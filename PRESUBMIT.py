@@ -3372,6 +3372,61 @@ def CheckForNewDEPSDownloadFromGoogleStorageHooks(input_api, output_api):
     return []
 
 
+def CheckEachPerfettoTestDataFileHasDepsEntry(input_api, output_api):
+    test_data_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=[r'^base/tracing/test/data/.*\.sha256'])
+    if not any(input_api.AffectedFiles(file_filter=test_data_filter)):
+        return []
+
+    # Find DEPS entry
+    deps_entry = []
+    for f in input_api.AffectedFiles(include_deletes=False):
+        if f.LocalPath() == 'DEPS':
+            new_deps = _ParseDeps('\n'.join(f.NewContents()))['deps']
+            deps_entry = new_deps['src/base/tracing/test/data']
+    if not deps_entry:
+        return [output_api.PresubmitError(
+            'You must update the DEPS file when you update a '
+            '.sha256 file in base/tracing/test/data'
+        )]
+
+    output = []
+    for f in input_api.AffectedFiles(file_filter=test_data_filter):
+        objects = deps_entry['objects']
+        if not f.NewContents():
+            # Deleted file so check that DEPS entry removed
+            sha256_from_file = f.OldContents()[0]
+            object_entry = next(
+                (item for item in objects if item["sha256sum"] == sha256_from_file),
+                None)
+            if object_entry:
+                output.append(output_api.PresubmitError(
+                    'You deleted %s so you must also remove the corresponding DEPS entry.'
+                    % f.LocalPath()
+                ))
+            continue
+
+        sha256_from_file = f.NewContents()[0]
+        object_entry = next(
+            (item for item in objects if item["sha256sum"] == sha256_from_file),
+            None)
+        if not object_entry:
+            output.append(output_api.PresubmitError(
+                'No corresponding DEPS entry found for %s. '
+                'Run `base/tracing/test/test_data.py get_deps --filepath %s` '
+                'to generate the DEPS entry.'
+                % (f.LocalPath(), f.LocalPath())
+            ))
+
+    if output:
+        output.append(output_api.PresubmitError(
+            'The DEPS entry for `src/base/tracing/test/data` in the DEPS file has not been '
+            'updated properly. Run `base/tracing/test/test_data.py get_all_deps` to see what '
+            'the DEPS entry should look like.'
+        ))
+    return output
+
+
 def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
     """When a dependency prefixed with + is added to a DEPS file, we
     want to make sure that the change is reviewed by an OWNER of the
