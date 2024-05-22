@@ -14,6 +14,7 @@ source_set("stub") {
     "ink_brush_stub.cc",
     "ink_in_progress_stroke_stub.cc",
     "ink_in_progress_stroke_stub.h",
+    "ink_intersects_stub.cc",
     "ink_modeled_shape_stub.cc",
     "ink_modeled_shape_stub.h",
     "ink_skia_renderer_stub.cc",
