@@ -881,18 +881,13 @@ class HashTable final
     return mask;
   }
 
-  void SetEnqueued() { queue_flag_ = true; }
-  void ClearEnqueued() { queue_flag_ = false; }
-  bool Enqueued() { return queue_flag_; }
-
   // Constructor for hash tables with raw storage.
   struct RawStorageTag {};
   HashTable(RawStorageTag, ValueType* table, unsigned size)
       : table_(table),
         table_size_(size),
         key_count_(0),
-        deleted_count_(0),
-        queue_flag_(0)
+        deleted_count_(0)
 #if DCHECK_IS_ON()
         ,
         access_forbidden_(0),
@@ -906,12 +901,10 @@ class HashTable final
   unsigned key_count_;
 #if DCHECK_IS_ON()
   unsigned deleted_count_ : 30;
-  unsigned queue_flag_ : 1;
   unsigned access_forbidden_ : 1;
   unsigned modifications_;
 #else
   unsigned deleted_count_ : 31;
-  unsigned queue_flag_ : 1;
 #endif
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
@@ -967,8 +960,7 @@ inline HashTable<Key,
     : table_(nullptr),
       table_size_(0),
       key_count_(0),
-      deleted_count_(0),
-      queue_flag_(false)
+      deleted_count_(0)
 #if DCHECK_IS_ON()
       ,
       access_forbidden_(false),
@@ -1798,8 +1790,7 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::HashTable(
     : table_(nullptr),
       table_size_(0),
       key_count_(0),
-      deleted_count_(0),
-      queue_flag_(false)
+      deleted_count_(0)
 #if DCHECK_IS_ON()
       ,
       access_forbidden_(false),
@@ -1830,8 +1821,7 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::HashTable(
     : table_(nullptr),
       table_size_(0),
       key_count_(0),
-      deleted_count_(0),
-      queue_flag_(false)
+      deleted_count_(0)
 #if DCHECK_IS_ON()
       ,
       access_forbidden_(false),
@@ -1877,8 +1867,6 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::swap(
   unsigned deleted = deleted_count_;
   deleted_count_ = other.deleted_count_;
   other.deleted_count_ = deleted;
-  DCHECK(!queue_flag_);
-  DCHECK(!other.queue_flag_);
 
 #if DCHECK_IS_ON()
   std::swap(modifications_, other.modifications_);
