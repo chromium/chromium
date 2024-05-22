@@ -4,6 +4,8 @@
 
 source_set("top_chrome") {
   sources = [
+    "per_profile_webui_tracker.cc",
+    "per_profile_webui_tracker.h",
     "top_chrome_web_ui_controller.cc",
     "top_chrome_web_ui_controller.h",
     "untrusted_top_chrome_web_ui_controller.cc",
@@ -11,6 +13,7 @@ source_set("top_chrome") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//content/public/browser",
     "//ui/webui",
   ]
