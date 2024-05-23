@@ -367,6 +367,48 @@ void V4L2StatelessVideoDecoder::ConfigureInputQueue() {
   }
 }
 
+bool V4L2StatelessVideoDecoder::ConfigureOutputQueue(void* ctrls) {
+  // The header needs to be parsed before the video resolution and format
+  // can be decided.
+  if (!request_queue_->SetHeadersForFormatNegotiation(ctrls)) {
+    LogError(media_log_,
+             "Failure to send the header necessary for output queue "
+             "instantiation.");
+    return false;
+  }
+
+  output_queue_ = OutputQueue::Create(device_);
+  if (!output_queue_) {
+    LogError(media_log_, "Unable to create an output queue.");
+    return false;
+  }
+
+  // There needs to be two additional buffers. One for the video frame being
+  // decoded, and one for our client (presumably an ImageProcessor).
+  constexpr size_t kAdditionalOutputBuffers = 2;
+  const size_t num_buffers =
+      decoder_->GetNumReferenceFrames() + kAdditionalOutputBuffers;
+  // Verify |num_buffers| has a reasonable value. Anecdotally
+  // 16 is the largest amount of reference frames seen, on an ITU-T H.264 test
+  // vector (CAPCM*1_Sand_E.h264).
+  CHECK_LE(num_buffers, 32u);
+  if (!output_queue_->PrepareBuffers(num_buffers)) {
+    LogError(media_log_, "Unable to prepare output buffers.");
+    return false;
+  }
+
+  if (!SetupOutputFormatForPipeline()) {
+    return false;
+  }
+
+  if (!output_queue_->StartStreaming()) {
+    LogError(media_log_, "Unable to start streaming on the output queue.");
+    return false;
+  }
+
+  return true;
+}
+
 size_t V4L2StatelessVideoDecoder::GetMaxOutputFramePoolSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   NOTIMPLEMENTED();
@@ -422,41 +464,9 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
   DVLOGF(4);
 
   if (!output_queue_) {
-    // The header needs to be parsed before the video resolution and format
-    // can be decided.
-    if (!request_queue_->SetHeadersForFormatNegotiation(ctrls)) {
-      LogError(media_log_,
-               "Failure to send the header necessary for output queue "
-               "instantiation.");
+    if (!ConfigureOutputQueue(ctrls)) {
+      output_queue_.reset();
       return false;
-    }
-
-    output_queue_ = OutputQueue::Create(device_);
-    if (!output_queue_) {
-      LogError(media_log_, "Unable to create an output queue.");
-      return false;
-    }
-
-    // There needs to be two additional buffers. One for the video frame being
-    // decoded, and one for our client (presumably an ImageProcessor).
-    constexpr size_t kAdditionalOutputBuffers = 2;
-    const size_t num_buffers =
-        decoder_->GetNumReferenceFrames() + kAdditionalOutputBuffers;
-    // Verify |num_buffers| has a reasonable value. Anecdotally
-    // 16 is the largest amount of reference frames seen, on an ITU-T H.264 test
-    // vector (CAPCM*1_Sand_E.h264).
-    CHECK_LE(num_buffers, 32u);
-    if (!output_queue_->PrepareBuffers(num_buffers)) {
-      LogError(media_log_, "Unable to prepare output buffers.");
-      return false;
-    }
-
-    if (!SetupOutputFormatForPipeline()) {
-      return false;
-    }
-
-    if (!output_queue_->StartStreaming()) {
-      LogError(media_log_, "Unable to start streaming on the output queue.");
     }
   }
 
