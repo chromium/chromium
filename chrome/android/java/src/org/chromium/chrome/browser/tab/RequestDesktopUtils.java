@@ -163,8 +163,7 @@ public class RequestDesktopUtils {
         // For incognito profile, keep the domain level setting to override the settings from normal
         // profile.
         if (!isIncognito && useDesktopUserAgent == rdsGlobalSetting) {
-            // To support the window setting, keep the domain settings when the window setting
-            // is ON.
+            // Keep the domain settings when the window setting preference is ON.
             PrefService prefService = UserPrefs.get(profile);
             if (!prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED)) {
                 contentSettingValue = ContentSettingValues.DEFAULT;
