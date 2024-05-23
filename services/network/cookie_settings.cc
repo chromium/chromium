@@ -62,6 +62,8 @@ net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
   switch (allow_mechanism) {
     case CookieSettings::ThirdPartyCookieAllowMechanism::
         kAllowByExplicitSetting:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowByTrackingProtectionException:
       return net::CookieInclusionStatus::ExemptionReason::kUserSetting;
     case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
       return net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;

@@ -188,6 +188,10 @@ BASE_FEATURE(kTrackingProtectionContentSettingUbControl,
              "TrackingProtectionContentSettingUbControl",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTrackingProtectionContentSettingFor3pcb,
+             "TrackingProtectionContentSettingFor3pcb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTrackingProtectionNoticeRequestTracking,
              "TrackingProtectionNoticeRequestTracking",

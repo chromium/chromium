@@ -15,6 +15,7 @@
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "net/base/features.h"
 #include "net/base/network_delegate.h"
 #include "net/base/schemeful_site.h"
@@ -169,18 +170,13 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
                                            /*kBlockSource*/ BlockSource>> {
  public:
   CookieSettingsTestP() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
+    std::vector<base::test::FeatureRef> enabled_features;
     if (IsForceThirdPartyCookieBlockingFlagEnabled()) {
-      enabled_features.push_back(
-          {net::features::kForceThirdPartyCookieBlocking, {}});
-      enabled_features.push_back(
-          {net::features::kThirdPartyStoragePartitioning, {}});
+      enabled_features.push_back(net::features::kForceThirdPartyCookieBlocking);
+      enabled_features.push_back(net::features::kThirdPartyStoragePartitioning);
     }
 
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    feature_list_.InitWithFeatures(enabled_features, {});
   }
 
   // Indicates whether the setting comes from the testing flag if the
@@ -281,6 +277,44 @@ TEST_F(CookieSettingsTest, GetCookieSetting) {
                                       net::CookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 }
+
+class CookieSettingsTrackingProtectionTest : public CookieSettingsTestBase {
+ public:
+  CookieSettingsTrackingProtectionTest() {
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
+  }
+};
+
+// The TRACKING_PROTECTION content setting is not registered on iOS
+#if !BUILDFLAG(IS_IOS)
+TEST_F(CookieSettingsTrackingProtectionTest,
+       GetCookieSettingUsesTrackingProtectionSetting) {
+  // Set default to block 3PCs
+  CookieSettings settings;
+  settings.set_block_third_party_cookies(true);
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kOtherURL), GURL(kURL),
+                                      net::CookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  // Add TRACKING_PROTECTION exception
+  settings.set_content_settings(
+      ContentSettingsType::TRACKING_PROTECTION,
+      {CreateSetting("*", kURL, CONTENT_SETTING_ALLOW)});
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kOtherURL), GURL(kURL),
+                                      net::CookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_ALLOW);
+
+  // Explicitly block COOKIES for the URL. This should take priority over the
+  // TRACKING_PROTECTION exception
+  settings.set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting(kOtherURL, kURL, CONTENT_SETTING_BLOCK)});
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kOtherURL), GURL(kURL),
+                                      net::CookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+}
+#endif
 
 TEST_F(CookieSettingsTest, GetCookieSettingMultipleProviders) {
   CookieSettings settings;

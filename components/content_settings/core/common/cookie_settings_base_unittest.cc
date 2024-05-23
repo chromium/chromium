@@ -219,7 +219,7 @@ TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithAllowSetting) {
 }
 
 TEST_F(CookieSettingsBaseTest, ThirdPartyCookiesOverriden) {
-  GURL thirdPartyURL = GURL("https://3p.com");
+  const GURL kThirdPartyURL = GURL("https://3p.com");
 
   CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
   net::CookieSettingOverrides overrides{};
@@ -228,9 +228,9 @@ TEST_F(CookieSettingsBaseTest, ThirdPartyCookiesOverriden) {
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(url_, site_for_cookies_,
                                                  origin_, overrides));
   EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
-      thirdPartyURL, site_for_cookies_, origin_, overrides));
+      kThirdPartyURL, site_for_cookies_, origin_, overrides));
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
-      thirdPartyURL, site_for_cookies_, origin_,
+      kThirdPartyURL, site_for_cookies_, origin_,
       net::CookieSettingOverrides()));
 }
 

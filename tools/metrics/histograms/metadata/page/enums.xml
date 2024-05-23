@@ -391,6 +391,9 @@ chromium-metrics-reviews@google.com.
              education TLD entries within the 3PCD metadata grants content
              settings (Global Allowlist)."/>
   <int value="19" label="kAllowByScheme: Allowed by the top-level scheme."/>
+  <int value="20"
+      label="kAllowByTrackingProtectionException: Allowed by explicit
+             tracking protection content setting."/>
 </enum>
 
 </enums>

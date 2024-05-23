@@ -110,6 +110,7 @@ source_set("cookie_settings") {
     "//components/policy/core/browser",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
+    "//components/privacy_sandbox:features",
     "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/privacy_sandbox:tracking_protection_settings",
     "//components/tpcd/metadata/browser",
