@@ -62,7 +62,7 @@ class AudioStreamCoordinatorTest : public TestWithBrowserView {
   MockStreamFactory fake_stream_factory_;
 };
 
-TEST_F(AudioStreamCoordinatorTest, ConnectToAudioCaptuerAndReceiveBuses) {
+TEST_F(AudioStreamCoordinatorTest, ConnectToAudioCapturerAndReceiveBuses) {
   constexpr uint32_t kAudioBusesNumber = 9;  // some arbitrary number
   base::MockCallback<base::RepeatingClosure> callback;
   EXPECT_CALL(callback, Run()).Times(kAudioBusesNumber);
@@ -76,6 +76,7 @@ TEST_F(AudioStreamCoordinatorTest, ConnectToAudioCaptuerAndReceiveBuses) {
   std::unique_ptr<::media::AudioBus> audio_bus = media::AudioBus::Create(
       {media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
        media::ChannelLayoutConfig::Mono(), kSampleRate, kSampleRate / 20});
+  audio_bus->Zero();
 
   for (uint32_t i = 0; i < kAudioBusesNumber; i++) {
     coordinator_->GetAudioCapturerForTest()->Capture(
