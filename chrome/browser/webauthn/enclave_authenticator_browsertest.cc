@@ -61,6 +61,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+// These tests are disabled on the M125 branch because they test a feature (GPM
+// passkeys on the desktop) that isn't active in M125 and a necessary revert
+// on to the M125 branch broken them.
+#if 0
+
 // These tests are disabled under MSAN. The enclave subprocess is written in
 // Rust and FFI from Rust to C++ doesn't work in Chromium at this time
 // (crbug.com/1369167).
@@ -802,3 +807,5 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 }
 
 #endif  // !defined(MEMORY_SANITIZER)
+
+#endif
