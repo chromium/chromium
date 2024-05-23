@@ -11,8 +11,8 @@ import org.chromium.page_image_service.mojom.ClientId.EnumType;
 
 /** Allows java access to the native ImageService. */
 public class ImageServiceMetrics {
-    static final String HISTOGRAM_SALIENT_IMAGE_URL_FETCH_RESULT =
-            "PageImageService.Android.SalientImageUrlFetchResult";
+    static final String HISTOGRAM_SALIENT_IMAGE_URL_FETCH_RESULT_PREFIX =
+            "PageImageService.Android.SalientImageUrlFetchResult.";
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -36,8 +36,7 @@ public class ImageServiceMetrics {
     public static void recordFetchImageUrlResult(
             @EnumType int clientId, @SalientImageUrlFetchResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_SALIENT_IMAGE_URL_FETCH_RESULT
-                        + "."
+                HISTOGRAM_SALIENT_IMAGE_URL_FETCH_RESULT_PREFIX
                         + ImageServiceBridge.clientIdToString(clientId),
                 result,
                 SalientImageUrlFetchResult.NUM_ENTRIES);
