@@ -1377,8 +1377,7 @@ void LensOverlayController::IssueTranslateSelectionRequest(
     int selection_end_index) {
   initialization_data_->additional_search_query_params_.clear();
   lens::AppendTranslateParamsToMap(
-      initialization_data_->additional_search_query_params_, query,
-      content_language);
+      initialization_data_->additional_search_query_params_, query, "auto");
 
   IssueTextSelectionRequestInner(query, selection_start_index,
                                  selection_end_index);

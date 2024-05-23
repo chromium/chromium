@@ -121,7 +121,7 @@ constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
     "const tliteslPresent = "
     "  root.getElementById('results').src.includes('tlitesl=' + $2);"
     "const tlitetlPresent = "
-    "  root.getElementById('results').src.includes('tlitetl=en-US');"
+    "  root.getElementById('results').src.includes('tlitetl=en');"
     "const searchboxInputLoaded = "
     "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && tlitetxtPresent && ctxslTransPresent "
@@ -1107,7 +1107,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
            content::EvalJs(
                controller->GetSidePanelWebContentsForTesting(),
                content::JsReplace(kCheckSidePanelTranslateResultsLoadedScript,
-                                  text_query, content_language));
+                                  text_query, "auto"));
   }));
 }
 

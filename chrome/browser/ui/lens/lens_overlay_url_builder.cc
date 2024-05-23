@@ -7,6 +7,7 @@
 #include "base/base64url.h"
 #include "base/strings/escape.h"
 #include "chrome/browser/browser_process.h"
+#include "components/language/core/common/language_util.h"
 #include "components/lens/lens_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -106,9 +107,12 @@ void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
                                 const std::string& content_language) {
   params[kCtxslTransParameterKey] = kCtxslTransParameterValue;
   params[kTliteQueryParameterKey] = query;
-  params[kTliteSourceLanguageParameterKey] = content_language;
-  params[kTliteTargetLanguageParameterKey] =
-      g_browser_process->GetApplicationLocale();
+  auto content_language_synonym = content_language;
+  language::ToTranslateLanguageSynonym(&content_language_synonym);
+  params[kTliteSourceLanguageParameterKey] = content_language_synonym;
+  auto locale = g_browser_process->GetApplicationLocale();
+  language::ToTranslateLanguageSynonym(&locale);
+  params[kTliteTargetLanguageParameterKey] = locale;
 }
 
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {

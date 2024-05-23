@@ -42,6 +42,7 @@ static_library("lens") {
     "//chrome/common:channel_info",
     "//components/constrained_window",
     "//components/endpoint_fetcher",
+    "//components/language/core/common",
     "//components/lens:features",
     "//components/lens/proto/server:proto",
     "//components/prefs",
