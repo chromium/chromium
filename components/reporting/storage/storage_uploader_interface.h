@@ -7,9 +7,9 @@
 
 #include <cstdint>
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"

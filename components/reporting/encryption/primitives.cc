@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "crypto/aead.h"
@@ -16,7 +17,6 @@
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/hkdf.h"
 
-#include "base/strings/string_piece.h"
 
 namespace reporting {
 

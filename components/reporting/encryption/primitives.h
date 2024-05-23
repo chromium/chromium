@@ -8,8 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace reporting {
 

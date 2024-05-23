@@ -6,8 +6,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"

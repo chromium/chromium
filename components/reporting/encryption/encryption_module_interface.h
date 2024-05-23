@@ -6,11 +6,11 @@
 #define COMPONENTS_REPORTING_ENCRYPTION_ENCRYPTION_MODULE_INTERFACE_H_
 
 #include <atomic>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"

@@ -4,13 +4,13 @@
 
 #include "components/reporting/encryption/encryption_module_interface.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/reporting/proto/synced/record.pb.h"

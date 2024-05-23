@@ -6,8 +6,8 @@
 #define COMPONENTS_REPORTING_ENCRYPTION_VERIFICATION_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/reporting/util/status.h"
 
 namespace reporting {

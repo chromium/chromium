@@ -6,12 +6,12 @@
 #define COMPONENTS_REPORTING_STORAGE_STORAGE_CONFIGURATION_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"

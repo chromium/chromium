@@ -7,10 +7,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/statusor.h"

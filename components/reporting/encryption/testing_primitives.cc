@@ -7,17 +7,16 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
+#include "components/reporting/encryption/primitives.h"
 #include "crypto/aead.h"
 #include "crypto/openssl_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/hkdf.h"
-
-#include "components/reporting/encryption/primitives.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::Eq;
 using ::testing::Ge;

@@ -10,7 +10,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
