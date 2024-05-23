@@ -1008,23 +1008,9 @@ void Append3pcExceptions(Profile* profile,
   base::Value::List cookie_exceptions;
   GetExceptionsForContentType(ContentSettingsType::COOKIES, profile, web_ui,
                               /*incognito=*/false, &cookie_exceptions);
-  // Create a set of TP exceptions keyed off of <name, source>.
-  std::set<std::pair<std::string, std::string>> display_name_and_source;
-  for (const auto& exception : *exceptions) {
-    const auto& dict = exception.GetDict();
-    CHECK(dict.contains(kEmbeddingOrigin) && dict.contains(kSource));
-    display_name_and_source.insert(std::make_pair(
-        *dict.FindString(kEmbeddingOrigin), *dict.FindString(kSource)));
-  }
-
   for (auto& cookie_exception : cookie_exceptions) {
     auto& dict = cookie_exception.GetDict();
-    CHECK(dict.contains(kEmbeddingOrigin) && dict.contains(kSource) &&
-          dict.contains(kOrigin));
-    // Add 3PC exceptions that are not also TP exceptions.
-    if (*dict.FindString(kOrigin) == "*" &&
-        !display_name_and_source.contains(std::make_pair(
-            *dict.FindString(kEmbeddingOrigin), *dict.FindString(kSource)))) {
+    if (dict.contains(kOrigin) && *dict.FindString(kOrigin) == "*") {
       dict.Set(kDescription,
                l10n_util::GetStringUTF16(
                    IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL));

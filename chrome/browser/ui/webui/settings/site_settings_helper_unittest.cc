@@ -695,13 +695,7 @@ TEST_F(SiteSettingsHelperTest,
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString("some-site.com"),
       kContentTypeTrackingProtection, CONTENT_SETTING_ALLOW);
-  // Add unique 3PC exception
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("some-site.com"), kContentTypeCookies,
-      CONTENT_SETTING_ALLOW);
-  // Add 3PC exception with the same pattern as the Tracking Protection
-  // exception. This should end up being filtered out.
+  // Add 3PC exception
   map->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString("third-party-cookies.com"),
@@ -712,15 +706,15 @@ TEST_F(SiteSettingsHelperTest,
       ContentSettingsPattern::Wildcard(), kContentTypeCookies,
       CONTENT_SETTING_ALLOW);
 
-  // Check that cookies list has three exceptions.
+  // Check that cookies list has two exceptions.
   base::Value::List cookie_exceptions;
   site_settings::GetExceptionsForContentType(kContentTypeCookies, &profile,
                                              /*web_ui=*/nullptr,
                                              /*incognito=*/false,
                                              &cookie_exceptions);
-  ASSERT_EQ(3U, cookie_exceptions.size());
+  ASSERT_EQ(2U, cookie_exceptions.size());
 
-  // Check that Tracking Protection list only has two exceptions.
+  // Check that Tracking Protection list has two exceptions.
   base::Value::List tp_exceptions;
   site_settings::GetExceptionsForContentType(
       kContentTypeTrackingProtection, &profile,
@@ -752,9 +746,8 @@ TEST_F(SiteSettingsHelperTest,
           IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL));
 }
 
-TEST_F(
-    SiteSettingsHelperTest,
-    TrackingProtectionExceptionsListIncludes3pcExceptionsWithDifferentSource) {
+TEST_F(SiteSettingsHelperTest,
+       TrackingProtectionExceptionsListIncludes3pcExceptionsWithSamePattern) {
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -763,16 +756,11 @@ TEST_F(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString("some-site.com"),
       kContentTypeTrackingProtection, CONTENT_SETTING_ALLOW);
-  // Add 3PC exception for same pattern but from enterprise source
-  auto policy_provider = std::make_unique<content_settings::MockProvider>();
-  policy_provider->SetWebsiteSetting(
+  // Add 3PC exception for same pattern
+  map->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString("some-site.com"), kContentTypeCookies,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
-  policy_provider->set_read_only(true);
-  content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
-                                                ProviderType::kPolicyProvider);
+      CONTENT_SETTING_ALLOW);
 
   // Check that Tracking Protection list has two exceptions.
   base::Value::List tp_exceptions;
