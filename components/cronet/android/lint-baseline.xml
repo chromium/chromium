@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.4.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.4.0-alpha09">
+<issues format="6" by="lint 8.6.0-alpha02" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha02">
 
     <issue
         id="WrongCommentType"
@@ -41,7 +41,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java"
-            line="47"
+            line="55"
             column="1"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java"
-            line="32"
+            line="39"
             column="1"/>
     </issue>
 
@@ -85,7 +85,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java"
-            line="40"
+            line="39"
             column="1"/>
     </issue>
 
