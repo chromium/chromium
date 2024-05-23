@@ -10,15 +10,19 @@ source_set("model") {
     "price_insights_model_factory.mm",
   ]
   deps = [
+    ":feature",
     "//base",
     "//components/commerce/core:commerce_types",
     "//components/commerce/core:shopping_service",
     "//components/commerce/core/subscriptions",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/strings",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
   ]
 }
 
@@ -27,15 +31,22 @@ source_set("unit_tests") {
   sources = [ "price_insights_model_unittest.mm" ]
   frameworks = [ "Foundation.framework" ]
   deps = [
+    ":feature",
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/commerce/core:commerce_types",
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service_test_support",
+    "//components/strings",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
 

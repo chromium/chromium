@@ -104,6 +104,7 @@ BASE_DECLARE_FEATURE(kTrackByDefaultOnMobile);
 
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kPriceInsightsIos);
+BASE_DECLARE_FEATURE(kPriceInsightsHighPriceIos);
 #endif
 
 // Feature flag for Discounts on navigation.

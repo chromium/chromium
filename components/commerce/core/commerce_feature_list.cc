@@ -274,6 +274,10 @@ BASE_FEATURE(kTrackByDefaultOnMobile,
 BASE_FEATURE(kPriceInsightsIos,
              "PriceInsightsIos",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPriceInsightsHighPriceIos,
+             "PriceInsightsHighPrice",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kShoppingPageTypes,

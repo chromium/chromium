@@ -86,11 +86,14 @@ class PriceInsightsModel final : public ContextualPanelModel,
       const GURL& url,
       const std::optional<commerce::PriceInsightsInfo>& info);
   // Runs callbacks associated with a given URL.
-  void RunCallbacks(const GURL& url, bool with_valid_config);
+  void RunCallbacks(const GURL& url);
   // Callback function called when IsSubscribed returns whether or not the
   // current page is being tracked.
   void OnIsSubscribedReceived(const GURL& url, bool is_subscribed);
+  // Check if there are pending executions for the specified URL.
   bool HasPendingExecutions(const GURL& url);
+  // Updates PriceInsightsItemConfiguration.
+  void UpdatePriceInsightsItemConfig(const GURL& url);
   // Pointer to the shopping service.
   raw_ptr<commerce::ShoppingService> shopping_service_ = nullptr;
   // Map containing Price Insights execution status for each URL.

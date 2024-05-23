@@ -6967,6 +6967,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "price-insights-high-price-ios",
+    "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "price-insights-ios",
     "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 130

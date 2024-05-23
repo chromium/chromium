@@ -81,6 +81,7 @@
 #import "ios/chrome/browser/follow/model/follow_features.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/sessions/features.h"
@@ -548,6 +549,22 @@ const FeatureEntry::FeatureVariation kBottomOmniboxPromoVariations[] = {
      nullptr},
 };
 
+constexpr flags_ui::FeatureEntry::FeatureParam kPriceInsightsPriceIsLowParam[] =
+    {{kLowPriceParam, kLowPriceParamPriceIsLow}};
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kPriceInsightsGoodDealNowParam[] = {
+        {kLowPriceParam, kLowPriceParamGoodDealNow}};
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kPriceInsightsSeePriceHistoryParam[] = {
+        {kLowPriceParam, kLowPriceParamSeePriceHistory}};
+constexpr flags_ui::FeatureEntry::FeatureVariation kPriceInsightsVariations[] =
+    {{"Price is low", kPriceInsightsPriceIsLowParam,
+      std::size(kPriceInsightsPriceIsLowParam), nullptr},
+     {"Good deal now", kPriceInsightsGoodDealNowParam,
+      std::size(kPriceInsightsGoodDealNowParam), nullptr},
+     {"See price history", kPriceInsightsSeePriceHistoryParam,
+      std::size(kPriceInsightsSeePriceHistoryParam), nullptr}};
+
 const FeatureEntry::FeatureParam kBottomOmniboxPromoDefaultPositionTop[] = {
     {kBottomOmniboxPromoDefaultPositionParam,
      kBottomOmniboxPromoDefaultPositionParamTop}};
@@ -876,7 +893,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(syncer::kEnableBookmarkFoldersForAccountStorage)},
     {"price-insights-ios", commerce::flag_descriptions::kPriceInsightsIosName,
      commerce::flag_descriptions::kPriceInsightsIosDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(commerce::kPriceInsightsIos)},
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kPriceInsightsIos,
+                                    kPriceInsightsVariations,
+                                    "PriceInsightsIos")},
+    {"price-insights-high-price-ios",
+     commerce::flag_descriptions::kPriceInsightsHighPriceIosName,
+     commerce::flag_descriptions::kPriceInsightsHighPriceIosDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(commerce::kPriceInsightsHighPriceIos)},
     {"autofill-enable-card-product-name",
      flag_descriptions::kAutofillEnableCardProductNameName,
      flag_descriptions::kAutofillEnableCardProductNameDescription,

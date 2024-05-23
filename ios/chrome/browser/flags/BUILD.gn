@@ -70,6 +70,7 @@ source_set("flags") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/price_insights/model:feature",
     "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/screen_time/model:buildflags",
     "//ios/chrome/browser/sessions:features",

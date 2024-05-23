@@ -4,13 +4,36 @@
 
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/commerce/core/subscriptions/subscriptions_storage.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+std::string getHighConfidenceMomentsText() {
+  std::string low_price_value = GetLowPriceParamValue();
+  if (low_price_value == std::string(kLowPriceParamGoodDealNow)) {
+    return l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_EXPANDED_TEXT_GOOD_DEAL);
+  }
+  if (low_price_value == std::string(kLowPriceParamSeePriceHistory)) {
+    return l10n_util::GetStringUTF8(
+        IDS_INSIGHTS_ICON_EXPANDED_TEXT_PRICE_HISTORY);
+  }
+
+  return l10n_util::GetStringUTF8(
+      IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE);
+}
+
+}  // namespace
 
 PriceInsightsModel::PriceInsightsModel() {}
 
@@ -37,8 +60,6 @@ void PriceInsightsModel::FetchConfigurationForWebState(
   //  config.
   price_insights_executions_[product_url] =
       std::make_unique<PriceInsightsExecution>();
-  price_insights_executions_[product_url]->config =
-      std::make_unique<PriceInsightsItemConfiguration>();
 
   shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
       web_state->GetBrowserState());
@@ -53,9 +74,12 @@ void PriceInsightsModel::OnProductInfoUrlReceived(
   if (!info.has_value()) {
     price_insights_executions_[url]->is_subscribed_processed = true;
     price_insights_executions_[url]->is_price_insights_info_processed = true;
-    RunCallbacks(url, false);
+    RunCallbacks(url);
     return;
   }
+
+  price_insights_executions_[url]->config =
+      std::make_unique<PriceInsightsItemConfiguration>();
 
   price_insights_executions_[url]->config->product_info = info.value();
 
@@ -86,7 +110,7 @@ void PriceInsightsModel::OnPriceInsightsInfoUrlReceived(
   }
   price_insights_executions_[url]->is_price_insights_info_processed = true;
 
-  RunCallbacks(url, true);
+  RunCallbacks(url);
 }
 
 void PriceInsightsModel::OnIsSubscribedReceived(const GURL& url,
@@ -94,10 +118,10 @@ void PriceInsightsModel::OnIsSubscribedReceived(const GURL& url,
   price_insights_executions_[url]->config->is_subscribed = is_subscribed;
   price_insights_executions_[url]->is_subscribed_processed = true;
 
-  RunCallbacks(url, true);
+  RunCallbacks(url);
 }
 
-void PriceInsightsModel::RunCallbacks(const GURL& url, bool with_valid_config) {
+void PriceInsightsModel::RunCallbacks(const GURL& url) {
   if (HasPendingExecutions(url)) {
     return;
   }
@@ -107,16 +131,14 @@ void PriceInsightsModel::RunCallbacks(const GURL& url, bool with_valid_config) {
   auto execution_it = price_insights_executions_.find(url);
 
   for (FetchConfigurationForWebStateCallback& callback : callbacks_it->second) {
-    if (with_valid_config) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback),
-                         std::make_unique<PriceInsightsItemConfiguration>(
-                             execution_it->second->config.get())));
-    } else {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), nullptr));
-    }
+    UpdatePriceInsightsItemConfig(url);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       execution_it->second->config == nullptr
+                           ? nullptr
+                           : std::make_unique<PriceInsightsItemConfiguration>(
+                                 execution_it->second->config.get())));
   }
 
   callbacks_.erase(callbacks_it);
@@ -133,6 +155,70 @@ bool PriceInsightsModel::HasPendingExecutions(const GURL& url) {
   }
 
   return false;
+}
+
+void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
+  auto execution_it = price_insights_executions_.find(url);
+  if (!execution_it->second->config) {
+    return;
+  }
+  execution_it->second->config->entrypoint_image_name =
+      base::SysNSStringToUTF8(kDownTrendSymbol);
+  execution_it->second->config->image_type =
+      ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
+  execution_it->second->config->accessibility_label =
+      l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY);
+
+  if (!execution_it->second->config->price_insights_info.has_value()) {
+    execution_it->second->config->relevance =
+        ContextualPanelItemConfiguration::low_relevance;
+    return;
+  }
+
+  commerce::PriceInsightsInfo info =
+      execution_it->second->config->price_insights_info.value();
+  std::string message;
+  switch (info.price_bucket) {
+    case commerce::PriceBucket::kLowPrice: {
+      message = getHighConfidenceMomentsText();
+      break;
+    }
+    case commerce::PriceBucket::kHighPrice: {
+      if (!IsPriceInsightsHighPriceEnabled()) {
+        execution_it->second->config->relevance =
+            ContextualPanelItemConfiguration::low_relevance;
+        return;
+      }
+
+      execution_it->second->config->entrypoint_image_name =
+          base::SysNSStringToUTF8(kUpTrendSymbol);
+
+      if (!execution_it->second->config->can_price_track ||
+          execution_it->second->config->is_subscribed) {
+        execution_it->second->config->relevance =
+            ContextualPanelItemConfiguration::low_relevance;
+        return;
+      }
+      message =
+          l10n_util::GetStringUTF8(IDS_INSIGHTS_ICON_PRICE_HIGH_EXPANDED_TEXT);
+      break;
+    }
+    case commerce::PriceBucket::kTypicalPrice: {
+      execution_it->second->config->relevance =
+          ContextualPanelItemConfiguration::low_relevance;
+      return;
+    }
+    case commerce::PriceBucket::kUnknown: {
+      execution_it->second->config->relevance =
+          ContextualPanelItemConfiguration::low_relevance;
+      return;
+    }
+  }
+
+  execution_it->second->config->relevance =
+      ContextualPanelItemConfiguration::high_relevance;
+  execution_it->second->config->accessibility_label = message;
+  execution_it->second->config->entrypoint_message = message;
 }
 
 PriceInsightsItemConfiguration::PriceInsightsItemConfiguration()
