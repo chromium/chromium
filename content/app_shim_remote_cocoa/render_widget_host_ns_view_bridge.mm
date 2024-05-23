@@ -9,7 +9,6 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #import "base/mac/scoped_sending_event.h"
 #import "base/message_loop/message_pump_apple.h"
@@ -21,6 +20,7 @@
 #import "content/app_shim_remote_cocoa/web_menu_runner_mac.h"
 #include "content/common/mac/attributed_string_type_converters.h"
 #import "skia/ext/skia_utils_mac.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #import "ui/base/cocoa/animation_utils.h"
@@ -427,7 +427,14 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
                               rightAligned:menu->right_aligned];
 
   {
-    base::AutoReset<bool> running(&showing_popup_menu_, true);
+    // We can't use base::AutoReset to set and reset `showing_popup_menu_` as
+    // `this` might be destroyed by the time showing the menu finishes.
+    showing_popup_menu_ = true;
+    absl::Cleanup running([weak_self]() {
+      if (weak_self) {
+        weak_self->showing_popup_menu_ = false;
+      }
+    });
 
     PopupMenuRunner mojo_host(std::move(menu->receiver), runner);
 
