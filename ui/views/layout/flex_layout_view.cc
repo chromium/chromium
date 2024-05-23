@@ -154,6 +154,10 @@ gfx::Size FlexLayoutView::CalculatePreferredSize(
   return layout_->GetPreferredSize(this, {});
 }
 
+int FlexLayoutView::GetHeightForWidth(int w) const {
+  return layout_->GetPreferredHeightForWidth(this, w);
+}
+
 BEGIN_METADATA(FlexLayoutView)
 ADD_PROPERTY_METADATA(LayoutOrientation, Orientation)
 ADD_PROPERTY_METADATA(LayoutAlignment, MainAxisAlignment)

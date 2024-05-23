@@ -607,9 +607,6 @@ gfx::Size View::GetMaximumSize() const {
 }
 
 int View::GetHeightForWidth(int w) const {
-  if (HasLayoutManager()) {
-    return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
-  }
   return GetPreferredSize(SizeBounds(w, {})).height();
 }
 

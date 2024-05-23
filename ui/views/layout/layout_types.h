@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/views_export.h"
 
