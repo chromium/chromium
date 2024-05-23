@@ -1771,15 +1771,21 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SigninPending.ResolutionSource"
+<histogram name="Signin.SigninPending.ResolutionSource{Status}"
     enum="SigninAccessPoint" expires_after="2024-10-16">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the access point of the resolution event from Signin Pending to
-    Signed in. The value is recorded when the user resolves the Signin Pending
-    state by signing back in.
+    Signed in. The value is recorded when the user {Status}.
   </summary>
+  <token key="Status">
+    <variant name="Completed"
+        summary="resolves the Signin Pending state by signing back in"/>
+    <variant name="Started"
+        summary="starts resolving the Signin Pending state by attempting to
+                 sign back in"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.SigninPending.ResolutionTime.{ResolutionType}"

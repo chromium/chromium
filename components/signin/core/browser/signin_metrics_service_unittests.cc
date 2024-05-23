@@ -11,6 +11,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -28,9 +29,12 @@ constexpr char kFirstAccountWebSigninStartTimePrefForTesting[] =
 constexpr char kSigninPendingStartTimePrefForTesting[] =
     "signin.sigin_pending_start_time";
 
+const signin_metrics::AccessPoint kDefaultTestAccessPoint =
+    signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+
 }  // namespace
 
-enum class Resolution { kReauth, kSignout };
+enum class Resolution { kReauth, kWebSignin, kSignout };
 
 class SigninMetricsServiceTest : public ::testing::Test {
  public:
@@ -45,9 +49,9 @@ class SigninMetricsServiceTest : public ::testing::Test {
 
   void DestroySigninMetricsService() { signin_metrics_service_ = nullptr; }
 
-  void Signin(const std::string& email,
-              signin_metrics::AccessPoint access_point =
-                  signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS) {
+  void Signin(
+      const std::string& email,
+      signin_metrics::AccessPoint access_point = kDefaultTestAccessPoint) {
     identity_test_environment_.MakeAccountAvailable(
         signin::AccountAvailabilityOptionsBuilder()
             .AsPrimary(signin::ConsentLevel::kSignin)
@@ -76,8 +80,10 @@ class SigninMetricsServiceTest : public ::testing::Test {
   }
 
   void ResolveSigninPending(Resolution resolution) {
-    ASSERT_TRUE(
-        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+    CoreAccountInfo core_account_info =
+        identity_manager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin);
+    ASSERT_FALSE(core_account_info.IsEmpty());
 
     // Clear the error.
     switch (resolution) {
@@ -87,10 +93,24 @@ class SigninMetricsServiceTest : public ::testing::Test {
         // here.
         identity_test_environment_
             .UpdatePersistentErrorOfRefreshTokenForAccount(
-                identity_manager()->GetPrimaryAccountId(
-                    signin::ConsentLevel::kSignin),
+                core_account_info.account_id,
                 GoogleServiceAuthError::AuthErrorNone());
         return;
+      case Resolution::kWebSignin: {
+        AccountInfo account_info =
+            identity_manager()->FindExtendedAccountInfo(core_account_info);
+        account_info.access_point =
+            signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+        identity_test_environment_.UpdateAccountInfoForAccount(account_info);
+        // Calling `IdentityTestEnvironment::SetRefreshTokenForPrimaryAccount()`
+        // will not fire the notification event in unit tests. Directly fire it
+        // here.
+        identity_test_environment_
+            .UpdatePersistentErrorOfRefreshTokenForAccount(
+                account_info.account_id,
+                GoogleServiceAuthError::AuthErrorNone());
+        return;
+      }
       case Resolution::kSignout:
         identity_test_environment_.ClearPrimaryAccount();
         return;
@@ -160,6 +180,14 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionReauth) {
                                       1);
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Reauth", 1);
+
+  // Started histogram is not expected to be recorded through this part of the
+  // flow.
+  histogram_tester.ExpectTotalCount(
+      "Signin.SigninPending.ResolutionSourceStarted", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SigninPending.ResolutionSourceCompleted", kDefaultTestAccessPoint,
+      1);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -347,4 +375,21 @@ TEST_F(SigninMetricsServiceTest, WebSigninWithMultipleAccountsStartTimePref) {
   EXPECT_EQ(
       web_signin_start_time,
       pref_service().GetTime(kFirstAccountWebSigninStartTimePrefForTesting));
+}
+
+TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  Signin("test@gmail.com");
+  TriggerSigninPending();
+  ResolveSigninPending(Resolution::kWebSignin);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SigninPending.ResolutionSourceStarted",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SigninPending.ResolutionSourceCompleted",
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
 }

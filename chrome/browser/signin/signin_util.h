@@ -22,6 +22,10 @@
 
 class Profile;
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace signin_util {
 
 enum class ProfileSeparationPolicyState {
@@ -145,6 +149,11 @@ PrimaryAccountError SetPrimaryAccountWithInvalidToken(
     bool is_under_advanced_protection,
     signin_metrics::AccessPoint access_point,
     signin_metrics::SourceForRefreshTokenOperation source);
+
+// Returns true if the Chrome is signed into with an account that is in
+// persistent error state. Always return false for Syncing users, even if in
+// error state.
+bool IsSigninPaused(signin::IdentityManager* identity_manager);
 
 }  // namespace signin_util
 

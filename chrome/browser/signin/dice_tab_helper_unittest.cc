@@ -11,6 +11,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -313,6 +314,40 @@ TEST_F(DiceTabHelperTest, IsSyncSigninInProgress) {
   EXPECT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
   dice_tab_helper->OnSyncSigninFlowComplete();
   EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+}
+
+TEST_F(DiceTabHelperTest, SigninPendingResolutionStarted) {
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  // Sign in
+  identity_test_env->MakePrimaryAccountAvailable("primary@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  base::HistogramTester h_tester;
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
+  {
+    DiceTabHelper::CreateForWebContents(web_contents());
+    DiceTabHelper* dice_tab_helper =
+        DiceTabHelper::FromWebContents(web_contents());
+
+    InitializeDiceTabHelper(dice_tab_helper, access_point,
+                            signin_metrics::Reason::kReauthentication);
+  }
+  // No value recorded as we are not in a Signin pending State yet.
+  h_tester.ExpectTotalCount("Signin.SigninPending.ResolutionSourceStarted", 0);
+
+  // Trigger signin pending.
+  identity_test_env->SetInvalidRefreshTokenForPrimaryAccount();
+  {
+    DiceTabHelper::CreateForWebContents(web_contents());
+    DiceTabHelper* dice_tab_helper =
+        DiceTabHelper::FromWebContents(web_contents());
+
+    InitializeDiceTabHelper(dice_tab_helper, access_point,
+                            signin_metrics::Reason::kReauthentication);
+  }
+  h_tester.ExpectUniqueSample("Signin.SigninPending.ResolutionSourceStarted",
+                              access_point, 1);
 }
 
 class DiceTabHelperPrerenderTest : public DiceTabHelperTest {

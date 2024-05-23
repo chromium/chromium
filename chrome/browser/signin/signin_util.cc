@@ -303,4 +303,12 @@ PrimaryAccountError SetPrimaryAccountWithInvalidToken(
   return set_primary_account_result;
 }
 
+bool IsSigninPaused(signin::IdentityManager* identity_manager) {
+  return !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+             identity_manager->GetPrimaryAccountId(
+                 signin::ConsentLevel::kSignin));
+}
+
 }  // namespace signin_util

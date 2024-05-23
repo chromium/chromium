@@ -43,9 +43,6 @@ class SigninMetricsService : public KeyedService,
   raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<PrefService> pref_service_;
 
-  signin_metrics::AccessPoint last_reauth_access_point_ =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
-
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_scoped_observation_{this};

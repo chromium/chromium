@@ -116,9 +116,10 @@ void DiceTabHelper::InitializeSigninFlow(
 
   // This profile creation may lead to the user signing in. To speed up a
   // potential subsequent account capabililties fetch, notify IdentityManager.
-  IdentityManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
-      ->PrepareForAddingNewAccount();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  identity_manager->PrepareForAddingNewAccount();
 
   if (!record_signin_started_metrics) {
     return;
@@ -137,6 +138,12 @@ void DiceTabHelper::InitializeSigninFlow(
     signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
     signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Loading"));
+  }
+
+  if (signin_util::IsSigninPaused(identity_manager)) {
+    base::UmaHistogramEnumeration(
+        "Signin.SigninPending.ResolutionSourceStarted", access_point,
+        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
   }
 }
 

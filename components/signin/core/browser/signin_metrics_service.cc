@@ -157,8 +157,21 @@ void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
         identity_manager_->FindExtendedAccountInfo(core_account_info);
     if (account_info.access_point !=
         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+      // Only record `Started` from WEB_SIGNIN, since there is no way to know
+      // that a WebSignin resolution has started until it was completed. Other
+      // access points are client access points which can be tracked at the
+      // real started event.
+      if (account_info.access_point ==
+          signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+        base::UmaHistogramEnumeration(
+            "Signin.SigninPending.ResolutionSourceStarted",
+            account_info.access_point,
+            signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      }
+
       base::UmaHistogramEnumeration(
-          "Signin.SigninPending.ResolutionSource", account_info.access_point,
+          "Signin.SigninPending.ResolutionSourceCompleted",
+          account_info.access_point,
           signin_metrics::AccessPoint::ACCESS_POINT_MAX);
     }
   }

@@ -241,14 +241,6 @@ bool IsChangePrimaryAccountAllowed(Profile* profile, const std::string& email) {
       email,
       identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin).email);
 }
-
-bool IsSigninPaused(signin::IdentityManager* identity_manager) {
-  return !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-             identity_manager->GetPrimaryAccountId(
-                 signin::ConsentLevel::kSignin));
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 settings::SignedInState GetSignedInState(
@@ -478,7 +470,7 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
   // re-auth scenario, and we need to ensure that the user signs in with the
   // same email address.
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
-      IsSigninPaused(identity_manager)) {
+      signin_util::IsSigninPaused(identity_manager)) {
     SigninErrorController* error_controller =
         SigninErrorControllerFactory::GetForProfile(profile_);
     DCHECK(error_controller->HasError());
