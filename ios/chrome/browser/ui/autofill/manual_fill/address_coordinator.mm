@@ -97,9 +97,9 @@
 #pragma mark - AddressListDelegate
 
 - (void)openAddressSettings {
-  __weak id<AddressCoordinatorDelegate> weakDelegate = self.delegate;
+  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakDelegate openAddressSettings];
+    [weakSelf.delegate openAddressSettings];
   }];
 }
 

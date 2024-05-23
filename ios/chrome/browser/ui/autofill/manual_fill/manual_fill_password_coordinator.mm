@@ -113,43 +113,38 @@
 #pragma mark - PasswordListNavigator
 
 - (void)openAllPasswordsList {
-  __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
-
+  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakDelegate openAllPasswordsPicker];
+    [weakSelf.delegate openAllPasswordsPicker];
   }];
 }
 
 - (void)openPasswordManager {
-  __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
-
+  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakDelegate openPasswordManager];
+    [weakSelf.delegate openPasswordManager];
   }];
 }
 
 - (void)openPasswordSettings {
-  __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
-
+  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakDelegate openPasswordSettings];
+    [weakSelf.delegate openPasswordSettings];
   }];
 }
 
 - (void)openPasswordSuggestion {
-  __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
-
+  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakDelegate openPasswordSuggestion];
+    [weakSelf.delegate openPasswordSuggestion];
   }];
 }
 
 - (void)openPasswordDetailsInEditModeForCredential:
     (password_manager::CredentialUIEntry)credential {
-  __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
-
+  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakDelegate openPasswordDetailsInEditModeForCredential:credential];
+    [weakSelf.delegate openPasswordDetailsInEditModeForCredential:credential];
   }];
 }
 

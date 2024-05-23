@@ -103,16 +103,16 @@
 #pragma mark - CardListDelegate
 
 - (void)openCardSettings {
-  __weak id<CardCoordinatorDelegate> weakDelegate = self.delegate;
+  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakDelegate openCardSettings];
+    [weakSelf.delegate openCardSettings];
   }];
 }
 
 - (void)openAddCreditCard {
-  __weak id<CardCoordinatorDelegate> weakDelegate = self.delegate;
+  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakDelegate openAddCreditCard];
+    [weakSelf.delegate openAddCreditCard];
   }];
 }
 
