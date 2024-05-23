@@ -85,8 +85,8 @@ cros_toolchain("target") {
 
 # This is a special toolchain needed just for the nacl_bootstrap target in
 # //native_client/src/trusted/service_runtime/linux. It is identical
-# to ":target" except that it forces `use_debug_fission1 and `use_sysroot` off,
-# and allows the user to set different sets of extra flags.
+# to ":target" except that it forces use_debug_fission, use_gold, and
+# use_sysroot off, and allows the user to set different sets of extra flags.
 cros_toolchain("nacl_bootstrap") {
   toolchain_args = {
     if (target_cpu == "arm64") {
@@ -96,6 +96,7 @@ cros_toolchain("nacl_bootstrap") {
     }
     current_os = "chromeos"
     use_debug_fission = false
+    use_gold = false
     use_sysroot = false
   }
 
@@ -139,6 +140,7 @@ cros_toolchain("nacl_helper_arm32") {
     current_cpu = "arm"
     current_os = "chromeos"
     use_debug_fission = false
+    use_gold = false
     sysroot = cros_nacl_helper_arm32_sysroot
 
     # Disable some uses of libraries that this build does not require. The
