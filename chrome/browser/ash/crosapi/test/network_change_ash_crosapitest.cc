@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/test/crosapi_test_base.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/network_change.mojom.h"
@@ -51,7 +51,7 @@ class NetworkChangeCrosapiTest : public CrosapiTestBase {
 };
 
 TEST_F(NetworkChangeCrosapiTest, OnNetworkChanged) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> waiter;
   // When NetworkChange::AddObserver() is called,
   // NetworkChangeObserver::OnNetworkChange() should also be called to
   // initialize network setup.
@@ -64,16 +64,16 @@ TEST_F(NetworkChangeCrosapiTest, OnNetworkChanged) {
                   /*connection_subtype_changed=*/true,
                   mojom::ConnectionSubtype(
                       net::NetworkChangeNotifier::SUBTYPE_UNKNOWN)))
-      .WillOnce([&] { run_loop.Quit(); });
+      .WillOnce([&] { waiter.SetValue(); });
   network_change_->AddObserver(receiver_.BindNewPipeAndPassRemote());
-  run_loop.Run();
+  EXPECT_TRUE(waiter.Wait());
 
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer_));
 
   {
     testing::InSequence sequence;
 
-    base::RunLoop run_loop2;
+    base::test::TestFuture<void> waiter2;
     // Ignore OnNetworkChange() calls and only check the last result which
     // overrides all results passed before. The first called
     // DisconnectFromNetwork() causes a few network chaneges for some reason.
@@ -88,14 +88,14 @@ TEST_F(NetworkChangeCrosapiTest, OnNetworkChanged) {
                                mojom::ConnectionType::CONNECTION_WIFI,
                                /*connection_subtype_changed=*/true,
                                mojom::ConnectionSubtype::SUBTYPE_UNKNOWN))
-        .WillOnce([&] { run_loop2.Quit(); });
+        .WillOnce([&] { waiter2.SetValue(); });
 
     test_controller_->DisconnectFromNetwork(kEthServicePath);
-    run_loop2.Run();
+    EXPECT_TRUE(waiter2.Wait());
   }
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer_));
 
-  base::RunLoop run_loop3;
+  base::test::TestFuture<void> waiter3;
   // Check if disconnected from Wifi and not connected to anything.
   EXPECT_CALL(observer_, OnNetworkChanged(
                              /*dns_changed=*/true,
@@ -104,14 +104,14 @@ TEST_F(NetworkChangeCrosapiTest, OnNetworkChanged) {
                              mojom::ConnectionType::CONNECTION_NONE,
                              /*connection_subtype_changed=*/true,
                              mojom::ConnectionSubtype::SUBTYPE_NONE))
-      .WillOnce([&] { run_loop3.Quit(); });
+      .WillOnce([&] { waiter3.SetValue(); });
 
   test_controller_->DisconnectFromNetwork(kWifiServicePath);
-  run_loop3.Run();
+  EXPECT_TRUE(waiter3.Wait());
 
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer_));
 
-  base::RunLoop run_loop4;
+  base::test::TestFuture<void> waiter4;
   // Check if connected to Ethernet.
   EXPECT_CALL(observer_, OnNetworkChanged(
                              /*dns_changed=*/true,
@@ -120,10 +120,10 @@ TEST_F(NetworkChangeCrosapiTest, OnNetworkChanged) {
                              mojom::ConnectionType::CONNECTION_ETHERNET,
                              /*connection_subtype_changed=*/true,
                              mojom::ConnectionSubtype::SUBTYPE_UNKNOWN))
-      .WillOnce([&] { run_loop4.Quit(); });
+      .WillOnce([&] { waiter4.SetValue(); });
 
   test_controller_->ConnectToNetwork(kEthServicePath);
-  run_loop4.Run();
+  EXPECT_TRUE(waiter4.Wait());
 }
 
 }  // namespace

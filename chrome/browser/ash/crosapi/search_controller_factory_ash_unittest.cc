@@ -53,10 +53,10 @@ class TestMojomSearchController : public mojom::SearchController {
   }
 
   void RunUntilSearch() {
-    base::RunLoop loop;
-    base::AutoReset<base::RepeatingClosure> quit_loop(&search_callback_,
-                                                      loop.QuitClosure());
-    loop.Run();
+    base::test::TestFuture<void> waiter;
+    base::AutoReset<base::RepeatingClosure> quit_loop(
+        &search_callback_, waiter.GetRepeatingCallback());
+    EXPECT_TRUE(waiter.Wait());
   }
 
   void ProduceResults(
@@ -101,10 +101,10 @@ class TestMojomSearchControllerFactory : public mojom::SearchControllerFactory {
   }
 
   void RunUntilCreateSearchController() {
-    base::RunLoop loop;
+    base::test::TestFuture<void> waiter;
     base::AutoReset<base::RepeatingClosure> quit_loop(
-        &create_search_controller_callback_, loop.QuitClosure());
-    loop.Run();
+        &create_search_controller_callback_, waiter.GetRepeatingCallback());
+    EXPECT_TRUE(waiter.Wait());
   }
 
   std::unique_ptr<TestMojomSearchController> TakeLastTestController() {

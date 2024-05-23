@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/screen_ai/screen_ai_downloader_chromeos.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,17 +82,11 @@ class ScreenAIDownloaderAshReplyTest
   ScreenAIDownloaderAshReplyTest() {
     downloader_ash_.Bind(downloader_remote_.BindNewPipeAndPassReceiver());
     if (start_observing_before_call_) {
-      base::RunLoop run_loop;
+      base::test::TestFuture<const std::optional<::base::FilePath>&> future;
       // Calling `GetComponentFolder` for the first time sets the observer.
       GetComponentFolder(
-          /*download_if_needed=*/true,
-          base::BindOnce(
-              [](base::RunLoop* run_loop,
-                 const std::optional<::base::FilePath>& file_path) {
-                run_loop->Quit();
-              },
-              &run_loop));
-      run_loop.Run();
+          /*download_if_needed=*/true, future.GetCallback());
+      EXPECT_TRUE(future.Wait());
 
       // Remove downloaded component path and reset state.
       install_state_.ResetForTesting();
@@ -133,15 +127,9 @@ class ScreenAIDownloaderAshReplyTest
 //  - Call parameter `download_if_needed`.
 //  - If fake download should result successful.
 TEST_P(ScreenAIDownloaderAshReplyTest, EnsureReplyInAllStates) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<const std::optional<::base::FilePath>&> future;
   GetComponentFolder(
-      /*download_if_needed=*/request_download_if_needed_,
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const std::optional<::base::FilePath>& file_path) {
-            run_loop->Quit();
-          },
-          &run_loop));
+      /*download_if_needed=*/request_download_if_needed_, future.GetCallback());
 
   // A `downloading` state will eventually result in a state change to
   // `downloaded` or `failed`.
@@ -149,7 +137,7 @@ TEST_P(ScreenAIDownloaderAshReplyTest, EnsureReplyInAllStates) {
     MockDownloadCompletion();
   }
 
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
 }
 
 INSTANTIATE_TEST_SUITE_P(

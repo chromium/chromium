@@ -10,10 +10,10 @@
 
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom-shared.h"
@@ -102,17 +102,15 @@ class ClipboardHistoryAshWithClientTest : public ash::AshTestBase {
   // descriptors.
   std::vector<mojom::ClipboardHistoryItemDescriptorPtr>
   WaitForReceivedDescriptors() {
-    base::RunLoop run_loop;
-    std::vector<mojom::ClipboardHistoryItemDescriptorPtr> received_descriptors;
+    base::test::TestFuture<
+        std::vector<mojom::ClipboardHistoryItemDescriptorPtr>>
+        future;
     EXPECT_CALL(mock_client_, SetClipboardHistoryItemDescriptors)
-        .WillOnce(
-            [&received_descriptors, &run_loop](
-                std::vector<mojom::ClipboardHistoryItemDescriptorPtr> ptrs) {
-              received_descriptors = std::move(ptrs);
-              run_loop.Quit();
-            });
-    run_loop.Run();
-    return received_descriptors;
+        .WillOnce([&future](auto descriptors) {
+          future.SetValue(std::move(descriptors));
+        });
+
+    return future.Take();
   }
 
   void RegisterClient() {
