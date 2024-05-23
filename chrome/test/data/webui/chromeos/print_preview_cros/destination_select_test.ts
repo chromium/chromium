@@ -10,11 +10,13 @@ import {DestinationSelectElement} from 'chrome://os-print/js/destination_select.
 import {DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED, DestinationSelectController} from 'chrome://os-print/js/destination_select_controller.js';
 import {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
-import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
+import {getDestinationProvider} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+
+import {resetDataManagersAndProviders} from './test_utils.js';
 
 suite('DestinationSelect', () => {
   let element: DestinationSelectElement;
@@ -34,12 +36,9 @@ suite('DestinationSelect', () => {
     mockTimer = new MockTimer();
     mockTimer.install();
 
-    DestinationManager.resetInstanceForTesting();
-    destinationProvider = new FakeDestinationProvider();
+    resetDataManagersAndProviders();
+    destinationProvider = getDestinationProvider() as FakeDestinationProvider;
     destinationProvider.setTestDelay(testDelay);
-    setDestinationProviderForTesting(destinationProvider);
-
-    DestinationManager.resetInstanceForTesting();
     destinationManager = DestinationManager.getInstance();
     destinationManager.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
 
@@ -53,7 +52,7 @@ suite('DestinationSelect', () => {
 
   teardown(() => {
     element.remove();
-    DestinationManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
     mockTimer.uninstall();
     mockController.reset();
   });

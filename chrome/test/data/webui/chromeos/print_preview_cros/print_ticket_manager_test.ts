@@ -10,12 +10,14 @@ import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PRINT_TICKET_
 import {DEFAULT_PARTIAL_PRINT_TICKET} from 'chrome://os-print/js/data/ticket_constants.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
-import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
+import {getPrintPreviewPageHandler} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {PrinterStatusReason, PrintTicket} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {resetDataManagersAndProviders} from './test_utils.js';
 
 suite('PrintTicketManager', () => {
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
@@ -30,22 +32,20 @@ suite('PrintTicketManager', () => {
   };
 
   setup(() => {
-    PrintTicketManager.resetInstanceForTesting();
-    DestinationManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
 
     // Setup fakes for testing.
     mockController = new MockController();
     mockTimer = new MockTimer();
     mockTimer.install();
-    printPreviewPageHandler = new FakePrintPreviewPageHandler();
-    setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
+    printPreviewPageHandler =
+        getPrintPreviewPageHandler() as FakePrintPreviewPageHandler;
   });
 
   teardown(() => {
     mockController.reset();
     mockTimer.uninstall();
-    PrintTicketManager.resetInstanceForTesting();
-    DestinationManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
   });
 
   test('is a singleton', () => {

@@ -11,7 +11,7 @@ import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from
 import {SummaryPanelElement} from 'chrome://os-print/js/summary_panel.js';
 import {PRINT_BUTTON_DISABLED_CHANGED_EVENT, SHEETS_USED_CHANGED_EVENT, SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
-import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
+import {getPrintPreviewPageHandler} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {Button} from 'chrome://resources/cros_components/button/button.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -20,6 +20,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+
+import {resetDataManagersAndProviders} from './test_utils.js';
 
 suite('SummaryPanel', () => {
   const sheetsUsedSelector = '#sheetsUsed';
@@ -38,11 +40,9 @@ suite('SummaryPanel', () => {
     mockController = new MockController();
     mockTimer = new MockTimer();
     mockTimer.install();
-    CapabilitiesManager.resetInstanceForTesting();
-    PreviewTicketManager.resetInstanceForTesting();
-    PrintTicketManager.resetInstanceForTesting();
-    printPreviewPageHandler = new FakePrintPreviewPageHandler();
-    setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
+    resetDataManagersAndProviders();
+    printPreviewPageHandler =
+        getPrintPreviewPageHandler() as FakePrintPreviewPageHandler;
     element =
         document.createElement(SummaryPanelElement.is) as SummaryPanelElement;
     assertTrue(!!element);
@@ -66,9 +66,7 @@ suite('SummaryPanel', () => {
     controller = null;
     mockController?.reset();
     mockController = null;
-    CapabilitiesManager.resetInstanceForTesting();
-    PreviewTicketManager.resetInstanceForTesting();
-    PrintTicketManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
   });
 
   // Sets sheets used in controller and wait for UI to update.

@@ -6,11 +6,13 @@ import 'chrome://os-print/js/data/preview_ticket_manager.js';
 
 import {PREVIEW_REQUEST_FINISHED_EVENT, PREVIEW_REQUEST_STARTED_EVENT, PREVIEW_TICKET_MANAGER_SESSION_INITIALIZED, PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
-import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
+import {getPrintPreviewPageHandler} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {resetDataManagersAndProviders} from './test_utils.js';
 
 suite('PreviewTicketManager', () => {
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
@@ -18,20 +20,19 @@ suite('PreviewTicketManager', () => {
   let mockController: MockController;
 
   setup(() => {
-    PreviewTicketManager.resetInstanceForTesting();
-
     // Setup fakes for testing.
     mockController = new MockController();
     mockTimer = new MockTimer();
     mockTimer.install();
-    printPreviewPageHandler = new FakePrintPreviewPageHandler();
-    setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
+    resetDataManagersAndProviders();
+    printPreviewPageHandler =
+        getPrintPreviewPageHandler() as FakePrintPreviewPageHandler;
   });
 
   teardown(() => {
     mockController.reset();
     mockTimer.uninstall();
-    PreviewTicketManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
   });
 
   test('is a singleton', () => {

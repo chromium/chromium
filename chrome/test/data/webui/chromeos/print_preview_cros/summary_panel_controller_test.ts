@@ -7,20 +7,19 @@ import 'chrome://os-print/js/summary_panel.js';
 import {CapabilitiesManager} from 'chrome://os-print/js/data/capabilities_manager.js';
 import {PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
-import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
-import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {resetDataManagersAndProviders} from './test_utils.js';
+
 suite('SummaryPanelController', () => {
   let controller: SummaryPanelController|null = null;
   let mockController: MockController;
-  let printPreviewPageHandler: FakePrintPreviewPageHandler;
   let capabilitiesManager: CapabilitiesManager;
   let previewTicketManager: PreviewTicketManager;
   let printTicketManager: PrintTicketManager;
@@ -30,10 +29,8 @@ suite('SummaryPanelController', () => {
     mockController = new MockController();
     eventTracker = new EventTracker();
 
-    PrintTicketManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
     // Setup fakes.
-    printPreviewPageHandler = new FakePrintPreviewPageHandler();
-    setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
     capabilitiesManager = CapabilitiesManager.getInstance();
     previewTicketManager = PreviewTicketManager.getInstance();
     printTicketManager = PrintTicketManager.getInstance();
@@ -45,9 +42,7 @@ suite('SummaryPanelController', () => {
   teardown(() => {
     mockController.reset();
     eventTracker.removeAll();
-    CapabilitiesManager.resetInstanceForTesting();
-    PreviewTicketManager.resetInstanceForTesting();
-    PrintTicketManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
     controller = null;
   });
 

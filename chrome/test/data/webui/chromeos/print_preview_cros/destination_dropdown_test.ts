@@ -21,7 +21,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createTestDestination} from './test_utils.js';
+import {createTestDestination, resetDataManagersAndProviders} from './test_utils.js';
 
 suite('DestinationDropdown', () => {
   let element: DestinationDropdownElement;
@@ -37,7 +37,7 @@ suite('DestinationDropdown', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     mockController = new MockController();
-    DestinationManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
     destinationManager = DestinationManager.getInstance();
 
     // Set PDF as default active destination for testing UI.
@@ -55,7 +55,7 @@ suite('DestinationDropdown', () => {
 
   teardown(() => {
     element.remove();
-    DestinationManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
     mockController.reset();
   });
 

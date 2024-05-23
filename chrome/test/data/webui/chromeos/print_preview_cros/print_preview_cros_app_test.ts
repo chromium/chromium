@@ -8,12 +8,15 @@ import {PrintPreviewCrosAppElement} from 'chrome://os-print/js/print_preview_cro
 import {assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {resetDataManagersAndProviders} from './test_utils.js';
+
 suite('PrintPreviewCrosApp', () => {
   let element: PrintPreviewCrosAppElement;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    resetDataManagersAndProviders();
     element = document.createElement(PrintPreviewCrosAppElement.is) as
         PrintPreviewCrosAppElement;
     assertTrue(!!element);
@@ -22,6 +25,7 @@ suite('PrintPreviewCrosApp', () => {
 
   teardown(() => {
     element.remove();
+    resetDataManagersAndProviders();
   });
 
   // Verify the print-preview-cros-app element can be rendered.

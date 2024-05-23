@@ -10,10 +10,12 @@ import {PREVIEW_TICKET_MANAGER_SESSION_INITIALIZED, PreviewTicketManager} from '
 import {PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {PrintPreviewCrosAppController} from 'chrome://os-print/js/print_preview_cros_app_controller.js';
-import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
+import {getPrintPreviewPageHandler} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {resetDataManagersAndProviders} from './test_utils.js';
 
 suite('PrintPreviewCrosAppController', () => {
   let controller: PrintPreviewCrosAppController;
@@ -26,22 +28,16 @@ suite('PrintPreviewCrosAppController', () => {
     mockTimer = new MockTimer();
     mockTimer.install();
 
-    CapabilitiesManager.resetInstanceForTesting();
-    DestinationManager.resetInstanceForTesting();
-    PrintTicketManager.resetInstanceForTesting();
-    PreviewTicketManager.resetInstanceForTesting();
-    printPreviewPageHandler = new FakePrintPreviewPageHandler();
-    setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
+    resetDataManagersAndProviders();
+    printPreviewPageHandler =
+        getPrintPreviewPageHandler() as FakePrintPreviewPageHandler;
 
     controller = new PrintPreviewCrosAppController();
   });
 
   teardown(() => {
     printPreviewPageHandler.reset();
-    CapabilitiesManager.resetInstanceForTesting();
-    DestinationManager.resetInstanceForTesting();
-    PreviewTicketManager.resetInstanceForTesting();
-    PrintTicketManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
     mockTimer.uninstall();
   });
 

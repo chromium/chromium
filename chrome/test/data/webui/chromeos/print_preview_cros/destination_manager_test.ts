@@ -8,14 +8,14 @@ import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.j
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DESTINATION_MANAGER_SESSION_INITIALIZED, DESTINATION_MANAGER_STATE_CHANGED, DestinationManager, DestinationManagerState} from 'chrome://os-print/js/data/destination_manager.js';
 import {FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD, OBSERVE_DESTINATION_CHANGES_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
-import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
+import {getDestinationProvider} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {Destination, PrinterStatusReason, PrinterType} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createTestDestination} from './test_utils.js';
+import {createTestDestination, resetDataManagersAndProviders} from './test_utils.js';
 
 suite('DestinationManager', () => {
   let instance: DestinationManager;
@@ -30,17 +30,15 @@ suite('DestinationManager', () => {
     mockTimer = new MockTimer();
     mockTimer.install();
 
-    DestinationManager.resetInstanceForTesting();
-    destinationProvider = new FakeDestinationProvider();
+    resetDataManagersAndProviders();
+    destinationProvider = getDestinationProvider() as FakeDestinationProvider;
     destinationProvider.setTestDelay(testDelay);
-    setDestinationProviderForTesting(destinationProvider);
 
     instance = DestinationManager.getInstance();
   });
 
   teardown(() => {
-    DestinationManager.resetInstanceForTesting();
-    destinationProvider.reset();
+    resetDataManagersAndProviders();
     mockTimer.uninstall();
     mockController.reset();
   });

@@ -8,14 +8,14 @@ import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DEST
 import {DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from 'chrome://os-print/js/destination_dropdown_controller.js';
 import {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
-import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
+import {getDestinationProvider} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createTestDestination} from './test_utils.js';
+import {createTestDestination, resetDataManagersAndProviders} from './test_utils.js';
 
 suite('DestinationDropdownController', () => {
   let controller: DestinationDropdownController;
@@ -33,17 +33,17 @@ suite('DestinationDropdownController', () => {
     mockTimer = new MockTimer();
     mockTimer.install();
 
-    fakeDestinationProvider = new FakeDestinationProvider();
+    resetDataManagersAndProviders();
+    fakeDestinationProvider =
+        getDestinationProvider() as FakeDestinationProvider;
     fakeDestinationProvider.setTestDelay(testDelay);
-    setDestinationProviderForTesting(fakeDestinationProvider);
-    DestinationManager.resetInstanceForTesting();
     destinationManager = DestinationManager.getInstance();
 
     controller = new DestinationDropdownController(eventTracker);
   });
 
   teardown(() => {
-    DestinationManager.resetInstanceForTesting();
+    resetDataManagersAndProviders();
     eventTracker.removeAll();
     mockTimer.uninstall();
     mockController.reset();

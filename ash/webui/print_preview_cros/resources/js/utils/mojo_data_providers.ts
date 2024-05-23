@@ -15,12 +15,13 @@ import {DestinationProvider, type PrintPreviewPageHandler} from './print_preview
  * well as an override method to be used in tests.
  */
 
+let useFakeProviders: boolean = false;
 let printPreviewPageHandler: PrintPreviewPageHandler|null = null;
 let destinationProvider: DestinationProvider|null = null;
 
 // Returns shared instance of PrintPreviewPageHandler.
 export function getPrintPreviewPageHandler(): PrintPreviewPageHandler {
-  if (printPreviewPageHandler == null) {
+  if (printPreviewPageHandler === null && useFakeProviders) {
     printPreviewPageHandler = new FakePrintPreviewPageHandler();
   }
 
@@ -28,15 +29,9 @@ export function getPrintPreviewPageHandler(): PrintPreviewPageHandler {
   return printPreviewPageHandler;
 }
 
-// Override shared instance of PrintPreviewPageHandle for testing.
-export function setPrintPreviewPageHandlerForTesting(
-    handler: PrintPreviewPageHandler): void {
-  printPreviewPageHandler = handler;
-}
-
 // Returns shared instance of DestinationProvider.
 export function getDestinationProvider(): DestinationProvider {
-  if (destinationProvider == null) {
+  if (destinationProvider === null && useFakeProviders) {
     destinationProvider = new FakeDestinationProvider();
   }
 
@@ -44,8 +39,11 @@ export function getDestinationProvider(): DestinationProvider {
   return destinationProvider;
 }
 
-// Override shared instance of DestinationProvider for testing.
-export function setDestinationProviderForTesting(provider: DestinationProvider):
-    void {
-  destinationProvider = provider;
+// Set useFakeProviders to true and providers to `null`. Needs to be
+// called before provider getters to ensure cached value in controllers and
+// managers match fake provider configured for testing.
+export function resetProvidersForTesting(): void {
+  useFakeProviders = true;
+  destinationProvider = null;
+  printPreviewPageHandler = null;
 }
