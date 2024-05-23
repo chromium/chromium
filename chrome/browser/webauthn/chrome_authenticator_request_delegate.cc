@@ -921,6 +921,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
         }
       }
 #endif
+    } else {
+      FIDO_LOG(EVENT)
+          << "Enclave unavailable for creating passkeys due to policy.";
     }
   }
 
