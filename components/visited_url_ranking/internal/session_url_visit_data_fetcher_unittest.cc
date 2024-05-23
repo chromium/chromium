@@ -152,7 +152,9 @@ class SessionURLVisitDataFetcherTest
     : public testing::Test,
       public ::testing::WithParamInterface<Source> {
  public:
-  SessionURLVisitDataFetcherTest() {
+  SessionURLVisitDataFetcherTest() = default;
+
+  void SetSessionSyncServiceExpectations() {
     EXPECT_CALL(mock_session_sync_service_, GetOpenTabsUIDelegate())
         .WillOnce(
             testing::Invoke([this]() { return &open_tabs_ui_delegate_; }));
@@ -178,16 +180,30 @@ class SessionURLVisitDataFetcherTest
 
  protected:
   sync_sessions::MockOpenTabsUIDelegate open_tabs_ui_delegate_;
+  sync_sessions::MockSessionSyncService mock_session_sync_service_;
 
  private:
   base::test::TaskEnvironment task_env_;
-  sync_sessions::MockSessionSyncService mock_session_sync_service_;
 };
+
+TEST_F(SessionURLVisitDataFetcherTest, FetchURLVisitDataNoOpenTabsUIDelegate) {
+  EXPECT_CALL(mock_session_sync_service_, GetOpenTabsUIDelegate())
+      .WillOnce(testing::Invoke([]() { return nullptr; }));
+
+  std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
+  sample_sessions.push_back(GetSampleSession());
+
+  base::Time yesterday = base::Time::Now() - base::Days(1);
+  auto result = FetchAndGetResult(FetchOptions(
+      {{Fetcher::kSession, FetchOptions::kOriginSources}}, yesterday));
+  EXPECT_EQ(result.status, FetchResult::Status::kError);
+}
 
 TEST_F(SessionURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
   sample_sessions.push_back(GetSampleSession());
 
+  SetSessionSyncServiceExpectations();
   EXPECT_CALL(open_tabs_ui_delegate_, GetLocalSession(testing::_))
       .WillOnce(testing::Invoke(
           [&sample_sessions](const sync_sessions::SyncedSession** local) {
@@ -225,6 +241,7 @@ TEST_P(SessionURLVisitDataFetcherTest, FetchURLVisitData) {
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
   sample_sessions.push_back(GetSampleSession());
 
+  SetSessionSyncServiceExpectations();
   const auto source = GetParam();
   if (source == Source::kLocal) {
     EXPECT_CALL(open_tabs_ui_delegate_, GetLocalSession(testing::_))

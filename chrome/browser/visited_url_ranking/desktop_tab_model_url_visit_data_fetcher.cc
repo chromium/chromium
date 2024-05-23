@@ -65,7 +65,9 @@ void DesktopTabModelURLVisitDataFetcher::FetchURLVisitData(
 
       auto url_key = ComputeURLMergeKey(web_contents->GetURL());
       auto it = url_visit_tab_data_map.find(url_key);
-      if ((it == url_visit_tab_data_map.end()) ||
+      bool tab_data_map_already_has_url_entry =
+          (it != url_visit_tab_data_map.end());
+      if (!tab_data_map_already_has_url_entry ||
           (it->second.last_active_tab.visit.last_modified <
            last_entry->GetTimestamp())) {
         url_visit_tab_data_map.emplace(
@@ -73,7 +75,9 @@ void DesktopTabModelURLVisitDataFetcher::FetchURLVisitData(
       }
 
       auto& tab_data = url_visit_tab_data_map.at(url_key);
-      tab_data.tab_count += 1;
+      if (tab_data_map_already_has_url_entry) {
+        tab_data.tab_count += 1;
+      }
       TabRendererData tab_renderer_data =
           TabRendererData::FromTabInModel(tab_strip_model, i);
       tab_data.pinned = tab_data.pinned || tab_renderer_data.pinned;

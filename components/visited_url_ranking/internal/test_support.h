@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VISITED_URL_RANKING_INTERNAL_TRANSFORMER_HISTORY_TRANSFORMER_TEST_SUPPORT_H_
-#define COMPONENTS_VISITED_URL_RANKING_INTERNAL_TRANSFORMER_HISTORY_TRANSFORMER_TEST_SUPPORT_H_
+#ifndef COMPONENTS_VISITED_URL_RANKING_INTERNAL_TEST_SUPPORT_H_
+#define COMPONENTS_VISITED_URL_RANKING_INTERNAL_TEST_SUPPORT_H_
 
 #include <vector>
 
@@ -12,6 +12,9 @@
 #include "url/gurl.h"
 
 namespace visited_url_ranking {
+
+inline constexpr char kSampleSearchUrl[] =
+    "https://www.google.com/search?q=sample";
 
 history::AnnotatedVisit GenerateSampleAnnotatedVisit(
     history::VisitID visit_id,
@@ -26,4 +29,4 @@ history::AnnotatedVisit GenerateSampleAnnotatedVisit(
 
 }  // namespace visited_url_ranking
 
-#endif  // COMPONENTS_VISITED_URL_RANKING_INTERNAL_TRANSFORMER_HISTORY_TRANSFORMER_TEST_SUPPORT_H_
+#endif  // COMPONENTS_VISITED_URL_RANKING_INTERNAL_TEST_SUPPORT_H_

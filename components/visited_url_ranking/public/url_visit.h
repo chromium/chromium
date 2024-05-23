@@ -98,7 +98,7 @@ struct URLVisitAggregate {
     bool in_group = false;
     // The number of opened tabs for the given URL visit aggregate in a time
     // period.
-    size_t tab_count = 0;
+    size_t tab_count = 1;
   };
 
   struct HistoryData {
@@ -126,7 +126,7 @@ struct URLVisitAggregate {
 
     // The number of history visits associated with the URL visit aggregate in a
     // time period.
-    size_t visit_count = 0;
+    size_t visit_count = 1;
   };
 
   URLVisitAggregate();

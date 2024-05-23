@@ -44,8 +44,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "transformer/history_transformer_test_support.cc",
-    "transformer/history_transformer_test_support.h",
+    "test_support.cc",
+    "test_support.h",
     "transformer/transformer_test_support.cc",
     "transformer/transformer_test_support.h",
   ]

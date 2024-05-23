@@ -16,7 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/mock_callback.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/visited_url_ranking/internal/transformer/history_transformer_test_support.h"
+#include "components/visited_url_ranking/internal/test_support.h"
 #include "components/visited_url_ranking/internal/transformer/transformer_test_support.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "testing/gmock/include/gmock/gmock.h"
