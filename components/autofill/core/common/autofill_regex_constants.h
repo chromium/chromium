@@ -131,6 +131,7 @@ inline constexpr char16_t kZipCodeRe[] =
     u"|postal|post.*code|pcode"
     u"|pin.?code"               // en-IN
     u"|postleitzahl|\\bplz\\b"  // de-DE
+    u"|kod.?pocztowy"           // pl-PL
     u"|\\bcp\\b"                // es
     u"|\\bcdp\\b"               // fr-FR
     u"|\\bcap\\b"               // it-IT

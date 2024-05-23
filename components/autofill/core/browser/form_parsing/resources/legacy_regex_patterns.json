@@ -876,6 +876,15 @@
         "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER"]
       }
     ],
+    "pl": [
+      {
+        "positive_pattern": "kod.?pocztowy",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER"]
+      }
+    ],
     "es": [
       {
         "positive_pattern": "\\bcp\\b",
