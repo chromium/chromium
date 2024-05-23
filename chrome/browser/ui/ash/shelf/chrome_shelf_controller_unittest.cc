@@ -1119,7 +1119,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   // Creates app window and set optional ARC application id.
   views::Widget* CreateArcWindow(const std::string& window_app_id) {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
     params.bounds = gfx::Rect(5, 5, 20, 20);
     params.context = GetContext();
     views::Widget* widget = new views::Widget();
@@ -1177,7 +1179,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   // Creates a window with TYPE_APP shelf item type and the given app_id.
   views::Widget* CreateShelfAppWindow(const std::string& app_id) {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
     params.context = GetContext();
     params.bounds = gfx::Rect(5, 5, 20, 20);
     views::Widget* widget = new views::Widget();

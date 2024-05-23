@@ -61,7 +61,8 @@ views::Widget* CreateWindowAsFramelessChild(
     gfx::NativeView parent) {
   views::Widget* widget = new CaptivePortalWidget(profile);
 
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.delegate = delegate.release();
   params.child = true;
   params.parent = parent;

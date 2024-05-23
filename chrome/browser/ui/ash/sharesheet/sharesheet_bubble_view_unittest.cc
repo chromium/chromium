@@ -79,7 +79,8 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
 
     // Set up parent window for sharesheet to anchor to.
     auto* widget = new views::Widget();
-    views::Widget::InitParams params;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
     params.delegate = new TestWidgetDelegate();
     params.context = GetContext();
     widget->Init(std::move(params));

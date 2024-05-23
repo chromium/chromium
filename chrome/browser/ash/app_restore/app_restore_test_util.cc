@@ -31,7 +31,9 @@ constexpr char kTestAppActivity2[] = "test.arc.app.package.activity2";
 
 views::Widget* CreateExoWindow(const std::string& window_app_id,
                                const std::string& app_id) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(5, 5, 20, 20);
   params.context = Shell::GetPrimaryRootWindow();
 

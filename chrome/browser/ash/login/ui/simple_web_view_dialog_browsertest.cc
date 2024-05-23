@@ -30,7 +30,8 @@ IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, HttpAuthWebDialog) {
   auto delegate = dialog_ptr->MakeWidgetDelegate();
   auto* dialog = delegate->SetContentsView(std::move(dialog_ptr));
 
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.delegate = delegate.release();  // Pass ownership to widget.
 
   views::UniqueWidgetPtr widget(std::make_unique<ChromeTestWidget>());

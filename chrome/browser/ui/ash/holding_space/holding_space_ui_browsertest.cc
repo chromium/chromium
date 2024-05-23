@@ -351,12 +351,13 @@ class DropSenderView : public views::WidgetDelegateView,
   }
 
   void InitWidget(aura::Window* context) {
-    views::Widget::InitParams params;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.accept_events = true;
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.context = context;
     params.delegate = this;
-    params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
     params.wants_mouse_events_when_inactive = true;
 
     views::Widget* widget = new views::Widget();
@@ -414,12 +415,13 @@ class DropTargetView : public views::WidgetDelegateView {
   }
 
   void InitWidget(aura::Window* context) {
-    views::Widget::InitParams params;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.accept_events = true;
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.context = context;
     params.delegate = this;
-    params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
     params.wants_mouse_events_when_inactive = true;
 
     views::Widget* widget = new views::Widget();

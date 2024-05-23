@@ -155,7 +155,9 @@ std::string CreateIntentUriWithShelfGroupAndLogicalWindow(
 // Creates an exo app window and sets its shell application id. The returned
 // Widget is owned by its NativeWidget (the underlying aura::Window).
 views::Widget* CreateExoWindow(const std::string& window_app_id) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(5, 5, 20, 20);
   params.context = ash::Shell::GetPrimaryRootWindow();
   views::Widget* widget = new views::Widget();

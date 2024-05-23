@@ -1470,7 +1470,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   // Build a simple window with a button and position it at the right edge of
   // the screen.
   views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
 
   // Assert the right edge fits the below window.
   ASSERT_GE(root_window->bounds().width(), 1280);
@@ -1550,7 +1552,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
   // Build a simple window with a button and position it at the right edge of
   // the screen.
   views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.parent = root_window;
 
   // This is the right edge of the screen.

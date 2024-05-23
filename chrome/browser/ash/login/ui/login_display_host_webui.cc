@@ -926,6 +926,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
   }
 
   views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = CalculateScreenBounds(gfx::Size());
   params.show_state = ui::SHOW_STATE_FULLSCREEN;

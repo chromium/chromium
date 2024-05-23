@@ -65,6 +65,7 @@ AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
 
   widget_ = new views::Widget();
   views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   // Placing the panel in the accessibility panel container allows ash to manage
   // both the window bounds and display work area.

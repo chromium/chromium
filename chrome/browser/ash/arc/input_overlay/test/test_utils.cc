@@ -31,10 +31,11 @@ std::unique_ptr<views::Widget> CreateArcWindow(
     aura::Window* root_window,
     const gfx::Rect& bounds,
     const std::string& package_name) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = bounds;
   params.context = root_window;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   // `chromeos::kAppTypeKey` property should be assigned before widget init.
   // It simulates the situation that
   // `AppServiceAppWindowShelfController::OnWindowInitialized()` is called

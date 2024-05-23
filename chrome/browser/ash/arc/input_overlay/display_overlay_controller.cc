@@ -74,8 +74,8 @@ std::unique_ptr<views::Widget> CreateTransientWidget(
     const std::string& widget_name,
     bool accept_events) {
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = parent_window;
   params.name = widget_name;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;

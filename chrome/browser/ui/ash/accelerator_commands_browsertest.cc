@@ -144,11 +144,11 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
   EXPECT_TRUE(IsInitialShowState(widget));
 
   // 5) Miscellaneous windows (e.g. task manager).
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params.delegate = new views::WidgetDelegateView;
   params.delegate->SetCanMaximize(true);
   params.delegate->SetCanFullscreen(true);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   views::Widget misc_widget;
   widget = &misc_widget;
   widget->Init(std::move(params));

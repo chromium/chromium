@@ -114,10 +114,9 @@ ClipboardImageModelRequest::ClipboardImageModelRequest(
       request_creation_time_(base::TimeTicks::Now()) {
   CHECK(profile);
 
-  views::Widget::InitParams widget_params;
-  widget_params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-  widget_params.ownership =
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams widget_params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   widget_params.name = "ClipboardImageModelRequest";
   widget_->Init(std::move(widget_params));
   widget_->SetContentsView(web_view_);

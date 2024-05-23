@@ -48,7 +48,8 @@ class CandidateViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
 
     views::Widget::InitParams init_params(
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW));
+        CreateParams(views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW));
 
     init_params.delegate = new views::WidgetDelegateView();
 

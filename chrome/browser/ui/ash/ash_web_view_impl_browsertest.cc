@@ -100,10 +100,9 @@ using ash::AshWebViewFactory;
 std::unique_ptr<views::Widget> CreateWidget() {
   auto widget = std::make_unique<views::Widget>();
 
-  views::Widget::InitParams params;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   widget->Init(std::move(params));
   return widget;
 }
