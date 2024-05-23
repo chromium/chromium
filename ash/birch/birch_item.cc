@@ -507,8 +507,9 @@ std::u16string BirchTabItem::GetSubtitle(const std::string& session_name,
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchMostVisitedItem::BirchMostVisitedItem(const std::u16string& title,
-                                           const GURL& url)
-    : BirchItem(title, GetSubtitle(url)), url_(url) {}
+                                           const GURL& url,
+                                           ui::ImageModel icon)
+    : BirchItem(title, GetSubtitle()), url_(url), icon_(icon) {}
 
 BirchMostVisitedItem::BirchMostVisitedItem(BirchMostVisitedItem&&) = default;
 
@@ -550,13 +551,12 @@ void BirchMostVisitedItem::PerformSecondaryAction() {
 }
 
 void BirchMostVisitedItem::LoadIcon(LoadIconCallback callback) const {
-  // TODO(jamescook): Load favicon or generic web site icon.
-  std::move(callback).Run(ui::ImageModel());
+  std::move(callback).Run(icon_);
 }
 
 // static
-std::u16string BirchMostVisitedItem::GetSubtitle(const GURL& url) {
-  return base::UTF8ToUTF16(url.spec());
+std::u16string BirchMostVisitedItem::GetSubtitle() {
+  return l10n_util::GetStringUTF16(IDS_ASH_BIRCH_MOST_VISITED_SUBTITLE);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

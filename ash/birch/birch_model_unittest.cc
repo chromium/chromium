@@ -499,7 +499,8 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
                              BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
   std::vector<BirchMostVisitedItem> most_visited_list;
-  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"));
+  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
+                                 ui::ImageModel());
   model->SetMostVisitedItems(std::move(most_visited_list));
   std::vector<BirchSelfShareItem> self_share_item_list;
   GURL faviconUrl = GURL("https://www.favicon.com/");
@@ -976,7 +977,8 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
                              BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
   std::vector<BirchMostVisitedItem> most_visited_list;
-  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"));
+  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
+                                 ui::ImageModel());
   model->SetMostVisitedItems(std::move(most_visited_list));
   std::vector<BirchSelfShareItem> self_share_item_list;
   GURL faviconUrl = GURL("favicon");
@@ -1475,6 +1477,29 @@ TEST_F(BirchModelTest, DuplicateSelfShareAndRecentTabItem) {
   ASSERT_EQ(all_items.size(), 1u);
   EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kTab);
   EXPECT_EQ(all_items[0]->title(), u"tab");
+}
+
+TEST_F(BirchModelTest, DuplicateMostVisitedAndRecentTabItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Create a recent tab from more than an hour ago.
+  std::vector<BirchTabItem> tab_item_list;
+  tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
+                             test_clock_.Now() - base::Hours(2), GURL(),
+                             "session",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
+  model->SetRecentTabItems(std::move(tab_item_list));
+
+  std::vector<BirchMostVisitedItem> most_visited_item_list;
+  most_visited_item_list.emplace_back(
+      u"most visited", GURL("https://www.example.com/"), ui::ImageModel());
+  model->SetMostVisitedItems(std::move(most_visited_item_list));
+
+  // The most visited item has the higher priority and hence is shown.
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 1u);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kMostVisited);
+  EXPECT_EQ(all_items[0]->title(), u"most visited");
 }
 
 TEST_F(BirchModelTest, DifferentSelfShareAndRecentTabItem) {

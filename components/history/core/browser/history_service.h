@@ -390,7 +390,8 @@ class HistoryService : public KeyedService,
   using QueryMostVisitedURLsCallback =
       base::OnceCallback<void(MostVisitedURLList)>;
 
-  base::CancelableTaskTracker::TaskId QueryMostVisitedURLs(
+  // Virtual for mocking.
+  virtual base::CancelableTaskTracker::TaskId QueryMostVisitedURLs(
       int result_count,
       QueryMostVisitedURLsCallback callback,
       base::CancelableTaskTracker* tracker);

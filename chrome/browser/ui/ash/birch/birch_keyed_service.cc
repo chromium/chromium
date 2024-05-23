@@ -34,7 +34,8 @@ BirchKeyedService::BirchKeyedService(Profile* profile)
       file_suggest_provider_(
           std::make_unique<BirchFileSuggestProvider>(profile)),
       recent_tabs_provider_(std::make_unique<BirchRecentTabsProvider>(profile)),
-      most_visited_provider_(std::make_unique<BirchMostVisitedProvider>()),
+      most_visited_provider_(
+          std::make_unique<BirchMostVisitedProvider>(profile)),
       release_notes_provider_(
           std::make_unique<BirchReleaseNotesProvider>(profile)),
       self_share_provider_(std::make_unique<BirchSelfShareProvider>(profile)),

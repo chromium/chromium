@@ -9,6 +9,8 @@
 #include "ash/utility/forest_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -37,6 +39,10 @@ BirchKeyedServiceFactory::BirchKeyedServiceFactory()
 
   // Indirect dependency via calendar_utils, used by BirchCalendarProvider.
   DependsOn(CalendarKeyedServiceFactory::GetInstance());
+
+  // Indirect dependency via BirchMostVisitedProvider.
+  DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(FaviconServiceFactory::GetInstance());
 }
 
 BirchKeyedService* BirchKeyedServiceFactory::GetService(

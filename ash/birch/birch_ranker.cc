@@ -172,6 +172,16 @@ void BirchRanker::RankRecentTabItems(std::vector<BirchTabItem>* items) {
   }
 }
 
+void BirchRanker::RankMostVisitedItems(
+    std::vector<BirchMostVisitedItem>* items) {
+  CHECK(items);
+
+  for (BirchMostVisitedItem& item : *items) {
+    // TODO(jamescook): Finalize ranking.
+    item.set_ranking(17.f);
+  }
+}
+
 void BirchRanker::RankSelfShareItems(std::vector<BirchSelfShareItem>* items) {
   CHECK(items);
 

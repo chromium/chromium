@@ -269,7 +269,9 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
 // A birch item for a most-frequently-visited URL.
 class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
  public:
-  BirchMostVisitedItem(const std::u16string& title, const GURL& url);
+  BirchMostVisitedItem(const std::u16string& title,
+                       const GURL& url,
+                       ui::ImageModel icon);
   BirchMostVisitedItem(BirchMostVisitedItem&&);
   BirchMostVisitedItem(const BirchMostVisitedItem&);
   BirchMostVisitedItem& operator=(const BirchMostVisitedItem&);
@@ -286,9 +288,10 @@ class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
   const GURL& url() const { return url_; }
 
  private:
-  static std::u16string GetSubtitle(const GURL& url);
+  static std::u16string GetSubtitle();
 
   GURL url_;
+  ui::ImageModel icon_;
 };
 
 // A birch item which contains tabs shared to self information.

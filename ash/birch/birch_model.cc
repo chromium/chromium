@@ -289,12 +289,29 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   ranker.RankAttachmentItems(&attachment_data_.items);
   ranker.RankFileSuggestItems(&file_suggest_data_.items);
   ranker.RankRecentTabItems(&recent_tab_data_.items);
-  // TODO(jamescook): Rank most visited items.
+  ranker.RankMostVisitedItems(&most_visited_data_.items);
   ranker.RankSelfShareItems(&self_share_data_.items);
   ranker.RankWeatherItems(&weather_data_.items);
   ranker.RankReleaseNotesItems(&release_notes_data_.items);
 
-  // TODO(jamescook): Avoid duplicate most visited URLs with other tab items.
+  // Avoid showing a duplicate most-visited tab with a recent tab by removing
+  // the item with the higher ranking.
+  std::unordered_map<std::string, BirchMostVisitedItem>
+      url_to_most_visited_item;
+  for (auto& item : most_visited_data_.items) {
+    url_to_most_visited_item.emplace(item.url().spec(), item);
+  }
+  std::erase_if(recent_tab_data_.items, [&url_to_most_visited_item](
+                                            const auto& recent_tab_item) {
+    if (auto iter = url_to_most_visited_item.find(recent_tab_item.url().spec());
+        iter != url_to_most_visited_item.end()) {
+      if (recent_tab_item.ranking() > iter->second.ranking()) {
+        return true;
+      }
+      url_to_most_visited_item.erase(iter);
+    }
+    return false;
+  });
 
   // Avoid showing a duplicate tab item by removing the item with the higher
   // ranking.
@@ -349,8 +366,8 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   for (auto& tab : recent_tab_data_.items) {
     all_items.push_back(std::make_unique<BirchTabItem>(tab));
   }
-  for (auto& item : most_visited_data_.items) {
-    all_items.push_back(std::make_unique<BirchMostVisitedItem>(item));
+  for (auto& item : url_to_most_visited_item) {
+    all_items.push_back(std::make_unique<BirchMostVisitedItem>(item.second));
   }
   for (auto& event : url_to_self_share_item) {
     all_items.push_back(std::make_unique<BirchSelfShareItem>(event.second));
