@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // This command-line program generates the set of files needed for the crash-
 // cache unit tests (DiskCacheTest,CacheBackend_Recover*). This program only
 // works properly on debug mode, because the crash functionality is not compiled

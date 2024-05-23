@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // This is a simple application that stress-tests the crash recovery of the disk
 // cache. The main application starts a copy of itself on a loop, checking the
 // exit code of the child process. When the child dies in an unexpected way,

@@ -42,6 +42,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/cookies/canonical_cookie.h"
 
 #include <limits>
