@@ -591,9 +591,9 @@ void AudioDestination::PullFromCallback(AudioBus* destination_bus,
                     glitch_info_to_report_.GetAndReset());
 }
 
-media::OutputDeviceStatus AudioDestination::CreateSinkAndGetDeviceStatus() {
-  TRACE_EVENT0("webaudio", "AudioDestination::CreateSinkAndGetDeviceStatus");
-  return web_audio_device_->CreateSinkAndGetDeviceStatus();
+media::OutputDeviceStatus AudioDestination::MaybeCreateSinkAndGetStatus() {
+  TRACE_EVENT0("webaudio", "AudioDestination::MaybeCreateSinkAndGetStatus");
+  return web_audio_device_->MaybeCreateSinkAndGetStatus();
 }
 
 }  // namespace blink

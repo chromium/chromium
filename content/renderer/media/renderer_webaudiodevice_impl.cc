@@ -366,9 +366,11 @@ void RendererWebAudioDeviceImpl::CreateAudioRendererSink() {
 }
 
 media::OutputDeviceStatus
-RendererWebAudioDeviceImpl::CreateSinkAndGetDeviceStatus() {
+RendererWebAudioDeviceImpl::MaybeCreateSinkAndGetStatus() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  CreateAudioRendererSink();
+  if (!sink_) {
+    CreateAudioRendererSink();
+  }
 
   // The device status of a silent sink is always OK.
   bool is_silent_sink =

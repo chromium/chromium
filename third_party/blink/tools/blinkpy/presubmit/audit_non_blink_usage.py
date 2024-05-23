@@ -1109,6 +1109,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/platform/web_audio_device.h',
+        ],
+        'allowed': [
+            'media::OutputDeviceStatus',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/web/web_frame_widget.h',
         ],
         'allowed': [

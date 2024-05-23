@@ -465,7 +465,7 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
   // sink in order to query the device status. If the status is OK, then replace
   // the `platform_destination_` with the pending_platform_destination.
   media::OutputDeviceStatus status =
-      pending_platform_destination->CreateSinkAndGetDeviceStatus();
+      pending_platform_destination->MaybeCreateSinkAndGetStatus();
   if (status == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
     StopPlatformDestination();
     platform_destination_ = pending_platform_destination;

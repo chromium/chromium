@@ -81,9 +81,9 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
     return current_sink_params_;
   }
 
-  // Creates a new sink and return its device status. If the status is OK,
-  // replace the existing sink with the new one.
-  media::OutputDeviceStatus CreateSinkAndGetDeviceStatus() override;
+  // Creates a new sink if one hasn't been created yet, and returns the sink
+  // status.
+  media::OutputDeviceStatus MaybeCreateSinkAndGetStatus() override;
 
  protected:
   // Callback to get output device params (for tests).

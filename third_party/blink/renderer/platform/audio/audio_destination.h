@@ -140,11 +140,11 @@ class PLATFORM_EXPORT AudioDestination final
   // Sets the detect silence flag for `web_audio_device_`.
   void SetDetectSilence(bool detect_silence);
 
-  // Creates a new sink and return its device status. If the status is OK,
-  // replace the existing sink with the new one. This function is called in
+  // Creates a new sink if one hasn't been created yet, and returns the sink
+  // status.  This function is called in
   // RealtimeAudioDestinationHandler::SetSinkDescriptor, which can be invoked
   // from the constructor of AudioContext and AudioContext.setSinkId() method.
-  media::OutputDeviceStatus CreateSinkAndGetDeviceStatus();
+  media::OutputDeviceStatus MaybeCreateSinkAndGetStatus();
 
  private:
   explicit AudioDestination(AudioIOCallback&,

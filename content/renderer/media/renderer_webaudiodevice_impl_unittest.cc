@@ -438,7 +438,7 @@ TEST_F(RendererWebAudioDeviceImplTest,
   // `CreateAndGetSinkStatus` call.
   EXPECT_EQ(webaudio_device_->sink_, nullptr);
   media::OutputDeviceStatus status =
-      webaudio_device_->CreateSinkAndGetDeviceStatus();
+      webaudio_device_->MaybeCreateSinkAndGetStatus();
   EXPECT_NE(webaudio_device_->sink_, nullptr);
 
   // Healthy device should return OUTPUT_DEVICE_STATUS_OK.
@@ -468,7 +468,7 @@ TEST_F(RendererWebAudioDeviceImplTest,
   // `CreateAndGetSinkStatus` call.
   EXPECT_EQ(webaudio_device_->sink_, nullptr);
   media::OutputDeviceStatus status =
-      webaudio_device_->CreateSinkAndGetDeviceStatus();
+      webaudio_device_->MaybeCreateSinkAndGetStatus();
   EXPECT_EQ(webaudio_device_->sink_, nullptr);
 
   // Error device should return OUTPUT_DEVICE_STATUS_ERROR_INTERNAL.
@@ -496,7 +496,7 @@ TEST_F(RendererWebAudioDeviceImplTest,
   // `CreateAndGetSinkStatus` call.
   EXPECT_EQ(webaudio_device_->sink_, nullptr);
   media::OutputDeviceStatus status =
-      webaudio_device_->CreateSinkAndGetDeviceStatus();
+      webaudio_device_->MaybeCreateSinkAndGetStatus();
   EXPECT_NE(webaudio_device_->sink_, nullptr);
 
   // Silent sink should return OUTPUT_DEVICE_STATUS_OK.
