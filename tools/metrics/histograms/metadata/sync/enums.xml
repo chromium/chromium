@@ -988,6 +988,7 @@ chromium-metrics-reviews@google.com.
   <int value="65" label="Plus Address"/>
   <int value="66" label="Compare"/>
   <int value="67" label="Cookies"/>
+  <int value="68" label="Plus Address Settings"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/model_type.h:SyncModelTypes) -->

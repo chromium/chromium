@@ -1120,7 +1120,7 @@ void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
 }
 
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(52 == syncer::GetNumModelTypes(),
+  static_assert(53 == syncer::GetNumModelTypes(),
                 "Add new types below if they can run in transport mode");
   // Only some types will run by default in transport mode (i.e. without their
   // own separate opt-in).
@@ -1130,6 +1130,7 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
                                         syncer::CONTACT_INFO,
                                         syncer::DEVICE_INFO,
                                         syncer::PLUS_ADDRESS,
+                                        syncer::PLUS_ADDRESS_SETTING,
                                         syncer::SECURITY_EVENTS,
                                         syncer::SEND_TAB_TO_SELF,
                                         syncer::SHARING_MESSAGE,

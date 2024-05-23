@@ -106,6 +106,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case POWER_BOOKMARK:
     case WEBAUTHN_CREDENTIAL:
     case PLUS_ADDRESS:
+    case PLUS_ADDRESS_SETTING:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
       NOTREACHED_IN_MIGRATION();
@@ -171,6 +172,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case SHARED_TAB_GROUP_DATA:
     case COLLABORATION_GROUP:
     case PLUS_ADDRESS:
+    case PLUS_ADDRESS_SETTING:
     case COMPARE:
     case COOKIES:
       return false;

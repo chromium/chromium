@@ -168,7 +168,13 @@ enum ModelType {
   // Browser cookies, ChromeOS only.
   COOKIES,
 
-  LAST_USER_MODEL_TYPE = COOKIES,
+  // Settings for PLUS_ADDRESS forwarded from the user's account. Since the
+  // settings originate from the user's account, this is not reusing any of the
+  // standard syncable prefs.
+  // Read-only on the client.
+  PLUS_ADDRESS_SETTING,
+
+  LAST_USER_MODEL_TYPE = PLUS_ADDRESS_SETTING,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -265,7 +271,8 @@ enum class ModelTypeForHistograms {
   kPlusAddresses = 65,
   kCompare = 66,
   kCookies = 67,
-  kMaxValue = kCookies,
+  kPlusAddressSettings = 68,
+  kMaxValue = kPlusAddressSettings,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncModelTypes)
 
@@ -294,11 +301,13 @@ constexpr ModelTypeSet UserTypes() {
 
 // User types which are not user-controlled.
 constexpr ModelTypeSet AlwaysPreferredUserTypes() {
-  // TODO(b/322147254): `PLUS_ADDRESS` isn't bound to a `UserSelectableType` and
-  // always considered enabled. Revise once a product decision about the opt-out
-  // has been made.
-  return {DEVICE_INFO,     USER_CONSENTS,    PLUS_ADDRESS,
-          SECURITY_EVENTS, SEND_TAB_TO_SELF, SUPERVISED_USER_SETTINGS,
+  return {DEVICE_INFO,
+          USER_CONSENTS,
+          PLUS_ADDRESS,
+          PLUS_ADDRESS_SETTING,
+          SECURITY_EVENTS,
+          SEND_TAB_TO_SELF,
+          SUPERVISED_USER_SETTINGS,
           SHARING_MESSAGE};
 }
 

@@ -48,7 +48,7 @@ class SyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(52 == syncer::GetNumModelTypes(),
+    static_assert(53 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -97,6 +97,8 @@ class SyncServiceFactoryTest : public PlatformTest {
     if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
       datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
     }
+    // TODO(b/342089839): Add `syncer::PLUS_ADDRESS_SETTING` once it has a
+    // controller.
     return datatypes;
   }
 

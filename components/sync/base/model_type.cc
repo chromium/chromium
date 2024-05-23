@@ -213,6 +213,10 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
     {COOKIES, "COOKIE", "cookies", "Cookies",
      sync_pb::EntitySpecifics::kCookieFieldNumber,
      ModelTypeForHistograms::kCookies},
+    {PLUS_ADDRESS_SETTING, "PLUS_ADDRESS_SETTING", "plus_address_setting",
+     "Plus Address Setting",
+     sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber,
+     ModelTypeForHistograms::kPlusAddressSettings},
     // ---- Control Types ----
     {NIGORI, "NIGORI", "nigori", "Encryption Keys",
      sync_pb::EntitySpecifics::kNigoriFieldNumber,
@@ -222,11 +226,11 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
 static_assert(std::size(kModelTypeInfoMap) == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
-static_assert(52 == syncer::GetNumModelTypes(),
+static_assert(53 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
-static_assert(52 == syncer::GetNumModelTypes(),
+static_assert(53 == syncer::GetNumModelTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -311,6 +315,8 @@ constexpr kSpecificsFieldNumberToModelTypeMap
         {sync_pb::EntitySpecifics::kPlusAddressFieldNumber, PLUS_ADDRESS},
         {sync_pb::EntitySpecifics::kCompareFieldNumber, COMPARE},
         {sync_pb::EntitySpecifics::kCookieFieldNumber, COOKIES},
+        {sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber,
+         PLUS_ADDRESS_SETTING},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
     });
@@ -476,6 +482,9 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
     case COOKIES:
       specifics->mutable_cookie();
       break;
+    case PLUS_ADDRESS_SETTING:
+      specifics->mutable_plus_address_setting();
+      break;
   }
 }
 
@@ -504,7 +513,7 @@ void internal::GetModelTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(52 == syncer::GetNumModelTypes(),
+  static_assert(53 == syncer::GetNumModelTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -619,6 +628,9 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_cookie()) {
     return COOKIES;
   }
+  if (specifics.has_plus_address_setting()) {
+    return PLUS_ADDRESS_SETTING;
+  }
 
   // This client version doesn't understand |specifics|.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -626,7 +638,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(52 == syncer::GetNumModelTypes(),
+  static_assert(53 == syncer::GetNumModelTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();
@@ -655,9 +667,10 @@ ModelTypeSet EncryptableUserTypes() {
   encryptable_user_types.Remove(OUTGOING_PASSWORD_SHARING_INVITATION);
   // Never encrypted because consumed server-side.
   encryptable_user_types.Remove(SHARED_TAB_GROUP_DATA);
-  // Plus addresses are never encrypted because the originate from outside
-  // Chrome.
+  // Plus addresses and their settings are never encrypted because they
+  // originate from outside Chrome.
   encryptable_user_types.Remove(PLUS_ADDRESS);
+  encryptable_user_types.Remove(PLUS_ADDRESS_SETTING);
 
   return encryptable_user_types;
 }
