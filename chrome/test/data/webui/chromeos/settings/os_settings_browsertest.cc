@@ -646,6 +646,13 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampMochaTestFasterSplitScreenDisabled::DescribeParams);
 
+using OSSettingsRevampTestOsAboutPage = OSSettingsRevampMochaTest;
+
+INSTANTIATE_TEST_SUITE_P(RevampParameterized,
+                         OSSettingsRevampTestOsAboutPage,
+                         testing::Bool(),
+                         OSSettingsRevampTestOsAboutPage::DescribeParams);
+
 /* End Test Classes */
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppLanguageSelectionDialog) {
@@ -1325,15 +1332,13 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsA11yPageTtsVoiceSubpage) {
   RunSettingsTest("os_a11y_page/tts_voice_subpage_test.js");
 }
 
-// TODO(crbug.com/336428443): Flaky for OsSettingsRevampWayfindingDisabled.
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
-                       DISABLED_OsAboutPage_AllBuilds) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampTestOsAboutPage, AllBuilds) {
   RunSettingsTest("os_about_page/os_about_page_test.js",
                   "runMochaSuite('<os-about-page> AllBuilds')");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsAboutPage_OfficialBuild) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampTestOsAboutPage, OfficialBuild) {
   RunSettingsTest("os_about_page/os_about_page_test.js",
                   "runMochaSuite('<os-about-page> OfficialBuild')");
 }

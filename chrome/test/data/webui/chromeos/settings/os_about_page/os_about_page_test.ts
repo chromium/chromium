@@ -48,8 +48,6 @@ suite('<os-about-page> AllBuilds', () => {
 
     aboutBrowserProxy = new TestAboutPageBrowserProxy();
     AboutPageBrowserProxyImpl.setInstanceForTesting(aboutBrowserProxy);
-
-    Router.getInstance().navigateTo(routes.ABOUT);
   });
 
   teardown(() => {
@@ -82,7 +80,10 @@ suite('<os-about-page> AllBuilds', () => {
     clearBody();
     page = document.createElement('os-about-page');
     document.body.appendChild(page);
+
+    Router.getInstance().navigateTo(routes.ABOUT);
     await flushTasks();
+
     await Promise.all([
       aboutBrowserProxy.whenCalled('getChannelInfo'),
       aboutBrowserProxy.whenCalled('refreshUpdateStatus'),
