@@ -441,6 +441,9 @@ BASE_FEATURE(kPartitionAllocMakeFreeNoOpOnShutdown,
 
 constexpr FeatureParam<WhenFreeBecomesNoOp>::Option
     kPartitionAllocMakeFreeNoOpOnShutdownOptions[] = {
+        {WhenFreeBecomesNoOp::kBeforePreShutdown, "before-preshutdown"},
+        {WhenFreeBecomesNoOp::kBeforeHaltingStartupTracingController,
+         "before-halting-startup-tracing-controller"},
         {
             WhenFreeBecomesNoOp::kBeforeShutDownThreads,
             "before-shutdown-threads",

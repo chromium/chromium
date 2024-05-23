@@ -124,7 +124,8 @@ enum class BucketDistributionMode : uint8_t {
 // Parameter for 'kPartitionAllocMakeFreeNoOpOnShutdown' feature which
 // controls when free() becomes a no-op during Shutdown()
 enum class WhenFreeBecomesNoOp {
-  // Allocator is inserted either before, in, or after shutdown threads
+  kBeforePreShutdown,
+  kBeforeHaltingStartupTracingController,
   kBeforeShutDownThreads,
   kInShutDownThreads,
   kAfterShutDownThreads,
