@@ -45,7 +45,16 @@ DiscardableSharedMemoryHeap::Span::Span(
       shared_memory_(shared_memory),
       start_(start),
       length_(length),
-      is_locked_(false) {}
+      is_locked_(false) {
+    INIT_RECORD_REPLAY_ID(DiscardableSharedMemoryHeap::Span);
+    recordreplay::Assert(
+      "[TT-1252-1255] ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Purge %d %d",
+        record_replay_id_,
+        shared_memory_ ? 
+          recordreplay::PointerId(shared_memory_) :
+          -1
+    );
+  }
 
 DiscardableSharedMemoryHeap::ScopedMemorySegment::ScopedMemorySegment(
     DiscardableSharedMemoryHeap* heap,
@@ -225,14 +234,15 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
   num_free_blocks_ += span->length_;
 
   recordreplay::Assert(
-      "[RUN-3056-3057] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean A %d",
+      "[TT-1252-1255] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean A %d %d",
+      span->RecordReplayId(),
       recordreplay::PointerId(span->shared_memory_));
 
   // Merge with previous span if possible.
   auto prev_it = spans_.find(span->start_ - 1);
   if (prev_it != spans_.end() && IsInFreeList(prev_it->second)) {
     recordreplay::Assert(
-        "[RUN-3056-3057] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean "
+        "[TT-1252-1255] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean "
         "B");
     std::unique_ptr<Span> prev = RemoveFromFreeList(prev_it->second);
     DCHECK_EQ(prev->start_ + prev->length_, span->start_);
@@ -248,7 +258,7 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
   auto next_it = spans_.find(span->start_ + span->length_);
   if (next_it != spans_.end() && IsInFreeList(next_it->second)) {
     recordreplay::Assert(
-        "[RUN-3056-3057] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean "
+        "[TT-1252-1255] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean "
         "C");
     std::unique_ptr<Span> next = RemoveFromFreeList(next_it->second);
     DCHECK_EQ(next->start_, span->start_ + span->length_);
@@ -260,7 +270,7 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
   }
 
   recordreplay::Assert(
-      "[RUN-3056-3057] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean D");
+      "[TT-1252-1255] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean D");
 
   InsertIntoFreeList(std::move(span));
 }
@@ -330,15 +340,16 @@ void DiscardableSharedMemoryHeap::ReleaseFreeMemory() {
 void DiscardableSharedMemoryHeap::ReleasePurgedMemory() {
   // Erase all purged segments after rearranging the segments in such a way
   // that resident segments precede all purged segments.
-  recordreplay::Assert(
-    "[RUN-3056-3057] DiscardableSharedMemoryHeap::ReleasePurgedMemory A %zu",
-    memory_segments_.size());
   memory_segments_.erase(
       std::partition(memory_segments_.begin(), memory_segments_.end(),
                      [](const std::unique_ptr<ScopedMemorySegment>& segment) {
                        return segment->IsResident();
                      }),
       memory_segments_.end());
+
+  recordreplay::Assert(
+    "[TT-1252-1255] DiscardableSharedMemoryHeap::ReleasePurgedMemory A %zu",
+    memory_segments_.size());
 }
 
 size_t DiscardableSharedMemoryHeap::GetSize() const {
@@ -426,8 +437,10 @@ void DiscardableSharedMemoryHeap::InsertIntoFreeList(
   size_t index = std::min(span->length_, std::size(free_spans_)) - 1;
 
   recordreplay::Assert(
-      "[RUN-3056-3057] DiscardableSharedMemoryHeap::InsertIntoFreeList %d %zu",
-      recordreplay::PointerId(span->shared_memory()), index);
+      "[TT-1252-1255] DiscardableSharedMemoryHeap::InsertIntoFreeList %d %d %zu",
+      span->RecordReplayId(),
+      recordreplay::PointerId(span->shared_memory()),
+      index);
 
   free_spans_[index].Append(span.release());
 }
@@ -437,7 +450,8 @@ DiscardableSharedMemoryHeap::RemoveFromFreeList(Span* span) {
   DCHECK(IsInFreeList(span));
 
   recordreplay::Assert(
-      "[RUN-3056-3057] DiscardableSharedMemoryHeap::RemoveFromFreeList %d",
+      "[TT-1252-1255] DiscardableSharedMemoryHeap::RemoveFromFreeList %d %d",
+      span->RecordReplayId(),
       recordreplay::PointerId(span->shared_memory()));
 
   span->RemoveFromList();
@@ -484,6 +498,11 @@ void DiscardableSharedMemoryHeap::UnregisterSpan(Span* span) {
   DCHECK(spans_.find(span->start_) != spans_.end());
   DCHECK_EQ(spans_[span->start_], span);
 
+  recordreplay::Assert(
+    "[TT-1252-1255] DiscardableSharedMemoryHeap::UnregisterSpan %d",
+      span->RecordReplayId()
+  );
+
   spans_.erase(span->start_);
   if (span->length_ > 1) {
     DCHECK(spans_.find(span->start_ + span->length_ - 1) != spans_.end());
@@ -518,7 +537,7 @@ void DiscardableSharedMemoryHeap::ReleaseMemory(
   size_t end = offset + size / block_size_;
   
   recordreplay::Assert(
-      "[RUN-3056-3057] DiscardableSharedMemoryHeap::ReleaseMemory A %zu %d",
+      "[TT-1252-1255] DiscardableSharedMemoryHeap::ReleaseMemory A %zu %d",
       end - offset, recordreplay::PointerId(shared_memory));
   while (offset < end) {
     DCHECK(spans_.find(offset) != spans_.end());

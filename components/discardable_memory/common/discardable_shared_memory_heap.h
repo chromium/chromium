@@ -20,6 +20,8 @@
 #include "components/discardable_memory/common/discardable_memory_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#include "base/record_replay.h"
+
 namespace base {
 class DiscardableSharedMemory;
 }
@@ -42,6 +44,8 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
     Span& operator=(const Span&) = delete;
 
     ~Span() = default;
+
+    HAS_RECORD_REPLAY_ID();
 
     base::DiscardableSharedMemory* shared_memory() { return shared_memory_; }
     size_t start() const { return start_; }

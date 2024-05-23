@@ -141,10 +141,16 @@ ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Purge(
   DCHECK(span_);
 
   recordreplay::Assert(
-    "[RUN-3056-3057] ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Purge %d %d %d",
+    "[TT-1252-1255] ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Purge %d %d %d %d",
+    span_ ? span_->RecordReplayId() : -1,
     is_locked(),
     last_locked_ > min_ticks,
-    span_ ? recordreplay::PointerId(span_->shared_memory()) : -1);
+    span_ ? 
+      (span_->shared_memory() ? 
+        recordreplay::PointerId(span_->shared_memory()) :
+        -1
+      )
+     : -2);
 
   if (is_locked())
     return nullptr;
