@@ -755,6 +755,7 @@ void SidePanelCoordinator::PopulateSidePanel(
     actions::ActionItem* const action_item = GetActionItem(entry->key());
     UpdatePanelIconAndTitle(
         action_item->GetImage(), action_item->GetText(),
+        entry->GetProperty(kShouldShowTitleInSidePanelHeaderKey),
         (entry->key().id() == SidePanelEntryId::kExtension));
   } else {
     // Ensure that the correct combobox entry is selected. This may not be the
@@ -1400,9 +1401,11 @@ void SidePanelCoordinator::UpdateToolbarButtonHighlight(
   }
 }
 
-void SidePanelCoordinator::UpdatePanelIconAndTitle(const ui::ImageModel& icon,
-                                                   const std::u16string& text,
-                                                   const bool is_extension) {
+void SidePanelCoordinator::UpdatePanelIconAndTitle(
+    const ui::ImageModel& icon,
+    const std::u16string& text,
+    const bool should_show_title_text,
+    const bool is_extension) {
   if (is_extension) {
     ui::ImageModel updated_icon = icon;
     if (icon.IsVectorIcon()) {
@@ -1413,7 +1416,7 @@ void SidePanelCoordinator::UpdatePanelIconAndTitle(const ui::ImageModel& icon,
     panel_icon_->SetImage(updated_icon);
   }
   panel_icon_->SetVisible(is_extension);
-  panel_title_->SetText(text);
+  panel_title_->SetText(should_show_title_text ? text : std::u16string());
 }
 
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,

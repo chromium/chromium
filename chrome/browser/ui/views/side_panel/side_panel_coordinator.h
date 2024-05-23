@@ -185,6 +185,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   void UpdatePanelIconAndTitle(const ui::ImageModel& icon,
                                const std::u16string& text,
+                               const bool should_show_title_text,
                                const bool is_extension);
 
   // views::ViewObserver:
