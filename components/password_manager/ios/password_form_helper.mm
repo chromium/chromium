@@ -252,7 +252,7 @@ const char kFrameIdKey[] = "frame_id";
             fromFillData:(password_manager::FillData)fillData
     withFieldDataManager:(autofill::FieldDataManager*)manager
                   driver:(IOSPasswordManagerDriver*)driver {
-  if (!result->is_dict()) {
+  if (!result || !result->is_dict()) {
     return NO;
   }
 
