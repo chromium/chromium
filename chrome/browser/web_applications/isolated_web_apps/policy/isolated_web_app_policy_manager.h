@@ -109,7 +109,7 @@ class IwaInstaller {
       ResultCallback callback);
   ~IwaInstaller();
 
-  // Starts installing the IWA in MGS.
+  // Starts installing the IWA in session (user or MGS).
   void Start();
 
   IwaInstaller(const IwaInstaller&) = delete;
