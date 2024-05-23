@@ -100,7 +100,12 @@ public class PublicTransitConfig {
     }
 
     static void onTravelException(TravelException travelException) {
+        if (sFreezeOnException) {
+            Log.e(TAG, "Frozen on TravelException:", travelException);
+        }
+
         triggerOnExceptionCallback();
+
         if (sFreezeOnException) {
             int backoffTimer = 1000;
             int totalMsFrozen = 0;
