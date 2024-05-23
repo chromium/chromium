@@ -11,12 +11,6 @@
     margin-inline-start: 15px;
   }
 
-  #safetyHubTitleContainer {
-    font-size: 15px;
-    font-weight: 400;
-    margin: 0 0 16px 5px;
-  }
-
   cr-icon[icon='cr:check'] {
     padding-inline-start: 10px;
     fill: var(--google-green-700);
@@ -49,10 +43,11 @@
   }
 </style>
 
-<h2 id="safetyHubTitleContainer"
+<h2 id="safetyHubTitleContainer" class="panel-title"
     hidden$="[[!shouldShowSafetyHubHeader_]]">
   $i18n{safetyHubHeader}
 </h2>
+
 <div class="panel-background">
   <cr-expand-button no-hover
       id="expandButton"

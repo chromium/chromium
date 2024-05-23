@@ -110,6 +110,12 @@ a[href] {
   min-width: var(--cr-icon-size);
 }
 
+.panel-title {
+  font-size: 15px;
+  font-weight: 400;
+  margin: 0 0 16px 5px;
+}
+
 .panel-background {
   background-color: var(--cr-card-background-color);
   border-radius: var(--cr-card-border-radius);

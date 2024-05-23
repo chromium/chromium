@@ -50,6 +50,11 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
       },
 
       /**
+       * Whether the panel title should be shown.
+       */
+      showTitle: Boolean,
+
+      /**
        * The string for the panel's header.
        */
       headerString_: String,
@@ -72,6 +77,7 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
 
   extensions: chrome.developerPrivate.ExtensionInfo[];
   delegate: ItemDelegate&Mv2DeprecationPanelDelegate;
+  showTitle: boolean;
   private headerString_: string;
   private subtitleString_: string;
   private extensionWithActionMenuOpened_: chrome.developerPrivate.ExtensionInfo;

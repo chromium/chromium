@@ -313,4 +313,40 @@ suite('ExtensionItemListTest', function() {
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', false);
   });
+
+  test('ManifestV2DeprecationPanel_TitleVisibility', function() {
+    // Enable feature for both panels. Their visibility will be determined
+    // whether they have extensions to show.
+    loadTimeData.overrideValues({'MV2DeprecationPanelEnabled': true});
+    loadTimeData.overrideValues({'safetyHubShowReviewPanel': true});
+
+    // Show the MV2 deprecation panel by adding an extension affected by the
+    // mv2 deprecation.
+    itemList.push('extensions', createExtensionInfo({
+                    name: 'MV2 extension',
+                    id: 'd'.repeat(32),
+                    isAffectedByMV2Deprecation: true,
+                  }));
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', true);
+
+    // MV2 deprecation panel title is hidden when the review panel is hidden.
+    const mv2DeprecationPanel = itemList.shadowRoot!.querySelector<HTMLElement>(
+        'extensions-mv2-deprecation-panel');
+    assertTrue(!!mv2DeprecationPanel);
+    testVisible(mv2DeprecationPanel, '.panel-title', false);
+
+    // Show the review panel by adding an extension with safety check text.
+    itemList.push(
+        'extensions', createExtensionInfo({
+          name: 'Unsafe extension',
+          id: 'e'.repeat(32),
+          safetyCheckText: {panelString: 'This extension contains malware.'},
+        }));
+    flush();
+    boundTestVisible('extensions-review-panel', true);
+
+    // MV2 deprecation panel title is visible when the review panel is visible.
+    testVisible(mv2DeprecationPanel, '.panel-title', true);
+  });
 });

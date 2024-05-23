@@ -352,6 +352,11 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
   RunTestCase("ManifestV2DeprecationPanel_Enabled");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
+                       ManifestV2DeprecationPanel_TitleVisibility) {
+  RunTestCase("ManifestV2DeprecationPanel_TitleVisibility");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Load Error Tests
 
