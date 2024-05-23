@@ -1871,10 +1871,8 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
                                                      : EUserModify::kReadOnly);
   FontBuilder(&GetDocument()).CreateInitialFont(builder);
 
-  scoped_refptr<StyleInitialData> initial_data =
-      engine.MaybeCreateAndGetInitialData();
-  if (initial_data) {
-    builder.SetInitialData(std::move(initial_data));
+  if (StyleInitialData* initial_data = engine.MaybeCreateAndGetInitialData()) {
+    builder.SetInitialData(initial_data);
   }
 
   if (RuntimeEnabledFeatures::PreferDefaultScrollbarStylesEnabled()) {

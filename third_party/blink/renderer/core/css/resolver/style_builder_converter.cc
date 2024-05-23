@@ -3060,8 +3060,7 @@ const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyValue(
 // (and registered) custom properties work correctly.
 //
 // https://drafts.css-houdini.org/css-properties-values-api-1/#substitution
-scoped_refptr<CSSVariableData>
-StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
+CSSVariableData* StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
     const CSSValue& value,
     bool is_animation_tainted) {
   // TODO(andruud): Produce tokens directly from CSSValue.

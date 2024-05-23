@@ -135,7 +135,7 @@ std::optional<const CSSValue*> PropertyRegistration::ConvertInitial(
   if (!initial_value) {
     return syntax.IsUniversal() ? std::make_optional(nullptr) : std::nullopt;
   }
-  scoped_refptr<CSSVariableData> initial_variable_data =
+  CSSVariableData* initial_variable_data =
       To<CSSUnparsedDeclarationValue>(*initial_value).VariableDataValue();
 
   // Parse initial value, if we have it.

@@ -106,7 +106,6 @@ class StyleContentAlignmentData;
 class StyleDifference;
 class StyleImage;
 class StyleInheritedVariables;
-class StyleInitialData;
 class StyleRay;
 class StyleResolver;
 class StyleResolverState;
@@ -3221,10 +3220,10 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // Variables
   const StyleInheritedVariables* InheritedVariables() const {
-    return InheritedVariablesInternal().get();
+    return InheritedVariablesInternal().Get();
   }
   const StyleNonInheritedVariables* NonInheritedVariables() const {
-    return NonInheritedVariablesInternal().get();
+    return NonInheritedVariablesInternal().Get();
   }
   CSSVariableData* GetVariableData(const AtomicString&,
                                    bool is_inherited_property) const;
@@ -3233,12 +3232,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void CopyInheritedVariablesFrom(const ComputedStyle*);
   void CopyNonInheritedVariablesFrom(const ComputedStyle*);
   CORE_EXPORT void SetVariableData(const AtomicString& name,
-                                   scoped_refptr<CSSVariableData> value,
+                                   CSSVariableData* value,
                                    bool is_inherited_property) {
     if (is_inherited_property) {
-      MutableInheritedVariables().SetData(name, std::move(value));
+      MutableInheritedVariables().SetData(name, value);
     } else {
-      MutableNonInheritedVariables().SetData(name, std::move(value));
+      MutableNonInheritedVariables().SetData(name, value);
     }
   }
   CORE_EXPORT void SetVariableValue(const AtomicString& name,
@@ -3249,9 +3248,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     } else {
       MutableNonInheritedVariables().SetValue(name, value);
     }
-  }
-  CORE_EXPORT void SetInitialData(scoped_refptr<StyleInitialData> data) {
-    MutableInitialDataInternal() = std::move(data);
   }
 
   EWhiteSpace WhiteSpace() const {
@@ -3287,6 +3283,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetContainIntrinsicHeight(height);
   }
 
+ private:
+  mutable bool has_own_inherited_variables_ = false;
+  mutable bool has_own_non_inherited_variables_ = false;
 };
 
 }  // namespace blink

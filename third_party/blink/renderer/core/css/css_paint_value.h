@@ -23,7 +23,7 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
   explicit CSSPaintValue(CSSCustomIdentValue* name);
   CSSPaintValue(CSSCustomIdentValue* name, bool threaded_compositing_enabled);
   CSSPaintValue(CSSCustomIdentValue* name,
-                Vector<scoped_refptr<CSSVariableData>>&);
+                HeapVector<Member<CSSVariableData>>&&);
   ~CSSPaintValue();
 
   String CustomCSSText() const;
@@ -102,7 +102,7 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
       generators_;
   Member<Observer> paint_image_generator_observer_;
   Member<CSSStyleValueVector> parsed_input_arguments_;
-  Vector<scoped_refptr<CSSVariableData>> argument_variable_data_;
+  HeapVector<Member<CSSVariableData>> argument_variable_data_;
   enum class OffThreadPaintState { kUnknown, kOffThread, kMainThread };
   // Indicates whether this paint worklet is composited or not. kUnknown
   // indicates that it has not been decided yet.

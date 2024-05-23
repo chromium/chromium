@@ -940,7 +940,7 @@ StyleRuleStartingStyle::StyleRuleStartingStyle(
 StyleRuleFunction::StyleRuleFunction(
     AtomicString name,
     Vector<StyleRuleFunction::Parameter> parameters,
-    scoped_refptr<CSSVariableData> function_body,
+    CSSVariableData* function_body,
     StyleRuleFunction::Type return_type)
     : StyleRuleBase(kFunction),
       name_(std::move(name)),
@@ -949,6 +949,7 @@ StyleRuleFunction::StyleRuleFunction(
       return_type_(return_type) {}
 
 void StyleRuleFunction::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(function_body_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

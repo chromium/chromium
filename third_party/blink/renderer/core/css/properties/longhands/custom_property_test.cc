@@ -297,8 +297,7 @@ TEST_F(CustomPropertyTest, ValueMode) {
 
   CustomProperty property(AtomicString("--x"), GetDocument());
 
-  scoped_refptr<CSSVariableData> data =
-      css_test_helpers::CreateVariableData("100px");
+  CSSVariableData* data = css_test_helpers::CreateVariableData("100px");
   ASSERT_FALSE(data->IsAnimationTainted());
   auto* declaration = MakeGarbageCollected<CSSUnparsedDeclarationValue>(
       data, /* parser_context */ nullptr);

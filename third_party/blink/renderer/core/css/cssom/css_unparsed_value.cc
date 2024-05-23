@@ -121,7 +121,7 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
 
   if (range.AtEnd()) {
     return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-        CSSVariableData::Create());
+        MakeGarbageCollected<CSSVariableData>());
   }
 
   // The string we just parsed has /**/ inserted between every token

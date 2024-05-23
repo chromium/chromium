@@ -624,9 +624,9 @@ TEST_F(ComputedStyleTest, CustomPropertiesEqual_Data) {
   const ComputedStyle* style1;
   const ComputedStyle* style2;
 
-  auto value1 = css_test_helpers::CreateVariableData("foo");
-  auto value2 = css_test_helpers::CreateVariableData("bar");
-  auto value3 = css_test_helpers::CreateVariableData("foo");
+  auto* value1 = css_test_helpers::CreateVariableData("foo");
+  auto* value2 = css_test_helpers::CreateVariableData("bar");
+  auto* value3 = css_test_helpers::CreateVariableData("foo");
 
   Vector<AtomicString> properties;
   properties.push_back("--x");
@@ -966,7 +966,8 @@ TEST_F(ComputedStyleTest, InitialVariableNames) {
                              *CreateLengthRegistration("--y", 2));
 
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-  builder.SetInitialData(StyleInitialData::Create(GetDocument(), *registry));
+  builder.SetInitialData(
+      MakeGarbageCollected<StyleInitialData>(GetDocument(), *registry));
   const ComputedStyle* style = builder.TakeStyle();
 
   EXPECT_EQ(2u, style->GetVariableNames().size());
@@ -1039,7 +1040,8 @@ TEST_F(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
                              *CreateLengthRegistration("--e", 2));
 
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-  builder.SetInitialData(StyleInitialData::Create(GetDocument(), *registry));
+  builder.SetInitialData(
+      MakeGarbageCollected<StyleInitialData>(GetDocument(), *registry));
 
   const bool inherited = true;
   builder.SetVariableData(AtomicString("--a"), CreateVariableData("foo"),
@@ -1064,7 +1066,7 @@ TEST_F(ComputedStyleTest, GetVariableNamesCount_Invalidation) {
   const ComputedStyle* style = InitialComputedStyle();
   EXPECT_EQ(style->GetVariableNamesCount(), 0u);
 
-  auto data = css_test_helpers::CreateVariableData("foo");
+  auto* data = css_test_helpers::CreateVariableData("foo");
   ComputedStyleBuilder builder(*style);
   builder.SetVariableData(AtomicString("--x"), data, false);
   style = builder.TakeStyle();
@@ -1084,7 +1086,7 @@ TEST_F(ComputedStyleTest, GetVariableNamesCount_Invalidation) {
 TEST_F(ComputedStyleTest, GetVariableNames_Invalidation) {
   const ComputedStyle* style;
 
-  auto data = css_test_helpers::CreateVariableData("foo");
+  auto* data = css_test_helpers::CreateVariableData("foo");
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
   builder.SetVariableData(AtomicString("--x"), data, false);
   style = builder.TakeStyle();
@@ -1117,7 +1119,8 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
     PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
     registry->RegisterProperty(AtomicString("--x"),
                                *CreateLengthRegistration("--x", 1));
-    builder.SetInitialData(StyleInitialData::Create(GetDocument(), *registry));
+    builder.SetInitialData(
+        MakeGarbageCollected<StyleInitialData>(GetDocument(), *registry));
     style = builder.TakeStyle();
   }
   EXPECT_EQ(style->GetVariableNames().size(), 1u);
@@ -1131,7 +1134,8 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
                                *CreateLengthRegistration("--y", 2));
     registry->RegisterProperty(AtomicString("--z"),
                                *CreateLengthRegistration("--z", 3));
-    builder.SetInitialData(StyleInitialData::Create(GetDocument(), *registry));
+    builder.SetInitialData(
+        MakeGarbageCollected<StyleInitialData>(GetDocument(), *registry));
     style = builder.TakeStyle();
   }
   EXPECT_EQ(style->GetVariableNames().size(), 2u);

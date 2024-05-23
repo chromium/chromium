@@ -604,7 +604,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   DocumentStyleEnvironmentVariables& EnsureEnvironmentVariables();
 
-  scoped_refptr<StyleInitialData> MaybeCreateAndGetInitialData();
+  StyleInitialData* MaybeCreateAndGetInitialData();
 
   bool NeedsStyleInvalidation() const {
     return style_invalidation_root_.GetRootNode();
@@ -1035,9 +1035,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   Member<CascadeLayerMap> user_cascade_layer_map_;
 
-  scoped_refptr<DocumentStyleEnvironmentVariables> environment_variables_;
+  Member<DocumentStyleEnvironmentVariables> environment_variables_;
 
-  scoped_refptr<StyleInitialData> initial_data_;
+  Member<StyleInitialData> initial_data_;
 
   // Page color schemes set by the viewport meta tag. E.g.
   // <meta name="color-scheme" content="light dark">.

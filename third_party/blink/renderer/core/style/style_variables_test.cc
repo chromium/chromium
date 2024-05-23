@@ -23,7 +23,7 @@ TEST_F(StyleVariablesTest, EmptyEqual) {
 }
 
 TEST_F(StyleVariablesTest, Copy) {
-  auto foo_data = css_test_helpers::CreateVariableData("foo");
+  auto* foo_data = css_test_helpers::CreateVariableData("foo");
   const CSSValue* foo_value = css_test_helpers::CreateCustomIdent("foo");
   AtomicString x_string("--x");
 
@@ -38,7 +38,7 @@ TEST_F(StyleVariablesTest, Copy) {
 }
 
 TEST_F(StyleVariablesTest, Assignment) {
-  auto foo_data = css_test_helpers::CreateVariableData("foo");
+  auto* foo_data = css_test_helpers::CreateVariableData("foo");
   const CSSValue* foo_value = css_test_helpers::CreateCustomIdent("foo");
   AtomicString x_string("--x");
   AtomicString y_string("--y");
@@ -106,8 +106,8 @@ TEST_F(StyleVariablesTest, SetData) {
   AtomicString x_string("--x");
   StyleVariables vars;
 
-  auto foo = css_test_helpers::CreateVariableData("foo");
-  auto bar = css_test_helpers::CreateVariableData("bar");
+  auto* foo = css_test_helpers::CreateVariableData("foo");
+  auto* bar = css_test_helpers::CreateVariableData("bar");
 
   EXPECT_FALSE(vars.GetData(x_string).has_value());
 
@@ -130,7 +130,7 @@ TEST_F(StyleVariablesTest, SetNullData) {
 
 TEST_F(StyleVariablesTest, SingleDataSamePointer) {
   AtomicString x_string("--x");
-  auto data = css_test_helpers::CreateVariableData("foo");
+  auto* data = css_test_helpers::CreateVariableData("foo");
   StyleVariables vars1;
   StyleVariables vars2;
   vars1.SetData(x_string, data);

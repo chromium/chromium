@@ -35,21 +35,9 @@ bool IsEqual(const OptionalValue& a, const OptionalValue& b) {
 
 }  // namespace
 
-StyleVariables::StyleVariables() : values_(MakeGarbageCollected<ValueMap>()) {}
-
-StyleVariables::StyleVariables(const StyleVariables& other)
-    : data_(other.data_),
-      values_(MakeGarbageCollected<ValueMap>(*other.values_)) {}
-
-StyleVariables& StyleVariables::operator=(const StyleVariables& other) {
-  data_ = other.data_;
-  values_ = MakeGarbageCollected<ValueMap>(*other.values_);
-  return *this;
-}
-
 bool StyleVariables::operator==(const StyleVariables& other) const {
   if (data_.size() != other.data_.size() ||
-      values_->size() != other.values_->size()) {
+      values_.size() != other.values_.size()) {
     return false;
   }
 
@@ -69,7 +57,7 @@ bool StyleVariables::operator==(const StyleVariables& other) const {
     }
   }
 
-  for (const auto& pair : *values_) {
+  for (const auto& pair : values_) {
     if (!IsEqual(GetValue(pair.key), other.GetValue(pair.key))) {
       equality_cached_result_ = other.equality_cached_result_ = false;
       return false;
@@ -84,33 +72,32 @@ StyleVariables::OptionalData StyleVariables::GetData(
     const AtomicString& name) const {
   auto i = data_.find(name);
   if (i != data_.end()) {
-    return i->value.get();
+    return i->value.Get();
   }
   return std::nullopt;
 }
 
 StyleVariables::OptionalValue StyleVariables::GetValue(
     const AtomicString& name) const {
-  auto i = values_->find(name);
-  if (i != values_->end()) {
+  auto i = values_.find(name);
+  if (i != values_.end()) {
     return i->value.Get();
   }
   return std::nullopt;
 }
 
-void StyleVariables::SetData(const AtomicString& name,
-                             scoped_refptr<CSSVariableData> data) {
-  data_.Set(name, std::move(data));
+void StyleVariables::SetData(const AtomicString& name, CSSVariableData* data) {
+  data_.Set(name, data);
   equality_cache_partner_ = nullptr;
 }
 
 void StyleVariables::SetValue(const AtomicString& name, const CSSValue* value) {
-  values_->Set(name, value);
+  values_.Set(name, value);
   equality_cache_partner_ = nullptr;
 }
 
 bool StyleVariables::IsEmpty() const {
-  return data_.empty() && values_->empty();
+  return data_.empty() && values_.empty();
 }
 
 void StyleVariables::CollectNames(HashSet<AtomicString>& names) const {
@@ -126,7 +113,7 @@ std::ostream& operator<<(std::ostream& stream,
     stream << key << ": " << value->Serialize() << ", ";
   }
   stream << "][";
-  for (const auto& [key, value] : *variables.values_) {
+  for (const auto& [key, value] : variables.values_) {
     stream << key << ": " << value->CssText() << ", ";
   }
   return stream << "]";

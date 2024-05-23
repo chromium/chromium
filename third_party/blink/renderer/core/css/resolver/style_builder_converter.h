@@ -332,7 +332,7 @@ class StyleBuilderConverter {
       const CSSValue&,
       const CSSParserContext*);
 
-  static scoped_refptr<CSSVariableData> ConvertRegisteredPropertyVariableData(
+  static CSSVariableData* ConvertRegisteredPropertyVariableData(
       const CSSValue&,
       bool is_animation_tainted);
 

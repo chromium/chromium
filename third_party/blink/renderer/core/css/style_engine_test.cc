@@ -2710,7 +2710,7 @@ TEST_F(StyleEngineTest, InitialDataCreation) {
   // After registering, there should be initial data.
   css_test_helpers::RegisterProperty(GetDocument(), "--x", "<length>", "10px",
                                      false);
-  auto data1 = GetStyleEngine().MaybeCreateAndGetInitialData();
+  auto* data1 = GetStyleEngine().MaybeCreateAndGetInitialData();
   EXPECT_TRUE(data1);
 
   // After a full recalc, we should have the same initial data.
@@ -2718,7 +2718,7 @@ TEST_F(StyleEngineTest, InitialDataCreation) {
   EXPECT_TRUE(GetDocument().documentElement()->NeedsStyleRecalc());
   EXPECT_TRUE(GetDocument().documentElement()->ChildNeedsStyleRecalc());
   UpdateAllLifecyclePhases();
-  auto data2 = GetStyleEngine().MaybeCreateAndGetInitialData();
+  auto* data2 = GetStyleEngine().MaybeCreateAndGetInitialData();
   EXPECT_TRUE(data2);
   EXPECT_EQ(data1, data2);
 

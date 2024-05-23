@@ -972,8 +972,7 @@ void StyleCascade::TokenSequence::Append(const CSSParserToken& token,
   original_text_.Append(original_text);
 }
 
-scoped_refptr<CSSVariableData>
-StyleCascade::TokenSequence::BuildVariableData() {
+CSSVariableData* StyleCascade::TokenSequence::BuildVariableData() {
   return CSSVariableData::Create(original_text_, is_animation_tainted_,
                                  /*needs_variable_resolution=*/false,
                                  has_font_units_, has_root_font_units_,
@@ -1037,17 +1036,17 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   DCHECK(!resolver.IsLocked(property));
   CascadeResolver::AutoLock lock(property, resolver);
 
-  scoped_refptr<CSSVariableData> data = decl.VariableDataValue();
+  CSSVariableData* data = decl.VariableDataValue();
 
   if (data->NeedsVariableResolution()) {
-    data = ResolveVariableData(data.get(), *GetParserContext(decl), resolver);
+    data = ResolveVariableData(data, *GetParserContext(decl), resolver);
   }
 
-  if (HasFontSizeDependency(To<CustomProperty>(property), data.get())) {
+  if (HasFontSizeDependency(To<CustomProperty>(property), data)) {
     resolver.DetectCycle(GetCSSPropertyFontSize());
   }
 
-  if (HasLineHeightDependency(To<CustomProperty>(property), data.get())) {
+  if (HasLineHeightDependency(To<CustomProperty>(property), data)) {
     resolver.DetectCycle(GetCSSPropertyLineHeight());
   }
 
@@ -1326,7 +1325,7 @@ const CSSValue* StyleCascade::ResolveMathFunction(
   return scoped_math_value;
 }
 
-scoped_refptr<CSSVariableData> StyleCascade::ResolveVariableData(
+CSSVariableData* StyleCascade::ResolveVariableData(
     CSSVariableData* data,
     const CSSParserContext& context,
     CascadeResolver& resolver) {
@@ -1429,13 +1428,13 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   // Note that even if we are in a cycle, we must proceed in order to discover
   // secondary cycles via the var() fallback.
 
-  scoped_refptr<CSSVariableData> data = GetVariableData(property);
+  CSSVariableData* data = GetVariableData(property);
 
   // If substitution is not allowed, treat the value as
   // invalid-at-computed-value-time.
   //
   // https://drafts.csswg.org/css-variables/#animation-tainted
-  if (!resolver.AllowSubstitution(data.get())) {
+  if (!resolver.AllowSubstitution(data)) {
     data = nullptr;
   }
 
@@ -1467,8 +1466,7 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     return false;
   }
 
-  return out.Append(data.get(), parent_tokenizer,
-                    CSSVariableData::kMaxVariableBytes);
+  return out.Append(data, parent_tokenizer, CSSVariableData::kMaxVariableBytes);
 }
 
 bool StyleCascade::ResolveFunctionInto(StringView function_name,

@@ -23,19 +23,6 @@ unsigned DocumentStyleEnvironmentVariables::GenerateHashFromName(
   return StringHasher::ComputeHash(name.Characters16(), name.length());
 }
 
-// static
-scoped_refptr<DocumentStyleEnvironmentVariables>
-DocumentStyleEnvironmentVariables::Create(StyleEnvironmentVariables& parent,
-                                          Document& document) {
-  scoped_refptr<DocumentStyleEnvironmentVariables> obj =
-      base::AdoptRef(new DocumentStyleEnvironmentVariables(document));
-
-  // Add a reference to this instance from the root.
-  obj->BindToParent(parent);
-
-  return obj;
-}
-
 CSSVariableData* DocumentStyleEnvironmentVariables::ResolveVariable(
     const AtomicString& name,
     WTF::Vector<unsigned> indices,
@@ -74,8 +61,9 @@ void DocumentStyleEnvironmentVariables::InvalidateVariable(
 }
 
 DocumentStyleEnvironmentVariables::DocumentStyleEnvironmentVariables(
+    StyleEnvironmentVariables& parent,
     Document& document)
-    : document_(&document) {}
+    : StyleEnvironmentVariables(parent), document_(&document) {}
 
 void DocumentStyleEnvironmentVariables::RecordVariableUsage(unsigned id) {
   UseCounter::Count(document_, WebFeature::kCSSEnvironmentVariable);

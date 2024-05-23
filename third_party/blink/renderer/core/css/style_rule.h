@@ -711,7 +711,7 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleBase {
 
   StyleRuleFunction(AtomicString name,
                     Vector<Parameter> parameters,
-                    scoped_refptr<CSSVariableData> function_body,
+                    CSSVariableData* function_body,
                     Type return_type);
   StyleRuleFunction(const StyleRuleFunction&) = delete;
 
@@ -725,7 +725,7 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleBase {
  private:
   AtomicString name_;
   Vector<Parameter> parameters_;
-  scoped_refptr<CSSVariableData> function_body_;
+  Member<CSSVariableData> function_body_;
   Type return_type_;
 };
 

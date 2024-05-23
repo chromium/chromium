@@ -693,7 +693,7 @@ bool ConsumeTranslate3d(CSSParserTokenRange& args,
 // Add CSSVariableData to variableData vector.
 bool AddCSSPaintArgument(
     const Vector<CSSParserToken>& tokens,
-    Vector<scoped_refptr<CSSVariableData>>* const variable_data,
+    HeapVector<Member<CSSVariableData>>* const variable_data,
     const CSSParserContext& context) {
   CSSParserTokenRange token_range(tokens);
   if (CSSVariableParser::ContainsValidVariableReferences(
@@ -707,10 +707,9 @@ bool AddCSSPaintArgument(
     // if we get normalized whitespace etc., so we work around it by creating
     // a fake “original text” by serializing the tokens back.
     String text = token_range.Serialize();
-    scoped_refptr<CSSVariableData> unparsed_css_variable_data =
-        CSSVariableData::Create({token_range, text}, false, false);
-    if (unparsed_css_variable_data.get()) {
-      variable_data->push_back(std::move(unparsed_css_variable_data));
+    if (CSSVariableData* unparsed_css_variable_data =
+            CSSVariableData::Create({token_range, text}, false, false)) {
+      variable_data->push_back(unparsed_css_variable_data);
       return true;
     }
   }
@@ -3816,7 +3815,7 @@ static CSSValue* ConsumePaint(CSSParserTokenRange& args,
   // TODO(renjieliu): We may want to optimize the implementation by resolve
   // variables early if paint function is registered.
   Vector<CSSParserToken> argument_tokens;
-  Vector<scoped_refptr<CSSVariableData>> variable_data;
+  HeapVector<Member<CSSVariableData>> variable_data;
   while (!args.AtEnd()) {
     if (args.Peek().GetType() != kCommaToken) {
       argument_tokens.AppendVector(ConsumeFunctionArgsOrNot(args));
@@ -3834,7 +3833,7 @@ static CSSValue* ConsumePaint(CSSParserTokenRange& args,
     return nullptr;
   }
 
-  return MakeGarbageCollected<CSSPaintValue>(name, variable_data);
+  return MakeGarbageCollected<CSSPaintValue>(name, std::move(variable_data));
 }
 
 template <typename T>

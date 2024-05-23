@@ -2247,7 +2247,7 @@ static bool HasInitialVariables(const StyleInitialData* initial_data) {
 
 bool ComputedStyle::HasVariables() const {
   return InheritedVariables() || NonInheritedVariables() ||
-         HasInitialVariables(InitialData().get());
+         HasInitialVariables(InitialData());
 }
 
 wtf_size_t ComputedStyle::GetVariableNamesCount() const {
@@ -2265,7 +2265,7 @@ const Vector<AtomicString>& ComputedStyle::GetVariableNames() const {
   Vector<AtomicString>& cache = EnsureVariableNamesCache();
 
   HashSet<AtomicString> names;
-  if (auto* initial_data = InitialData().get()) {
+  if (auto* initial_data = InitialData()) {
     initial_data->CollectVariableNames(names);
   }
   if (auto* inherited_variables = InheritedVariables()) {
@@ -2280,11 +2280,11 @@ const Vector<AtomicString>& ComputedStyle::GetVariableNames() const {
 }
 
 const StyleInheritedVariables* ComputedStyle::InheritedVariables() const {
-  return InheritedVariablesInternal().get();
+  return InheritedVariablesInternal().Get();
 }
 
 const StyleNonInheritedVariables* ComputedStyle::NonInheritedVariables() const {
-  return NonInheritedVariablesInternal().get();
+  return NonInheritedVariablesInternal().Get();
 }
 
 namespace {
@@ -2305,7 +2305,7 @@ CSSVariableData* GetVariableData(
       return *data;
     }
   }
-  if (StyleInitialData* initial_data = style_or_builder.InitialData().get()) {
+  if (StyleInitialData* initial_data = style_or_builder.InitialData()) {
     return initial_data->GetVariableData(name);
   }
   return nullptr;
@@ -2327,7 +2327,7 @@ const CSSValue* GetVariableValue(
       return *data;
     }
   }
-  if (StyleInitialData* initial_data = style_or_builder.InitialData().get()) {
+  if (StyleInitialData* initial_data = style_or_builder.InitialData()) {
     return initial_data->GetVariableValue(name);
   }
   return nullptr;
@@ -2923,6 +2923,8 @@ const ComputedStyle* ComputedStyleBuilder::TakeStyle() {
 
 const ComputedStyle* ComputedStyleBuilder::CloneStyle() const {
   ResetAccess();
+  has_own_inherited_variables_ = false;
+  has_own_non_inherited_variables_ = false;
   return MakeGarbageCollected<ComputedStyle>(ComputedStyle::BuilderPassKey(),
                                              *this);
 }
@@ -2932,8 +2934,9 @@ void ComputedStyleBuilder::PropagateIndependentInheritedProperties(
   ComputedStyleBuilderBase::PropagateIndependentInheritedProperties(
       parent_style);
   if (!HasVariableReference() && !HasVariableDeclaration() &&
-      (InheritedVariablesInternal().get() !=
+      (InheritedVariablesInternal().Get() !=
        parent_style.InheritedVariables())) {
+    has_own_inherited_variables_ = false;
     MutableInheritedVariablesInternal() =
         parent_style.InheritedVariablesInternal();
   }
@@ -3082,29 +3085,36 @@ CSSVariableData* ComputedStyleBuilder::GetVariableData(
 }
 
 StyleInheritedVariables& ComputedStyleBuilder::MutableInheritedVariables() {
-  scoped_refptr<StyleInheritedVariables>& variables =
+  Member<StyleInheritedVariables>& variables =
       MutableInheritedVariablesInternal();
-  if (!variables) {
-    variables = StyleInheritedVariables::Create();
-  } else if (!variables->HasOneRef()) {
-    variables = variables->Copy();
+  if (!has_own_inherited_variables_) {
+    variables = variables
+                    ? MakeGarbageCollected<StyleInheritedVariables>(*variables)
+                    : MakeGarbageCollected<StyleInheritedVariables>();
   }
+  has_own_inherited_variables_ = true;
+  DCHECK(variables);
   return *variables;
 }
 
 StyleNonInheritedVariables&
 ComputedStyleBuilder::MutableNonInheritedVariables() {
-  std::unique_ptr<StyleNonInheritedVariables>& variables =
+  Member<StyleNonInheritedVariables>& variables =
       MutableNonInheritedVariablesInternal();
-  if (!variables) {
-    variables = std::make_unique<StyleNonInheritedVariables>();
+  if (!has_own_non_inherited_variables_) {
+    variables =
+        variables ? MakeGarbageCollected<StyleNonInheritedVariables>(*variables)
+                  : MakeGarbageCollected<StyleNonInheritedVariables>();
   }
+  has_own_non_inherited_variables_ = true;
+  DCHECK(variables);
   return *variables;
 }
 
 void ComputedStyleBuilder::CopyInheritedVariablesFrom(
     const ComputedStyle* style) {
   if (style->InheritedVariablesInternal()) {
+    has_own_inherited_variables_ = false;
     MutableInheritedVariablesInternal() = style->InheritedVariablesInternal();
   }
 }
@@ -3112,8 +3122,9 @@ void ComputedStyleBuilder::CopyInheritedVariablesFrom(
 void ComputedStyleBuilder::CopyNonInheritedVariablesFrom(
     const ComputedStyle* style) {
   if (style->NonInheritedVariablesInternal()) {
+    has_own_non_inherited_variables_ = false;
     MutableNonInheritedVariablesInternal() =
-        style->NonInheritedVariablesInternal()->Clone();
+        style->NonInheritedVariablesInternal();
   }
 }
 

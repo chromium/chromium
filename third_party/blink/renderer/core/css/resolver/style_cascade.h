@@ -298,7 +298,7 @@ class CORE_EXPORT StyleCascade {
     // template machinery) of TokenSequence and everything calling it.
     void StripCommentTokens();
 
-    scoped_refptr<CSSVariableData> BuildVariableData();
+    CSSVariableData* BuildVariableData();
 
    private:
     // In cases where we're not building a CSSValue, we don't really care about
@@ -380,9 +380,9 @@ class CORE_EXPORT StyleCascade {
                                       const CSSMathFunctionValue&,
                                       CascadePriority);
 
-  scoped_refptr<CSSVariableData> ResolveVariableData(CSSVariableData*,
-                                                     const CSSParserContext&,
-                                                     CascadeResolver&);
+  CSSVariableData* ResolveVariableData(CSSVariableData*,
+                                       const CSSParserContext&,
+                                       CascadeResolver&);
 
   // Certain parts of CSS function evaluation may need some local context
   // supplied by the caller. Given the current scoping strategy, the only

@@ -3253,22 +3253,23 @@ StyleRuleFontPaletteValues* StyleEngine::FontPaletteValuesForNameAndFamily(
 
 DocumentStyleEnvironmentVariables& StyleEngine::EnsureEnvironmentVariables() {
   if (!environment_variables_) {
-    environment_variables_ = DocumentStyleEnvironmentVariables::Create(
-        StyleEnvironmentVariables::GetRootInstance(), *document_);
+    environment_variables_ =
+        MakeGarbageCollected<DocumentStyleEnvironmentVariables>(
+            StyleEnvironmentVariables::GetRootInstance(), *document_);
   }
-  return *environment_variables_.get();
+  return *environment_variables_.Get();
 }
 
-scoped_refptr<StyleInitialData> StyleEngine::MaybeCreateAndGetInitialData() {
-  if (initial_data_) {
-    return initial_data_;
-  }
-  if (const PropertyRegistry* registry = document_->GetPropertyRegistry()) {
-    if (!registry->IsEmpty()) {
-      initial_data_ = StyleInitialData::Create(GetDocument(), *registry);
+StyleInitialData* StyleEngine::MaybeCreateAndGetInitialData() {
+  if (!initial_data_) {
+    if (const PropertyRegistry* registry = document_->GetPropertyRegistry()) {
+      if (!registry->IsEmpty()) {
+        initial_data_ =
+            MakeGarbageCollected<StyleInitialData>(GetDocument(), *registry);
+      }
     }
   }
-  return initial_data_;
+  return initial_data_.Get();
 }
 
 bool StyleEngine::RecalcHighlightStylesForContainer(Element& container) {
@@ -4286,6 +4287,8 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(font_palette_values_rule_map_);
   visitor->Trace(user_counter_style_map_);
   visitor->Trace(user_cascade_layer_map_);
+  visitor->Trace(environment_variables_);
+  visitor->Trace(initial_data_);
   visitor->Trace(inspector_style_sheet_);
   visitor->Trace(document_style_sheet_collection_);
   visitor->Trace(style_sheet_collection_map_);

@@ -62,10 +62,9 @@ void CSSVariableData::ExtractFeatures(const CSSParserToken& token,
   has_line_height_units |= IsLineHeightUnitToken(token);
 }
 
-scoped_refptr<CSSVariableData> CSSVariableData::Create(
-    CSSTokenizedValue value,
-    bool is_animation_tainted,
-    bool needs_variable_resolution) {
+CSSVariableData* CSSVariableData::Create(CSSTokenizedValue value,
+                                         bool is_animation_tainted,
+                                         bool needs_variable_resolution) {
   bool has_font_units = false;
   bool has_root_font_units = false;
   bool has_line_height_units = false;
@@ -77,10 +76,9 @@ scoped_refptr<CSSVariableData> CSSVariableData::Create(
                 has_font_units, has_root_font_units, has_line_height_units);
 }
 
-scoped_refptr<CSSVariableData> CSSVariableData::Create(
-    const String& original_text,
-    bool is_animation_tainted,
-    bool needs_variable_resolution) {
+CSSVariableData* CSSVariableData::Create(const String& original_text,
+                                         bool is_animation_tainted,
+                                         bool needs_variable_resolution) {
   bool has_font_units = false;
   bool has_root_font_units = false;
   bool has_line_height_units = false;
@@ -142,7 +140,8 @@ bool CSSVariableData::operator==(const CSSVariableData& other) const {
   return OriginalText() == other.OriginalText();
 }
 
-CSSVariableData::CSSVariableData(StringView original_text,
+CSSVariableData::CSSVariableData(PassKey,
+                                 StringView original_text,
                                  bool is_animation_tainted,
                                  bool needs_variable_resolution,
                                  bool has_font_units,

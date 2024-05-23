@@ -2166,7 +2166,7 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
   }
 
   // Parse the actual returned value.
-  scoped_refptr<CSSVariableData> return_value;
+  CSSVariableData* return_value = nullptr;
   {
     CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
     CSSTokenizedValue tokenized_value =
@@ -2185,8 +2185,8 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
   }
 
   return MakeGarbageCollected<StyleRuleFunction>(
-      name.Value().ToAtomicString(), std::move(*parameters),
-      std::move(return_value), std::move(*return_type));
+      name.Value().ToAtomicString(), std::move(*parameters), return_value,
+      std::move(*return_type));
 }
 
 // Parse the parameters of a CSS function: Zero or more comma-separated

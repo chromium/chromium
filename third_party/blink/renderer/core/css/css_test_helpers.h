@@ -82,7 +82,7 @@ void DeclareProperty(Document& document,
                      const std::optional<String>& initial_value,
                      bool is_inherited);
 
-scoped_refptr<CSSVariableData> CreateVariableData(String);
+CSSVariableData* CreateVariableData(String);
 const CSSValue* CreateCustomIdent(const char*);
 const CSSValue* ParseLonghand(Document& document,
                               const CSSProperty&,

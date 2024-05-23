@@ -43,26 +43,15 @@ void SetDefaultEnvironmentVariables(StyleEnvironmentVariables* instance) {
 
 }  // namespace.
 
-// This owns the static root instance.
-class StyleEnvironmentVariables::RootOwner {
- public:
-  StyleEnvironmentVariables& GetRoot() {
-    if (!instance_) {
-      instance_ = base::AdoptRef(new StyleEnvironmentVariables());
-      SetDefaultEnvironmentVariables(instance_.get());
-    }
-
-    return *instance_.get();
-  }
-
- private:
-  scoped_refptr<StyleEnvironmentVariables> instance_;
-};
+StyleEnvironmentVariables::StyleEnvironmentVariables() : parent_(nullptr) {
+  SetDefaultEnvironmentVariables(this);
+}
 
 // static
 StyleEnvironmentVariables& StyleEnvironmentVariables::GetRootInstance() {
-  static auto* instance = new StyleEnvironmentVariables::RootOwner();
-  return instance->GetRoot();
+  DEFINE_STATIC_LOCAL(Persistent<StyleEnvironmentVariables>, instance,
+                      (MakeGarbageCollected<StyleEnvironmentVariables>()));
+  return *instance;
 }
 
 // static
@@ -134,33 +123,11 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
   NOTREACHED_IN_MIGRATION();
 }
 
-// static
-scoped_refptr<StyleEnvironmentVariables> StyleEnvironmentVariables::Create(
-    StyleEnvironmentVariables& parent) {
-  scoped_refptr<StyleEnvironmentVariables> obj =
-      base::AdoptRef(new StyleEnvironmentVariables());
-
-  // Add a reference to this instance from the parent.
-  obj->BindToParent(parent);
-
-  return obj;
-}
-
-StyleEnvironmentVariables::~StyleEnvironmentVariables() {
-  // Remove a reference to this instance from the parent.
-  if (parent_) {
-    auto it = parent_->children_.Find(this);
-    DCHECK(it != kNotFound);
-    parent_->children_.EraseAt(it);
-  }
-}
-
 void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
                                             const String& value) {
-  scoped_refptr<CSSVariableData> variable_data =
-      CSSVariableData::Create(value, false /* is_animation_tainted */,
-                              false /* needs_variable_resolution */);
-  data_.Set(name, std::move(variable_data));
+  data_.Set(name,
+            CSSVariableData::Create(value, false /* is_animation_tainted */,
+                                    false /* needs_variable_resolution */));
   InvalidateVariable(name);
 }
 
@@ -180,7 +147,7 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
     return;
   }
 
-  scoped_refptr<CSSVariableData> variable_data =
+  CSSVariableData* variable_data =
       CSSVariableData::Create(value, false /* is_animation_tainted */,
                               false /* needs_variable_resolution */);
 
@@ -250,7 +217,7 @@ CSSVariableData* StyleEnvironmentVariables::ResolveVariable(
     if (result == data_.end()) {
       return nullptr;
     }
-    return result->value.get();
+    return result->value.Get();
   } else if (indices.size() == 2u) {
     auto result = two_dimension_data_.find(name);
     if (result == two_dimension_data_.end() && parent_) {
@@ -266,7 +233,7 @@ CSSVariableData* StyleEnvironmentVariables::ResolveVariable(
         second_dimension >= result->value[first_dimension].size()) {
       return nullptr;
     }
-    return result->value[first_dimension][second_dimension].get();
+    return result->value[first_dimension][second_dimension].Get();
   }
 
   return nullptr;
@@ -299,13 +266,6 @@ void StyleEnvironmentVariables::ClearForTesting() {
   if (!parent_) {
     SetDefaultEnvironmentVariables(this);
   }
-}
-
-void StyleEnvironmentVariables::BindToParent(
-    StyleEnvironmentVariables& parent) {
-  DCHECK_EQ(nullptr, parent_);
-  parent_ = &parent;
-  parent.children_.push_back(this);
 }
 
 void StyleEnvironmentVariables::ParentInvalidatedVariable(

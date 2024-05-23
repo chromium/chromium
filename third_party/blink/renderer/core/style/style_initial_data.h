@@ -22,13 +22,11 @@ class PropertyRegistry;
 //
 // An instance of this class is created once, and then shared between all the
 // ComputedStyles that inherit (directly or indirectly) from the initial style.
-class CORE_EXPORT StyleInitialData : public RefCounted<StyleInitialData> {
+class CORE_EXPORT StyleInitialData : public GarbageCollected<StyleInitialData> {
  public:
-  static scoped_refptr<StyleInitialData> Create(
-      Document& document,
-      const PropertyRegistry& registry) {
-    return base::AdoptRef(new StyleInitialData(document, registry));
-  }
+  StyleInitialData(Document&, const PropertyRegistry&);
+
+  void Trace(Visitor* visitor) const { visitor->Trace(variables_); }
 
   bool operator==(const StyleInitialData& other) const;
   bool operator!=(const StyleInitialData& other) const {
@@ -52,7 +50,6 @@ class CORE_EXPORT StyleInitialData : public RefCounted<StyleInitialData> {
   unsigned GetViewportUnitFlags() const { return viewport_unit_flags_; }
 
  private:
-  StyleInitialData(Document&, const PropertyRegistry&);
 
   // Initial values for all registered properties. This is set on
   // the initial style, and then shared with all other styles that directly or

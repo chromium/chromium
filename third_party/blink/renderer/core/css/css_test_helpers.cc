@@ -175,7 +175,7 @@ void DeclareProperty(Document& document,
   document.GetStyleEngine().PropertyRegistryChanged();
 }
 
-scoped_refptr<CSSVariableData> CreateVariableData(String s) {
+CSSVariableData* CreateVariableData(String s) {
   bool is_animation_tainted = false;
   bool needs_variable_resolution = false;
   return CSSVariableData::Create(s, is_animation_tainted,

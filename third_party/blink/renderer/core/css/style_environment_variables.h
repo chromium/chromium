@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -71,7 +72,7 @@ enum class UADefinedTwoDimensionalVariable {
 // UADefinedVariable. Note that UADefinedVariables are not always set/defined,
 // as they depend on the environment.
 class CORE_EXPORT StyleEnvironmentVariables
-    : public RefCounted<StyleEnvironmentVariables> {
+    : public GarbageCollected<StyleEnvironmentVariables> {
  public:
   static StyleEnvironmentVariables& GetRootInstance();
 
@@ -85,11 +86,23 @@ class CORE_EXPORT StyleEnvironmentVariables
       UADefinedTwoDimensionalVariable variable,
       const FeatureContext* feature_context);
 
-  // Create a new instance bound to |parent|.
-  static scoped_refptr<StyleEnvironmentVariables> Create(
-      StyleEnvironmentVariables& parent);
+  // Create a new root instance.
+  StyleEnvironmentVariables();
 
-  virtual ~StyleEnvironmentVariables();
+  // Create a new instance bound to |parent|.
+  StyleEnvironmentVariables(StyleEnvironmentVariables& parent)
+      : parent_(parent) {
+    parent.children_.push_back(this);
+  }
+
+  virtual ~StyleEnvironmentVariables() = default;
+
+  virtual void Trace(Visitor* visitor) const {
+    visitor->Trace(children_);
+    visitor->Trace(data_);
+    visitor->Trace(two_dimension_data_);
+    visitor->Trace(parent_);
+  }
 
   // Tokenize |value| and set it. This will invalidate any dependents.
   void SetVariable(UADefinedVariable variable, const String& value);
@@ -137,28 +150,21 @@ class CORE_EXPORT StyleEnvironmentVariables
 
   void ClearForTesting();
 
-  // Bind this instance to a |parent|. This should only be called once.
-  void BindToParent(StyleEnvironmentVariables& parent);
-
   // Called by the parent to tell the child that variable |name| has changed.
   void ParentInvalidatedVariable(const AtomicString& name);
-
-  StyleEnvironmentVariables() : parent_(nullptr) {}
 
   // Called when variable |name| is changed. This will notify any children that
   // this variable has changed.
   virtual void InvalidateVariable(const AtomicString& name);
 
  private:
-  class RootOwner;
-
-  typedef WTF::Vector<WTF::Vector<scoped_refptr<CSSVariableData>>>
+  typedef HeapVector<HeapVector<Member<CSSVariableData>>>
       TwoDimensionVariableValues;
 
-  Vector<scoped_refptr<StyleEnvironmentVariables>> children_;
-  HashMap<AtomicString, scoped_refptr<CSSVariableData>> data_;
-  HashMap<AtomicString, TwoDimensionVariableValues> two_dimension_data_;
-  scoped_refptr<StyleEnvironmentVariables> parent_;
+  HeapVector<Member<StyleEnvironmentVariables>> children_;
+  HeapHashMap<AtomicString, Member<CSSVariableData>> data_;
+  HeapHashMap<AtomicString, TwoDimensionVariableValues> two_dimension_data_;
+  Member<StyleEnvironmentVariables> parent_;
 };
 
 }  // namespace blink

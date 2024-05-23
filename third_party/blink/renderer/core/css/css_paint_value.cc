@@ -39,9 +39,9 @@ CSSPaintValue::CSSPaintValue(CSSCustomIdentValue* name)
 
 CSSPaintValue::CSSPaintValue(
     CSSCustomIdentValue* name,
-    Vector<scoped_refptr<CSSVariableData>>& variable_data)
+    HeapVector<Member<CSSVariableData>>&& variable_data)
     : CSSPaintValue(name) {
-  argument_variable_data_.swap(variable_data);
+  argument_variable_data_ = variable_data;
 }
 
 CSSPaintValue::~CSSPaintValue() = default;
@@ -52,7 +52,7 @@ String CSSPaintValue::CustomCSSText() const {
   result.Append(name_->CustomCSSText());
   for (const auto& variable_data : argument_variable_data_) {
     result.Append(", ");
-    result.Append(variable_data.get()->Serialize());
+    result.Append(variable_data.Get()->Serialize());
   }
   result.Append(')');
   return result.ReleaseString();
@@ -255,6 +255,7 @@ void CSSPaintValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(generators_);
   visitor->Trace(paint_image_generator_observer_);
   visitor->Trace(parsed_input_arguments_);
+  visitor->Trace(argument_variable_data_);
   CSSImageGeneratorValue::TraceAfterDispatch(visitor);
 }
 

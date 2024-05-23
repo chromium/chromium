@@ -99,17 +99,15 @@ class InheritedCustomPropertyChecker
 class ResolvedRegisteredCustomPropertyChecker
     : public InterpolationType::ConversionChecker {
  public:
-  ResolvedRegisteredCustomPropertyChecker(
-      const PropertyHandle& property,
-      const CSSValue& value,
-      scoped_refptr<CSSVariableData> resolved_tokens)
-      : property_(property),
-        value_(value),
-        resolved_tokens_(std::move(resolved_tokens)) {}
+  ResolvedRegisteredCustomPropertyChecker(const PropertyHandle& property,
+                                          const CSSValue& value,
+                                          CSSVariableData* resolved_tokens)
+      : property_(property), value_(value), resolved_tokens_(resolved_tokens) {}
 
   void Trace(Visitor* visitor) const final {
     CSSInterpolationType::ConversionChecker::Trace(visitor);
     visitor->Trace(value_);
+    visitor->Trace(resolved_tokens_);
   }
 
  private:
@@ -117,17 +115,17 @@ class ResolvedRegisteredCustomPropertyChecker
                const InterpolationValue&) const final {
     const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
     const CSSValue* resolved = css_environment.Resolve(property_, value_);
-    scoped_refptr<CSSVariableData> resolved_tokens;
+    CSSVariableData* resolved_tokens = nullptr;
     if (const auto* decl = DynamicTo<CSSUnparsedDeclarationValue>(resolved)) {
       resolved_tokens = decl->VariableDataValue();
     }
 
-    return base::ValuesEquivalent(resolved_tokens, resolved_tokens_);
+    return base::ValuesEquivalent(resolved_tokens, resolved_tokens_.Get());
   }
 
   PropertyHandle property_;
   Member<const CSSValue> value_;
-  scoped_refptr<CSSVariableData> resolved_tokens_;
+  Member<CSSVariableData> resolved_tokens_;
 };
 
 template <typename RevertValueType>
@@ -279,8 +277,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
   // CSSUnparsedDeclarationValue. Expand those keywords into real CSSValues
   // if present.
   bool is_inherited = Registration().Inherits();
-  const StyleInitialData* initial_data =
-      state.StyleBuilder().InitialData().get();
+  const StyleInitialData* initial_data = state.StyleBuilder().InitialData();
   DCHECK(initial_data);
   const CSSValue* initial_value = initial_data->GetVariableValue(name);
 
