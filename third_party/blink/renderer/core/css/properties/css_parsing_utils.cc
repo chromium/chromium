@@ -5949,7 +5949,7 @@ CSSValue* ConsumeCounter(CSSParserTokenStream& stream,
   do {
     CSSCustomIdentValue* counter_name = ConsumeCustomIdent(stream, context);
     if (!counter_name) {
-      return nullptr;
+      break;
     }
     int value = default_value;
     if (CSSPrimitiveValue* counter_value = ConsumeInteger(stream, context)) {
@@ -5961,6 +5961,9 @@ CSSValue* ConsumeCounter(CSSParserTokenStream& stream,
                                        CSSPrimitiveValue::UnitType::kInteger),
         CSSValuePair::kDropIdenticalValues));
   } while (!stream.AtEnd());
+  if (list->length() == 0) {
+    return nullptr;
+  }
   return list;
 }
 
