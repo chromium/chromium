@@ -69,8 +69,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Card related Legal Messages to be displayed.
 @property(nonatomic, copy)
     NSMutableArray<SaveCardMessageWithLinks*>* legalMessages;
-// YES if the Card being displayed has been saved.
-@property(nonatomic, assign) BOOL currentCardSaved;
+// YES if the Card being displayed has been accepted to be saved.
+@property(nonatomic, assign) BOOL currentCardSaveAccepted;
 // Set to YES if the Modal should support editing.
 @property(nonatomic, assign) BOOL supportsEditing;
 // The email to identify the account where the card will be saved. Empty if none
@@ -224,7 +224,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.saveCardButtonItem.textAlignment = NSTextAlignmentNatural;
   self.saveCardButtonItem.buttonText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
-  self.saveCardButtonItem.enabled = !self.currentCardSaved;
+  self.saveCardButtonItem.enabled = !self.currentCardSaveAccepted;
   self.saveCardButtonItem.disableButtonIntrinsicWidth = YES;
   [model addItem:self.saveCardButtonItem
       toSectionWithIdentifier:SectionIdentifierContent];
@@ -250,7 +250,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.expirationMonth = prefs[kExpirationMonthPrefKey];
   self.expirationYear = prefs[kExpirationYearPrefKey];
   self.legalMessages = prefs[kLegalMessagesPrefKey];
-  self.currentCardSaved = [prefs[kCurrentCardSavedPrefKey] boolValue];
+  self.currentCardSaveAccepted =
+      [prefs[kCurrentCardSaveAcceptedPrefKey] boolValue];
   self.supportsEditing = [prefs[kSupportsEditingPrefKey] boolValue];
   self.displayedTargetAccountEmail = prefs[kDisplayedTargetAccountEmailPrefKey];
   self.displayedTargetAccountAvatar =

@@ -80,13 +80,19 @@
     kExpirationYearPrefKey :
         base::SysUTF16ToNSString(delegate->expiration_date_year()),
     kLegalMessagesPrefKey : [self legalMessages],
-    kCurrentCardSavedPrefKey : @(infobar->accepted()),
+    kCurrentCardSaveAcceptedPrefKey : @(infobar->accepted()),
     kSupportsEditingPrefKey : @(supportsEditing),
     kDisplayedTargetAccountEmailPrefKey :
         base::SysUTF16ToNSString(delegate->displayed_target_account_email()),
     kDisplayedTargetAccountAvatarPrefKey : avatar,
   };
   [_consumer setupModalViewControllerWithPrefs:prefs];
+
+  // If Modal has been accepted and card is being uploaded, show Modal in
+  // loading state with an activity indicator.
+  if (delegate->is_for_upload() && infobar->accepted()) {
+    [self.consumer showLoadingState];
+  }
 }
 
 #pragma mark - OverlayRequestMediator

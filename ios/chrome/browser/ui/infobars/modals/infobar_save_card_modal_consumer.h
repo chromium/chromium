@@ -14,7 +14,7 @@ extern NSString* const kCardNumberPrefKey;
 extern NSString* const kExpirationMonthPrefKey;
 extern NSString* const kExpirationYearPrefKey;
 extern NSString* const kLegalMessagesPrefKey;
-extern NSString* const kCurrentCardSavedPrefKey;
+extern NSString* const kCurrentCardSaveAcceptedPrefKey;
 extern NSString* const kSupportsEditingPrefKey;
 extern NSString* const kDisplayedTargetAccountEmailPrefKey;
 extern NSString* const kDisplayedTargetAccountAvatarPrefKey;
