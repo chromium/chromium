@@ -76,6 +76,11 @@ import("//build/rust/rust_static_library.gni")
 #    files here. Again, this doesn't correspond to a Cargo variable
 #    but is necessary for gn.
 #
+#  native_libs (optional)
+#    Paths to library files that need to be in the linking search path when
+#    depending on the crate's library, as it links against them via #[link]
+#    directives.
+#
 #  crate_type "bin", "proc-macro" or "rlib" (optional)
 #    Whether to build an executable. The default is "rlib".
 #    At present others are not supported.
@@ -213,6 +218,16 @@ template("cargo_crate") {
     _testonly = invoker.testonly
   }
 
+  if (defined(invoker.native_libs)) {
+    _native_libs_action = "copy_${target_name}_native_libs"
+    copy(_native_libs_action) {
+      testonly = _testonly
+      visibility = [ ":$target_name" ]
+      sources = invoker.native_libs
+      outputs = [ "$root_out_dir/{{source_file_part}}" ]
+    }
+  }
+
   # The main target, either a Rust source set or an executable.
   target(_target_type, target_name) {
     forward_variables_from(invoker,
@@ -231,6 +246,7 @@ template("cargo_crate") {
                                  "proc_macro_configs",
                                  "rustenv",
                                  "dev_deps",
+                                 "native_libs_dir",
                                ])
 
     testonly = _testonly
@@ -348,6 +364,9 @@ template("cargo_crate") {
         }
       }
       deps += [ ":${_build_script_name}_output" ]
+      if (defined(_native_libs_action)) {
+        deps += [ ":${_native_libs_action}" ]
+      }
     }
   }
 

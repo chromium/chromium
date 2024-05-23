@@ -202,12 +202,12 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
         .iter()
         .filter(|p| p.lib_target.is_some())
         .map(|p| {
-            crates::collect_std_crate_files(p, &config, crates::IncludeCrateTargets::LibOnly)
+            crates::collect_crate_files(p, &config, crates::IncludeCrateTargets::LibOnly)
                 .expect("missing a stdlib input file, did you gclient sync?")
         })
         .collect();
 
-    let build_file = gn::build_file_from_std_deps(
+    let build_file = gn::build_file_from_deps(
         dependencies.iter(),
         paths,
         &config,
@@ -293,11 +293,12 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
         .iter()
         .map(|p| {
-            crates::collect_std_crate_files(p, &config, crates::IncludeCrateTargets::LibAndBin)
-                .unwrap_or_else(|_| {
+            crates::collect_crate_files(p, &config, crates::IncludeCrateTargets::LibAndBin)
+                .unwrap_or_else(|e| {
                     panic!(
-                        "missing a crate input file for '{}'. Dependencies are not vendored?",
-                        p.package_name
+                        "missing a crate input file for '{}'. Dependencies are not vendored?\n\
+                         note: {}",
+                        p.package_name, e
                     )
                 })
         })
@@ -323,7 +324,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     let all_build_files: HashMap<PathBuf, gn::BuildFile> = {
         let mut map = HashMap::new();
         for dep in &dependencies {
-            let build_file = gn::build_file_from_std_deps(
+            let build_file = gn::build_file_from_deps(
                 std::iter::once(dep),
                 paths,
                 &config,

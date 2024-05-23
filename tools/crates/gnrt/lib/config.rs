@@ -107,12 +107,14 @@ pub struct CrateConfig {
     /// If true, the build script should not be built or used.
     #[serde(default)]
     pub remove_build_rs: bool,
-    /// Include rs and input files under these relative paths as part of the
-    /// crate. The roots may each be a single file or a directory.
+    /// Include rs and input files under these paths relative to the crate's
+    /// root source file as part of the crate. The roots may each be a single
+    /// file or a directory.
     #[serde(default)]
     pub extra_src_roots: Vec<std::path::PathBuf>,
-    /// Include input files under these relative paths as part of the crate.
-    /// The roots may each be a single file or a directory.
+    /// Include input files under these paths relative to the crate's root
+    /// source file as part of the crate. The roots may each be a single file or
+    /// a directory.
     #[serde(default)]
     pub extra_input_roots: Vec<std::path::PathBuf>,
     /// Include rs and input files under these relative paths as part of the
@@ -147,6 +149,15 @@ pub struct CrateConfig {
     pub license: Option<String>,
     #[serde(default)]
     pub license_files: Vec<String>,
+    /// Include `.lib` files under these paths relative to the crate's root
+    /// source file as part of the crate. They will be available for #[link]
+    /// directives in the crate. The roots may each be a single file or a
+    /// directory.
+    ///
+    /// These paths are the only ones searched for lib files, unlike
+    /// `extra_src_roots`. Nothing is searched if this is empty.
+    #[serde(default)]
+    pub native_libs_roots: Vec<std::path::PathBuf>,
 }
 
 #[cfg(test)]

@@ -283,6 +283,10 @@ pub struct CrateFiles {
     /// may contain .rs files as well that are part of other crates and which
     /// may be include()'d or used through module paths.
     pub inputs: Vec<PathBuf>,
+    /// The list of all native lib files that are part of the crate and may be
+    /// depended on through `#[link]` directives. These files are those found
+    /// under the crate root.
+    pub native_libs: Vec<PathBuf>,
     /// Like `sources` but for the crate's build script.
     pub build_script_sources: Vec<PathBuf>,
     /// Like `inputs` but for the crate's build script.
@@ -294,6 +298,7 @@ impl CrateFiles {
         Self {
             sources: vec![],
             inputs: vec![],
+            native_libs: vec![],
             build_script_sources: vec![],
             build_script_inputs: vec![],
         }
@@ -303,6 +308,7 @@ impl CrateFiles {
     fn sort(&mut self) {
         self.sources.sort_unstable();
         self.inputs.sort_unstable();
+        self.native_libs.sort_unstable();
         self.build_script_sources.sort_unstable();
         self.build_script_inputs.sort_unstable();
     }
@@ -320,8 +326,8 @@ pub enum IncludeCrateTargets {
 }
 
 /// Collect the source and input files (i.e. `CrateFiles`) for each library that
-/// is part of the standard library build.
-pub fn collect_std_crate_files(
+/// is part of the build.
+pub fn collect_crate_files(
     p: &deps::Package,
     config: &BuildConfig,
     include_targets: IncludeCrateTargets,
@@ -378,6 +384,17 @@ pub fn collect_std_crate_files(
                 .map(|path| RootDir {
                     path: lib_root.join(path),
                     collect: CollectCrateFiles::BuildScriptExternalInputsOnly,
+                }),
+        );
+
+        root_dirs.extend(
+            crate_config
+                .iter()
+                .flat_map(|crate_config| &crate_config.native_libs_roots)
+                .chain(&config.all_config.native_libs_roots)
+                .map(|path| RootDir {
+                    path: lib_root.join(path),
+                    collect: CollectCrateFiles::LibsOnly,
                 }),
         );
     }
@@ -458,41 +475,47 @@ enum CollectCrateFiles {
     BuildScriptExternalSourcesAndInputs,
     /// Like `ExternalInputsOnly` but for build scripts.
     BuildScriptExternalInputsOnly,
+    /// Collect .lib files and store them as `native_libs`. These can be
+    /// depended on by the crate through `#[link]` directives.
+    LibsOnly,
 }
 
 // Adds a `filepath` to `CrateFiles` depending on the type of file and the
 // `mode` of collection.
 fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath: &Path) {
+    use CollectCrateFiles::*;
     match filepath.extension().and_then(std::ffi::OsStr::to_str) {
         Some("rs") => match mode {
-            CollectCrateFiles::Internal => files.sources.push(filepath.to_owned()),
-            CollectCrateFiles::ExternalSourcesAndInputs => files.inputs.push(filepath.to_owned()),
-            CollectCrateFiles::ExternalInputsOnly => (),
-            CollectCrateFiles::BuildScriptExternalSourcesAndInputs => {
+            Internal => files.sources.push(filepath.to_owned()),
+            ExternalSourcesAndInputs => files.inputs.push(filepath.to_owned()),
+            ExternalInputsOnly => (),
+            BuildScriptExternalSourcesAndInputs => {
                 files.build_script_inputs.push(filepath.to_owned())
             }
-            CollectCrateFiles::BuildScriptExternalInputsOnly => (),
+            BuildScriptExternalInputsOnly => (),
+            LibsOnly => (),
         },
         // md: Markdown files are commonly include!()'d into source code as docs.
         // h: cxxbridge_cmd include!()'s its .h file into it.
         // json: json files are include!()'d into source code in the wycheproof crate
         Some("md") | Some("h") | Some("json") => match mode {
-            CollectCrateFiles::Internal
-            | CollectCrateFiles::ExternalSourcesAndInputs
-            | CollectCrateFiles::ExternalInputsOnly => files.inputs.push(filepath.to_owned()),
-            CollectCrateFiles::BuildScriptExternalSourcesAndInputs
-            | CollectCrateFiles::BuildScriptExternalInputsOnly => {
+            Internal | ExternalSourcesAndInputs | ExternalInputsOnly => {
+                files.inputs.push(filepath.to_owned())
+            }
+            BuildScriptExternalSourcesAndInputs | BuildScriptExternalInputsOnly => {
                 files.build_script_inputs.push(filepath.to_owned())
             }
+            LibsOnly => (),
         },
+        Some("lib") if mode == LibsOnly => files.native_libs.push(filepath.to_owned()),
         _ => (),
     };
 }
 
-// Recursively visits all files under `path` and calls `f` on each one.
-//
-// The `path` may be a single file or a directory.
-fn recurse_crate_files(path: &Path, f: &mut dyn FnMut(&Path)) -> anyhow::Result<()> {
+/// Recursively visits all files under `path` and calls `f` on each one.
+///
+/// The `path` may be a single file or a directory.
+pub fn recurse_crate_files(path: &Path, f: &mut dyn FnMut(&Path)) -> anyhow::Result<()> {
     fn recurse(path: &Path, root: &Path, f: &mut dyn FnMut(&Path)) -> anyhow::Result<()> {
         let meta = std::fs::metadata(path).with_context(|| format!("missing path {:?}", path))?;
         if !meta.is_dir() {

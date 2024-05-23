@@ -259,6 +259,18 @@ pub fn collect_dependencies(
         dep.description = package.description.clone();
         dep.authors = package.authors.clone();
         dep.edition = package.edition.to_string();
+        // TODO(danakj): It would be nice to store the `manifest_dir` here and
+        // change all gnrt_config.toml relative paths to be relative to the
+        // manifest instead of relative to the crate root, to eliminate the
+        // chance for there being a different relative path from a lib root vs a
+        // bin root. It can be grabbed like:
+        //
+        // dep.manifest_dir = package
+        //     .manifest_path
+        //     .parent()
+        //     .expect("manifest_path has no directory?")
+        //     .to_path_buf()
+        //     .into_std_path_buf();
 
         // TODO(crbug.com/40212956): Resolve features independently per kind
         // and platform. This may require using the unstable unit-graph feature:

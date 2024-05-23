@@ -83,6 +83,7 @@ pub struct RuleDetail {
     pub build_script_sources: Vec<String>,
     pub build_script_inputs: Vec<String>,
     pub build_script_outputs: Vec<String>,
+    pub native_libs: Vec<String>,
     /// Data passed unchanged from gnrt_config.toml to the build file template.
     pub extra_kv: HashMap<String, serde_json::Value>,
     /// Whether this rule depends on the main lib target in its group (e.g. a
@@ -117,7 +118,7 @@ pub enum NameLibStyle {
     LibLiteral,
 }
 
-pub fn build_file_from_std_deps<'a, 'b, Iter, GetFiles>(
+pub fn build_file_from_deps<'a, 'b, Iter, GetFiles>(
     deps: Iter,
     paths: &'b paths::ChromiumPaths,
     extra_config: &'b BuildConfig,
@@ -131,7 +132,7 @@ where
     let mut b = BuildFile { rules: Vec::new() };
     for dep in deps {
         let crate_id = dep.crate_id();
-        b.rules.extend(build_rule_from_std_dep(
+        b.rules.extend(build_rule_from_dep(
             dep,
             paths,
             get_files(&crate_id),
@@ -142,7 +143,7 @@ where
     Ok(b)
 }
 
-pub fn build_rule_from_std_dep(
+pub fn build_rule_from_dep(
     dep: &deps::Package,
     paths: &paths::ChromiumPaths,
     details: &CrateFiles,
@@ -233,6 +234,16 @@ pub fn build_rule_from_std_dep(
     });
     detail_template.aliased_deps = aliased_normal_deps;
 
+    detail_template.sources =
+        details.sources.iter().map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap())).collect();
+    detail_template.inputs =
+        details.inputs.iter().map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap())).collect();
+    detail_template.native_libs = details
+        .native_libs
+        .iter()
+        .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
+        .collect();
+
     let requested_features_for_normal = {
         let mut features = dep
             .dependency_kinds
@@ -310,16 +321,6 @@ pub fn build_rule_from_std_dep(
         let mut bin_detail = detail_template.clone();
         bin_detail.crate_type = "bin".to_string();
         bin_detail.crate_root = format!("//{bin_root_from_src}");
-        bin_detail.sources = details
-            .sources
-            .iter()
-            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
-            .collect();
-        bin_detail.inputs = details
-            .inputs
-            .iter()
-            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
-            .collect();
         // Bins are not part of a build script, so they don't need build-script
         // deps, only normal deps.
         bin_detail.features = requested_features_for_normal.clone();
@@ -376,16 +377,6 @@ pub fn build_rule_from_std_dep(
             lib_detail.epoch = epoch;
             lib_detail.crate_type = crate_type;
             lib_detail.crate_root = format!("//{lib_root_from_src}");
-            lib_detail.sources = details
-                .sources
-                .iter()
-                .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
-                .collect();
-            lib_detail.inputs = details
-                .inputs
-                .iter()
-                .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
-                .collect();
             lib_detail.features = match &dep_kind {
                 Normal => requested_features_for_normal.clone(),
                 Build => requested_features_for_build.clone(),
