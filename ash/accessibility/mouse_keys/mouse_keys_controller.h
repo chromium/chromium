@@ -72,6 +72,8 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
     kKeyDownRight,
     kKeyClick,
     kKeyDoubleClick,
+    kKeyDragStart,
+    kKeyDragStop,
     kKeySelectLeftButton,
     kKeySelectRightButton,
     kKeySelectBothButtons,
@@ -104,7 +106,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   void SelectNextButton();
   void RefreshVelocity();
   void UpdateState();
-  void Reset();
+  void ResetMovement();
 
   bool enabled_ = false;
   bool paused_ = false;
@@ -117,6 +119,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   MouseButton current_mouse_button_ = kLeft;
 
   bool pressed_keys_[kKeyCount];
+  bool dragging_ = false;
   gfx::Point last_mouse_position_dips_ = gfx::Point(-1, -1);
   int event_flags_ = 0;
   base::RepeatingTimer update_timer_;

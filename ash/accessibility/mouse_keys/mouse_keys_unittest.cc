@@ -677,7 +677,7 @@ TEST_F(MouseKeysTest, MaxSpeed) {
   auto mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
 
-  EXPECT_EQ(10u, mouse_events.size());
+  ASSERT_EQ(10u, mouse_events.size());
   gfx::Vector2d move_delta(kMoveDeltaDIP * kMaxSpeed, 0);
   auto position = kDefaultPosition;
   for (size_t i = 0; i < mouse_events.size(); ++i) {
@@ -933,6 +933,153 @@ TEST_F(MouseKeysTest, UsePrimaryKeyboard) {
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForMouseEvents().size());
   EXPECT_EQ(18u, CheckForKeyEvents().size());
+}
+
+TEST_F(MouseKeysTest, Dragging) {
+  // Enough time for the initial event and 9 updates.
+  constexpr auto kTenEventsInSeconds =
+      MouseKeysController::kUpdateFrequencyInSeconds * 9.5;
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+  // No acceleration.
+  constexpr int kMaxSpeed = 3;
+  SetMaxSpeed(kMaxSpeed);
+  SetAcceleration(0);
+
+  // Start Drag.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_M);
+  auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(1u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
+
+  // Move right.
+  ClearEvents();
+  PressKey(ui::VKEY_O);
+  task_environment()->FastForwardBy(base::Seconds(kTenEventsInSeconds));
+  ReleaseKey(ui::VKEY_O);
+  mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(10u, mouse_events.size());
+  gfx::Vector2d move_delta(kMoveDeltaDIP * kMaxSpeed, 0);
+  auto position = kDefaultPosition;
+  for (size_t i = 0; i < mouse_events.size(); ++i) {
+    position += move_delta;
+    EXPECT_EQ(ui::ET_MOUSE_DRAGGED, mouse_events[i].type());
+    EXPECT_EQ(mouse_events[i].location(), position);
+  }
+
+  // Stop Drag.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_OEM_PERIOD);
+  mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(1u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), position);
+}
+
+TEST_F(MouseKeysTest, DragWithClick) {
+  // Enough time for the initial event and 9 updates.
+  constexpr auto kTenEventsInSeconds =
+      MouseKeysController::kUpdateFrequencyInSeconds * 9.5;
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+  // No acceleration.
+  constexpr int kMaxSpeed = 3;
+  SetMaxSpeed(kMaxSpeed);
+  SetAcceleration(0);
+
+  // Start Drag.
+  ClearEvents();
+  PressKey(ui::VKEY_I);
+  auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(1u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
+
+  // Move right.
+  ClearEvents();
+  PressKey(ui::VKEY_O);
+  task_environment()->FastForwardBy(base::Seconds(kTenEventsInSeconds));
+  ReleaseKey(ui::VKEY_O);
+  mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(10u, mouse_events.size());
+  gfx::Vector2d move_delta(kMoveDeltaDIP * kMaxSpeed, 0);
+  auto position = kDefaultPosition;
+  for (size_t i = 0; i < mouse_events.size(); ++i) {
+    position += move_delta;
+    EXPECT_EQ(ui::ET_MOUSE_DRAGGED, mouse_events[i].type());
+    EXPECT_EQ(mouse_events[i].location(), position);
+  }
+
+  // Stop Drag.
+  ClearEvents();
+  ReleaseKey(ui::VKEY_I);
+  mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(1u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), position);
+}
+
+TEST_F(MouseKeysTest, DragWithMixed) {
+  // Enough time for the initial event and 9 updates.
+  constexpr auto kTenEventsInSeconds =
+      MouseKeysController::kUpdateFrequencyInSeconds * 9.5;
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+  // No acceleration.
+  constexpr int kMaxSpeed = 3;
+  SetMaxSpeed(kMaxSpeed);
+  SetAcceleration(0);
+
+  // Start Drag.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_M);
+  auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(1u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
+
+  // Move right.
+  ClearEvents();
+  PressKey(ui::VKEY_O);
+  task_environment()->FastForwardBy(base::Seconds(kTenEventsInSeconds));
+  ReleaseKey(ui::VKEY_O);
+  mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(10u, mouse_events.size());
+  gfx::Vector2d move_delta(kMoveDeltaDIP * kMaxSpeed, 0);
+  auto position = kDefaultPosition;
+  for (size_t i = 0; i < mouse_events.size(); ++i) {
+    position += move_delta;
+    EXPECT_EQ(ui::ET_MOUSE_DRAGGED, mouse_events[i].type());
+    EXPECT_EQ(mouse_events[i].location(), position);
+  }
+
+  // Stop Drag.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_I);
+  mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(1u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), position);
 }
 
 }  // namespace ash
