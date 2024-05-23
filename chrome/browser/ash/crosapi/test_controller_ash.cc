@@ -84,6 +84,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_source.h"
+#include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/button.h"
@@ -1085,6 +1086,13 @@ void TestControllerAsh::SetMachineStatistic(
     LOG(WARNING) << "Unknown key for setting machine statistic";
     std::move(callback).Run(false);
   }
+}
+
+void TestControllerAsh::SetMinFlingVelocity(
+    float velocity,
+    SetMinFlingVelocityCallback callback) {
+  ui::GestureConfiguration::GetInstance()->set_min_fling_velocity(velocity);
+  std::move(callback).Run();
 }
 
 // This class waits for overview mode to either enter or exit and fires a

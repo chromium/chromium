@@ -512,6 +512,7 @@ source_set("test_support") {
     "//components/component_updater/ash",
     "//printing",
     "//testing/gmock",
+    "//ui/events:gesture_detection",
   ]
 }
 

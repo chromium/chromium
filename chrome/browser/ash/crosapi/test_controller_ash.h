@@ -182,6 +182,9 @@ class TestControllerAsh : public mojom::TestController,
                            const std::string& value,
                            SetMachineStatisticCallback callback) override;
 
+  void SetMinFlingVelocity(float velocity,
+                           SetMinFlingVelocityCallback callback) override;
+
   mojom::StandaloneBrowserTestController* GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());
     return standalone_browser_test_controller_.get();
