@@ -666,7 +666,17 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
                  navigationItem:(web::NavigationItem*)item
        navigationInitiationType:(web::NavigationInitiationType)type
                  hasUserGesture:(BOOL)hasUserGesture {
-  WKNavigation* navigation = [self.webView goToBackForwardListItem:wk_item];
+  WKNavigation* navigation;
+  // Where possible, call `goBack` or `goForward` since WebKit has logic
+  // specific to those functions for skipping over maliciously-added items. See
+  // crbug.com/40072465 for an example.
+  if (wk_item == self.webView.backForwardList.backItem) {
+    navigation = [self.webView goBack];
+  } else if (wk_item == self.webView.backForwardList.forwardItem) {
+    navigation = [self.webView goForward];
+  } else {
+    navigation = [self.webView goToBackForwardListItem:wk_item];
+  }
 
   GURL URL = net::GURLWithNSURL(wk_item.URL);
 
