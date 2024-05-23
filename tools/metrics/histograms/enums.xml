@@ -10994,7 +10994,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="OBSOLETE_kCSSPseudoIsWhereContainsMixOfValidAndInvalid"/>
   <int value="4442" label="PrivateNetworkAccessFetchedSubFrame"/>
   <int value="4443" label="PrivateNetworkAccessFetchedTopFrame"/>
-  <int value="4444" label="DisableThirdPartyStoragePartitioning"/>
+  <int value="4444" label="OBSOLETE_DisableThirdPartyStoragePartitioning"/>
   <int value="4445" label="ServiceWorkerFetchHandlerAddedAfterInitialization"/>
   <int value="4446" label="ObsoleteCreateImageBitmapImageOrientationNone"/>
   <int value="4447" label="OBSOLETE_kWindowManagementPermissionDescriptorUsed"/>
@@ -11588,6 +11588,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4972" label="MaximumHTMLParserDOMTreeDepthHit"/>
   <int value="4973" label="V8ModelGenericSession_Destroy_Method"/>
   <int value="4974" label="UsedDeviceScaleAdjustment"/>
+  <int value="4975" label="DisableThirdPartyStoragePartitioning2"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

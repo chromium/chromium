@@ -34,7 +34,7 @@ void UserBypassWebContentsObserver::LoadUserBypass(
       navigation_handle->GetMutableRuntimeFeatureStateContext();
 
   // Enable blink runtime feature when User bypass is enabled.
-  context.SetDisableThirdPartyStoragePartitioningEnabled(
+  context.SetDisableThirdPartyStoragePartitioning2Enabled(
       cookie_settings_->IsStoragePartitioningBypassEnabled(
           navigation_handle->GetURL()));
 }

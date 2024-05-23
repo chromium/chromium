@@ -17,8 +17,8 @@ async_test(t => {
     const spMeta = document.createElement('meta');
     spMeta.httpEquiv = 'origin-trial';
     // The token below was generated via the following command:
-    // tools/origin_trials/generate_token.py https://web-platform.test:8444 DisableThirdPartyStoragePartitioning --expire-timestamp=2000000000
-    spMeta.content = 'A/ZoX2C4Y7GqRBvcNYxeXkxquUdlGfuEF0r03N4M7+RsJA1fINcuOjrLCTJ0QNK1nmzogxeZ3okd9c0kpdW0fAQAAAB1eyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiRGlzYWJsZVRoaXJkUGFydHlTdG9yYWdlUGFydGl0aW9uaW5nIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9';
+    // tools/origin_trials/generate_token.py https://web-platform.test:8444 DisableThirdPartyStoragePartitioning2 --expire-timestamp=2000000000
+    spMeta.content = 'A2kO9VXomVHI2qXmDKzOIFbeBynCH0cFHdQsAJV2QjujjYKz5jHlNrcdGvgOrjZbRWHH/VUjmwuLOwBfraaFHg8AAAB2eyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiRGlzYWJsZVRoaXJkUGFydHlTdG9yYWdlUGFydGl0aW9uaW5nMiIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==';
     document.head.append(spMeta);
     const cpMeta = document.createElement('meta');
     cpMeta.httpEquiv = 'origin-trial';

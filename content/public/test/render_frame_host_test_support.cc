@@ -13,7 +13,7 @@ void LeaveInPendingDeletionState(RenderFrameHost* rfh) {
   static_cast<RenderFrameHostImpl*>(rfh)->DoNotDeleteForTesting();
 }
 
-bool IsDisableThirdPartyStoragePartitioningEnabled(RenderFrameHost* rfh) {
+bool IsDisableThirdPartyStoragePartitioning2Enabled(RenderFrameHost* rfh) {
   DCHECK(rfh->IsInPrimaryMainFrame());
 
   RuntimeFeatureStateDocumentData* document_data =
@@ -23,7 +23,7 @@ bool IsDisableThirdPartyStoragePartitioningEnabled(RenderFrameHost* rfh) {
   blink::RuntimeFeatureStateReadContext read_context =
       document_data->runtime_feature_state_read_context();
 
-  return read_context.IsDisableThirdPartyStoragePartitioningEnabled();
+  return read_context.IsDisableThirdPartyStoragePartitioning2Enabled();
 }
 
 void CreatePermissionService(

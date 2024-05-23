@@ -54,14 +54,14 @@ void RuntimeFeatureStateOverrideContext::Set{{feature.name}}ForceEnabled() {
 {% if feature in origin_trial_controlled_features %}
 bool RuntimeFeatureStateOverrideContext::
     Set{{feature.name}}Enabled(const WTF::Vector<WTF::String>& tokens) {
-{% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning' %}
+{% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning2' %}
   UseCounter::Count(use_counter_,
-                          WebFeature::kDisableThirdPartyStoragePartitioning);
+                          WebFeature::kDisableThirdPartyStoragePartitioning2);
   // If the base::Feature for the deprecation trial is disabled, we should
   // not send any overrides to the browser, so we return false immediately,
   // skipping any mojom messaging.
   if(!base::FeatureList::IsEnabled(
-    blink::features::kDisableThirdPartyStoragePartitioningDeprecationTrial)){
+    blink::features::kDisableThirdPartyStoragePartitioningDeprecationTrial2)){
     return false;
   }
 {% endif %}

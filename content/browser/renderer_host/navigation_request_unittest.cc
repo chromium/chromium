@@ -780,7 +780,7 @@ TEST_F(NavigationRequestTest, RuntimeFeatureStateStorageKey) {
 
     if (disable_sp) {
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioningEnabled(true);
+          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
     }
 
     navigation->ReadyToCommit();

@@ -747,8 +747,8 @@ BASE_FEATURE(kDiscardInputEventsToRecentlyMovedFrames,
              "DiscardInputEventsToRecentlyMovedFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisableThirdPartyStoragePartitioningDeprecationTrial,
-             "DisableThirdPartyStoragePartitioningDeprecationTrial",
+BASE_FEATURE(kDisableThirdPartyStoragePartitioningDeprecationTrial2,
+             "DisableThirdPartyStoragePartitioningDeprecationTrial2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for not WebGL DrawingBuffer using SharedImage without

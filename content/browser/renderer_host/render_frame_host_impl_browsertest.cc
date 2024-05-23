@@ -996,14 +996,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
                        DocumentDataAltered) {
   // Generated with:
   // tools/origin_trials/generate_token.py https://127.0.0.1:44444
-  // DisableThirdPartyStoragePartitioning
+  // DisableThirdPartyStoragePartitioning2
   // --expire-timestamp=2000000000
   const char kValidFirstPartyToken[] =
-      "A9v/4viv5sMLtBrzIk/"
-      "ziQsS4dQo2hiBOHoVQ7JXtnDOMh32OUZVDB+"
-      "cDHP8StL1JrVCgLg7OkWhms8LRYflTwgAAABueyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4"
-      "wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXR"
-      "pb25pbmciLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
+      "AxMOenT1sG/"
+      "yhbr90XJPbHZ9fHn4dUuB9ti4X+Ec1QneGq68WfIZCMJ9w9ZI0AjpyceLwlFpxe/"
+      "mdVIf3VJCwwoAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmV"
+      "hdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmcyIiwgImV4cGl"
+      "yeSI6IDIwMDAwMDAwMDB9";
 
   SetOriginTrialToken(kValidFirstPartyToken);
   EXPECT_TRUE(NavigateToURL(shell(), simple_origin_trial_url()));
@@ -1034,14 +1034,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   std::string raw_token(kValidFirstPartyToken);
   std::vector<std::string> raw_tokens_vector{raw_token};
   overrides_with_tokens
-      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning] =
+      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning2] =
           blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
   origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
       std::move(overrides_with_tokens));
 
   // Create the set of expected overrides without the corresponding tokens.
   expected_overrides
-      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning] =
+      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning2] =
           true;
 
   // Verify that the document data was altered with the correct overrides.
@@ -1086,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   std::string raw_token(kInvalidToken);
   std::vector<std::string> raw_tokens_vector{raw_token};
   overrides_with_tokens
-      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning] =
+      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning2] =
           blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
   origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
       std::move(overrides_with_tokens));
@@ -1187,15 +1187,14 @@ IN_PROC_BROWSER_TEST_F(
     ReusedChildFrameNavigatedFromDeprecationTrialIsPartitioned) {
   // Generated with
   // tools/origin_trials/generate_token.py https://127.0.0.1:44445
-  // DisableThirdPartyStoragePartitioning --expire-timestamp=2000000000
+  // DisableThirdPartyStoragePartitioning2 --expire-timestamp=2000000000
   // --is-third-party
   const char kValidToken[] =
-      "Ayom1wtawpnUfk8Om3a/EYemMJVC77lAo/"
-      "l0q5+r82zkJlavqefYq0yd+"
-      "X2aUFG5Jaf71UH1qoePdy87cjs5CQ8AAACEeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wL"
-      "jE6NDQ0NDUiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb"
-      "25pbmciLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCwgImlzVGhpcmRQYXJ0eSI6IHRydWV"
-      "9";
+      "A1HN+j5dGwYe307k+"
+      "ljKWOpwMh6rXnk3mFDsOs0TG2ibF9tOnChGQCrhjn6oJXxmZxeU91hgMBfI48Cm+"
+      "iswgg8AAACFeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiZmVhdHVyZ"
+      "SI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmcyIiwgImV4cGlyeSI6I"
+      "DIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
   SetOriginTrialToken(kValidToken);
 
   // Navigate to "a.com" and load a script from a third-party. In that script,

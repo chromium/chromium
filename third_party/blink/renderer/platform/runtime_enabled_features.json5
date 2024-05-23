@@ -1247,12 +1247,13 @@
       name: "DisableSelectAllForEmptyText",
       status: "stable",
     },
-    // This feature will represent the deprecation trial that allows first
-    // parties to temporarily use unpartitioned storage in embeds loaded
-    // on their site.
+    // This feature will represent the extension of a deprecation trial that
+    // allows first parties to temporarily use unpartitioned storage in embeds
+    // loaded on their site. It replaces an old DT named
+    // DisableThirdPartyStoragePartitioning which expired in M126.
     {
-      name: "DisableThirdPartyStoragePartitioning",
-      origin_trial_feature_name: "DisableThirdPartyStoragePartitioning",
+      name: "DisableThirdPartyStoragePartitioning2",
+      origin_trial_feature_name: "DisableThirdPartyStoragePartitioning2",
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
       origin_trial_allows_third_party: true,

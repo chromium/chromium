@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(UserBypassWebContentsObserverBrowserTest,
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   // Check that there are no changes to the RenderFrameHost.
-  EXPECT_FALSE(IsDisableThirdPartyStoragePartitioningEnabled(
+  EXPECT_FALSE(IsDisableThirdPartyStoragePartitioning2Enabled(
       GetActiveWebContents()->GetPrimaryMainFrame()));
 }
 
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(UserBypassWebContentsObserverBrowserTest,
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   // Check that the changes were applied to the RenderFrameHost.
-  EXPECT_TRUE(IsDisableThirdPartyStoragePartitioningEnabled(
+  EXPECT_TRUE(IsDisableThirdPartyStoragePartitioning2Enabled(
       GetActiveWebContents()->GetPrimaryMainFrame()));
 
   // Navigate the top-level frame to |kUserBypassDisabledHost|.
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(UserBypassWebContentsObserverBrowserTest,
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   // Check that there are no changes to the RenderFrameHost.
-  EXPECT_FALSE(IsDisableThirdPartyStoragePartitioningEnabled(
+  EXPECT_FALSE(IsDisableThirdPartyStoragePartitioning2Enabled(
       GetActiveWebContents()->GetPrimaryMainFrame()));
 }
 
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(UserBypassWebContentsObserverBrowserTest,
       NavigateToURL(GetActiveWebContents(), redirect_url, destination_url));
 
   // Check that there are no changes to the RenderFrameHost.
-  EXPECT_FALSE(IsDisableThirdPartyStoragePartitioningEnabled(
+  EXPECT_FALSE(IsDisableThirdPartyStoragePartitioning2Enabled(
       GetActiveWebContents()->GetPrimaryMainFrame()));
 }
 

@@ -858,7 +858,7 @@ TEST_F(RenderFrameHostImplTest,
           NavigationRequest::From(navigation->GetNavigationHandle());
       // Disable Storage Partitioning by enabling the deprecation trial.
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioningEnabled(true);
+          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
     }
 
     navigation->Commit();
@@ -1014,7 +1014,7 @@ TEST_F(RenderFrameHostImplTest,
       NavigationRequest* request =
           NavigationRequest::From(navigation->GetNavigationHandle());
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioningEnabled(true);
+          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
     }
 
     navigation->Commit();
@@ -1093,13 +1093,13 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKeyOfUnnavigatedFrame) {
 
   // Disable Storage Partitioning by enabling the deprecation trial.
   request->GetMutableRuntimeFeatureStateContext()
-      .SetDisableThirdPartyStoragePartitioningEnabled(true);
+      .SetDisableThirdPartyStoragePartitioning2Enabled(true);
 
   navigation->Commit();
 
   EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
                   ->runtime_feature_state_read_context()
-                  .IsDisableThirdPartyStoragePartitioningEnabled());
+                  .IsDisableThirdPartyStoragePartitioning2Enabled());
 
   // Create a child frame and navigate to `child_url`.
   auto* child_frame = main_test_rfh()->AppendChild("child");
