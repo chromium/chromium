@@ -1300,7 +1300,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     SuggestionsContext context,
     OnGenerateSuggestionsCallback callback) {
   std::vector<Suggestion> suggestions =
-      GetAvailableSuggestions(form, field, trigger_source, context);
+      GetAvailableAddressAndCreditCardSuggestions(form, field, trigger_source,
+                                                  context);
 
   auto ShouldSuppressSuggestions = [&] {
     switch (context.suppress_reason) {
@@ -1738,8 +1739,9 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   // suggestions generated, but only the way suggestions behave when they are
   // accepted. For this reason, checking whether suggestions are available can
   // be done with the `kUnspecified` suggestion trigger source.
-  std::vector<Suggestion> suggestions = GetAvailableSuggestions(
-      form, field, AutofillSuggestionTriggerSource::kUnspecified, context);
+  std::vector<Suggestion> suggestions =
+      GetAvailableAddressAndCreditCardSuggestions(
+          form, field, AutofillSuggestionTriggerSource::kUnspecified, context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
        !suggestions.empty())
@@ -2778,7 +2780,8 @@ void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
   }
 }
 
-std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
+std::vector<Suggestion>
+BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,

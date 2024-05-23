@@ -545,10 +545,9 @@ class BrowserAutofillManager : public AutofillManager {
   // the `form` are filled depends on the `trigger_source`. `context` could
   // contain additional information about the suggestions, such as ablation
   // study related fields.
-  // TODO(b/340494671): Rename to GetAvailableAddressAndCreditCardSuggestions.
   // TODO(b/340494671): Move ablation study fields out of the function and make
   // the context a const ref.
-  std::vector<Suggestion> GetAvailableSuggestions(
+  std::vector<Suggestion> GetAvailableAddressAndCreditCardSuggestions(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
