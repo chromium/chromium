@@ -6,7 +6,7 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "8go0I9U8zwjGFhFFulM3U9vc2dCFmS9m_v7AsPlKFmEC"  # 34.2.13
+  version: "97gAPeXJa7zT-JcddyV8fpQtsx6kJjwqfmLe8FhZD1kC"  # 34.2.14 (Stable)
   dest_path: "android_v_google_apis_x64"
 }
 
@@ -19,9 +19,9 @@ system_image_name: "system-images;android-VanillaIceCream;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-vanillaicecream/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8747736785956393969
+  # Created in https://ci.chromium.org/ui/b/8747199066191845233
   # Patched gmscore version 24.08.12 in https://crrev.com/c/5398140
-  version: "v64UgJ8ex1zeKbnkHjiRhxGZOVlUTZLGewjiPAPZYP4C"
+  version: "eu3ApdnqxAMlcBzBfnvLezsC4nKi-Bg5QPh3uzQIuWUC"
   dest_path: "android_v_google_apis_x64"
 }
 avd_name: "android_v_google_apis_x64"
