@@ -11,7 +11,7 @@ namespace blink {
     return DOMExceptionCode::error_code;               \
   }
 
-DOMExceptionCode ConvertWebNNErrorCodeToDOMExceptionCode(
+DOMExceptionCode WebNNErrorCodeToDOMExceptionCode(
     webnn::mojom::blink::Error::Code error_code) {
   switch (error_code) {
     DEFINE_WEBNN_ERROR_CODE_MAPPING(kUnknownError)

@@ -11,7 +11,7 @@
 
 namespace blink {
 
-DOMExceptionCode ConvertWebNNErrorCodeToDOMExceptionCode(
+DOMExceptionCode WebNNErrorCodeToDOMExceptionCode(
     webnn::mojom::blink::Error::Code error_code);
 
 template <typename MojoResultType>

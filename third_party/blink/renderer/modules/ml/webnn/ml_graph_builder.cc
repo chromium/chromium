@@ -113,7 +113,7 @@ webnn::Operand::DataType BlinkOperandTypeToComponent(
   NOTREACHED_NORETURN();
 }
 
-webnn::Operand ConvertToComponentOperand(const blink::MLOperand* ml_operand) {
+webnn::Operand BlinkOperandToComponent(const blink::MLOperand* ml_operand) {
   return webnn::Operand(BlinkOperandTypeToComponent(ml_operand->DataType()),
                         ml_operand->Dimensions());
 }
@@ -213,10 +213,10 @@ webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
   CHECK(options);
   webnn::BatchNormalizationAttributes attributes;
   if (options->hasScale()) {
-    attributes.scale = ConvertToComponentOperand(options->scale());
+    attributes.scale = BlinkOperandToComponent(options->scale());
   }
   if (options->hasBias()) {
-    attributes.bias = ConvertToComponentOperand(options->bias());
+    attributes.bias = BlinkOperandToComponent(options->bias());
   }
   attributes.axis = options->axis();
   return attributes;
@@ -259,7 +259,7 @@ base::expected<Conv2dAttributesType, String> ConvertToConv2dAttributesBase(
   attributes.input_layout =
       BlinkInputOperandLayoutToComponent(options->inputLayout().AsEnum());
   if (options->hasBias()) {
-    attributes.bias_operand = ConvertToComponentOperand(options->bias());
+    attributes.bias_operand = BlinkOperandToComponent(options->bias());
   }
 
   return std::move(attributes);
@@ -374,7 +374,7 @@ webnn::GemmAttributes ConvertToGemmAttributes(
   CHECK(options);
   webnn::GemmAttributes attributes;
   if (options->hasC()) {
-    attributes.c_operand = ConvertToComponentOperand(options->c());
+    attributes.c_operand = BlinkOperandToComponent(options->c());
   }
   attributes.alpha = options->alpha();
   attributes.beta = options->beta();
@@ -389,15 +389,15 @@ webnn::GruAttributes ConvertToGruAttributes(MLGraphBuilder* builder,
   webnn::GruAttributes attributes;
 
   if (options->hasBias()) {
-    attributes.bias = ConvertToComponentOperand(options->bias());
+    attributes.bias = BlinkOperandToComponent(options->bias());
   }
   if (options->hasRecurrentBias()) {
     attributes.recurrent_bias =
-        ConvertToComponentOperand(options->recurrentBias());
+        BlinkOperandToComponent(options->recurrentBias());
   }
   if (options->hasInitialHiddenState()) {
     attributes.initial_hidden_state =
-        ConvertToComponentOperand(options->initialHiddenState());
+        BlinkOperandToComponent(options->initialHiddenState());
   }
   attributes.return_sequence = options->returnSequence();
   attributes.direction =
@@ -423,11 +423,11 @@ webnn::GruCellAttributes ConvertToGruCellAttributes(
   webnn::GruCellAttributes attributes;
 
   if (options->hasBias()) {
-    attributes.bias = ConvertToComponentOperand(options->bias());
+    attributes.bias = BlinkOperandToComponent(options->bias());
   }
   if (options->hasRecurrentBias()) {
     attributes.recurrent_bias =
-        ConvertToComponentOperand(options->recurrentBias());
+        BlinkOperandToComponent(options->recurrentBias());
   }
   // If the activations are not specified, create a default activation sequence
   // [sigmoid, tanh] as defined in the spec.
@@ -448,10 +448,10 @@ webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
   CHECK(options);
   webnn::InstanceNormalizationAttributes attributes;
   if (options->hasScale()) {
-    attributes.scale = ConvertToComponentOperand(options->scale());
+    attributes.scale = BlinkOperandToComponent(options->scale());
   }
   if (options->hasBias()) {
-    attributes.bias = ConvertToComponentOperand(options->bias());
+    attributes.bias = BlinkOperandToComponent(options->bias());
   }
   attributes.layout =
       BlinkInputOperandLayoutToComponent(options->layout().AsEnum());
@@ -463,10 +463,10 @@ webnn::LayerNormalizationAttributes ConvertToLayerNormalizationAttributes(
   CHECK(options);
   webnn::LayerNormalizationAttributes attributes;
   if (options->hasScale()) {
-    attributes.scale = ConvertToComponentOperand(options->scale());
+    attributes.scale = BlinkOperandToComponent(options->scale());
   }
   if (options->hasBias()) {
-    attributes.bias = ConvertToComponentOperand(options->bias());
+    attributes.bias = BlinkOperandToComponent(options->bias());
   }
   return attributes;
 }
@@ -477,23 +477,23 @@ webnn::LstmAttributes ConvertToLstmAttributes(
   webnn::LstmAttributes attributes;
 
   if (options->hasBias()) {
-    attributes.bias = ConvertToComponentOperand(options->bias());
+    attributes.bias = BlinkOperandToComponent(options->bias());
   }
   if (options->hasRecurrentBias()) {
     attributes.recurrent_bias =
-        ConvertToComponentOperand(options->recurrentBias());
+        BlinkOperandToComponent(options->recurrentBias());
   }
   if (options->hasPeepholeWeight()) {
     attributes.peephole_weight =
-        ConvertToComponentOperand(options->peepholeWeight());
+        BlinkOperandToComponent(options->peepholeWeight());
   }
   if (options->hasInitialHiddenState()) {
     attributes.initial_hidden_state =
-        ConvertToComponentOperand(options->initialHiddenState());
+        BlinkOperandToComponent(options->initialHiddenState());
   }
   if (options->hasInitialCellState()) {
     attributes.initial_cell_state =
-        ConvertToComponentOperand(options->initialCellState());
+        BlinkOperandToComponent(options->initialCellState());
   }
   attributes.activation_count = options->activations().size();
   attributes.return_sequence = options->returnSequence();
@@ -509,15 +509,15 @@ webnn::LstmCellAttributes ConvertToLstmCellAttributes(
   webnn::LstmCellAttributes attributes;
 
   if (options->hasBias()) {
-    attributes.bias = ConvertToComponentOperand(options->bias());
+    attributes.bias = BlinkOperandToComponent(options->bias());
   }
   if (options->hasRecurrentBias()) {
     attributes.recurrent_bias =
-        ConvertToComponentOperand(options->recurrentBias());
+        BlinkOperandToComponent(options->recurrentBias());
   }
   if (options->hasPeepholeWeight()) {
     attributes.peephole_weight =
-        ConvertToComponentOperand(options->peepholeWeight());
+        BlinkOperandToComponent(options->peepholeWeight());
   }
   attributes.activation_count = options->activations().size();
 
@@ -581,7 +581,7 @@ MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
   const auto input_rank = input->Dimensions().size();
   const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
   const auto validated_output = webnn::ValidateArgMinMaxAndInferOutput(
-      ConvertToComponentOperand(input), axes, options->keepDimensions());
+      BlinkOperandToComponent(input), axes, options->keepDimensions());
   if (!validated_output.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
@@ -708,7 +708,7 @@ MLOperand* BuildReduce(MLGraphBuilder* builder,
   const auto input_rank = input->Dimensions().size();
   const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
   auto validated_output = webnn::ValidateReduceAndInferOutput(
-      MojoReduceKindToComponent(kind), ConvertToComponentOperand(input), axes,
+      MojoReduceKindToComponent(kind), BlinkOperandToComponent(input), axes,
       options->keepDimensions());
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
@@ -744,7 +744,7 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
   }
 
   auto validated_output = webnn::ValidatePool2dAndInferOutput(
-      ConvertToComponentOperand(input), std::move(pool2d_attributes.value()));
+      BlinkOperandToComponent(input), std::move(pool2d_attributes.value()));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
@@ -849,8 +849,8 @@ MLOperand* MLGraphBuilder::batchNormalization(
   }
 
   const auto validated_output = webnn::ValidateBatchNormalizationAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(mean),
-      ConvertToComponentOperand(variance),
+      BlinkOperandToComponent(input), BlinkOperandToComponent(mean),
+      BlinkOperandToComponent(variance),
       ConvertToBatchNormalizationAttributes(options));
   if (!validated_output.has_value()) {
     exception_state.ThrowDOMException(
@@ -887,7 +887,7 @@ MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
   input_component_operands.reserve(inputs.size());
   base::ranges::transform(
       inputs, std::back_inserter(input_component_operands),
-      [](const auto& input) { return ConvertToComponentOperand(input); });
+      [](const auto& input) { return BlinkOperandToComponent(input); });
 
   auto validated_output =
       webnn::ValidateConcatAndInferOutput(input_component_operands, axis);
@@ -957,7 +957,7 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
   }
 
   auto validated_output = webnn::ValidateConv2dAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
+      BlinkOperandToComponent(input), BlinkOperandToComponent(filter),
       std::move(conv2d_attributes.value()));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
@@ -1002,7 +1002,7 @@ MLOperand* MLGraphBuilder::convTranspose2d(
   }
 
   auto validated_output = webnn::ValidateConvTranspose2dAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
+      BlinkOperandToComponent(input), BlinkOperandToComponent(filter),
       std::move(convTranspose2d_attributes.value()));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
@@ -1192,7 +1192,7 @@ MLOperand* MLGraphBuilder::gather(const MLOperand* input,
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
   auto validated_output = webnn::ValidateGatherAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(indices),
+      BlinkOperandToComponent(input), BlinkOperandToComponent(indices),
       options->axis());
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
@@ -1244,7 +1244,7 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
   auto validated_output = webnn::ValidateGemmAndInferOutput(
-      ConvertToComponentOperand(a), ConvertToComponentOperand(b),
+      BlinkOperandToComponent(a), BlinkOperandToComponent(b),
       ConvertToGemmAttributes(options));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
@@ -1292,8 +1292,8 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::gru(
   }
 
   auto validated_outputs = webnn::ValidateGruAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
-      ConvertToComponentOperand(recurrent_weight), steps, hidden_size,
+      BlinkOperandToComponent(input), BlinkOperandToComponent(weight),
+      BlinkOperandToComponent(recurrent_weight), steps, hidden_size,
       ConvertToGruAttributes(this, options));
   if (!validated_outputs.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
@@ -1341,9 +1341,9 @@ MLOperand* MLGraphBuilder::gruCell(const MLOperand* input,
   }
 
   auto validated_output = webnn::ValidateGruCellAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
-      ConvertToComponentOperand(recurrent_weight),
-      ConvertToComponentOperand(hidden_state), hidden_size,
+      BlinkOperandToComponent(input), BlinkOperandToComponent(weight),
+      BlinkOperandToComponent(recurrent_weight),
+      BlinkOperandToComponent(hidden_state), hidden_size,
       ConvertToGruCellAttributes(this, options));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
@@ -1429,7 +1429,7 @@ MLOperand* MLGraphBuilder::instanceNormalization(
 
   const auto validated_output =
       webnn::ValidateInstanceNormalizationAndInferOutput(
-          ConvertToComponentOperand(input),
+          BlinkOperandToComponent(input),
           ConvertToInstanceNormalizationAttributes(options));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
@@ -1474,7 +1474,7 @@ MLOperand* MLGraphBuilder::layerNormalization(
       CreateLayerNormalizationDefaultAxes(input->Dimensions().size()));
 
   const auto validated_output = webnn::ValidateLayerNormalizationAndInferOutput(
-      ConvertToComponentOperand(input), axes,
+      BlinkOperandToComponent(input), axes,
       ConvertToLayerNormalizationAttributes(options));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
@@ -1592,8 +1592,8 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
   }
 
   auto validated_outputs = webnn::ValidateLstmAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
-      ConvertToComponentOperand(recurrent_weight), steps, hidden_size,
+      BlinkOperandToComponent(input), BlinkOperandToComponent(weight),
+      BlinkOperandToComponent(recurrent_weight), steps, hidden_size,
       ConvertToLstmAttributes(options));
   if (!validated_outputs.has_value()) {
     exception_state.ThrowDOMException(
@@ -1662,10 +1662,10 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstmCell(
   }
 
   auto validated_outputs = webnn::ValidateLstmCellAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
-      ConvertToComponentOperand(recurrent_weight),
-      ConvertToComponentOperand(hidden_state),
-      ConvertToComponentOperand(cell_state), hidden_size,
+      BlinkOperandToComponent(input), BlinkOperandToComponent(weight),
+      BlinkOperandToComponent(recurrent_weight),
+      BlinkOperandToComponent(hidden_state),
+      BlinkOperandToComponent(cell_state), hidden_size,
       ConvertToLstmCellAttributes(options));
   if (!validated_outputs.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
@@ -1700,7 +1700,7 @@ MLOperand* MLGraphBuilder::matmul(const MLOperand* a,
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
   auto validated_output = webnn::ValidateMatmulAndInferOutput(
-      ConvertToComponentOperand(a), ConvertToComponentOperand(b));
+      BlinkOperandToComponent(a), BlinkOperandToComponent(b));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(
         WTF::String::FromUTF8(validated_output.error()));
@@ -1729,7 +1729,7 @@ MLOperand* MLGraphBuilder::pad(const MLOperand* input,
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
   auto validated_output = webnn::ValidatePadAndInferOutput(
-      ConvertToComponentOperand(input), beginning_padding, ending_padding);
+      BlinkOperandToComponent(input), beginning_padding, ending_padding);
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
@@ -1806,7 +1806,7 @@ MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
   auto validated_output = webnn::ValidatePreluAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(slope));
+      BlinkOperandToComponent(input), BlinkOperandToComponent(slope));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
@@ -1911,7 +1911,7 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
   }
 
   auto validated_output = webnn::ValidateResample2dAndInferOutput(
-      ConvertToComponentOperand(input), scales_or_sizes,
+      BlinkOperandToComponent(input), scales_or_sizes,
       options->getAxesOr({2, 3}));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
@@ -1962,7 +1962,7 @@ MLOperand* MLGraphBuilder::slice(const MLOperand* input,
   attributes.sizes.assign(sizes.begin(), sizes.end());
   attributes.starts.assign(starts.begin(), starts.end());
   auto validated_output = webnn::ValidateSliceAndInferOutput(
-      ConvertToComponentOperand(input), attributes);
+      BlinkOperandToComponent(input), attributes);
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
@@ -1985,7 +1985,7 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
   auto validated_output =
-      webnn::ValidateSoftmaxAndInferOutput(ConvertToComponentOperand(input));
+      webnn::ValidateSoftmaxAndInferOutput(BlinkOperandToComponent(input));
   if (!validated_output.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
@@ -2066,10 +2066,10 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
                                  HeapVector<Member<const MLOperand>>());
 
   auto validated_outputs = webnn::ValidateSplitAndInferOutput(
-      ConvertToComponentOperand(input), {
-                                            .splits = splits,
-                                            .axis = options->axis(),
-                                        });
+      BlinkOperandToComponent(input), {
+                                          .splits = splits,
+                                          .axis = options->axis(),
+                                      });
   if (!validated_outputs.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
     return {};
@@ -2103,10 +2103,10 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
                                  HeapVector<Member<const MLOperand>>());
 
   auto validated_outputs = webnn::ValidateSplitAndInferOutput(
-      ConvertToComponentOperand(input), {
-                                            .splits = splits,
-                                            .axis = options->axis(),
-                                        });
+      BlinkOperandToComponent(input), {
+                                          .splits = splits,
+                                          .axis = options->axis(),
+                                      });
   if (!validated_outputs.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
     return {};
@@ -2164,7 +2164,7 @@ MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
   const Vector<uint32_t> permutation =
       options->getPermutationOr(CreateDefaultPermutation(input_rank));
   auto validated_output = webnn::ValidateTransposeAndInferOutput(
-      ConvertToComponentOperand(input), permutation);
+      BlinkOperandToComponent(input), permutation);
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
@@ -2193,7 +2193,7 @@ MLOperand* MLGraphBuilder::triangular(const MLOperand* input,
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
   const base::expected<webnn::Operand, std::string> validated_output =
-      webnn::ValidateTriangularAndInferOutput(ConvertToComponentOperand(input));
+      webnn::ValidateTriangularAndInferOutput(BlinkOperandToComponent(input));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
@@ -2223,9 +2223,8 @@ MLOperand* MLGraphBuilder::where(const MLOperand* condition,
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
   const auto validated_output = webnn::ValidateWhereAndInferOutput(
-      ConvertToComponentOperand(condition),
-      ConvertToComponentOperand(true_value),
-      ConvertToComponentOperand(false_value));
+      BlinkOperandToComponent(condition), BlinkOperandToComponent(true_value),
+      BlinkOperandToComponent(false_value));
   if (!validated_output.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;

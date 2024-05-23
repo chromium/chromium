@@ -87,7 +87,7 @@ void MLBufferMojo::OnDidReadBuffer(
   if (result->is_error()) {
     const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
     resolver->RejectWithDOMException(
-        ConvertWebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
+        WebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
         read_buffer_error.message);
     return;
   }

@@ -77,7 +77,7 @@ webnn::Operand::DataType MojoOperandTypeToComponent(
   NOTREACHED_NORETURN();
 }
 
-webnn::Operand ConvertToComponentOperand(const mojom::Operand* mojo_operand) {
+webnn::Operand MojoOperandToComponent(const mojom::Operand* mojo_operand) {
   return webnn::Operand(MojoOperandTypeToComponent(mojo_operand->data_type),
                         mojo_operand->dimensions);
 }
@@ -220,13 +220,13 @@ webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
   if (scale_operand_id) {
     const mojom::OperandPtr& scale_operand =
         id_to_operand_map.at(scale_operand_id.value());
-    component_attributes.scale = ConvertToComponentOperand(scale_operand.get());
+    component_attributes.scale = MojoOperandToComponent(scale_operand.get());
   }
   const auto& bias_operand_id = batch_normalization->bias_operand_id;
   if (bias_operand_id) {
     const mojom::OperandPtr& bias_operand =
         id_to_operand_map.at(bias_operand_id.value());
-    component_attributes.bias = ConvertToComponentOperand(bias_operand.get());
+    component_attributes.bias = MojoOperandToComponent(bias_operand.get());
   }
   component_attributes.axis = batch_normalization->axis;
 
@@ -313,29 +313,28 @@ webnn::LstmAttributes ConvertToLstmAttributes(
   if (lstm->bias_operand_id.has_value()) {
     const auto* bias =
         GetMojoOperand(id_to_operand_map, lstm->bias_operand_id.value());
-    attributes.bias = ConvertToComponentOperand(bias);
+    attributes.bias = MojoOperandToComponent(bias);
   }
   if (lstm->recurrent_bias_operand_id.has_value()) {
     const auto* recurrent_bias = GetMojoOperand(
         id_to_operand_map, lstm->recurrent_bias_operand_id.value());
-    attributes.recurrent_bias = ConvertToComponentOperand(recurrent_bias);
+    attributes.recurrent_bias = MojoOperandToComponent(recurrent_bias);
   }
   if (lstm->peephole_weight_operand_id.has_value()) {
     const auto* peephole_weight = GetMojoOperand(
         id_to_operand_map, lstm->peephole_weight_operand_id.value());
-    attributes.peephole_weight = ConvertToComponentOperand(peephole_weight);
+    attributes.peephole_weight = MojoOperandToComponent(peephole_weight);
   }
   if (lstm->initial_hidden_state_operand_id.has_value()) {
     const auto* initial_hidden_state = GetMojoOperand(
         id_to_operand_map, lstm->initial_hidden_state_operand_id.value());
     attributes.initial_hidden_state =
-        ConvertToComponentOperand(initial_hidden_state);
+        MojoOperandToComponent(initial_hidden_state);
   }
   if (lstm->initial_cell_state_operand_id.has_value()) {
     const auto* initial_cell_state = GetMojoOperand(
         id_to_operand_map, lstm->initial_cell_state_operand_id.value());
-    attributes.initial_cell_state =
-        ConvertToComponentOperand(initial_cell_state);
+    attributes.initial_cell_state = MojoOperandToComponent(initial_cell_state);
   }
 
   return attributes;
@@ -350,17 +349,17 @@ webnn::LstmCellAttributes ConvertToLstmCellAttributes(
   if (lstm_cell.bias_operand_id.has_value()) {
     const auto* bias =
         GetMojoOperand(id_to_operand_map, lstm_cell.bias_operand_id.value());
-    attributes.bias = ConvertToComponentOperand(bias);
+    attributes.bias = MojoOperandToComponent(bias);
   }
   if (lstm_cell.recurrent_bias_operand_id.has_value()) {
     const auto* recurrent_bias = GetMojoOperand(
         id_to_operand_map, lstm_cell.recurrent_bias_operand_id.value());
-    attributes.recurrent_bias = ConvertToComponentOperand(recurrent_bias);
+    attributes.recurrent_bias = MojoOperandToComponent(recurrent_bias);
   }
   if (lstm_cell.peephole_weight_operand_id.has_value()) {
     const auto* peephole_weight = GetMojoOperand(
         id_to_operand_map, lstm_cell.peephole_weight_operand_id.value());
-    attributes.peephole_weight = ConvertToComponentOperand(peephole_weight);
+    attributes.peephole_weight = MojoOperandToComponent(peephole_weight);
   }
 
   return attributes;
@@ -403,14 +402,14 @@ webnn::LayerNormalizationAttributes ConvertToLayerNormalizationAttributes(
   if (scale_operand_id.has_value()) {
     const mojom::OperandPtr& scale_operand =
         id_to_operand_map.at(scale_operand_id.value());
-    component_attributes.scale = ConvertToComponentOperand(scale_operand.get());
+    component_attributes.scale = MojoOperandToComponent(scale_operand.get());
   }
 
   const auto& bias_operand_id = layer_normalization->bias_operand_id;
   if (bias_operand_id.has_value()) {
     const mojom::OperandPtr& bias_operand =
         id_to_operand_map.at(bias_operand_id.value());
-    component_attributes.bias = ConvertToComponentOperand(bias_operand.get());
+    component_attributes.bias = MojoOperandToComponent(bias_operand.get());
   }
 
   return component_attributes;
@@ -458,7 +457,7 @@ webnn::GemmAttributes ConvertToGemmAttributes(
   if (c_operand_id) {
     const mojom::OperandPtr& c_operand =
         id_to_operand_map.at(c_operand_id.value());
-    component_attributes.c_operand = ConvertToComponentOperand(c_operand.get());
+    component_attributes.c_operand = MojoOperandToComponent(c_operand.get());
   }
   component_attributes.alpha = gemm->alpha;
   component_attributes.beta = gemm->beta;
@@ -474,19 +473,19 @@ webnn::GruAttributes ConvertToGruAttributes(
   if (gru->bias_operand_id.has_value()) {
     const auto* bias =
         GetMojoOperand(id_to_operand_map, gru->bias_operand_id.value());
-    component_attributes.bias = ConvertToComponentOperand(bias);
+    component_attributes.bias = MojoOperandToComponent(bias);
   }
   if (gru->recurrent_bias_operand_id.has_value()) {
     const auto* recurrent_bias = GetMojoOperand(
         id_to_operand_map, gru->recurrent_bias_operand_id.value());
     component_attributes.recurrent_bias =
-        ConvertToComponentOperand(recurrent_bias);
+        MojoOperandToComponent(recurrent_bias);
   }
   if (gru->initial_hidden_state_operand_id.has_value()) {
     const auto* initial_hidden_state = GetMojoOperand(
         id_to_operand_map, gru->initial_hidden_state_operand_id.value());
     component_attributes.initial_hidden_state =
-        ConvertToComponentOperand(initial_hidden_state);
+        MojoOperandToComponent(initial_hidden_state);
   }
 
   component_attributes.return_sequence = gru->return_sequence;
@@ -504,13 +503,13 @@ webnn::GruCellAttributes ConvertToGruCellAttributes(
   if (gru_cell.bias_operand_id.has_value()) {
     const auto* bias =
         GetMojoOperand(id_to_operand_map, gru_cell.bias_operand_id.value());
-    component_attributes.bias = ConvertToComponentOperand(bias);
+    component_attributes.bias = MojoOperandToComponent(bias);
   }
   if (gru_cell.recurrent_bias_operand_id.has_value()) {
     const auto* recurrent_bias = GetMojoOperand(
         id_to_operand_map, gru_cell.recurrent_bias_operand_id.value());
     component_attributes.recurrent_bias =
-        ConvertToComponentOperand(recurrent_bias);
+        MojoOperandToComponent(recurrent_bias);
   }
   component_attributes.activation_count = gru_cell.activations.size();
 
@@ -525,13 +524,13 @@ webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
   if (scale_operand_id) {
     const mojom::OperandPtr& scale_operand =
         id_to_operand_map.at(scale_operand_id.value());
-    component_attributes.scale = ConvertToComponentOperand(scale_operand.get());
+    component_attributes.scale = MojoOperandToComponent(scale_operand.get());
   }
   const auto& bias_operand_id = instance_normalization->bias_operand_id;
   if (bias_operand_id) {
     const mojom::OperandPtr& bias_operand =
         id_to_operand_map.at(bias_operand_id.value());
-    component_attributes.bias = ConvertToComponentOperand(bias_operand.get());
+    component_attributes.bias = MojoOperandToComponent(bias_operand.get());
   }
   component_attributes.layout =
       MojoInputOperandLayoutToComponent(instance_normalization->layout);
@@ -658,14 +657,14 @@ bool ValidateBatchNormalization(
   }
 
   const auto validated_output = ValidateBatchNormalizationAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(mean),
-      ConvertToComponentOperand(variance),
+      MojoOperandToComponent(input), MojoOperandToComponent(mean),
+      MojoOperandToComponent(variance),
       ConvertToBatchNormalizationAttributes(id_to_operand_map,
                                             batch_normalization));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -690,12 +689,12 @@ bool ValidateArgMinMax(const IdToOperandMap& id_to_operand_map,
   }
 
   const auto validated_output = ValidateArgMinMaxAndInferOutput(
-      ConvertToComponentOperand(input), arg_min_max->axes,
+      MojoOperandToComponent(input), arg_min_max->axes,
       arg_min_max->keep_dimensions);
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -737,14 +736,14 @@ bool ValidateConcat(const IdToOperandMap& id_to_operand_map,
     if (!input || input == output) {
       return false;
     }
-    inputs.push_back(ConvertToComponentOperand(input));
+    inputs.push_back(MojoOperandToComponent(input));
   }
 
   auto validated_output = ValidateConcatAndInferOutput(inputs, concat->axis);
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
   processed_operands.insert(concat->output_operand_id);
@@ -787,8 +786,7 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
       // Invalid bias operand.
       return false;
     }
-    bias_operand =
-        ConvertToComponentOperand(bias_operand_iterator->second.get());
+    bias_operand = MojoOperandToComponent(bias_operand_iterator->second.get());
   }
   processed_operands.insert(conv2d->output_operand_id);
 
@@ -803,7 +801,7 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
   switch (conv2d->kind) {
     case mojom::Conv2d::Kind::kDirect: {
       validated_output = ValidateConv2dAndInferOutput(
-          ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
+          MojoOperandToComponent(input), MojoOperandToComponent(filter),
           ConvertToConv2dAttributes(id_to_operand_map, conv2d,
                                     std::move(bias_operand)));
       break;
@@ -811,7 +809,7 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
 
     case mojom::Conv2d::Kind::kTransposed: {
       validated_output = ValidateConvTranspose2dAndInferOutput(
-          ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
+          MojoOperandToComponent(input), MojoOperandToComponent(filter),
           ConvertToConvTranspose2dAttributes(id_to_operand_map, conv2d,
                                              std::move(bias_operand)));
       break;
@@ -820,7 +818,7 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -998,12 +996,12 @@ bool ValidateGather(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateGatherAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(indices),
+      MojoOperandToComponent(input), MojoOperandToComponent(indices),
       gather->axis);
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1033,12 +1031,12 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
     return false;
   }
   auto validated_output = ValidateGemmAndInferOutput(
-      ConvertToComponentOperand(a), ConvertToComponentOperand(b),
+      MojoOperandToComponent(a), MojoOperandToComponent(b),
       ConvertToGemmAttributes(id_to_operand_map, gemm));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1098,8 +1096,8 @@ bool ValidateGru(const IdToOperandMap& id_to_operand_map,
   }
 
   const auto validated_outputs = ValidateGruAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
-      ConvertToComponentOperand(recurrent_weight), gru->steps, gru->hidden_size,
+      MojoOperandToComponent(input), MojoOperandToComponent(weight),
+      MojoOperandToComponent(recurrent_weight), gru->steps, gru->hidden_size,
       ConvertToGruAttributes(id_to_operand_map, gru));
   if (!validated_outputs.has_value()) {
     return false;
@@ -1113,7 +1111,7 @@ bool ValidateGru(const IdToOperandMap& id_to_operand_map,
     if (!output) {
       return false;
     }
-    if (validated_outputs->at(i) != ConvertToComponentOperand(output)) {
+    if (validated_outputs->at(i) != MojoOperandToComponent(output)) {
       return false;
     }
   }
@@ -1175,9 +1173,9 @@ bool ValidateGruCell(const IdToOperandMap& id_to_operand_map,
 
   const base::expected<webnn::Operand, std::string> validated_output =
       ValidateGruCellAndInferOutput(
-          ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
-          ConvertToComponentOperand(recurrent_weight),
-          ConvertToComponentOperand(hidden_state), gru_cell.hidden_size,
+          MojoOperandToComponent(input), MojoOperandToComponent(weight),
+          MojoOperandToComponent(recurrent_weight),
+          MojoOperandToComponent(hidden_state), gru_cell.hidden_size,
           ConvertToGruCellAttributes(id_to_operand_map, gru_cell));
   if (!validated_output.has_value()) {
     return false;
@@ -1188,7 +1186,7 @@ bool ValidateGruCell(const IdToOperandMap& id_to_operand_map,
   if (!output) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1251,13 +1249,13 @@ bool ValidateLayerNormalization(
   }
 
   const auto validated_output = ValidateLayerNormalizationAndInferOutput(
-      ConvertToComponentOperand(input), layer_normalization->axes,
+      MojoOperandToComponent(input), layer_normalization->axes,
       ConvertToLayerNormalizationAttributes(id_to_operand_map,
                                             layer_normalization));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1359,9 +1357,9 @@ bool ValidateLstm(const IdToOperandMap& id_to_operand_map,
   }
 
   const auto validated_outputs = ValidateLstmAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
-      ConvertToComponentOperand(recurrent_weight), lstm->steps,
-      lstm->hidden_size, ConvertToLstmAttributes(id_to_operand_map, lstm));
+      MojoOperandToComponent(input), MojoOperandToComponent(weight),
+      MojoOperandToComponent(recurrent_weight), lstm->steps, lstm->hidden_size,
+      ConvertToLstmAttributes(id_to_operand_map, lstm));
   if (!validated_outputs.has_value()) {
     return false;
   }
@@ -1374,7 +1372,7 @@ bool ValidateLstm(const IdToOperandMap& id_to_operand_map,
     if (!output) {
       return false;
     }
-    if (validated_outputs->at(i) != ConvertToComponentOperand(output)) {
+    if (validated_outputs->at(i) != MojoOperandToComponent(output)) {
       return false;
     }
   }
@@ -1447,10 +1445,10 @@ bool ValidateLstmCell(const IdToOperandMap& id_to_operand_map,
 
   const base::expected<std::vector<webnn::Operand>, std::string>
       validated_outputs = ValidateLstmCellAndInferOutput(
-          ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
-          ConvertToComponentOperand(recurrent_weight),
-          ConvertToComponentOperand(hidden_state),
-          ConvertToComponentOperand(cell_state), lstm_cell.hidden_size,
+          MojoOperandToComponent(input), MojoOperandToComponent(weight),
+          MojoOperandToComponent(recurrent_weight),
+          MojoOperandToComponent(hidden_state),
+          MojoOperandToComponent(cell_state), lstm_cell.hidden_size,
           ConvertToLstmCellAttributes(id_to_operand_map, lstm_cell));
   if (!validated_outputs.has_value()) {
     return false;
@@ -1464,7 +1462,7 @@ bool ValidateLstmCell(const IdToOperandMap& id_to_operand_map,
     if (!output) {
       return false;
     }
-    if (validated_outputs->at(i) != ConvertToComponentOperand(output)) {
+    if (validated_outputs->at(i) != MojoOperandToComponent(output)) {
       return false;
     }
   }
@@ -1511,13 +1509,13 @@ bool ValidateInstanceNormalization(
   }
 
   const auto validated_output = ValidateInstanceNormalizationAndInferOutput(
-      ConvertToComponentOperand(input),
+      MojoOperandToComponent(input),
       ConvertToInstanceNormalizationAttributes(id_to_operand_map,
                                                instance_normalization));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1541,11 +1539,11 @@ bool ValidateMatmul(const IdToOperandMap& id_to_operand_map,
     return false;
   }
   auto validated_output = ValidateMatmulAndInferOutput(
-      ConvertToComponentOperand(a), ConvertToComponentOperand(b));
+      MojoOperandToComponent(a), MojoOperandToComponent(b));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1568,12 +1566,12 @@ bool ValidatePad(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output =
-      ValidatePadAndInferOutput(ConvertToComponentOperand(input),
+      ValidatePadAndInferOutput(MojoOperandToComponent(input),
                                 pad->beginning_padding, pad->ending_padding);
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1607,13 +1605,12 @@ bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
     // The element of output dimensions should be 4.
     return false;
   }
-  auto validated_output =
-      ValidatePool2dAndInferOutput(ConvertToComponentOperand(input),
-                                   ConvertToPool2dAttributes(pool2d, output));
+  auto validated_output = ValidatePool2dAndInferOutput(
+      MojoOperandToComponent(input), ConvertToPool2dAttributes(pool2d, output));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1638,11 +1635,11 @@ bool ValidatePrelu(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidatePreluAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(slope));
+      MojoOperandToComponent(input), MojoOperandToComponent(slope));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1684,11 +1681,11 @@ bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateResample2dAndInferOutput(
-      ConvertToComponentOperand(input), scales_or_sizes, axes);
+      MojoOperandToComponent(input), scales_or_sizes, axes);
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1746,11 +1743,11 @@ bool ValidateSlice(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateSliceAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToSliceAttributes(slice));
+      MojoOperandToComponent(input), ConvertToSliceAttributes(slice));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1772,11 +1769,11 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
     return false;
   }
   auto validated_output =
-      ValidateSoftmaxAndInferOutput(ConvertToComponentOperand(input));
+      ValidateSoftmaxAndInferOutput(MojoOperandToComponent(input));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1810,9 +1807,8 @@ bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
     processed_operands.insert(output_id);
   }
 
-  auto validated_output =
-      ValidateSplitAndInferOutput(ConvertToComponentOperand(input),
-                                  {.splits = splits, .axis = split->axis});
+  auto validated_output = ValidateSplitAndInferOutput(
+      MojoOperandToComponent(input), {.splits = splits, .axis = split->axis});
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1826,7 +1822,7 @@ bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
   for (uint32_t i = 0; i < validated_output->size(); ++i) {
     auto* output =
         GetMojoOperand(id_to_operand_map, split->output_operand_ids[i]);
-    if (validated_output->at(i) != ConvertToComponentOperand(output)) {
+    if (validated_output->at(i) != MojoOperandToComponent(output)) {
       return false;
     }
   }
@@ -1851,11 +1847,11 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateTransposeAndInferOutput(
-      ConvertToComponentOperand(input), transpose->permutation);
+      MojoOperandToComponent(input), transpose->permutation);
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1879,11 +1875,11 @@ bool ValidateTriangular(const IdToOperandMap& id_to_operand_map,
   }
 
   base::expected<Operand, std::string> validated_output =
-      ValidateTriangularAndInferOutput(ConvertToComponentOperand(input));
+      ValidateTriangularAndInferOutput(MojoOperandToComponent(input));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1913,14 +1909,13 @@ bool ValidateWhere(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  auto validated_output =
-      ValidateWhereAndInferOutput(ConvertToComponentOperand(condition),
-                                  ConvertToComponentOperand(true_value),
-                                  ConvertToComponentOperand(false_value));
+  auto validated_output = ValidateWhereAndInferOutput(
+      MojoOperandToComponent(condition), MojoOperandToComponent(true_value),
+      MojoOperandToComponent(false_value));
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 
@@ -1943,12 +1938,12 @@ bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateReduceAndInferOutput(
-      MojoReduceTypeToComponent(reduce->kind), ConvertToComponentOperand(input),
+      MojoReduceTypeToComponent(reduce->kind), MojoOperandToComponent(input),
       reduce->axes, reduce->keep_dimensions);
   if (!validated_output.has_value()) {
     return false;
   }
-  if (validated_output != ConvertToComponentOperand(output)) {
+  if (validated_output != MojoOperandToComponent(output)) {
     return false;
   }
 

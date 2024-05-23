@@ -252,7 +252,7 @@ void MLGraphMojo::OnDidCompute(
   if (mojo_result->is_error()) {
     const auto& compute_error = mojo_result->get_error();
     resolver->RejectWithDOMException(
-        ConvertWebNNErrorCodeToDOMExceptionCode(compute_error->code),
+        WebNNErrorCodeToDOMExceptionCode(compute_error->code),
         compute_error->message);
     return;
   }
@@ -306,7 +306,7 @@ void MLGraphMojo::OnCreateWebNNGraph(ScopedMLTrace scoped_trace,
   if (result->is_error()) {
     const auto& create_graph_error = result->get_error();
     resolver->RejectWithDOMException(
-        ConvertWebNNErrorCodeToDOMExceptionCode(create_graph_error->code),
+        WebNNErrorCodeToDOMExceptionCode(create_graph_error->code),
         create_graph_error->message);
     return;
   }

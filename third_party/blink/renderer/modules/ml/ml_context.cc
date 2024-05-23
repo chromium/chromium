@@ -202,7 +202,7 @@ void MLContext::OnCreateWebNNContext(
   if (result->is_error()) {
     const auto& create_context_error = result->get_error();
     resolver->RejectWithDOMException(
-        ConvertWebNNErrorCodeToDOMExceptionCode(create_context_error->code),
+        WebNNErrorCodeToDOMExceptionCode(create_context_error->code),
         create_context_error->message);
     return;
   }
