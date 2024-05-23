@@ -139,16 +139,4 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
       ->AddTransientURLRewriter(&HostToLocalHostRewrite);
 }
 
-+ (NSString*)frYahooSearchEngineName {
-  return base::SysUTF16ToNSString(TemplateURLPrepopulateData::yahoo_fr.name);
-}
-
-+ (NSString*)usYahooSearchEngineName {
-  return base::SysUTF16ToNSString(TemplateURLPrepopulateData::yahoo.name);
-}
-
-+ (NSString*)googleSearchEngineName {
-  return base::SysUTF16ToNSString(TemplateURLPrepopulateData::google.name);
-}
-
 @end

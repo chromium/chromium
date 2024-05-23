@@ -9,6 +9,7 @@
 #import "build/branding_buildflags.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
@@ -1662,7 +1663,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       assertWithMatcher:grey_allOf(grey_enabled(), grey_notNil(), nil)];
 
   // Selects a search engine.
-  NSString* searchEngineToSelect = @"Bing";
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
   [SearchEngineChoiceEarlGreyUI
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionDown
@@ -1712,7 +1714,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
                                    nil)];
 
   // Selects a search engine.
-  NSString* searchEngineToSelect = @"Bing";
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
   [SearchEngineChoiceEarlGreyUI
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionUp

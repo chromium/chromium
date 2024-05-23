@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/search_engines/prepopulated_engines.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -92,6 +94,11 @@
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(
                                kSearchEngineTableViewControllerId)];
+}
+
++ (NSString*)searchEngineNameWithPrepopulatedEngine:
+    (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine {
+  return base::SysUTF16ToNSString(prepopulatedEngine.name);
 }
 
 @end

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
@@ -13,15 +14,6 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-
-namespace {
-
-// Microsoft search engine name.
-NSString* const kMicrosoftBingSearchEngineName = @"Microsoft Bing";
-// Google search engine name.
-NSString* const kGoogleSearchEngineName = @"Google";
-
-}  // namespace
 
 @interface SearchEngineTestCase : ChromeTestCase
 @end
@@ -96,7 +88,8 @@ NSString* const kGoogleSearchEngineName = @"Google";
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
   // Selects a search engine.
-  NSString* searchEngineToSelect = kMicrosoftBingSearchEngineName;
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
   [SearchEngineChoiceEarlGreyUI
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionDown
@@ -136,7 +129,8 @@ NSString* const kGoogleSearchEngineName = @"Google";
                                    nil)];
 
   // Selects a search engine.
-  NSString* searchEngineToSelect = kMicrosoftBingSearchEngineName;
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
   [SearchEngineChoiceEarlGreyUI
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionUp
@@ -154,7 +148,9 @@ NSString* const kGoogleSearchEngineName = @"Google";
   if ([ChromeEarlGrey isIPadIdiom]) {
     return;
   }
-  NSString* googleSearchEngineIdentifier = kGoogleSearchEngineName;
+  NSString* googleSearchEngineIdentifier =
+      [SearchEngineChoiceEarlGreyUI searchEngineNameWithPrepopulatedEngine:
+                                        TemplateURLPrepopulateData::google];
   [SearchEngineChoiceEarlGreyUI
       selectSearchEngineCellWithName:googleSearchEngineIdentifier
                      scrollDirection:kGREYDirectionDown

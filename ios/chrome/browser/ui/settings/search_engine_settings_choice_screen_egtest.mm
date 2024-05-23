@@ -6,6 +6,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
@@ -151,7 +152,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   NSString* yahooSearchEngineName =
-      [SettingsAppInterface frYahooSearchEngineName];
+      [SearchEngineChoiceEarlGreyUI searchEngineNameWithPrepopulatedEngine:
+                                        TemplateURLPrepopulateData::yahoo_fr];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(yahooSearchEngineName)]
       performAction:grey_tap()];

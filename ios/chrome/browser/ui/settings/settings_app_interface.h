@@ -46,16 +46,6 @@
 + (void)addURLRewriterForHosts:(NSArray<NSString*>*)hosts
                         onPort:(NSString*)port;
 
-// Returns the Yahoo search engine name for France.
-// TODO(b/326560103): Improve the APIs to get the search engine names.
-+ (NSString*)frYahooSearchEngineName;
-
-// Returns the Yahoo search engine name for USA.
-+ (NSString*)usYahooSearchEngineName;
-
-// Returns the Yahoo search engine name.
-+ (NSString*)googleSearchEngineName;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_APP_INTERFACE_H_

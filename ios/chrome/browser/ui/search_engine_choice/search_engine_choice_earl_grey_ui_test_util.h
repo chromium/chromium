@@ -12,6 +12,10 @@
 @class GREYElementInteraction;
 @protocol GREYMatcher;
 
+namespace TemplateURLPrepopulateData {
+struct PrepopulatedEngine;
+}  // namespace TemplateURLPrepopulateData
+
 // State of the fake omnibox illustration
 typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
   kHidden,
@@ -48,6 +52,9 @@ typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
 // The custom search engine URL needs to be 127.0.0.1.
 + (GREYElementInteraction*)interactionForSettingsCustomSearchEngineWithName:
     (const char*)name;
+
++ (NSString*)searchEngineNameWithPrepopulatedEngine:
+    (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine;
 
 @end
 
