@@ -90,6 +90,7 @@ void TestInterestGroupManagerImpl::EnqueueReports(
 
 void TestInterestGroupManagerImpl::EnqueueRealTimeReports(
     std::map<url::Origin, RealTimeReportingContributions> contributions,
+    AdAuctionPageDataCallback ad_auction_page_data_callback,
     int frame_tree_node_id,
     const url::Origin& frame_origin,
     const network::mojom::ClientSecurityState& client_security_state,
@@ -99,8 +100,9 @@ void TestInterestGroupManagerImpl::EnqueueRealTimeReports(
   EXPECT_EQ(expected_url_loader_factory_.get(), url_loader_factory.get());
   if (use_real_enqueue_reports_) {
     InterestGroupManagerImpl::EnqueueRealTimeReports(
-        std::move(contributions), frame_tree_node_id, frame_origin,
-        client_security_state, url_loader_factory);
+        std::move(contributions), std::move(ad_auction_page_data_callback),
+        frame_tree_node_id, frame_origin, client_security_state,
+        url_loader_factory);
   } else {
     real_time_contributions_ = std::move(contributions);
   }

@@ -32,6 +32,7 @@
 #include "base/values.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
+#include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_real_time_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -59,6 +60,10 @@ constexpr int kMaxReportQueueLength = 1000;
 constexpr base::TimeDelta kMaxReportingRoundDuration = base::Minutes(10);
 // The time interval to wait before sending the next report after sending one.
 constexpr base::TimeDelta kReportingInterval = base::Milliseconds(50);
+// The number of real time reports (`kMaxRealTimeReports`) allowed to be sent
+// per reporting origin per page per `kRealTimeReportingWindow`.
+constexpr base::TimeDelta kRealTimeReportingWindow = base::Seconds(20);
+constexpr int kMaxRealTimeReports = 10;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("auction_report_sender", R"(
@@ -178,6 +183,23 @@ ConvertOwnerJoinerPairsToDataKeys(
   }
   return data_keys;
 }
+
+double GetRealTimeReportingQuota(
+    std::optional<std::pair<base::TimeTicks, double>> quota,
+    base::TimeTicks now,
+    double max_real_time_reports,
+    base::TimeDelta rate_limit_window) {
+  if (!quota.has_value()) {
+    return max_real_time_reports;
+  }
+
+  double recovered_quota = max_real_time_reports *
+                           (now - quota->first).InMillisecondsF() /
+                           rate_limit_window.InMilliseconds();
+  double new_quota = quota->second + recovered_quota;
+  return std::min(new_quota, max_real_time_reports);
+}
+
 }  // namespace
 
 InterestGroupManagerImpl::ReportRequest::ReportRequest() = default;
@@ -210,6 +232,8 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
       max_report_queue_length_(kMaxReportQueueLength),
       reporting_interval_(kReportingInterval),
       max_reporting_round_duration_(kMaxReportingRoundDuration),
+      real_time_reporting_window_(kRealTimeReportingWindow),
+      max_real_time_reports_(static_cast<double>(kMaxRealTimeReports)),
       ba_key_fetcher_(this) {}
 
 InterestGroupManagerImpl::~InterestGroupManagerImpl() = default;
@@ -506,11 +530,18 @@ void InterestGroupManagerImpl::EnqueueReports(
 
 void InterestGroupManagerImpl::EnqueueRealTimeReports(
     std::map<url::Origin, RealTimeReportingContributions> contributions,
+    AdAuctionPageDataCallback ad_auction_page_data_callback,
     int frame_tree_node_id,
     const url::Origin& frame_origin,
     const network::mojom::ClientSecurityState& client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   if (contributions.empty()) {
+    return;
+  }
+
+  AdAuctionPageData* ad_auction_page_data = ad_auction_page_data_callback.Run();
+  if (!ad_auction_page_data) {
+    // The page is destroyed. Don't enqueue the real time reports.
     return;
   }
 
@@ -525,7 +556,16 @@ void InterestGroupManagerImpl::EnqueueRealTimeReports(
   std::map<url::Origin, std::vector<uint8_t>> histograms =
       CalculateRealTimeReportingHistograms(std::move(contributions));
 
+  base::TimeTicks now = base::TimeTicks::Now();
   for (auto& [origin, histogram] : histograms) {
+    double quota = GetRealTimeReportingQuota(
+        ad_auction_page_data->GetRealTimeReportingQuota(origin), now,
+        max_real_time_reports_, real_time_reporting_window_);
+    if (quota < 1) {
+      continue;
+    }
+    ad_auction_page_data->UpdateRealTimeReportingQuota(origin,
+                                                       {now, quota - 1});
     auto report_request = std::make_unique<ReportRequest>();
     GURL report_url = GetRealTimeReportDestination(origin);
     report_request->request_url_size_bytes = report_url.spec().size();

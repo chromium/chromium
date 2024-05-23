@@ -6,10 +6,12 @@
 
 #include "base/no_destructor.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -121,6 +123,21 @@ data_decoder::DataDecoder* AdAuctionPageData::GetDecoderFor(
     decoder = std::make_unique<data_decoder::DataDecoder>();
   }
   return decoder.get();
+}
+
+std::optional<std::pair<base::TimeTicks, double>>
+AdAuctionPageData::GetRealTimeReportingQuota(const url::Origin& origin) {
+  auto it = real_time_reporting_quota_.find(origin);
+  if (it == real_time_reporting_quota_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
+}
+
+void AdAuctionPageData::UpdateRealTimeReportingQuota(
+    const url::Origin& origin,
+    std::pair<base::TimeTicks, double> quota) {
+  real_time_reporting_quota_[origin] = quota;
 }
 
 void AdAuctionPageData::OnAddAuctionSignalsWitnessForOriginCompleted(

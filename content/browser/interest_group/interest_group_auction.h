@@ -166,6 +166,9 @@ class CONTENT_EXPORT InterestGroupAuction
       base::RepeatingCallback<data_decoder::DataDecoder*(
           const url::Origin& seller)>;
 
+  using AdAuctionPageDataCallback =
+      base::RepeatingCallback<AdAuctionPageData*()>;
+
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
@@ -555,6 +558,7 @@ class CONTENT_EXPORT InterestGroupAuction
       BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      AdAuctionPageDataCallback ad_auction_page_data_callback,
       std::unique_ptr<blink::AuctionConfig> auction_config,
       const url::Origin& main_frame_origin,
       const url::Origin& frame_origin,

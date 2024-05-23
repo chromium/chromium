@@ -24616,6 +24616,136 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
 }
 
+IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
+                       RealTimeReportingRateLimitIsPerPagePerReportOrigin) {
+  const GURL kRealTimeReportUrlA = embedded_https_test_server().GetURL(
+      "a.test", "/.well-known/interest-group/real-time-report");
+
+  URLLoaderMonitor url_loader_monitor;
+  // Setting a small reporting interval to run the test faster.
+  manager_->set_reporting_interval_for_testing(base::Milliseconds(1));
+  manager_->set_max_report_queue_length_for_testing(50);
+  manager_->set_max_active_report_requests_for_testing(50);
+  // Two real time reports allowed to be sent per reporting origin per page per
+  // day.
+  manager_->set_real_time_reporting_window_for_testing(base::Days(1));
+  manager_->set_max_real_time_reports_for_testing(1);
+
+  GURL test_url_a =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+  const url::Origin origin_a = url::Origin::Create(test_url_a);
+
+  GURL ad1_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_winner");
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/origin_a,
+              /*name=*/"winner")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_with_real_time_reporting.js"))
+              .SetAds({{{ad1_url, R"({"ad":"metadata","here":[1,2]})"}}})
+              .Build()));
+
+  // Only opt-in origin_a as buyer.
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    perBuyerRealTimeReportingConfig: {
+      $1: {type: 'default-local-reporting'}
+    }
+  })",
+      origin_a,
+      embedded_https_test_server().GetURL(
+          "a.test",
+          "/interest_group/decision_logic_with_real_time_reporting.js"));
+  // Run an ad auction.
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
+
+  // origin_a sent one as buyer. Since it does not opt-in as seller, so the
+  // report was from its `generateBid()`.
+  WaitForUrl(kRealTimeReportUrlA);
+  ClearReceivedRequests();
+
+  // Run auction again on the same page. origin_a opted in as seller.
+  auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    sellerRealTimeReportingConfig: {type: 'default-local-reporting'},
+    perBuyerRealTimeReportingConfig: {
+      $1: {type: 'default-local-reporting'}
+    }
+  })",
+      origin_a,
+      embedded_https_test_server().GetURL(
+          "a.test",
+          "/interest_group/decision_logic_with_real_time_reporting.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
+
+  // No real time report is sent after this auction, since origin_a is rate
+  // limited now.
+  EXPECT_TRUE(!HasServerSeenUrl(kRealTimeReportUrlA));
+  ClearReceivedRequests();
+
+  // Navigate to the same URL to open a new page of it, to test that the rate
+  // limit is per page, not per URL or something.
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    perBuyerRealTimeReportingConfig: {
+      $1: {type: 'default-local-reporting'}
+    }
+  })",
+      origin_a,
+      embedded_https_test_server().GetURL(
+          "a.test",
+          "/interest_group/decision_logic_with_real_time_reporting.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
+
+  // origin_a sent real time reports after the auction, because rate limit was
+  // per reporting origin per page, and it's a new page after navigation,
+  // although it's the same URL.
+  WaitForUrl(kRealTimeReportUrlA);
+  ClearReceivedRequests();
+
+  // Run the third auction on another page c.test.
+  GURL test_url_c =
+      embedded_https_test_server().GetURL("c.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_c));
+
+  auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    perBuyerRealTimeReportingConfig: {
+      $1: {type: 'default-local-reporting'}
+    }
+  })",
+      origin_a,
+      embedded_https_test_server().GetURL(
+          "a.test",
+          "/interest_group/decision_logic_with_real_time_reporting.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
+
+  // origin_a sent real time reports after the auction, because rate limit was
+  // per reporting origin per page, and there was rate limit for page a.test,
+  // not for page c.test.
+  WaitForUrl(kRealTimeReportUrlA);
+}
+
 }  // namespace
 
 }  // namespace content

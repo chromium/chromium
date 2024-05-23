@@ -69,6 +69,7 @@ class TestInterestGroupManagerImpl
   // InterestGroupManagerImpl implementation:
   void EnqueueRealTimeReports(
       std::map<url::Origin, RealTimeReportingContributions> contributions,
+      AdAuctionPageDataCallback ad_auction_page_data_callback,
       int frame_tree_node_id,
       const url::Origin& frame_origin,
       const network::mojom::ClientSecurityState& client_security_state,

@@ -77,6 +77,14 @@ class CONTENT_EXPORT AdAuctionPageData
   // The DataDecoder is only valid for the life of the page.
   data_decoder::DataDecoder* GetDecoderFor(const url::Origin& origin);
 
+  // Returns real time reporting quota left for `origin`.
+  std::optional<std::pair<base::TimeTicks, double>> GetRealTimeReportingQuota(
+      const url::Origin& origin);
+
+  // Update real time reporting quota for `origin`.
+  void UpdateRealTimeReportingQuota(const url::Origin& origin,
+                                    std::pair<base::TimeTicks, double> quota);
+
  private:
   explicit AdAuctionPageData(Page& page);
 
@@ -91,6 +99,13 @@ class CONTENT_EXPORT AdAuctionPageData
   std::map<url::Origin, std::map<std::string, std::vector<std::string>>>
       origin_nonce_additional_bids_map_;
   std::map<base::Uuid, AdAuctionRequestContext> context_map_;
+
+  // The real time reporting quota left for origin at a certain timestamp. Used
+  // to do per page per reporting origin rate limiting on real time reporting.
+  // TODO(crbug.com/337132755): Clean this up after long enough time, in case
+  // some pages live for a while.
+  std::map<url::Origin, std::pair<base::TimeTicks, double>>
+      real_time_reporting_quota_;
 
   // Must be declared last -- DataDecoder destruction cancels decoding
   // completion callbacks.

@@ -31,6 +31,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
@@ -166,6 +167,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     PrivateAggregationManager* private_aggregation_manager,
     LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
+    AdAuctionPageDataCallback ad_auction_page_data_callback,
     std::unique_ptr<blink::AuctionConfig> auction_config,
     const std::string& devtools_auction_id,
     const url::Origin& main_frame_origin,
@@ -192,6 +194,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
       private_aggregation_manager_(private_aggregation_manager),
       log_private_aggregation_requests_callback_(
           std::move(log_private_aggregation_requests_callback)),
+      ad_auction_page_data_callback_(std::move(ad_auction_page_data_callback)),
       auction_config_(std::move(auction_config)),
       devtools_auction_id_(devtools_auction_id),
       main_frame_origin_(main_frame_origin),
@@ -1047,8 +1050,9 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd(
   // Send pre-populated real time reports. Note that `real_time_contributions_`
   // will be converted to a histogram in EnqueueRealTimeReports().
   interest_group_manager_->EnqueueRealTimeReports(
-      std::move(real_time_contributions_), frame_tree_node_id, frame_origin_,
-      *client_security_state_, url_loader_factory_);
+      std::move(real_time_contributions_), ad_auction_page_data_callback_,
+      frame_tree_node_id, frame_origin_, *client_security_state_,
+      url_loader_factory_);
   real_time_contributions_.clear();
 
   // Send pre-populated reports. Send these after the main reports, since

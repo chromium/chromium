@@ -22,6 +22,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
+#include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_response.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
@@ -125,6 +126,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   using RealTimeReportingContributions =
       std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
+
+  using AdAuctionPageDataCallback =
+      base::RepeatingCallback<AdAuctionPageData*()>;
 
   // Seller-specific information about the winning bid. The top-level seller and
   // (if present) component seller associated with the winning bid have separate
@@ -252,6 +256,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       PrivateAggregationManager* private_aggregation_manager,
       LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
+      AdAuctionPageDataCallback ad_auction_page_data_callback,
       std::unique_ptr<blink::AuctionConfig> auction_config,
       const std::string& devtools_auction_id,
       const url::Origin& main_frame_origin,
@@ -491,6 +496,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   const LogPrivateAggregationRequestsCallback
       log_private_aggregation_requests_callback_;
+
+  const AdAuctionPageDataCallback ad_auction_page_data_callback_;
 
   // Top-level AuctionConfig. It owns the `auction_config` objects pointed at by
   // the the top-level SellerWinningBidInfo. If there's a component auction

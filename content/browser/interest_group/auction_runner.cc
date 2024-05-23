@@ -500,10 +500,11 @@ void AuctionRunner::FailAuction(
         std::move(debug_loss_report_urls),
         FrameTreeNode::kFrameTreeNodeInvalidId, frame_origin_,
         *client_security_state_, url_loader_factory_);
+
     interest_group_manager_->EnqueueRealTimeReports(
         auction_.TakeRealTimeReportingContributions(),
-        FrameTreeNode::kFrameTreeNodeInvalidId, frame_origin_,
-        *client_security_state_, url_loader_factory_);
+        ad_auction_page_data_callback_, FrameTreeNode::kFrameTreeNodeInvalidId,
+        frame_origin_, *client_security_state_, url_loader_factory_);
 
     InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
         private_aggregation_manager_, main_frame_origin_,
@@ -674,8 +675,9 @@ void AuctionRunner::OnBidsGeneratedAndScored(base::TimeTicks start_time,
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
       auction_.CreateReporter(
           browser_context_, private_aggregation_manager_, url_loader_factory_,
-          std::move(owned_auction_config_), main_frame_origin_, frame_origin_,
-          client_security_state_.Clone(), std::move(interest_groups_that_bid));
+          ad_auction_page_data_callback_, std::move(owned_auction_config_),
+          main_frame_origin_, frame_origin_, client_security_state_.Clone(),
+          std::move(interest_groups_that_bid));
   DCHECK(reporter);
 
   if (is_server_auction) {
