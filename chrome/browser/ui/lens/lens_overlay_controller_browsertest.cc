@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "build/build_config.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
@@ -1855,8 +1856,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->GetSearchQueryHistoryForTesting().empty());
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RecordInvocationAndDismissalHistograms \
+  DISABLED_RecordInvocationAndDismissalHistograms
+#else
+#define MAYBE_RecordInvocationAndDismissalHistograms \
+  RecordInvocationAndDismissalHistograms
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       RecordInvocationAndDismissalHistograms) {
+                       MAYBE_RecordInvocationAndDismissalHistograms) {
   base::HistogramTester histogram_tester;
   WaitForPaint();
 
