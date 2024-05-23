@@ -126,7 +126,7 @@ ms::StructuredMetricsClient::Record(
 ```
 
 ## Local Verification
-Structured Metrics has a debug page at `chrome://metrics-internal/structured` that can be used to verify recorded events and their contents. The page must be manually refreshed to see recently recorded events.
+Structured Metrics has a debug page at `chrome://metrics-internals/structured` that can be used to verify recorded events and their contents. The page must be manually refreshed to see recently recorded events.
 
 <!-- TODO: Expand with image and additional functionality -->
 
