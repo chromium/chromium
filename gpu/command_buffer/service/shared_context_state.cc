@@ -803,6 +803,11 @@ void SharedContextState::SubmitIfNecessary(
     return;
   }
 
+  // Do nothing here if there is no context.
+  if (!gr_context()) {
+    return;
+  }
+
   // Note that when DrDc is enabled, we need to call
   // AddVulkanCleanupTaskForSkiaFlush() on gpu main thread and do skia flush.
   // This will ensure that vulkan memory allocated on gpu main thread will be
