@@ -136,6 +136,13 @@ cargo_crate("{{this.name}}") {
   {{#if output_dir}}
   output_dir = "{{output_dir}}"
   {{/if}}
+  {{#if native_libs}}
+  native_libs = [
+  {{#each native_libs}}
+    "{{this}}",
+  {{/each}}
+  ]
+  {{/if}}
   {{/with}}
 
   {{#if gn_visibility.public}}
