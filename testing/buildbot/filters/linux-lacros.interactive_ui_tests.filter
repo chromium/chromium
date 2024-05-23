@@ -58,9 +58,6 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.NewBrowserWindowState/*
 -TabDragging/DetachToBrowserTabDragControllerTest.OffsetForDraggingInMaximizedWindow/*
 -TabDragging/DetachToBrowserTabDragControllerTest.OffsetForDraggingTab/*
-# The following tests are flaky.
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/0
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/2
 
 # TODO(b/256212431): Re-enable when linux-lacros-rel support
 # signin::MakePrimaryAccountAvailable().
