@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_STRUCTURED_ARENA_EVENT_BUFFER_H_
-#define COMPONENTS_METRICS_STRUCTURED_ARENA_EVENT_BUFFER_H_
+#ifndef CHROME_BROWSER_METRICS_STRUCTURED_ARENA_EVENT_BUFFER_H_
+#define CHROME_BROWSER_METRICS_STRUCTURED_ARENA_EVENT_BUFFER_H_
 
 #include <cstdint>
 #include <memory>
@@ -84,4 +84,4 @@ class ArenaEventBuffer : public EventBuffer<StructuredEventProto> {
 };
 }  // namespace metrics::structured
 
-#endif  // COMPONENTS_METRICS_STRUCTURED_ARENA_EVENT_BUFFER_H_
+#endif  // CHROME_BROWSER_METRICS_STRUCTURED_ARENA_EVENT_BUFFER_H_

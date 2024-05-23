@@ -16,6 +16,10 @@ source_set("structured") {
   ]
 
   if (is_chromeos_ash) {
+    sources += [
+      "arena_event_buffer.cc",
+      "arena_event_buffer.h",
+    ]
     deps += [ "//components/metrics/structured:external_metrics" ]
   } else if (is_win || is_linux || is_mac || is_chromeos_lacros) {
     sources += [
