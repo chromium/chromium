@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
@@ -173,6 +174,7 @@ enum class LcppHintStatus {
 // would be sent to the renderer process upon navigation commit.
 void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
                                 LoadingPredictor& predictor) {
+  base::ElapsedTimer timer;
   if (!blink::LcppEnabled() || !navigation_handle.IsInOutermostMainFrame() ||
       navigation_handle.IsSameDocument()) {
     return;
@@ -202,6 +204,8 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
     base::UmaHistogramEnumeration(
         "LoadingPredictor.SetLCPPNavigationHint.Status",
         LcppHintStatus::kSucceedToSet);
+    base::UmaHistogramTimes("LoadingPredictor.SetLCPPNavigationHint.Time",
+                            timer.Elapsed());
   } else {
     base::UmaHistogramEnumeration(
         "LoadingPredictor.SetLCPPNavigationHint.Status",

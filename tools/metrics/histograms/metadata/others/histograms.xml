@@ -7396,6 +7396,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LoadingPredictor.SetLCPPNavigationHint.Time" units="ms"
+    expires_after="2024-08-22">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the elapsed time it takes to read LCPPNavigationHint and attach it
+    to NavigationHandle. Recorded on DidStartNavigation or DidRedirectNavigation
+    only when there is hint information.
+  </summary>
+</histogram>
+
 <histogram name="Manifest.HasProperty" enum="Boolean"
     expires_after="2024-11-03">
   <owner>mgiuca@chromium.org</owner>

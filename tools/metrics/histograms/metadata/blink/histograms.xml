@@ -3184,6 +3184,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.LCPP.PrewarmHttpDiskCache.{PrewarmMethod}.CacheExists"
+    enum="BooleanExists" expires_after="2024-08-22">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records whether prewarming HttpDiskCache successfully warmed up the disk or
+    not. If the cache entry does not exist, false will be recorded. This is
+    recorded on each HttpDiskCache prewarming attempt and only if the
+    {PrewarmMethod} prewarming method was used.
+  </summary>
+  <token key="PrewarmMethod">
+    <variant name="DownloadBody"/>
+    <variant name="HeadersOnly"/>
+  </token>
+</histogram>
+
+<histogram name="Blink.LCPP.PrewarmHttpDiskCacheURL.Count" units="count"
+    expires_after="2024-08-22">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the predicted subresource URL count that is predicted by the
+    HttpDiskCachePrewarming feature. This is recorded on each navigation.
+  </summary>
+</histogram>
+
 <histogram name="Blink.LCPP.RecordedFontCount" units="count"
     expires_after="2024-11-17">
   <owner>yyanagisawa@chromium.org</owner>

@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/base_tracing.h"
@@ -109,6 +110,9 @@ void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
         base::BindOnce(&PrewarmHttpDiskCacheManager::MaybeProcessNextQueuedJob,
                        weak_factory_.GetWeakPtr()));
   }
+
+  base::UmaHistogramCounts100("Blink.LCPP.PrewarmHttpDiskCacheURL.Count",
+                              top_frame_subresource_urls.size());
 }
 
 void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
@@ -209,6 +213,8 @@ void PrewarmHttpDiskCacheManager::OnComplete(bool success) {
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "success", success);
   CHECK(!use_read_and_discard_body_option_);
+  base::UmaHistogramBoolean(
+      "Blink.LCPP.PrewarmHttpDiskCache.DownloadBody.CacheExists", success);
   DoComplete();
 }
 
@@ -217,13 +223,15 @@ void PrewarmHttpDiskCacheManager::OnRetry(base::OnceClosure start_retry) {
 }
 
 void PrewarmHttpDiskCacheManager::OnHeadersOnly(
-    scoped_refptr<net::HttpResponseHeaders> ignored) {
+    scoped_refptr<net::HttpResponseHeaders> headers) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TRACE_EVENT_WITH_FLOW0("loading",
                          "PrewarmHttpDiskCacheManager::OnHeadersOnly",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   CHECK(use_read_and_discard_body_option_);
+  base::UmaHistogramBoolean(
+      "Blink.LCPP.PrewarmHttpDiskCache.HeadersOnly.CacheExists", bool(headers));
   DoComplete();
 }
 
