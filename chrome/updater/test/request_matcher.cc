@@ -4,12 +4,14 @@
 
 #include "chrome/updater/test/request_matcher.h"
 
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -168,9 +170,9 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
           if (const auto* appid = dict->FindString("appid"); *appid == app_id) {
             if (const auto* install_source =
                     dict->FindString("installsource")) {
-              return (*install_source == "ondemand" ||
-                      *install_source == "taggedmi" ||
-                      *install_source == "policy") ==
+              static constexpr auto kInstallSources =
+                  std::array{"ondemand", "taggedmi", "policy"};
+              return base::Contains(kInstallSources, *install_source) ==
                      (priority == UpdateService::Priority::kForeground);
             }
           }
