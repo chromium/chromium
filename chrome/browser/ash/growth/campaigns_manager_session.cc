@@ -104,34 +104,52 @@ void MaybeTriggerCampaignsWhenCampaignsLoaded() {
   MaybeTriggerSlot(growth::Slot::kNotification);
 }
 
-const GURL FindActiveWebAppBrowser(Profile* profile,
-                                   const webapps::AppId& app_id) {
+// The app_id is optional and only required if the browser type is app.
+const GURL FindActiveBrowserUrl(const Profile* profile,
+                                Browser::Type browser_type,
+                                const webapps::AppId& app_id = std::string()) {
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
+      continue;
+    }
+    if (browser->type() != browser_type) {
+      continue;
+    }
     if (browser->profile() != profile) {
       continue;
     }
-
-    if (web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
-      const auto* tab_strip_model = browser->tab_strip_model();
-      if (!tab_strip_model) {
-        LOG(ERROR) << "No tab_strip_model.";
-        continue;
-      }
-
-      auto* active_web_contents = tab_strip_model->GetActiveWebContents();
-      if (!active_web_contents) {
-        LOG(ERROR) << "No active web contents.";
-        continue;
-      }
-
-      return active_web_contents->GetURL();
+    // For web app type, it must match the app_id.
+    if (browser_type == Browser::TYPE_APP &&
+        !web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
+      continue;
     }
-  }
 
+    const auto* tab_strip_model = browser->tab_strip_model();
+    if (!tab_strip_model) {
+      LOG(ERROR) << "No tab_strip_model.";
+      continue;
+    }
+
+    auto* active_web_contents = tab_strip_model->GetActiveWebContents();
+    if (!active_web_contents) {
+      LOG(ERROR) << "No active web contents.";
+      continue;
+    }
+
+    return active_web_contents->GetURL();
+  }
   return GURL::EmptyGURL();
 }
 
-bool IsBrowserApp(const std::string& app_id) {
+const GURL FindActiveWebAppUrl(Profile* profile, const webapps::AppId& app_id) {
+  return FindActiveBrowserUrl(profile, Browser::TYPE_APP, app_id);
+}
+
+const GURL FindActiveTabUrl(Profile* profile) {
+  return FindActiveBrowserUrl(profile, Browser::TYPE_NORMAL);
+}
+
+bool IsBrowserAppId(const std::string& app_id) {
   return app_id == app_constants::kChromeAppId ||
          app_id == app_constants::kAshDebugBrowserAppId ||
          app_id == app_constants::kLacrosAppId;
@@ -213,13 +231,14 @@ void CampaignsManagerSession::OnInstanceUpdate(
   auto app_id = update.AppId();
   // For browser app, the user can open a new tab or switch to an existing tab.
   // The campaigns will be triggered when navigating to the target url.
-  if (IsBrowserApp(app_id)) {
+  if (IsBrowserAppId(app_id)) {
     if (ash::features::IsGrowthCampaignsTriggerByBrowserEnabled() &&
         IsAppActiveAndVisible(update)) {
       auto* campaigns_manager = growth::CampaignsManager::Get();
       CHECK(campaigns_manager);
 
-      // TODO: b/339706247 - Set the app id and window on PrimaryPageChanged.
+      // The app id set here will be used to check if active app is browser when
+      // primary page changed.
       campaigns_manager->SetOpenedApp(app_id);
       opened_window_ = update.Window();
     }
@@ -240,16 +259,23 @@ void CampaignsManagerSession::OnInstanceRegistryWillBeDestroyed(
 }
 
 void CampaignsManagerSession::PrimaryPageChanged(const GURL& url) {
-  if (!ash::features::IsGrowthCampaignsTriggerByBrowserEnabled()) {
-    return;
-  }
-
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
 
-  if (!IsBrowserApp(campaigns_manager->GetOpenedAppId())) {
+  auto app_id = campaigns_manager->GetOpenedAppId();
+  if (!IsBrowserAppId(app_id)) {
     return;
   }
+
+  // If the source of page change is different from active tab url, skip showing
+  // the campaign. This could happen when the user navigates to url_1, and while
+  // it is loading switches to another tab with url_2. The url_1 nudge will not
+  // be shown in this case.
+  auto active_tab_url = FindActiveTabUrl(GetProfile());
+  if (!active_tab_url.EqualsIgnoringRef(url)) {
+    return;
+  }
+
   campaigns_manager->SetActiveUrl(url);
   MaybeTriggerCampaignsWhenAppOpened();
 }
@@ -328,8 +354,7 @@ void CampaignsManagerSession::HandleAppInstanceCreation(
   auto app_id = update.AppId();
 
   campaigns_manager->SetOpenedApp(app_id);
-  campaigns_manager->SetActiveUrl(
-      FindActiveWebAppBrowser(GetProfile(), app_id));
+  campaigns_manager->SetActiveUrl(FindActiveWebAppUrl(GetProfile(), app_id));
   opened_window_ = update.Window();
 
   MaybeTriggerCampaignsWhenAppOpened();
