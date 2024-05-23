@@ -2573,10 +2573,19 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
   } else {
     logical_block_offset = logical_offset.block_offset + fragment.BlockSize();
 
+    const LayoutUnit clearance_after_line = layout_result.ClearanceAfterLine();
     if (const std::optional<LayoutUnit> trim_block_end_by =
             layout_result.TrimBlockEndBy()) {
-      // Trim the space to respect the `text-box-trim` property here.
-      logical_block_offset -= *trim_block_end_by;
+      // Trim the space to respect the `text-box-trim` property here. Objects
+      // that pushes following boxes down (e.g., Ruby annotations) are also
+      // trimmed.
+      if (clearance_after_line) {
+        // `<br>` with clearance is an exception. It still pushes down, after
+        // all other objects are trimmed. See `AddAnyClearanceAfterLine()`.
+        logical_block_offset += clearance_after_line;
+      } else {
+        logical_block_offset -= *trim_block_end_by;
+      }
     } else {
       // We add the greater of AnnotationOverflow and ClearanceAfterLine here.
       // Then, we cancel the AnnotationOverflow part if
@@ -2586,8 +2595,8 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
       //
       // See InlineLayoutAlgorithm::CreateLine() and
       // BlockLayoutAlgorithm::Layout().
-      logical_block_offset += std::max(layout_result.AnnotationOverflow(),
-                                       layout_result.ClearanceAfterLine());
+      logical_block_offset +=
+          std::max(layout_result.AnnotationOverflow(), clearance_after_line);
     }
   }
 
