@@ -108,6 +108,10 @@ void ErrorScreen::AllowGuestSignin(bool allowed) {
   }
 }
 
+void ErrorScreen::DisallowOfflineLogin() {
+  ShowOfflineLoginOption(false);
+}
+
 void ErrorScreen::ShowOfflineLoginOption(bool show) {
   if (view_) {
     view_->SetOfflineSigninAllowed(show);
@@ -123,10 +127,12 @@ void ErrorScreen::OnOfflineLoginClicked() {
   LoginDisplayHost::default_host()->StartWizard(OfflineLoginView::kScreenId);
 }
 
+// static
 void ErrorScreen::AllowOfflineLogin(bool allowed) {
   g_offline_login_allowed_ = allowed;
 }
 
+// static
 void ErrorScreen::AllowOfflineLoginPerUser(bool allowed) {
   g_offline_login_per_user_allowed_ = allowed;
 }
@@ -269,7 +275,7 @@ void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
   // No need to show the screen again if it is already shown.
   if (is_hidden()) {
     SetUIState(NetworkError::UI_STATE_SIGNIN);
-    Show(nullptr /*wizard_context*/);
+    Show(/*wizard_context=*/nullptr);
   }
 }
 
