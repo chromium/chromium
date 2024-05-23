@@ -65,17 +65,6 @@ std::unique_ptr<ArcPaiStarter> ArcPaiStarter::CreateIfNeeded(Profile* profile) {
   return std::make_unique<ArcPaiStarter>(profile);
 }
 
-void ArcPaiStarter::AcquireLock() {
-  DCHECK(!locked_);
-  locked_ = true;
-}
-
-void ArcPaiStarter::ReleaseLock() {
-  DCHECK(locked_);
-  locked_ = false;
-  MaybeStartPai();
-}
-
 void ArcPaiStarter::AddOnStartCallback(base::OnceClosure callback) {
   if (started_) {
     std::move(callback).Run();
@@ -94,8 +83,9 @@ void ArcPaiStarter::MaybeStartPai() {
   // flow failed and no condition is changed to trigger |MaybeStartPai|.
   retry_timer_.Stop();
 
-  if (started_ || pending_ || locked_ || IsArcPlayAutoInstallDisabled())
+  if (started_ || pending_ || IsArcPlayAutoInstallDisabled()) {
     return;
+  }
 
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_);
   DCHECK(prefs);

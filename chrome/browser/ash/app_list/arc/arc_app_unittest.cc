@@ -2431,9 +2431,7 @@ TEST_P(ArcPlayStoreAppTest, PaiStarter) {
   bool pai_started = false;
 
   arc::ArcPaiStarter starter1(profile_.get());
-  arc::ArcPaiStarter starter2(profile_.get());
   EXPECT_FALSE(starter1.started());
-  EXPECT_FALSE(starter2.started());
   EXPECT_EQ(app_instance()->start_pai_request_count(), 0);
 
   starter1.AddOnStartCallback(
@@ -2452,8 +2450,6 @@ TEST_P(ArcPlayStoreAppTest, PaiStarter) {
   ASSERT_TRUE(session_manager->pai_starter());
   EXPECT_FALSE(session_manager->pai_starter()->started());
 
-  starter2.AcquireLock();
-
   SendPlayStoreApp();
 
   EXPECT_TRUE(starter1.started());
@@ -2465,17 +2461,12 @@ TEST_P(ArcPlayStoreAppTest, PaiStarter) {
       base::BindOnce(&OnPaiStartedCallback, &pai_started));
   EXPECT_TRUE(pai_started);
 
-  EXPECT_FALSE(starter2.started());
   EXPECT_TRUE(session_manager->pai_starter()->started());
   EXPECT_EQ(app_instance()->start_pai_request_count(), 2);
 
-  starter2.ReleaseLock();
+  arc::ArcPaiStarter starter2(profile_.get());
   EXPECT_TRUE(starter2.started());
   EXPECT_EQ(app_instance()->start_pai_request_count(), 3);
-
-  arc::ArcPaiStarter starter3(profile_.get());
-  EXPECT_TRUE(starter3.started());
-  EXPECT_EQ(app_instance()->start_pai_request_count(), 4);
 }
 
 // Validates that PAI is started on the next session start if it was not started
@@ -2491,10 +2482,7 @@ TEST_P(ArcPlayStoreAppTest, StartPaiOnNextRun) {
   ASSERT_TRUE(pai_starter);
   EXPECT_FALSE(pai_starter->started());
 
-  // Finish session with lock. This would prevent running PAI.
-  pai_starter->AcquireLock();
-  SendPlayStoreApp();
-  EXPECT_FALSE(pai_starter->started());
+  // Session ended without PAI starts.
   session_manager->Shutdown();
 
   // Simulate ARC restart.
@@ -2505,7 +2493,6 @@ TEST_P(ArcPlayStoreAppTest, StartPaiOnNextRun) {
   session_manager = arc::ArcSessionManager::Get();
   pai_starter = session_manager->pai_starter();
   ASSERT_TRUE(pai_starter);
-  EXPECT_FALSE(pai_starter->locked());
 
   SendPlayStoreApp();
   EXPECT_TRUE(pai_starter->started());

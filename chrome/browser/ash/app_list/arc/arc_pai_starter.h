@@ -35,22 +35,12 @@ class ArcPaiStarter : public ArcAppListPrefs::Observer {
   // |context|.
   static std::unique_ptr<ArcPaiStarter> CreateIfNeeded(Profile* profile);
 
-  // Locks PAI to be run on the Play Store app is ready.
-  void AcquireLock();
-
-  // Unlocks PAI to be run on the Play Store app is ready. If the Play Store app
-  // is ready at this moment then PAI is started immediately.
-  void ReleaseLock();
-
   // Registers callback that is called once PAI has been started. If PAI is
   // started already then callback is called immediately.
   void AddOnStartCallback(base::OnceClosure callback);
 
   // Triggers retry for testing. This fails in case retry is not scheduled.
   void TriggerRetryForTesting();
-
-  // Returns true if lock was acquired.
-  bool locked() const { return locked_; }
 
   // Returns true if PAI request was already started.
   bool started() const { return started_; }
