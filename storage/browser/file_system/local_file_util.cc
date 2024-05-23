@@ -48,26 +48,20 @@ class LocalFileUtil::LocalFileEnumerator
   ~LocalFileEnumerator() override = default;
 
   base::FilePath Next() override {
-    base::FilePath next = file_enum_.Next();
-    while (!next.empty() && file_util_->IsHiddenItem(next)) {
-      next = file_enum_.Next();
-    }
-    if (next.empty()) {
-      // TODO(b/329523214): in the long term, setting error_ should not be
-      // conditional on the enumeration coming up empty (equivalently,
-      // !had_some_results_). But, as per that bug, we do so in the short term
-      // "as an intermediate checkpoint".
-      if (!had_some_results_) {
+    while (true) {
+      base::FilePath next = file_enum_.Next();
+      if (next.empty()) {
         error_ = file_enum_.GetError();
+        return next;
+      } else if (file_util_->IsHiddenItem(next)) {
+        continue;
       }
-      return next;
-    }
-    file_util_info_ = file_enum_.GetInfo();
-    had_some_results_ = true;
+      file_util_info_ = file_enum_.GetInfo();
 
-    base::FilePath path;
-    platform_root_path_.AppendRelativePath(next, &path);
-    return virtual_root_path_.Append(path);
+      base::FilePath path;
+      platform_root_path_.AppendRelativePath(next, &path);
+      return virtual_root_path_.Append(path);
+    }
   }
 
   base::File::Error GetError() override { return error_; }
@@ -85,7 +79,6 @@ class LocalFileUtil::LocalFileEnumerator
   // through the whole lifetime of the enumerator.
   const raw_ptr<const LocalFileUtil> file_util_;
   base::File::Error error_ = base::File::FILE_OK;
-  bool had_some_results_ = false;
   base::FileEnumerator file_enum_;
   base::FileEnumerator::FileInfo file_util_info_;
   base::FilePath platform_root_path_;
