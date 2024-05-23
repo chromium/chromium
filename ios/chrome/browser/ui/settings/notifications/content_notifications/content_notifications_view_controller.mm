@@ -75,13 +75,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - UIViewController
 
-- (void)viewWillLayoutSubviews {
-  // Make the navigation bar buttons blue instead of white (only happens when
-  // the NotificationsBannerViewController `banner` is enabled, otherwise it's
-  // blue by default anyway).
-  self.navigationController.navigationBar.tintColor = UIColor.systemBlueColor;
-}
-
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   [super didMoveToParentViewController:parent];
   if (!parent) {
