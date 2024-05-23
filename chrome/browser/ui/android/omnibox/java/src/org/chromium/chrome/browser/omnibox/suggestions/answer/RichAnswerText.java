@@ -60,6 +60,7 @@ class RichAnswerText implements AnswerText {
         RichAnswerText[] result = new RichAnswerText[2];
 
         int answerType = richAnswerTemplate.getAnswerType().getNumber();
+        int maxLines = getMaxLinesForAnswerType(answerType);
         if (answerType == AnswerType.DICTIONARY) {
             result[0] =
                     new RichAnswerText(
@@ -75,7 +76,7 @@ class RichAnswerText implements AnswerText {
                             answerType,
                             /* isAnswerLine= */ false,
                             reverseStockTextColor);
-            result[0].mMaxLines = 1;
+            result[1].mMaxLines = maxLines;
         } else {
             // Construct the Answer card presenting Answers in Suggest in Answer > Query order.
             result[0] =
@@ -92,10 +93,7 @@ class RichAnswerText implements AnswerText {
                             answerType,
                             /* isAnswerLine= */ false,
                             reverseStockTextColor);
-            result[1].mMaxLines = 1;
-            if (answerType == AnswerType.TRANSLATION) {
-                result[0].mMaxLines = 3;
-            }
+            result[0].mMaxLines = maxLines;
 
             // Note: Despite Answers in Suggest being presented in reverse order (first answer, then
             // query) we want to ensure that the query is announced first to visually impaired
@@ -218,5 +216,11 @@ class RichAnswerText implements AnswerText {
         return new TextAppearanceSpan(
                 mContext,
                 org.chromium.chrome.browser.omnibox.R.style.TextAppearance_TextMedium_Secondary);
+    }
+
+    private static int getMaxLinesForAnswerType(int answerType) {
+        return (answerType == AnswerType.DICTIONARY || answerType == AnswerType.TRANSLATION)
+                ? 3
+                : 1;
     }
 }

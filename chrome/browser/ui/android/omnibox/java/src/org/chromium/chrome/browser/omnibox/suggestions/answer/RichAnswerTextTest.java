@@ -86,7 +86,7 @@ public class RichAnswerTextTest {
 
         AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, false);
         Assert.assertEquals(texts[0].getMaxLines(), 1);
-        Assert.assertEquals(texts[1].getMaxLines(), 1);
+        Assert.assertEquals(texts[1].getMaxLines(), 3);
         Assert.assertEquals(texts[0].getAccessibilityDescription(), "define adroit • /əˈdroit/");
         Assert.assertEquals(
                 texts[1].getAccessibilityDescription(),
