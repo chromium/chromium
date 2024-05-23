@@ -12,4 +12,10 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_CLOSE_DEVICE_LIST_TEXT" desc="Tooltip for the close button in the cast device selector view.">
    Close device list for casting
   </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_UNKNOWN_SOURCE_TEXT" desc="Placeholder text for cast media item with empty source.">
+   Unknown source
+  </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_UNKNOWN_DEVICE_TEXT" desc="Placeholder text for cast media item with empty device.">
+   Unknown device
+  </message>
 </grit-part>

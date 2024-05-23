@@ -20,6 +20,7 @@
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -31,6 +32,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using Metadata = media_message_center::MediaNotificationViewImpl::Metadata;
 
@@ -132,6 +134,10 @@ std::u16string GetSourceTitle(const media_router::MediaRoute& route) {
 #if !BUILDFLAG(IS_CHROMEOS)
   // Never include the media sink name for updated media UI on non-CrOS.
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI)) {
+    if (route.description().empty()) {
+      return l10n_util::GetStringUTF16(
+          IDS_GLOBAL_MEDIA_CONTROLS_UNKNOWN_SOURCE_TEXT);
+    }
     return base::UTF8ToUTF16(route.description());
   }
 #endif

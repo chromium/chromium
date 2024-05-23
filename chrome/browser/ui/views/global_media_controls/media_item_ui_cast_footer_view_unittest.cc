@@ -23,13 +23,7 @@ class MediaItemUICastFooterViewTest : public ChromeViewsTestBase {
         media_message_center::MediaColorTheme());
   }
 
-  void SimulateButtonClicked(views::View* view) {
-    views::test::ButtonTestApi(static_cast<views::Button*>(view))
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(), 0, 0));
-  }
-
-  MediaItemUICastFooterView* get_view() { return view_.get(); }
+  MediaItemUICastFooterView* view() { return view_.get(); }
   views::Button* stop_casting_button() {
     return view_->GetStopCastingButtonForTesting();
   }
@@ -48,6 +42,8 @@ TEST_F(MediaItemUICastFooterViewTest, ClickingOnStopCastingButton) {
   EXPECT_TRUE(stop_casting_button()->GetEnabled());
 
   EXPECT_CALL(*mock_stop_casting_callback(), Run());
-  SimulateButtonClicked(stop_casting_button());
+  views::test::ButtonTestApi(stop_casting_button())
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(stop_casting_button()->GetEnabled());
 }

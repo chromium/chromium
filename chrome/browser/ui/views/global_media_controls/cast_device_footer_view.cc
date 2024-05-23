@@ -53,7 +53,9 @@ CastDeviceFooterView::CastDeviceFooterView(
           kDeviceIconSize)));
 
   // Add the device name.
-  device_name_ = AddChildView(std::make_unique<views::Label>(std::u16string()));
+  device_name_ =
+      AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_GLOBAL_MEDIA_CONTROLS_UNKNOWN_DEVICE_TEXT)));
   if (device_name.has_value()) {
     device_name_->SetText(base::UTF8ToUTF16(device_name.value()));
   }
@@ -93,7 +95,11 @@ CastDeviceFooterView::CastDeviceFooterView(
 
 CastDeviceFooterView::~CastDeviceFooterView() = default;
 
-views::LabelButton* CastDeviceFooterView::GetStopCastingButtonForTesting() {
+views::Label* CastDeviceFooterView::GetDeviceNameForTesting() {
+  return device_name_;
+}
+
+views::Button* CastDeviceFooterView::GetStopCastingButtonForTesting() {
   return stop_casting_button_;
 }
 
