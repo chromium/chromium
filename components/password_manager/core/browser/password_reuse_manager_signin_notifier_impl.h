@@ -2,33 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_SIGNIN_NOTIFIER_IMPL_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_SIGNIN_NOTIFIER_IMPL_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_REUSE_MANAGER_SIGNIN_NOTIFIER_IMPL_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_REUSE_MANAGER_SIGNIN_NOTIFIER_IMPL_H_
 
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "components/password_manager/core/browser/password_store_signin_notifier.h"
+#include "components/password_manager/core/browser/password_reuse_manager_signin_notifier.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace password_manager {
 
 // Responsible for subscribing to Google identity sign-in events and passing
-// them to PasswordStore.
-class PasswordStoreSigninNotifierImpl
-    : public PasswordStoreSigninNotifier,
+// them to PasswordReuseManager.
+class PasswordReuseManagerSigninNotifierImpl
+    : public PasswordReuseManagerSigninNotifier,
       public signin::IdentityManager::Observer {
  public:
-  explicit PasswordStoreSigninNotifierImpl(
+  explicit PasswordReuseManagerSigninNotifierImpl(
       signin::IdentityManager* identity_manager);
-  ~PasswordStoreSigninNotifierImpl() override;
-  PasswordStoreSigninNotifierImpl(const PasswordStoreSigninNotifierImpl&) =
+  ~PasswordReuseManagerSigninNotifierImpl() override;
+  PasswordReuseManagerSigninNotifierImpl(const PasswordReuseManagerSigninNotifierImpl&) =
       delete;
-  PasswordStoreSigninNotifierImpl& operator=(
-      const PasswordStoreSigninNotifierImpl&) = delete;
+  PasswordReuseManagerSigninNotifierImpl& operator=(
+      const PasswordReuseManagerSigninNotifierImpl&) = delete;
 
-  // PasswordStoreSigninNotifier implementations.
+  // PasswordReuseManagerSigninNotifier implementations.
   void SubscribeToSigninEvents(PasswordReuseManager* reuse_manager) override;
   void UnsubscribeFromSigninEvents() override;
 
@@ -48,4 +48,4 @@ class PasswordStoreSigninNotifierImpl
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_SIGNIN_NOTIFIER_IMPL_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_REUSE_MANAGER_SIGNIN_NOTIFIER_IMPL_H_

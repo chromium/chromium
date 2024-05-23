@@ -132,6 +132,7 @@ static_library("browser") {
     "password_reuse_manager.h",
     "password_reuse_manager_impl.cc",
     "password_reuse_manager_impl.h",
+    "password_reuse_manager_signin_notifier.h",
     "password_save_manager.h",
     "password_save_manager_impl.cc",
     "password_save_manager_impl.h",
@@ -139,7 +140,6 @@ static_library("browser") {
     "password_session_durations_metrics_recorder.h",
     "password_store_factory_util.cc",
     "password_store_factory_util.h",
-    "password_store_signin_notifier.h",
     "password_suggestion_flow.h",
     "password_suggestion_generator.cc",
     "password_suggestion_generator.h",
@@ -229,8 +229,8 @@ static_library("browser") {
 
   if (!is_chromeos_ash && !is_android) {
     sources += [
-      "password_store_signin_notifier_impl.cc",
-      "password_store_signin_notifier_impl.h",
+      "password_reuse_manager_signin_notifier_impl.cc",
+      "password_reuse_manager_signin_notifier_impl.h",
     ]
   }
 }
@@ -488,7 +488,7 @@ source_set("unit_tests") {
   }
 
   if (!is_chromeos_ash && !is_android) {
-    sources += [ "password_store_signin_notifier_impl_unittest.cc" ]
+    sources += [ "password_reuse_manager_signin_notifier_impl_unittest.cc" ]
   }
 
   deps = [

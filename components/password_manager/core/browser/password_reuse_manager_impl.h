@@ -68,8 +68,8 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   base::CallbackListSubscription RegisterStateCallbackOnHashPasswordManager(
       const base::RepeatingCallback<void(const std::string& username)>&
           callback) override;
-  void SetPasswordStoreSigninNotifier(
-      std::unique_ptr<PasswordStoreSigninNotifier> notifier) override;
+  void SetPasswordReuseManagerSigninNotifier(
+      std::unique_ptr<PasswordReuseManagerSigninNotifier> notifier) override;
   void ScheduleEnterprisePasswordURLUpdate() override;
   void MaybeSavePasswordHash(const PasswordForm* submitted_form,
                              PasswordManagerClient* client) override;
@@ -142,7 +142,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   std::unique_ptr<PasswordReuseDetector> reuse_detector_;
 
   // Notifies PasswordReuseManager about sign-in events.
-  std::unique_ptr<PasswordStoreSigninNotifier> notifier_;
+  std::unique_ptr<PasswordReuseManagerSigninNotifier> notifier_;
 
   // Responsible for saving, clearing, retrieving and encryption of a password
   // hash data in preferences.

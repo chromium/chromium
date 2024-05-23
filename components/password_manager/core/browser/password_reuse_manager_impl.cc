@@ -20,7 +20,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store_signin_notifier.h"
+#include "components/password_manager/core/browser/password_reuse_manager_signin_notifier.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -336,8 +336,8 @@ PasswordReuseManagerImpl::RegisterStateCallbackOnHashPasswordManager(
   return hash_password_manager_.RegisterStateCallback(callback);
 }
 
-void PasswordReuseManagerImpl::SetPasswordStoreSigninNotifier(
-    std::unique_ptr<PasswordStoreSigninNotifier> notifier) {
+void PasswordReuseManagerImpl::SetPasswordReuseManagerSigninNotifier(
+    std::unique_ptr<PasswordReuseManagerSigninNotifier> notifier) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!notifier_);
   DCHECK(notifier);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store_signin_notifier_impl.h"
+#include "components/password_manager/core/browser/password_reuse_manager_signin_notifier_impl.h"
 
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
@@ -18,10 +18,10 @@ using testing::_;
 namespace password_manager {
 namespace {
 
-class PasswordStoreSigninNotifierImplTest : public testing::Test {
+class PasswordReuseManagerSigninNotifierImplTest : public testing::Test {
  public:
-  PasswordStoreSigninNotifierImplTest() = default;
-  ~PasswordStoreSigninNotifierImplTest() override = default;
+  PasswordReuseManagerSigninNotifierImplTest() = default;
+  ~PasswordReuseManagerSigninNotifierImplTest() override = default;
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
@@ -38,9 +38,9 @@ class PasswordStoreSigninNotifierImplTest : public testing::Test {
 };
 
 // Checks that if a notifier is subscribed on sign-in events, then
-// a password store receives sign-in notifications.
-TEST_F(PasswordStoreSigninNotifierImplTest, Subscribed) {
-  PasswordStoreSigninNotifierImpl notifier(identity_manager());
+// PasswordReuseManager receives sign-in notifications.
+TEST_F(PasswordReuseManagerSigninNotifierImplTest, Subscribed) {
+  PasswordReuseManagerSigninNotifierImpl notifier(identity_manager());
   notifier.SubscribeToSigninEvents(&reuse_manager_);
   identity_test_env()->MakePrimaryAccountAvailable("test@example.com",
                                                    signin::ConsentLevel::kSync);
@@ -50,9 +50,9 @@ TEST_F(PasswordStoreSigninNotifierImplTest, Subscribed) {
 }
 
 // Checks that if a notifier is unsubscribed on sign-in events, then
-// a password store receives no sign-in notifications.
-TEST_F(PasswordStoreSigninNotifierImplTest, Unsubscribed) {
-  PasswordStoreSigninNotifierImpl notifier(identity_manager());
+// PasswordReuseManager receives no sign-in notifications.
+TEST_F(PasswordReuseManagerSigninNotifierImplTest, Unsubscribed) {
+  PasswordReuseManagerSigninNotifierImpl notifier(identity_manager());
   notifier.SubscribeToSigninEvents(&reuse_manager_);
   notifier.UnsubscribeFromSigninEvents();
   EXPECT_CALL(reuse_manager_, ClearAllGaiaPasswordHash()).Times(0);
@@ -65,8 +65,8 @@ TEST_F(PasswordStoreSigninNotifierImplTest, Unsubscribed) {
 // This test is excluded from iOS since iOS does not support multiple Google
 // accounts. Checks that ClearGaiaPasswordHash() is called when a secondary
 // account is removed.
-TEST_F(PasswordStoreSigninNotifierImplTest, SignOutContentArea) {
-  PasswordStoreSigninNotifierImpl notifier(identity_manager());
+TEST_F(PasswordReuseManagerSigninNotifierImplTest, SignOutContentArea) {
+  PasswordReuseManagerSigninNotifierImpl notifier(identity_manager());
   notifier.SubscribeToSigninEvents(&reuse_manager_);
 
   identity_test_env()->MakePrimaryAccountAvailable("username",

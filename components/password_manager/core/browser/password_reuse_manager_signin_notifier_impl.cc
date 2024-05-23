@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store_signin_notifier_impl.h"
+#include "components/password_manager/core/browser/password_reuse_manager_signin_notifier_impl.h"
 
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
@@ -10,25 +10,25 @@
 
 namespace password_manager {
 
-PasswordStoreSigninNotifierImpl::PasswordStoreSigninNotifierImpl(
+PasswordReuseManagerSigninNotifierImpl::PasswordReuseManagerSigninNotifierImpl(
     signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager) {
   DCHECK(identity_manager_);
 }
 
-PasswordStoreSigninNotifierImpl::~PasswordStoreSigninNotifierImpl() = default;
+PasswordReuseManagerSigninNotifierImpl::~PasswordReuseManagerSigninNotifierImpl() = default;
 
-void PasswordStoreSigninNotifierImpl::SubscribeToSigninEvents(
+void PasswordReuseManagerSigninNotifierImpl::SubscribeToSigninEvents(
     PasswordReuseManager* reuse_manager) {
   reuse_manager_ = reuse_manager;
   identity_manager_->AddObserver(this);
 }
 
-void PasswordStoreSigninNotifierImpl::UnsubscribeFromSigninEvents() {
+void PasswordReuseManagerSigninNotifierImpl::UnsubscribeFromSigninEvents() {
   identity_manager_->RemoveObserver(this);
 }
 
-void PasswordStoreSigninNotifierImpl::NotifySignedOut(
+void PasswordReuseManagerSigninNotifierImpl::NotifySignedOut(
     const std::string& username,
     bool syncing_account) {
   if (!reuse_manager_) {
@@ -49,7 +49,7 @@ void PasswordStoreSigninNotifierImpl::NotifySignedOut(
 }
 
 // IdentityManager::Observer implementation.
-void PasswordStoreSigninNotifierImpl::OnPrimaryAccountChanged(
+void PasswordReuseManagerSigninNotifierImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   // TODO(crbug.com/40067058): Remove this code when ConsentLevel::kSync is
   // deleted (since kSignin users are handled by
@@ -63,7 +63,7 @@ void PasswordStoreSigninNotifierImpl::OnPrimaryAccountChanged(
 }
 
 // IdentityManager::Observer implementation.
-void PasswordStoreSigninNotifierImpl::OnExtendedAccountInfoRemoved(
+void PasswordReuseManagerSigninNotifierImpl::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // Only react to non-syncing Gaia account sign-out event - the syncing
   // account is handled separately in OnPrimaryAccountChanged().

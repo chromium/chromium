@@ -6,7 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_REUSE_MANAGER_H_
 
 #include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/core/browser/password_store_signin_notifier.h"
+#include "components/password_manager/core/browser/password_reuse_manager_signin_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {
@@ -63,8 +63,8 @@ class MockPasswordReuseManager : public PasswordReuseManager {
                    callback),
               (override));
   MOCK_METHOD(void,
-              SetPasswordStoreSigninNotifier,
-              (std::unique_ptr<PasswordStoreSigninNotifier> notifier),
+              SetPasswordReuseManagerSigninNotifier,
+              (std::unique_ptr<PasswordReuseManagerSigninNotifier> notifier),
               (override));
   MOCK_METHOD(void, ScheduleEnterprisePasswordURLUpdate, (), (override));
   MOCK_METHOD(void,

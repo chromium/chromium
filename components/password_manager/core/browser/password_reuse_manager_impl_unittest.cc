@@ -15,8 +15,8 @@
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector_impl.h"
+#include "components/password_manager/core/browser/password_reuse_manager_signin_notifier.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
-#include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -65,7 +65,8 @@ std::optional<PasswordHashData> GetPasswordFromPref(
   return hash_password_manager.RetrievePasswordHash(username, is_gaia_password);
 }
 
-class MockPasswordStoreSigninNotifier : public PasswordStoreSigninNotifier {
+class MockPasswordReuseManagerSigninNotifier
+    : public PasswordReuseManagerSigninNotifier {
  public:
   MOCK_METHOD(void,
               SubscribeToSigninEvents,
@@ -506,13 +507,13 @@ TEST_F(PasswordReuseManagerImplTest, ReportMetrics) {
 TEST_F(PasswordReuseManagerImplTest,
        SubscriptionAndUnsubscriptionFromSignInEvents) {
   Initialize();
-  std::unique_ptr<MockPasswordStoreSigninNotifier> notifier =
-      std::make_unique<MockPasswordStoreSigninNotifier>();
-  MockPasswordStoreSigninNotifier* notifier_weak = notifier.get();
+  std::unique_ptr<MockPasswordReuseManagerSigninNotifier> notifier =
+      std::make_unique<MockPasswordReuseManagerSigninNotifier>();
+  MockPasswordReuseManagerSigninNotifier* notifier_weak = notifier.get();
 
   // Check that |reuse_manager| is subscribed to sign-in events.
   EXPECT_CALL(*notifier_weak, SubscribeToSigninEvents(reuse_manager()));
-  reuse_manager()->SetPasswordStoreSigninNotifier(std::move(notifier));
+  reuse_manager()->SetPasswordReuseManagerSigninNotifier(std::move(notifier));
   testing::Mock::VerifyAndClearExpectations(reuse_manager());
 
   // Check that |reuse_manager| is unsubscribed from sign-in events on shutdown.
