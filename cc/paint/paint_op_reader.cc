@@ -307,10 +307,10 @@ void PaintOpReader::Read(PaintFlags* flags) {
 }
 
 void PaintOpReader::Read(CorePaintFlags* flags) {
-  Read(&flags->color);
-  Read(&flags->width);
-  Read(&flags->miter_limit);
-  ReadSimple(&flags->bitfields_uint);
+  Read(&flags->color_);
+  Read(&flags->width_);
+  Read(&flags->miter_limit_);
+  ReadSimple(&flags->bitfields_uint_);
 }
 
 void PaintOpReader::Read(

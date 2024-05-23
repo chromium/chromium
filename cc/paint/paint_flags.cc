@@ -29,7 +29,7 @@ bool AreValuesEqualForTesting(const sk_sp<T>& a, const sk_sp<T>& b) {
 
 namespace cc {
 
-PaintFlags::PaintFlags() {
+CorePaintFlags::CorePaintFlags() {
   // Match SkPaint defaults.
   bitfields_uint_ = 0u;
   bitfields_.cap_type_ = SkPaint::kDefault_Cap;
@@ -45,33 +45,25 @@ PaintFlags::PaintFlags() {
                 "Too many bitfields");
 }
 
+bool CorePaintFlags::operator==(const CorePaintFlags& other) const {
+  return color_ == other.color_ && width_ == other.width_ &&
+         miter_limit_ == other.miter_limit_ &&
+         bitfields_uint_ == other.bitfields_uint_;
+}
+
+PaintFlags::PaintFlags() = default;
+
 PaintFlags::PaintFlags(const PaintFlags& flags) = default;
 
-PaintFlags::PaintFlags(const CorePaintFlags& flags)
-    : color_(flags.color),
-      width_(flags.width),
-      miter_limit_(flags.miter_limit),
-      bitfields_uint_(flags.bitfields_uint) {}
+PaintFlags::PaintFlags(const CorePaintFlags& flags) : CorePaintFlags(flags) {}
 
 PaintFlags::PaintFlags(PaintFlags&& other) = default;
-
-PaintFlags::~PaintFlags() {
-  // TODO(enne): non-default dtor to investigate http://crbug.com/790915
-
-  // Sanity check accessing this object doesn't crash.
-  bitfields_.blend_mode_ = static_cast<uint32_t>(SkBlendMode::kLastMode);
-
-  // Free refcounted objects one by one.
-  path_effect_.reset();
-  shader_.reset();
-  color_filter_.reset();
-  draw_looper_.reset();
-  image_filter_.reset();
-}
 
 PaintFlags& PaintFlags::operator=(const PaintFlags& other) = default;
 
 PaintFlags& PaintFlags::operator=(PaintFlags&& other) = default;
+
+PaintFlags::~PaintFlags() = default;
 
 bool PaintFlags::CanConvertToCorePaintFlags() const {
   return IsValid() && !path_effect_ && !shader_ && !color_filter_ &&
@@ -80,7 +72,7 @@ bool PaintFlags::CanConvertToCorePaintFlags() const {
 
 CorePaintFlags PaintFlags::ToCorePaintFlags() const {
   DCHECK(CanConvertToCorePaintFlags());
-  return {color_, width_, miter_limit_, bitfields_uint_};
+  return CorePaintFlags(*this);
 }
 
 void PaintFlags::setImageFilter(sk_sp<PaintFilter> filter) {
@@ -157,12 +149,12 @@ SkPaint PaintFlags::ToSkPaint() const {
   if (image_filter_) {
     paint.setImageFilter(image_filter_->cached_sk_filter_);
   }
-  paint.setColor(color_);
-  paint.setStrokeWidth(width_);
-  paint.setStrokeMiter(miter_limit_);
+  paint.setColor(getColor4f());
+  paint.setStrokeWidth(getStrokeWidth());
+  paint.setStrokeMiter(getStrokeMiter());
   paint.setBlendMode(getBlendMode());
-  paint.setAntiAlias(bitfields_.antialias_);
-  paint.setDither(bitfields_.dither_);
+  paint.setAntiAlias(isAntiAlias());
+  paint.setDither(isDither());
   paint.setStrokeCap(static_cast<SkPaint::Cap>(getStrokeCap()));
   paint.setStrokeJoin(static_cast<SkPaint::Join>(getStrokeJoin()));
   paint.setStyle(static_cast<SkPaint::Style>(getStyle()));
@@ -185,7 +177,7 @@ SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
   }
 }
 
-bool PaintFlags::IsValid() const {
+bool CorePaintFlags::IsValid() const {
   return PaintOp::IsValidPaintFlagsSkBlendMode(getBlendMode());
 }
 
