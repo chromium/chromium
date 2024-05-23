@@ -521,6 +521,7 @@ other_dts_files = [
   "//tools/typescript/definitions/webview_tag.d.ts",
   "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
   "//ui/file_manager/image_loader/image_loader_private.d.ts",
+  "//ui/file_manager/image_loader/overrides.d.ts",
 ]
 
 generated_js_files = [

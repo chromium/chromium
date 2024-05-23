@@ -48,6 +48,7 @@ copy("copy_src") {
 
 dts_files = [
   "image_loader_private.d.ts",
+  "overrides.d.ts",
   "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/runtime.d.ts",
 ]
