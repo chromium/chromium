@@ -858,7 +858,7 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
         return;
       case AcceleratedVideoDecoder::kDecodeError:
         LogError(media_log_, "AcceleratedVideoDecoder::Decode() failed.");
-        ClearPendingRequests(DecoderStatus::Codes::kPlatformDecodeFailure);
+        ClearPendingRequests(DecoderStatus::Codes::kFailed);
         return;
       case AcceleratedVideoDecoder::kTryAgain:
         // Will be needed for h.264 CENCv1
