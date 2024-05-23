@@ -67,5 +67,6 @@ cargo_crate("lib") {
     "unicode-script",
     "unicode-segment",
   ]
+
   testonly = true
 }

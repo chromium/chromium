@@ -84,5 +84,6 @@ cargo_crate("lib") {
     "use_alloc",
     "use_std",
   ]
+
   testonly = true
 }

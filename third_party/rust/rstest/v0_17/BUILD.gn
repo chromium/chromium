@@ -35,5 +35,6 @@ cargo_crate("lib") {
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/rstest_macros/v0_17:lib" ]
   build_deps = [ "//third_party/rust/rustc_version/v0_4:buildrs_support" ]
+
   testonly = true
 }

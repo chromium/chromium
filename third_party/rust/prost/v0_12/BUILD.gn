@@ -45,5 +45,6 @@ cargo_crate("lib") {
     "derive",
     "std",
   ]
+
   testonly = true
 }

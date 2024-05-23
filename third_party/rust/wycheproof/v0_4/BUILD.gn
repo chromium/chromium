@@ -367,5 +367,6 @@ cargo_crate("lib") {
     "//third_party/rust/serde/v1:lib",
     "//third_party/rust/serde_json/v1:lib",
   ]
+
   testonly = true
 }

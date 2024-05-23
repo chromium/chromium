@@ -137,14 +137,21 @@ cargo_crate("{{this.name}}") {
   output_dir = "{{output_dir}}"
   {{/if}}
   {{/with}}
-  {{#unless this.gn_visibility.public}}
 
+  {{#if gn_visibility.public}}
+  {{#if detail.extra_kv.visibility}}
+  visibility = []
+  {{/if}}
+  {{else}}
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
   # it from first-party code.
   visibility = [ "//third_party/rust/*" ]
-  {{/unless}}
-  {{#if this.gn_visibility.testonly}}
+  {{/if}}
+  {{#each detail.extra_kv.visibility}}
+  visibility += [ "{{this}}" ]
+  {{/each}}
+  {{#if gn_visibility.testonly}}
   testonly = true
   {{/if}}
 }

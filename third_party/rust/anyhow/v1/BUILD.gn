@@ -47,5 +47,6 @@ cargo_crate("lib") {
       "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.83/build.rs"
   build_sources =
       [ "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.83/build.rs" ]
+
   testonly = true
 }
