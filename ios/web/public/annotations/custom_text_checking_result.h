@@ -10,6 +10,7 @@
 // Custom NSTextCheckingResult types.
 uint64_t const TCTextCheckingTypeParcelTracking = 1ULL << 32;
 uint64_t const TCTextCheckingTypeMeasurement = 1ULL << 33;
+uint64_t const TCTextCheckingTypeCarrier = 1ULL << 34;
 
 // Custom NSTextCheckingResult class adding TextClassifier custom types.
 @interface CustomTextCheckingResult : NSTextCheckingResult
@@ -25,6 +26,8 @@ uint64_t const TCTextCheckingTypeMeasurement = 1ULL << 33;
 + (NSTextCheckingResult*)parcelCheckingResultWithRange:(NSRange)range
                                                carrier:(int)carrier
                                          carrierNumber:(NSString*)carrierNumber;
++ (NSTextCheckingResult*)carrierCheckingResultWithRange:(NSRange)range
+                                                carrier:(int)carrier;
 @end
 
 #endif  // IOS_WEB_PUBLIC_ANNOTATIONS_CUSTOM_TEXT_CHECKING_RESULT_H_

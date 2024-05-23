@@ -55,4 +55,16 @@
   }
   return result;
 }
+
++ (NSTextCheckingResult*)carrierCheckingResultWithRange:(NSRange)range
+                                                carrier:(int)carrier {
+  CustomTextCheckingResult* result = [[CustomTextCheckingResult alloc] init];
+  if (result) {
+    result->_customResultType = TCTextCheckingTypeCarrier;
+    result->_customRange = range;
+    result->_carrier = carrier;
+  }
+  return result;
+}
+
 @end

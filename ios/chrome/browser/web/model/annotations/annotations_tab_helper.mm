@@ -215,10 +215,23 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
       web_state_->GetWebFramesManager(content_world)->GetMainWebFrame();
   if (main_frame && deferred) {
     std::vector<web::TextAnnotation> annotations(std::move(deferred.value()));
-    if ((IsIOSParcelTrackingEnabled() &&
-         !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) ||
-        base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
-      AnnotationsTabHelper::ProcessAnnotations(annotations);
+    if (IsIOSParcelTrackingEnabled() &&
+        !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
+      parcel_number_tracker_.ProcessAnnotations(annotations);
+      // Show UI only if this is the currently active WebState.
+      if (parcel_number_tracker_.HasNewTrackingNumbers() &&
+          web_state_->IsVisible()) {
+        // Call asynchronously to allow the rest of the annotations to be
+        // decorated first.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&AnnotationsTabHelper::MaybeShowParcelTrackingUI,
+                           weak_factory_.GetWeakPtr(),
+                           parcel_number_tracker_.GetNewTrackingNumbers()));
+      }
+    }
+    if (base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
+      ProcessAnnotations(annotations);
     }
     base::Value::List decorations_list;
     BuildCacheAndDecorations(annotations, decorations_list);
@@ -240,54 +253,20 @@ void AnnotationsTabHelper::BuildCacheAndDecorations(
 
 void AnnotationsTabHelper::ProcessAnnotations(
     std::vector<web::TextAnnotation>& annotations_list) {
-  NSMutableArray<CustomTextCheckingResult*>* unique_parcels =
-      [[NSMutableArray alloc] init];
-  NSMutableSet* existing_parcel_numbers = [NSMutableSet set];
+  if (!base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
+    return;
+  }
   int detected_measurements = 0;
   for (auto annotation = annotations_list.begin();
        annotation != annotations_list.end();) {
     NSTextCheckingResult* match = annotation->second;
-    if (!match || (match.resultType != TCTextCheckingTypeParcelTracking &&
-                   match.resultType != TCTextCheckingTypeMeasurement)) {
-      annotation++;
-      continue;
-    }
-    CustomTextCheckingResult* custom_match =
-        static_cast<CustomTextCheckingResult*>(match);
-
-    if (match.resultType == TCTextCheckingTypeParcelTracking) {
-      // Avoid adding duplicates to `unique_parcels`.
-      if (![existing_parcel_numbers
-              containsObject:[custom_match carrierNumber]]) {
-        [existing_parcel_numbers addObject:[custom_match carrierNumber]];
-        [unique_parcels addObject:custom_match];
-      }
-      // Remove the parcel from annotations_list to prevent decorating the
-      // tracking number.
-      annotation = annotations_list.erase(annotation);
-      continue;
-    } else if (match.resultType == TCTextCheckingTypeMeasurement) {
+    if (match && match.resultType == TCTextCheckingTypeMeasurement) {
       detected_measurements++;
     }
     annotation++;
   }
-
-  if (base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
-    base::UmaHistogramCounts100("IOS.UnitConversion.DetectedMeasurements",
-                                detected_measurements);
-  }
-
-  // Show UI only if this is the currently active WebState.
-  if ([unique_parcels count] > 0 && web_state_->IsVisible()) {
-    DCHECK(IsIOSParcelTrackingEnabled() &&
-           !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState()));
-    // Call asynchronously to allow the rest of the annotations to be decorated
-    // first.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AnnotationsTabHelper::MaybeShowParcelTrackingUI,
-                       weak_factory_.GetWeakPtr(), unique_parcels));
-  }
+  base::UmaHistogramCounts100("IOS.UnitConversion.DetectedMeasurements",
+                              detected_measurements);
 }
 
 void AnnotationsTabHelper::MaybeShowParcelTrackingUI(

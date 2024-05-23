@@ -39,17 +39,25 @@ source_set("annotations") {
     "annotations_tab_helper.mm",
     "annotations_util.h",
     "annotations_util.mm",
+    "parcel_number_tracker.h",
+    "parcel_number_tracker.mm",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "annotations_util_unittest.mm" ]
+  sources = [
+    "annotations_util_unittest.mm",
+    "parcel_number_tracker_unittest.mm",
+  ]
   deps = [
     ":annotations",
+    "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/web/common:features",
+    "//ios/web/public/annotations:custom_text_check_result",
     "//testing/gtest",
   ]
 }
