@@ -50,7 +50,7 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
   // errors in BeginAccess/EndAccess flow.
   if (texture_) {
     LOG(ERROR) << "Attempting to begin access before ending previous access.";
-    return device_.CreateErrorTexture(&texture_descriptor);
+    return nullptr;
   }
 
   // We need to have internal usages of CopySrc for copies,
@@ -115,9 +115,10 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
     // End the access on the backing and restore its fence, as Dawn did not
     // consume it.
     android_backing()->EndWrite(std::move(sync_fd));
-    auto texture = std::move(texture_);
+
+    // Set `texture_` to nullptr to signal failure to BeginScopedAccess(), which
+    // will itself then return nullptr to signal failure to the client.
     texture_ = nullptr;
-    return texture;
   }
 
   return texture_;
