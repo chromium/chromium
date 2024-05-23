@@ -215,9 +215,15 @@ public class SectionHeaderView extends LinearLayout {
 
         if (mIsSurfacePolishEnabled) {
             // Add 20dp padding at each sides for the SectionHeaderView.
-            int lateralPadding =
-                    getResources().getDimensionPixelSize(R.dimen.feed_header_menu_end_margin);
-            mContent.setPadding(lateralPadding, 0, 0, 0);
+            int startLateralPadding =
+                    getResources().getDimensionPixelSize(R.dimen.feed_header_menu_start_margin);
+            int endLateralPadding =
+                    getResources()
+                            .getDimensionPixelSize(
+                                    ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)
+                                            ? R.dimen.feed_containment_feed_header_menu_end_margin
+                                            : R.dimen.feed_header_menu_end_margin);
+            mContent.setPadding(startLateralPadding, 0, endLateralPadding, 0);
             MarginLayoutParams contentMarginLayoutParams =
                     (MarginLayoutParams) mContent.getLayoutParams();
             contentMarginLayoutParams.topMargin =
