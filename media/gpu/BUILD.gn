@@ -383,6 +383,8 @@ source_set("common") {
 
   if (is_win || use_vaapi) {
     sources += [
+      "av1_builder.cc",
+      "av1_builder.h",
       "h264_builder.cc",
       "h264_builder.h",
       "vp9_svc_layers.cc",
@@ -672,6 +674,7 @@ source_set("unit_tests") {
 
   if (is_win || use_vaapi) {
     sources += [
+      "av1_builder_unittest.cc",
       "h264_builder_unittest.cc",
       "vp9_svc_layers_unittest.cc",
     ]

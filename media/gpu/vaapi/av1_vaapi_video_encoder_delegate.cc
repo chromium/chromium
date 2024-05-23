@@ -9,6 +9,7 @@
 
 #include "base/bits.h"
 #include "base/logging.h"
+#include "media/gpu/av1_builder.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -179,103 +180,6 @@ int ComputeLevel(const gfx::Size& coded_size, uint32_t framerate) {
   }
 
   return -1;
-}
-
-// Helper class for writing packed bitstream data.
-class PackedData {
- public:
-  void Write(uint64_t val, int num_bits);
-  void WriteBool(bool val);
-  void WriteOBUHeader(libgav1::ObuType type,
-                      bool extension_flag,
-                      bool has_size);
-  void EncodeLeb128(uint32_t value,
-                    std::optional<int> fixed_size = std::nullopt);
-  std::vector<uint8_t> Flush();
-  size_t OutstandingBits() { return total_outstanding_bits_; }
-
- private:
-  std::vector<std::pair<uint64_t, int>> queued_writes_;
-  size_t total_outstanding_bits_ = 0;
-};
-
-void PackedData::Write(uint64_t val, int num_bits) {
-  queued_writes_.push_back(std::make_pair(val, num_bits));
-  total_outstanding_bits_ += num_bits;
-}
-
-void PackedData::WriteBool(bool val) {
-  Write(val, 1);
-}
-
-std::vector<uint8_t> PackedData::Flush() {
-  std::vector<uint8_t> ret;
-  uint8_t curr_byte = 0;
-  int rem_bits_in_byte = 8;
-  for (auto queued_write : queued_writes_) {
-    uint64_t val = queued_write.first;
-    int outstanding_bits = queued_write.second;
-    while (outstanding_bits) {
-      if (rem_bits_in_byte >= outstanding_bits) {
-        curr_byte |= val << (rem_bits_in_byte - outstanding_bits);
-        rem_bits_in_byte -= outstanding_bits;
-        outstanding_bits = 0;
-      } else {
-        curr_byte |= (val >> (outstanding_bits - rem_bits_in_byte)) &
-                     ((1 << rem_bits_in_byte) - 1);
-        outstanding_bits -= rem_bits_in_byte;
-        rem_bits_in_byte = 0;
-      }
-      if (!rem_bits_in_byte) {
-        ret.push_back(curr_byte);
-        curr_byte = 0;
-        rem_bits_in_byte = 8;
-      }
-    }
-  }
-
-  if (rem_bits_in_byte != 8) {
-    ret.push_back(curr_byte);
-  }
-
-  queued_writes_.clear();
-  total_outstanding_bits_ = 0;
-
-  return ret;
-}
-
-// See section 5.3.2 of the AV1 specification.
-void PackedData::WriteOBUHeader(libgav1::ObuType type,
-                                bool extension_flag,
-                                bool has_size) {
-  DCHECK_LE(1, type);
-  DCHECK_LE(type, 8);
-  WriteBool(false);  // forbidden bit
-  Write(base::checked_cast<uint64_t>(type), 4);
-  WriteBool(extension_flag);
-  WriteBool(has_size);
-  WriteBool(false);  // reserved bit
-}
-
-// Encode a variable length unsigned integer of up to 4 bytes.
-// Most significant bit of each byte indicates if parsing should continue, and
-// the 7 least significant bits hold the actual data. So the encoded length
-// may be 5 bytes under some circumstances.
-// This function also has a fixed size mode where we pass in a fixed size for
-// the data and the function zero pads up to that size.
-// See section 4.10.5 of the AV1 specification.
-void PackedData::EncodeLeb128(uint32_t value, std::optional<int> fixed_size) {
-  for (int i = 0; i < fixed_size.value_or(5); i++) {
-    uint8_t curr_byte = value & 0x7F;
-    value >>= 7;
-    if (value || fixed_size) {
-      curr_byte |= 0x80;
-      Write(curr_byte, 8);
-    } else {
-      Write(curr_byte, 8);
-      break;
-    }
-  }
 }
 
 scoped_refptr<AV1Picture> GetAV1Picture(
@@ -557,15 +461,15 @@ void AV1VaapiVideoEncoderDelegate::BitrateControlUpdate(
 // See section 5.6 of the AV1 specification.
 bool AV1VaapiVideoEncoderDelegate::SubmitTemporalDelimiter(
     size_t& temporal_delimiter_obu_size) {
-  PackedData temporal_delimiter_obu;
+  AV1BitstreamBuilder temporal_delimiter_obu;
   temporal_delimiter_obu.WriteOBUHeader(
       /*type=*/libgav1::ObuType::kObuTemporalDelimiter,
       /*extension_flag=*/false,
       /*has_size=*/true);
-  temporal_delimiter_obu.EncodeLeb128(0);
+  temporal_delimiter_obu.WriteValueInLeb128(0);
 
   std::vector<uint8_t> temporal_delimiter_obu_data =
-      temporal_delimiter_obu.Flush();
+      std::move(temporal_delimiter_obu).Flush();
   temporal_delimiter_obu_size = temporal_delimiter_obu_data.size();
   return SubmitPackedData(temporal_delimiter_obu_data);
 }
@@ -631,7 +535,7 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceParam() {
 
 bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeaderOBU(
     size_t& sequence_header_obu_size) {
-  PackedData sequence_header_obu;
+  AV1BitstreamBuilder sequence_header_obu;
 
   sequence_header_obu.WriteOBUHeader(
       /*type=*/libgav1::ObuType::kObuSequenceHeader,
@@ -639,9 +543,10 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeaderOBU(
       /*has_size=*/true);
   std::vector<uint8_t> packed_sequence_data = PackSequenceHeader();
 
-  sequence_header_obu.EncodeLeb128(packed_sequence_data.size());
+  sequence_header_obu.WriteValueInLeb128(packed_sequence_data.size());
 
-  std::vector<uint8_t> sequence_header_obu_data = sequence_header_obu.Flush();
+  std::vector<uint8_t> sequence_header_obu_data =
+      std::move(sequence_header_obu).Flush();
   sequence_header_obu_data.insert(
       sequence_header_obu_data.end(),
       std::make_move_iterator(packed_sequence_data.begin()),
@@ -653,7 +558,7 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeaderOBU(
 
 // See AV1 specification 5.5.1
 std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackSequenceHeader() const {
-  PackedData ret;
+  AV1BitstreamBuilder ret;
 
   ret.Write(seq_param_.seq_profile, 3);
   ret.WriteBool(seq_param_.seq_fields.bits.still_picture);
@@ -707,7 +612,7 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackSequenceHeader() const {
 
   ret.WriteBool(true);  // Trailing bit must be 1 per 5.3.4
 
-  return ret.Flush();
+  return std::move(ret).Flush();
 }
 
 bool AV1VaapiVideoEncoderDelegate::SubmitFrame(const EncodeJob& job,
@@ -964,15 +869,15 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
 bool AV1VaapiVideoEncoderDelegate::SubmitFrameOBU(
     const VAEncPictureParameterBufferAV1& pic_param,
     size_t& frame_header_obu_size_offset) {
-  PackedData frame_obu;
+  AV1BitstreamBuilder frame_obu;
   frame_obu.WriteOBUHeader(/*type=*/libgav1::ObuType::kObuFrame,
                            /*extension_flag=*/false,
                            /*has_size=*/true);
   frame_header_obu_size_offset = frame_obu.OutstandingBits() / 8;
 
   std::vector<uint8_t> frame_header_data = PackFrameHeader(pic_param);
-  frame_obu.EncodeLeb128(frame_header_data.size(), 4);
-  std::vector<uint8_t> frame_obu_data = frame_obu.Flush();
+  frame_obu.WriteValueInLeb128(frame_header_data.size(), 4);
+  std::vector<uint8_t> frame_obu_data = std::move(frame_obu).Flush();
   frame_obu_data.insert(frame_obu_data.end(),
                         std::make_move_iterator(frame_header_data.begin()),
                         std::make_move_iterator(frame_header_data.end()));
@@ -985,7 +890,7 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrameOBU(
 // https://github.com/intel/libva-utils/blob/master/encode/av1encode.c
 std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
     const VAEncPictureParameterBufferAV1& pic_param) const {
-  PackedData ret;
+  AV1BitstreamBuilder ret;
   libgav1::FrameType frame_type =
       static_cast<libgav1::FrameType>(pic_param.picture_flags.bits.frame_type);
 
@@ -1116,7 +1021,7 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
     }
   }
 
-  return ret.Flush();
+  return std::move(ret).Flush();
 }
 
 bool AV1VaapiVideoEncoderDelegate::SubmitPictureParam(
