@@ -17,11 +17,11 @@ namespace focusgroup {
 enum FocusgroupFlags : uint8_t {
   kNone = 0,
   kExtend = 1 << 0,
-  kHorizontal = 1 << 1,
-  kVertical = 1 << 2,
+  kInline = 1 << 1,
+  kBlock = 1 << 2,
   kGrid = 1 << 3,
-  kWrapHorizontally = 1 << 4,
-  kWrapVertically = 1 << 5,
+  kWrapInline = 1 << 4,
+  kWrapBlock = 1 << 5,
   kRowFlow = 1 << 6,
   kColFlow = 1 << 7,
 };

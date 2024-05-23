@@ -617,75 +617,75 @@ TEST_F(ElementTest, ParseFocusgroupAttrDefaultValuesWhenEmptyValue) {
   FocusgroupFlags fg_flags = fg->GetFocusgroupFlags();
   ASSERT_NE(fg_flags, FocusgroupFlags::kNone);
 
-  ASSERT_TRUE(fg_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_TRUE(fg_flags & FocusgroupFlags::kVertical);
+  ASSERT_TRUE(fg_flags & FocusgroupFlags::kInline);
+  ASSERT_TRUE(fg_flags & FocusgroupFlags::kBlock);
   ASSERT_FALSE(fg_flags & FocusgroupFlags::kExtend);
-  ASSERT_FALSE(fg_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg_flags & FocusgroupFlags::kWrapBlock);
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
-    <div id=fg1 focusgroup=horizontal></div>
-    <div id=fg2 focusgroup=vertical></div>
+    <div id=fg1 focusgroup=inline></div>
+    <div id=fg2 focusgroup=block></div>
     <div id=fg3 focusgroup>
-      <div id=fg3_a focusgroup="extend horizontal"></div>
-      <div id=fg3_b focusgroup="extend vertical">
+      <div id=fg3_a focusgroup="extend inline"></div>
+      <div id=fg3_b focusgroup="extend block">
         <div id=fg3_b_1 focusgroup=extend></div>
       </div>
     </div>
   )HTML");
 
-  // 1. Only horizontal should be supported.
+  // 1. Only inline should be supported.
   auto* fg1 = document.getElementById(AtomicString("fg1"));
   ASSERT_TRUE(fg1);
 
   FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
-  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kVertical);
+  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kInline);
+  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kBlock);
 
-  // 2. Only vertical should be supported.
+  // 2. Only block should be supported.
   auto* fg2 = document.getElementById(AtomicString("fg2"));
   ASSERT_TRUE(fg2);
 
   FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
-  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kVertical);
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kInline);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kBlock);
 
   // 3. No axis specified so both should be supported
   auto* fg3 = document.getElementById(AtomicString("fg3"));
   ASSERT_TRUE(fg3);
 
   FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kVertical);
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kInline);
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kBlock);
 
-  // 4. Only support horizontal because it's specified, regardless of the
+  // 4. Only support inline because it's specified, regardless of the
   // extend.
   auto* fg3_a = document.getElementById(AtomicString("fg3_a"));
   ASSERT_TRUE(fg3_a);
 
   FocusgroupFlags fg3_a_flags = fg3_a->GetFocusgroupFlags();
-  ASSERT_TRUE(fg3_a_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_FALSE(fg3_a_flags & FocusgroupFlags::kVertical);
+  ASSERT_TRUE(fg3_a_flags & FocusgroupFlags::kInline);
+  ASSERT_FALSE(fg3_a_flags & FocusgroupFlags::kBlock);
 
-  // 5. Only support vertical because it's specified, regardless of the extend.
+  // 5. Only support block because it's specified, regardless of the extend.
   auto* fg3_b = document.getElementById(AtomicString("fg3_b"));
   ASSERT_TRUE(fg3_b);
 
   FocusgroupFlags fg3_b_flags = fg3_b->GetFocusgroupFlags();
-  ASSERT_FALSE(fg3_b_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_TRUE(fg3_b_flags & FocusgroupFlags::kVertical);
+  ASSERT_FALSE(fg3_b_flags & FocusgroupFlags::kInline);
+  ASSERT_TRUE(fg3_b_flags & FocusgroupFlags::kBlock);
 
-  // 6. Extends a focusgroup that only supports vertical axis, but should
+  // 6. Extends a focusgroup that only supports block axis, but should
   // support both axes regardless.
   auto* fg3_b_1 = document.getElementById(AtomicString("fg3_b_1"));
   ASSERT_TRUE(fg3_b_1);
 
   FocusgroupFlags fg3_b_1_flags = fg3_b_1->GetFocusgroupFlags();
-  ASSERT_TRUE(fg3_b_1_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_TRUE(fg3_b_1_flags & FocusgroupFlags::kVertical);
+  ASSERT_TRUE(fg3_b_1_flags & FocusgroupFlags::kInline);
+  ASSERT_TRUE(fg3_b_1_flags & FocusgroupFlags::kBlock);
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrExtendCorrectly) {
@@ -770,9 +770,9 @@ TEST_F(ElementTest, ParseFocusgroupAttrWrapCorrectly) {
   SetBodyContent(R"HTML(
     <div id=fg1 focusgroup=wrap>
       <div id=fg2 focusgroup=extend>
-        <div id=fg3 focusgroup="extend horizontal"></div>
-        <div id=fg4 focusgroup="extend vertical">
-          <div id=fg5 focusgroup="extend horizontal"></div>
+        <div id=fg3 focusgroup="extend inline"></div>
+        <div id=fg4 focusgroup="extend block">
+          <div id=fg5 focusgroup="extend inline"></div>
         </div>
       </div>
     </div>
@@ -785,8 +785,8 @@ TEST_F(ElementTest, ParseFocusgroupAttrWrapCorrectly) {
 
   FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
   ASSERT_NE(fg1_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kWrapBlock);
 
   // 2. When a focusgroup extends another one, it should inherit its wrap
   // properties in all supported axes.
@@ -795,28 +795,28 @@ TEST_F(ElementTest, ParseFocusgroupAttrWrapCorrectly) {
 
   FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
   ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapBlock);
 
   // 3. The ancestor focusgroup's wrap properties should only be inherited in
-  // the horizontal axis.
+  // the inline axis.
   auto* fg3 = document.getElementById(AtomicString("fg3"));
   ASSERT_TRUE(fg3);
 
   FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
   ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapBlock);
 
   // 4. The ancestor focusgroup's wrap properties should only be inherited in
-  // the vertical axis.
+  // the block axis.
   auto* fg4 = document.getElementById(AtomicString("fg4"));
   ASSERT_TRUE(fg4);
 
   FocusgroupFlags fg4_flags = fg4->GetFocusgroupFlags();
   ASSERT_NE(fg4_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kWrapBlock);
 
   // 5. The ancestor focusgroup's wrap properties shouldn't be inherited since
   // the two focusgroups have no axis in common.
@@ -825,26 +825,26 @@ TEST_F(ElementTest, ParseFocusgroupAttrWrapCorrectly) {
 
   FocusgroupFlags fg5_flags = fg5->GetFocusgroupFlags();
   ASSERT_NE(fg5_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapBlock);
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrDoesntWrapInExtendingFocusgroupOnly) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
     <div id=fg1 focusgroup>
-      <div id=fg2 focusgroup="extend horizontal wrap"></div>
-      <div id=fg3 focusgroup="extend vertical wrap"></div>
+      <div id=fg2 focusgroup="extend inline wrap"></div>
+      <div id=fg3 focusgroup="extend block wrap"></div>
       <div id=fg4 focusgroup="extend wrap"></div>
     </div>
-    <div id=fg5 focusgroup=horizontal>
-      <div id=fg6 focusgroup="extend horizontal wrap"></div>
-      <div id=fg7 focusgroup="extend vertical wrap"></div>
+    <div id=fg5 focusgroup=inline>
+      <div id=fg6 focusgroup="extend inline wrap"></div>
+      <div id=fg7 focusgroup="extend block wrap"></div>
       <div id=fg8 focusgroup="extend wrap"></div>
     </div>
-    <div id=fg9 focusgroup=vertical>
-      <div id=fg10 focusgroup="extend horizontal wrap"></div>
-      <div id=fg11 focusgroup="extend vertical wrap"></div>
+    <div id=fg9 focusgroup=block>
+      <div id=fg10 focusgroup="extend inline wrap"></div>
+      <div id=fg11 focusgroup="extend block wrap"></div>
       <div id=fg12 focusgroup="extend wrap"></div>
     </div>
   )HTML");
@@ -876,63 +876,63 @@ TEST_F(ElementTest, ParseFocusgroupAttrDoesntWrapInExtendingFocusgroupOnly) {
 
   FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
   ASSERT_NE(fg1_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
   ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
   ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg4_flags = fg4->GetFocusgroupFlags();
   ASSERT_NE(fg4_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg5_flags = fg5->GetFocusgroupFlags();
   ASSERT_NE(fg5_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg6_flags = fg6->GetFocusgroupFlags();
   ASSERT_NE(fg6_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg6_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg6_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg6_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg6_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg7_flags = fg7->GetFocusgroupFlags();
   ASSERT_NE(fg7_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg7_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_TRUE(fg7_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg7_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg7_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg8_flags = fg8->GetFocusgroupFlags();
   ASSERT_NE(fg8_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg8_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_TRUE(fg8_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg8_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg8_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg9_flags = fg9->GetFocusgroupFlags();
   ASSERT_NE(fg9_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg9_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg9_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg9_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg9_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg10_flags = fg10->GetFocusgroupFlags();
   ASSERT_NE(fg10_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg10_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg10_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_TRUE(fg10_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg10_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg11_flags = fg11->GetFocusgroupFlags();
   ASSERT_NE(fg11_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg11_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg11_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg11_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg11_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg12_flags = fg12->GetFocusgroupFlags();
   ASSERT_NE(fg12_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg12_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg12_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_TRUE(fg12_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg12_flags & FocusgroupFlags::kWrapBlock);
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
@@ -1011,35 +1011,26 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
 
   ASSERT_EQ(e1_flags, FocusgroupFlags::kGrid);
   ASSERT_EQ(e2_flags, FocusgroupFlags::kGrid);
-  ASSERT_EQ(e3_flags,
-            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally |
-             FocusgroupFlags::kWrapVertically));
-  ASSERT_EQ(e4_flags,
-            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally));
-  ASSERT_EQ(e5_flags,
-            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapVertically));
-  ASSERT_EQ(e6_flags,
-            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally |
-             FocusgroupFlags::kWrapVertically));
+  ASSERT_EQ(e3_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapInline |
+                       FocusgroupFlags::kWrapBlock));
+  ASSERT_EQ(e4_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapInline));
+  ASSERT_EQ(e5_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapBlock));
+  ASSERT_EQ(e6_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapInline |
+                       FocusgroupFlags::kWrapBlock));
   ASSERT_EQ(e7_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kRowFlow |
                        FocusgroupFlags::kColFlow));
   ASSERT_EQ(e8_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kRowFlow));
   ASSERT_EQ(e9_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kColFlow));
   ASSERT_EQ(e10_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kRowFlow |
                         FocusgroupFlags::kColFlow));
-  ASSERT_EQ(e11_flags,
-            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally));
-  ASSERT_EQ(e12_flags,
-            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally |
-             FocusgroupFlags::kColFlow));
-  ASSERT_EQ(e13_flags,
-            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapVertically));
-  ASSERT_EQ(e14_flags,
-            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapVertically |
-             FocusgroupFlags::kRowFlow));
+  ASSERT_EQ(e11_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapInline));
+  ASSERT_EQ(e12_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapInline |
+                        FocusgroupFlags::kColFlow));
+  ASSERT_EQ(e13_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapBlock));
+  ASSERT_EQ(e14_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapBlock |
+                        FocusgroupFlags::kRowFlow));
   ASSERT_EQ(e15_flags, FocusgroupFlags::kNone);
-  ASSERT_EQ(e16_flags,
-            (FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical));
+  ASSERT_EQ(e16_flags, (FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
@@ -1063,8 +1054,8 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
   FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
   ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
   ASSERT_TRUE(fg2_flags & FocusgroupFlags::kExtend);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapBlock);
 
   auto* fg3 = document.getElementById(AtomicString("fg3"));
   ASSERT_TRUE(fg3);
@@ -1072,8 +1063,8 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
   FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
   ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
   ASSERT_TRUE(fg3_flags & FocusgroupFlags::kExtend);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapBlock);
 
   // 2. Move |fg2| from |fg1| to |not-fg|.
   auto* not_fg = document.getElementById(AtomicString("not-fg"));
@@ -1086,14 +1077,14 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
   fg2_flags = fg2->GetFocusgroupFlags();
   ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
   ASSERT_FALSE(fg2_flags & FocusgroupFlags::kExtend);
-  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapBlock);
 
   fg3_flags = fg3->GetFocusgroupFlags();
   ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
   ASSERT_TRUE(fg3_flags & FocusgroupFlags::kExtend);
-  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapHorizontally);
-  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapVertically);
+  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapBlock);
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrValueClearedAfterNodeRemoved) {

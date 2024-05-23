@@ -42,8 +42,8 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
 
   // 1. Parse the input.
   bool has_extend = false;
-  bool has_horizontal = false;
-  bool has_vertical = false;
+  bool has_inline = false;
+  bool has_block = false;
   bool has_grid = false;
   bool has_wrap = false;
   bool has_row_wrap = false;
@@ -58,10 +58,10 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
     AtomicString lowercase_token = tokens[i].LowerASCII();
     if (lowercase_token == "extend") {
       has_extend = true;
-    } else if (lowercase_token == "horizontal") {
-      has_horizontal = true;
-    } else if (lowercase_token == "vertical") {
-      has_vertical = true;
+    } else if (lowercase_token == "inline") {
+      has_inline = true;
+    } else if (lowercase_token == "block") {
+      has_block = true;
     } else if (lowercase_token == "grid") {
       has_grid = true;
     } else if (lowercase_token == "wrap") {
@@ -148,8 +148,7 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
 
     // Set the wrap/flow flags, if specified.
     if (has_wrap) {
-      flags |=
-          FocusgroupFlags::kWrapHorizontally | FocusgroupFlags::kWrapVertically;
+      flags |= FocusgroupFlags::kWrapInline | FocusgroupFlags::kWrapBlock;
       if (has_row_wrap) {
         element->GetDocument().AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
@@ -170,9 +169,9 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
       }
     } else {
       if (has_row_wrap)
-        flags |= FocusgroupFlags::kWrapHorizontally;
+        flags |= FocusgroupFlags::kWrapInline;
       if (has_col_wrap)
-        flags |= FocusgroupFlags::kWrapVertically;
+        flags |= FocusgroupFlags::kWrapBlock;
 
       if (has_row_wrap && has_col_wrap) {
         element->GetDocument().AddConsoleMessage(
@@ -186,8 +185,8 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
     }
 
     if (has_flow) {
-      if (flags & FocusgroupFlags::kWrapHorizontally ||
-          flags & FocusgroupFlags::kWrapVertically) {
+      if (flags & FocusgroupFlags::kWrapInline ||
+          flags & FocusgroupFlags::kWrapBlock) {
         element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
                                                  ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
@@ -218,7 +217,7 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
       }
     } else {
       if (has_row_flow) {
-        if (flags & FocusgroupFlags::kWrapHorizontally) {
+        if (flags & FocusgroupFlags::kWrapInline) {
           element->GetDocument().AddConsoleMessage(
               MakeGarbageCollected<ConsoleMessage>(
                   mojom::blink::ConsoleMessageSource::kOther,
@@ -231,7 +230,7 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
         }
       }
       if (has_col_flow) {
-        if (flags & FocusgroupFlags::kWrapVertically) {
+        if (flags & FocusgroupFlags::kWrapBlock) {
           element->GetDocument().AddConsoleMessage(
               MakeGarbageCollected<ConsoleMessage>(
                   mojom::blink::ConsoleMessageSource::kOther,
@@ -256,22 +255,22 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
     }
 
     // These values are reserved for linear focusgroups.
-    if (has_horizontal) {
+    if (has_inline) {
       element->GetDocument().AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kOther,
               mojom::blink::ConsoleMessageLevel::kError,
               WebString::FromUTF8(
-                  "Focusgroup attribute value 'horizontal' present, "
+                  "Focusgroup attribute value 'inline' present, "
                   "but no has no effect on grid focusgroups.")));
     }
-    if (has_vertical) {
+    if (has_block) {
       element->GetDocument().AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kOther,
               mojom::blink::ConsoleMessageLevel::kError,
               WebString::FromUTF8(
-                  "Focusgroup attribute value 'vertical' present, "
+                  "Focusgroup attribute value 'block' present, "
                   "but no has no effect on grid focusgroups.")));
     }
 
@@ -328,23 +327,26 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   }
 
   // 4. Set the axis supported on that focusgroup.
-  if (has_horizontal)
-    flags |= FocusgroupFlags::kHorizontal;
-  if (has_vertical)
-    flags |= FocusgroupFlags::kVertical;
+  if (has_inline) {
+    flags |= FocusgroupFlags::kInline;
+  }
+  if (has_block) {
+    flags |= FocusgroupFlags::kBlock;
+  }
 
   // When no axis is specified, it means that the focusgroup should handle
   // both.
-  if (!has_horizontal && !has_vertical)
-    flags |= FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical;
+  if (!has_inline && !has_block) {
+    flags |= FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
+  }
 
-  if (has_horizontal && has_vertical) {
+  if (has_inline && has_block) {
     element->GetDocument().AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kWarning,
             WebString::FromUTF8(
-                "'horizontal' and 'vertical' focusgroup attribute values used "
+                "'inline' and 'block' focusgroup attribute values used "
                 "together are redundant (this is the default behavior) and can "
                 "be omitted.")));
   }
@@ -353,18 +355,18 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   // performed once the supported axes are final.
   if (has_wrap) {
     if (flags & FocusgroupFlags::kExtend) {
-      bool extends_horizontally = flags & FocusgroupFlags::kHorizontal &&
-                                  ancestor_flags & FocusgroupFlags::kHorizontal;
-      if (!extends_horizontally && flags & FocusgroupFlags::kHorizontal) {
-        flags |= FocusgroupFlags::kWrapHorizontally;
+      bool extends_inline = flags & FocusgroupFlags::kInline &&
+                            ancestor_flags & FocusgroupFlags::kInline;
+      if (!extends_inline && flags & FocusgroupFlags::kInline) {
+        flags |= FocusgroupFlags::kWrapInline;
       }
-      bool extends_vertically = flags & FocusgroupFlags::kVertical &&
-                                ancestor_flags & FocusgroupFlags::kVertical;
-      if (!extends_vertically && flags & FocusgroupFlags::kVertical) {
-        flags |= FocusgroupFlags::kWrapVertically;
+      bool extends_block = flags & FocusgroupFlags::kBlock &&
+                           ancestor_flags & FocusgroupFlags::kBlock;
+      if (!extends_block && flags & FocusgroupFlags::kBlock) {
+        flags |= FocusgroupFlags::kWrapBlock;
       }
 
-      if (extends_horizontally && extends_vertically) {
+      if (extends_inline && extends_block) {
         element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
                                                  ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
@@ -375,10 +377,12 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
                 "one in both axes.")));
       }
     } else {
-      if (flags & FocusgroupFlags::kHorizontal)
-        flags |= FocusgroupFlags::kWrapHorizontally;
-      if (flags & FocusgroupFlags::kVertical)
-        flags |= FocusgroupFlags::kWrapVertically;
+      if (flags & FocusgroupFlags::kInline) {
+        flags |= FocusgroupFlags::kWrapInline;
+      }
+      if (flags & FocusgroupFlags::kBlock) {
+        flags |= FocusgroupFlags::kWrapBlock;
+      }
     }
   }
 
@@ -386,10 +390,10 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   // for the descendant's supported axes.
   if (flags & FocusgroupFlags::kExtend) {
     DCHECK(ancestor_flags != FocusgroupFlags::kNone);
-    if ((flags & FocusgroupFlags::kWrapHorizontally) ==
-            (ancestor_flags & FocusgroupFlags::kWrapHorizontally) &&
-        (flags & FocusgroupFlags::kWrapVertically) ==
-            (ancestor_flags & FocusgroupFlags::kWrapVertically)) {
+    if ((flags & FocusgroupFlags::kWrapInline) ==
+            (ancestor_flags & FocusgroupFlags::kWrapInline) &&
+        (flags & FocusgroupFlags::kWrapBlock) ==
+            (ancestor_flags & FocusgroupFlags::kWrapBlock)) {
       element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
                                                ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
@@ -398,10 +402,12 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
               "Focusgroup attribute value 'wrap' present but ignored. 'wrap' "
               "is inherited from the extended parent focusgroup.")));
     }
-    if (flags & FocusgroupFlags::kHorizontal)
-      flags |= (ancestor_flags & FocusgroupFlags::kWrapHorizontally);
-    if (flags & FocusgroupFlags::kVertical)
-      flags |= (ancestor_flags & FocusgroupFlags::kWrapVertically);
+    if (flags & FocusgroupFlags::kInline) {
+      flags |= (ancestor_flags & FocusgroupFlags::kWrapInline);
+    }
+    if (flags & FocusgroupFlags::kBlock) {
+      flags |= (ancestor_flags & FocusgroupFlags::kWrapBlock);
+    }
   }
 
   return flags;

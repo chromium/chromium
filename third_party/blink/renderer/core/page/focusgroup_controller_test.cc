@@ -53,25 +53,25 @@ class FocusgroupControllerTest : public PageTestBase {
 };
 
 TEST_F(FocusgroupControllerTest, FocusgroupDirectionForEventValid) {
-  // Arrow right should be forward and horizontal.
+  // Arrow right should be forward and inline.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT);
   EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
-            FocusgroupDirection::kForwardHorizontal);
+            FocusgroupDirection::kForwardInline);
 
-  // Arrow down should be forward and vertical.
+  // Arrow down should be forward and block.
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN);
   EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
-            FocusgroupDirection::kForwardVertical);
+            FocusgroupDirection::kForwardBlock);
 
-  // Arrow left should be backward and horizontal.
+  // Arrow left should be backward and inline.
   event = KeyDownEvent(ui::DomKey::ARROW_LEFT);
   EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
-            FocusgroupDirection::kBackwardHorizontal);
+            FocusgroupDirection::kBackwardInline);
 
-  // Arrow up should be backward and vertical.
+  // Arrow up should be backward and block.
   event = KeyDownEvent(ui::DomKey::ARROW_UP);
   EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
-            FocusgroupDirection::kBackwardVertical);
+            FocusgroupDirection::kBackwardBlock);
 
   // When the shift key is pressed, even when combined with a valid arrow key,
   // it should return kNone.
@@ -100,139 +100,124 @@ TEST_F(FocusgroupControllerTest, FocusgroupDirectionForEventValid) {
 
 TEST_F(FocusgroupControllerTest, IsDirectionBackward) {
   ASSERT_FALSE(utils::IsDirectionBackward(FocusgroupDirection::kNone));
-  ASSERT_TRUE(
-      utils::IsDirectionBackward(FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_TRUE(
-      utils::IsDirectionBackward(FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(
-      utils::IsDirectionBackward(FocusgroupDirection::kForwardHorizontal));
-  ASSERT_FALSE(
-      utils::IsDirectionBackward(FocusgroupDirection::kForwardVertical));
+  ASSERT_TRUE(utils::IsDirectionBackward(FocusgroupDirection::kBackwardInline));
+  ASSERT_TRUE(utils::IsDirectionBackward(FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::IsDirectionBackward(FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::IsDirectionBackward(FocusgroupDirection::kForwardBlock));
 }
 
 TEST_F(FocusgroupControllerTest, IsDirectionForward) {
   ASSERT_FALSE(utils::IsDirectionForward(FocusgroupDirection::kNone));
-  ASSERT_FALSE(
-      utils::IsDirectionForward(FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_FALSE(
-      utils::IsDirectionForward(FocusgroupDirection::kBackwardVertical));
-  ASSERT_TRUE(
-      utils::IsDirectionForward(FocusgroupDirection::kForwardHorizontal));
-  ASSERT_TRUE(utils::IsDirectionForward(FocusgroupDirection::kForwardVertical));
+  ASSERT_FALSE(utils::IsDirectionForward(FocusgroupDirection::kBackwardInline));
+  ASSERT_FALSE(utils::IsDirectionForward(FocusgroupDirection::kBackwardBlock));
+  ASSERT_TRUE(utils::IsDirectionForward(FocusgroupDirection::kForwardInline));
+  ASSERT_TRUE(utils::IsDirectionForward(FocusgroupDirection::kForwardBlock));
 }
 
-TEST_F(FocusgroupControllerTest, IsDirectionHorizontal) {
-  ASSERT_FALSE(utils::IsDirectionHorizontal(FocusgroupDirection::kNone));
-  ASSERT_TRUE(
-      utils::IsDirectionHorizontal(FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_FALSE(
-      utils::IsDirectionHorizontal(FocusgroupDirection::kBackwardVertical));
-  ASSERT_TRUE(
-      utils::IsDirectionHorizontal(FocusgroupDirection::kForwardHorizontal));
-  ASSERT_FALSE(
-      utils::IsDirectionHorizontal(FocusgroupDirection::kForwardVertical));
+TEST_F(FocusgroupControllerTest, IsDirectionInline) {
+  ASSERT_FALSE(utils::IsDirectionInline(FocusgroupDirection::kNone));
+  ASSERT_TRUE(utils::IsDirectionInline(FocusgroupDirection::kBackwardInline));
+  ASSERT_FALSE(utils::IsDirectionInline(FocusgroupDirection::kBackwardBlock));
+  ASSERT_TRUE(utils::IsDirectionInline(FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::IsDirectionInline(FocusgroupDirection::kForwardBlock));
 }
 
-TEST_F(FocusgroupControllerTest, IsDirectionVertical) {
-  ASSERT_FALSE(utils::IsDirectionVertical(FocusgroupDirection::kNone));
-  ASSERT_FALSE(
-      utils::IsDirectionVertical(FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_TRUE(
-      utils::IsDirectionVertical(FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(
-      utils::IsDirectionVertical(FocusgroupDirection::kForwardHorizontal));
-  ASSERT_TRUE(
-      utils::IsDirectionVertical(FocusgroupDirection::kForwardVertical));
+TEST_F(FocusgroupControllerTest, IsDirectionBlock) {
+  ASSERT_FALSE(utils::IsDirectionBlock(FocusgroupDirection::kNone));
+  ASSERT_FALSE(utils::IsDirectionBlock(FocusgroupDirection::kBackwardInline));
+  ASSERT_TRUE(utils::IsDirectionBlock(FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::IsDirectionBlock(FocusgroupDirection::kForwardInline));
+  ASSERT_TRUE(utils::IsDirectionBlock(FocusgroupDirection::kForwardBlock));
 }
 
 TEST_F(FocusgroupControllerTest, IsAxisSupported) {
-  FocusgroupFlags flags_horizontal_only = FocusgroupFlags::kHorizontal;
-  ASSERT_FALSE(utils::IsAxisSupported(flags_horizontal_only,
-                                      FocusgroupDirection::kNone));
-  ASSERT_TRUE(utils::IsAxisSupported(flags_horizontal_only,
-                                     FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_FALSE(utils::IsAxisSupported(flags_horizontal_only,
-                                      FocusgroupDirection::kBackwardVertical));
-  ASSERT_TRUE(utils::IsAxisSupported(flags_horizontal_only,
-                                     FocusgroupDirection::kForwardHorizontal));
-  ASSERT_FALSE(utils::IsAxisSupported(flags_horizontal_only,
-                                      FocusgroupDirection::kForwardVertical));
-
-  FocusgroupFlags flags_vertical_only = FocusgroupFlags::kVertical;
+  FocusgroupFlags flags_inline_only = FocusgroupFlags::kInline;
   ASSERT_FALSE(
-      utils::IsAxisSupported(flags_vertical_only, FocusgroupDirection::kNone));
-  ASSERT_FALSE(utils::IsAxisSupported(
-      flags_vertical_only, FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_TRUE(utils::IsAxisSupported(flags_vertical_only,
-                                     FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(utils::IsAxisSupported(flags_vertical_only,
-                                      FocusgroupDirection::kForwardHorizontal));
-  ASSERT_TRUE(utils::IsAxisSupported(flags_vertical_only,
-                                     FocusgroupDirection::kForwardVertical));
+      utils::IsAxisSupported(flags_inline_only, FocusgroupDirection::kNone));
+  ASSERT_TRUE(utils::IsAxisSupported(flags_inline_only,
+                                     FocusgroupDirection::kBackwardInline));
+  ASSERT_FALSE(utils::IsAxisSupported(flags_inline_only,
+                                      FocusgroupDirection::kBackwardBlock));
+  ASSERT_TRUE(utils::IsAxisSupported(flags_inline_only,
+                                     FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::IsAxisSupported(flags_inline_only,
+                                      FocusgroupDirection::kForwardBlock));
+
+  FocusgroupFlags flags_block_only = FocusgroupFlags::kBlock;
+  ASSERT_FALSE(
+      utils::IsAxisSupported(flags_block_only, FocusgroupDirection::kNone));
+  ASSERT_FALSE(utils::IsAxisSupported(flags_block_only,
+                                      FocusgroupDirection::kBackwardInline));
+  ASSERT_TRUE(utils::IsAxisSupported(flags_block_only,
+                                     FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::IsAxisSupported(flags_block_only,
+                                      FocusgroupDirection::kForwardInline));
+  ASSERT_TRUE(utils::IsAxisSupported(flags_block_only,
+                                     FocusgroupDirection::kForwardBlock));
 
   FocusgroupFlags flags_both_directions =
-      FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical;
+      FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
   ASSERT_FALSE(utils::IsAxisSupported(flags_both_directions,
                                       FocusgroupDirection::kNone));
   ASSERT_TRUE(utils::IsAxisSupported(flags_both_directions,
-                                     FocusgroupDirection::kBackwardHorizontal));
+                                     FocusgroupDirection::kBackwardInline));
   ASSERT_TRUE(utils::IsAxisSupported(flags_both_directions,
-                                     FocusgroupDirection::kBackwardVertical));
+                                     FocusgroupDirection::kBackwardBlock));
   ASSERT_TRUE(utils::IsAxisSupported(flags_both_directions,
-                                     FocusgroupDirection::kForwardHorizontal));
+                                     FocusgroupDirection::kForwardInline));
   ASSERT_TRUE(utils::IsAxisSupported(flags_both_directions,
-                                     FocusgroupDirection::kForwardVertical));
+                                     FocusgroupDirection::kForwardBlock));
 }
 
 TEST_F(FocusgroupControllerTest, WrapsInDirection) {
   FocusgroupFlags flags_no_wrap = FocusgroupFlags::kNone;
   ASSERT_FALSE(
       utils::WrapsInDirection(flags_no_wrap, FocusgroupDirection::kNone));
-  ASSERT_FALSE(utils::WrapsInDirection(
-      flags_no_wrap, FocusgroupDirection::kBackwardHorizontal));
   ASSERT_FALSE(utils::WrapsInDirection(flags_no_wrap,
-                                       FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(utils::WrapsInDirection(
-      flags_no_wrap, FocusgroupDirection::kForwardHorizontal));
+                                       FocusgroupDirection::kBackwardInline));
   ASSERT_FALSE(utils::WrapsInDirection(flags_no_wrap,
-                                       FocusgroupDirection::kForwardVertical));
+                                       FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::WrapsInDirection(flags_no_wrap,
+                                       FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::WrapsInDirection(flags_no_wrap,
+                                       FocusgroupDirection::kForwardBlock));
 
-  FocusgroupFlags flags_wrap_horizontal = FocusgroupFlags::kWrapHorizontally;
-  ASSERT_FALSE(utils::WrapsInDirection(flags_wrap_horizontal,
-                                       FocusgroupDirection::kNone));
-  ASSERT_TRUE(utils::WrapsInDirection(
-      flags_wrap_horizontal, FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_FALSE(utils::WrapsInDirection(flags_wrap_horizontal,
-                                       FocusgroupDirection::kBackwardVertical));
-  ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_horizontal,
-                                      FocusgroupDirection::kForwardHorizontal));
-  ASSERT_FALSE(utils::WrapsInDirection(flags_wrap_horizontal,
-                                       FocusgroupDirection::kForwardVertical));
-
-  FocusgroupFlags flags_wrap_vertical = FocusgroupFlags::kWrapVertically;
+  FocusgroupFlags flags_wrap_inline = FocusgroupFlags::kWrapInline;
   ASSERT_FALSE(
-      utils::WrapsInDirection(flags_wrap_vertical, FocusgroupDirection::kNone));
-  ASSERT_FALSE(utils::WrapsInDirection(
-      flags_wrap_vertical, FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_vertical,
-                                      FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(utils::WrapsInDirection(
-      flags_wrap_vertical, FocusgroupDirection::kForwardHorizontal));
-  ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_vertical,
-                                      FocusgroupDirection::kForwardVertical));
+      utils::WrapsInDirection(flags_wrap_inline, FocusgroupDirection::kNone));
+  ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_inline,
+                                      FocusgroupDirection::kBackwardInline));
+  ASSERT_FALSE(utils::WrapsInDirection(flags_wrap_inline,
+                                       FocusgroupDirection::kBackwardBlock));
+  ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_inline,
+                                      FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::WrapsInDirection(flags_wrap_inline,
+                                       FocusgroupDirection::kForwardBlock));
+
+  FocusgroupFlags flags_wrap_block = FocusgroupFlags::kWrapBlock;
+  ASSERT_FALSE(
+      utils::WrapsInDirection(flags_wrap_block, FocusgroupDirection::kNone));
+  ASSERT_FALSE(utils::WrapsInDirection(flags_wrap_block,
+                                       FocusgroupDirection::kBackwardInline));
+  ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_block,
+                                      FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::WrapsInDirection(flags_wrap_block,
+                                       FocusgroupDirection::kForwardInline));
+  ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_block,
+                                      FocusgroupDirection::kForwardBlock));
 
   FocusgroupFlags flags_wrap_both =
-      FocusgroupFlags::kWrapHorizontally | FocusgroupFlags::kWrapVertically;
+      FocusgroupFlags::kWrapInline | FocusgroupFlags::kWrapBlock;
   ASSERT_FALSE(
       utils::WrapsInDirection(flags_wrap_both, FocusgroupDirection::kNone));
-  ASSERT_TRUE(utils::WrapsInDirection(
-      flags_wrap_both, FocusgroupDirection::kBackwardHorizontal));
   ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_both,
-                                      FocusgroupDirection::kBackwardVertical));
+                                      FocusgroupDirection::kBackwardInline));
   ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_both,
-                                      FocusgroupDirection::kForwardHorizontal));
+                                      FocusgroupDirection::kBackwardBlock));
   ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_both,
-                                      FocusgroupDirection::kForwardVertical));
+                                      FocusgroupDirection::kForwardInline));
+  ASSERT_TRUE(utils::WrapsInDirection(flags_wrap_both,
+                                      FocusgroupDirection::kForwardBlock));
 }
 
 TEST_F(FocusgroupControllerTest, FocusgroupExtendsInAxis) {
@@ -241,149 +226,120 @@ TEST_F(FocusgroupControllerTest, FocusgroupExtendsInAxis) {
 
   ASSERT_FALSE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
                                               FocusgroupDirection::kNone));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kForwardHorizontal));
   ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
-      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardVertical));
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardBlock));
 
-  focusgroup |= FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical;
+  focusgroup |= FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
 
   ASSERT_FALSE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
                                               FocusgroupDirection::kNone));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kForwardHorizontal));
   ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
-      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardVertical));
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardBlock));
 
-  extending_focusgroup |=
-      FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical;
+  extending_focusgroup |= FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
 
   ASSERT_FALSE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
                                               FocusgroupDirection::kNone));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kForwardHorizontal));
   ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
-      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardVertical));
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardBlock));
 
   extending_focusgroup = FocusgroupFlags::kExtend;
 
   ASSERT_TRUE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
                                              FocusgroupDirection::kNone));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kForwardHorizontal));
   ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
-      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardVertical));
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardBlock));
 
-  extending_focusgroup |= FocusgroupFlags::kHorizontal;
+  extending_focusgroup |= FocusgroupFlags::kInline;
 
   ASSERT_TRUE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
                                              FocusgroupDirection::kNone));
-  ASSERT_TRUE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardVertical));
-  ASSERT_TRUE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kForwardHorizontal));
-  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
-      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardVertical));
-
-  extending_focusgroup |= FocusgroupFlags::kVertical;
-
-  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                             FocusgroupDirection::kNone));
-  ASSERT_TRUE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_TRUE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardVertical));
-  ASSERT_TRUE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kForwardHorizontal));
   ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
-      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardVertical));
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardBlock));
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardBlock));
+
+  extending_focusgroup |= FocusgroupFlags::kBlock;
+
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
+                                             FocusgroupDirection::kNone));
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardInline));
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardBlock));
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardInline));
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardBlock));
 
   focusgroup = FocusgroupFlags::kNone;
-  extending_focusgroup = FocusgroupFlags::kExtend |
-                         FocusgroupFlags::kHorizontal |
-                         FocusgroupFlags::kVertical;
+  extending_focusgroup = FocusgroupFlags::kExtend | FocusgroupFlags::kInline |
+                         FocusgroupFlags::kBlock;
 
   ASSERT_FALSE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
                                               FocusgroupDirection::kNone));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kForwardHorizontal));
   ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
-      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardVertical));
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardInline));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardBlock));
 
-  focusgroup |= FocusgroupFlags::kVertical;
-
-  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                             FocusgroupDirection::kNone));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_TRUE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardVertical));
-  ASSERT_FALSE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kForwardHorizontal));
-  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
-      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardVertical));
-
-  focusgroup |= FocusgroupFlags::kHorizontal;
+  focusgroup |= FocusgroupFlags::kBlock;
 
   ASSERT_TRUE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
                                              FocusgroupDirection::kNone));
-  ASSERT_TRUE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardHorizontal));
-  ASSERT_TRUE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kBackwardVertical));
-  ASSERT_TRUE(
-      utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
-                                     FocusgroupDirection::kForwardHorizontal));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardInline));
   ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
-      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardVertical));
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardBlock));
+  ASSERT_FALSE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardInline));
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardBlock));
+
+  focusgroup |= FocusgroupFlags::kInline;
+
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(extending_focusgroup, focusgroup,
+                                             FocusgroupDirection::kNone));
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardInline));
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kBackwardBlock));
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardInline));
+  ASSERT_TRUE(utils::FocusgroupExtendsInAxis(
+      extending_focusgroup, focusgroup, FocusgroupDirection::kForwardBlock));
 }
 
 TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
