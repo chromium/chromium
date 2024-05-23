@@ -3747,7 +3747,11 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "ios_eg2_tests",
     tests = {
-        "ios_chrome_bookmarks_eg2tests_module": targets.legacy_test_config(),
+        "ios_chrome_bookmarks_eg2tests_module": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
         "ios_chrome_settings_eg2tests_module": targets.legacy_test_config(
             mixins = [
                 "ios_parallel_simulators",
