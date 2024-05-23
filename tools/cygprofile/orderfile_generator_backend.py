@@ -247,6 +247,7 @@ class ClankCompiler:
         'symbol_level=1',  # to fit 30 GiB RAM on the bot when LLD is running
         'target_os="android"',
         'enable_proguard_obfuscation=false',  # More debuggable stacktraces.
+        'use_siso=' + str(self._options.use_siso).lower(),
         'use_remoteexec=' + str(self._options.use_remoteexec).lower(),
         'use_order_profiling=' + str(instrumented).lower(),
         'devtools_instrumentation_dumping=' + str(instrumented).lower()
@@ -1192,6 +1193,10 @@ def CreateArgumentParser():
                       help='Set this to clear the entire out/ directory prior '
                       'to running any builds. This helps to clear the build '
                       'cache and restart with empty build dirs.')
+  parser.add_argument('--use-siso',
+                      action='store_true',
+                      default=False,
+                      help='Set this to turn on using siso.')
   parser.add_argument('-v',
                       '--verbose',
                       dest='verbosity',
