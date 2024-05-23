@@ -148,6 +148,10 @@ float ProactiveNudgeTracker::Delegate::SegmentationFallbackShowResult() {
   return base::RandFloat();
 }
 
+float ProactiveNudgeTracker::Delegate::SegmentationForceShowResult() {
+  return base::RandFloat();
+}
+
 ProactiveNudgeTracker::ProactiveNudgeTracker(
     segmentation_platform::SegmentationPlatformService* segmentation_service,
     Delegate* delegate)
@@ -291,7 +295,10 @@ void ProactiveNudgeTracker::MaybeShowProactiveNudge() {
 
   // Transition to the SHOWN state.
 
-  if (state_->segmentation_result) {
+  if (state_->segmentation_result &&
+      (state_->segmentation_result_ignored_for_training ||
+       compose::GetComposeConfig()
+           .proactive_nudge_always_collect_training_data)) {
     engagement_trackers_[state_->field.renderer_id] =
         std::make_unique<EngagementTracker>(
             state_->field.renderer_id, state_->segmentation_result->request_id,
@@ -321,6 +328,12 @@ void ProactiveNudgeTracker::GotClassificationResult(
       }
       break;
     case segmentation_platform::PredictionStatus::kSucceeded:
+      if (delegate_->SegmentationForceShowResult() <
+          compose::GetComposeConfig().proactive_nudge_force_show_probability) {
+        state_->segmentation_result->ordered_labels = {
+            segmentation_platform::kComposePrmotionLabelShow};
+        state_->segmentation_result_ignored_for_training = true;
+      }
       break;
   }
 

@@ -55,6 +55,10 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     // Compared with compose's Config random nudge probability to determine if
     // we should show the nudge if segmentation fails.
     virtual float SegmentationFallbackShowResult();
+
+    // Returns a random number between 0 and 1. Controls whether the proactive
+    // nudge is force-shown when segmentation is enabled.
+    virtual float SegmentationForceShowResult();
   };
 
   enum class ShowState { kWaiting, kCanBeShown, kShown };
@@ -84,6 +88,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     std::u16string initial_text_value;
     std::optional<segmentation_platform::ClassificationResult>
         segmentation_result = std::nullopt;
+    bool segmentation_result_ignored_for_training = false;
     base::OneShotTimer timer;
     bool timer_complete = false;
 

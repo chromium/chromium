@@ -76,6 +76,18 @@ Config::Config() {
       features::kEnableComposeProactiveNudge,
       "proactive_nudge_show_probability", proactive_nudge_show_probability);
 
+  proactive_nudge_force_show_probability =
+      base::GetFieldTrialParamByFeatureAsDouble(
+          features::kEnableComposeProactiveNudge,
+          "proactive_nudge_force_show_probability",
+          proactive_nudge_force_show_probability);
+
+  proactive_nudge_always_collect_training_data =
+      base::GetFieldTrialParamByFeatureAsBool(
+          features::kEnableComposeProactiveNudge,
+          "proactive_nudge_always_collect_training_data",
+          proactive_nudge_always_collect_training_data);
+
   proactive_nudge_delay =
       base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
           features::kEnableComposeProactiveNudge,
