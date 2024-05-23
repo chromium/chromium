@@ -22,6 +22,10 @@ export function isSeaPenUINextEnabled() {
   return loadTimeData.getBoolean('isSeaPenUINextEnabled');
 }
 
+export function isSeaPenUseExptTemplateEnabled() {
+  return loadTimeData.getBoolean('isSeaPenUseExptTemplateEnabled');
+}
+
 export function isSeaPenEnterpriseEnabled() {
   return loadTimeData.getBoolean('isSeaPenEnterpriseEnabled');
 }

@@ -133,6 +133,9 @@
   }
 </style>
 <div id="container" class="main">
+  <template is="dom-if" if="[[seaPenUseExptTemplateEnabled_]]">
+    <div id="nextTemplate">Using the experimental theme (if available)</div>
+  </template>
   <template is="dom-if" if="[[shouldShowOptions_(options_)]]"
       on-dom-change="onSeaPenOptionsDomChanged_">
     <sea-pen-options

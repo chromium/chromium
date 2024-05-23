@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_utils_generated.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -102,6 +103,11 @@ manta::proto::Request CreateMantaRequest(
       input_option.set_tag(ash::TemplateChipToString(option.first));
       input_option.set_text(ash::TemplateOptionToString(option.second));
     }
+  }
+  if (ash::features::IsSeaPenUseExptTemplateEnabled()) {
+    manta::proto::InputData& expt_template_option = *request.add_input_data();
+    expt_template_option.set_tag("use_expt_template");
+    expt_template_option.set_text("true");
   }
   return request;
 }
