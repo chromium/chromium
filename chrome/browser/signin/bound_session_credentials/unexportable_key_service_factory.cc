@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/chrome_version.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
@@ -55,22 +54,12 @@ unexportable_keys::UnexportableKeyTaskManager* GetSharedTaskManagerInstance() {
       instance(CreateTaskManagerInstance());
   return instance->get();
 }
-
-class KeyedUnexportableKeyServiceImpl
-    : public unexportable_keys::UnexportableKeyServiceImpl,
-      public KeyedService {
- public:
-  explicit KeyedUnexportableKeyServiceImpl(
-      unexportable_keys::UnexportableKeyTaskManager& task_manager)
-      : unexportable_keys::UnexportableKeyServiceImpl(task_manager) {}
-};
-
 }  // namespace
 
 // static
 unexportable_keys::UnexportableKeyService*
 UnexportableKeyServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<KeyedUnexportableKeyServiceImpl*>(
+  return static_cast<unexportable_keys::UnexportableKeyService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
@@ -109,5 +98,6 @@ UnexportableKeyServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<KeyedUnexportableKeyServiceImpl>(*task_manager);
+  return std::make_unique<unexportable_keys::UnexportableKeyServiceImpl>(
+      *task_manager);
 }
