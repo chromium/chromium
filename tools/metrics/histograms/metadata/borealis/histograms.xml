@@ -223,6 +223,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Borealis.Launch.Source" enum="BorealisLaunchSource"
+    expires_after="2024-10-11">
+  <owner>philpearson@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The referring source for a non-installer Borealis launch, for example, a
+    chromeos-steam://install link, the Steam installer app in the Launcher, a
+    Unified App Installer click, when uninstalling an app, launching an app by
+    URL, retrying a previous launch, or the Open Steam button in the installer.
+    This is recorded when starting to launch a Borealis app: a game, or the
+    Steam client.
+  </summary>
+</histogram>
+
 <histogram name="Borealis.Shutdown.Attempt" enum="BooleanAttempted"
     expires_after="2024-08-25">
   <owner>philpearson@google.com</owner>

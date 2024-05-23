@@ -189,10 +189,10 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
                            // client app.
                            ::borealis::BorealisService::GetForProfile(profile)
                                ->AppLauncher()
-                               .Launch(
-                                   ::borealis::kClientAppId,
-                                   ::borealis::BorealisLaunchSource::kUnknown,
-                                   base::DoNothing());
+                               .Launch(::borealis::kClientAppId,
+                                       ::borealis::BorealisLaunchSource::
+                                           kErrorDialogRetryButton,
+                                       base::DoNothing());
                          },
                          profile));
     }

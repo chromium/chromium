@@ -61,6 +61,10 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Unified App Installer"/>
   <int value="3" label="Steam installer Launcher app"/>
   <int value="4" label="insert_coin crosh command"/>
+  <int value="5" label="App uninstaller"/>
+  <int value="6" label="App URL handler"/>
+  <int value="7" label="Retry clicked on launch error dialog"/>
+  <int value="8" label="Launch button on successful install"/>
 </enum>
 
 <enum name="BorealisStartupResult">

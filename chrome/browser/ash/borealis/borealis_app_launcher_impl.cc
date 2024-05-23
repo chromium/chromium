@@ -45,6 +45,7 @@ void BorealisAppLauncherImpl::Launch(std::string app_id,
            .IsRunning()) {
     borealis::ShowBorealisSplashScreenView(profile_);
   }
+  RecordBorealisLaunchSourceHistogram(source);
   BorealisService::GetForProfile(profile_)->ContextManager().StartBorealis(
       base::BindOnce(
           [](Profile* profile, std::string app_id,

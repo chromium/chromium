@@ -156,8 +156,9 @@ TEST_F(BorealisAppUninstallerTest, BorealisGameUninstalls) {
               Call(BorealisAppUninstaller::UninstallResult::kSuccess));
   BorealisAppUninstaller uninstaller = BorealisAppUninstaller(profile_.get());
   std::vector<std::string> v = {"steam://uninstall/1439770"};
-  EXPECT_CALL(*mock_launcher_,
-              Launch(steam_id, v, BorealisLaunchSource::kUnknown, testing::_))
+  EXPECT_CALL(
+      *mock_launcher_,
+      Launch(steam_id, v, BorealisLaunchSource::kAppUninstaller, testing::_))
       .WillOnce(testing::Invoke(
           [&](std::string app_id, const std::vector<std::string>& args,
               BorealisLaunchSource source,

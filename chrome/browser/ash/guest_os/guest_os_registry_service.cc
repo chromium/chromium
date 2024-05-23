@@ -77,7 +77,7 @@ void Launch(vm_tools::apps::VmType vm_type,
 
     case VmType::BOREALIS:
       borealis::BorealisService::GetForProfile(profile)->AppLauncher().Launch(
-          app_id, {url.spec()}, borealis::BorealisLaunchSource::kUnknown,
+          app_id, {url.spec()}, borealis::BorealisLaunchSource::kAppUrlHandler,
           base::DoNothing());
       break;
 

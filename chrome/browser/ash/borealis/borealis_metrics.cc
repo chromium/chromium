@@ -21,6 +21,7 @@ const char kBorealisInstallOverallTimeHistogram[] =
 // Same as Borealis.Install.OverallTime, but with more appropriate bucket sizes.
 const char kBorealisInstallOverallTimeHistogram2[] =
     "Borealis.Install.OverallTime2";
+const char kBorealisLaunchSourceHistogram[] = "Borealis.Launch.Source";
 const char kBorealisShutdownNumAttemptsHistogram[] =
     "Borealis.Shutdown.NumAttempts";
 const char kBorealisShutdownResultHistogram[] = "Borealis.Shutdown.Result";
@@ -55,6 +56,10 @@ void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time) {
   base::UmaHistogramTimes(kBorealisInstallOverallTimeHistogram, install_time);
   base::UmaHistogramLongTimes(kBorealisInstallOverallTimeHistogram2,
                               install_time);
+}
+
+void RecordBorealisLaunchSourceHistogram(BorealisLaunchSource launch_source) {
+  base::UmaHistogramEnumeration(kBorealisLaunchSourceHistogram, launch_source);
 }
 
 void RecordBorealisUninstallNumAttemptsHistogram() {

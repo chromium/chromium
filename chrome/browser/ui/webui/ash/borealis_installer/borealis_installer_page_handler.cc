@@ -99,7 +99,8 @@ void BorealisInstallerPageHandler::Launch() {
   borealis::ShowBorealisSplashScreenView(profile_);
   // Launch button has been clicked.
   borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
-      borealis::kClientAppId, borealis::BorealisLaunchSource::kUnknown,
+      borealis::kClientAppId,
+      borealis::BorealisLaunchSource::kPostInstallLaunch,
       base::BindOnce([](borealis::BorealisAppLauncher::LaunchResult result) {
         if (result == borealis::BorealisAppLauncher::LaunchResult::kSuccess) {
           return;

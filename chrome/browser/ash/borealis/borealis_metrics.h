@@ -31,7 +31,11 @@ enum class BorealisLaunchSource {
   kUnifiedAppInstaller = 2,
   kSteamInstallerApp = 3,
   kInsertCoin = 4,
-  kMaxValue = kInsertCoin,
+  kAppUninstaller = 5,
+  kAppUrlHandler = 6,
+  kErrorDialogRetryButton = 7,
+  kPostInstallLaunch = 8,
+  kMaxValue = kPostInstallLaunch,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -131,6 +135,7 @@ void RecordBorealisInstallResultHistogram(
     borealis::mojom::InstallResult install_result);
 void RecordBorealisInstallSourceHistogram(BorealisLaunchSource install_source);
 void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time);
+void RecordBorealisLaunchSourceHistogram(BorealisLaunchSource launch_source);
 void RecordBorealisUninstallNumAttemptsHistogram();
 void RecordBorealisUninstallResultHistogram(
     BorealisUninstallResult uninstall_result);

@@ -62,7 +62,7 @@ void BorealisAppUninstaller::Uninstall(std::string app_id,
       "steam://uninstall/" + base::NumberToString(*uninstall_app_id);
   borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
       kClientAppId, {uninstall_string},
-      borealis::BorealisLaunchSource::kUnknown,
+      borealis::BorealisLaunchSource::kAppUninstaller,
       base::BindOnce(
           [](OnUninstalledCallback callback,
              BorealisAppLauncher::LaunchResult result) {
