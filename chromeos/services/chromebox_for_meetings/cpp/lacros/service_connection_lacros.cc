@@ -43,17 +43,7 @@ void ServiceConnectionLacrosImpl::BindServiceContext(
   auto* service = chromeos::LacrosService::Get();
   DCHECK(service);
 
-  // Cast to uint32_t to ensure correct value is sent in order to inform
-  // the client outside of chrome that the implementation is unavailable.
-  // TODO(b/341417390): Investigate casting safely.
-  uint32_t reason = static_cast<uint32_t>(
-      mojom::DisconnectReason::kServiceUnavailableCode);
-  std::string description = mojom::DisconnectReason::kServiceUnavailableMessage;
-
-  receiver.ResetWithReason(std::move(reason), std::move(description));
-
-  // TODO(b/340146720): Complete LaCrOS Migration;
-  NOTIMPLEMENTED() << "LaCrOS Migration in Process";
+  service->BindCfmServiceContext(std::move(receiver));
 }
 
 }  // namespace

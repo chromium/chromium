@@ -150,6 +150,7 @@ mojom("mojom") {
     "//chromeos/components/payments/mojom",
     "//chromeos/components/remote_apps/mojom",
     "//chromeos/components/sensors/mojom",
+    "//chromeos/services/chromebox_for_meetings/public/mojom",
     "//chromeos/services/machine_learning/public/mojom",
     "//chromeos/services/network_health/public/mojom:types",
     "//components/digital_goods/mojom:mojom",
