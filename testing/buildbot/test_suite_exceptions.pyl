@@ -1733,7 +1733,6 @@
       # TODO(crbug.com/40241445): Enable on Fuchsia dbg/asan/clang builders.
       'fuchsia-fyi-arm64-dbg',
       'fuchsia-fyi-x64-asan',
-      'fuchsia-fyi-x64-dbg',
       'ToTFuchsia x64',
       'ToTFuchsiaOfficial arm64',
       'linux-chromeos-chrome-preuprev', # http://b/331706144

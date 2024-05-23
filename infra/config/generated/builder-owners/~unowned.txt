@@ -281,7 +281,6 @@ try/fuchsia-clang-tidy-rel
 try/fuchsia-code-coverage
 try/fuchsia-deterministic-dbg
 try/fuchsia-fyi-arm64-dbg
-try/fuchsia-fyi-x64-dbg
 try/fuchsia-x64-accessibility-rel
 try/fuchsia-x64-cast-receiver-rel
 try/fuchsia-x64-cast-receiver-rel-compilator

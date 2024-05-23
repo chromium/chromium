@@ -178,8 +178,8 @@ polymorphic.launcher(
     os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
-        "ci/fuchsia-fyi-arm64-dbg",
-        "ci/fuchsia-fyi-x64-dbg",
+        "ci/fuchsia-arm64-cast-receiver-rel",
+        "ci/fuchsia-x64-cast-receiver-dbg",
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
 )

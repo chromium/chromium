@@ -141,15 +141,9 @@ try_.builder(
 )
 
 try_.builder(
-    name = "fuchsia-fyi-x64-dbg",
-    mirrors = ["ci/fuchsia-fyi-x64-dbg"],
-    gn_args = "ci/fuchsia-fyi-x64-dbg",
-)
-
-try_.builder(
     name = "fuchsia-fyi-x64-dbg-persistent-emulator",
     mirrors = ["ci/fuchsia-fyi-x64-dbg-persistent-emulator"],
-    gn_args = "ci/fuchsia-fyi-x64-dbg",
+    gn_args = "ci/fuchsia-fyi-x64-dbg-persistent-emulator",
     contact_team_email = "chrome-fuchsia-engprod@google.com",
     execution_timeout = 10 * time.hour,
 )

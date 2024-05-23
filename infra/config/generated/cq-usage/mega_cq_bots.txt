@@ -65,7 +65,6 @@ chromium/try/dawn-win11-arm64-deps-rel
 chromium/try/fuchsia-arm64-cast-receiver-rel
 chromium/try/fuchsia-fyi-arm64-dbg
 chromium/try/fuchsia-fyi-x64-asan
-chromium/try/fuchsia-fyi-x64-dbg
 chromium/try/fuchsia-fyi-x64-dbg-persistent-emulator
 chromium/try/fuchsia-x64-cast-receiver-dbg
 chromium/try/fuchsia-x64-cast-receiver-dbg-compile

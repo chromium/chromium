@@ -8600,27 +8600,6 @@
           }
         ]
       },
-      "fuchsia-fyi-x64-dbg": {
-        "contact_team_email": "chrome-fuchsia-engprod@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "fuchsia-fyi-x64-dbg-persistent-emulator": {
         "contact_team_email": "chrome-fuchsia-engprod@google.com",
         "problem_specs": [

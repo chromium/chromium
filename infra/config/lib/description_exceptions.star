@@ -348,7 +348,6 @@ exempted_from_description_builders = {
         "fuchsia-code-coverage",
         "fuchsia-fyi-arm64-dbg",
         "fuchsia-fyi-x64-asan",
-        "fuchsia-fyi-x64-dbg",
         "fuchsia-fyi-x64-dbg-persistent-emulator",
         "fuchsia-x64-accessibility-rel",
         "fuchsia-x64-cast-receiver-rel",

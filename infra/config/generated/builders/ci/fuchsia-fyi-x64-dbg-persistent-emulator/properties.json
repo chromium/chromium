@@ -1,12 +1,15 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/fuchsia-fyi-x64-dbg-persistent-emulator/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "fuchsia-fyi-x64-dbg",
+              "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
               "project": "chromium"
             },
             "builder_spec": {
@@ -28,39 +31,6 @@
                 ],
                 "config": "chromium"
               }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
-              "builder_group": "chromium.fuchsia.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Debug",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "fuchsia"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "fuchsia_x64"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "fuchsia-fyi-x64-dbg",
-                "project": "chromium"
-              },
-              "run_tests_serially": true
             }
           }
         ]

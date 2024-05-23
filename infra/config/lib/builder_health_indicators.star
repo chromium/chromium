@@ -613,7 +613,6 @@ _exempted_from_contact_builders = {
         "fuchsia-compile-x64-dbg",
         "fuchsia-deterministic-dbg",
         "fuchsia-fyi-arm64-dbg",
-        "fuchsia-fyi-x64-dbg",
         "fuchsia-x64-accessibility-rel",
         "fuchsia-x64-cast-receiver-dbg-compile",
         "fuchsia-x64-cast-receiver-rel",
