@@ -1655,8 +1655,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
   VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
                             first_search_url);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
 
   // Loading a second url in the side panel should show the results page.
@@ -1680,8 +1680,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
   VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
                             second_search_url);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
   VerifySearchQueryParameters(observer.last_navigation_url());
   VerifyTextQueriesAreEqual(observer.last_navigation_url(), second_search_url);
@@ -1700,16 +1700,25 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
   VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
                             first_search_url);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
   VerifySearchQueryParameters(pop_observer.last_navigation_url());
   VerifyTextQueriesAreEqual(pop_observer.last_navigation_url(),
                             first_search_url);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       PopAndLoadQueryFromHistoryWithTextSelection) {
+// TODO(crbug.com/342390515): Test flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PopAndLoadQueryFromHistoryWithRegionAndTextSelection \
+  DISABLED_PopAndLoadQueryFromHistoryWithRegionAndTextSelection
+#else
+#define MAYBE_PopAndLoadQueryFromHistoryWithRegionAndTextSelection \
+  PopAndLoadQueryFromHistoryWithRegionAndTextSelection
+#endif
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerBrowserTest,
+    MAYBE_PopAndLoadQueryFromHistoryWithRegionAndTextSelection) {
   WaitForPaint();
 
   // State should start in off.
@@ -1727,7 +1736,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
 
-  // Loading a url in the side panel should show the results page.
+  // Issuing a text selection request should show the results page.
   const GURL first_search_url(
       "https://www.google.com/"
       "search?cs=0&source=chrome.cr.menu&q=oranges&lns_mode=text&gsc=1&"
@@ -1748,61 +1757,105 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
 
-  // Loading a second url in the side panel should show the results page.
+  // Issuing a region selection request should update the results page.
   const GURL second_search_url(
+      "https://www.google.com/"
+      "search?cs=0&source=chrome.cr.menu&q=&lns_mode=un&gsc=1&"
+      "hl=en-US");
+  // We can't use content::WaitForLoadStop here and below since the last
+  // navigation was already successful.
+  content::TestNavigationObserver second_search_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueLensRequestForTesting(kTestRegion->Clone());
+  // The full sequnce of events necessary to load Lens search results is not
+  // currently testable, so load the expected URL manually.
+  controller->LoadURLInResultsFrame(second_search_url);
+  second_search_observer.Wait();
+
+  // The search query history stack should have 1 entry and the currently loaded
+  // region should be set.
+  EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 1UL);
+  loaded_search_query.reset();
+  loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  EXPECT_TRUE(loaded_search_query);
+  EXPECT_EQ(loaded_search_query->search_query_text_, std::string());
+  EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_TRUE(loaded_search_query->selected_region_);
+
+  // Loading another url in the side panel should update the results page.
+  const GURL third_search_url(
       "https://www.google.com/"
       "search?cs=0&source=chrome.cr.menu&q=kiwi&lns_mode=text&gsc=1&hl="
       "en-US");
-  // We can't use content::WaitForLoadStop here since the last navigation is
-  // successful.
-  content::TestNavigationObserver observer(
+  content::TestNavigationObserver third_search_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueTextSelectionRequestForTesting("kiwi", 1, 100);
-  observer.Wait();
+  third_search_observer.Wait();
 
-  // The search query history stack should have 1 entry and the currently loaded
-  // query should be set to the new query
-  EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 1UL);
+  // The search query history stack should have 2 entries and the currently
+  // loaded query should be set to the new query
+  EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 2UL);
+  loaded_search_query.reset();
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
   url_without_start_time_or_size =
       RemoveStartTimeAndSizeParams(loaded_search_query->search_query_url_);
-  EXPECT_EQ(url_without_start_time_or_size, second_search_url);
+  EXPECT_EQ(url_without_start_time_or_size, third_search_url);
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 1);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 100);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
   url_without_start_time_or_size =
-      RemoveStartTimeAndSizeParams(observer.last_navigation_url());
-  EXPECT_EQ(url_without_start_time_or_size, second_search_url);
+      RemoveStartTimeAndSizeParams(third_search_observer.last_navigation_url());
+  EXPECT_EQ(url_without_start_time_or_size, third_search_url);
 
-  // Popping the query should load the previous query into the results frame.
-  content::TestNavigationObserver pop_observer(
+  // Popping a query should load the previous query into the results frame.
+  content::TestNavigationObserver first_pop_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
-  pop_observer.Wait();
+  first_pop_observer.Wait();
+
+  // The search query history stack should have 1 entry and the previously
+  // loaded region should be present.
+  EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 1UL);
+  loaded_search_query.reset();
+  loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  EXPECT_TRUE(loaded_search_query);
+  EXPECT_EQ(loaded_search_query->search_query_text_, std::string());
+  EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_TRUE(loaded_search_query->selected_region_);
+
+  // Popping another query should load the original query into the results
+  // frame.
+  content::TestNavigationObserver second_pop_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->PopAndLoadQueryFromHistory();
+  second_pop_observer.Wait();
 
   // The search query history stack should be empty and the currently loaded
-  // query should be set to the previous query.
+  // query should be set to the original query.
   EXPECT_TRUE(controller->GetSearchQueryHistoryForTesting().empty());
+  loaded_search_query.reset();
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   url_without_start_time_or_size =
       RemoveStartTimeAndSizeParams(loaded_search_query->search_query_url_);
   EXPECT_EQ(url_without_start_time_or_size, first_search_url);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
   url_without_start_time_or_size =
-      RemoveStartTimeAndSizeParams(pop_observer.last_navigation_url());
+      RemoveStartTimeAndSizeParams(second_pop_observer.last_navigation_url());
   EXPECT_EQ(url_without_start_time_or_size, first_search_url);
 
   // Verify the text selection was sent back to mojo and any old selections were

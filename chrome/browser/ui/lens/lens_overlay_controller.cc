@@ -222,10 +222,10 @@ LensOverlayController::SearchQuery::SearchQuery(std::string text_query,
 
 LensOverlayController::SearchQuery::SearchQuery(const SearchQuery& other) {
   search_query_text_ = other.search_query_text_;
-  if (other.search_query_region_) {
-    search_query_region_ = other.search_query_region_->Clone();
+  if (other.selected_region_) {
+    selected_region_ = other.selected_region_->Clone();
   }
-  search_query_region_thumbnail_ = other.search_query_region_thumbnail_;
+  selected_region_thumbnail_uri_ = other.selected_region_thumbnail_uri_;
   search_query_url_ = other.search_query_url_;
   selected_text_ = other.selected_text_;
 }
@@ -234,10 +234,10 @@ LensOverlayController::SearchQuery&
 LensOverlayController::SearchQuery::operator=(
     const LensOverlayController::SearchQuery& other) {
   search_query_text_ = other.search_query_text_;
-  if (other.search_query_region_) {
-    search_query_region_ = other.search_query_region_->Clone();
+  if (other.selected_region_) {
+    selected_region_ = other.selected_region_->Clone();
   }
-  search_query_region_thumbnail_ = other.search_query_region_thumbnail_;
+  selected_region_thumbnail_uri_ = other.selected_region_thumbnail_uri_;
   search_query_url_ = other.search_query_url_;
   selected_text_ = other.selected_text_;
   return *this;
@@ -549,6 +549,7 @@ void LensOverlayController::SetSearchboxInputText(const std::string& text) {
 void LensOverlayController::AddQueryToHistory(std::string query,
                                               GURL search_url) {
   CHECK(initialization_data_);
+
   // If we are loading the query that was just popped, do not add it to the
   // stack.
   auto loaded_search_query =
@@ -559,18 +560,25 @@ void LensOverlayController::AddQueryToHistory(std::string query,
     return;
   }
 
-  // Create the search query struct.
-  SearchQuery search_query(std::move(query), std::move(search_url));
+  // In the case where a query was triggered by a selection on the overlay or
+  // use of the searchbox, initialization_data_, additional_search_query_params_
+  // and selected_region_thumbnail_uri_ will have already been set. Record
+  // that state in a search query struct.
+  SearchQuery search_query(query, search_url);
   if (initialization_data_->selected_region_) {
-    search_query.search_query_region_ =
+    search_query.selected_region_ =
         initialization_data_->selected_region_->Clone();
-    search_query.search_query_region_thumbnail_ = thumbnail_uri_;
+    search_query.selected_region_thumbnail_uri_ =
+        selected_region_thumbnail_uri_;
   }
   if (initialization_data_->selected_text_.has_value()) {
     search_query.selected_text_ = initialization_data_->selected_text_.value();
   }
+  search_query.additional_search_query_params_ =
+      initialization_data_->additional_search_query_params_;
 
-  // Add the last loaded search query to the query stack if it is present.
+  // Add what was the currently loaded search query to the query stack,
+  // if it is present.
   if (loaded_search_query) {
     initialization_data_->search_query_history_stack_.push_back(
         loaded_search_query.value());
@@ -578,7 +586,23 @@ void LensOverlayController::AddQueryToHistory(std::string query,
   }
 
   // Set the currently loaded search query to the one we just created.
+  initialization_data_->currently_loaded_search_query_.reset();
   initialization_data_->currently_loaded_search_query_ = search_query;
+
+  // Update searchbox and selection state to match the new query.
+  SetSearchboxInputText(query);
+  // A search URL without a Lens mode parameter indicates a click on a related
+  // search or other in-SRP refinement. In this case, we should clear all
+  // selection and thumbnail state.
+  const std::string lens_mode = lens::GetLensModeParameterValue(search_url);
+  if (lens_mode.empty()) {
+    initialization_data_->selected_region_.reset();
+    initialization_data_->selected_text_.reset();
+    initialization_data_->additional_search_query_params_.clear();
+    selected_region_thumbnail_uri_.clear();
+    page_->ClearAllSelections();
+    SetSearchboxThumbnail(std::string());
+  }
 }
 
 void LensOverlayController::PopAndLoadQueryFromHistory() {
@@ -596,21 +620,28 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
   }
 
   // Clear any active selections on the page and then re-add selections for this
-  // query.
+  // query and update the selection, thumbnail and searchbox state.
   CHECK(page_);
   page_->ClearAllSelections();
   if (query.selected_text_.has_value()) {
     page_->SetTextSelection(query.selected_text_->first,
                             query.selected_text_->second);
-  } else if (query.search_query_region_) {
-    page_->SetPostRegionSelection(query.search_query_region_->Clone());
+    initialization_data_->selected_text_ = query.selected_text_.value();
+  } else if (query.selected_region_) {
+    page_->SetPostRegionSelection(query.selected_region_->Clone());
+    initialization_data_->selected_region_ = query.selected_region_->Clone();
+    selected_region_thumbnail_uri_ = query.selected_region_thumbnail_uri_;
   }
-
-  // Update the searchbox state and the results frame URL. After, set the
-  // currently loaded query to the one we just popped.
+  initialization_data_->additional_search_query_params_ =
+      query.additional_search_query_params_;
   SetSearchboxInputText(query.search_query_text_);
-  SetSearchboxThumbnail(query.search_query_region_thumbnail_);
+  SetSearchboxThumbnail(query.selected_region_thumbnail_uri_);
+
+  // Load the popped query URL in the results frame.
   LoadURLInResultsFrame(query.search_query_url_);
+
+  // Set the currently loaded query to the one we just popped.
+  initialization_data_->currently_loaded_search_query_.reset();
   initialization_data_->currently_loaded_search_query_ = query;
 }
 
@@ -628,6 +659,11 @@ void LensOverlayController::OnSidePanelEntryDeregistered() {
     return;
   }
   CloseUIAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+}
+
+void LensOverlayController::IssueLensRequestForTesting(
+    lens::mojom::CenterRotatedBoxPtr region) {
+  IssueLensRequest(std::move(region));
 }
 
 void LensOverlayController::IssueTextSelectionRequestForTesting(
@@ -964,7 +1000,7 @@ void LensOverlayController::CloseUIPart2(
   pending_side_panel_url_.reset();
   pending_text_query_.reset();
   pending_thumbnail_uri_.reset();
-  thumbnail_uri_.clear();
+  selected_region_thumbnail_uri_.clear();
   pending_region_.reset();
   fullscreen_observation_.Reset();
 
@@ -1096,13 +1132,13 @@ const GURL& LensOverlayController::GetPageURL() const {
 metrics::OmniboxEventProto::PageClassification
 LensOverlayController::GetPageClassification() const {
   // TODO(b/335234545): Return CONTEXTUAL_SEARCHBOX when appropriate.
-  return thumbnail_uri_.empty()
+  return selected_region_thumbnail_uri_.empty()
              ? metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX
              : metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
 }
 
 std::string& LensOverlayController::GetThumbnail() {
-  return thumbnail_uri_;
+  return selected_region_thumbnail_uri_;
 }
 
 const lens::proto::LensOverlayInteractionResponse&
@@ -1120,7 +1156,7 @@ void LensOverlayController::OnTextModified() {
 }
 
 void LensOverlayController::OnThumbnailRemoved() {
-  thumbnail_uri_.clear();
+  selected_region_thumbnail_uri_.clear();
   initialization_data_->selected_region_.reset();
   page_->ClearRegionSelection();
 }
@@ -1317,24 +1353,10 @@ void LensOverlayController::IssueLensRequest(
   SetSearchboxInputText(std::string());
   initialization_data_->selected_region_ = region.Clone();
   initialization_data_->selected_text_.reset();
+  initialization_data_->additional_search_query_params_.clear();
   // TODO(b/332787629): Append the 'mactx' param.
-  // TODO(b/335718601): Remove query parameters from region search.
   lens_overlay_query_controller_->SendRegionSearch(
       region.Clone(), initialization_data_->additional_search_query_params_);
-  results_side_panel_coordinator_->RegisterEntryAndShow();
-  state_ = State::kOverlayAndResults;
-}
-
-void LensOverlayController::IssueObjectSelectionRequest(
-    const std::string& object_id) {
-  SetSearchboxInputText(std::string());
-  // TODO(b/332787629): Append the 'mactx' param.
-  initialization_data_->additional_search_query_params_.clear();
-  initialization_data_->selected_region_.reset();
-  initialization_data_->selected_text_.reset();
-  // TODO(b/335718601): Remove query parameters from object selection.
-  lens_overlay_query_controller_->SendObjectSelection(
-      object_id, initialization_data_->additional_search_query_params_);
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
 }
@@ -1367,7 +1389,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
     int selection_start_index,
     int selection_end_index) {
   initialization_data_->selected_region_.reset();
-  thumbnail_uri_.clear();
+  selected_region_thumbnail_uri_.clear();
   initialization_data_->selected_text_ =
       std::make_pair(selection_start_index, selection_end_index);
 
@@ -1447,9 +1469,9 @@ void LensOverlayController::HandleInteractionDataResponse(
 
 void LensOverlayController::HandleThumbnailCreated(
     const std::string& thumbnail_bytes) {
-  thumbnail_uri_ = webui::MakeDataURIForImage(
+  selected_region_thumbnail_uri_ = webui::MakeDataURIForImage(
       base::as_bytes(base::make_span(thumbnail_bytes)), "jpeg");
-  SetSearchboxThumbnail(thumbnail_uri_);
+  SetSearchboxThumbnail(selected_region_thumbnail_uri_);
 }
 
 void LensOverlayController::SetSearchboxThumbnail(

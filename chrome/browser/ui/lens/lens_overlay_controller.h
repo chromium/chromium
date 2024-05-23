@@ -100,11 +100,13 @@ class LensOverlayController : public LensSearchboxClient,
     // The text query of the SRP panel.
     std::string search_query_text_;
     // The selected region for this query, if any.
-    lens::mojom::CenterRotatedBoxPtr search_query_region_;
+    lens::mojom::CenterRotatedBoxPtr selected_region_;
     // The selected text for this query, if any.
     std::optional<std::pair<int, int>> selected_text_;
     // The data URI of the thumbnail in the searchbox.
-    std::string search_query_region_thumbnail_;
+    std::string selected_region_thumbnail_uri_;
+    // Additional parameters used to build search URLs.
+    std::map<std::string, std::string> additional_search_query_params_;
     // The url that the search query loaded into the results frame.
     GURL search_query_url_;
   };
@@ -268,10 +270,6 @@ class LensOverlayController : public LensSearchboxClient,
   // Pass a result frame URL to load in the side panel.
   void LoadURLInResultsFrame(const GURL& url);
 
-  // Sets the input text for the searchbox. If the searchbox has not been bound,
-  // it stores it in `pending_text_query_` instead.
-  void SetSearchboxInputText(const std::string& text);
-
   // Adds a text query to the history stack for this lens overlay. This allows
   // the user to navigate to previous SRP results after sending new queries.
   void AddQueryToHistory(std::string query, GURL search_url);
@@ -285,6 +283,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Handles when the side panel has been deregistered to do any required
   // cleanup.
   void OnSidePanelEntryDeregistered();
+
+  // Testing function to issue a Lens (region selection) request.
+  void IssueLensRequestForTesting(lens::mojom::CenterRotatedBoxPtr region);
 
   // Testing function to issue a text request.
   void IssueTextSelectionRequestForTesting(const std::string& text_query,
@@ -540,7 +541,6 @@ class LensOverlayController : public LensSearchboxClient,
       ui::mojom::ClickModifiersPtr click_modifiers) override;
   // TODO: rename this to IssueRegionSearchRequest.
   void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
-  void IssueObjectSelectionRequest(const std::string& object_id);
   void IssueTextSelectionRequest(const std::string& text_query,
                                  int selection_start_index,
                                  int selection_end_index) override;
@@ -583,6 +583,10 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Handles the creation of a new thumbnail based on the user selection.
   void HandleThumbnailCreated(const std::string& thumbnail_bytes);
+
+  // Sets the input text for the searchbox. If the searchbox has not been bound,
+  // it stores it in `pending_text_query_` instead.
+  void SetSearchboxInputText(const std::string& text);
 
   // Sets the thumbnail URI values on the searchbox if it is
   // bound. If it hasn't yet been bound, stores the value in
@@ -643,7 +647,7 @@ class LensOverlayController : public LensSearchboxClient,
   // Thumbnail URI referencing the data defined by the user image selection on
   // the overlay. If the user hasn't made any selection or has made a text
   // selection this will contain an empty string. Returned by GetThumbnail().
-  std::string thumbnail_uri_;
+  std::string selected_region_thumbnail_uri_;
 
   // Connections to and from the overlay WebUI. Only valid while
   // `overlay_widget_` is showing, and after the WebUI has started executing JS

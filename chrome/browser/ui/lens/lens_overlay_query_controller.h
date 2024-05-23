@@ -76,12 +76,6 @@ class LensOverlayQueryController {
       lens::mojom::CenterRotatedBoxPtr region,
       std::map<std::string, std::string> additional_search_query_params);
 
-  // Sends an object selection interaction. Expected to be called multiple
-  // times.
-  void SendObjectSelection(
-      const std::string& object_id,
-      std::map<std::string, std::string> additional_search_query_params);
-
   // Sends a text-only interaction. Expected to be called multiple times.
   void SendTextOnlyQuery(
       const std::string& query_text,

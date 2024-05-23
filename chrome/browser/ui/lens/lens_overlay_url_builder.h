@@ -50,6 +50,10 @@ GURL BuildLensSearchURL(
 // URL if any. Empty string otherwise.
 const std::string GetTextQueryParameterValue(const GURL& url);
 
+// Returns the value of the lens mode parameter value from the provided search
+// URL if any. Empty string otherwise.
+const std::string GetLensModeParameterValue(const GURL& url);
+
 // Returns whether the given |url| contains all the common search query
 // parameters required to properly enable the lens overlay results in the side
 // panel. This does not check the value of these query parameters.

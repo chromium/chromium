@@ -33,9 +33,6 @@ namespace lens {
 // The fake multimodal query text.
 constexpr char kTestQueryText[] = "query_text";
 
-// The fake object id.
-constexpr char kTestObjectId[] = "object_id";
-
 // The fake suggest signals.
 constexpr char kTestSuggestSignals[] = "suggest_signals";
 
@@ -453,89 +450,6 @@ TEST_F(LensOverlayQueryControllerTest,
           .text_query()
           .query(),
       kTestQueryText);
-  ASSERT_TRUE(has_start_time);
-}
-
-TEST_F(LensOverlayQueryControllerTest,
-       FetchObjectSelectionInteraction_ReturnsResponses) {
-  task_environment_.RunUntilIdle();
-  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr>
-      full_image_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
-      url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
-      interaction_data_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
-  LensOverlayQueryControllerMock query_controller(
-      full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(),
-      thumbnail_created_future.GetRepeatingCallback(),
-      profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()),
-      lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false);
-  query_controller.fake_objects_response_.mutable_cluster_info()
-      ->set_server_session_id(kTestServerSessionId);
-  query_controller.fake_interaction_response_.set_encoded_response(
-      kTestSuggestSignals);
-  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  std::map<std::string, std::string> additional_search_query_params;
-  query_controller.StartQueryFlow(
-      bitmap, std::make_optional<GURL>(kTestPageUrl),
-      std::make_optional<std::string>(kTestPageTitle));
-  task_environment_.RunUntilIdle();
-
-  query_controller.SendObjectSelection(kTestObjectId,
-                                       additional_search_query_params);
-  task_environment_.RunUntilIdle();
-  query_controller.EndQuery();
-
-  std::string actual_start_time;
-  bool has_start_time =
-      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                                 kStartTimeQueryParam, &actual_start_time);
-
-  ASSERT_TRUE(full_image_response_future.IsReady());
-  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
-                .image_metadata()
-                .width(),
-            100);
-  ASSERT_EQ(query_controller.sent_objects_request_.image_data()
-                .image_metadata()
-                .height(),
-            100);
-  ASSERT_TRUE(url_response_future.Get().has_url());
-  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
-            lens::REGION_SEARCH);
-  ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
-            kTestSuggestSignals);
-  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
-                .request_id()
-                .sequence_id(),
-            1);
-  ASSERT_EQ(query_controller.sent_interaction_request_.request_context()
-                .request_id()
-                .sequence_id(),
-            2);
-  ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .type(),
-      lens::LensOverlayInteractionRequestMetadata::TAP);
-  ASSERT_EQ(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .selection_metadata()
-          .object()
-          .object_id(),
-      kTestObjectId);
-  ASSERT_FALSE(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .selection_metadata()
-          .has_region());
-  ASSERT_FALSE(
-      query_controller.sent_interaction_request_.interaction_request_metadata()
-          .has_query_metadata());
   ASSERT_TRUE(has_start_time);
 }
 

@@ -348,16 +348,6 @@ void LensOverlayQueryController::SendRegionSearch(
                   additional_search_query_params);
 }
 
-void LensOverlayQueryController::SendObjectSelection(
-    const std::string& object_id,
-    std::map<std::string, std::string> additional_search_query_params) {
-  // Object selection should send a REGION_SEARCH interaction type.
-  SendInteraction(/*region=*/lens::mojom::CenterRotatedBoxPtr(),
-                  /*query_text=*/std::nullopt,
-                  /*object_id=*/std::make_optional<std::string>(object_id),
-                  lens::REGION_SEARCH, additional_search_query_params);
-}
-
 void LensOverlayQueryController::SendMultimodalRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     const std::string& query_text,

@@ -85,13 +85,6 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
     return content::NavigationThrottle::CANCEL;
   }
 
-  // The navigation is to a search URL. Get the text query from the URL and set
-  // it as the input text on the searchbox.
-  const std::string text_query = GetTextQueryParameterValue(url);
-  if (!text_query.empty()) {
-    controller->SetSearchboxInputText(text_query);
-  }
-
   // If this is a same-site navigation and search URL, we make sure that the URL
   // has the parameters needed to preserve lens overlay features (e.g. framing).
   // If no such parameters were needed, we can just proceed.
@@ -100,6 +93,7 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
     // a user navigating to a SRP. If the SRP url did not have the common search
     // query parameters, it will reload the frame and go through this flow
     // anyway.
+    const std::string text_query = GetTextQueryParameterValue(url);
     controller->AddQueryToHistory(std::move(text_query),
                                   navigation_handle()->GetURL());
     return content::NavigationThrottle::PROCEED;

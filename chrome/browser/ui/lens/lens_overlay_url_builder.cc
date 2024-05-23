@@ -270,6 +270,12 @@ const std::string GetTextQueryParameterValue(const GURL& url) {
   return param_value;
 }
 
+const std::string GetLensModeParameterValue(const GURL& url) {
+  std::string param_value = "";
+  net::GetValueForKeyInQuery(url, kLensModeParameterKey, &param_value);
+  return param_value;
+}
+
 bool HasCommonSearchQueryParameters(const GURL& url) {
   // Needed to prevent memory leaks even though we do not use the output.
   std::string temp_output_string;
