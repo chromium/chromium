@@ -1240,6 +1240,9 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
                 urn_uuid, std::move(mapping_result));
 
     shared_storage_worklet_host_manager_->NotifyConfigPopulated(config);
+  } else {
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::kSelectURLWebVisible);
   }
 
   base::UmaHistogramLongTimes(
