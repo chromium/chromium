@@ -1,6 +1,8 @@
 Tests the data of Network request lifecycle trace events
 Recording started
 Tracing complete
+
+Trace events for URL: http://127.0.0.1:8000/inspector-protocol/resources/basic.html:
 Object: {
 	args: {
 		data: {
@@ -150,6 +152,8 @@ Object: {
 	tid: number
 	ts: number
 }
+
+Trace events for URL: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol/resources/empty.js:
 Object: {
 	args: {
 		data: {
@@ -265,6 +269,8 @@ Object: {
 	tid: number
 	ts: number
 }
+
+Trace events for URL: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol/resources/square.png:
 Object: {
 	args: {
 		data: {
@@ -396,6 +402,8 @@ Object: {
 	tid: number
 	ts: number
 }
+
+Trace events for URL: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol/resources/style.css:
 Object: {
 	args: {
 		data: {

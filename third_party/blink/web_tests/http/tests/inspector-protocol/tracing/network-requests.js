@@ -46,6 +46,7 @@
     .sort((a, b) => a[1].localeCompare(b[1]))
     .map(r => r[0]);
   for (const key of orderedKeys) {
+    testRunner.log(`\nTrace events for URL: ${requestIdToUrl.get(key)}:`)
     const events = eventsByRequestId.get(key);
     for (const event of events) {
       tracingHelper.logEventShape(event, [], ['name', 'resourceType', 'isLinkPreload', 'fetchPriorityHint', 'fetchType', 'protocol'])
