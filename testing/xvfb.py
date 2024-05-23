@@ -28,6 +28,7 @@ DEFAULT_XVFB_WHD = '1280x800x24'
 
 # pylint: disable=useless-object-inheritance
 
+
 class _X11ProcessError(Exception):
   """Exception raised when Xvfb or Xorg cannot start."""
 
@@ -167,29 +168,20 @@ def run_executable(cmd,
   return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
 
-def _make_xorg_modeline(width, height, refresh):
-  """Generates a tuple of a modeline (list of parameters) and label based off a
-  specified width, height and refresh rate.
-  See: https://www.x.org/archive/X11R7.0/doc/html/chips4.html"""
-  cvt_output = subprocess.check_output(
-      ['cvt', str(width), str(height),
-       str(refresh)],
-      stderr=subprocess.STDOUT,
-      text=True)
-  re_matches = re.search('Modeline "(.*)"\s+(.*)', cvt_output, re.IGNORECASE)
-  modeline_label = re_matches.group(1)
-  modeline = re_matches.group(2)
-  # Split the modeline string on spaces, and filter out empty element (cvt adds
-  # double spaces between in some parts).
-  return (modeline_label, list(filter(lambda a: a != '', modeline.split(' '))))
-
-
-def _make_xorg_config():
-  """Generates an Xorg config file and returns the file path. See:
+def _make_xorg_config(whd):
+  """Generates an Xorg config file based on the specified WxHxD string and
+  returns the file path. See:
   https://www.x.org/releases/current/doc/man/man5/xorg.conf.5.xhtml"""
-  config = """
+  (width, height, depth) = whd.split('x')
+  modeline = subprocess.check_output(['cvt', width, height, '60'],
+                                     stderr=subprocess.STDOUT,
+                                     text=True)
+  modeline_label = re.search('Modeline "(.*)"', modeline,
+                             re.IGNORECASE).group(1)
+  config = f"""
 Section "Monitor"
   Identifier "Monitor0"
+  {modeline}
 EndSection
 Section "Device"
   Identifier "Device0"
@@ -198,58 +190,20 @@ Section "Device"
   VideoRam 256000
 EndSection
 Section "Screen"
+  DefaultDepth {depth}
   Identifier "Screen0"
   Device "Device0"
   Monitor "Monitor0"
+  SubSection "Display"
+    Depth {depth}
+    Modes "{modeline_label}"
+  EndSubSection
 EndSection
   """
   config_file = os.path.join(tempfile.gettempdir(), 'xorg.config')
   with open(config_file, 'w') as f:
     f.write(config)
   return config_file
-
-
-def _setup_xrandr(env, default_whd):
-  """Configures xrandr dummy displays from xserver-xorg-video-dummy package."""
-  (width, height, _) = default_whd.split('x')
-  default_size = (int(width), int(height))
-  xrandr_sizes = [(800, 600), (1024, 768), (1920, 1080), (1600, 1200),
-                  (3840, 2160)]
-  if (default_size not in xrandr_sizes):
-    xrandr_sizes.append(default_size)
-    xrandr_sizes = sorted(xrandr_sizes)
-  output_names = ['DUMMY0', 'DUMMY1', 'DUMMY2', 'DUMMY3', 'DUMMY4']
-  refresh_rate = 60
-
-  # Calls xrandr with the provided argument array
-  def call_xrandr(args):
-    subprocess.check_call(['xrandr'] + args,
-                          env=env,
-                          stdout=subprocess.DEVNULL,
-                          stderr=subprocess.STDOUT)
-
-  for width, height in xrandr_sizes:
-    (modeline_label, modeline) = _make_xorg_modeline(width, height,
-                                                     refresh_rate)
-    call_xrandr(['--newmode', modeline_label] + modeline)
-    for output_name in output_names:
-      call_xrandr(['--addmode', output_name, modeline_label])
-
-  (default_mode_label, _) = _make_xorg_modeline(*default_size, refresh_rate)
-
-  # Set the mode of all monitors to connect and activate them.
-  for i in range(0, len(output_names)):
-    args = ['--output', output_names[i], '--mode', default_mode_label]
-    if (i > 0):
-      args += ['--right-of', output_names[i - 1]]
-    call_xrandr(args)
-
-  # Sets the primary monitor (DUMMY0) to the default size and marks the rest as
-  # disabled.
-  call_xrandr(["-s", "%dx%d" % default_size])
-
-  # Set the DPI to something realistic (as required by some desktops).
-  call_xrandr(['--dpi', '96'])
 
 
 def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
@@ -271,7 +225,7 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
 
   dbus_pid = None
   x11_binary = 'Xorg' if use_xorg else 'Xvfb'
-  xorg_config_file = _make_xorg_config() if use_xorg else None
+  xorg_config_file = _make_xorg_config(xvfb_whd) if use_xorg else None
   try:
     signal.signal(signal.SIGTERM, raise_x11_error)
     signal.signal(signal.SIGINT, raise_x11_error)
@@ -362,9 +316,6 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
       xcompmgr_proc = subprocess.Popen('xcompmgr',
                                        stderr=subprocess.STDOUT,
                                        env=env)
-
-    if use_xorg:
-      _setup_xrandr(env, xvfb_whd)
 
     return test_env.run_executable(cmd, env, stdoutfile, cwd)
   except OSError as e:
