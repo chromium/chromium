@@ -257,10 +257,6 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation \
   FLAKY_testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation
-#else
-// TODO(crbug.com/341948849): This test fails on devices.
-#define MAYBE_testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation \
-  DISABLED_testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation
 #endif
 - (void)MAYBE_testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation {
   [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];

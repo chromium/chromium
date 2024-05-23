@@ -633,6 +633,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       currentWebState->GetNavigationManager();
   BOOL back = navigationManager->CanGoBack();
   BOOL forward = navigationManager->CanGoForward();
+  if (!back && !forward) {
+    return;
+  }
   int textId = IDS_IOS_BACK_FORWARD_SWIPE_IPH_BACK_ONLY;
   if (forward) {
     textId = back ? IDS_IOS_BACK_FORWARD_SWIPE_IPH

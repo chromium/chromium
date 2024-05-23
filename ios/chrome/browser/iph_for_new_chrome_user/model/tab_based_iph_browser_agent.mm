@@ -68,6 +68,7 @@ void TabBasedIPHBrowserAgent::NotifyMultiGestureRefreshEvent() {
 }
 
 void TabBasedIPHBrowserAgent::NotifyBackForwardButtonTap() {
+  ResetFeatureStatesAndRemoveIPHViews();
   engagement_tracker_->NotifyEvent(
       feature_engagement::events::kIOSBackForwardButtonTapped);
   back_forward_button_tapped_ = true;
