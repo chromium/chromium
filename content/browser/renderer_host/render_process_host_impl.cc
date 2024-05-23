@@ -5247,6 +5247,8 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
     DCHECK(child_process_launcher_.get());
     DCHECK(!child_process_launcher_->IsStarting());
 #if BUILDFLAG(IS_ANDROID)
+    // TODO(339097516): Remove the following CHECK when the issue is fixed.
+    CHECK(child_process_launcher_->GetProcess().IsValid());
     child_process_launcher_->SetRenderProcessPriority(priority_);
 #elif BUILDFLAG(IS_MAC)
     if (base::FeatureList::IsEnabled(
