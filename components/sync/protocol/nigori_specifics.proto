@@ -77,6 +77,9 @@ message TrustedVaultAutoUpgradeExperimentGroup {
     // Evaluation group for the first eligibility criteria (Android device
     // with LSKF, Gaia PWD public key & between 5 and 50 passwords).
     ANDROID_LSKF_GAIA_PASSWORD_5_50_PASSWORDS_EVALUATION = 2;
+    // Cohort of users used to validate metrics analysis strategy by comparing
+    // metrics posted by users within CONTROL and VALIDATION groups.
+    CONTROL_AND_VALIDATION_MARKING_EXERCISE = 3;
   }
 
   // ID of cohort account belongs to. Only use IDs defined within enum |Cohort|.
