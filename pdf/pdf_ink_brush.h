@@ -47,13 +47,21 @@ class PdfInkBrush {
 
   const Params& params() const { return params_; }
 
+  // Returns the `InkBrush` that `this` represents.
+  const InkBrush& GetInkBrush() const;
+
+ private:
   // Returns a new ink brush of `type_` with `params_` Returns nullptr if failed
   // to create an ink brush.
   std::unique_ptr<InkBrush> CreateInkBrush();
 
- private:
+  // TODO(crbug.com/342414726): These fields are only used for unit tests. Tests
+  // should instead check the parameters in `InkBrush`.
   Type type_;
   Params params_;
+
+  // The ink brush of type `type_` with params` params_`. Always non-nullptr.
+  std::unique_ptr<InkBrush> ink_brush_;
 };
 
 }  // namespace chrome_pdf

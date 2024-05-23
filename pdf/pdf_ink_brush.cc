@@ -37,11 +37,16 @@ std::optional<PdfInkBrush::Type> PdfInkBrush::StringToType(
 }
 
 PdfInkBrush::PdfInkBrush(Type brush_type, Params brush_params)
-    : type_(brush_type), params_(brush_params) {
+    : type_(brush_type), params_(brush_params), ink_brush_(CreateInkBrush()) {
   CHECK_GT(brush_params.size, 0);
+  CHECK(ink_brush_);
 }
 
 PdfInkBrush::~PdfInkBrush() = default;
+
+const InkBrush& PdfInkBrush::GetInkBrush() const {
+  return *ink_brush_;
+}
 
 std::unique_ptr<InkBrush> PdfInkBrush::CreateInkBrush() {
   // TODO(crbug.com/335524380): Use real values here.

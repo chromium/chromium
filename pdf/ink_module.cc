@@ -68,9 +68,7 @@ void InkModule::Draw(SkCanvas& canvas) {
     return;
   }
 
-  std::unique_ptr<InkBrush> brush = pdf_ink_brush_->CreateInkBrush();
-  CHECK(brush);
-  stroke->Start(*brush);
+  stroke->Start(pdf_ink_brush_->GetInkBrush());
   auto input_batch = InkStrokeInputBatch::Create(ink_inputs_);
   CHECK(input_batch);
   bool enqueue_results = stroke->EnqueueInputs(input_batch.get(), nullptr);
@@ -241,9 +239,7 @@ void InkModule::ConvertInkInputsIntoStroke() {
 
   auto stroke = InkInProgressStroke::Create();
   CHECK(stroke);
-  std::unique_ptr<InkBrush> brush = pdf_ink_brush_->CreateInkBrush();
-  CHECK(brush);
-  stroke->Start(*brush);
+  stroke->Start(pdf_ink_brush_->GetInkBrush());
   // TODO(crbug.com/335524380): Add `event` to `ink_inputs_`?
   auto input_batch = InkStrokeInputBatch::Create(ink_inputs_);
   CHECK(input_batch);
