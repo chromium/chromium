@@ -79,6 +79,8 @@ public abstract class Condition {
      */
     protected void rebuildDescription() {
         mDescription = buildDescription();
+        assert mDescription != null
+                : this.getClass().getCanonicalName() + "#buildDescription() should not return null";
     }
 
     /**

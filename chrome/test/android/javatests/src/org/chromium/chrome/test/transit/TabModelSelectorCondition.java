@@ -34,7 +34,7 @@ public class TabModelSelectorCondition extends UiThreadCondition
 
     @Override
     public String buildDescription() {
-        return null;
+        return "TabModelSelector is available";
     }
 
     @Override
