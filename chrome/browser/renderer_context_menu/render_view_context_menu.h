@@ -69,12 +69,12 @@ class PdfOcrMenuObserver;
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
 class MenuItem;
-}
+}  // namespace extensions
 
 namespace gfx {
 class Point;
@@ -84,7 +84,7 @@ namespace blink {
 namespace mojom {
 class MediaPlayerAction;
 }
-}
+}  // namespace blink
 
 namespace ui {
 class DataTransferEndpoint;
