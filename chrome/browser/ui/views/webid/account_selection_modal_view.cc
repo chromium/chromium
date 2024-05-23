@@ -121,10 +121,10 @@ void AccountSelectionModalView::AddProgressBar() {
 
 void AccountSelectionModalView::UpdateDialogPosition() {
   constrained_window::UpdateWebContentsModalDialogPosition(
-      GetWidget(),
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
-          ->delegate()
-          ->GetWebContentsModalDialogHost());
+      GetWidget(), web_modal::WebContentsModalDialogManager::FromWebContents(
+                       web_contents_.get())
+                       ->delegate()
+                       ->GetWebContentsModalDialogHost());
 
   if (accessibility_state_utils::IsScreenReaderEnabled()) {
     GetInitiallyFocusedView()->RequestFocus();
@@ -142,7 +142,7 @@ void AccountSelectionModalView::InitDialogWidget() {
   }
 
   views::Widget* widget =
-      constrained_window::ShowWebModalDialogViews(this, web_contents_);
+      constrained_window::ShowWebModalDialogViews(this, web_contents_.get());
   if (!widget) {
     return;
   }
