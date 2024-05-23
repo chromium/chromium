@@ -648,10 +648,6 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onUrlFocusChange(boolean hasFocus) {
         if (hasFocus) {
             mLocationBarCoordinator.setUrlFocusChangeInProgress(false);
-        } else {
-            // TODO(crbug.com/329702834): Terminate SearchActivity on focus change:
-            // it's possible that we're running in a multi-window mode.
-            finish(TerminationReason.OMNIBOX_FOCUS_LOST);
         }
     }
 
