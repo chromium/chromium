@@ -321,10 +321,6 @@ class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
                             ThreadType thread_type,
                             IsViaIPC via_ipc);
 
-  // Toggles a specific thread's type at runtime. The thread must be of the
-  // current process.
-  static void SetThreadType(PlatformThreadId thread_id, ThreadType thread_type);
-
   // For a given thread id and thread type, setup the cpuset and schedtune
   // CGroups for the thread.
   static void SetThreadCgroupsForThreadType(PlatformThreadId thread_id,
@@ -333,12 +329,6 @@ class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
   // Determine if thread_id is a background thread by looking up whether
   // it is in the urgent or non-urgent cpuset
   static bool IsThreadBackgroundedForTest(PlatformThreadId thread_id);
-
- protected:
-  static void SetThreadTypeInternal(PlatformThreadId process_id,
-                                    PlatformThreadId thread_id,
-                                    ThreadType thread_type,
-                                    IsViaIPC via_ipc);
 };
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -387,12 +377,6 @@ class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
   // Returns a SequenceChecker which should be used to verify that all
   // cross-process priority changes are performed without races.
   static SequenceCheckerImpl& GetCrossProcessThreadPrioritySequenceChecker();
-
- protected:
-  static void SetThreadTypeInternal(PlatformThreadId process_id,
-                                    PlatformThreadId thread_id,
-                                    ThreadType thread_type,
-                                    IsViaIPC via_ipc);
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -414,6 +398,24 @@ void SetCurrentThreadType(ThreadType thread_type,
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+void SetThreadTypeLinux(PlatformThreadId process_id,
+                        PlatformThreadId thread_id,
+                        ThreadType thread_type,
+                        IsViaIPC via_ipc);
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+void SetThreadTypeChromeOS(PlatformThreadId process_id,
+                           PlatformThreadId thread_id,
+                           ThreadType thread_type,
+                           IsViaIPC via_ipc);
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr auto SetThreadType = SetThreadTypeChromeOS;
+#elif BUILDFLAG(IS_LINUX)
+inline constexpr auto SetThreadType = SetThreadTypeLinux;
+#endif
 
 }  // namespace internal
 

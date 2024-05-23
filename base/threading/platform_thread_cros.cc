@@ -384,35 +384,7 @@ void PlatformThreadChromeOS::SetThreadType(ProcessId process_id,
           process_id, thread_id, thread_type)) {
     return;
   }
-  SetThreadTypeInternal(process_id, thread_id, thread_type, via_ipc);
-}
-
-// static
-void PlatformThreadChromeOS::SetThreadTypeInternal(ProcessId process_id,
-                                                   PlatformThreadId thread_id,
-                                                   ThreadType thread_type,
-                                                   IsViaIPC via_ipc) {
-  // TODO(b/262267726): Re-use common code with PlatformThreadLinux::SetThreadType
-  // Should not be called concurrently with other functions
-  // like SetThreadBackgrounded.
-  if (via_ipc) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(
-        PlatformThread::GetCrossProcessThreadPrioritySequenceChecker());
-  }
-
-  auto proc = Process::Open(process_id);
-  bool backgrounded = false;
-  if (IsThreadsBgFeatureEnabled() &&
-      thread_type != ThreadType::kRealtimeAudio && proc.IsValid() &&
-      proc.GetPriority() == base::Process::Priority::kBestEffort) {
-    backgrounded = true;
-  }
-
-  SetThreadTypeOtherAttrs(process_id, thread_id,
-                          backgrounded ? ThreadType::kBackground : thread_type);
-
-  SetThreadRTPrioFromType(process_id, thread_id, thread_type, backgrounded);
-  SetThreadNiceFromType(process_id, thread_id, thread_type);
+  internal::SetThreadType(process_id, thread_id, thread_type, via_ipc);
 }
 
 void PlatformThreadChromeOS::SetThreadBackgrounded(ProcessId process_id,
@@ -449,5 +421,36 @@ PlatformThreadChromeOS::GetCrossProcessThreadPrioritySequenceChecker() {
   static NoDestructor<SequenceCheckerImpl> instance;
   return *instance;
 }
+
+namespace internal {
+
+void SetThreadTypeChromeOS(ProcessId process_id,
+                           PlatformThreadId thread_id,
+                           ThreadType thread_type,
+                           IsViaIPC via_ipc) {
+  // TODO(b/262267726): Re-use common code with SetThreadTypeLinux.
+  // Should not be called concurrently with
+  // other functions like SetThreadBackgrounded.
+  if (via_ipc) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        PlatformThread::GetCrossProcessThreadPrioritySequenceChecker());
+  }
+
+  auto proc = Process::Open(process_id);
+  bool backgrounded = false;
+  if (PlatformThread::IsThreadsBgFeatureEnabled() &&
+      thread_type != ThreadType::kRealtimeAudio && proc.IsValid() &&
+      proc.GetPriority() == base::Process::Priority::kBestEffort) {
+    backgrounded = true;
+  }
+
+  SetThreadTypeOtherAttrs(process_id, thread_id,
+                          backgrounded ? ThreadType::kBackground : thread_type);
+
+  SetThreadRTPrioFromType(process_id, thread_id, thread_type, backgrounded);
+  SetThreadNiceFromType(process_id, thread_id, thread_type);
+}
+
+}  // namespace internal
 
 }  // namespace base
