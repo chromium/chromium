@@ -289,7 +289,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         }
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         return syncService == null
-                || !syncService.isSyncFeatureEnabled()
                 || !syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
     }
 
