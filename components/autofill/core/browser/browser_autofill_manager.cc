@@ -1369,6 +1369,19 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return;
   }
 
+  if (IsPlusAddressesManuallyTriggered(trigger_source)) {
+    // The list of suggestions is never empty. It contains either existing plus
+    // addresses or the option to create a new one.
+    suggestions = client().GetPlusAddressDelegate()->GetSuggestions(
+        client().GetLastCommittedPrimaryMainFrameOrigin(),
+        client().IsOffTheRecord(),
+        client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                        field.global_id()),
+        field.value(), trigger_source);
+    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+    return;
+  }
+
   // Check if other suggestion sources should be queried. Other suggestions may
   // include Compose or single field form suggestions. Manual fallbacks can't
   // trigger different suggestion types.
@@ -2771,12 +2784,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext& context) {
   if (IsPlusAddressesManuallyTriggered(trigger_source)) {
-    return client().GetPlusAddressDelegate()->GetSuggestions(
-        client().GetLastCommittedPrimaryMainFrameOrigin(),
-        client().IsOffTheRecord(),
-        client().ClassifyAsPasswordForm(*this, form.global_id(),
-                                        field.global_id()),
-        field.value(), trigger_source);
+    return {};
   }
 
   if (context.should_show_mixed_content_warning) {
