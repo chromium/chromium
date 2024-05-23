@@ -111,6 +111,8 @@
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
+#include "chrome/browser/ui/webui/webui_util.h"
+#include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "ash/webui/conch/conch_ui.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -254,6 +256,8 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<EmojiUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<extended_updates::ExtendedUpdatesUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::kiosk_vision::UIConfig>(
+      base::BindRepeating(webui::SetupWebUIDataSource)));
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<FilesInternalsUIConfig, FilesInternalsUI,
                                       ChromeFilesInternalsUIDelegate>());

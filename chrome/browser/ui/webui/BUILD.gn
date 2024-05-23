@@ -25,6 +25,7 @@ source_set("configs") {
 
   deps = [
     "//chrome/browser/ui:ui",
+    "//chrome/browser/ui/webui:webui",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//content/public/browser",
@@ -68,6 +69,7 @@ source_set("configs") {
       "//ash/webui/status_area_internals",
       "//ash/webui/vc_background_ui",
       "//chrome/browser/ash",
+      "//chromeos/ash/components/kiosk/vision/webui",
       "//components/cross_device/logging",
     ]
 

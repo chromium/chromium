@@ -771,6 +771,10 @@
     "META": {"sizes": {"includes": [15],}},
     "includes" : [5740],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chromeos/ash/components/kiosk/vision/webui/resources.grd" : {
+    "META": {"sizes": {"includes": [15]}},
+    "includes" : [5750],
+  },
   "chromeos/ash/resources/ash_resources.grd": {
     "includes": [5760],
   },

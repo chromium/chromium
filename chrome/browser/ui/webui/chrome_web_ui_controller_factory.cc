@@ -178,6 +178,8 @@
 #include "chrome/browser/ash/extensions/url_constants.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
+#include "chromeos/ash/components/kiosk/vision/webui/constants.h"
+#include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -321,6 +323,15 @@ WebUIController* NewWebUI<AboutUI>(WebUI* web_ui, const GURL& url) {
   return new AboutUI(web_ui, url.host());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+template <>
+WebUIController* NewWebUI<ash::kiosk_vision::UIController>(WebUI* web_ui,
+                                                           const GURL& url) {
+  return new ash::kiosk_vision::UIController(
+      web_ui, base::BindRepeating(webui::SetupWebUIDataSource));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 template <>
 WebUIController* NewWebUI<commerce::CommerceInternalsUI>(WebUI* web_ui,
                                                          const GURL& url) {
@@ -437,6 +448,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       security_interstitials::kChromeUIConnectionMonitoringDetectedHost) {
     return &NewWebUI<security_interstitials::KnownInterceptionDisclosureUI>;
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (url.host_piece() ==
+      ash::kiosk_vision::kChromeUIKioskVisionInternalsHost) {
+    return &NewWebUI<ash::kiosk_vision::UIController>;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (url.host_piece() == chrome::kChromeUINetExportHost)
     return &NewWebUI<NetExportUI>;
   if (url.host_piece() == chrome::kChromeUINetInternalsHost)
