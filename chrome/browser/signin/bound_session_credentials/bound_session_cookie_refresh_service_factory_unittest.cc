@@ -38,9 +38,13 @@ using sync_preferences::TestingPrefServiceSyncable;
 using ::testing::TestWithParam;
 using ::testing::Values;
 
+class KeyedFakeUnexportableKeyService
+    : public unexportable_keys::FakeUnexportableKeyService,
+      public KeyedService {};
+
 std::unique_ptr<KeyedService> CreateFakeUnexportableKeyService(
     content::BrowserContext* context) {
-  return std::make_unique<unexportable_keys::FakeUnexportableKeyService>();
+  return std::make_unique<KeyedFakeUnexportableKeyService>();
 }
 
 bool DoesServiceExistForProfile(Profile* profile) {
