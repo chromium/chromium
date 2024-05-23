@@ -96,8 +96,6 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
 
   std::string GetHeadingText();
 
-  GURL GetLaunchURL() const;
-
   // Returns true if a checkbox should be shown in the dialog.
   bool ShouldShowCheckbox() const;
 
@@ -122,8 +120,6 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
                            Delegate* delegate);
 
   // Accessors for members.
-  const Profile* profile() const { return profile_; }
-  Delegate* delegate() const { return delegate_; }
   const Extension* extension() const { return extension_.get(); }
   const Extension* triggering_extension() const {
       return triggering_extension_.get(); }

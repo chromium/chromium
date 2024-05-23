@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -185,10 +184,6 @@ std::string ExtensionUninstallDialog::GetHeadingText() {
   }
   return l10n_util::GetStringFUTF8(IDS_EXTENSION_UNINSTALL_PROMPT_HEADING,
                                    base::UTF8ToUTF16(extension_->name()));
-}
-
-GURL ExtensionUninstallDialog::GetLaunchURL() const {
-  return AppLaunchInfo::GetFullLaunchURL(extension_.get());
 }
 
 bool ExtensionUninstallDialog::ShouldShowCheckbox() const {
