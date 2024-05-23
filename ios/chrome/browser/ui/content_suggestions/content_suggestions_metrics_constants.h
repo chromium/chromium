@@ -29,6 +29,7 @@ extern const char kMagicStackModuleEngagementSetUpListIndexHistogram[];
 extern const char kMagicStackModuleEngagementTabResumptionIndexHistogram[];
 extern const char kMagicStackModuleEngagementSafetyCheckIndexHistogram[];
 extern const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[];
+extern const char kMagicStackModuleDisabledHistogram[];
 extern const char kContentNotificationSnackbarEventHistogram[];
 
 // The name of the histogram that records fetch time for the Segmentation

@@ -450,6 +450,7 @@
 }
 
 - (void)didTapMagicStackEditButton {
+  base::RecordAction(base::UserMetricsAction("IOSMagicStackSettingsOpened"));
   _magicStackHalfSheetTableViewController =
       [[MagicStackHalfSheetTableViewController alloc] init];
 
