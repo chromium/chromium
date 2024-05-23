@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
@@ -48,6 +49,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   UIBarButtonItem* _selectAllButton;
   UIBarButtonItem* _selectedTabsItem;
   UIBarButtonItem* _searchButton;
+  UIBarButtonItem* _identityDiscItem;
   UIBarButtonItem* _doneButton;
   UIBarButtonItem* _closeAllOrUndoButton;
   UIBarButtonItem* _editButton;
@@ -301,7 +303,9 @@ const CGFloat kSymbolSearchImagePointSize = 22;
         _selectionModeFixedSpace, trailingButton
       ]];
     } else {
-      trailingButton = _spaceItem;
+      trailingButton = base::FeatureList::IsEnabled(kIdentityDiscAccountSwitch)
+                           ? _identityDiscItem
+                           : _spaceItem;
       [self setItems:@[
         _leadingButton, _spaceItem, centralItem, _spaceItem, trailingButton
       ]];
@@ -343,6 +347,12 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
   if (_mode != TabGridModeNormal) {
     [items addObject:_selectionModeFixedSpace];
+  }
+
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountSwitch)) {
+    // In Landscape mode, the upper right corner will have the identity disc
+    // before the "Done" button.
+    [items addObject:_identityDiscItem];
   }
 
   [items addObject:trailingButton];
@@ -456,6 +466,15 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   [_searchBarView addSubview:_searchBar];
   [_searchBarView sizeToFit];
   _searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:_searchBarView];
+
+  UIImage* identityImage = DefaultSymbolTemplateWithPointSize(
+      kPersonCropCircleSymbol, kIdentityImageDimension);
+  // TODO(crbug.com/336719423): Add action to view the account switching menu.
+  _identityDiscItem =
+      [[UIBarButtonItem alloc] initWithImage:identityImage
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:nil];
 
   _iconButtonAdditionalSpaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace

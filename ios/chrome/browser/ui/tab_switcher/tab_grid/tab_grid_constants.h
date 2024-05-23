@@ -84,6 +84,9 @@ extern const CGFloat kTabGridSearchBarNonCompactWidthRatioModifier;
 // Alpha of the background color of the toolbar.
 extern const CGFloat kToolbarBackgroundAlpha;
 
+// Dimension of the identity image.
+extern const CGFloat kIdentityImageDimension;
+
 // Duration for animations in the tab grid.
 extern const base::TimeDelta kAnimationDuration;
 
