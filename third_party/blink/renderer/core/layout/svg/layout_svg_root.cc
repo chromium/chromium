@@ -133,11 +133,10 @@ bool LayoutSVGRoot::IsEmbeddedThroughFrameContainingSVGDocument() const {
 double LayoutSVGRoot::LogicalSizeScaleFactorForPercentageLengths() const {
   NOT_DESTROYED();
   CHECK(IsDocumentElement());
-  if (!GetDocument().IsInOutermostMainFrame()) {
+  if (!GetDocument().IsInOutermostMainFrame() ||
+      GetDocument().GetLayoutView()->ShouldUsePaginatedLayout()) {
     return 1;
   }
-  if (GetDocument().GetLayoutView()->ShouldUsePrintingLayout())
-    return 1;
   // This will return the zoom factor which is different from the typical usage
   // of "zoom factor" in blink (e.g., |LocalFrame::PageZoomFactor()|) which
   // includes CSS zoom and the device scale factor (if use-zoom-for-dsf is

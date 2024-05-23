@@ -302,7 +302,7 @@ LogicalRect TargetPageBorderBoxLogicalRect(
 }
 
 wtf_size_t PageCount(const LayoutView& view) {
-  DCHECK(view.ShouldUsePrintingLayout());
+  DCHECK(view.ShouldUsePaginatedLayout());
   const auto& fragments = view.GetPhysicalFragment(0)->Children();
   return ClampTo<wtf_size_t>(fragments.size());
 }

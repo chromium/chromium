@@ -516,19 +516,20 @@ void LayoutView::CommitPendingSelection() {
   frame_view_->GetFrame().Selection().CommitAppearanceIfNeeded();
 }
 
-bool LayoutView::ShouldUsePrintingLayout(const Document& document) {
+bool LayoutView::ShouldUsePaginatedLayout(const Document& document) {
   if (!document.Printing())
     return false;
   const LocalFrameView* frame_view = document.View();
   if (!frame_view)
     return false;
-  return frame_view->GetFrame().ShouldUsePrintingLayout();
+  return frame_view->GetFrame().ShouldUsePaginatedLayout();
 }
 
 PhysicalRect LayoutView::ViewRect() const {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout())
+  if (GetDocument().Printing()) {
     return PhysicalRect(PhysicalOffset(), Size());
+  }
 
   if (!frame_view_)
     return PhysicalRect();
@@ -739,10 +740,15 @@ PhysicalRect LayoutView::DocumentRect() const {
 gfx::Size LayoutView::GetLayoutSize(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout()) {
-    return ToFlooredSize(initial_containing_block_size_for_pagination_);
+  if (GetDocument().Printing()) {
+    return ToFlooredSize(initial_containing_block_size_for_printing_);
   }
+  return GetNonPrintingLayoutSize(scrollbar_inclusion);
+}
 
+gfx::Size LayoutView::GetNonPrintingLayoutSize(
+    IncludeScrollbarsInRect scrollbar_inclusion) const {
+  NOT_DESTROYED();
   if (!frame_view_)
     return gfx::Size();
 
@@ -770,8 +776,8 @@ int LayoutView::ViewLogicalHeight(
 
 LayoutUnit LayoutView::ViewLogicalHeightForPercentages() const {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout()) {
-    PhysicalSize size = initial_containing_block_size_for_pagination_;
+  if (GetDocument().Printing()) {
+    PhysicalSize size = initial_containing_block_size_for_printing_;
     return IsHorizontalWritingMode() ? size.height : size.width;
   }
   return LayoutUnit(ViewLogicalHeight());
@@ -786,7 +792,7 @@ const LayoutBox& LayoutView::RootBox() const {
 }
 
 void LayoutView::InvalidateSvgRootsWithRelativeLengthDescendents() {
-  if (GetDocument().SvgExtensions() && !ShouldUsePrintingLayout()) {
+  if (GetDocument().SvgExtensions() && !ShouldUsePaginatedLayout()) {
     GetDocument()
         .AccessSVGExtensions()
         .InvalidateSVGRootsWithRelativeLengthDescendents();
@@ -795,7 +801,7 @@ void LayoutView::InvalidateSvgRootsWithRelativeLengthDescendents() {
 
 void LayoutView::LayoutRoot() {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout()) {
+  if (ShouldUsePaginatedLayout()) {
     intrinsic_logical_widths_ = LogicalWidth();
   }
 
@@ -1029,7 +1035,7 @@ Vector<gfx::Rect> LayoutView::GetTickmarks() const {
 }
 
 bool LayoutView::IsFragmentationContextRoot() const {
-  return ShouldUsePrintingLayout();
+  return ShouldUsePaginatedLayout();
 }
 
 }  // namespace blink

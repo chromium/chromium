@@ -66,7 +66,7 @@ wtf_size_t PrintContext::PageCount() const {
   if (!IsFrameValid()) {
     return 0;
   }
-  if (!use_printing_layout_) {
+  if (!use_paginated_layout_) {
     return 1;
   }
 
@@ -79,8 +79,9 @@ gfx::Rect PrintContext::PageRect(wtf_size_t page_number) const {
   DCHECK_LT(page_number, PageCount());
   const LayoutView& layout_view = *frame_->GetDocument()->GetLayoutView();
 
-  if (!use_printing_layout_) {
-    // Remote frames end up here.
+  if (!use_paginated_layout_) {
+    // Remote frames (and the special per-page headers+footers document) end up
+    // here.
     return ToPixelSnappedRect(layout_view.DocumentRect());
   }
 
@@ -105,7 +106,7 @@ void PrintContext::BeginPrintMode(const WebPrintParams& print_params) {
   // without going back to screen mode.
   is_printing_ = true;
 
-  use_printing_layout_ = print_params.use_printing_layout;
+  use_paginated_layout_ = print_params.use_paginated_layout;
 
   const Settings* settings = frame_->GetSettings();
   DCHECK(settings);

@@ -405,9 +405,10 @@ class CORE_EXPORT LocalFrame final
   // page size with the specified maximum shrink ratio, if this value is larger
   // than 1. If this value is 1 or less, there will be no shrinking.
   void StartPrinting(const WebPrintParams&, float maximum_shrink_ratio = 0);
+  void StartPrintingSubLocalFrame();
 
   void EndPrinting();
-  bool ShouldUsePrintingLayout() const;
+  bool ShouldUsePaginatedLayout() const;
 
   // Setup for a Paint Preview of the page which will paint the full page
   // contents.

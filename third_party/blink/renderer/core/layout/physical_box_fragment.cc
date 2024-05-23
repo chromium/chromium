@@ -433,7 +433,7 @@ const LayoutBox* PhysicalBoxFragment::OwnerLayoutBox() const {
   if (UNLIKELY(IsFragmentainerBox())) {
     if (owner_box->IsLayoutView()) {
       DCHECK_EQ(GetBoxType(), kPageArea);
-      DCHECK(To<LayoutView>(owner_box)->ShouldUsePrintingLayout());
+      DCHECK(To<LayoutView>(owner_box)->ShouldUsePaginatedLayout());
     } else {
       DCHECK(IsColumnBox());
     }

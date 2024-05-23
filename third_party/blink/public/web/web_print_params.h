@@ -72,8 +72,8 @@ struct WebPrintParams {
   printing::mojom::PrintScalingOption print_scaling_option =
       printing::mojom::PrintScalingOption::kFitToPrintableArea;
 
-  // Specifies whether printing layout needs to be applied.
-  bool use_printing_layout = true;
+  // Specifies whether paginated layout needs to be applied.
+  bool use_paginated_layout = true;
 
   // Specifies how many pages per sheet. This parameter is for N-up mode.
   size_t pages_per_sheet = 1;
@@ -83,11 +83,11 @@ struct WebPrintParams {
   explicit WebPrintParams(const gfx::SizeF& paper_size)
       : WebPrintParams(paper_size, true) {}
 
-  WebPrintParams(const gfx::SizeF& paper_size, bool use_printing_layout)
+  WebPrintParams(const gfx::SizeF& paper_size, bool use_paginated_layout)
       : printable_area_in_css_pixels(paper_size),
         default_page_description(paper_size),
         print_scaling_option(printing::mojom::PrintScalingOption::kSourceSize),
-        use_printing_layout(use_printing_layout) {}
+        use_paginated_layout(use_paginated_layout) {}
 };
 
 }  // namespace blink

@@ -1236,6 +1236,63 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooterFitToPrinter) {
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 }
 
+TEST_F(MAYBE_PrintRenderFrameHelperTest, FooterPartiallyOutsidePage) {
+  const float kPageWidth = 150;
+  const float kPageHeight = 150;
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 150pt;
+        margin: 24pt 0;
+      }
+    </style>
+    <!-- Add something wide, to trigger document downscaling. This should have
+         no effect on headers and footers. -->
+    <div style="width:300pt; height:10pt;"></div>
+  )HTML");
+
+  mojom::PrintParams& params = printer()->Params();
+  printer()->set_should_generate_page_images(true);
+  params.display_header_footer = true;
+  params.footer_template =
+      uR"HTML(
+    <style>
+      /* Lose default footer padding. */
+      #footer {
+        padding: 0 !important;
+      }
+    </style>
+    <div>
+      <!-- The bottom 3pt of the rectangle should be pushed off the page edge
+          (and not be seen anywhere), due to the negative bottom margin, so that
+          it should end up as a 9x9 square. -->
+      <div style="break-inside:avoid; margin-bottom:-3pt;
+                  border-left:9pt solid #ff0; height:12pt;"></div>
+    </div>
+    <div style="break-before:page; border-left:9pt solid #00f;
+                height:9pt;"></div>
+  )HTML";
+
+  OnPrintPages();
+
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image& image = page->image();
+  ASSERT_EQ(image.size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the yellow square in the footer area.
+  PixelCount pixel_count =
+      CheckPixels(image, 0xffff00U, gfx::Rect(0, kPageHeight - 24, 9, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the blue square in the footer area.
+  pixel_count = CheckPixels(image, 0x0000ffU,
+                            gfx::Rect(9, kPageHeight - 24, kPageWidth - 9, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+}
+
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 TEST_F(MAYBE_PrintRenderFrameHelperTest, SpecifiedPageSize1) {

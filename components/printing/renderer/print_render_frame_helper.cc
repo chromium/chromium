@@ -609,6 +609,12 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
   blink::WebPrintParams webkit_params(page_size);
   webkit_params.printer_dpi = GetDPI(params);
 
+  // Avoid fragmentation. Everything (header + footer) should fit on one
+  // page. Anything that partially overflows the page should be clipped rather
+  // than pushed to a next page that is never to be seen. This may happen for
+  // custom headers and (especially) footers.
+  webkit_params.use_paginated_layout = false;
+
   RecordDebugEvent(DebugEvent::kPrintBegin1);
   frame.PrintBegin(webkit_params, blink::WebNode());
   frame.PrintPage(0, canvas);
@@ -1538,9 +1544,9 @@ void PrintRenderFrameHelper::PrintFrameContent(
   canvas->SetPrintingMetafile(&metafile);
 
   // This subframe doesn't need to fit to the page size, thus we are not using
-  // printing layout for it. It just prints with the specified size.
+  // paginated layout for it. It just prints with the specified size.
   blink::WebPrintParams web_print_params(gfx::SizeF(area_size),
-                                         /*use_printing_layout=*/false);
+                                         /*use_paginated_layout=*/false);
 
   // Printing embedded pdf plugin has been broken since pdf plugin viewer was
   // moved out-of-process

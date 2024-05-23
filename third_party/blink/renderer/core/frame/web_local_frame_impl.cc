@@ -534,7 +534,7 @@ class ChromePluginPrintContext final : public ChromePrintContext {
 class PaintPreviewContext : public PrintContext {
  public:
   explicit PaintPreviewContext(LocalFrame* frame) : PrintContext(frame) {
-    use_printing_layout_ = false;
+    use_paginated_layout_ = false;
   }
   PaintPreviewContext(const PaintPreviewContext&) = delete;
   PaintPreviewContext& operator=(const PaintPreviewContext&) = delete;

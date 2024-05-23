@@ -81,8 +81,7 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
 
   Member<LocalFrame> frame_;
 
-  // True when printing layout needs to be applied.
-  bool use_printing_layout_ = true;
+  bool use_paginated_layout_ = true;
 
  private:
   void ComputePageCount();

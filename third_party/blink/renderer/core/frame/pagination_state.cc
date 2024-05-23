@@ -73,7 +73,7 @@ ObjectPaintProperties& PaginationState::EnsureContentAreaProperties(
 
 void PaginationState::UpdateContentAreaPropertiesForCurrentPage(
     const LayoutView& layout_view) {
-  DCHECK(layout_view.ShouldUsePrintingLayout());
+  DCHECK(layout_view.ShouldUsePaginatedLayout());
   auto chunk_properties = layout_view.FirstFragment().ContentsProperties();
   const PhysicalBoxFragment& page_container =
       *GetPageContainer(layout_view, current_page_number_);

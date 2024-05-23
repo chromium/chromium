@@ -121,6 +121,9 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // - scrollbar exclusion is compatible with root layer scrolling
   gfx::Size GetLayoutSize(IncludeScrollbarsInRect = kExcludeScrollbars) const;
 
+  // Same as above, but ignore print settings.
+  gfx::Size GetNonPrintingLayoutSize(IncludeScrollbarsInRect) const;
+
   int ViewHeight(
       IncludeScrollbarsInRect scrollbar_inclusion = kExcludeScrollbars) const {
     NOT_DESTROYED();
@@ -192,13 +195,13 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
 
   bool IsFragmentationContextRoot() const override;
 
-  void SetInitialContainingBlockSizeForPagination(PhysicalSize size) {
+  void SetInitialContainingBlockSizeForPrinting(PhysicalSize size) {
     NOT_DESTROYED();
-    initial_containing_block_size_for_pagination_ = size;
+    initial_containing_block_size_for_printing_ = size;
   }
-  PhysicalSize InitialContainingBlockSizeForPagination() const {
+  PhysicalSize InitialContainingBlockSizeForPrinting() const {
     NOT_DESTROYED();
-    return initial_containing_block_size_for_pagination_;
+    return initial_containing_block_size_for_printing_;
   }
 
   void SetPaginationScaleFactor(float factor) {
@@ -321,10 +324,10 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
                           TransformState&,
                           MapCoordinatesFlags) const override;
 
-  static bool ShouldUsePrintingLayout(const Document&);
-  bool ShouldUsePrintingLayout() const {
+  static bool ShouldUsePaginatedLayout(const Document&);
+  bool ShouldUsePaginatedLayout() const {
     NOT_DESTROYED();
-    return ShouldUsePrintingLayout(GetDocument());
+    return ShouldUsePaginatedLayout(GetDocument());
   }
 
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
@@ -371,8 +374,10 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
     return false;
   }
 
-  // The page area (content area) size of the first page, when printing.
-  PhysicalSize initial_containing_block_size_for_pagination_;
+  // The page area (content area) size of the first page, when printing. This
+  // size should always be consulted when printing, also when not paginating
+  // (e.g. if it's a subframe).
+  PhysicalSize initial_containing_block_size_for_printing_;
 
   // The scale factor that is applied to page area sizes. This affects the
   // initial containing block size for print layout. Used to honor any scaling

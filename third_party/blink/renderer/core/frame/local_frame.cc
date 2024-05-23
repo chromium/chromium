@@ -1376,7 +1376,34 @@ void LocalFrame::StartPrinting(const WebPrintParams& print_params,
                                float maximum_shrink_ratio) {
   DCHECK(!saved_scroll_offsets_);
   print_params_ = print_params;
+
+  if (!print_params_.use_paginated_layout) {
+    // Not laying out for pagination (e.g. this is a subframe, or a special
+    // headers/footers document, which is generated once per page). Just set the
+    // initial containing block to the default page size from print parameters.
+    if (LayoutView* layout_view = View()->GetLayoutView()) {
+      auto size = PhysicalSize::FromSizeFRound(
+          print_params_.default_page_description.size);
+      layout_view->SetInitialContainingBlockSizeForPrinting(size);
+    }
+  }
+
   SetPrinting(true, maximum_shrink_ratio);
+}
+
+void LocalFrame::StartPrintingSubLocalFrame() {
+  gfx::SizeF page_size;
+  // This is a subframe. Use the non-printing layout size as "pagination" size.
+  if (const LayoutView* layout_view = View()->GetLayoutView()) {
+    page_size =
+        gfx::SizeF(layout_view->GetNonPrintingLayoutSize(kIncludeScrollbars));
+  }
+  WebPrintParams print_params(page_size);
+
+  // Only the root frame is paginated.
+  print_params.use_paginated_layout = false;
+
+  StartPrinting(print_params);
 }
 
 void LocalFrame::EndPrinting() {
@@ -1397,7 +1424,7 @@ void LocalFrame::SetPrinting(bool printing, float maximum_shrink_ratio) {
   if (TextAutosizer* text_autosizer = GetDocument()->GetTextAutosizer())
     text_autosizer->UpdatePageInfo();
 
-  if (ShouldUsePrintingLayout()) {
+  if (ShouldUsePaginatedLayout()) {
     View()->ForceLayoutForPagination(maximum_shrink_ratio);
   } else {
     if (LayoutView* layout_view = View()->GetLayoutView()) {
@@ -1416,7 +1443,7 @@ void LocalFrame::SetPrinting(bool printing, float maximum_shrink_ratio) {
        child = child->Tree().NextSibling()) {
     if (auto* child_local_frame = DynamicTo<LocalFrame>(child)) {
       if (printing) {
-        child_local_frame->StartPrinting(WebPrintParams());
+        child_local_frame->StartPrintingSubLocalFrame();
       } else {
         child_local_frame->EndPrinting();
       }
@@ -1432,11 +1459,11 @@ void LocalFrame::SetPrinting(bool printing, float maximum_shrink_ratio) {
     GetDocument()->SetPrinting(Document::kNotPrinting);
 }
 
-bool LocalFrame::ShouldUsePrintingLayout() const {
+bool LocalFrame::ShouldUsePaginatedLayout() const {
   if (!GetDocument()->Printing())
     return false;
 
-  // Only the top frame being printed should be fitted to page size.
+  // Only the top frame being printed may be fitted to page size.
   // Subframes should be constrained by parents only.
   // This function considers the following two kinds of frames as top frames:
   // -- frame with no parent;
@@ -1444,13 +1471,11 @@ bool LocalFrame::ShouldUsePrintingLayout() const {
   // For the second type, it is a bit complicated when its parent is a remote
   // frame. In such case, we can not check its document or other internal
   // status. However, if the parent is in printing mode, this frame's printing
-  // must have started with |use_printing_layout| as false in print context.
-  auto* parent = Tree().Parent();
-  if (!parent)
-    return true;
-  auto* local_parent = DynamicTo<LocalFrame>(parent);
-  return local_parent ? !local_parent->GetDocument()->Printing()
-                      : print_params_.use_printing_layout;
+  // must have started with |use_paginated_layout| as false in print context.
+  if (auto* local_parent = DynamicTo<LocalFrame>(Tree().Parent())) {
+    return !local_parent->GetDocument()->Printing();
+  }
+  return print_params_.use_paginated_layout;
 }
 
 void LocalFrame::StartPaintPreview() {
@@ -2336,7 +2361,7 @@ bool LocalFrame::ClipsContent() const {
     return false;
   }
 
-  if (ShouldUsePrintingLayout()) {
+  if (ShouldUsePaginatedLayout()) {
     return false;
   }
 
