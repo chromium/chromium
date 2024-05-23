@@ -15,7 +15,7 @@
 
 BASE_FEATURE(kSnackbarUseLegacyDismissalBehavior,
              "SnackbarUseLegacyDismissalBehavior",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allow access to `usesLegacyDismissalBehavior` since the autoroller to update
 // the header is broken.
