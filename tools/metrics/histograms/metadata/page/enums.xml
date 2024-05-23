@@ -390,6 +390,7 @@ chromium-metrics-reviews@google.com.
       label="kAllowBy3PCDMetadataSourceGovEduTld: Allowed by government and
              education TLD entries within the 3PCD metadata grants content
              settings (Global Allowlist)."/>
+  <int value="19" label="kAllowByScheme: Allowed by the top-level scheme."/>
 </enum>
 
 </enums>
