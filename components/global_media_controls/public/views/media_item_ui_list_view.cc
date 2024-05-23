@@ -23,6 +23,11 @@ constexpr int kMediaListMaxHeight = 478;
 // Thickness of separator border.
 constexpr int kMediaListSeparatorThickness = 2;
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// Padding for the borders and separators for non-CrOS updated UI.
+constexpr int kMediaListUpdatedPadding = 8;
+#endif
+
 std::unique_ptr<views::Border> CreateMediaListSeparatorBorder(SkColor color,
                                                               int thickness) {
   return views::CreateSolidSidedBorder(gfx::Insets::TLBR(thickness, 0, 0, 0),
@@ -54,6 +59,16 @@ MediaItemUIListView::MediaItemUIListView(
       views::ScrollBar::Orientation::kVertical));
   SetHorizontalScrollBar(std::make_unique<views::OverlayScrollBar>(
       views::ScrollBar::Orientation::kHorizontal));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI)) {
+    auto* layout =
+        static_cast<views::BoxLayout*>(contents()->GetLayoutManager());
+    layout->set_inside_border_insets(
+        gfx::Insets::VH(kMediaListUpdatedPadding, kMediaListUpdatedPadding));
+    layout->set_between_child_spacing(kMediaListUpdatedPadding);
+  }
+#endif
 }
 
 MediaItemUIListView::~MediaItemUIListView() = default;
