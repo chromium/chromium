@@ -45,10 +45,10 @@
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
@@ -381,7 +381,7 @@ void SetUpEnvironment(ash::standalone_browser::LacrosSelection lacros_selection,
   // should be using an unknown channel for Lacros as well. This prevents Lacros
   // from picking up Finch experiments.
   version_info::Channel update_channel = version_info::Channel::UNKNOWN;
-  if (chrome::GetChannel() != version_info::Channel::UNKNOWN) {
+  if (ash::GetChannel() != version_info::Channel::UNKNOWN) {
     update_channel =
         browser_util::GetLacrosSelectionUpdateChannel(lacros_selection);
     // If we don't have channel information, we default to the "dev" channel.

@@ -27,9 +27,9 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
@@ -204,7 +204,7 @@ Channel GetStatefulLacrosChannel() {
       return it->second;
     }
   }
-  return chrome::GetChannel();
+  return ash::GetChannel();
 }
 
 }  // namespace
@@ -485,7 +485,7 @@ Channel GetLacrosSelectionUpdateChannel(
     case ash::standalone_browser::LacrosSelection::kRootfs:
       // For 'rootfs' Lacros use the same channel as ash/OS. Obtained from
       // the LSB's release track property.
-      return chrome::GetChannel();
+      return ash::GetChannel();
     case ash::standalone_browser::LacrosSelection::kStateful:
       // For 'stateful' Lacros directly check the channel of stateful-lacros
       // that the user is on.

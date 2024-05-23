@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -88,7 +88,7 @@ void PreloadComponent(
 // Returns the name of the component on success, empty string on failure.
 std::string CheckForComponentToPreloadMayBlock() {
   browser_util::ComponentInfo info =
-      browser_util::GetLacrosComponentInfoForChannel(chrome::GetChannel());
+      browser_util::GetLacrosComponentInfoForChannel(ash::GetChannel());
   bool registered = IsInstalledMayBlock(info.name);
   if (registered) {
     return info.name;

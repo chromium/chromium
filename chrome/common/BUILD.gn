@@ -94,10 +94,7 @@ source_set("channel_info") {
     public_deps += [ "//components/version_info/android:channel_getter" ]
   } else if (is_chromeos_ash) {
     sources += [ "channel_info_chromeos.cc" ]
-    deps += [
-      "//chromeos/crosapi/cpp",
-      "//chromeos/crosapi/cpp:crosapi_constants",
-    ]
+    deps += [ "//chromeos/ash/components/channel" ]
   } else if (is_chromeos_lacros) {
     sources += [ "channel_info_lacros.cc" ]
   } else if (is_posix) {

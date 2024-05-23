@@ -83,6 +83,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "channel_info_chromeos\.cc": [
+    "+chromeos/ash/components/channel/channel_info.h",
+  ],
   "chrome_constants_ash_unittest\.cc": [
     "+chromeos/ash/components/browser_context_helper/browser_context_types.h",
   ],

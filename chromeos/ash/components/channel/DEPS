@@ -1,0 +1,10 @@
+specific_include_rules = {
+  "channel_info\.cc": [
+    "+chromeos/crosapi/cpp/channel_to_enum.h",
+    "+chromeos/crosapi/cpp/crosapi_constants.h",
+    "+components/version_info/version_info.h"
+  ],
+  "channel_info_unittest\.cc": [
+    "+components/version_info/version_info.h"
+  ],
+}

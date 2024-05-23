@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("channel") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_CHANNEL_IMPL" ]
+
+  sources = [
+    "channel_info.cc",
+    "channel_info.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//chromeos/crosapi/cpp",
+    "//chromeos/crosapi/cpp:crosapi_constants",
+    "//components/version_info",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "channel_info_unittest.cc" ]
+
+  deps = [
+    ":channel",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/version_info",
+    "//testing/gtest",
+  ]
+}

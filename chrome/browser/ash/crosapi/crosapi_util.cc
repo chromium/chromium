@@ -42,9 +42,9 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -790,7 +790,7 @@ void InjectBrowserInitParams(
     }
 
     std::string_view limited_entropy_randomization_source;
-    if (variations::IsLimitedEntropyModeEnabled(chrome::GetChannel()) &&
+    if (variations::IsLimitedEntropyModeEnabled(ash::GetChannel()) &&
         limited_entropy_synthetic_trial.IsEnabled()) {
       limited_entropy_randomization_source =
           metrics_service->GetLimitedEntropyRandomizationSource();
