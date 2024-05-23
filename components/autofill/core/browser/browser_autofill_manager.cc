@@ -2203,8 +2203,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
       /*upload_contents=*/EncodeUploadRequest(*submitted_form, non_empty_types,
                                               /*login_form_signature=*/{},
                                               observed_submission),
-      submitted_form->submission_source(), submitted_form->active_field_count(),
-      client().GetPrefs());
+      submitted_form->submission_source(), client().GetPrefs());
 }
 
 const gfx::Image& BrowserAutofillManager::GetCardImage(

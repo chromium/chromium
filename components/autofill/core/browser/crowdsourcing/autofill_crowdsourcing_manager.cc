@@ -691,7 +691,6 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
 bool AutofillCrowdsourcingManager::StartUploadRequest(
     std::vector<AutofillUploadContents> upload_contents,
     mojom::SubmissionSource form_submission_source,
-    int form_active_field_count,
     PrefService* prefs) {
   if (!IsEnabled()) {
     return false;
@@ -703,11 +702,10 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
   const FormSignature form_signature(upload_contents[0].form_signature());
   const bool can_throttle_upload = CanThrottleUpload(
       form_signature, form_submission_source, throttle_reset_period_, prefs);
-  const bool is_small_form = form_active_field_count < 3;
-  const bool allow_upload = !(can_throttle_upload &&
-                              (base::FeatureList::IsEnabled(
-                                   features::test::kAutofillUploadThrottling) ||
-                               is_small_form));
+  const bool allow_upload =
+      !can_throttle_upload ||
+      !base::FeatureList::IsEnabled(features::test::kAutofillUploadThrottling);
+
   AutofillMetrics::LogUploadEvent(form_submission_source, allow_upload);
 
   // For debugging purposes, even throttled uploads are logged. If no log
@@ -717,11 +715,9 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
     return false;
 
   auto Upload = [&](AutofillUploadContents upload) {
-    // If this upload was a candidate for throttling, tag it and make sure that
+    // If this upload was a candidate for throttling, make sure that
     // any throttling sensitive features are enforced.
     if (can_throttle_upload) {
-      upload.set_was_throttleable(true);
-
       // Don't send randomized metadata.
       upload.clear_randomized_form_metadata();
       for (auto& f : *upload.mutable_field())

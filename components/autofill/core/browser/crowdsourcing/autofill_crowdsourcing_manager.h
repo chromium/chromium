@@ -84,7 +84,6 @@ class AutofillCrowdsourcingManager {
   virtual bool StartUploadRequest(
       std::vector<AutofillUploadContents> upload_contents,
       mojom::SubmissionSource form_submission_source,
-      int form_active_field_count,
       PrefService* prefs);
 
   // Returns true if the autofill server communication is enabled.

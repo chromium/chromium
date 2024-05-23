@@ -595,7 +595,7 @@ class PasswordFormManagerTest : public testing::Test,
                   FieldSingleUsernameVoteTypeIs(vote_type),
                   FieldIsMostRecentSingleUsernameCandidateIs(most_recent))));
     EXPECT_CALL(crowdsourcing_manager(),
-                StartUploadRequest(upload_contents_matcher, _, _, _));
+                StartUploadRequest(upload_contents_matcher, _, _));
   }
 
   // Creates LRU cache simulating user modifying non-password field outside of
@@ -1284,7 +1284,7 @@ TEST_P(PasswordFormManagerTest, VotesUploadingOnPasswordUpdate) {
         UploadFieldIs(submitted_form.fields[0], FieldType::PASSWORD),
         UploadFieldIs(submitted_form.fields[1], expected_vote)));
     EXPECT_CALL(crowdsourcing_manager(),
-                StartUploadRequest(upload_contents_matcher, _, _, _));
+                StartUploadRequest(upload_contents_matcher, _, _));
     if (expected_vote == autofill::NEW_PASSWORD) {
       // An unrelated |FIRST_USE| vote.
       EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest);
@@ -1373,7 +1373,7 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
               FieldVoteTypeIs(Field::USERNAME_OVERWRITTEN)),
           UploadFieldIs(password_field, FieldType::ACCOUNT_CREATION_PASSWORD)));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
 
   form_manager_->Save();
 }
@@ -1428,7 +1428,7 @@ TEST_P(PasswordFormManagerTest, CredentialsReusedVote) {
                     saved_match_.form_data.fields[kPasswordFieldIndex])),
                 FieldVoteTypeIs(Field::CREDENTIALS_REUSED))));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
 
   // Saved credentials from the signup form were used for the first time on a
   // submitted form. The vote applies to the new form being submitted.
@@ -1441,7 +1441,7 @@ TEST_P(PasswordFormManagerTest, CredentialsReusedVote) {
                               submitted_form_.fields[kPasswordFieldIndex])),
                           FieldVoteTypeIs(Field::FIRST_USE))));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
 
   form_manager_->Save();
 }
@@ -1487,7 +1487,7 @@ TEST_P(PasswordFormManagerTest, UpdateUsernameToAnotherFieldValue) {
                     FieldType::PASSWORD,
                     FieldGenerationTypeIs(Field::NO_GENERATION))));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
   form_manager_->Save();
 }
 
@@ -1576,7 +1576,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToUnknownValueFromPrompt) {
                               submitted_form_.fields[kPasswordFieldIndex])),
                           FieldGenerationTypeIs(Field::NO_GENERATION))));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
   form_manager_->Save();
 }
 
@@ -1610,7 +1610,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueMultiplePasswordFields) {
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(UploadFieldIs(
       submitted_form_.fields[kPasswordFieldIndex], FieldType::PASSWORD)));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
 
   // Check that the password which was chosen by the user is saved.
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
@@ -2334,7 +2334,7 @@ TEST_P(PasswordFormManagerTest, PasswordRevealedVote) {
     EXPECT_CALL(
         crowdsourcing_manager(),
         StartUploadRequest(
-            IsPasswordUpload(PasswordsRevealedIs(password_revealed)), _, _, _));
+            IsPasswordUpload(PasswordsRevealedIs(password_revealed)), _, _));
     form_manager_->Save();
     Mock::VerifyAndClearExpectations(&crowdsourcing_manager());
   }
@@ -2360,7 +2360,7 @@ TEST_P(PasswordFormManagerTest, GenerationUploadOnNoInteraction) {
                   submitted_form_.fields[kPasswordFieldIndex])),
               FieldGenerationTypeIs(Field::IGNORED_GENERATION_POPUP))));
     EXPECT_CALL(crowdsourcing_manager(),
-                StartUploadRequest(upload_contents_matcher, _, _, _))
+                StartUploadRequest(upload_contents_matcher, _, _))
         .Times(generation_popup_shown ? 1 : 0);
     form_manager_->OnNoInteraction(false /*is_update */);
     Mock::VerifyAndClearExpectations(&crowdsourcing_manager());
@@ -2387,7 +2387,7 @@ TEST_P(PasswordFormManagerTest, GenerationUploadOnNeverClicked) {
                   submitted_form_.fields[kPasswordFieldIndex])),
               FieldGenerationTypeIs(Field::IGNORED_GENERATION_POPUP))));
     EXPECT_CALL(crowdsourcing_manager(),
-                StartUploadRequest(upload_contents_matcher, _, _, _))
+                StartUploadRequest(upload_contents_matcher, _, _))
         .Times(generation_popup_shown ? 1 : 0);
 
     form_manager_->OnNeverClicked();
@@ -2812,7 +2812,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
           UploadFieldIs(submitted_form.fields[1], FieldType::UNKNOWN_TYPE),
           UploadFieldIs(submitted_form.fields[2], FieldType::PASSWORD)));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
   form_manager_->Save();
 }
 
@@ -2866,7 +2866,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     // Upload username first flow votes on the username form.
     if constexpr (!BUILDFLAG(IS_ANDROID)) {
       EXPECT_CALL(crowdsourcing_manager(),
-                  StartUploadRequest(IsSingleUsernameUpload(), _, _, _));
+                  StartUploadRequest(IsSingleUsernameUpload(), _, _));
     }
 
     // Upload username first flow votes on the password form.
@@ -2885,13 +2885,12 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
         SingleUsernameDataIs(
             EqualsSingleUsernameDataVector({expected_single_username_data})));
     EXPECT_CALL(crowdsourcing_manager(),
-                StartUploadRequest(upload_contents_matcher, _, _, _));
+                StartUploadRequest(upload_contents_matcher, _, _));
 
     if (is_password_update) {
-      EXPECT_CALL(
-          crowdsourcing_manager(),
-          StartUploadRequest(IsPasswordUpload(SingleUsernameDataIs(IsEmpty())),
-                             _, _, _));
+      EXPECT_CALL(crowdsourcing_manager(),
+                  StartUploadRequest(
+                      IsPasswordUpload(SingleUsernameDataIs(IsEmpty())), _, _));
     }
 
     base::HistogramTester histogram_tester;
@@ -2941,7 +2940,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
   // Upload username first flow vote on the single username form.
   if constexpr (!BUILDFLAG(IS_ANDROID)) {
     EXPECT_CALL(crowdsourcing_manager(),
-                StartUploadRequest(IsSingleUsernameUpload(), _, _, _));
+                StartUploadRequest(IsSingleUsernameUpload(), _, _));
   }
 
   // Upload username first flow vote on the sign-up form.
@@ -2959,7 +2958,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
       SingleUsernameDataIs(
           EqualsSingleUsernameDataVector({expected_single_username_data})));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
 
   // Simulate showing the prompt and saving the suggested value.
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
@@ -3028,7 +3027,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowInFormOverruleVotes) {
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(IsPasswordUpload(FormSignatureIs(
                                      CalculateFormSignature(submitted_form_))),
-                                 _, _, _));
+                                 _, _));
   form_manager_->Save();
 }
 
@@ -3088,7 +3087,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowPositiveInFormOverruleVote) {
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(IsPasswordUpload(FormSignatureIs(
                                      CalculateFormSignature(submitted_form_))),
-                                 _, _, _));
+                                 _, _));
   form_manager_->Save();
 }
 
@@ -3134,7 +3133,7 @@ TEST_P(PasswordFormManagerTest,
   EXPECT_CALL(
       crowdsourcing_manager(),
       StartUploadRequest(
-          IsPasswordUpload(FormSignatureIs(kSingleUsernameFormSignature)), _, _,
+          IsPasswordUpload(FormSignatureIs(kSingleUsernameFormSignature)), _,
           _))
       .Times(0);
 
@@ -3143,7 +3142,7 @@ TEST_P(PasswordFormManagerTest,
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(IsPasswordUpload(FormSignatureIs(
                                      CalculateFormSignature(submitted_form_))),
-                                 _, _, _));
+                                 _, _));
   form_manager_->Save();
 }
 
@@ -3199,7 +3198,7 @@ TEST_P(PasswordFormManagerTest,
   // Upload username first flow vote on the single username form.
   if constexpr (!BUILDFLAG(IS_ANDROID)) {
     EXPECT_CALL(crowdsourcing_manager(),
-                StartUploadRequest(IsSingleUsernameUpload(), _, _, _));
+                StartUploadRequest(IsSingleUsernameUpload(), _, _));
   }
 
   // Upload username first flow vote on the sign-up form.
@@ -3217,7 +3216,7 @@ TEST_P(PasswordFormManagerTest,
       SingleUsernameDataIs(
           EqualsSingleUsernameDataVector({expected_single_username_data})));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
 
   // Simulate showing the prompt and saving the suggested value.
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
@@ -3319,7 +3318,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSendVotesOnRecentFields) {
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(IsPasswordUpload(FormSignatureIs(
                                      CalculateFormSignature(submitted_form))),
-                                 _, _, _));
+                                 _, _));
 
   form_manager_->Save();
 }
@@ -3442,7 +3441,7 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
         FieldsContain(AllOf(FieldSignatureIs(kUsernameFieldSignature),
                             FieldAutofillTypeIs({FieldType::NOT_USERNAME}))));
     EXPECT_CALL(crowdsourcing_manager(),
-                StartUploadRequest(upload_contents_matcher, _, _, _));
+                StartUploadRequest(upload_contents_matcher, _, _));
   } else {
     EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest).Times(0);
   }
@@ -3462,7 +3461,7 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
       SingleUsernameDataIs(
           EqualsSingleUsernameDataVector({expected_single_username_data})));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
   base::HistogramTester histogram_tester;
   form_manager_->Save();
 
@@ -3510,7 +3509,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
   EXPECT_CALL(
       crowdsourcing_manager(),
       StartUploadRequest(
-          IsPasswordUpload(FormSignatureIs(kSingleUsernameFormSignature)), _, _,
+          IsPasswordUpload(FormSignatureIs(kSingleUsernameFormSignature)), _,
           _))
       .Times(0);
 
@@ -3523,7 +3522,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
       SingleUsernameDataIs(
           EqualsSingleUsernameDataVector({expected_single_username_data})));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _, _));
+              StartUploadRequest(upload_contents_matcher, _, _));
   form_manager_->Save();
 }
 
@@ -3943,7 +3942,7 @@ TEST_P(PasswordFormManagerTest, StrongForgotPasswordFormVotes) {
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(IsPasswordUpload(FormSignatureIs(
                                      CalculateFormSignature(submitted_form))),
-                                 _, _, _));
+                                 _, _));
 
   form_manager_->Save();
 }
@@ -3995,7 +3994,7 @@ TEST_P(PasswordFormManagerTest, WeakForgotPasswordFormVotes) {
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(IsPasswordUpload(FormSignatureIs(
                                      CalculateFormSignature(submitted_form))),
-                                 _, _, _));
+                                 _, _));
 
   form_manager_->Save();
 }
@@ -4038,10 +4037,9 @@ TEST_P(PasswordFormManagerTest,
                                autofill::SINGLE_USERNAME_FORGOT_PASSWORD);
 
   // Expect no vote on another single text field form, unrelated to FPF.
-  EXPECT_CALL(
-      crowdsourcing_manager(),
-      StartUploadRequest(IsPasswordUpload(FormSignatureIs(kOtherFormSignature)),
-                         _, _, _))
+  EXPECT_CALL(crowdsourcing_manager(),
+              StartUploadRequest(
+                  IsPasswordUpload(FormSignatureIs(kOtherFormSignature)), _, _))
       .Times(0);
 
   // Expect upload for the password form. This upload is unrelated to FPF: it
@@ -4049,7 +4047,7 @@ TEST_P(PasswordFormManagerTest,
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(IsPasswordUpload(FormSignatureIs(
                                      CalculateFormSignature(submitted_form))),
-                                 _, _, _));
+                                 _, _));
 
   form_manager_->Save();
 }
@@ -4099,10 +4097,9 @@ TEST_P(PasswordFormManagerTest, ForgotPasswordFormVotesOnLikelyOTPField) {
                                FieldType::SINGLE_USERNAME_FORGOT_PASSWORD);
 
   // Expect no vote on another single text field form, unrelated to FPF.
-  EXPECT_CALL(
-      crowdsourcing_manager(),
-      StartUploadRequest(IsPasswordUpload(FormSignatureIs(kOtherFormSignature)),
-                         _, _, _))
+  EXPECT_CALL(crowdsourcing_manager(),
+              StartUploadRequest(
+                  IsPasswordUpload(FormSignatureIs(kOtherFormSignature)), _, _))
       .Times(0);
 
   // Expect upload for the password form. This upload is unrelated to FPF: it
@@ -4110,7 +4107,7 @@ TEST_P(PasswordFormManagerTest, ForgotPasswordFormVotesOnLikelyOTPField) {
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(IsPasswordUpload(FormSignatureIs(
                                      CalculateFormSignature(submitted_form))),
-                                 _, _, _));
+                                 _, _));
 
   form_manager_->Save();
 }

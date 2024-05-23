@@ -44,6 +44,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -327,21 +328,21 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
       *form_structures[0], FieldTypeSet(), std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents_1), form_structures[0]->submission_source(),
-      form_structures[0]->active_field_count(), &pref_service()));
+      &pref_service()));
 
   // Request with id 2.
   std::vector<AutofillUploadContents> upload_contents_2 = EncodeUploadRequest(
       *form_structures[1], FieldTypeSet(), std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents_2), form_structures[1]->submission_source(),
-      form_structures[1]->active_field_count(), &pref_service()));
+      &pref_service()));
   // Request with id 3. Upload request with a non-empty additional password form
   // signature.
   std::vector<AutofillUploadContents> upload_contents_3 =
       EncodeUploadRequest(*form_structures[2], FieldTypeSet(), "42", true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents_3), form_structures[1]->submission_source(),
-      form_structures[1]->active_field_count(), &pref_service()));
+      &pref_service()));
 
   // Server responseses - returned  out of sequence.
   const char* response_contents[] = {
@@ -650,7 +651,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
       EncodeUploadRequest(form_structure, FieldTypeSet(), std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents), form_structure.submission_source(),
-      form_structure.active_field_count(), pref_service.get()));
+      pref_service.get()));
 
   // Inspect the request that the test URL loader sent.
   network::TestURLLoaderFactory::PendingRequest* request =
@@ -744,7 +745,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
       EncodeUploadRequest(form_structure, FieldTypeSet(), std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
       std::move(upload_contents), form_structure.submission_source(),
-      form_structure.active_field_count(), &pref_service()));
+      &pref_service()));
 
   auto* request = url_loader_factory().GetPendingRequest(0);
 
@@ -769,7 +770,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
       EncodeUploadRequest(form_structure, FieldTypeSet(), std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
       std::move(upload_contents_2), form_structure.submission_source(),
-      form_structure.active_field_count(), &pref_service()));
+      &pref_service()));
 
   request = url_loader_factory().GetPendingRequest(2);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
@@ -843,7 +844,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
       EncodeUploadRequest(form_structure, FieldTypeSet(), std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
       std::move(upload_contents), form_structure.submission_source(),
-      form_structure.active_field_count(), &pref_service()));
+      &pref_service()));
 
   constexpr auto kTimeDeltaMargin = base::Milliseconds(100);
   const int max_attempts = crowdsourcing_manager().GetMaxServerAttempts();
@@ -1205,8 +1206,7 @@ class AutofillServerCommunicationTest
     std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
         form, available_field_types, login_form_signature, observed_submission);
     bool succeeded = crowdsourcing_manager.StartUploadRequest(
-        std::move(upload_contents), form.submission_source(),
-        form.active_field_count(), &pref_service());
+        std::move(upload_contents), form.submission_source(), &pref_service());
     if (succeeded)
       run_loop_->Run();
     run_loop_.reset();
@@ -1699,76 +1699,75 @@ TEST_P(AutofillUploadTest, Throttling) {
   }
 }
 
-TEST_P(AutofillUploadTest, ThrottlingDisabled) {
-  ASSERT_NE(DISABLED, GetParam());
-  base::test::ScopedFeatureList local_feature;
-  local_feature.InitWithFeatures(
-      // Enabled.
-      {},
-      // Disabled
-      {features::test::kAutofillUploadThrottling});
-
+// Tests that votes are not throttled with
+// `features::test::kAutofillUploadThrottling` disabled, but metadata is
+// throttled regardless of the feature state.
+TEST_P(AutofillUploadTest, SuccessfulSubmissionOnDisabledThrottling) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(/*enabled_features=*/{}, /*disabled_features=*/{
+                                    features::test::kAutofillUploadThrottling});
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN, nullptr);
-  FormStructure form_structure(
-      test::GetFormData({.fields = {{.role = NAME_FIRST},
-                                    {.role = NAME_LAST},
-                                    {.role = EMAIL_ADDRESS}}}));
-  FormStructure small_form_structure(test::GetFormData(
-      {.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}}));
+      &client(), version_info::Channel::UNKNOWN, /*log_manager=*/nullptr);
+
+  FormData form_data = test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                                     {.role = NAME_LAST},
+                                                     {.role = EMAIL_ADDRESS}}});
+  FormStructure form_structure(form_data);
   SetCorrectFieldHostFormSignatures(form_structure);
-  SetCorrectFieldHostFormSignatures(small_form_structure);
 
-  for (int i = 0; i <= static_cast<int>(SubmissionSource::kMaxValue); ++i) {
-    base::HistogramTester histogram_tester;
-    auto submission_source = static_cast<SubmissionSource>(i);
-    SCOPED_TRACE(testing::Message()
-                 << "submission source = " << submission_source);
-    form_structure.set_submission_source(submission_source);
-    small_form_structure.set_submission_source(submission_source);
+  form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
+  form_structure.set_randomized_encoder(
+      RandomizedEncoder::Create(&pref_service()));
 
-    payloads().clear();
+  base::HistogramTester histogram_tester;
+  // The first upload must be successfully sent to the Autofill server.
+  EXPECT_TRUE(SendUploadRequest(form_structure, /*available_field_types=*/{},
+                                /*login_form_signature=*/"",
+                                /*observed_submission=*/true));
 
-    // The first attempt should succeed.
-    EXPECT_TRUE(SendUploadRequest(form_structure, {}, "", true));
+  // The second upload also must be successfully sent to the Autofill server.
+  EXPECT_TRUE(SendUploadRequest(form_structure, /*available_field_types=*/{},
+                                /*login_form_signature=*/"",
+                                /*observed_submission=*/true));
+  histogram_tester.ExpectBucketCount("Autofill.UploadEvent", 1, 2);
+  // Two votes are sent to the server.
+  histogram_tester.ExpectBucketCount(
+      AutofillMetrics::SubmissionSourceToUploadEventMetric(
+          SubmissionSource::FORM_SUBMISSION),
+      1, 2);
+  // There are no votes that are not sent to the server.
+  histogram_tester.ExpectBucketCount(
+      AutofillMetrics::SubmissionSourceToUploadEventMetric(
+          SubmissionSource::FORM_SUBMISSION),
+      0, 0);
 
-    // The second attempt should also succeed
-    EXPECT_TRUE(SendUploadRequest(form_structure, {}, "", true));
+  ASSERT_THAT(payloads(), SizeIs(2));
 
-    // The third attempt should also succeed
-    EXPECT_TRUE(SendUploadRequest(form_structure, {}, "", true));
+  AutofillUploadRequest request;
+  // The first upload must be successfully sent to the Autofill server.
+  ASSERT_TRUE(request.ParseFromString(payloads()[0]));
+  ASSERT_TRUE(request.has_upload());
+  ASSERT_EQ(request.upload().field_size(), 3);
+  // Metadata must be stored in non-throttled upload. Since it is encoded, only
+  // check for presence.
+  EXPECT_TRUE(
+      request.upload().field(0).randomized_field_metadata().has_label());
+  EXPECT_TRUE(
+      request.upload().field(1).randomized_field_metadata().has_label());
+  EXPECT_TRUE(
+      request.upload().field(2).randomized_field_metadata().has_label());
 
-    // The first small form attempt should succeed
-    EXPECT_TRUE(SendUploadRequest(small_form_structure, {}, "", true));
-
-    // The second small form attempt should be throttled, even if throttling
-    // is disabled.
-    EXPECT_FALSE(SendUploadRequest(small_form_structure, {}, "", true));
-
-    // All uploads were allowed..
-    histogram_tester.ExpectBucketCount("Autofill.UploadEvent", 1, 4);
-    histogram_tester.ExpectBucketCount(
-        AutofillMetrics::SubmissionSourceToUploadEventMetric(submission_source),
-        1, 4);
-    histogram_tester.ExpectBucketCount(
-        AutofillMetrics::SubmissionSourceToUploadEventMetric(submission_source),
-        0, 1);
-
-    // The last middle two uploads were marked as throttle-able.
-    ASSERT_THAT(payloads(), SizeIs(4));
-    for (size_t j = 0; j < payloads().size(); ++j) {
-      AutofillUploadRequest request;
-      ASSERT_TRUE(request.ParseFromString(payloads()[j]));
-      ASSERT_TRUE(request.has_upload());
-      const AutofillUploadContents& upload_contents = request.upload();
-      EXPECT_EQ(upload_contents.was_throttleable(), (j == 1 || j == 2))
-          << "Wrong was_throttleable value for upload " << j;
-      EXPECT_FALSE(upload_contents.has_randomized_form_metadata());
-      for (const auto& upload_contents_field : upload_contents.field()) {
-        EXPECT_FALSE(upload_contents_field.has_randomized_field_metadata());
-      }
-    }
-  }
+  // The second upload also must be successfully sent to the Autofill server.
+  ASSERT_TRUE(request.ParseFromString(payloads()[1]));
+  ASSERT_TRUE(request.has_upload());
+  ASSERT_EQ(request.upload().field_size(), 3);
+  // Metadata must be cleared in throttled uploads.
+  EXPECT_FALSE(
+      request.upload().field(0).randomized_field_metadata().has_label());
+  EXPECT_FALSE(
+      request.upload().field(1).randomized_field_metadata().has_label());
+  EXPECT_FALSE(
+      request.upload().field(2).randomized_field_metadata().has_label());
 }
 
 TEST_P(AutofillUploadTest, PeriodicReset) {

@@ -474,7 +474,7 @@ message AutofillUploadContents {
   optional bool has_form_tag = 37;
 
   // Captures whether or not this upload was a candidate for throttling.
-  optional bool was_throttleable = 38;
+  optional bool was_throttleable = 38 [deprecated = true];
 
   // Type of the value seen in the potential single username field.
   enum ValueType {

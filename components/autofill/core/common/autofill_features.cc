@@ -845,7 +845,10 @@ BASE_FEATURE(kAutofillShowTypePredictions,
              "AutofillShowTypePredictions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Autofill upload throttling is used for testing.
+// Autofill upload throttling limits uploading a form to the Autofill server
+// more than once over a `kAutofillUploadThrottlingPeriodInDays` period.
+// This feature is for testing purposes and is not supposed
+// to be launched.
 BASE_FEATURE(kAutofillUploadThrottling,
              "AutofillUploadThrottling",
              base::FEATURE_ENABLED_BY_DEFAULT);

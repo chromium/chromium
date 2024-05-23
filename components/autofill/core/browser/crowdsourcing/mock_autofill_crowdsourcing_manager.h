@@ -37,7 +37,6 @@ class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
               StartUploadRequest,
               (std::vector<AutofillUploadContents>,
                mojom::SubmissionSource,
-               int,
                PrefService*),
               (override));
 };

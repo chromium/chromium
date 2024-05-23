@@ -977,7 +977,7 @@ bool VotesUploader::SendUploadRequest(
       EncodeUploadRequest(form_to_upload, available_field_types,
                           login_form_signature, password_attributes,
                           should_set_passwords_were_revealed),
-      form_to_upload.submission_source(), form_to_upload.active_field_count(),
+      form_to_upload.submission_source(),
       /*pref_service=*/nullptr);
 }
 
