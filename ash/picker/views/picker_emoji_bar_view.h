@@ -15,6 +15,7 @@
 
 namespace ash {
 
+class IconButton;
 class PickerAssetFetcher;
 class PickerSearchResult;
 class PickerSearchResultsViewDelegate;
@@ -37,6 +38,10 @@ class ASH_EXPORT PickerEmojiBarView : public views::View {
   PickerEmojiBarView& operator=(const PickerEmojiBarView&) = delete;
   ~PickerEmojiBarView() override;
 
+  // views::View:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
   // Clears the emoji bar's search results.
   void ClearSearchResults();
 
@@ -45,16 +50,26 @@ class ASH_EXPORT PickerEmojiBarView : public views::View {
 
   PickerSectionView* item_row_for_testing() { return item_row_; }
 
+  IconButton* more_emojis_button_for_testing() { return more_emojis_button_; }
+
  private:
   void SelectSearchResult(const PickerSearchResult& result);
+
+  void OpenMoreEmojis();
 
   std::unique_ptr<SystemShadow> shadow_;
 
   // `delegate_` outlives `this`.
   raw_ptr<PickerSearchResultsViewDelegate> delegate_;
 
+  // The width of the PickerView that contains this emoji bar.
+  int picker_view_width_ = 0;
+
   // Contains the item views corresponding to each search result.
   raw_ptr<PickerSectionView> item_row_ = nullptr;
+
+  // The button for opening more emojis.
+  raw_ptr<IconButton> more_emojis_button_ = nullptr;
 };
 
 }  // namespace ash
