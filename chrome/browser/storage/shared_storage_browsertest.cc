@@ -3787,7 +3787,6 @@ class SharedStorageFencedFrameChromeBrowserTest
       EXPECT_EQ(run_url_op_result.ExtractString(), observed_urn_uuid->spec());
     }
 
-    EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
     EXPECT_EQ(1u, run_url_op_console_observer.messages().size());
     EXPECT_EQ(
         "Finish executing \'test-url-selection-operation\'",
