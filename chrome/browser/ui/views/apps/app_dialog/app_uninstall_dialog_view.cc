@@ -455,8 +455,8 @@ void AppUninstallDialogView::InitializeSubAppList(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
   AddChildView(std::make_unique<views::Separator>());
 
-  sub_apps_scroll_view_->SetVisible(true);
-  sub_apps_description_->SetVisible(true);
+  sub_apps_scroll_view_->SetVisible(!sub_apps.empty());
+  sub_apps_description_->SetVisible(!sub_apps.empty());
   ResizeWidgetToContents(sub_apps_scroll_view_->GetWidget());
 }
 
