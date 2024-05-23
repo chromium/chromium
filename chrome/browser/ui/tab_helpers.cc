@@ -545,6 +545,21 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       web_contents);
   tpcd::trial::ValidityService::MaybeCreateForWebContents(web_contents);
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
+    auto* service = UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+    if (service) {
+      UnusedSitePermissionsService::TabHelper::CreateForWebContents(
+          web_contents, service);
+    }
+  }
+#else   // BUILDFLAG(IS_ANDROID)
+  auto* service = UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  if (service) {
+    UnusedSitePermissionsService::TabHelper::CreateForWebContents(web_contents,
+                                                                  service);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
   v8_compile_hints::V8CompileHintsTabHelper::MaybeCreateForWebContents(
       web_contents);
@@ -637,11 +652,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   if (commerce::isContextualConsentEnabled()) {
     commerce_hint::CommerceHintTabHelper::CreateForWebContents(web_contents);
-  }
-  auto* service = UnusedSitePermissionsServiceFactory::GetForProfile(profile);
-  if (service) {
-    UnusedSitePermissionsService::TabHelper::CreateForWebContents(web_contents,
-                                                                  service);
   }
   if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
     side_panel::HistoryClustersTabHelper::CreateForWebContents(web_contents);
