@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -229,6 +230,27 @@ void DevToolsAgent::BindReceiver(
       &DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
 }
 
+namespace {
+void UpdateSessionCountCrashKey(int delta) {
+  static std::atomic_int s_session_count;
+
+  int old_value = s_session_count.fetch_add(delta, std::memory_order_relaxed);
+  CHECK_GE(old_value, 0);
+  const bool need_update = old_value == 0 || (delta + old_value == 0);
+  if (!need_update) {
+    return;
+  }
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  base::AutoLock auto_lock(lock);
+  static base::debug::CrashKeyString* devtools_present =
+      base::debug::AllocateCrashKeyString("devtools_present",
+                                          base::debug::CrashKeySize::Size32);
+  SetCrashKeyString(
+      devtools_present,
+      s_session_count.load(std::memory_order_relaxed) ? "true" : "false");
+}
+}  // namespace
+
 void DevToolsAgent::AttachDevToolsSessionImpl(
     mojo::PendingAssociatedRemote<mojom::blink::DevToolsSessionHost> host,
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsSession>
@@ -259,7 +281,13 @@ void DevToolsAgent::AttachDevToolsSessionImpl(
                 MainThreadTaskRunnerRestricted{})
           : inspector_task_runner_->isolate_task_runner());
   sessions_.insert(session);
+  UpdateSessionCountCrashKey(1);
   client_->DebuggerTaskFinished();
+}
+
+void DevToolsAgent::DetachDevToolsSession(DevToolsSession* session) {
+  sessions_.erase(session);
+  UpdateSessionCountCrashKey(-1);
 }
 
 void DevToolsAgent::AttachDevToolsSession(

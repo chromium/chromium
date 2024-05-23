@@ -201,7 +201,7 @@ void DevToolsSession::Append(InspectorAgent* agent) {
 void DevToolsSession::Detach() {
   agent_->client_->DebuggerTaskStarted();
   agent_->client_->DetachSession(this);
-  agent_->sessions_.erase(this);
+  agent_->DetachDevToolsSession(this);
   receiver_.reset();
   host_remote_.reset();
   CHECK(io_session_);

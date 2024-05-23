@@ -134,6 +134,7 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       bool client_is_trusted,
       const WTF::String& session_id,
       bool session_waits_for_debugger);
+  void DetachDevToolsSession(DevToolsSession* session);
   void InspectElementImpl(const gfx::Point& point);
   void ReportChildTargetsImpl(bool report,
                               bool wait_for_debugger,
