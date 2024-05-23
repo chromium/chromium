@@ -1100,7 +1100,7 @@
     {
       name: "preferredRootScrollbarColorScheme",
       initial: "mojom::blink::PreferredColorScheme::kLight",
-      invalidate: ["ColorScheme"],
+      invalidate: ["Paint"],
       type: "mojom::blink::PreferredColorScheme",
       include_paths: [
         "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
