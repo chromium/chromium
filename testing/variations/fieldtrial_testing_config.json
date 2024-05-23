@@ -1496,31 +1496,6 @@
             ]
         }
     ],
-    "AutofillEnableCacheForRegexMatching": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "cache_size": "1000"
-                    },
-                    "enable_features": [
-                        "AutofillEnableCacheForRegexMatching"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableCardArtAndCardProductName": [
         {
             "platforms": [

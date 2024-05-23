@@ -700,7 +700,7 @@ BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
 // kAutofillEnableCacheForRegexMatchingCacheSizeParam.
 BASE_FEATURE(kAutofillEnableCacheForRegexMatching,
              "AutofillEnableCacheForRegexMatching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int>
     kAutofillEnableCacheForRegexMatchingCacheSizeParam{
         &kAutofillEnableCacheForRegexMatching, "cache_size", 1000};
