@@ -425,6 +425,7 @@ void ContentCacheImpl::WriteBytes(const OpenedCloudFile& file,
   }
 
   // Add a new CacheFileContext to the lru_cache.
+  VLOG(1) << "Adding '" << file.file_path << "' to the cache";
   it = lru_cache_.Put(
       PathContextPair(file.file_path, CacheFileContext(file.version_tag)));
   EvictExcessItems();

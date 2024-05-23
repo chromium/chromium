@@ -30,6 +30,7 @@ namespace ash::file_system_provider {
 namespace {
 
 using base::test::IsNotNullCallback;
+using base::test::RunClosure;
 using base::test::RunOnceCallback;
 using base::test::TestFuture;
 using testing::_;
@@ -114,6 +115,10 @@ class MockContentCacheObserver : public ContentCache::Observer {
   MOCK_METHOD(void,
               OnItemEvicted,
               (const base::FilePath& fsp_path),
+              (override));
+  MOCK_METHOD(void,
+              OnItemRemovedFromDisk,
+              (const base::FilePath& fsp_path, int64_t bytes_removed),
               (override));
 };
 
@@ -641,6 +646,71 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(1);
   DeleteFileSuccessfully(*cloud_file_system, fake_file_path);
+}
+
+TEST_F(FileSystemProviderCloudFileSystemTest, CurrentReaderCanReadEvictedFile) {
+  // Underlying FakeProvidedFileSystem is (always) initialised with fake file
+  // with kFakeFilePath.
+  const base::FilePath fake_file_path(kFakeFilePath);
+  auto [mock_content_cache_observer, cloud_file_system] =
+      CreateContentCacheAndObserverAndCloudFileSystem();
+
+  // Read 2 bytes of the `kFakeFilePath` file and insert them into the cache.
+  int file_handle = GetFileHandleFromSuccessfulOpenFile(
+      *cloud_file_system, base::FilePath(kFakeFilePath));
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(1);
+
+  ReadFileSuccessfully(*cloud_file_system, file_handle, buffer, /*offset=*/0,
+                       /*length=*/1);
+  ReadFileSuccessfully(*cloud_file_system, file_handle, buffer, /*offset=*/1,
+                       /*length=*/1);
+  CloseFileSuccessfully(*cloud_file_system, file_handle);
+
+  // Open the file again.
+  file_handle = GetFileHandleFromSuccessfulOpenFile(
+      *cloud_file_system, base::FilePath(kFakeFilePath));
+
+  // Read the first byte from the cache.
+  ReadFileSuccessfully(*cloud_file_system, file_handle, buffer, /*offset=*/0,
+                       /*length=*/1);
+
+  // Remove the entry from the underlying FSP to ensure that the ReadFile is
+  // indeed reading from the cache.
+  DeleteEntryOnFakeFileSystem(fake_file_path);
+
+  // Send a delete notification. Expect that the item gets evicted.
+  auto changes = std::make_unique<ProvidedFileSystemObserver::Changes>();
+  changes->emplace_back(
+      fake_file_path, storage::WatcherManager::ChangeType::DELETED,
+      std::make_unique<ash::file_system_provider::CloudFileInfo>("versionA"));
+  EXPECT_CALL(*mock_content_cache_observer, OnItemEvicted(fake_file_path));
+  cloud_file_system->Notify(fake_file_path, /*recursive=*/true,
+                            storage::WatcherManager::ChangeType::DELETED,
+                            std::move(changes), /*tag=*/"", base::DoNothing());
+
+  // Read the second byte from the cache.
+  ReadFileSuccessfully(*cloud_file_system, file_handle, buffer, /*offset=*/1,
+                       /*length=*/1);
+
+  // Fail to read the third byte. Expect that the request is forwarded to the
+  // FSP which responds with a `base::File::FILE_ERROR_INVALID_OPERATION` due to
+  // the file not existing.
+  ReadFileFuture read_file_future;
+  cloud_file_system->ReadFile(file_handle, buffer.get(), /*offset=*/2,
+                              /*length=*/1,
+                              read_file_future.GetRepeatingCallback());
+  EXPECT_EQ(read_file_future.Get<int>(), 0);
+  EXPECT_EQ(read_file_future.Get<base::File::Error>(),
+            base::File::FILE_ERROR_INVALID_OPERATION);
+
+  // Close the file, expect that it now gets removed.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_content_cache_observer,
+              OnItemRemovedFromDisk(fake_file_path, /*bytes_removed=*/2))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  CloseFileSuccessfully(*cloud_file_system, file_handle);
+  run_loop.Run();
 }
 
 }  // namespace

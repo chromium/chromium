@@ -254,6 +254,9 @@ void CloudFileSystem::OnReadFileFromCacheCompleted(
     int bytes_read,
     bool has_more,
     base::File::Error result) {
+  VLOG(2) << "OnReadFileFromCacheCompleted {fsid = " << GetFileSystemId()
+          << ", file_handle = '" << file_handle << "', result = '" << result
+          << "}";
   if (result == base::File::FILE_OK) {
     // If the cached read file was successful, ensure that is passed to the
     // caller.
@@ -285,6 +288,10 @@ void CloudFileSystem::OnReadFileCompleted(int file_handle,
                                           int bytes_read,
                                           bool has_more,
                                           base::File::Error result) {
+  VLOG(2) << "OnReadFileCompleted {fsid = " << GetFileSystemId()
+          << ", file_handle = '" << file_handle << "', result = '" << result
+          << ", bytes_read = " << bytes_read << "}";
+
   const OpenedCloudFileMap::const_iterator it = opened_files_.find(file_handle);
   if (it == opened_files_.end() || result != base::File::FILE_OK ||
       !content_cache_) {
