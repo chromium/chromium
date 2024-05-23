@@ -102,7 +102,11 @@ public class PwaRestoreBottomSheetCoordinator implements BottomSheetObserver {
         // By default, a scrim isn't provided for a Bottom Sheet while in peeking mode. This creates
         // problems (see bug), especially since our dialog is a bit large due to the illustration
         // icon. A scrim is therefore required, so we provide it manually (when in peeking mode).
-        if (newState == BottomSheetController.SheetState.PEEK) {
+        // The reason we check for non-zero container height is because onSheetStateChanged can be
+        // sent with PEEK when the container is hidden (happens when the user changes theme to
+        // Dark). We only want to show the scrim if the container is visible.
+        if (newState == BottomSheetController.SheetState.PEEK
+                && mController.getContainerHeight() != 0) {
             mController.getScrimCoordinator().showScrim(createScrimPropertyModel());
         }
     }
