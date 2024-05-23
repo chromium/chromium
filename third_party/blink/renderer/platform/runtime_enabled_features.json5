@@ -1795,6 +1795,8 @@
       // Enables real time reporting API in Protected Audience.
       // https://github.com/WICG/turtledove/blob/main/PA_real_time_monitoring.md
       name: "FledgeRealTimeReporting",
+      public: true,
+      status: "test",
     },
     {
       // Enables using a 'reportingTimeout' field within the Protected Audience

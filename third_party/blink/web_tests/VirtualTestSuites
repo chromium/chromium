@@ -1584,10 +1584,13 @@
     ],
     "expires": "Sep 1, 2024"
   },
+  "This virtual suite disables CookieDeprecationFacilitatedTesting while",
+  "enabling fledge flags, to test fledge features that are disabled when",
+  "CookieDeprecationFacilitatedTesting is enabled.",
   {
-    "prefix": "fledge-deprecated-render-url-replacements",
+    "prefix": "fledge-disable-cookie-deprecation-testing",
     "platforms": ["Linux", "Mac", "Win"],
-    "owners": ["ybourouphael@google.com", "behamilton@google.com", "mmenke@chromium.org", "pauljensen@chromium.org"],
+    "owners": ["ybourouphael@google.com", "behamilton@google.com", "mmenke@chromium.org", "pauljensen@chromium.org", "qingxinwu@google.com"],
     "bases": [
       "external/wpt/fledge/tentative/deprecated-render-url-replacements.https.window.js",
       "external/wpt/fledge/tentative/auction-config-passed-to-worklets.https.window.js",

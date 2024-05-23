@@ -721,6 +721,7 @@ void ResolveInvalidConfigurations() {
   if (base::FeatureList::IsEnabled(
           features::kCookieDeprecationFacilitatedTesting)) {
     WebRuntimeFeatures::EnableFledgeMultiBid(false);
+    WebRuntimeFeatures::EnableFledgeRealTimeReporting(false);
 
     if (!base::FeatureList::IsEnabled(
             blink::features::

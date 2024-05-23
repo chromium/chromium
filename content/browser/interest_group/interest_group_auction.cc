@@ -1964,6 +1964,8 @@ class InterestGroupAuction::BuyerHelper
 
     if (base::FeatureList::IsEnabled(
             blink::features::kFledgeRealTimeReporting) &&
+        !base::FeatureList::IsEnabled(
+            features::kCookieDeprecationFacilitatedTesting) &&
         !real_time_contributions.empty()) {
       if (!base::ranges::all_of(real_time_contributions,
                                 HasValidRealTimeBucket)) {
@@ -4808,7 +4810,9 @@ void InterestGroupAuction::OnScoreAdComplete(
     // TODO(qingxinwu): Validate received real time reporting message, and
     // report bad message if invalid.
     if (base::FeatureList::IsEnabled(
-            blink::features::kFledgeRealTimeReporting)) {
+            blink::features::kFledgeRealTimeReporting) &&
+        !base::FeatureList::IsEnabled(
+            features::kCookieDeprecationFacilitatedTesting)) {
       if (config_->non_shared_params.seller_real_time_reporting_type
               .has_value()) {
         RealTimeReportingContributions& real_time_contributions_for_origin =

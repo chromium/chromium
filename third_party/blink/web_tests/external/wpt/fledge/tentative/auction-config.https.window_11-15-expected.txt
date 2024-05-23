@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] perBuyerRealTimeReportingConfig has invalid buyer
+  assert_true: did not get expected error: [object FencedFrameConfig] expected true got false
+[FAIL] perBuyerRealTimeReportingConfig has no type
+  assert_true: did not get expected error: [object FencedFrameConfig] expected true got false
+Harness: the test ran to completion.
+

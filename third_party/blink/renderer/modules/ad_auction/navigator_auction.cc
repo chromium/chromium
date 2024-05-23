@@ -1747,9 +1747,7 @@ bool CopyPerBuyerRealTimeReportingTypesFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
-  if (!input.hasPerBuyerRealTimeReportingConfig() ||
-      !base::FeatureList::IsEnabled(
-          blink::features::kFledgeRealTimeReporting)) {
+  if (!input.hasPerBuyerRealTimeReportingConfig()) {
     return true;
   }
   output.auction_ad_config_non_shared_params
@@ -2550,8 +2548,7 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
         blink::AdCurrency::From(seller_currency_str);
   }
 
-  if (config.hasSellerRealTimeReportingConfig() &&
-      base::FeatureList::IsEnabled(blink::features::kFledgeRealTimeReporting)) {
+  if (config.hasSellerRealTimeReportingConfig()) {
     mojo_config->auction_ad_config_non_shared_params
         ->seller_real_time_reporting_type = GetRealTimeReportingTypeFromConfig(
         *config.sellerRealTimeReportingConfig());

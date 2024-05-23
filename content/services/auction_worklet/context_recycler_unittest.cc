@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
@@ -4776,7 +4777,8 @@ class ContextRecyclerRealTimeReportingEnabledTest : public ContextRecyclerTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Exercise RealTimeReportingBindings, and make sure they reset properly.
+// Exercise RealTimeReportingBindings, and make sure they are not available when
+// kCookieDeprecationFacilitatedTesting is enabled.
 TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
   const char kScript[] = R"(
     function test(args) {
@@ -5124,6 +5126,81 @@ class ContextRecyclerRealTimeReportingDisabledTest
 
 // Exercise RealTimeReportingBindings, and make sure they reset properly.
 TEST_F(ContextRecyclerRealTimeReportingDisabledTest,
+       RealTimeReportingBindings) {
+  const char kScript[] = R"(
+    function test(args) {
+      realTimeReporting.contributeToRealTimeHistogram(123,args);
+    }
+    function testLatency(args) {
+      realTimeReporting.contributeOnWorkletLatency(200, args);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddRealTimeReportingBindings();
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("priorityWeight", 0.5);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:3 Uncaught ReferenceError: "
+                    "realTimeReporting is not defined."));
+
+    EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
+                    ->TakeRealTimeReportingContributions()
+                    .empty());
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("priorityWeight", 0.5);
+    dict.Set("latencyThreshold", 200);
+
+    Run(scope, script, "testLatency", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:6 Uncaught ReferenceError: "
+                    "realTimeReporting is not defined."));
+
+    EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
+                    ->TakeRealTimeReportingContributions()
+                    .empty());
+  }
+}
+
+class ContextRecyclerRealTimeReportingAndCookieDeprecationEnabledTest
+    : public ContextRecyclerTest {
+ public:
+  ContextRecyclerRealTimeReportingAndCookieDeprecationEnabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kFledgeRealTimeReporting,
+                              features::kCookieDeprecationFacilitatedTesting},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Exercise RealTimeReportingBindings, and make sure they reset properly.
+TEST_F(ContextRecyclerRealTimeReportingAndCookieDeprecationEnabledTest,
        RealTimeReportingBindings) {
   const char kScript[] = R"(
     function test(args) {

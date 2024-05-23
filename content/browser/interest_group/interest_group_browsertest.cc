@@ -24746,6 +24746,102 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
   WaitForUrl(kRealTimeReportUrlA);
 }
 
+class AuctionConfigRealTimeReportingAndCookieDeprecationEnabledTest
+    : public InterestGroupBrowserTest {
+ public:
+  AuctionConfigRealTimeReportingAndCookieDeprecationEnabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kFledgeRealTimeReporting,
+                              features::kCookieDeprecationFacilitatedTesting},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    AuctionConfigRealTimeReportingAndCookieDeprecationEnabledTest,
+    RealTimeReporting) {
+  const char kHostA[] = "a.test";
+  const char kHostB[] = "b.test";
+  GURL test_url =
+      embedded_https_test_server().GetURL(kHostA, "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      embedded_https_test_server().GetURL(kHostA, "/echo?render_cars");
+  GURL ad2_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_bikes");
+  url::Origin test_origin_b =
+      url::Origin::Create(embedded_https_test_server().GetURL(kHostB, "/echo"));
+
+  // IG "winner" should bid 2 and should have won the auction if it bids
+  // successfully, but it should fail to bid due to it calls undefined real time
+  // reporting API.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"winner",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          embedded_https_test_server().GetURL(
+              kHostA,
+              "/interest_group/bidding_logic_with_real_time_reporting.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"bikes",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    kHostA, "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad2_url, /*metadata=*/std::nullopt}}}));
+
+  // IG "bikes" won the auction, since "winner" failed to bid.
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        interestGroupBuyers: [$3],
+        sellerRealTimeReportingConfig: {type: 'default-local-reporting'},
+        perBuyerRealTimeReportingConfig: {
+          $3: {type: 'default-local-reporting'}
+        }
+      })",
+      test_origin_b,
+      embedded_https_test_server().GetURL(kHostB,
+                                          "/interest_group/decision_logic.js"),
+      test_origin);
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad2_url);
+
+  WaitForUrl(embedded_https_test_server().GetURL("/echoall?report_seller"));
+  WaitForUrl(embedded_https_test_server().GetURL("/echoall?report_bidder"));
+
+  EXPECT_FALSE(HasServerSeenUrl(embedded_https_test_server().GetURL(
+      "a.test", "/.well-known/interest-group/real-time-report")));
+  // Seller didn't call real time reporting API, so it succeeded, but it
+  // does not send the default real time report although it opted in.
+  EXPECT_FALSE(HasServerSeenUrl(embedded_https_test_server().GetURL(
+      "b.test", "/.well-known/interest-group/real-time-report")));
+
+  const GURL kRealTimeReportUrls[] = {
+      embedded_https_test_server().GetURL(
+          "a.test", "/.well-known/interest-group/real-time-report"),
+      embedded_https_test_server().GetURL(
+          "b.test", "/.well-known/interest-group/real-time-report")};
+
+  for (const auto& report_url : kRealTimeReportUrls) {
+    EXPECT_FALSE(HasServerSeenUrl(report_url));
+  }
+}
+
 }  // namespace
 
 }  // namespace content

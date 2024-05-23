@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
@@ -109,8 +110,11 @@ RealTimeReportingBindings::~RealTimeReportingBindings() = default;
 
 void RealTimeReportingBindings::AttachToContext(
     v8::Local<v8::Context> context) {
+  // Don't enable real time reporting in Mode A/B traffic.
   if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgeRealTimeReporting)) {
+          blink::features::kFledgeRealTimeReporting) ||
+      base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTesting)) {
     return;
   }
 
