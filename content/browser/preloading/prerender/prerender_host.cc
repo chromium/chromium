@@ -862,20 +862,17 @@ PrerenderHost::ActivationNavigationParamsMatch
 PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     const blink::mojom::CommonNavigationParams& potential_activation,
     bool allow_initiator_and_transition_mismatch) {
-  // The CommonNavigationParams::url field is expected to be the same for both
-  // initial and activation prerender navigations, as the PrerenderHost
-  // selection would have already checked for matching values. Adding a CHECK
-  // here to be safe.
+  // The CommonNavigationParams::url field is expected to match both initial and
+  // activation prerender navigations, as the PrerenderHost selection would have
+  // already checked for matching values. Adding a CHECK here to be safe.
   CHECK(common_params_);
   if (attributes_.url_match_predicate) {
     CHECK(attributes_.url_match_predicate.Run(potential_activation.url));
+  } else if (no_vary_search_.has_value()) {
+    CHECK(no_vary_search_->AreEquivalent(potential_activation.url,
+                                         common_params_->url));
   } else {
-    // TODO(crbug.com/41494389): We should check for No-Vary-Search match
-    // here.
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kPrerender2NoVarySearch)) {
-      CHECK_EQ(potential_activation.url, common_params_->url);
-    }
+    CHECK_EQ(potential_activation.url, common_params_->url);
   }
 
   // TODO(https://crbug.com/340416082): Check details of security properties,
