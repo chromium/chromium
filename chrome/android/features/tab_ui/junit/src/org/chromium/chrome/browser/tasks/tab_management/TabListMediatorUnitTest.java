@@ -374,9 +374,12 @@ public class TabListMediatorUnitTest {
         doReturn(POSITION1).when(mTabModel).indexOf(mTab1);
         doReturn(POSITION2).when(mTabModel).indexOf(mTab2);
         doReturn(POSITION1).when(mTabModel).index();
+        doReturn(mTab1).when(mIncognitoTabModel).getTabAt(POSITION1);
+        doReturn(mTab2).when(mIncognitoTabModel).getTabAt(POSITION2);
         doNothing().when(mTab1).addObserver(mTabObserverCaptor.capture());
         doReturn(0).when(mTabModel).index();
         doReturn(2).when(mTabModel).getCount();
+        doReturn(2).when(mIncognitoTabModel).getCount();
         doNothing()
                 .when(mTabListFaviconProvider)
                 .getFaviconForUrlAsync(any(GURL.class), anyBoolean(), mCallbackCaptor.capture());
@@ -3829,6 +3832,59 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testOnMenuItemClickedCallback_UngroupInTabSwitcher_IncognitoNoShow() {
+        mCurrentTabModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
+        when(mIncognitoTabModel.isIncognito()).thenReturn(true);
+
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < mIncognitoTabModel.getCount(); i++) {
+            tabs.add(mIncognitoTabModel.getTabAt(i));
+        }
+
+        // Create tab group.
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
+        mMediator.resetWithListOfTabs(tabs, false);
+
+        // Assert that the callback performs as expected.
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK));
+        when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
+        when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
+        mModel.get(POSITION1)
+                .model
+                .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
+                .onClick(R.id.ungroup_tab, TAB1_ID);
+        verify(mIncognitoTabGroupModelFilter).moveTabOutOfGroup(TAB1_ID);
+    }
+
+    @Test
+    public void testOnMenuItemClickedCallback_DeleteGroupInTabSwitcher_IncognitoNoShow() {
+        mCurrentTabModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
+        when(mIncognitoTabModel.isIncognito()).thenReturn(true);
+
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < mIncognitoTabModel.getCount(); i++) {
+            tabs.add(mIncognitoTabModel.getTabAt(i));
+        }
+
+        // Create tab group.
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
+        mMediator.resetWithListOfTabs(tabs, false);
+
+        // Assert that the callback performs as expected.
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK));
+        when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
+        when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
+        mModel.get(POSITION1)
+                .model
+                .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
+                .onClick(R.id.delete_tab, TAB1_ID);
+        verify(mIncognitoTabGroupModelFilter)
+                .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ false);
+    }
+
+    @Test
     public void testOnMenuItemClickedCallback_CloseGroupInTabSwitcher_SingleTabGroup() {
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < mTabModel.getCount(); i++) {
@@ -4053,6 +4109,7 @@ public class TabListMediatorUnitTest {
         doReturn(tab).when(mTabModel).getTabAt(count);
         doReturn(count).when(mTabModel).getCount();
         when(mTabModel.getTabById(id)).thenReturn(tab);
+        when(mIncognitoTabModel.getTabById(id)).thenReturn(tab);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(id)).thenReturn(1);
         return tab;
     }

@@ -2718,8 +2718,9 @@ class TabListMediator {
         TabModel tabModel = filter.getTabModel();
         int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
+        boolean isIncognito = filter.getTabModel().isIncognito();
 
-        if (hideTabGroups) {
+        if (hideTabGroups || isIncognito) {
             filter.closeMultipleTabs(tabs, /* canUndo= */ true, hideTabGroups);
         } else {
             List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
@@ -2809,18 +2810,25 @@ class TabListMediator {
         int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
+        boolean isIncognito = filter.getTabModel().isIncognito();
 
-        // Present a confirmation dialog to the user before ungrouping the tab group.
-        Callback<Integer> onResult =
-                (@ConfirmationResult Integer result) -> {
-                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        for (Tab tab : tabs) {
-                            filter.moveTabOutOfGroup(tab.getId());
+        if (isIncognito) {
+            for (Tab tab : tabs) {
+                filter.moveTabOutOfGroup(tab.getId());
+            }
+        } else {
+            // Present a confirmation dialog to the user before ungrouping the tab group.
+            Callback<Integer> onResult =
+                    (@ConfirmationResult Integer result) -> {
+                        if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                            for (Tab tab : tabs) {
+                                filter.moveTabOutOfGroup(tab.getId());
+                            }
                         }
-                    }
-                };
+                    };
 
-        mActionConfirmationManager.processUngroupAttempt(onResult);
+            mActionConfirmationManager.processUngroupAttempt(onResult);
+        }
     }
 
     private String getActionButtonDescriptionString(
