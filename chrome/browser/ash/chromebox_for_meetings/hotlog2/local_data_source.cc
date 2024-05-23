@@ -217,12 +217,13 @@ void LocalDataSource::BuildLogEntryFromLogLine(
     entry.set_severity(default_severity);
     entry.set_text_payload(line);
   } else {
-    auto time_since_epoch = TimestampStringToUnixTime(timestamp);
+    auto time_since_epoch =
+        !timestamp.empty() ? TimestampStringToUnixTime(timestamp) : 0;
 
     // Use the log source and timestamp to create a unique ID that can be
     // used to identify this entry. This will aid in de-duplication on the
     // server side.
-    if (is_incremental_) {
+    if (is_incremental_ && time_since_epoch != 0) {
       entry.set_insert_id(GetDisplayName() + ":" +
                           base::NumberToString(time_since_epoch));
     }
