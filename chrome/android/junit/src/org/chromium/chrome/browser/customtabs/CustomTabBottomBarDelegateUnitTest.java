@@ -190,4 +190,27 @@ public class CustomTabBottomBarDelegateUnitTest {
         verify(updater).updateBottomBarButton(eq(customButtonParams));
         verifyNoInteractions(mButtonView);
     }
+
+    @Test
+    public void testOnControlsOffsetChanged() {
+        when(mBrowserControlsSizer.getBottomControlsMinHeight()).thenReturn(100);
+
+        mBottomBarDelegate.onControlsOffsetChanged(
+                /* topOffset= */ 0,
+                /* topControlsMinHeightOffset= */ 0,
+                /* bottomOffset= */ 0,
+                /* bottomControlsMinHeightOffset= */ 0,
+                /* needsAnimate= */ false);
+        verify(mBottomBarView).setTranslationY(-100);
+    }
+
+    @Test
+    public void testOnBottomControlsHeightChanged() {
+        when(mBrowserControlsSizer.getBottomControlsMinHeightOffset()).thenReturn(100);
+        when(mBrowserControlsSizer.getBrowserControlHiddenRatio()).thenReturn(1f);
+        mBottomBarDelegate.onBottomControlsHeightChanged(
+                /* bottomControlsHeight= */ 50, /* bottomControlsMinHeight= */ 0);
+
+        verify(mBottomBarView).setTranslationY(-50); // 1.0 * 50 - 100
+    }
 }

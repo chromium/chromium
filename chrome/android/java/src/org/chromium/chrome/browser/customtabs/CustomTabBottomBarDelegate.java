@@ -165,7 +165,7 @@ public class CustomTabBottomBarDelegate
                                 int oldRight,
                                 int oldBottom) {
                             mBottomBarContentView.removeOnLayoutChangeListener(this);
-                            mBrowserControlsSizer.setBottomControlsHeight(getBottomBarHeight(), 0);
+                            setBottomControlsHeight(getBottomBarHeight());
                         }
                     });
             return;
@@ -389,7 +389,7 @@ public class CustomTabBottomBarDelegate
                             }
                         })
                 .start();
-        mBrowserControlsSizer.setBottomControlsHeight(0, 0);
+        setBottomControlsHeight(0);
     }
 
     private void transformViewIds(View view) {
@@ -443,7 +443,7 @@ public class CustomTabBottomBarDelegate
                             int oldRight,
                             int oldBottom) {
                         inflatedView.removeOnLayoutChangeListener(this);
-                        mBrowserControlsSizer.setBottomControlsHeight(getBottomBarHeight(), 0);
+                        setBottomControlsHeight(getBottomBarHeight());
                     }
                 });
         return true;
@@ -487,7 +487,10 @@ public class CustomTabBottomBarDelegate
             int bottomOffset,
             int bottomControlsMinHeightOffset,
             boolean needsAnimate) {
-        if (mBottomBarView != null) mBottomBarView.setTranslationY(bottomOffset);
+        if (mBottomBarView != null) {
+            int minHeight = mBrowserControlsSizer.getBottomControlsMinHeight();
+            mBottomBarView.setTranslationY(bottomOffset - minHeight);
+        }
         // If the bottom bar is not visible use the top controls as a guide to set state.
         int offset = getBottomBarHeight() == 0 ? topOffset : bottomOffset;
         int height =
@@ -510,14 +513,14 @@ public class CustomTabBottomBarDelegate
         // using getBrowserControlHiddenRatio(), http://crbug.com/928903.
         getBottomBarView()
                 .setTranslationY(
-                        mBrowserControlsSizer.getBrowserControlHiddenRatio()
-                                * bottomControlsHeight);
+                        mBrowserControlsSizer.getBrowserControlHiddenRatio() * bottomControlsHeight
+                                - mBrowserControlsSizer.getBottomControlsMinHeightOffset());
     }
 
     /**
      * This method temporarily hides bottomBarView.
      *
-     * If you need to remove bottom bar completely use {@link #hideBottomBar()}.
+     * <p>If you need to remove bottom bar completely use {@link #hideBottomBar()}.
      *
      * @param hidesBottomBar whether bottom bar needs to be hidden.
      */
@@ -527,10 +530,10 @@ public class CustomTabBottomBarDelegate
             // changing inadvertently while it is being updated by other insets.
             if (getBottomBarView().getVisibility() == View.GONE) return;
             getBottomBarView().setVisibility(View.GONE);
-            mBrowserControlsSizer.setBottomControlsHeight(0, 0);
+            setBottomControlsHeight(0);
         } else {
             getBottomBarView().setVisibility(View.VISIBLE);
-            mBrowserControlsSizer.setBottomControlsHeight(getBottomBarHeight(), 0);
+            setBottomControlsHeight(getBottomBarHeight());
         }
     }
 
@@ -558,6 +561,11 @@ public class CustomTabBottomBarDelegate
         if (mBottomBarView == null) return;
         mBottomBarView.setSwipeHandler(null);
         mSwipeUpPendingIntent = null;
+    }
+
+    private void setBottomControlsHeight(int height) {
+        int minHeight = mBrowserControlsSizer.getBottomControlsMinHeight();
+        mBrowserControlsSizer.setBottomControlsHeight(minHeight + height, minHeight);
     }
 
     // SwipeGestureListener.SwipeHandler methods
