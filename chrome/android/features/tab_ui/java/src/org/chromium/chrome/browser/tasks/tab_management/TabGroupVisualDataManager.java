@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
@@ -64,12 +66,24 @@ public class TabGroupVisualDataManager {
                                 if (filter.getRelatedTabCountForRootId(rootId) > 1) continue;
                             }
 
-                            filter.deleteTabGroupTitle(rootId);
-                            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                                filter.deleteTabGroupColor(rootId);
-                            }
-                            if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-                                filter.deleteTabGroupCollapsed(rootId);
+                            Runnable deleteTask =
+                                    () -> {
+                                        filter.deleteTabGroupTitle(rootId);
+                                        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                                            filter.deleteTabGroupColor(rootId);
+                                        }
+                                        if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
+                                            filter.deleteTabGroupCollapsed(rootId);
+                                        }
+                                    };
+                            if (!canRestore && filter.isTabGroupHiding(tab.getTabGroupId())) {
+                                // Post this work because if the closure is non-undoable, but the
+                                // tab group is hiding we don't want sync to pick up this deletion
+                                // and we should post so all the observers are notified before we do
+                                // the deletion.
+                                PostTask.postTask(TaskTraits.UI_DEFAULT, deleteTask);
+                            } else {
+                                deleteTask.run();
                             }
                         }
                     }

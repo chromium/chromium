@@ -29,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
@@ -215,6 +216,31 @@ public class TabGroupVisualDataManagerUnitTest {
         // Verify that the title and color were deleted.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB1_ID);
         verify(mTabGroupModelFilter).deleteTabGroupColor(TAB1_ID);
+    }
+
+    @Test
+    public void onFinishingMultipleTabClosure_DeleteStoredTitle_CannotRestore() {
+        List<Tab> tabs = List.of(mTab1);
+        createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
+
+        doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB3_ID, TAB4_ID)))
+                .when(mTabGroupModelFilter)
+                .getLazyAllRootIdsInComprehensiveModel(any());
+        doReturn(true).when(mTabGroupModelFilter).isTabGroupHiding(GROUP_1_ID);
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(tabs, /* canRestore= */ false);
+        // Verify the properties are not deleted yet.
+        verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
+        verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);
+        verify(mTabGroupModelFilter, never()).deleteTabGroupCollapsed(TAB1_ID);
+
+        ShadowLooper.runUiThreadTasks();
+
+        // Verify that the properties are now deleted.
+        verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB1_ID);
+        verify(mTabGroupModelFilter).deleteTabGroupColor(TAB1_ID);
+        verify(mTabGroupModelFilter).deleteTabGroupCollapsed(TAB1_ID);
     }
 
     @Test
