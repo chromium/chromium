@@ -370,8 +370,14 @@ class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
+// TODO(crbug.com/340578724): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_geolocation DISABLED_InvokeUi_geolocation
+#else
+#define MAYBE_InvokeUi_geolocation InvokeUi_geolocation
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
-                       InvokeUi_geolocation) {
+                       MAYBE_InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }
 
