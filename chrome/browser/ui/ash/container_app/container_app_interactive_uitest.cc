@@ -48,9 +48,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "chromeos/components/libsegmentation/buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/app_constants/constants.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/sync/base/command_line_switches.h"
@@ -209,16 +207,8 @@ class ContainerAppInteractiveUiTestBase
     : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
  public:
   ContainerAppInteractiveUiTestBase(
-      std::optional<ash::LoggedInUserMixin::LogInType> login_type,
-      bool should_ignore_feature_key)
+      std::optional<ash::LoggedInUserMixin::LogInType> login_type)
       : user_session_mixin_(CreateUserSessionMixin(login_type)) {
-    // Conditionally ignore the container app preinstallation key.
-    if (should_ignore_feature_key) {
-      ignore_container_app_preinstall_key_ = std::make_unique<
-          base::AutoReset<bool>>(
-          chromeos::features::SetIgnoreContainerAppPreinstallKeyForTesting());
-    }
-
     // Enable container app preinstallation.
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kContainerAppPreinstall,
@@ -363,9 +353,6 @@ class ContainerAppInteractiveUiTestBase
 
   // Used to retrieve expected title/URL for the container app.
   std::unique_ptr<web_app::WebAppInstallInfo> container_app_install_info_;
-
-  // Used to conditionally ignore the container app preinstallation key.
-  std::unique_ptr<base::AutoReset<bool>> ignore_container_app_preinstall_key_;
 };
 
 // ContainerAppInteractiveUiTest -----------------------------------------------
@@ -374,15 +361,13 @@ class ContainerAppInteractiveUiTestBase
 // whether the logged-in user is new or existing. Tests include a PRE_ session,
 // where user state is initialized, followed by a subsequent session containing
 // test logic. Chrome is restarted between sessions.
-
 class ContainerAppInteractiveUiTest
     : public ContainerAppInteractiveUiTestBase,
       public WithParamInterface</*existing_user=*/bool> {
  public:
   ContainerAppInteractiveUiTest()
       : ContainerAppInteractiveUiTestBase(
-            ash::LoggedInUserMixin::LogInType::kConsumer,
-            /*should_ignore_feature_key=*/true) {
+            ash::LoggedInUserMixin::LogInType::kConsumer) {
     // Disable the container app during the PRE_ session so that the subsequent
     // session containing test logic is when the app preinstallation occurs.
     if (IsPreSession()) {
@@ -834,12 +819,6 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromShelf) {
 enum class IneligibilityReason {
   kMinValue = 0,
   kFeatureFlagDisabled = kMinValue,
-#if !BUILDFLAG(ENABLE_MERGE_REQUEST)
-  // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
-  kFeatureKeyEmpty,
-  kFeatureKeyParamIncorrect,
-  kFeatureKeySwitchIncorrect,
-#endif  // !BUILDFLAG(ENABLE_MERGE_REQUEST)
   kFeatureManagementFlagDisabled,
   kUserManaged,
   kUserTypeChild,
@@ -854,12 +833,6 @@ enum class IneligibilityReason {
 inline std::ostream& operator<<(std::ostream& os, IneligibilityReason reason) {
   switch (reason) {
     INELIGIBILITY_REASON_CASE(kFeatureFlagDisabled);
-#if !BUILDFLAG(ENABLE_MERGE_REQUEST)
-    // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
-    INELIGIBILITY_REASON_CASE(kFeatureKeyEmpty);
-    INELIGIBILITY_REASON_CASE(kFeatureKeyParamIncorrect);
-    INELIGIBILITY_REASON_CASE(kFeatureKeySwitchIncorrect);
-#endif  // !BUILDFLAG(ENABLE_MERGE_REQUEST)
     INELIGIBILITY_REASON_CASE(kFeatureManagementFlagDisabled);
     INELIGIBILITY_REASON_CASE(kUserManaged);
     INELIGIBILITY_REASON_CASE(kUserTypeChild);
@@ -872,51 +845,15 @@ class ContainerAppInteractiveUiIneligibilityTest
     : public ContainerAppInteractiveUiTestBase,
       public WithParamInterface<IneligibilityReason> {
  public:
-  // Incorrect key param/switch for the container app preinstallation feature.
-  static constexpr char kIncorrectKey[] = "<INCORRECT_KEY>";
-
   ContainerAppInteractiveUiIneligibilityTest()
-      : ContainerAppInteractiveUiTestBase(GetLoginType(),
-                                          ShouldIgnoreFeatureKey()) {
-    std::vector<base::test::FeatureRefAndParams> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-
-    // Feature flag and key param.
-    if (IsFeatureFlagDisabled()) {
-      disabled.emplace_back(chromeos::features::kContainerAppPreinstall);
-    } else {
-      enabled.emplace_back(
-          chromeos::features::kContainerAppPreinstall,
-          IsFeatureKeyParamIncorrect()
-              ? base::FieldTrialParams({{"key", kIncorrectKey}})
-              : base::FieldTrialParams());
-    }
-
-    // Feature management flag.
-    if (IsFeatureManagementFlagDisabled()) {
-      disabled.emplace_back(
-          chromeos::features::kFeatureManagementContainerAppPreinstall);
-    } else {
-      enabled.emplace_back(
-          chromeos::features::kFeatureManagementContainerAppPreinstall,
-          base::FieldTrialParams());
-    }
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+      : ContainerAppInteractiveUiTestBase(GetLoginType()) {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kContainerAppPreinstall, IsFeatureFlagDisabled()},
+         {chromeos::features::kFeatureManagementContainerAppPreinstall,
+          IsFeatureManagementFlagDisabled()}});
   }
 
  private:
-  // ContainerAppInteractiveUiTestBase:
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    ContainerAppInteractiveUiTestBase::SetUpDefaultCommandLine(command_line);
-
-    // Feature key switch.
-    if (IsFeatureKeySwitchIncorrect()) {
-      command_line->AppendSwitchASCII(
-          chromeos::switches::kContainerAppPreinstallKey, kIncorrectKey);
-    }
-  }
-
   void SetUpOnMainThread() override {
     // Web app preinstallation times out for child user types due to failure to
     // install some default web apps. Since this test suite only cares about the
@@ -951,47 +888,10 @@ class ContainerAppInteractiveUiIneligibilityTest
     return GetParam() == IneligibilityReason::kFeatureFlagDisabled;
   }
 
-  // Returns whether the feature key param is incorrect given test
-  // parameterization.
-  bool IsFeatureKeyParamIncorrect() const {
-#if !BUILDFLAG(ENABLE_MERGE_REQUEST)
-    return GetParam() == IneligibilityReason::kFeatureKeyParamIncorrect;
-#else   // !BUILDFLAG(ENABLE_MERGE_REQUEST)
-    // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
-    return true;
-#endif  // BUILDFLAG(ENABLE_MERGE_REQUEST)
-  }
-
-  // Returns whether the feature key switch is incorrect given test
-  // parameterization.
-  bool IsFeatureKeySwitchIncorrect() const {
-#if !BUILDFLAG(ENABLE_MERGE_REQUEST)
-    return GetParam() == IneligibilityReason::kFeatureKeySwitchIncorrect;
-#else   // !BUILDFLAG(ENABLE_MERGE_REQUEST)
-    // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
-    return true;
-#endif  // BUILDFLAG(ENABLE_MERGE_REQUEST)
-  }
-
   // Returns whether the feature management flag is disabled given test
   // parameterization.
   bool IsFeatureManagementFlagDisabled() const {
     return GetParam() == IneligibilityReason::kFeatureManagementFlagDisabled;
-  }
-
-  // Returns whether the feature key should be ignored given test
-  // parameterization.
-  bool ShouldIgnoreFeatureKey() const {
-#if !BUILDFLAG(ENABLE_MERGE_REQUEST)
-    return !std::set<IneligibilityReason>(
-                {IneligibilityReason::kFeatureKeyEmpty,
-                 IneligibilityReason::kFeatureKeyParamIncorrect,
-                 IneligibilityReason::kFeatureKeySwitchIncorrect})
-                .contains(GetParam());
-#else   // !BUILDFLAG(ENABLE_MERGE_REQUEST)
-    // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
-    return false;
-#endif  // BUILDFLAG(ENABLE_MERGE_REQUEST)
   }
 
   // Used to enable/disable the container app preinstallation based on test

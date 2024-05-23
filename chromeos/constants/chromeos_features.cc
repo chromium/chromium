@@ -6,14 +6,10 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chromeos/components/libsegmentation/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
-#elif !BUILDFLAG(ENABLE_MERGE_REQUEST)
-#include "base/hash/sha1.h"
-#include "chromeos/constants/chromeos_switches.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(ENABLE_MERGE_REQUEST)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos::features {
 
@@ -80,24 +76,10 @@ BASE_FEATURE(kBlinkExtensionKiosk,
              "BlinkExtensionKiosk",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature flag used to gate preinstallation of the container app. The container
-// app may only be preinstalled if the feature flag is enabled and the
-// associated `kContainerAppPreinstallKey` matches expectations.
+// Feature flag used to gate preinstallation of the container app.
 BASE_FEATURE(kContainerAppPreinstall,
              "ContainerAppPreinstall",
-#if BUILDFLAG(ENABLE_MERGE_REQUEST)
              base::FEATURE_ENABLED_BY_DEFAULT);
-#else   //  BUILDFLAG(ENABLE_MERGE_REQUEST)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(ENABLE_MERGE_REQUEST)
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(ENABLE_MERGE_REQUEST)
-// Parameterized key used to gate preinstallation of the container app. The
-// container app may only be preinstalled if the associated
-// `kContainerAppPreinstall` flag is enabled and the key matches expectations.
-const base::FeatureParam<std::string> kContainerAppPreinstallKey{
-    &kContainerAppPreinstall, "key", ""};
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(ENABLE_MERGE_REQUEST)
 
 // Enables handling of key press event in background.
 BASE_FEATURE(kCrosAppsBackgroundEventHandling,
@@ -360,23 +342,9 @@ bool IsContainerAppPreinstallEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsContainerAppPreinstallEnabled();
 #else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!base::FeatureList::IsEnabled(kFeatureManagementContainerAppPreinstall) ||
-      !base::FeatureList::IsEnabled(kContainerAppPreinstall)) {
-    return false;
-  }
-#if BUILDFLAG(ENABLE_MERGE_REQUEST)
-  // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
-  return true;
-#else   // BUILDFLAG(ENABLE_MERGE_REQUEST)
-  constexpr char kKey[] =
-      "\xa1\x65\xcd\x65\x2a\x94\xed\xe6\x97\x7d\xcc\x5b\xcc\x94\x66\xd4\x0a\x90"
-      "\x67\x65";
-  // NOTE: Key may be provided via param or via standalone command-line switch.
-  return (g_ignore_container_app_preinstall_key_for_testing ||
-          base::SHA1HashString(kContainerAppPreinstallKey.Get()) == kKey ||
-          base::SHA1HashString(switches::GetContainerAppPreinstallKey()) ==
-              kKey);
-#endif  // !BUILDFLAG(ENABLE_MERGE_REQUEST)
+  return base::FeatureList::IsEnabled(
+             kFeatureManagementContainerAppPreinstall) &&
+         base::FeatureList::IsEnabled(kContainerAppPreinstall);
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
