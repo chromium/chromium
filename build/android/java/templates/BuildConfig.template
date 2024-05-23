@@ -105,4 +105,10 @@ public class BuildConfig {
 #else
     public static MAYBE_FINAL boolean WRITE_CLANG_PROFILING_DATA MAYBE_FALSE;
 #endif
+
+#if defined(_DISABLE_DEBUG_LOGS)
+    public static MAYBE_FINAL boolean ENABLE_DEBUG_LOGS MAYBE_FALSE;
+#else
+    public static MAYBE_FINAL boolean ENABLE_DEBUG_LOGS = true;
+#endif
 }

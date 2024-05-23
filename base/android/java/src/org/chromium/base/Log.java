@@ -4,6 +4,7 @@
 
 package org.chromium.base;
 
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.AlwaysInline;
 
 import java.util.Locale;
@@ -65,11 +66,15 @@ public class Log {
     }
 
     /**
-     * In debug: Forwards to {@link android.util.Log#isLoggable(String, int)}.
-     * In release: Always returns false (via proguard rule).
+     * When BuildConfig.ENABLE_DEBUG_LOGS=true, returns true. Otherwise, forwards to {@link
+     * android.util.Log#isLoggable(String, int)} (which returns false for levels < INFO, unless
+     * configured otherwise by R8's -maximumremovedandroidloglevel).
+     *
+     * <p>https://stackoverflow.com/questions/7948204/does-log-isloggable-returns-wrong-values
      */
+    @AlwaysInline
     public static boolean isLoggable(String tag, int level) {
-        return android.util.Log.isLoggable(tag, level);
+        return BuildConfig.ENABLE_DEBUG_LOGS || android.util.Log.isLoggable(tag, level);
     }
 
     /**
