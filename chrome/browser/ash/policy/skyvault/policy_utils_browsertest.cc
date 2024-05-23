@@ -75,5 +75,6 @@ INSTANTIATE_TEST_SUITE_P(LocalUserFiles,
                          LocalUserFilesPolicyUtilsBrowserTest,
                          testing::Combine(
                              /*enable_skyvault*/ testing::Bool(),
-                             /*policy_value*/ testing::Bool()));
+                             /*policy_value*/ testing::Bool()),
+                         LocalUserFilesPolicyUtilsBrowserTest::ParamToString);
 }  // namespace policy::local_user_files
