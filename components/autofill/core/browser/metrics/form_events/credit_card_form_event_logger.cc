@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/credit_card_number_validation.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -21,7 +22,6 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -673,7 +673,7 @@ FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(
 
   if (number.empty()) {
     form_event = FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_NO_CARD;
-  } else if (!HasCorrectLength(number)) {
+  } else if (!HasCorrectCreditCardNumberLength(number)) {
     form_event =
         FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_WRONG_SIZE_CARD;
   } else if (!PassesLuhnCheck(number)) {

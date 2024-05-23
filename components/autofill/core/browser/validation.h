@@ -8,6 +8,10 @@
 #include <string>
 #include <string_view>
 
+// TODO(b/281812289): Remove this include when all dependencies switch to
+// including this file directly instead of relying on validation.h.
+#include "components/autofill/core/browser/credit_card_number_validation.h"
+
 namespace base {
 class Time;
 }  // namespace base
@@ -37,16 +41,6 @@ bool IsValidCreditCardExpirationDate(int year,
 // Returns true if |year| describes a year later than or equal to |now|'s year.
 // |year| must have 4 digits.
 bool IsValidCreditCardExpirationYear(int year, const base::Time& now);
-
-// Returns true if |text| looks like a valid credit card number.
-// Uses the Luhn formula to validate the number.
-bool IsValidCreditCardNumber(const std::u16string& text);
-
-// Returns true if |number| has correct length according to card network.
-bool HasCorrectLength(const std::u16string& number);
-
-// Returns true if |number| passes the validation by Luhn formula.
-bool PassesLuhnCheck(const std::u16string& number);
 
 // Returns true if |code| looks like a valid credit card security code
 // for the given credit card network.

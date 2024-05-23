@@ -118,13 +118,15 @@ TEST(AutofillValidation, IsValidCreditCardNumber) {
 TEST(AutofillValidation, IsValidCreditCardNumberLength) {
   for (const char16_t* valid_number : kValidNumbers) {
     SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
-    EXPECT_TRUE(HasCorrectLength(CreditCard::StripSeparators(valid_number)));
+    EXPECT_TRUE(HasCorrectCreditCardNumberLength(
+        CreditCard::StripSeparators(valid_number)));
   }
   // Only the first 2 invalid numbers in kInvalidNumbers have a bad length.
   for (size_t i = 0; i < 2; ++i) {
     const char16_t* invalid_number = kInvalidNumbers[i];
     SCOPED_TRACE(base::UTF16ToUTF8(invalid_number));
-    EXPECT_FALSE(HasCorrectLength(CreditCard::StripSeparators(invalid_number)));
+    EXPECT_FALSE(HasCorrectCreditCardNumberLength(
+        CreditCard::StripSeparators(invalid_number)));
   }
 }
 

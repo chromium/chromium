@@ -112,6 +112,8 @@ static_library("browser") {
     "browser_autofill_manager.cc",
     "browser_autofill_manager.h",
     "country_type.h",
+    "credit_card_number_validation.cc",
+    "credit_card_number_validation.h",
     "crowdsourcing/autofill_crowdsourcing_encoding.cc",
     "crowdsourcing/autofill_crowdsourcing_encoding.h",
     "crowdsourcing/autofill_crowdsourcing_manager.cc",
