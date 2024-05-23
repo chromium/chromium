@@ -95,6 +95,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="The verification operation was canceled."/>
   <int value="7" label="Failed to create UserConsentVerifier factory."/>
   <int value="8" label="Failed to call UserConsentVerifier API."/>
+  <int value="9" label="Failed to post authentication task."/>
 </enum>
 
 <enum name="AutoSigninFirstRun">

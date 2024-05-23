@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -113,6 +114,13 @@ void ReportCantCheckAvailability(
                                   BiometricAuthenticationStatusWin::kUnknown));
 }
 
+// Used to change the parameter of the `callback` to match what barrier callback
+// is expecting.
+bool WrapCallback(std::vector<bool> result) {
+  CHECK_EQ(result.size(), 1u);
+  return result[0];
+}
+
 // Asks operating system if user has configured and enabled Windows Hello on
 // their machine. Runs `callback` on `thread`.
 void GetBiometricAvailabilityFromWindows(
@@ -186,6 +194,7 @@ void ReturnAuthenticationValue(base::OnceCallback<void(bool)> callback,
       return;
     case AuthenticationResultStatusWin::kFailedToCallAPI:
     case AuthenticationResultStatusWin::kFailedToCreateFactory:
+    case AuthenticationResultStatusWin::kFailedToPostTask:
       // This values are not returned by UserConsentVerifier API.
       NOTREACHED_NORETURN();
   }
@@ -226,9 +235,21 @@ void PerformWindowsHelloAuthenticationAsync(
     return;
   }
 
-  base::win::PostAsyncHandlers(async_op.Get(),
-                               base::BindOnce(&OnAuthenticationReceived, thread,
-                                              std::move(callback), message));
+  // Needed in order to pass the callback both to the PostAsyncHandlers call and
+  // to the AuthenticateWithLegacyApi if the former fails to post the task.
+  auto barrier_callback = base::BarrierCallback<bool>(
+      1, base::BindOnce(&WrapCallback).Then(std::move(callback)));
+
+  hr = base::win::PostAsyncHandlers(
+      async_op.Get(), base::BindOnce(&OnAuthenticationReceived, thread,
+                                     barrier_callback, message));
+
+  if (FAILED(hr)) {
+    RecordWindowsHelloAuthenticationResult(
+        AuthenticationResultStatusWin::kFailedToPostTask);
+    AuthenticateWithLegacyApi(message, barrier_callback);
+    return;
+  }
 }
 }  // namespace
 
