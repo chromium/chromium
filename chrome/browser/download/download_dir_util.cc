@@ -100,9 +100,11 @@ bool ExpandOneDrivePolicyVariable(Profile* profile,
 #endif
 
   std::string expanded_value = old_path.value();
-  *new_path = base::FilePath(
-      expanded_value.replace(position, strlen(kOneDriveNamePolicyVariableName),
-                             onedrive_path.value()));
+  *new_path =
+      base::FilePath(expanded_value.replace(
+                         position, strlen(kOneDriveNamePolicyVariableName),
+                         onedrive_path.value()))
+          .StripTrailingSeparators();
   return true;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
