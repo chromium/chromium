@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import android.graphics.Color;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.activity.ComponentActivity;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
@@ -31,7 +33,9 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.Toast;
 
 /** Responsible of showing the sign-in bottom sheet. */
@@ -107,18 +111,26 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         sheetContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mContainerView.addView(sheetContainer);
+        @ColorInt int scrimColor = mActivity.getColor(R.color.black_alpha_30);
         mScrim =
                 new ScrimCoordinator(
                         mActivity,
                         new ScrimCoordinator.SystemUiScrimDelegate() {
                             @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
+                            public void setStatusBarScrimFraction(float scrimFraction) {
+                                // Update the status bar color to match the currently shown scrim
+                                // color when the latter is changed.
+                                float alpha = ((float) Color.alpha(scrimColor)) * scrimFraction;
+                                @ColorInt
+                                int color = ColorUtils.setAlphaComponent(scrimColor, (int) alpha);
+                                UiUtils.setStatusBarColor(mActivity.getWindow(), color);
+                            }
 
                             @Override
                             public void setNavigationBarScrimFraction(float scrimFraction) {}
                         },
                         (ViewGroup) sheetContainer.getParent(),
-                        mActivity.getColor(android.R.color.transparent));
+                        scrimColor);
 
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(

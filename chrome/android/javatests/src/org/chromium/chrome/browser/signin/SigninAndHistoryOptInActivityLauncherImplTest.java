@@ -103,7 +103,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
-        verify(mContextMock).startActivity(notNull(), any());
+        verify(mContextMock).startActivity(notNull());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
-        verify(mContextMock).startActivity(notNull(), any());
+        verify(mContextMock).startActivity(notNull());
     }
 
     @Test
@@ -151,7 +151,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                     SigninAccessPoint.RECENT_TABS);
                 });
 
-        verify(mContextMock).startActivity(notNull(), any());
+        verify(mContextMock).startActivity(notNull());
     }
 
     @Test
@@ -177,7 +177,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
-        verify(mContextMock, never()).startActivity(notNull(), any());
+        verify(mContextMock, never()).startActivity(notNull());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
-        verify(mContextMock, never()).startActivity(notNull(), any());
+        verify(mContextMock, never()).startActivity(notNull());
     }
 
     @Test
@@ -230,7 +230,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
-        verify(mContextMock, never()).startActivity(notNull(), any());
+        verify(mContextMock, never()).startActivity(notNull());
     }
 
     @Test
@@ -255,7 +255,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                     SigninAccessPoint.RECENT_TABS);
                 });
 
-        verify(mContextMock, never()).startActivity(notNull(), any());
+        verify(mContextMock, never()).startActivity(notNull());
     }
 
     @Test

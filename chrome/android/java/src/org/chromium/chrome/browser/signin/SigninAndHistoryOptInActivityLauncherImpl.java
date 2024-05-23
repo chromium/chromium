@@ -6,17 +6,14 @@ package org.chromium.chrome.browser.signin;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -105,12 +102,7 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
         if (SigninAndHistoryOptInCoordinator.willShowSigninUI(profile)
                 || SigninAndHistoryOptInCoordinator.willShowHistorySyncUI(
                         profile, historyOptInMode)) {
-            // Set fade-in animation for the sign-in flow.
-            Bundle startActivityOptions =
-                    ActivityOptionsCompat.makeCustomAnimation(
-                                    context, android.R.anim.fade_in, R.anim.no_anim)
-                            .toBundle();
-            context.startActivity(intent, startActivityOptions);
+            context.startActivity(intent);
             return true;
         }
         // TODO(crbug.com/41493758): Update the UI related to sign-in errors, and handle the
