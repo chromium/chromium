@@ -57,7 +57,7 @@ group("deps") {
     data += [ "//tools/memory/sanitizer/escalate_sanitizer_warnings.py" ]
   }
   if (is_asan || is_ubsan || is_ubsan_vptr || is_ubsan_security) {
-    if (is_win || is_apple) {
+    if ((is_win && is_component_build) || is_apple) {
       data_deps = [ ":copy_sanitizer_runtime" ]
     }
     if (is_apple) {
@@ -75,7 +75,7 @@ group("deps") {
 assert(!(is_win && is_asan && current_cpu == "x86"),
        "ASan is only supported in 64-bit builds on Windows.")
 
-if ((is_apple || is_win) &&
+if ((is_apple || (is_win && is_component_build)) &&
     (is_asan || is_ubsan || is_ubsan_vptr || is_ubsan_security)) {
   if (is_mac || (is_ios && target_environment == "catalyst")) {
     if (is_asan) {
@@ -91,7 +91,7 @@ if ((is_apple || is_win) &&
       assert(is_ubsan || is_ubsan_vptr || is_ubsan_security)
       _clang_rt_dso_path = "darwin/libclang_rt.ubsan_iossim_dynamic.dylib"
     }
-  } else if (is_win && current_cpu == "x64") {
+  } else if (is_win && current_cpu == "x64" && is_component_build) {
     if (is_asan) {
       _clang_rt_dso_path = "windows/clang_rt.asan_dynamic-x86_64.dll"
     } else {
