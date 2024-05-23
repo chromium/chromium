@@ -80,12 +80,6 @@ std::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path);
 // Resolves a handle to its type name. Returns the typename if successful.
 std::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle);
 
-// Resolves a user-readable registry path to a system-readable registry path.
-// For example, HKEY_LOCAL_MACHINE\\Software\\microsoft is translated to
-// \\registry\\machine\\software\\microsoft. Returns nullopt if the path
-// cannot be resolved.
-std::optional<std::wstring> ResolveRegistryName(std::wstring name);
-
 // Allocates |buffer_bytes| in child (PAGE_READWRITE) and copies data
 // from |local_buffer| in this process into |child|. |remote_buffer|
 // contains the address in the chile.  If a zero byte copy is

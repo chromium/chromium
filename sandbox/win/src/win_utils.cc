@@ -33,24 +33,6 @@ const size_t kDriveLetterLen = 3;
 constexpr wchar_t kNTDotPrefix[] = L"\\\\.\\";
 const size_t kNTDotPrefixLen = std::size(kNTDotPrefix) - 1;
 
-// Holds the information about a known registry key.
-struct KnownReservedKey {
-  const wchar_t* name;
-  HKEY key;
-};
-
-// Contains all the known registry key by name and by handle.
-const KnownReservedKey kKnownKey[] = {
-    {L"HKEY_CLASSES_ROOT", HKEY_CLASSES_ROOT},
-    {L"HKEY_CURRENT_USER", HKEY_CURRENT_USER},
-    {L"HKEY_LOCAL_MACHINE", HKEY_LOCAL_MACHINE},
-    {L"HKEY_USERS", HKEY_USERS},
-    {L"HKEY_PERFORMANCE_DATA", HKEY_PERFORMANCE_DATA},
-    {L"HKEY_PERFORMANCE_TEXT", HKEY_PERFORMANCE_TEXT},
-    {L"HKEY_PERFORMANCE_NLSTEXT", HKEY_PERFORMANCE_NLSTEXT},
-    {L"HKEY_CURRENT_CONFIG", HKEY_CURRENT_CONFIG},
-    {L"HKEY_DYN_DATA", HKEY_DYN_DATA}};
-
 // These functions perform case independent path comparisons.
 bool EqualPath(const std::wstring& first, const std::wstring& second) {
   return _wcsicmp(first.c_str(), second.c_str()) == 0;
@@ -203,30 +185,6 @@ bool IsPipe(const std::wstring& path) {
     return false;
 
   return EqualPath(path, start, kPipe, std::size(kPipe) - 1);
-}
-
-std::optional<std::wstring> ResolveRegistryName(std::wstring name) {
-  for (size_t i = 0; i < std::size(kKnownKey); ++i) {
-    if (name.find(kKnownKey[i].name) == 0) {
-      HKEY key;
-      DWORD disposition;
-      if (ERROR_SUCCESS != ::RegCreateKeyEx(kKnownKey[i].key, L"", 0, nullptr,
-                                            0, MAXIMUM_ALLOWED, nullptr, &key,
-                                            &disposition)) {
-        return std::nullopt;
-      }
-
-      auto result = GetPathFromHandle(key);
-      ::RegCloseKey(key);
-
-      if (!result)
-        return std::nullopt;
-
-      result->append(name.substr(wcslen(kKnownKey[i].name)));
-      return result;
-    }
-  }
-  return std::nullopt;
 }
 
 // |full_path| can have any of the following forms:
