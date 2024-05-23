@@ -54,6 +54,21 @@ These design principles make it easier to write, debug, and maintain code in //c
     * `BrowserWindowFeatures` (member of `Browser`)
         * example: omnibox, security chip, bookmarks bar, side panel
     * `BrowserContextKeyedServiceFactory` (functionally a member of `Profile`)
+        * Override `ServiceIsCreatedWithBrowserContext` to return `true`. This
+          guarantees precise lifetime semantics.
+        * Lazy instantiation is an anti-pattern.
+            * Production code is started via `content::ContentMain()`. Test
+              harnesses use a test-suite dependent start-point, e.g.
+              `base::LaunchUnitTests`. Tests typically instantiate a subset of
+              the lazily-instantiated factories instantiated by production code,
+              at a different time, with a different order. This results in
+              different, sometimes broken behavior in tests. This is typically
+              papered over by modifying the production logic to include
+              otherwise unnecessary conditionals, typically early-exits.
+              Overriding `ServiceIsCreatedWithBrowserContext` guarantees
+              identical behavior between test and production code.
+        * Use `TestingProfile::Builder::AddTestingFactory` to stub or fake
+          services.
     * `GlobalFeatures` (member of `BrowserProcess`)
     * The core controller should not be a `NoDestructor` singleton.
 * Global functions should not access non-global state.
