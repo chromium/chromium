@@ -165,6 +165,7 @@ export const ICON_TYPES = {
   SHORTCUT: 'shortcut',
   SITES: 'sites',
   SMB: 'smb',
+  STAR: 'star',
   TEAM_DRIVE: 'team_drive',
   THUMBNAIL_GENERIC: 'thumbnail_generic',
   TINI: 'tini',
