@@ -1558,9 +1558,8 @@ void StyleEngine::ClassChangedForElement(
 
   if (features.NeedsHasInvalidationForClassChange() &&
       PossiblyAffectingHasState(element)) {
-    unsigned changed_size = changed_classes.size();
-    for (unsigned i = 0; i < changed_size; ++i) {
-      if (features.NeedsHasInvalidationForClass(changed_classes[i])) {
+    for (const AtomicString& changed_class : changed_classes) {
+      if (features.NeedsHasInvalidationForClass(changed_class)) {
         InvalidateChangedElementAffectedByLogicalCombinationsInHas(
             element, /* for_element_affected_by_pseudo_in_has */ false);
         InvalidateAncestorsOrSiblingsAffectedByHas(
@@ -1576,10 +1575,9 @@ void StyleEngine::ClassChangedForElement(
   }
 
   InvalidationLists invalidation_lists;
-  unsigned changed_size = changed_classes.size();
-  for (unsigned i = 0; i < changed_size; ++i) {
+  for (const AtomicString& changed_class : changed_classes) {
     features.CollectInvalidationSetsForClass(invalidation_lists, element,
-                                             changed_classes[i]);
+                                             changed_class);
   }
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          element);
@@ -1614,14 +1612,14 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
   InvalidationLists invalidation_lists;
   bool affecting_has_state = false;
 
-  for (unsigned i = 0; i < new_classes.size(); ++i) {
+  for (const AtomicString& new_class : new_classes) {
     bool found = false;
-    for (unsigned j = 0; j < old_classes.size(); ++j) {
-      if (new_classes[i] == old_classes[j]) {
+    for (unsigned i = 0; i < old_classes.size(); ++i) {
+      if (new_class == old_classes[i]) {
         // Mark each class that is still in the newClasses so we can skip doing
         // an n^2 search below when looking for removals. We can't break from
         // this loop early since a class can appear more than once.
-        remaining_class_bits[j] = true;
+        remaining_class_bits[i] = true;
         found = true;
       }
     }
@@ -1629,10 +1627,10 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
     if (!found) {
       if (LIKELY(needs_schedule_invalidation)) {
         features.CollectInvalidationSetsForClass(invalidation_lists, element,
-                                                 new_classes[i]);
+                                                 new_class);
       }
       if (UNLIKELY(possibly_affecting_has_state)) {
-        if (features.NeedsHasInvalidationForClass(new_classes[i])) {
+        if (features.NeedsHasInvalidationForClass(new_class)) {
           affecting_has_state = true;
           possibly_affecting_has_state = false;  // Clear to skip check
         }
