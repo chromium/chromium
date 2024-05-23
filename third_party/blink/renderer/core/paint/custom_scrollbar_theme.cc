@@ -42,8 +42,9 @@ CustomScrollbarTheme* CustomScrollbarTheme::GetCustomScrollbarTheme() {
   return &theme;
 }
 
-ScrollbarPart CustomScrollbarTheme::HitTest(const Scrollbar& scrollbar,
-                                            const gfx::Point& test_position) {
+ScrollbarPart CustomScrollbarTheme::HitTest(
+    const Scrollbar& scrollbar,
+    const gfx::Point& test_position) const {
   auto result = ScrollbarTheme::HitTest(scrollbar, test_position);
   if (result == kScrollbarBGPart) {
     // The ScrollbarTheme knows nothing about the double buttons.
@@ -57,7 +58,7 @@ ScrollbarPart CustomScrollbarTheme::HitTest(const Scrollbar& scrollbar,
 
 void CustomScrollbarTheme::ButtonSizesAlongTrackAxis(const Scrollbar& scrollbar,
                                                      int& before_size,
-                                                     int& after_size) {
+                                                     int& after_size) const {
   gfx::Rect first_button = ButtonRect(scrollbar, kBackButtonStartPart);
   gfx::Rect second_button = ButtonRect(scrollbar, kForwardButtonStartPart);
   gfx::Rect third_button = ButtonRect(scrollbar, kBackButtonEndPart);
@@ -71,7 +72,7 @@ void CustomScrollbarTheme::ButtonSizesAlongTrackAxis(const Scrollbar& scrollbar,
   }
 }
 
-bool CustomScrollbarTheme::HasButtons(const Scrollbar& scrollbar) {
+bool CustomScrollbarTheme::HasButtons(const Scrollbar& scrollbar) const {
   int start_size;
   int end_size;
   ButtonSizesAlongTrackAxis(scrollbar, start_size, end_size);
@@ -80,28 +81,30 @@ bool CustomScrollbarTheme::HasButtons(const Scrollbar& scrollbar) {
                                                           : scrollbar.Height());
 }
 
-bool CustomScrollbarTheme::HasThumb(const Scrollbar& scrollbar) {
+bool CustomScrollbarTheme::HasThumb(const Scrollbar& scrollbar) const {
   return TrackLength(scrollbar) - ThumbLength(scrollbar) >= 0;
 }
 
-int CustomScrollbarTheme::MinimumThumbLength(const Scrollbar& scrollbar) {
+int CustomScrollbarTheme::MinimumThumbLength(const Scrollbar& scrollbar) const {
   return To<CustomScrollbar>(scrollbar).MinimumThumbLength();
 }
 
 gfx::Rect CustomScrollbarTheme::ButtonRect(const Scrollbar& scrollbar,
-                                           ScrollbarPart part_type) {
+                                           ScrollbarPart part_type) const {
   return To<CustomScrollbar>(scrollbar).ButtonRect(part_type);
 }
 
-gfx::Rect CustomScrollbarTheme::BackButtonRect(const Scrollbar& scrollbar) {
+gfx::Rect CustomScrollbarTheme::BackButtonRect(
+    const Scrollbar& scrollbar) const {
   return ButtonRect(scrollbar, kBackButtonStartPart);
 }
 
-gfx::Rect CustomScrollbarTheme::ForwardButtonRect(const Scrollbar& scrollbar) {
+gfx::Rect CustomScrollbarTheme::ForwardButtonRect(
+    const Scrollbar& scrollbar) const {
   return ButtonRect(scrollbar, kForwardButtonEndPart);
 }
 
-gfx::Rect CustomScrollbarTheme::TrackRect(const Scrollbar& scrollbar) {
+gfx::Rect CustomScrollbarTheme::TrackRect(const Scrollbar& scrollbar) const {
   if (!HasButtons(scrollbar))
     return scrollbar.FrameRect();
 
@@ -114,7 +117,7 @@ gfx::Rect CustomScrollbarTheme::TrackRect(const Scrollbar& scrollbar) {
 
 gfx::Rect CustomScrollbarTheme::ConstrainTrackRectToTrackPieces(
     const Scrollbar& scrollbar,
-    const gfx::Rect& rect) {
+    const gfx::Rect& rect) const {
   gfx::Rect back_rect =
       To<CustomScrollbar>(scrollbar).TrackPieceRectWithMargins(kBackTrackPart,
                                                                rect);

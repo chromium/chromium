@@ -65,7 +65,8 @@ class CORE_EXPORT ScrollbarTheme {
              GraphicsContext& context,
              const gfx::Vector2d& paint_offset);
 
-  ScrollbarPart HitTestRootFramePosition(const Scrollbar&, const gfx::Point&);
+  ScrollbarPart HitTestRootFramePosition(const Scrollbar&,
+                                         const gfx::Point&) const;
 
   virtual int ScrollbarThickness(float scale_from_dip,
                                  EScrollbarWidth scrollbar_width) const {
@@ -103,7 +104,7 @@ class CORE_EXPORT ScrollbarTheme {
   // parameter on Mac.
   virtual bool BlinkControlsOverlayVisibility() const { return true; }
 
-  virtual bool InvalidateOnMouseEnterExit() { return false; }
+  virtual bool InvalidateOnMouseEnterExit() const { return false; }
 
   // Returns parts of the scrollbar which must be repainted following a change
   // in the thumb position, given scroll positions before and after.
@@ -125,15 +126,16 @@ class CORE_EXPORT ScrollbarTheme {
                               const Scrollbar&,
                               const gfx::Rect&);
 
-  virtual bool ShouldCenterOnThumb(const Scrollbar&, const WebMouseEvent&) {
+  virtual bool ShouldCenterOnThumb(const Scrollbar&,
+                                   const WebMouseEvent&) const {
     return false;
   }
   virtual bool ShouldSnapBackToDragOrigin(const Scrollbar&,
-                                          const WebMouseEvent&) {
+                                          const WebMouseEvent&) const {
     return false;
   }
   virtual bool ShouldDragDocumentInsteadOfThumb(const Scrollbar&,
-                                                const WebMouseEvent&) {
+                                                const WebMouseEvent&) const {
     return false;
   }
 
@@ -141,46 +143,48 @@ class CORE_EXPORT ScrollbarTheme {
   virtual bool JumpOnTrackClick() const { return false; }
 
   // The position of the thumb relative to the track.
-  int ThumbPosition(const Scrollbar& scrollbar) {
+  int ThumbPosition(const Scrollbar& scrollbar) const {
     return ThumbPosition(scrollbar, scrollbar.CurrentPos());
   }
   virtual base::TimeDelta OverlayScrollbarFadeOutDelay() const;
   virtual base::TimeDelta OverlayScrollbarFadeOutDuration() const;
   // The position the thumb would have, relative to the track, at the specified
   // scroll position.
-  virtual int ThumbPosition(const Scrollbar&, float scroll_position);
+  virtual int ThumbPosition(const Scrollbar&, float scroll_position) const;
   // The length of the thumb along the axis of the scrollbar.
-  virtual int ThumbLength(const Scrollbar&);
+  virtual int ThumbLength(const Scrollbar&) const;
   // The position of the track relative to the scrollbar.
-  virtual int TrackPosition(const Scrollbar&);
+  virtual int TrackPosition(const Scrollbar&) const;
   // The length of the track along the axis of the scrollbar.
-  virtual int TrackLength(const Scrollbar&);
+  virtual int TrackLength(const Scrollbar&) const;
   // The opacity to be applied to the scrollbar. A theme overriding Opacity()
   // should also override PaintThumbWithOpacity().
   virtual float Opacity(const Scrollbar&) const { return 1.0f; }
 
   // Whether the native theme of the OS has scrollbar buttons.
-  virtual bool NativeThemeHasButtons() = 0;
+  virtual bool NativeThemeHasButtons() const = 0;
   // Whether the scrollbar has buttons. It's the same as NativeThemeHasButtons()
   // except for custom scrollbars which can override the OS settings.
-  virtual bool HasButtons(const Scrollbar&) { return NativeThemeHasButtons(); }
+  virtual bool HasButtons(const Scrollbar&) const {
+    return NativeThemeHasButtons();
+  }
 
-  virtual bool HasThumb(const Scrollbar&) = 0;
+  virtual bool HasThumb(const Scrollbar&) const = 0;
 
   // All these rects are in the same coordinate space as the scrollbar's
   // FrameRect.
-  virtual gfx::Rect BackButtonRect(const Scrollbar&) = 0;
-  virtual gfx::Rect ForwardButtonRect(const Scrollbar&) = 0;
-  virtual gfx::Rect TrackRect(const Scrollbar&) = 0;
-  virtual gfx::Rect ThumbRect(const Scrollbar&);
+  virtual gfx::Rect BackButtonRect(const Scrollbar&) const = 0;
+  virtual gfx::Rect ForwardButtonRect(const Scrollbar&) const = 0;
+  virtual gfx::Rect TrackRect(const Scrollbar&) const = 0;
+  virtual gfx::Rect ThumbRect(const Scrollbar&) const;
 
-  virtual int MinimumThumbLength(const Scrollbar&) = 0;
+  virtual int MinimumThumbLength(const Scrollbar&) const = 0;
 
   virtual void SplitTrack(const Scrollbar&,
                           const gfx::Rect& track,
                           gfx::Rect& start_track,
                           gfx::Rect& thumb,
-                          gfx::Rect& end_track);
+                          gfx::Rect& end_track) const;
 
   virtual void PaintThumb(GraphicsContext&,
                           const Scrollbar&,
@@ -192,15 +196,16 @@ class CORE_EXPORT ScrollbarTheme {
                                   const Scrollbar&,
                                   const gfx::Vector2d& offset);
 
-  virtual int MaxOverlapBetweenPages() {
+  virtual int MaxOverlapBetweenPages() const {
     return std::numeric_limits<int>::max();
   }
 
-  virtual base::TimeDelta InitialAutoscrollTimerDelay();
-  virtual base::TimeDelta AutoscrollTimerDelay();
+  virtual base::TimeDelta InitialAutoscrollTimerDelay() const;
+  virtual base::TimeDelta AutoscrollTimerDelay() const;
 
-  virtual gfx::Rect ConstrainTrackRectToTrackPieces(const Scrollbar&,
-                                                    const gfx::Rect& rect) {
+  virtual gfx::Rect ConstrainTrackRectToTrackPieces(
+      const Scrollbar&,
+      const gfx::Rect& rect) const {
     return rect;
   }
 
@@ -230,9 +235,9 @@ class CORE_EXPORT ScrollbarTheme {
 
  protected:
   // The point is in the same coordinate space as the scrollbar's FrameRect.
-  virtual ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&);
+  virtual ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) const;
 
-  virtual int TickmarkBorderWidth() { return 0; }
+  virtual int TickmarkBorderWidth() const { return 0; }
   virtual void PaintTrack(GraphicsContext&,
                           const Scrollbar&,
                           const gfx::Rect&) {}

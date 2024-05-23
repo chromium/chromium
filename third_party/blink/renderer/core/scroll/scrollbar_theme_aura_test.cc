@@ -26,7 +26,7 @@ class ScrollbarThemeAuraButtonOverride final : public ScrollbarThemeAura {
     return has_scrollbar_buttons_;
   }
 
-  int MinimumThumbLength(const Scrollbar& scrollbar) override {
+  int MinimumThumbLength(const Scrollbar& scrollbar) const override {
     return ScrollbarThickness(scrollbar.ScaleFromDIP(),
                               scrollbar.CSSScrollbarWidth());
   }

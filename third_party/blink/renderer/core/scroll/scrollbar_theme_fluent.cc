@@ -59,7 +59,7 @@ int ScrollbarThemeFluent::ScrollbarThickness(
                           Proportion(scrollbar_width) * scale_from_dip);
 }
 
-gfx::Rect ScrollbarThemeFluent::ThumbRect(const Scrollbar& scrollbar) {
+gfx::Rect ScrollbarThemeFluent::ThumbRect(const Scrollbar& scrollbar) const {
   gfx::Rect thumb_rect = ScrollbarTheme::ThumbRect(scrollbar);
   const int thumb_thickness =
       ThumbThickness(scrollbar.ScaleFromDIP(), scrollbar.CSSScrollbarWidth());

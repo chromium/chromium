@@ -37,7 +37,7 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
  protected:
   ScrollbarThemeFluent();
 
-  gfx::Rect ThumbRect(const Scrollbar&) override;
+  gfx::Rect ThumbRect(const Scrollbar&) const override;
   gfx::Size ButtonSize(const Scrollbar&) const override;
 
   void PaintTrack(GraphicsContext&,
