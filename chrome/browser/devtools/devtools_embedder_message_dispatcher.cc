@@ -281,11 +281,15 @@ struct ParamTuple<T, Ts...> {
 
 template <typename... As>
 bool ParseAndHandle(const base::RepeatingCallback<void(As...)>& handler,
+                    const std::string& method,
                     DispatchCallback callback,
                     const base::Value::List& list) {
   ParamTuple<As...> tuple;
-  if (!tuple.Parse(list, list.begin()))
+  if (!tuple.Parse(list, list.begin())) {
+    LOG(ERROR) << "Failed to parse arguments for " << method
+               << " call: " << list.DebugString();
     return false;
+  }
   tuple.Apply(handler);
   return true;
 }
@@ -293,11 +297,15 @@ bool ParseAndHandle(const base::RepeatingCallback<void(As...)>& handler,
 template <typename... As>
 bool ParseAndHandleWithCallback(
     const base::RepeatingCallback<void(DispatchCallback, As...)>& handler,
+    const std::string& method,
     DispatchCallback callback,
     const base::Value::List& list) {
   ParamTuple<As...> tuple;
-  if (!tuple.Parse(list, list.begin()))
+  if (!tuple.Parse(list, list.begin())) {
+    LOG(ERROR) << "Failed to parse arguments for " << method
+               << " call: " << list.DebugString();
     return false;
+  }
   tuple.Apply(handler, std::move(callback));
   return true;
 }
@@ -329,7 +337,7 @@ class DispatcherImpl : public DevToolsEmbedderMessageDispatcher {
                        Delegate* delegate) {
     handlers_[method] = base::BindRepeating(
         &ParseAndHandle<As...>,
-        base::BindRepeating(handler, base::Unretained(delegate)));
+        base::BindRepeating(handler, base::Unretained(delegate)), method);
   }
 
   template <typename... As>
@@ -339,7 +347,7 @@ class DispatcherImpl : public DevToolsEmbedderMessageDispatcher {
                                    Delegate* delegate) {
     handlers_[method] = base::BindRepeating(
         &ParseAndHandleWithCallback<As...>,
-        base::BindRepeating(handler, base::Unretained(delegate)));
+        base::BindRepeating(handler, base::Unretained(delegate)), method);
   }
 
  private:
