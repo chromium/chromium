@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -11,6 +12,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "url/url_features.h"
 
 namespace blink {
 
@@ -148,7 +150,25 @@ TEST(CSPSourceTest, InsecureHostSchemeMatchesSecureScheme) {
                                 KURL(base, "https://not-example.com:8000/")));
 }
 
-TEST(CSPSourceTest, SchemeIsEmpty) {
+class CSPSourceParamTest : public ::testing::TestWithParam<bool> {
+ public:
+  CSPSourceParamTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        url::kStandardCompliantNonSpecialSchemeURLParsing,
+        use_standard_compliant_non_special_scheme_url_parsing_);
+  }
+
+ protected:
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, CSPSourceParamTest, ::testing::Bool());
+
+TEST_P(CSPSourceParamTest, SchemeIsEmpty) {
   KURL base;
 
   // Self scheme is http.
@@ -324,7 +344,7 @@ TEST(CSPSourceTest, HostMatches) {
   }
 }
 
-TEST(CSPSourceTest, MatchingAsSelf) {
+TEST_P(CSPSourceParamTest, MatchingAsSelf) {
   // Testing Step 4 of
   // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression
   struct Source {

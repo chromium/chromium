@@ -133,6 +133,26 @@ bool inline CanUpgrade(const SchemeMatchingResult result) {
   return result == SchemeMatchingResult::kMatchingUpgrade;
 }
 
+const StringView HostForCSP(const KURL& url) {
+  // Chromium currently has an issue handling non-special URLs. The url.Host()
+  // function returns an empty string for them. See
+  // crbug.com/40063064 for details.
+  //
+  // In the future, once non-special URLs are fully supported, we might consider
+  // checking the host information for them too.
+  //
+  // For now, we check `url.IsStandard()` to maintain consistent behavior
+  // regardless of the url::StandardCompliantNonSpecialSchemeURLParsing feature
+  // state.
+  if (!url.IsStandard()) {
+    return "";
+  }
+  if (base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)) {
+    return url.HostView();
+  }
+  return url.Host();
+}
+
 }  // namespace
 
 bool CSPSourceMatches(const network::mojom::blink::CSPSource& source,
@@ -161,10 +181,7 @@ bool CSPSourceMatches(const network::mojom::blink::CSPSource& source,
     return false;
   }
 
-  return HostMatches(source,
-                     base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)
-                         ? url.HostView()
-                         : url.Host()) &&
+  return HostMatches(source, HostForCSP(url)) &&
          ports_match != PortMatchingResult::kNotMatching && paths_match;
 }
 
@@ -184,10 +201,7 @@ bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
     return true;
   }
 
-  bool hosts_match =
-      HostMatches(source, base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)
-                              ? url.HostView()
-                              : url.Host());
+  bool hosts_match = HostMatches(source, HostForCSP(url));
   PortMatchingResult ports_match = PortMatches(
       source, source.scheme, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
       url.Protocol());
