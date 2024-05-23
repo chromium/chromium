@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
@@ -22,6 +21,8 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+
+import java.util.List;
 
 /** Test class for {@link CommandLineFlags}. */
 @RunWith(CommandLineFlagsTest.ClassRunner.class)
@@ -39,22 +40,29 @@ public class CommandLineFlagsTest {
 
         // Verify class-level modifications are reset after class finishes.
         @Override
-        protected void onAfterTestClass() {
-            super.onAfterTestClass();
-            verifyCommandLine(false, false, false, false, false, false, false);
-            Assert.assertFalse(CommandLine.getInstance().hasSwitch("flagwithvalue"));
-            String enabledFeatures = CommandLine.getInstance().getSwitchValue("enable-features");
-            if (enabledFeatures != null) {
-                Assert.assertFalse(enabledFeatures.contains("feature1"));
-                Assert.assertFalse(enabledFeatures.contains("feature2"));
-            }
+        protected List<ClassHook> getPostClassHooks() {
+            return addToList(
+                    ClassRunner.super.getPostClassHooks(),
+                    (targetContext, testClass) -> {
+                        verifyCommandLine(false, false, false, false, false, false, false);
+                        Assert.assertFalse(CommandLine.getInstance().hasSwitch("flagwithvalue"));
+                        String enabledFeatures =
+                                CommandLine.getInstance().getSwitchValue("enable-features");
+                        if (enabledFeatures != null) {
+                            Assert.assertFalse(enabledFeatures.contains("feature1"));
+                            Assert.assertFalse(enabledFeatures.contains("feature2"));
+                        }
+                    });
         }
 
         // Verify that after each test, flags are reset to class-level state.
         @Override
-        protected void onAfterTestMethod(FrameworkMethod method) {
-            super.onAfterTestMethod(method);
-            verifyClassLevelStateOnly();
+        protected List<TestHook> getPostTestHooks() {
+            return addToList(
+                    ClassRunner.super.getPostTestHooks(),
+                    (targetContext, testMethod) -> {
+                        verifyClassLevelStateOnly();
+                    });
         }
     }
 

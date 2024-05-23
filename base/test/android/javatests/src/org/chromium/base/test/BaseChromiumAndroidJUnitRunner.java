@@ -16,7 +16,6 @@ import android.system.Os;
 
 import androidx.core.content.ContextCompat;
 import androidx.test.InstrumentationRegistry;
-import androidx.test.espresso.IdlingPolicies;
 import androidx.test.internal.runner.ClassPathScanner;
 import androidx.test.internal.runner.RunnerArgs;
 import androidx.test.internal.runner.TestExecutor;
@@ -172,7 +171,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
     private void initTestRunner(Bundle arguments) {
         org.chromium.base.test.ActivityFinisher.finishAll();
-        BaseJUnit4ClassRunner.clearJobSchedulerJobs();
+        BaseJUnit4TestRule.clearJobSchedulerJobs();
         clearDataDirectory(sInMemorySharedPreferencesContext);
         setInTouchMode(true);
         // //third_party/mockito is looking for android.support.test.InstrumentationRegistry.
@@ -181,8 +180,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         System.setProperty(
                 "org.mockito.android.target",
                 sInMemorySharedPreferencesContext.getCacheDir().getPath());
-        // Reduce the time Espresso waits before failing to be less than the Python test timeout.
-        IdlingPolicies.setMasterPolicyTimeout(20, TimeUnit.SECONDS);
         setClangCoverageEnvIfEnabled();
         if (arguments.getString(IS_UNIT_TEST_FLAG) != null) {
             LibraryLoader.setBrowserProcessStartupBlockedForTesting();
