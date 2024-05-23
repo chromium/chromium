@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/cronet/config.gni")
-import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/partition_alloc.gni")
 
 # PartitionAlloc have limited support for MSVC's cl.exe compiler. It can only
@@ -36,6 +34,12 @@ has_memory_tagging =
     current_cpu == "arm64" && is_clang && !is_asan && (is_linux || is_android)
 
 declare_args() {
+  # Those configurations are used by the embedder to remove/add specific
+  # configurations to every targets partition_alloc. For instance, chromium is
+  # defining an "optimized debug" configuration through those configurations.
+  partition_alloc_add_configs = []
+  partition_alloc_remove_configs = []
+
   # Causes all the allocations to be routed via allocator_shim.cc. Usually,
   # the allocator shim will, in turn, route them to PartitionAlloc, but
   # other allocators are also supported by the allocator shim.
@@ -73,16 +77,6 @@ if (is_nacl) {
 }
 
 declare_args() {
-  # Turns on compiler optimizations in PartitionAlloc in Debug build.
-  # If enabling PartitionAlloc-Everywhere in Debug build for tests in Debug
-  # build, since all memory allocations and deallocations are executed by
-  # non-optimized PartitionAlloc, chrome (including tests) will be much
-  # slower. This will cause debug trybots' timeouts. If we want to debug
-  # PartitionAlloc itself, use partition_alloc_optimized_debug=false.
-  # Otherwise, use partition_alloc_optimized_debug=true to enable optimized
-  # PartitionAlloc.
-  partition_alloc_optimized_debug = true
-
   # PartitionAlloc-Everywhere (PA-E). Causes allocator_shim.cc to route
   # calls to PartitionAlloc, rather than some other platform allocator.
   use_partition_alloc_as_malloc = use_partition_alloc && use_allocator_shim &&

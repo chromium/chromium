@@ -23,9 +23,44 @@
 #
 # {variable}_default works as the default value of {variable}.
 
+# TODO(crbug.com/41481467) Document what are the required and optional GN
+# variable embedders can provide to partition_alloc. For the least common,
+# consider wrapping them into some partition_alloc specific names.
+
+import("//build/config/android/config.gni")
+import("//build/config/cast.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/compiler/compiler.gni")
+import("//build/config/cronet/config.gni")
+import("//build/config/dcheck_always_on.gni")
+import("//build/config/logging.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+
 if (is_ios) {
   import("//ios/features.gni")
+}
+
+declare_args() {
+  # Turns on compiler optimizations in PartitionAlloc in Debug build. If
+  # enabling PartitionAlloc-Everywhere in Debug build for tests in Debug build,
+  # since all memory allocations and deallocations are executed by non-optimized
+  # PartitionAlloc, chrome (including tests) will be much slower. This will
+  # cause debug trybots' timeouts. If we want to debug PartitionAlloc itself,
+  # use partition_alloc_optimized_debug=false. Otherwise, use
+  # partition_alloc_optimized_debug=true to enable optimized PartitionAlloc.
+  partition_alloc_optimized_debug = true
+}
+
+if (!is_debug || partition_alloc_optimized_debug) {
+  # In chrome, partition_alloc is relatively hot (>1% of cycles for users of
+  # CrOS). Use speed-focused optimizations for it.
+  partition_alloc_remove_configs =
+      [ "//build/config/compiler:default_optimization" ]
+  partition_alloc_add_configs = [ "//build/config/compiler:optimize_speed" ]
+} else {
+  partition_alloc_remove_configs =
+      [ "//build/config/compiler:default_optimization" ]
+  partition_alloc_add_configs = [ "//build/config/compiler:no_optimize" ]
 }
 
 # Sanitizers replace the allocator, don't use our own.

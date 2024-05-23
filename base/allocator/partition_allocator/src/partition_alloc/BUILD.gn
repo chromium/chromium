@@ -87,19 +87,6 @@ config("wexit_time_destructors") {
   }
 }
 
-_remove_configs = []
-_add_configs = []
-if (!is_debug || partition_alloc_optimized_debug) {
-  _remove_configs += [ "//build/config/compiler:default_optimization" ]
-
-  # PartitionAlloc is relatively hot (>1% of cycles for users of CrOS).
-  # Use speed-focused optimizations for it.
-  _add_configs += [ "//build/config/compiler:optimize_speed" ]
-} else {
-  _remove_configs += [ "//build/config/compiler:default_optimization" ]
-  _add_configs += [ "//build/config/compiler:no_optimize" ]
-}
-
 source_set("build_config") {
   sources = [
     "build_config.h",
@@ -151,8 +138,8 @@ component("raw_ptr") {
   # See also: `partition_alloc_base/component_export.h`
   defines = [ "IS_RAW_PTR_IMPL" ]
 
-  configs -= _remove_configs
-  configs += _add_configs
+  configs -= partition_alloc_remove_configs
+  configs += partition_alloc_add_configs
   configs += [ ":dependants_extra_warnings" ]
 }
 
@@ -593,8 +580,8 @@ if (is_clang_or_gcc) {
       ]
     }
 
-    configs -= _remove_configs
-    configs += _add_configs
+    configs -= partition_alloc_remove_configs
+    configs += partition_alloc_add_configs
     configs += [ ":dependants_extra_warnings" ]
 
     # We want to be able to test pkey mode without access to the default pkey.
@@ -797,8 +784,8 @@ if (is_clang_or_gcc) {
       ]
     }
 
-    configs -= _remove_configs
-    configs += _add_configs
+    configs -= partition_alloc_remove_configs
+    configs += partition_alloc_add_configs
     configs += [ ":dependants_extra_warnings" ]
   }
 
@@ -815,8 +802,8 @@ if (is_clang_or_gcc) {
     ]
     frameworks = []
 
-    configs -= _remove_configs
-    configs += _add_configs
+    configs -= partition_alloc_remove_configs
+    configs += partition_alloc_add_configs
     configs += [ ":dependants_extra_warnings" ]
 
     shim_headers = []
@@ -876,7 +863,13 @@ if (is_clang_or_gcc) {
 
         # Do not compile with ARC because this target has to interface with
         # low-level Objective-C and having ARC would interfere.
-        configs -= [ "//build/config/compiler:enable_arc" ]
+        #
+        # TODO(crbug.com/41481467) Invert the dependency with chromium.
+        # PartitionAlloc shouldn't depend on chromium, it should be the
+        # opposite.
+        if (build_with_chromium) {
+          configs -= [ "//build/config/compiler:enable_arc" ]
+        }
       }
     }
     if (is_chromeos || is_linux) {
