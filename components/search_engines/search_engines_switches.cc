@@ -37,14 +37,8 @@ BASE_FEATURE(kSearchEngineChoiceTrigger,
              "SearchEngineChoiceTrigger",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT
-#elif BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#elif BUILDFLAG(IS_WIN)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#elif BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
 #else
-             base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
 
@@ -60,13 +54,8 @@ BASE_FEATURE(kPersistentSearchEngineChoiceImport,
 #endif
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-#if BUILDFLAG(IS_IOS)
 const base::FeatureParam<bool> kSearchEngineChoiceTriggerForTaggedProfilesOnly{
     &kSearchEngineChoiceTrigger, /*name=*/"for_tagged_profiles_only", false};
-#else
-const base::FeatureParam<bool> kSearchEngineChoiceTriggerForTaggedProfilesOnly{
-    &kSearchEngineChoiceTrigger, /*name=*/"for_tagged_profiles_only", true};
-#endif
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const base::FeatureParam<bool> kSearchEngineChoiceTriggerWithForceEeaCountry{
