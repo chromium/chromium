@@ -194,6 +194,10 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   void OnDeviceSettingsChanged();
 
+  // Starts `AuthHub` in login mode.
+  void ScheduleStartAuthHubInLoginMode();
+  void StartAuthHubInLoginMode(bool is_cryptohome_available);
+
   // State associated with a pending authentication attempt.
   struct AuthState {
     AuthState(AccountId account_id, base::OnceCallback<void(bool)> callback);
