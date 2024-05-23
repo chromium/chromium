@@ -44,9 +44,12 @@ void FormatStackTrace(v8::Isolate* isolate, StringBuilder& builder) {
   const std::string stack_trace = oss.str();
   std::istringstream iss(stack_trace);
   std::string line;
-  while (std::getline(iss, line)) {
+  const int stack_trace_limit = isolate->GetStackTraceLimit();
+  int frame_count = 0;
+  while (std::getline(iss, line) && frame_count < stack_trace_limit) {
     builder.Append("\n    at ");
     builder.Append(line.data(), base::checked_cast<unsigned>(line.size()));
+    frame_count++;
   }
 }
 
