@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SideSearchCrashesCloseSideSearch) {
   EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
 
   // Reopen side panel.
-  coordinator->Show();
+  coordinator->Show(SidePanelEntry::Id::kSideSearch);
   EXPECT_TRUE(side_panel->GetVisible());
 
   // Simulate a crash in the side panel contents of the first tab which is not

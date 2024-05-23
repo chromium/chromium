@@ -31,7 +31,6 @@
 
 class Browser;
 class BrowserView;
-class SidePanelComboboxModel;
 
 namespace actions {
 class ActionItem;
@@ -39,7 +38,6 @@ class ActionItem;
 
 namespace views {
 class ImageButton;
-class Combobox;
 class ToggleImageButton;
 class View;
 }  // namespace views
@@ -70,14 +68,13 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   static SidePanelRegistry* GetGlobalSidePanelRegistry(Browser* browser);
 
   // SidePanelUI:
-  void Show(std::optional<SidePanelEntry::Id> entry_id = std::nullopt,
+  void Show(SidePanelEntry::Id entry_id,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
                 std::nullopt) override;
   void Show(SidePanelEntry::Key entry_key,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
                 std::nullopt) override;
   void Close() override;
-  void Toggle() override;
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
   void OpenInNewTab() override;
@@ -111,17 +108,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   actions::ActionItem* GetActionItem(SidePanelEntry::Key entry_key);
 
-  views::Combobox* GetComboboxForTesting() { return header_combobox_; }
-
-  SidePanelComboboxModel* GetComboboxModelForTesting() {
-    return combobox_model_.get();
-  }
-
   views::ToggleImageButton* GetHeaderPinButtonForTesting() {
     return header_pin_button_;
   }
-
-  SidePanelEntry::Id GetComboboxDisplayedEntryIdForTesting() const;
 
   SidePanelEntry* GetLoadingEntryForTesting() const;
 
@@ -163,8 +152,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // showing.
   bool IsGlobalEntryShowing(const SidePanelEntry::Key& entry_key) const;
 
-  void SetSidePanelButtonTooltipText(std::u16string tooltip_text);
-
   // Creates header and SidePanelEntry content container within the side panel.
   void InitializeSidePanel();
 
@@ -180,8 +167,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Clear cached views for registry entries for global and contextual
   // registries.
   void ClearCachedEntryViews();
-
-  void UpdateToolbarButtonHighlight(bool side_panel_visible);
 
   void UpdatePanelIconAndTitle(const ui::ImageModel& icon,
                                const std::u16string& text,
@@ -200,36 +185,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
                      int to_index) override {}
   void OnActionsChanged() override;
 
-  // Returns the last active entry or the default entry if no last active
-  // entry exists.
-  std::optional<SidePanelEntry::Key> GetLastActiveEntryKey() const;
-
-  // Returns the currently selected id in the combobox, if one is shown.
-  std::optional<SidePanelEntry::Key> GetSelectedKey() const;
-
   SidePanelRegistry* GetActiveContextualRegistry() const;
 
   std::unique_ptr<views::View> CreateHeader();
-  std::unique_ptr<views::Combobox> CreateCombobox();
-
-  // This is called after a user has made a selection in the combobox dropdown
-  // and before any selected id and combobox model change takes place. This
-  // allows us to make the entry displayed in the combobox follow the same
-  // delays as the side panel content when there are delays for loading content.
-  bool OnComboboxChangeTriggered(size_t index);
-
-  // Called before the combobox dropdown menu is about to show. Used to record
-  // the combobox shown metric.
-  void OnComboboxMenuWillShow();
-
-  // Sets the entry corresponding to `entry_key` as selected in the combobox.
-  void SetSelectedEntryInCombobox(const SidePanelEntry::Key& entry_key);
-
-  // Determines if the entry in the combobox should be removed when it is
-  // deregistered. Called from `OnEntryWillDeregister()`.
-  bool ShouldRemoveFromComboboxOnDeregister(
-      SidePanelRegistry* deregistering_registry,
-      const SidePanelEntry::Key& entry_key);
 
   // Returns the new entry to be shown after the active entry is deregistered,
   // or nullptr if no suitable entry is found. Called from
@@ -257,7 +215,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
                          SidePanelEntry* entry) override;
   void OnEntryWillDeregister(SidePanelRegistry* registry,
                              SidePanelEntry* entry) override;
-  void OnEntryIconUpdated(SidePanelEntry* entry) override;
   void OnRegistryDestroying(SidePanelRegistry* registry) override;
 
   // TabStripModelObserver:
@@ -297,12 +254,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // automatically if the entry is destroyed.
   base::WeakPtr<SidePanelEntry> current_entry_;
 
-  // Used to update SidePanelEntry options in the `header_combobox_` based on
-  // their availability in the observed side panel registries.
-  std::unique_ptr<SidePanelComboboxModel> combobox_model_;
-  raw_ptr<views::Combobox, AcrossTasksDanglingUntriaged> header_combobox_ =
-      nullptr;
-
   // Used to update icon in the side panel header.
   raw_ptr<views::ImageView, AcrossTasksDanglingUntriaged> panel_icon_ = nullptr;
 
@@ -328,9 +279,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
       extensions_model_observation_{this};
 
   base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
-
-  // Combobox menu subscription.
-  base::CallbackListSubscription on_menu_will_show_subscription_;
 
   base::ScopedMultiSourceObservation<SidePanelRegistry,
                                      SidePanelRegistryObserver>

@@ -70,7 +70,6 @@
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
@@ -79,7 +78,6 @@
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
-#include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -402,10 +400,8 @@ void ToolbarView::Init() {
                   GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
   }
 
-  if (features::IsSidePanelPinningEnabled()) {
-    pinned_toolbar_actions_container_ = container_view_->AddChildView(
-        std::make_unique<PinnedToolbarActionsContainer>(browser_view_));
-  }
+  pinned_toolbar_actions_container_ = container_view_->AddChildView(
+      std::make_unique<PinnedToolbarActionsContainer>(browser_view_));
 
   if (IsChromeLabsEnabled()) {
     chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
@@ -456,16 +452,6 @@ void ToolbarView::Init() {
   if (send_tab_to_self_button)
     send_tab_to_self_button_ =
         container_view_->AddChildView(std::move(send_tab_to_self_button));
-
-  if (!features::IsSidePanelPinningEnabled()) {
-    if (companion::IsCompanionFeatureEnabled()) {
-      side_panel_container_ = container_view_->AddChildView(
-          std::make_unique<SidePanelToolbarContainer>(browser_view_));
-    } else {
-      side_panel_button_ = container_view_->AddChildView(
-          std::make_unique<SidePanelToolbarButton>(browser_));
-    }
-  }
 
   avatar_ = container_view_->AddChildView(
       std::make_unique<AvatarToolbarButton>(browser_view_));
@@ -569,10 +555,6 @@ void ToolbarView::Update(WebContents* tab) {
 
   if (pinned_toolbar_actions_container_) {
     pinned_toolbar_actions_container_->UpdateAllIcons();
-  }
-
-  if (side_panel_container_) {
-    side_panel_container_->UpdateAllIcons();
   }
 
   if (reload_)
@@ -685,13 +667,6 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
 
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
   return extensions_container_->GetExtensionsButton();
-}
-
-SidePanelToolbarButton* ToolbarView::GetSidePanelButton() {
-  if (side_panel_container_) {
-    return side_panel_container_->GetSidePanelButton();
-  }
-  return side_panel_button_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1000,15 +975,6 @@ void ToolbarView::InitLayout() {
                 &PinnedToolbarActionsContainer::CustomFlexRule,
                 base::Unretained(pinned_toolbar_actions_container_)))
             .WithOrder(kToolbarActionsFlexOrder));
-  } else if (side_panel_container_) {
-    const views::FlexSpecification side_panel_flex_rule =
-        views::FlexSpecification(
-            side_panel_container_->GetAnimatingLayoutManager()
-                ->GetDefaultFlexRule())
-            .WithOrder(kToolbarActionsFlexOrder);
-
-    side_panel_container_->SetProperty(views::kFlexBehaviorKey,
-                                       side_panel_flex_rule);
   }
 
   if (toolbar_divider_) {

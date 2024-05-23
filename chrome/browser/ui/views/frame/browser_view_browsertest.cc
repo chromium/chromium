@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, SidePanelRoundedCornerLayout) {
   SidePanelCoordinator* coordinator =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser((browser()));
   coordinator->SetNoDelaysForTesting(true);
-  coordinator->Show();
+  coordinator->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_EQ(side_panel()->bounds().x(),
             side_panel_rounded_corner()->bounds().right());
   EXPECT_EQ(side_panel()->bounds().y(),

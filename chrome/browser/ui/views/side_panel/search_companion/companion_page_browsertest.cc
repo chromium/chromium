@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/companion/visual_query/features.h"
 #include "chrome/common/pref_names.h"
@@ -710,12 +709,6 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 
   size_t requests_received_on_server() const {
     return requests_received_on_server_;
-  }
-
-  SidePanelToolbarContainer* side_panel_toolbar_container() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar()->side_panel_container();
   }
 
  protected:
@@ -2113,8 +2106,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   EXPECT_FALSE(side_panel_coordinator()->GetCurrentEntryId().has_value());
   EXPECT_EQ(0u, requests_received_on_server());
-  EXPECT_FALSE(side_panel_toolbar_container()->IsPinned(
-      SidePanelEntry::Id::kSearchCompanion));
+  EXPECT_FALSE(PinnedToolbarActionsModel::Get(browser()->profile())
+                   ->Contains(kActionSidePanelShowSearchCompanion));
 
   base::HistogramTester histogram_tester;
 
@@ -2144,8 +2137,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
             SidePanelEntry::Id::kSearchCompanion);
   EXPECT_EQ(1u, requests_received_on_server());
   // Companion is immediately pinned.
-  EXPECT_TRUE(side_panel_toolbar_container()->IsPinned(
-      SidePanelEntry::Id::kSearchCompanion));
+  EXPECT_TRUE(PinnedToolbarActionsModel::Get(browser()->profile())
+                  ->Contains(kActionSidePanelShowSearchCompanion));
 }
 
 // Verifies the behavior when companion feature is disabled but a navigation to
@@ -2177,8 +2170,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
   EXPECT_EQ(1u, requests_received_on_server());
 
   // Companion should be pinned now.
-  EXPECT_TRUE(side_panel_toolbar_container()->IsPinned(
-      SidePanelEntry::Id::kSearchCompanion));
+  EXPECT_TRUE(PinnedToolbarActionsModel::Get(browser()->profile())
+                  ->Contains(kActionSidePanelShowSearchCompanion));
 }
 
 class CompanionPagePolicyBrowserTest : public CompanionPageBrowserTest {

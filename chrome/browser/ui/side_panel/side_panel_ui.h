@@ -36,7 +36,7 @@ class SidePanelUI : public base::SupportsUserData::Data {
 
   // Open side panel with entry_id.
   virtual void Show(
-      std::optional<SidePanelEntryId> entry_id = std::nullopt,
+      SidePanelEntryId entry_id,
       std::optional<SidePanelOpenTrigger> open_trigger = std::nullopt) = 0;
 
   // Open side panel with entry key.
@@ -46,10 +46,6 @@ class SidePanelUI : public base::SupportsUserData::Data {
 
   // Close the side panel.
   virtual void Close() = 0;
-
-  // Open side panel when it's close or close side panel when it's open.
-  // TODO(shibalik): Remove after SidePanelPinning launch.
-  virtual void Toggle() = 0;
 
   // Open the side panel for a key. If side panel for the key is already opened
   // then close the side panel.

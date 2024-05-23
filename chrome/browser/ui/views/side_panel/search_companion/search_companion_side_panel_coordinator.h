@@ -42,8 +42,6 @@ class SearchCompanionSidePanelCoordinator
   void ShowLens(const content::OpenURLParams& url_params);
   BrowserView* GetBrowserView() const;
   std::u16string GetTooltipForToolbarButton() const;
-  static void SetAccessibleNameForToolbarButton(BrowserView* browser_view,
-                                                bool is_open);
 
   std::u16string accessible_name() const { return accessible_name_; }
   std::u16string name() const { return name_; }
@@ -80,12 +78,9 @@ class SearchCompanionSidePanelCoordinator
   // Update companion enabled state based on active tab's url.
   void MaybeUpdateCompanionEnabledState();
 
-  // Update whether the CSC pinned toolbar button is enabled if the button is
-  // pinned.
-  void MaybeUpdatePinnedButtonEnabledState(bool enabled);
-
-  // Update whether the CSC combobox entry is enabled if the entry exists.
-  void MaybeUpdateComboboxEntryEnabledState(bool enabled);
+  // Update the CSC side panel entry icon based on enabled state if the entry
+  // exists.
+  void MaybeUpdateEntryIcon(bool enabled);
 
   // Called if there is a change in the state of policy pref.
   void OnPolicyPrefChanged();

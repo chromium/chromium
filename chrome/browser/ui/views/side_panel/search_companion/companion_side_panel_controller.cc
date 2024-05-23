@@ -168,14 +168,6 @@ void CompanionSidePanelController::OnEntryShown(SidePanelEntry* entry) {
     base::RecordAction(
         base::UserMetricsAction("LensUnifiedSidePanel.LensEntryShown"));
   }
-
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  if (!browser) {
-    return;
-  }
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  SearchCompanionSidePanelCoordinator::SetAccessibleNameForToolbarButton(
-      browser_view, /*is_open=*/true);
 }
 
 void CompanionSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
@@ -185,14 +177,6 @@ void CompanionSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
     base::RecordAction(
         base::UserMetricsAction("LensUnifiedSidePanel.LensEntryHidden"));
   }
-
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  if (!browser) {
-    return;
-  }
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  SearchCompanionSidePanelCoordinator::SetAccessibleNameForToolbarButton(
-      browser_view, /*is_open=*/false);
 }
 
 void CompanionSidePanelController::AddObserver() {

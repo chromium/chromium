@@ -15,7 +15,6 @@ class DownloadToolbarButtonView;
 class ExtensionsToolbarContainer;
 class IntentChipButton;
 class PageActionIconView;
-class SidePanelToolbarButton;
 class ReloadButton;
 class ToolbarButton;
 
@@ -66,9 +65,6 @@ class ToolbarButtonProvider {
 
   // See comment in browser_window.h for more info.
   virtual void ZoomChangedForActiveTab(bool can_show_bubble) = 0;
-
-  // Returns the side panel button.
-  virtual SidePanelToolbarButton* GetSidePanelButton() = 0;
 
   // Returns the avatar button.
   virtual AvatarToolbarButton* GetAvatarToolbarButton() = 0;

@@ -161,10 +161,8 @@ class SidePanelBorder : public views::Border {
     // inset is outside the SidePanel itself, but not outside the BorderView. If
     // there is a header we want to increase the top inset to give room for the
     // header to paint on top of the border area.
-    int top_inset = views::Separator::kThickness + header_height_;
-    if (features::IsSidePanelPinningEnabled()) {
-      top_inset -= GetBorderThickness();
-    }
+    int top_inset =
+        views::Separator::kThickness + header_height_ - GetBorderThickness();
     return GetBorderInsets() + gfx::Insets::TLBR(top_inset, 0, 0, 0);
   }
   gfx::Size GetMinimumSize() const override {
@@ -316,10 +314,7 @@ void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
   static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
   // Update the border so that the insets include space for the header to be
   // placed on top of the border.
-  int top_inset = header_view_->height();
-  if (features::IsSidePanelPinningEnabled()) {
-    top_inset -= GetBorderThickness();
-  }
+  int top_inset = header_view_->height() - GetBorderThickness();
   SetBorder(views::CreateEmptyBorder(GetBorderInsets() +
                                      gfx::Insets::TLBR(top_inset, 0, 0, 0)));
 }
@@ -501,10 +496,7 @@ void SidePanel::UpdateVisibility() {
       border_view_->layer()->SetFillsBoundsOpaquely(false);
       if (header_view_) {
         static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
-        int top_inset = header_view_->height();
-        if (features::IsSidePanelPinningEnabled()) {
-          top_inset -= GetBorderThickness();
-        }
+        int top_inset = header_view_->height() - GetBorderThickness();
         SetBorder(views::CreateEmptyBorder(
             GetBorderInsets() + gfx::Insets::TLBR(top_inset, 0, 0, 0)));
       }

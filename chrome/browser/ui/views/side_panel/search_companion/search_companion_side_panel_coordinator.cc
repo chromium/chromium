@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -140,20 +139,6 @@ std::u16string SearchCompanionSidePanelCoordinator::GetTooltipForToolbarButton()
   return l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP);
 }
 
-void SearchCompanionSidePanelCoordinator::SetAccessibleNameForToolbarButton(
-    BrowserView* browser_view,
-    bool is_open) {
-  SidePanelToolbarContainer* container =
-      browser_view->toolbar()->side_panel_container();
-  if (container && container->IsPinned(SidePanelEntry::Id::kSearchCompanion)) {
-    ToolbarButton& button =
-        container->GetPinnedButtonForId(SidePanelEntry::Id::kSearchCompanion);
-    button.SetAccessibleName(l10n_util::GetStringUTF16(
-        is_open ? IDS_ACCNAME_SIDE_PANEL_COMPANION_HIDE
-                : IDS_ACCNAME_SIDE_PANEL_COMPANION_SHOW));
-  }
-}
-
 void SearchCompanionSidePanelCoordinator::NotifyCompanionOfSidePanelOpenTrigger(
     std::optional<SidePanelOpenTrigger> side_panel_open_trigger) {
   auto* companion_tab_helper = companion::CompanionTabHelper::FromWebContents(
@@ -222,9 +207,6 @@ void SearchCompanionSidePanelCoordinator::
     return;
   }
 
-  SidePanelToolbarContainer* container =
-      browser_view->toolbar()->side_panel_container();
-
   // Update existence of companion entry points based on changes.
   if (companion::IsSearchInCompanionSidePanelSupported(browser_) &&
       !is_currently_observing_tab_changes_) {
@@ -233,12 +215,7 @@ void SearchCompanionSidePanelCoordinator::
         CompanionSidePanelAvailabilityChanged::kUnavailableToAvailable);
     is_currently_observing_tab_changes_ = true;
 
-    if (features::IsSidePanelPinningEnabled()) {
-      GetActionItem()->SetVisible(true);
-    } else {
-      container->AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
-                                         accessible_name(), name(), icon());
-    }
+    GetActionItem()->SetVisible(true);
     browser_->tab_strip_model()->AddObserver(this);
     CreateAndRegisterEntriesForExistingWebContents(browser_->tab_strip_model());
     return;
@@ -251,12 +228,7 @@ void SearchCompanionSidePanelCoordinator::
         CompanionSidePanelAvailabilityChanged::kAvailableToUnavailable);
     is_currently_observing_tab_changes_ = false;
 
-    if (features::IsSidePanelPinningEnabled()) {
-      GetActionItem()->SetVisible(false);
-    } else {
-      container->RemovePinnedEntryButtonFor(
-          SidePanelEntry::Id::kSearchCompanion);
-    }
+    GetActionItem()->SetVisible(false);
     browser_->tab_strip_model()->RemoveObserver(this);
     DeregisterEntriesForExistingWebContents(browser_->tab_strip_model());
     return;
@@ -298,29 +270,11 @@ void SearchCompanionSidePanelCoordinator::MaybeUpdateCompanionEnabledState() {
             ChromeDistanceMetric::
                 DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
   } else {
-    MaybeUpdatePinnedButtonEnabledState(enabled);
-    MaybeUpdateComboboxEntryEnabledState(enabled);
+    MaybeUpdateEntryIcon(enabled);
   }
 }
 
-void SearchCompanionSidePanelCoordinator::MaybeUpdatePinnedButtonEnabledState(
-    bool enabled) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  if (!browser_view) {
-    return;
-  }
-  SidePanelToolbarContainer* container =
-      browser_view->toolbar()->side_panel_container();
-  if (container && container->IsPinned(SidePanelEntry::Id::kSearchCompanion)) {
-    ToolbarButton& button =
-        container->GetPinnedButtonForId(SidePanelEntry::Id::kSearchCompanion);
-    button.SetEnabled(enabled);
-    button.SetVectorIcon(enabled ? icon() : disabled_icon());
-  }
-}
-
-void SearchCompanionSidePanelCoordinator::MaybeUpdateComboboxEntryEnabledState(
-    bool enabled) {
+void SearchCompanionSidePanelCoordinator::MaybeUpdateEntryIcon(bool enabled) {
   auto* registry = SidePanelRegistry::Get(
       browser_->tab_strip_model()->GetActiveWebContents());
   if (!registry) {
