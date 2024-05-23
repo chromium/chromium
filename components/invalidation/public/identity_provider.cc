@@ -29,13 +29,6 @@ void IdentityProvider::ProcessRefreshTokenUpdateForAccount(
     observer.OnActiveAccountRefreshTokenUpdated();
 }
 
-void IdentityProvider::ProcessRefreshTokenRemovalForAccount(
-    const CoreAccountId& account_id) {
-  if (account_id != GetActiveAccountId()) {
-    return;
-  }
-}
-
 void IdentityProvider::FireOnActiveAccountLogin() {
   for (auto& observer : observers_)
     observer.OnActiveAccountLogin();

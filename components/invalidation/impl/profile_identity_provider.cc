@@ -5,18 +5,20 @@
 #include "components/invalidation/impl/profile_identity_provider.h"
 
 #include "base/functional/bind.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 
 namespace invalidation {
 
 namespace {
 
-// ActiveAccountAccessTokenFetcher implementation that is backed by
-// IdentityManager and wraps an AccessTokenFetcher internally.
+// `ActiveAccountAccessTokenFetcher` implementation that is backed by
+// `IdentityManager` and wraps an `PrimaryAccountAccessTokenFetcher` internally.
 class AccessTokenFetcherAdaptor : public ActiveAccountAccessTokenFetcher {
  public:
-  AccessTokenFetcherAdaptor(const CoreAccountId& active_account_id,
-                            const std::string& oauth_consumer_name,
+  AccessTokenFetcherAdaptor(const std::string& oauth_consumer_name,
                             signin::IdentityManager* identity_manager,
                             const signin::ScopeSet& scopes,
                             ActiveAccountAccessTokenCallback callback);
@@ -31,27 +33,32 @@ class AccessTokenFetcherAdaptor : public ActiveAccountAccessTokenFetcher {
                                     signin::AccessTokenInfo access_token_info);
 
   ActiveAccountAccessTokenCallback callback_;
-  std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      primary_account_access_token_fetcher_;
 };
 
 AccessTokenFetcherAdaptor::AccessTokenFetcherAdaptor(
-    const CoreAccountId& active_account_id,
     const std::string& oauth_consumer_name,
     signin::IdentityManager* identity_manager,
     const signin::ScopeSet& scopes,
     ActiveAccountAccessTokenCallback callback)
     : callback_(std::move(callback)) {
-  access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
-      active_account_id, oauth_consumer_name, scopes,
-      base::BindOnce(&AccessTokenFetcherAdaptor::HandleTokenRequestCompletion,
-                     base::Unretained(this)),
-      signin::AccessTokenFetcher::Mode::kImmediate);
+  primary_account_access_token_fetcher_ =
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+          oauth_consumer_name, identity_manager, scopes,
+          base::BindOnce(
+              &AccessTokenFetcherAdaptor::HandleTokenRequestCompletion,
+              // It is safe to use base::Unretained as
+              // |this| owns |access_token_fetcher_|.
+              base::Unretained(this)),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+          signin::ConsentLevel::kSignin);
 }
 
 void AccessTokenFetcherAdaptor::HandleTokenRequestCompletion(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
-  access_token_fetcher_.reset();
+  primary_account_access_token_fetcher_.reset();
 
   std::move(callback_).Run(error, access_token_info.token);
 }
@@ -62,9 +69,6 @@ ProfileIdentityProvider::ProfileIdentityProvider(
     signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager) {
   identity_manager_->AddObserver(this);
-
-  active_account_id_ =
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 }
 
 ProfileIdentityProvider::~ProfileIdentityProvider() {
@@ -72,12 +76,13 @@ ProfileIdentityProvider::~ProfileIdentityProvider() {
 }
 
 CoreAccountId ProfileIdentityProvider::GetActiveAccountId() {
-  return active_account_id_;
+  return identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 }
 
 bool ProfileIdentityProvider::IsActiveAccountWithRefreshToken() {
-  if (GetActiveAccountId().empty() || !identity_manager_ ||
-      !identity_manager_->HasAccountWithRefreshToken(GetActiveAccountId())) {
+  if (GetActiveAccountId().empty() ||
+      !identity_manager_->HasPrimaryAccountWithRefreshToken(
+          signin::ConsentLevel::kSignin)) {
     return false;
   }
 
@@ -90,8 +95,7 @@ ProfileIdentityProvider::FetchAccessToken(
     const signin::ScopeSet& scopes,
     ActiveAccountAccessTokenCallback callback) {
   return std::make_unique<AccessTokenFetcherAdaptor>(
-      GetActiveAccountId(), oauth_consumer_name, identity_manager_, scopes,
-      std::move(callback));
+      oauth_consumer_name, identity_manager_, scopes, std::move(callback));
 }
 
 void ProfileIdentityProvider::InvalidateAccessToken(
@@ -103,19 +107,21 @@ void ProfileIdentityProvider::InvalidateAccessToken(
 
 void ProfileIdentityProvider::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  CoreAccountId account_id =
-      event_details.GetCurrentState().primary_account.account_id;
-
-  if (account_id == active_account_id_) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kNone) {
     return;
   }
 
-  if (!active_account_id_.empty()) {
+  const CoreAccountId& previous_account_id =
+      event_details.GetPreviousState().primary_account.account_id;
+  const CoreAccountId& current_account_id =
+      event_details.GetCurrentState().primary_account.account_id;
+
+  if (!previous_account_id.empty()) {
     FireOnActiveAccountLogout();
   }
 
-  active_account_id_ = account_id;
-  if (!active_account_id_.empty()) {
+  if (!current_account_id.empty()) {
     FireOnActiveAccountLogin();
   }
 }
@@ -123,11 +129,6 @@ void ProfileIdentityProvider::OnPrimaryAccountChanged(
 void ProfileIdentityProvider::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   ProcessRefreshTokenUpdateForAccount(account_info.account_id);
-}
-
-void ProfileIdentityProvider::OnRefreshTokenRemovedForAccount(
-    const CoreAccountId& account_id) {
-  ProcessRefreshTokenRemovalForAccount(account_id);
 }
 
 }  // namespace invalidation
