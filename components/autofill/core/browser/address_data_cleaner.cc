@@ -91,7 +91,7 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
         return p.source() == AutofillProfile::Source::kLocalOrSyncable;
       });
 
-  size_t num_profiles_deleted = 0;
+  size_t num_profiles_deleted = 0, num_quasi_duplicates_deleted = 0;
   for (auto local_profile_it = profiles.begin();
        local_profile_it != bgn_account_profiles; ++local_profile_it) {
     // If possible, merge `*local_profile_it` with another local profile and
@@ -140,10 +140,13 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
                                           comparator)) {
       adm.RemoveProfile(local_profile_it->guid());
       num_profiles_deleted++;
+      num_quasi_duplicates_deleted++;
     }
   }
   autofill_metrics::LogNumberOfProfilesRemovedDuringDedupe(
       num_profiles_deleted);
+  autofill_metrics::LogNumberOfQuasiDuplicateProfilesRemovedDuringDedupe(
+      num_quasi_duplicates_deleted);
 }
 
 }  // namespace

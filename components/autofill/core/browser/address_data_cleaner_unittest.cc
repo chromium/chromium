@@ -267,8 +267,13 @@ TEST_F(AddressDataCleanerTest, Deduplicate_QuasiDuplicate_LowQuality) {
   }
   test_adm_.AddProfile(quasi_duplicate);
 
+  base::HistogramTester histogram_tester;
   test_api(data_cleaner_).ApplyDeduplicationRoutine();
   EXPECT_THAT(test_adm_.GetProfiles(), UnorderedElementsAre(Pointee(profile)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles."
+      "LowQualityQuasiDuplicatesRemoved",
+      1, 1);
 }
 
 // Tests that when AutofillSilentlyRemoveQuasiDuplicates is enabled, the

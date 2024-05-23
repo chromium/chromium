@@ -1779,6 +1779,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.Deduplication.ExistingProfiles.LowQualityQuasiDuplicatesRemoved"
+    units="Profiles" expires_after="2024-11-03">
+  <owner>koerber@chromium.org</owner>
+  <owner>fleimgruber@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the number of low quality quasi duplicates that were silently removed
+    by the once per milestone deduplication routine on startup.
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.Deduplication.ExistingProfiles.RankOfStoredQuasiDuplicateProfiles"
     units="Rank" expires_after="2024-11-03">
   <owner>koerber@chromium.org</owner>
