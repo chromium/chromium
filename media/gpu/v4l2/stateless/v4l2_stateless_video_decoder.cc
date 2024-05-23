@@ -397,7 +397,11 @@ bool V4L2StatelessVideoDecoder::ConfigureOutputQueue(void* ctrls) {
     return false;
   }
 
-  if (!SetupOutputFormatForPipeline()) {
+  const CroStatus status = SetupOutputFormatForPipeline();
+  if (status != CroStatus::Codes::kOk) {
+    if (status == CroStatus::Codes::kResetRequired) {
+      ClearPendingRequests(DecoderStatus::Codes::kAborted);
+    }
     return false;
   }
 
@@ -640,7 +644,7 @@ bool V4L2StatelessVideoDecoder::CreateDecoder(VideoCodecProfile profile,
   return true;
 }
 
-bool V4L2StatelessVideoDecoder::SetupOutputFormatForPipeline() {
+CroStatus V4L2StatelessVideoDecoder::SetupOutputFormatForPipeline() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
   DCHECK(output_queue_);
@@ -675,10 +679,10 @@ bool V4L2StatelessVideoDecoder::SetupOutputFormatForPipeline() {
              output_queue_->GetQueueFormat().ToString(),
              " format with a resolution of ",
              output_queue_->GetVideoResolution().ToString());
-    return false;
+    return std::move(status_or_output_format).error().code();
   }
 
-  return true;
+  return CroStatus::Codes::kOk;
 }
 
 void V4L2StatelessVideoDecoder::DequeueBuffers(bool success) {

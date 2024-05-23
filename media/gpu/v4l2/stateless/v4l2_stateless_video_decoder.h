@@ -120,7 +120,7 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // The uncompressed format that the driver produces is setup by the
   // |output_queue_|. This format then needs to be passed further down the
   // pipeline.
-  bool SetupOutputFormatForPipeline();
+  CroStatus SetupOutputFormatForPipeline();
 
   // Callbacks used to handle buffers that have been dequeued.
   void DequeueBuffers(bool success);
