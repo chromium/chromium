@@ -1896,10 +1896,12 @@ bool RTCVideoEncoder::Impl::CreateBlackGpuMemoryBufferFrame(
          gmb->stride(1) * gmb_size.height() / 2);
   gmb->Unmap();
 
-  gpu::MailboxHolder empty_mailboxes[media::VideoFrame::kMaxPlanes];
+  scoped_refptr<gpu::ClientSharedImage>
+      empty_shared_images[media::VideoFrame::kMaxPlanes];
   black_gmb_frame_ = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      gfx::Rect(gmb_size), natural_size, std::move(gmb), empty_mailboxes,
-      base::NullCallback(), base::TimeDelta());
+      gfx::Rect(gmb_size), natural_size, std::move(gmb), empty_shared_images,
+      gpu::SyncToken(), /*texture_target=*/0, base::NullCallback(),
+      base::TimeDelta());
   return true;
 }
 

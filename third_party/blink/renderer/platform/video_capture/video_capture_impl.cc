@@ -718,22 +718,18 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
                                  gpu_memory_buffer->GetFormat());
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
-  gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
   for (size_t plane = 0; plane < planes.size(); ++plane) {
     DCHECK(video_frame_init_data.buffer_context->gmb_resources()
                ->shared_images[plane]);
-    mailbox_holder_array[plane] =
-        gpu::MailboxHolder(video_frame_init_data.buffer_context->gmb_resources()
-                               ->shared_images[plane]
-                               ->mailbox(),
-                           sync_token, texture_target);
   }
 
   const auto gmb_size = gpu_memory_buffer->GetSize();
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::WrapExternalGpuMemoryBuffer(
           gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
-          gmb_size, std::move(gpu_memory_buffer), mailbox_holder_array,
+          gmb_size, std::move(gpu_memory_buffer),
+          video_frame_init_data.buffer_context->gmb_resources()->shared_images,
+          sync_token, texture_target,
           base::BindOnce(&BufferContext::MailboxHolderReleased,
                          video_frame_init_data.buffer_context),
           video_frame_init_data.ready_buffer->info->timestamp);

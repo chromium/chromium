@@ -1511,10 +1511,12 @@ TEST_P(WebMediaPlayerMSTest, OnContextLost) {
   std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
       std::make_unique<media::FakeGpuMemoryBuffer>(
           frame_size, gfx::BufferFormat::YUV_420_BIPLANAR);
-  gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
+  scoped_refptr<gpu::ClientSharedImage>
+      empty_shared_images[media::VideoFrame::kMaxPlanes];
   auto gpu_frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      gfx::Rect(frame_size), frame_size, std::move(gmb), mailbox_holders,
-      base::DoNothing(), base::TimeDelta());
+      gfx::Rect(frame_size), frame_size, std::move(gmb), empty_shared_images,
+      gpu::SyncToken(), /*texture_target=*/0, base::DoNothing(),
+      base::TimeDelta());
   compositor_->EnqueueFrame(gpu_frame, true);
   base::RunLoop().RunUntilIdle();
   // frame with gpu resource should be reset if context is lost
