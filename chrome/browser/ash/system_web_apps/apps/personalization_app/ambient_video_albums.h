@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_AMBIENT_VIDEO_ALBUMS_H_
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ambient_video.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
-#include "base/strings/string_piece.h"
 
 namespace ash::personalization_app {
 

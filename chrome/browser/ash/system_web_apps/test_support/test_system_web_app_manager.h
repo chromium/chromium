@@ -10,7 +10,6 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/version.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 
