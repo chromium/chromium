@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "content/browser/scheduler/responsiveness/metric_source.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 namespace responsiveness {
@@ -96,9 +97,16 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
                    bool was_blocked_or_low_priority,
                    std::vector<Metadata>* currently_running_metadata);
 
+  // TODO(crbug.com/40287434): After the "ReduceCpuUtilization2" feature is
+  // cleaned up (~January 2025), remove the absl::variant in favor of a
+  // base::FunctionRef.
+  using TaskOrEventFinishedSignature = void(base::TimeTicks,
+                                            base::TimeTicks,
+                                            base::TimeTicks);
+  using TaskOrEventFinishedCallback =
+      absl::variant<base::OnceCallback<TaskOrEventFinishedSignature>,
+                    base::FunctionRef<TaskOrEventFinishedSignature>>;
   // |callback| will either be synchronously invoked, or else never invoked.
-  using TaskOrEventFinishedCallback = base::OnceCallback<
-      void(base::TimeTicks, base::TimeTicks, base::TimeTicks)>;
   void DidRunTask(const base::PendingTask* task,
                   std::vector<Metadata>* currently_running_metadata,
                   int* mismatched_task_identifiers,
