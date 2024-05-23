@@ -1774,7 +1774,7 @@
   })
 # ---
 # name: test_input_setFiles_noSuchElement[websocket0]
-  'no such element'
+  'no such node'
 # ---
 # name: test_input_setFiles_twice[websocket0]
   dict({

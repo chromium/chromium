@@ -21,6 +21,7 @@ import {
   Script,
   UnableToSetFileInputException,
   type EmptyResult,
+  NoSuchNodeException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -81,7 +82,8 @@ export class InputProcessor {
     const realm = await context.getOrCreateSandbox(undefined);
 
     const enum ErrorCode {
-      Object,
+      Node,
+      Element,
       Type,
       Disabled,
       Multiple,
@@ -92,7 +94,10 @@ export class InputProcessor {
       result = await realm.callFunction(
         String(function getFiles(this: unknown, fileListLength: number) {
           if (!(this instanceof HTMLInputElement)) {
-            return ErrorCode.Object;
+            if (this instanceof Element) {
+              return ErrorCode.Element;
+            }
+            return ErrorCode.Node;
           }
           if (this.type !== 'file') {
             return ErrorCode.Type;
@@ -110,7 +115,7 @@ export class InputProcessor {
         [{type: 'number', value: params.files.length}]
       );
     } catch {
-      throw new NoSuchElementException(
+      throw new NoSuchNodeException(
         `Could not find element ${params.element.sharedId}`
       );
     }
@@ -118,14 +123,19 @@ export class InputProcessor {
     assert(result.type === 'success');
     if (result.result.type === 'number') {
       switch (result.result.value as ErrorCode) {
-        case ErrorCode.Object: {
+        case ErrorCode.Node: {
           throw new NoSuchElementException(
             `Could not find element ${params.element.sharedId}`
           );
         }
+        case ErrorCode.Element: {
+          throw new UnableToSetFileInputException(
+            `Element ${params.element.sharedId} is not a input`
+          );
+        }
         case ErrorCode.Type: {
           throw new UnableToSetFileInputException(
-            `Element ${params.element.sharedId} is not a file input`
+            `Input element ${params.element.sharedId} is not a file type`
           );
         }
         case ErrorCode.Disabled: {
