@@ -166,6 +166,9 @@ class BuildResolver:
     def _fetch_swarming_summary(self,
                                 step,
                                 log_name: str = 'chromium_swarming.summary'):
+        # TODO(crbug.com/342409114): Use swarming v2 API to fetch shard status
+        # and exit codes, not the potentially unstable
+        # `chromium_swarming.summary` log.
         for log in step.get('logs', []):
             if log['name'] == log_name:
                 with contextlib.suppress(RequestException):
@@ -281,4 +284,6 @@ def _build_sort_key(build: Build) -> Tuple[str, int]:
 
 
 def _shard_interrupted(shard) -> bool:
+    if shard.get('state') not in {'COMPLETED', 'DEDUPED'}:
+        return True
     return int(shard.get('exit_code', 0)) in exit_codes.ERROR_CODES
