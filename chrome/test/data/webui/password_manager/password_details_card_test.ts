@@ -349,6 +349,7 @@ suite('PasswordDetailsCardTest', function() {
         loadTimeData.getString('sitesAndAppsLabel'));
   });
 
+  // <if expr="_google_chrome">
   test('share button available when sync enabled', async function() {
     loadTimeData.overrideValues({enableSendPasswords: true});
 
@@ -463,6 +464,7 @@ suite('PasswordDetailsCardTest', function() {
         card.shadowRoot!.querySelector('share-password-flow');
     assertFalse(!!sharePasswordFlow);
   });
+  // </if>
 
   test(
       'clicking save password in account opens move password dialog',

@@ -99,8 +99,11 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
       showShareButton_: {
         type: Boolean,
+        value: false,
+        // <if expr="_google_chrome">
         computed: 'computeShowShareButton_(enableSendPasswords_, ' +
             'isOptedInForAccountStorage, isSyncingPasswords)',
+        // </if>
       },
 
       passwordSharingDisabled_: {
