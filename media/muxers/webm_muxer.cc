@@ -374,13 +374,6 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
         << GetCodecName(video_params->codec);
 
     if (!video_track_index_) {
-      // TODO(crbug.com/339841680): Potential issue for the first frame.
-      if (!frame.is_keyframe) {
-        CHECK_EQ(video_params->codec, VideoCodec::kVP9);
-        DVLOG(1) << __func__ << ", not a key frame";
-        return true;
-      }
-
       // |track_index_|, cannot be zero (!), initialize WebmMuxer in that case.
       // http://www.matroska.org/technical/specs/index.html#Tracks
       video_codec_ = video_params->codec;
