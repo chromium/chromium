@@ -156,7 +156,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   ~MainThreadSchedulerImpl() override;
 
   // WebThreadScheduler implementation:
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override;
   std::unique_ptr<MainThread> CreateMainThread() override;
@@ -654,7 +653,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       find_in_page_budget_pool_controller_;
 
   const scoped_refptr<MainThreadTaskQueue> control_task_queue_;
-  const scoped_refptr<MainThreadTaskQueue> compositor_task_queue_;
   scoped_refptr<MainThreadTaskQueue> virtual_time_control_task_queue_;
   scoped_refptr<MainThreadTaskQueue>
       back_forward_cache_ipc_tracking_task_queue_;
@@ -673,7 +671,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   scoped_refptr<base::SingleThreadTaskRunner> v8_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> v8_low_priority_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> control_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> non_waking_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner>
