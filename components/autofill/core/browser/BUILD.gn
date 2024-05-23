@@ -1095,6 +1095,7 @@ source_set("unit_tests") {
     "autofill_suggestion_generator_unittest.cc",
     "autofill_type_unittest.cc",
     "browser_autofill_manager_unittest.cc",
+    "credit_card_number_validation_unittest.cc",
     "crowdsourcing/autofill_crowdsourcing_encoding_unittest.cc",
     "crowdsourcing/autofill_crowdsourcing_manager_unittest.cc",
     "crowdsourcing/determine_possible_field_types_unittest.cc",
