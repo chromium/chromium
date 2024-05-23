@@ -66,7 +66,7 @@ class ChangedValueWaiter : public PrefStore::Observer {
 }  // namespace
 
 TestingPrefStore::TestingPrefStore()
-    : read_only_(true),
+    : read_only_(false),
       read_success_(true),
       read_error_(PersistentPrefStore::PREF_READ_ERROR_NONE),
       block_async_read_(false),
