@@ -1114,10 +1114,11 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       mojom::PixCodeDetectionResult::kInvalidPixCodeFound, std::string());
 }
 
-// If the PIX code has been validated, then the manager checks for API
-// availability.
+// The manager checks for API availability after validating the PIX code.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-       PixCodeValidated_ApiClientTriggered) {
+       ApiClientTriggeredAfterPixCodeValidation) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+
   EXPECT_CALL(*api_client_, IsAvailable(testing::_));
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
@@ -1128,6 +1129,8 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 // the manager does not check the API for availability.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        PixCodeValidationFailed_NoApiClientTriggered) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+
   EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
@@ -1153,6 +1156,8 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 // availability.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+
   EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(
@@ -1181,25 +1186,25 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 // If the user doesn't have any linked PIX accounts, the manager does not check
 // whether the facilitated payment API is available.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-       AbsenceOfPixAccountsDoesNotTriggerApiClient) {
+       NoPixAccounts_NoApiClientTriggered) {
   EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
 
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               /*is_pix_code_valid=*/true);
 }
 
 // If payments data manager is unavailable, the manager does not check
 // whether the facilitated payment API is available.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
-       UnavailabilityOfPdmDoesNotTriggerApiClient) {
+       NoPaymentsDataManager_NoApiClientTriggered) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
   ON_CALL(*client_, GetPaymentsDataManager)
       .WillByDefault(testing::Return(nullptr));
 
   EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
 
-  manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               /*is_pix_code_valid=*/true);
 }
 
 // If a valid PIX code is detected, and the user has PIX accounts, and API
