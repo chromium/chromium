@@ -11,8 +11,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -205,28 +207,37 @@ void DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
     Profile* profile,
     SigninInterceptionResult result) {
   std::string histogram_base_name =
-      "Signin.InterceptResult" +
-      GetHistogramSuffix(bubble_parameters.interception_type);
+      base::StrCat({"Signin.InterceptResult",
+                    GetHistogramSuffix(bubble_parameters.interception_type)});
   // Record aggregated histogram for each interception type.
   base::UmaHistogramEnumeration(histogram_base_name, result);
-  // Record histogram sliced by Sync status.
+  // Record histogram sliced by Sync.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   std::string sync_suffix =
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)
           ? ".Sync"
           : ".NoSync";
-  base::UmaHistogramEnumeration(histogram_base_name + sync_suffix, result);
+  base::UmaHistogramEnumeration(
+      base::StrCat({histogram_base_name, sync_suffix}), result);
+  // Record Signin Pending status.
+  // TODO(crbug.com/342118992): Change this to use a function such as
+  // `GetSignInState` in `signin_utils.h` instead.
+  if (signin::GetSignInPromoVersion(identity_manager) ==
+      signin::SignInAutofillBubbleVersion::kSignInPending) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({histogram_base_name, ".SigninPending"}), result);
+  }
   // For Enterprise, slice per enterprise status for each account.
   if (bubble_parameters.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kEnterprise) {
     if (bubble_parameters.intercepted_account.IsManaged()) {
-      std::string histogram_name = histogram_base_name + ".NewIsEnterprise";
-      base::UmaHistogramEnumeration(histogram_name, result);
+      base::UmaHistogramEnumeration(
+          base::StrCat({histogram_base_name, ".NewIsEnterprise"}), result);
     }
     if (bubble_parameters.primary_account.IsManaged()) {
-      std::string histogram_name = histogram_base_name + ".PrimaryIsEnterprise";
-      base::UmaHistogramEnumeration(histogram_name, result);
+      base::UmaHistogramEnumeration(
+          base::StrCat({histogram_base_name, ".PrimaryIsEnterprise"}), result);
     }
   }
 }

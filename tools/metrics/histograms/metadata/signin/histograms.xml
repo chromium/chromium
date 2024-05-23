@@ -1749,6 +1749,17 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SigninPending.InconsistentStateInvoked"
+    enum="BooleanHit" expires_after="2024-10-16">
+  <owner>amelies@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the signin interceptor detected the user entering an
+    inconsistent state by signing into the web with an account B while being in
+    sign in pending state with account A.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SigninPending.Resolution"
     enum="SigninPendingResolution" expires_after="2024-10-16">
   <owner>rsult@google.com</owner>

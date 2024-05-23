@@ -738,6 +738,45 @@ IN_PROC_BROWSER_TEST_F(
       pref_service, sync_service));
 }
 
+// Test the recording of the user entering or resolving an inconsistent state
+// (sign in pending with account A, sign in to web with account B).)
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest,
+    RecordInconsistentStateResolvedAfterSignInPending) {
+  base::HistogramTester histogram_tester;
+
+  // Set up a primary account in sign in pending state and a secondary account
+  // signing into the web, therefore inducing an inconsistent state.
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  AccountInfo secondary_account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", kNoHostedDomainFound);
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+
+  // Intercept.
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
+  source_interceptor_delegate->set_expected_interception_type(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser);
+  source_interceptor_delegate->set_expected_interception_result(
+      SigninInterceptionResult::kDismissed);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, secondary_account_info.account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      /*is_new_account=*/false,
+      /*is_sync_signin=*/false);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SigninPending.InconsistentStateInvoked", true, 1);
+}
+
 // Test to sign in to Chrome from the Chrome Signin Bubble Intercept with
 // the full `switches::kExplicitBrowserSigninUIOnDesktop` enabled.
 class DiceWebSigninInterceptorWithBrowserSigninFullPhaseBrowserTest
@@ -1671,9 +1710,8 @@ IN_PROC_BROWSER_TEST_F(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
 
-  CheckHistograms(
-      histogram_tester,
-      SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
+  CheckHistograms(histogram_tester,
+                  SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
 }
 
 // Tests the complete profile switch flow when the profile is not loaded.

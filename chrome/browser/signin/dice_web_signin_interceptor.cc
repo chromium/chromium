@@ -42,6 +42,7 @@
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -284,6 +285,20 @@ bool IsReauthPrimaryAccount(bool new_account_interception,
          IsPrimaryAccountInterception(account_id, identity_manager);
 }
 
+// Returns true if the current state is inconsistent, which happens by
+// signing into the web with an account B while being in sign in pending state
+// with account A. Returns false otherwise. Used for metrics.
+bool IsInInconsistentStateWithPrimaryAccount(
+    const CoreAccountId& account_id,
+    signin::IdentityManager* identity_manager) {
+  // TODO(crbug.com/342118992): Change this to use a function such as
+  // `GetSignInState` in `signin_utils.h` instead.
+  return signin::GetSignInPromoVersion(identity_manager) ==
+             signin::SignInAutofillBubbleVersion::kSignInPending &&
+         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                 .account_id != account_id;
+}
+
 }  // namespace
 
 DiceWebSigninInterceptor::DiceWebSigninInterceptor(
@@ -450,13 +465,21 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     signin_metrics::AccessPoint access_point,
     bool is_new_account,
     bool is_sync_signin) {
+  // If the user is in sign in pending state and signs in with a different
+  // account, it means that they enter an inconsistent state. Record this event
+  // so that we can check afterwards if this state is resolved by accepting the
+  // ProfileSwitchBubble or MultiUserBubble.
+  if (IsInInconsistentStateWithPrimaryAccount(account_id, identity_manager_)) {
+    base::UmaHistogramBoolean("Signin.SigninPending.InconsistentStateInvoked",
+                              true);
+  }
+
   if (state_->is_interception_in_progress_) {
     // Multiple concurrent interceptions are not supported.
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kAbortInterceptInProgress);
     return;
   }
-
   DCHECK_EQ(state_->interception_start_time_, base::TimeTicks());
   state_->interception_start_time_ = base::TimeTicks::Now();
   state_->access_point_ = access_point;

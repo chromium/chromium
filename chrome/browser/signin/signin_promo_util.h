@@ -35,6 +35,7 @@ bool ShouldShowSignInPromo(Profile& profile,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Returns the version of the autofill bubble that should be displayed.
+// TODO(crbug.com/342118992): Move this to `signin_utils.h`.
 SignInAutofillBubbleVersion GetSignInPromoVersion(
     IdentityManager* identity_manager);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
