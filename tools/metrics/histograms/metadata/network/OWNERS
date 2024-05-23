@@ -1,7 +1,7 @@
 per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
-# Use either chromium-metrics-reviews@google.com or the below owners.
 chadduffin@chromium.org
+gordonseto@google.com
 hsuregan@google.com
 jiajunz@google.com
 khorimoto@chromium.org
