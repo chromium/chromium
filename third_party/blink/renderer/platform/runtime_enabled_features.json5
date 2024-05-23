@@ -2929,6 +2929,8 @@
     },
     {
       name: "PaintHoldingForLocalIframes",
+      status: "test",
+      implied_by: ["ViewTransitionOnNavigationForIframes"],
     },
     {
       name: "PaintUnderInvalidationChecking",

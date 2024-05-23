@@ -8580,8 +8580,12 @@ class NavigationBrowserTestPaintHoldingSubframe
       public ::testing::WithParamInterface<bool> {
  public:
   NavigationBrowserTestPaintHoldingSubframe() {
-    paint_holding_feature_.InitAndEnableFeature(
-        blink::features::kPaintHoldingForIframes);
+    // Paint holding for in-process iframes is only enabled when there is a
+    // ViewTransition.
+    paint_holding_feature_.InitWithFeatures(
+        {blink::features::kPaintHoldingForIframes,
+         blink::features::kViewTransitionOnNavigationForIframes},
+        {});
 
     const bool enable_render_document = GetParam();
     if (enable_render_document) {
@@ -8656,12 +8660,25 @@ class NavigationBrowserTestPaintHoldingSubframe
   }
 
  private:
+  class SlowHttpResponseNoCaching : public SlowHttpResponse {
+   public:
+    explicit SlowHttpResponseNoCaching(GotRequestCallback got_request)
+        : SlowHttpResponse(std::move(got_request)) {}
+
+    base::StringPairs ResponseHeaders() override {
+      auto response = SlowHttpResponse::ResponseHeaders();
+      // Disable response caching.
+      response.emplace_back("Cache-Control", "max-age=0");
+      return response;
+    }
+  };
+
   std::unique_ptr<net::test_server::HttpResponse> HandleSlowStyleSheet(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url != "/slow-response") {
       return nullptr;
     }
-    return std::make_unique<SlowHttpResponse>(base::BindOnce(
+    return std::make_unique<SlowHttpResponseNoCaching>(base::BindOnce(
         &NavigationBrowserTestPaintHoldingSubframe::OnStylesheetRequest,
         base::Unretained(this)));
   }
@@ -8746,6 +8763,94 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe, Basic) {
         ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
     ASSERT_TRUE(subframe_rfh);
     ASSERT_TRUE(subframe_rfh->is_local_root());
+  }
+
+  // The frame should continue to display blue from paint holding.
+  WaitForCopyableViewInWebContents(web_contents);
+  bitmap = CopyView(web_contents->GetRenderWidgetHostView());
+  EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorBLUE);
+
+  // Respond to the stylesheet request which will resume rendering in the
+  // subframe.
+  FinishStylesheetRequest(subframe_rfh);
+
+  // Now the frame is displaying red.
+  WaitForCopyableViewInFrame(subframe_rfh);
+  bitmap = CopyView(web_contents->GetRenderWidgetHostView());
+  EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorRED) << cc::GetPNGDataUrl(bitmap);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe,
+                       BasicInProcessIframe) {
+  auto* web_contents = shell()->web_contents();
+
+  GURL main_url(
+      embedded_test_server()->GetURL("/render-blocking-mainframe.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents, main_url));
+
+  const std::string iframe_id = "iframe_id";
+  RenderFrameHostImpl* subframe_rfh = nullptr;
+
+  {
+    const std::string kCreateIFrameWithID = R"(
+    const iframe = document.createElement("iframe");
+    iframe.id = $1;
+    document.body.appendChild(iframe);
+  )";
+    ASSERT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(),
+                       JsReplace(kCreateIFrameWithID, "iframe_id")));
+
+    GURL subframe_url(
+        embedded_test_server()->GetURL("/render-blocking-subframe.html"));
+    TestNavigationObserver load_observer(web_contents);
+    ASSERT_TRUE(
+        BeginNavigateIframeToURL(web_contents, "iframe_id", subframe_url));
+    load_observer.WaitForNavigationFinished();
+    WaitForStylesheetRequest();
+
+    // We should have a same-process iframe which is not a local root.
+    subframe_rfh = static_cast<RenderFrameHostImpl*>(
+        ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
+    ASSERT_TRUE(subframe_rfh);
+    ASSERT_FALSE(subframe_rfh->is_local_root());
+    ASSERT_EQ(subframe_rfh->GetProcess(),
+              web_contents->GetPrimaryMainFrame()->GetProcess());
+
+    FinishStylesheetRequest(subframe_rfh);
+    WaitForCopyableViewInWebContents(web_contents);
+  }
+
+  {
+    const std::string kInjectVTOptIn = R"(
+      const style = document.createElement("style");
+      style.innerHTML = "@view-transition { navigation: auto; }"
+      document.head.appendChild(style);
+    )";
+    ASSERT_TRUE(ExecJs(subframe_rfh, kInjectVTOptIn));
+  }
+
+  // The frame is displaying blue.
+  WaitForCopyableViewInFrame(subframe_rfh);
+  auto bitmap = CopyView(web_contents->GetRenderWidgetHostView());
+  EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorBLUE) << cc::GetPNGDataUrl(bitmap);
+
+  {
+    GURL subframe_url(
+        embedded_test_server()->GetURL("/render-blocking-subframe.html?red"));
+
+    TestNavigationObserver load_observer(web_contents);
+    ASSERT_TRUE(
+        BeginNavigateIframeToURL(web_contents, "iframe_id", subframe_url));
+    load_observer.WaitForNavigationFinished();
+    WaitForStylesheetRequest();
+
+    // The subframe RFH could have changed.
+    subframe_rfh = static_cast<RenderFrameHostImpl*>(
+        ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
+    ASSERT_TRUE(subframe_rfh);
+    ASSERT_FALSE(subframe_rfh->is_local_root());
+    ASSERT_EQ(subframe_rfh->GetProcess(),
+              web_contents->GetPrimaryMainFrame()->GetProcess());
   }
 
   // The frame should continue to display blue from paint holding.

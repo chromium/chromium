@@ -144,6 +144,11 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   viz::ViewTransitionElementResourceId GetSnapshotId(
       const LayoutObject& object) const;
 
+  // The layer used to paint the old Document rendered in a LocalFrame subframe
+  // until the new Document can start rendering.
+  const scoped_refptr<cc::ViewTransitionContentLayer>&
+  GetSubframeSnapshotLayer() const;
+
   // Updates a clip node. The clip tracks the subset of the |object|'s ink
   // overflow rectangle which should be painted.The return value is a result of
   // updating the clip node.
@@ -323,9 +328,14 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   void OnRenderingPausedTimeout();
   void ResumeRendering();
 
-  bool IsCrossDocument() const {
-    return IsForNavigationSnapshot() || IsForNavigationOnNewDocument();
-  }
+  // Cross-document navigations may span across multiple CompositorFrameSinks if
+  // the old/new Documents render to different WebWidgets. This returns false if
+  // the navigation triggering the transition is guaranteed to not change the
+  // WebWidget.
+  //
+  // Same-document transitions triggered via the `startViewTransition` script
+  // API are never cross frame sink.
+  bool MaybeCrossFrameSink() const;
 
   State state_ = State::kInitial;
   const CreationType creation_type_;

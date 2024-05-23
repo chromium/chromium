@@ -251,7 +251,7 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
           static_cast<int>(State::kCaptureTagDiscovery) &&
       creation_type_ != CreationType::kForSnapshot) {
     delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
-        transition_token_, IsCrossDocument()));
+        transition_token_, MaybeCrossFrameSink()));
   }
 
   // We always need to call the transition state callback (mojo seems to require
@@ -447,7 +447,7 @@ void ViewTransition::ProcessCurrentState() {
         }
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateCapture(
-            transition_token_, IsCrossDocument(),
+            transition_token_, MaybeCrossFrameSink(),
             style_tracker_->TakeCaptureResourceIds(),
             ConvertToBaseOnceCallback(
                 CrossThreadBindOnce(&ViewTransition::NotifyCaptureFinished,
@@ -568,8 +568,8 @@ void ViewTransition::ProcessCurrentState() {
         }
 
         delegate_->AddPendingRequest(
-            ViewTransitionRequest::CreateAnimateRenderer(transition_token_,
-                                                         IsCrossDocument()));
+            ViewTransitionRequest::CreateAnimateRenderer(
+                transition_token_, MaybeCrossFrameSink()));
         process_next_state = AdvanceTo(State::kAnimating);
         DCHECK(!process_next_state);
 
@@ -599,7 +599,7 @@ void ViewTransition::ProcessCurrentState() {
         script_delegate_->DidFinishAnimating();
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
-            transition_token_, IsCrossDocument()));
+            transition_token_, MaybeCrossFrameSink()));
         delegate_->OnTransitionFinished(this);
 
         style_tracker_ = nullptr;
@@ -772,6 +772,11 @@ viz::ViewTransitionElementResourceId ViewTransition::GetSnapshotId(
   return style_tracker_->GetSnapshotId(*element);
 }
 
+const scoped_refptr<cc::ViewTransitionContentLayer>&
+ViewTransition::GetSubframeSnapshotLayer() const {
+  return style_tracker_->GetSubframeSnapshotLayer();
+}
+
 PaintPropertyChangeType ViewTransition::UpdateCaptureClip(
     const LayoutObject& object,
     const ClipPaintPropertyNodeOrAlias* current_clip,
@@ -941,6 +946,23 @@ void ViewTransition::ActivateFromSnapshot() {
   bool process_next_state = AdvanceTo(State::kAnimateTagDiscovery);
   DCHECK(process_next_state);
   ProcessCurrentState();
+}
+
+bool ViewTransition::MaybeCrossFrameSink() const {
+  // Same-document transitions always stay within the Document's widget which
+  // also means the same FrameSink.
+  if (IsCreatedViaScriptAPI()) {
+    return false;
+  }
+
+  // We don't support LocalFrame<->RemoteFrame transitions. So if the current
+  // Document is a subframe and a LocalFrame, the new Document must also be a
+  // LocalFrame. This means this transition must be within the same FrameSink.
+  //
+  // Note: The limitation above is enforced in
+  // content::ViewTransitionCommitDeferringCondition, the browser process
+  // doesn't issue a snapshot request for such navigations.
+  return document_->GetFrame()->IsLocalRoot();
 }
 
 }  // namespace blink

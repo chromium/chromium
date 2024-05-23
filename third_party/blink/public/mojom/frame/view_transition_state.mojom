@@ -78,5 +78,8 @@ struct ViewTransitionState {
   // collide with ids already used for resources from the old document.
   uint32 next_element_resource_id;
 
-  // TODO(khushalsagar): Add opaque blob from old Document.
+  // An ID referencing the texture with the complete content of the old
+  // Document. This is used for paint holding during a LocalFrame<->LocalFrame
+  // subframe navigation, i.e., a navigation in an in-process iframe.
+  viz.mojom.ViewTransitionElementResourceId subframe_snapshot_id;
 };

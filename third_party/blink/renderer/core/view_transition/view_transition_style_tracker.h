@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/unguessable_token.h"
+#include "cc/layers/view_transition_content_layer.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -116,6 +117,11 @@ class ViewTransitionStyleTracker
   // this Element. Returns an invalid ID if this element is not participating in
   // the transition.
   viz::ViewTransitionElementResourceId GetSnapshotId(const Element&) const;
+
+  // The layer used to paint the old Document rendered in a LocalFrame subframe
+  // until the new Document can start rendering.
+  const scoped_refptr<cc::ViewTransitionContentLayer>&
+  GetSubframeSnapshotLayer() const;
 
   // Creates a PseudoElement for the corresponding |pseudo_id| and
   // |view_transition_name|. The |pseudo_id| must be a ::transition* element.
@@ -356,6 +362,10 @@ class ViewTransitionStyleTracker
   // transition. This is a purely performance optimization since this check is
   // used in hot code-paths.
   bool is_root_transitioning_ = false;
+
+  // Set if this transition is in a LocalFrame sub-frame, when the capture is
+  // initiated until the start phase of the animation.
+  scoped_refptr<cc::ViewTransitionContentLayer> subframe_snapshot_layer_;
 
   // Returns true if GetViewTransitionState() has already been called. This is
   // used only to enforce additional captures don't happen after that.

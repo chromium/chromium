@@ -96,6 +96,11 @@ struct BLINK_COMMON_EXPORT
     return r.next_element_resource_id;
   }
 
+  static const viz::ViewTransitionElementResourceId& subframe_snapshot_id(
+      const blink::ViewTransitionState& r) {
+    return r.subframe_snapshot_id;
+  }
+
   static bool Read(blink::mojom::ViewTransitionStateDataView r,
                    blink::ViewTransitionState* out);
 };

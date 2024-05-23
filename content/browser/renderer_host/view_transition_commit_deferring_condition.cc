@@ -193,12 +193,37 @@ void ViewTransitionCommitDeferringCondition::OnSnapshotAckFromRenderer(
     return;
   }
 
+  base::ScopedClosureRunner runner(std::move(resume_navigation_));
+
+  if (view_transition_state.HasSubframeSnapshot()) {
+    if (!old_rfh_) {
+      return;
+    }
+
+    // The subframe snapshot is only used for in-process iframes which don't own
+    // a widget.
+    if (old_rfh_->is_local_root()) {
+      return;
+    }
+
+    auto* new_rfh =
+        NavigationRequest::From(&GetNavigationHandle())->GetRenderFrameHost();
+
+    // We shouldn't send a snapshot request unless the new RFH is also an
+    // in-process subframe.
+    CHECK(!new_rfh->is_local_root());
+    CHECK(!old_rfh_->is_main_frame()) << "Main frames must be local roots";
+    CHECK(!new_rfh->is_main_frame()) << "Main frames must be local roots";
+    CHECK_EQ(old_rfh_->GetProcess(), new_rfh->GetProcess())
+        << "Navigation between 2 non-local roots must be in the ancestor "
+           "frame's process";
+  }
+
   if (view_transition_state.IsValid()) {
     NavigationRequest::From(&GetNavigationHandle())
         ->SetViewTransitionState(std::move(resources_),
                                  std::move(view_transition_state));
   }
-  std::move(resume_navigation_).Run();
 }
 
 }  // namespace content

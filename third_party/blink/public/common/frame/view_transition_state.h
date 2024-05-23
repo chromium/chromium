@@ -52,6 +52,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionState {
     return next_element_resource_id !=
            viz::ViewTransitionElementResourceId::kInvalidLocalId;
   }
+  bool HasSubframeSnapshot() const { return subframe_snapshot_id.IsValid(); }
 
  private:
   // IMPORTANT:
@@ -71,6 +72,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionState {
   float device_pixel_ratio = 1.f;
   uint32_t next_element_resource_id =
       viz::ViewTransitionElementResourceId::kInvalidLocalId;
+  viz::ViewTransitionElementResourceId subframe_snapshot_id;
 };
 
 }  // namespace blink

@@ -47,6 +47,7 @@ include_rules = [
     "+cc/layers/content_layer_client.h",
     "+cc/layers/heads_up_display_layer.h",
     "+cc/layers/layer.h",
+    "+cc/layers/view_transition_content_layer.h",
     "+cc/layers/picture_layer.h",
     "+cc/layers/scrollbar_layer_base.h",
     "+cc/layers/surface_layer.h",
