@@ -657,7 +657,9 @@ void BluetoothDeviceFloss::CreateGattConnectionImpl(
   // Generally, the first ever connection to a device should be direct and
   // subsequent connections to known devices should be invoked with is_direct =
   // false. Refer to |autoConnect| on BluetoothGatt.java.
-  bool is_direct = !IsBondedImpl();
+  bool is_direct =
+      gatt_connecting_state_ == GattConnectingState::kGattConnectionInit ||
+      !IsBondedImpl();
 
   UpdateGattConnectingState(GattConnectingState::kGattConnecting);
 
