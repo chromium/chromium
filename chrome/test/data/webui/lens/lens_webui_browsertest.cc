@@ -152,6 +152,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, PostSelectionRenderer) {
   RunOverlayTest("lens/overlay/post_selection_renderer_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, FindWordsInRegion) {
+  RunOverlayTest("lens/overlay/find_words_in_region_test.js", "mocha.run()");
+}
+
 using LensSidePanelTest = LensOverlayTest;
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelResultsFrame) {
   RunOverlayTest("lens/side_panel/results_frame_test.js", "mocha.run()");
