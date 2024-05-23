@@ -32,7 +32,6 @@ suite('ExtensionItemListTest', function() {
       createExt({
         name: 'Alpha',
         id: 'a'.repeat(32),
-        safetyCheckText: {panelString: 'This extension contains malware.'},
       }),
       createExt({name: 'Bravo', id: 'b'.repeat(32)}),
       createExt({name: 'Charlie', id: 'c'.repeat(29) + 'wxy'}),
@@ -175,21 +174,85 @@ suite('ExtensionItemListTest', function() {
   });
 
   test('SafetyCheckPanel_EnabledSafetyCheck', function() {
-    // Panel is visible if safetyCheckShowReviewPanel is enabled.
+    // Panel is hidden if safetyCheckShowReviewPanel is enabled, there are no
+    // unsafe extensions and panel wasn't previously shown.
     loadTimeData.overrideValues(
         {safetyCheckShowReviewPanel: true, safetyHubShowReviewPanel: false});
     setupElement();
     flush();
+    boundTestVisible('extensions-review-panel', false);
+
+    // Panel is visible if safetyCheckShowReviewPanel is enabled, and there are
+    // unsafe extensions.
+    itemList.push(
+        'extensions', createExtensionInfo({
+          name: 'Unsafe extension',
+          id: 'd'.repeat(32),
+          safetyCheckText: {panelString: 'This extension contains malware.'},
+        }));
+    flush();
     boundTestVisible('extensions-review-panel', true);
+    const reviewPanel =
+        itemList.shadowRoot!.querySelector('extensions-review-panel');
+    assertTrue(!!reviewPanel);
+    assertEquals(1, reviewPanel.extensions.length);
+
+    // Panel is visible if safetyCheckShowReviewPanel is enabled, there are no
+    // unsafe extensions but the panel was previously shown.
+    // For this, we set the unsafe extension as acknowledged.
+    itemList.set(
+        'extensions.3', createExtensionInfo({
+          name: 'Unsafe extension',
+          id: 'd'.repeat(32),
+          safetyCheckText: {panelString: 'This extension contains malware.'},
+          acknowledgeSafetyCheckWarning: true,
+        }));
+    flush();
+    boundTestVisible('extensions-review-panel', true);
+    assertTrue(!!reviewPanel);
+    // There are no unsafe extensions in the panel.
+    assertEquals(0, reviewPanel.extensions.length);
   });
 
   test('SafetyCheckPanel_EnabledSafetyHub', function() {
-    // Panel is visible if safetyHubShowReviewPanel is enabled.
+    // Panel is hidden if safetyHubShowReviewPanel is enabled, there are no
+    // unsafe extensions and panel wasn't previously shown.
     loadTimeData.overrideValues(
         {safetyCheckShowReviewPanel: false, safetyHubShowReviewPanel: true});
     setupElement();
     flush();
+    boundTestVisible('extensions-review-panel', false);
+
+    // Panel is visible if safetyHubShowReviewPanel is enabled, and there are
+    // unsafe extensions.
+    itemList.push(
+        'extensions', createExtensionInfo({
+          name: 'Unsafe extension',
+          id: 'd'.repeat(32),
+          safetyCheckText: {panelString: 'This extension contains malware.'},
+        }));
+    flush();
     boundTestVisible('extensions-review-panel', true);
+    const reviewPanel =
+        itemList.shadowRoot!.querySelector('extensions-review-panel');
+    assertTrue(!!reviewPanel);
+    assertEquals(1, reviewPanel.extensions.length);
+
+    // Panel is visible if safetyHubShowReviewPanel is enabled, there are no
+    // unsafe extensions but the panel was previously shown.
+    // For this, we set the unsafe extension as acknowledged.
+    itemList.set(
+        'extensions.3', createExtensionInfo({
+          name: 'Unsafe extension',
+          id: 'd'.repeat(32),
+          safetyCheckText: {panelString: 'This extension contains malware.'},
+          acknowledgeSafetyCheckWarning: true,
+        }));
+    flush();
+    boundTestVisible('extensions-review-panel', true);
+    assertTrue(!!reviewPanel);
+    // There are no unsafe extensions in the panel.
+    assertEquals(0, reviewPanel.extensions.length);
   });
 
   test('ManifestV2DeprecationPanel_Disabled', async function() {

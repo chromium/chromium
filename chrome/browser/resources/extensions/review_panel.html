@@ -53,7 +53,7 @@
     hidden$="[[!shouldShowSafetyHubHeader_]]">
   $i18n{safetyHubHeader}
 </h2>
-<div class="panel-background" hidden$="[[shouldHideUnsafePanel_]]">
+<div class="panel-background">
   <cr-expand-button no-hover
       id="expandButton"
       expanded="{{unsafeExtensionsReviewListExpanded_}}"
@@ -81,7 +81,7 @@
   <cr-collapse class="panel-extensions"
       opened="[[unsafeExtensionsReviewListExpanded_]]"
       hidden$="[[!shouldShowUnsafeExtensions_]]">
-    <template is="dom-repeat" items="[[unsafeExtensions_]]">
+    <template is="dom-repeat" items="[[extensions]]">
       <div class="panel-extension-row cr-row">
         <img class="panel-extension-icon" src="[[item.iconUrl]]"
             role="presentation">

@@ -95,15 +95,14 @@
 <div id="container">
   <managed-footnote hidden="[[filter]]"></managed-footnote>
   <div id="content-wrapper" style="--max-columns: [[maxColumns_]];">
-    <!-- TODO(crbug.com/338528606): Safety Hub Panel adds an empty space when
-         extensions-review-panel can be shown but it's contents are not visible,
-         due to the styling of items-container-->
-    <div class="items-container panel">
-      <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]" restamp>
-        <extensions-review-panel extensions="[[extensions]]" delegate="[[delegate]]">
+    <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]" restamp>
+      <div class="items-container panel">
+        <extensions-review-panel
+            extensions="[[unsafeExtensions_]]"
+            delegate="[[delegate]]">
         </extensions-review-panel>
-      </template>
-    </div>
+      </div>
+    </template>
 
     <template is="dom-if" if="[[showMv2DeprecationPanel_]]" restamp>
       <div class="items-container panel">

@@ -35,8 +35,6 @@ suite('ExtensionsReviewPanel', function() {
         id: 'a'.repeat(32),
         safetyCheckText: {panelString: 'This extension contains malware.'},
       }),
-      createExtensionInfo({name: 'Bravo', id: 'b'.repeat(32)}),
-      createExtensionInfo({name: 'Charlie', id: 'c'.repeat(29)}),
     ];
     element.extensions = extensionItems;
     document.body.appendChild(element);
@@ -109,6 +107,18 @@ suite('ExtensionsReviewPanel', function() {
             ?.querySelector('.extension-representation')
             ?.textContent,
         'Alpha');
+  });
+
+  test('CompletionStateShouldBeShownIfNoExtensions', async function() {
+    const completionTextContainer =
+        element.shadowRoot!.querySelector('.completion-container');
+    assertTrue(!!completionTextContainer);
+    assertFalse(isVisible(completionTextContainer));
+
+    element.set('extensions', []);
+    await flushTasks();
+
+    assertTrue(isVisible(completionTextContainer));
   });
 
   test('CompletionStateShouldBeShownAfterDeletingItems', async function() {
@@ -185,17 +195,9 @@ suite('ExtensionsReviewPanel', function() {
         element.shadowRoot!.querySelector('.completion-container');
     class MockKeepItemDelegate extends MockItemDelegate {
       override setItemSafetyCheckWarningAcknowledged(): void {
-        const extensionItems = [
-          createExtensionInfo({
-            name: 'Alpha',
-            id: 'a'.repeat(32),
-            safetyCheckText: {panelString: 'This extension contains malware.'},
-            acknowledgeSafetyCheckWarning: true,
-          }),
-          createExtensionInfo({name: 'Bravo', id: 'b'.repeat(32)}),
-          createExtensionInfo({name: 'Charlie', id: 'c'.repeat(29)}),
-        ];
-        element.extensions = extensionItems;
+        // Update extensions to be an empty list since the only previous
+        // extension was marked as acknowledged.
+        element.set('extensions', []);
       }
     }
     element.delegate = new MockKeepItemDelegate();
@@ -215,7 +217,6 @@ suite('ExtensionsReviewPanel', function() {
 
     // Click the Keep the Extension button.
     actionMenu.querySelector('button')!.click();
-    await flushTasks();
     await browserProxy.whenCalled('extensionKeptAction');
 
     // The extension row should be removed and the completion state should be

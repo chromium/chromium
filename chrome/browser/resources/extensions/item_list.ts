@@ -61,6 +61,15 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
       },
 
       /**
+       * List of potentially unsafe extensions that should be visible in the
+       * review panel.
+       */
+      unsafeExtensions_: {
+        type: Array,
+        computed: 'computeUnsafeExtensions_(extensions.*)',
+      },
+
+      /**
        * List of extensions that are affected by the mv2 deprecation and should
        * be visible in the mv2 deprecation panel.
        */
@@ -79,10 +88,20 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         value: 0,
       },
 
+      /**
+       * Indicates whether the review panel is shown.
+       */
       showSafetyCheckReviewPanel_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('safetyCheckShowReviewPanel') ||
-            loadTimeData.getBoolean('safetyHubShowReviewPanel'),
+        computed: 'computeShowSafetyCheckReviewPanel_(unsafeExtensions_)',
+      },
+
+      /**
+       * Indicates if the review panel has ever been shown.
+       */
+      reviewPanelShown_: {
+        type: Boolean,
+        value: false,
       },
 
       /*
@@ -109,11 +128,13 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   filter: string;
   private computedFilter_: string;
   private maxColumns_: number;
+  private unsafeExtensions_: chrome.developerPrivate.ExtensionInfo[];
   private mv2DeprecatedExtensions_: chrome.developerPrivate.ExtensionInfo[];
   private shownAppsCount_: number;
   private shownExtensionsCount_: number;
   private showMv2DeprecationPanel_: boolean;
   private showSafetyCheckReviewPanel_: boolean;
+  private reviewPanelShown_: boolean;
   private hasSafetyCheckTriggeringExtension_: boolean;
 
   getDetailsButton(id: string): HTMLElement|null {
@@ -185,10 +206,43 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
     });
   }
 
+  /**
+   * Computes the extensions that are potentially unsafe and should be visible
+   * in the review panel.
+   */
+  private computeUnsafeExtensions_(): chrome.developerPrivate.ExtensionInfo[] {
+    return this.extensions?.filter(
+        extension =>
+            !!(extension.safetyCheckText &&
+               extension.safetyCheckText.panelString &&
+               !extension.acknowledgeSafetyCheckWarning));
+  }
+
+  /**
+   * Returns whether the review deprecation panel should be visible.
+   */
   private computeShowSafetyCheckReviewPanel_(): boolean {
-    return (
-        loadTimeData.getBoolean('safetyCheckShowReviewPanel') ||
-        loadTimeData.getBoolean('safetyHubShowReviewPanel'));
+    // Panel is hidden if neither safety feature is on.
+    if (!loadTimeData.getBoolean('safetyCheckShowReviewPanel') &&
+        !loadTimeData.getBoolean('safetyHubShowReviewPanel')) {
+      return false;
+    }
+
+    // If there are any unsafe extensions, they will be shown in the panel.
+    // Store this, so we can show the completion info in the panel when there
+    // are no unsafe extensions left after the user finished reviewing the
+    // extensions.
+    // Note: Unsafe extensions may not be initialized at construction, thus we
+    // check for their existence.
+    if (this.unsafeExtensions_?.length !== 0) {
+      this.reviewPanelShown_ = true;
+    }
+
+    // Panel is visible if there are any unsafe extensions, or the there are
+    // none left after the user finished reviewing the extensions.
+    // Note: Unsafe extensions may not be initialized at construction, thus we
+    // check for their existence.
+    return this.unsafeExtensions_?.length !== 0 || this.reviewPanelShown_;
   }
 
   private computeHasSafetyCheckTriggeringExtension_(): boolean {
