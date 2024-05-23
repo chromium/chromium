@@ -134,6 +134,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
 
         // TODO(crbug.com/40129299): Set a ManagedPreferenceDelegate?
+        mTpStatus.setBlockAll3PC(mBlockAll3PC);
         mTpSwitch.setVisible(params.thirdPartyCookieBlockingEnabled);
         mTpSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {

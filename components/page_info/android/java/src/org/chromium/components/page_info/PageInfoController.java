@@ -543,6 +543,11 @@ public class PageInfoController
         return mTrackingProtectionController;
     }
 
+    public PageInfoTrackingProtectionLaunchController
+            getTrackingProtectionLaunchControllerForTesting() {
+        return mTrackingProtectionLaunchController;
+    }
+
     public boolean isDialogShowingForTesting() {
         return mDialog != null;
     }

@@ -255,8 +255,13 @@ public class PageInfoViewTest {
     private void enableTrackingProtectionFixedExpiration() {
         PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
         assertNotNull(controller);
-        var tpController = controller.getTrackingProtectionControllerForTesting();
-        tpController.setFixedExceptionExpirationForTesting(true);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH)) {
+            var tpController = controller.getTrackingProtectionLaunchControllerForTesting();
+            tpController.setFixedExceptionExpirationForTesting(true);
+        } else {
+            var tpController = controller.getTrackingProtectionControllerForTesting();
+            tpController.setFixedExceptionExpirationForTesting(true);
+        }
     }
 
     private void setThirdPartyCookieBlocking(@CookieControlsMode int value) {
@@ -275,11 +280,11 @@ public class PageInfoViewTest {
                 });
     }
 
-    private void blockAll3PC() {
+    private void setBlockAll3PC(boolean value) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                            .setBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED, true);
+                            .setBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED, value);
                 });
     }
 
@@ -701,6 +706,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     public void testShowCookiesSubpageTrackingProtection() throws IOException {
         enableTrackingProtection();
+        setBlockAll3PC(false);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTrackingProtectionFixedExpiration();
@@ -723,13 +729,42 @@ public class PageInfoViewTest {
         mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Toggle_On");
     }
 
+    /** Tests the cookies page of the PageInfo UI with the 100% Tracking Protection UI enabled. */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH)
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageTrackingProtectionLaunch() throws IOException {
+        setBlockAll3PC(false);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration();
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(containsString("Chrome limits most sites from using")),
+                        isDisplayed()));
+        // Verify that the pref was recorded successfully.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                    .getBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED));
+                });
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
+        onView(withText(containsString("You have extra protections"))).perform(click());
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Toggle_On");
+    }
+
     /** Tests the cookies page of the PageInfo UI with the Tracking Protection UI enabled. */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowCookiesSubpageTrackingProtectionBlockAll() throws IOException {
         enableTrackingProtection();
-        blockAll3PC();
+        setBlockAll3PC(true);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTrackingProtectionFixedExpiration();
@@ -750,6 +785,35 @@ public class PageInfoViewTest {
         onView(withText(containsString("Third-party cookies"))).perform(click());
         mRenderTestRule.render(
                 getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Block_All_Toggle_On");
+    }
+
+    /** Tests the cookies page of the PageInfo UI with the 100% Tracking Protection UI enabled. */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH)
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageTrackingProtectionLaunchBlockAll() throws IOException {
+        setBlockAll3PC(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration();
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(
+                allOf(withText(containsString("You blocked sites from using")), isDisplayed()));
+        // Verify that the pref was recorded successfully.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                    .getBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED));
+                });
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Block_All_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
+        onView(withText(containsString("You have extra protections"))).perform(click());
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Block_All_Toggle_On");
     }
 
     /** Tests the history page of the PageInfo UI. */

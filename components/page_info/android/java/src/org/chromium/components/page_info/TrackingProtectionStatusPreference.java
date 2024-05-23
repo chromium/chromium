@@ -18,11 +18,13 @@ public class TrackingProtectionStatusPreference extends Preference {
     private TextView mIpStatus;
     private TextView mFingerprintStatus;
 
+    private boolean mBlockAll3PC;
     private boolean mStatus;
 
     /** Creates a new object and sets the widget layout. */
     public TrackingProtectionStatusPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mBlockAll3PC = false;
         mStatus = true;
         setLayoutResource(R.layout.tracking_protection_status);
     }
@@ -35,6 +37,10 @@ public class TrackingProtectionStatusPreference extends Preference {
         mIpStatus = (TextView) holder.findViewById(R.id.ip_status);
         mFingerprintStatus = (TextView) holder.findViewById(R.id.fingerprint_status);
         setTrackingProtectionStatus(mStatus);
+    }
+
+    public void setBlockAll3PC(boolean block) {
+        mBlockAll3PC = block;
     }
 
     public void setTrackingProtectionStatus(boolean enabled) {
@@ -52,11 +58,16 @@ public class TrackingProtectionStatusPreference extends Preference {
                         getContext(),
                         enabled ? R.drawable.tp_fingerprint_off : R.drawable.tp_fingerprint);
 
-        // TODO(b/330745124): Show a distinction between 3PC being blocked and limited.
-        mCookieStatus.setText(
-                enabled
-                        ? R.string.page_info_tracking_protection_site_info_button_label_limited
-                        : R.string.page_info_tracking_protection_site_info_button_label_allowed);
+        if (enabled) {
+            mCookieStatus.setText(
+                    mBlockAll3PC
+                            ? R.string.page_info_tracking_protection_site_info_button_label_blocked
+                            : R.string
+                                    .page_info_tracking_protection_site_info_button_label_limited);
+        } else {
+            mCookieStatus.setText(
+                    R.string.page_info_tracking_protection_site_info_button_label_allowed);
+        }
         mCookieStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(cookieIcon, null, null, null);
         mIpStatus.setText(
                 enabled
