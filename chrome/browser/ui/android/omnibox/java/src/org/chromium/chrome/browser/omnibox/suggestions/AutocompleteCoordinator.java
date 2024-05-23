@@ -460,10 +460,15 @@ public class AutocompleteCoordinator
      * @param profile The profile to expand the query for.
      * @param query The query to be expanded into a fully qualified URL if appropriate.
      * @return The AutocompleteMatch for a default / top match. This may be either SEARCH match
-     *     built with the user's default search engine, or a NAVIGATION match.
+     *     built with the user's default search engine, or a NAVIGATION match. The call might return
+     *     null if it is invoked before Native libraries are initialized, or if the Profile is
+     *     invalid.
      */
-    public static AutocompleteMatch classify(@NonNull Profile profile, @NonNull String query) {
-        return AutocompleteController.getForProfile(profile).classify(query);
+    public static @Nullable AutocompleteMatch classify(
+            @NonNull Profile profile, @NonNull String query) {
+        return AutocompleteController.getForProfile(profile)
+                .map(a -> a.classify(query))
+                .orElse(null);
     }
 
     /** Sends a zero suggest request to the server in order to pre-populate the result cache. */

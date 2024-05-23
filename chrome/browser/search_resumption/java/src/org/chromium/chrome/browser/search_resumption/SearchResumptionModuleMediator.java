@@ -191,14 +191,18 @@ public class SearchResumptionModuleMediator
     /** Starts the querying the search suggestions based on the Tab to track. */
     private void start(Profile profile) {
         if (!mUseNewServiceEnabled) {
-            mAutoComplete = AutocompleteController.getForProfile(profile);
-            mAutoComplete.addOnSuggestionsReceivedListener(this);
-            int pageClassification = getPageClassification();
-            mAutoComplete.startZeroSuggest(
-                    "",
-                    mTabToTrackSuggestion.getUrl(),
-                    pageClassification,
-                    mTabToTrackSuggestion.getTitle());
+            AutocompleteController.getForProfile(profile)
+                    .ifPresent(
+                            controller -> {
+                                mAutoComplete = controller;
+                                mAutoComplete.addOnSuggestionsReceivedListener(this);
+                                int pageClassification = getPageClassification();
+                                mAutoComplete.startZeroSuggest(
+                                        "",
+                                        mTabToTrackSuggestion.getUrl(),
+                                        pageClassification,
+                                        mTabToTrackSuggestion.getTitle());
+                            });
         } else {
             mSearchResumptionModuleBridge = new SearchResumptionModuleBridge(profile);
             mSearchResumptionModuleBridge.fetchSuggestions(

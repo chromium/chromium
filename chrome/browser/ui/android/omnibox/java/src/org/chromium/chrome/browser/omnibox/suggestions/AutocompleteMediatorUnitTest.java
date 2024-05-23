@@ -1397,9 +1397,9 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
-    public void onTextChanged_cachedZpsNotInvokedWithNativeReady() {
+    public void onTextChanged_cachedZpsNotInvokedWithAutocompleteControllerReady() {
         doReturn(mAutocompleteResult).when(ShadowCachedSuggestionsManager.mock).readFromCache();
-        mMediator.onNativeInitialized();
+        mMediator.setAutocompleteProfile(mProfile);
 
         for (var pageClass : PageClassification.values()) {
             setUpLocationBarDataProvider(PAGE_URL, PAGE_TITLE, pageClass.getNumber());

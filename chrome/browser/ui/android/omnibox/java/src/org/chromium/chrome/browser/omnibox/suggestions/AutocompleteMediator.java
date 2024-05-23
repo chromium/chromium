@@ -101,6 +101,7 @@ class AutocompleteMediator
     private final @NonNull ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final @NonNull SuggestionsListAnimationDriver mAnimationDriver;
 
+    private @NonNull Optional<AutocompleteController> mAutocomplete = Optional.empty();
     private @NonNull Optional<AutocompleteResult> mAutocompleteResult = Optional.empty();
     private @NonNull Optional<Runnable> mCurrentAutocompleteRequest = Optional.empty();
     private @NonNull Optional<Runnable> mDeferredLoadAction = Optional.empty();
@@ -108,7 +109,6 @@ class AutocompleteMediator
 
     private boolean mNativeInitialized;
     private boolean mIsInZeroPrefixContext;
-    private AutocompleteController mAutocomplete;
     private long mUrlFocusTime;
     // When set, indicates an active omnibox session.
     private boolean mIsActive;
@@ -252,10 +252,9 @@ class AutocompleteMediator
     }
 
     public void destroy() {
-        if (mAutocomplete != null) {
-            stopAutocomplete(false);
-            mAutocomplete.removeOnSuggestionsReceivedListener(this);
-        }
+        stopAutocomplete(false);
+        mAutocomplete.ifPresent(a -> a.removeOnSuggestionsReceivedListener(this));
+
         if (mNativeInitialized) {
             OmniboxActionFactoryImpl.get().destroyNativeFactory();
         }
@@ -349,7 +348,7 @@ class AutocompleteMediator
 
     private void maybeServeCachedResult() {
         int pageClass = mDataProvider.getPageClassification(false, false);
-        if (mNativeInitialized
+        if (mAutocomplete.isPresent()
                 || !mIsInZeroPrefixContext
                 || (pageClass != PageClassification.ANDROID_SEARCH_WIDGET_VALUE
                         && pageClass != PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE)) {
@@ -455,14 +454,11 @@ class AutocompleteMediator
      * @param profile The profile to be used.
      */
     void setAutocompleteProfile(Profile profile) {
-        if (mAutocomplete != null) {
-            stopAutocomplete(true);
-            mAutocomplete.removeOnSuggestionsReceivedListener(this);
-        }
+        stopAutocomplete(true);
+        mAutocomplete.ifPresent(a -> a.removeOnSuggestionsReceivedListener(this));
         mAutocomplete = AutocompleteController.getForProfile(profile);
-        mAutocomplete.addOnSuggestionsReceivedListener(this);
+        mAutocomplete.ifPresent(a -> a.addOnSuggestionsReceivedListener(this));
         mDropdownViewInfoListBuilder.setProfile(profile);
-
         runPendingAutocompleteRequests();
     }
 
@@ -475,8 +471,7 @@ class AutocompleteMediator
      * @see AutocompleteController#onVoiceResults(List)
      */
     void onVoiceResults(@Nullable List<VoiceRecognitionHandler.VoiceResult> results) {
-        if (!mNativeInitialized || mAutocomplete == null) return;
-        mAutocomplete.onVoiceResults(results);
+        mAutocomplete.ifPresent(a -> a.onVoiceResults(results));
     }
 
     /**
@@ -498,21 +493,18 @@ class AutocompleteMediator
     @Override
     public void onSuggestionClicked(
             @NonNull AutocompleteMatch suggestion, int matchIndex, @NonNull GURL url) {
-        if (!mNativeInitialized || mAutocomplete == null) {
-            mDeferredLoadAction =
-                    Optional.of(
-                            () ->
-                                    loadUrlForOmniboxMatch(
-                                            matchIndex,
-                                            suggestion,
-                                            url,
-                                            mLastActionUpTimestamp,
-                                            /* openInNewTab= */ false));
-            return;
-        }
+        mDeferredLoadAction =
+                Optional.of(
+                        () ->
+                                loadUrlForOmniboxMatch(
+                                        matchIndex,
+                                        suggestion,
+                                        url,
+                                        mLastActionUpTimestamp,
+                                        /* openInNewTab= */ false));
 
-        loadUrlForOmniboxMatch(
-                matchIndex, suggestion, url, mLastActionUpTimestamp, /* openInNewTab= */ false);
+        // Note: Action will be reset when load is initiated.
+        mAutocomplete.ifPresent(a -> mDeferredLoadAction.get().run());
     }
 
     /**
@@ -523,8 +515,7 @@ class AutocompleteMediator
      */
     @Override
     public void onSuggestionTouchDown(@NonNull AutocompleteMatch suggestion, int matchIndex) {
-        if (!mNativeInitialized
-                || mAutocomplete == null
+        if (mAutocomplete.isEmpty()
                 || mNumTouchDownEventForwardedInOmniboxSession
                         >= OmniboxFeatures.getMaxPrefetchesPerOmniboxSession()) {
             return;
@@ -534,7 +525,9 @@ class AutocompleteMediator
         var tab = mDataProvider.getTab();
         WebContents webContents = tab != null ? tab.getWebContents() : null;
         boolean wasPrefetchStarted =
-                mAutocomplete.onSuggestionTouchDown(suggestion, matchIndex, webContents);
+                mAutocomplete
+                        .map(a -> a.onSuggestionTouchDown(suggestion, matchIndex, webContents))
+                        .orElse(false);
         if (wasPrefetchStarted) {
             mNumPrefetchesStartedInOmniboxSession++;
             mLastPrefetchStartedSuggestion = Optional.of(suggestion);
@@ -586,7 +579,7 @@ class AutocompleteMediator
 
     @VisibleForTesting
     public boolean maybeSwitchToTab(AutocompleteMatch match) {
-        Tab tab = mAutocomplete.getMatchingTabForSuggestion(match);
+        Tab tab = mAutocomplete.map(a -> a.getMatchingTabForSuggestion(match)).orElse(null);
         if (tab == null || !mTabWindowManagerSupplier.hasValue()) return false;
 
         // When invoked directly from a browser, we want to trigger switch to tab animation.
@@ -625,7 +618,10 @@ class AutocompleteMediator
      */
     @Override
     public void onDeleteMatch(@NonNull AutocompleteMatch suggestion, @NonNull String titleText) {
-        showDeleteDialog(suggestion, titleText, () -> mAutocomplete.deleteMatch(suggestion));
+        showDeleteDialog(
+                suggestion,
+                titleText,
+                () -> mAutocomplete.ifPresent(a -> a.deleteMatch(suggestion)));
     }
 
     /**
@@ -641,7 +637,7 @@ class AutocompleteMediator
         showDeleteDialog(
                 suggestion,
                 titleText,
-                () -> mAutocomplete.deleteMatchElement(suggestion, elementIndex));
+                () -> mAutocomplete.ifPresent(a -> a.deleteMatchElement(suggestion, elementIndex)));
     }
 
     /** Terminate the interaction with the Omnibox. */
@@ -758,7 +754,7 @@ class AutocompleteMediator
      */
     private @NonNull GURL updateSuggestionUrlIfNeeded(
             @NonNull AutocompleteMatch suggestion, int matchIndex, @NonNull GURL url) {
-        if (!mNativeInitialized || mAutocomplete == null) return url;
+        if (mAutocomplete.isEmpty()) return url;
         // TODO(crbug.com/40279214): this should exclude TILE variants when horizontal render group
         // is
         // ready.
@@ -766,11 +762,12 @@ class AutocompleteMediator
             return url;
         }
 
-        GURL updatedUrl =
-                mAutocomplete.updateMatchDestinationUrlWithQueryFormulationTime(
-                        suggestion, getElapsedTimeSinceInputChange());
-
-        return updatedUrl == null ? url : updatedUrl;
+        return mAutocomplete
+                .map(
+                        a ->
+                                a.updateMatchDestinationUrlWithQueryFormulationTime(
+                                        suggestion, getElapsedTimeSinceInputChange()))
+                .orElse(url);
     }
 
     /**
@@ -783,10 +780,8 @@ class AutocompleteMediator
         mIgnoreOmniboxItemSelection = true;
         cancelAutocompleteRequests();
 
-        if (mEditSessionState == EditSessionState.INACTIVE
-                && mNativeInitialized
-                && mAutocomplete != null) {
-            mAutocomplete.resetSession();
+        if (mEditSessionState == EditSessionState.INACTIVE) {
+            mAutocomplete.ifPresent(a -> a.resetSession());
             mNewOmniboxEditSessionTimestamp = SystemClock.elapsedRealtime();
             mEditSessionState = EditSessionState.ACTIVATED_BY_USER_INPUT;
         }
@@ -815,12 +810,14 @@ class AutocompleteMediator
                 postAutocompleteRequest(
                         () -> {
                             startMeasuringSuggestionRequestToUiModelTime();
-                            mAutocomplete.start(
-                                    currentUrl,
-                                    pageClassification,
-                                    textWithoutAutocomplete,
-                                    cursorPosition,
-                                    preventAutocomplete);
+                            mAutocomplete.ifPresent(
+                                    a ->
+                                            a.start(
+                                                    currentUrl,
+                                                    pageClassification,
+                                                    textWithoutAutocomplete,
+                                                    cursorPosition,
+                                                    preventAutocomplete));
                         },
                         OMNIBOX_SUGGESTION_START_DELAY_MS);
             }
@@ -865,7 +862,7 @@ class AutocompleteMediator
     void loadTypedOmniboxText(long eventTime, boolean openInNewTab) {
         final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
         cancelAutocompleteRequests();
-        if (mNativeInitialized && mAutocomplete != null) {
+        if (mAutocomplete.isPresent()) {
             findMatchAndLoadUrl(urlText, eventTime, openInNewTab);
         } else {
             mDeferredLoadAction =
@@ -895,8 +892,7 @@ class AutocompleteMediator
             // user tapped the URL bar to dismiss the suggestions, then pressed enter. This can
             // also happen if the user presses enter before any suggestions have been received
             // from the autocomplete controller.
-            if (!mNativeInitialized || mAutocomplete == null) return;
-            suggestionMatch = mAutocomplete.classify(urlText);
+            suggestionMatch = mAutocomplete.map(a -> a.classify(urlText)).orElse(null);
             // If urlText couldn't be classified, bail.
             if (suggestionMatch == null) return;
         }
@@ -969,8 +965,11 @@ class AutocompleteMediator
                         @Override
                         public void onLoadUrl(LoadUrlParams params, LoadUrlResult loadUrlResult) {
                             if (loadUrlResult.navigationHandle != null) {
-                                mAutocomplete.createNavigationObserver(
-                                        loadUrlResult.navigationHandle, suggestion);
+                                mAutocomplete.ifPresent(
+                                        a ->
+                                                a.createNavigationObserver(
+                                                        loadUrlResult.navigationHandle,
+                                                        suggestion));
                             }
                         }
                     };
@@ -1002,9 +1001,12 @@ class AutocompleteMediator
                 mDataProvider.getPageClassification(
                         /* isFocusedFromFakebox= */ false, /* isPrefetch= */ true);
         postAutocompleteRequest(
-                () -> {
-                    mAutocomplete.startPrefetch(mDataProvider.getCurrentGurl(), pageClassification);
-                },
+                () ->
+                        mAutocomplete.ifPresent(
+                                a ->
+                                        a.startPrefetch(
+                                                mDataProvider.getCurrentGurl(),
+                                                pageClassification)),
                 SCHEDULE_FOR_IMMEDIATE_EXECUTION);
     }
 
@@ -1019,19 +1021,19 @@ class AutocompleteMediator
         mEditSessionState = EditSessionState.INACTIVE;
         mNewOmniboxEditSessionTimestamp = -1;
         startMeasuringSuggestionRequestToUiModelTime();
-        assert mNativeInitialized
-                : "startZeroSuggest should be scheduled using postAutocompleteRequest";
 
         if (mDelegate.isUrlBarFocused()
                 && (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox())) {
             int pageClassification =
                     mDataProvider.getPageClassification(
                             mDelegate.didFocusUrlFromFakebox(), /* isPrefetch= */ false);
-            mAutocomplete.startZeroSuggest(
-                    mUrlBarEditingTextProvider.getTextWithAutocomplete(),
-                    mDataProvider.getCurrentGurl(),
-                    pageClassification,
-                    mDataProvider.getTitle());
+            mAutocomplete.ifPresent(
+                    a ->
+                            a.startZeroSuggest(
+                                    mUrlBarEditingTextProvider.getTextWithAutocomplete(),
+                                    mDataProvider.getCurrentGurl(),
+                                    pageClassification,
+                                    mDataProvider.getTitle()));
         }
     }
 
@@ -1064,7 +1066,6 @@ class AutocompleteMediator
      */
     @VisibleForTesting
     void clearSuggestions() {
-        if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(true);
         dismissDeleteDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
@@ -1080,22 +1081,24 @@ class AutocompleteMediator
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void stopAutocomplete(boolean clear) {
-        if (mNativeInitialized && mAutocomplete != null) mAutocomplete.stop(clear);
+        mAutocomplete.ifPresent(a -> a.stop(clear));
         cancelAutocompleteRequests();
     }
 
     /** Trigger autocomplete for the given query. */
     void startAutocompleteForQuery(@NonNull String query) {
-        if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(false);
         if (mDataProvider.hasTab()) {
-            mAutocomplete.start(
-                    mDataProvider.getCurrentGurl(),
-                    mDataProvider.getPageClassification(
-                            /* isFocusedFromFakebox= */ false, /* isPrefetch= */ false),
-                    query,
-                    -1,
-                    false);
+            mAutocomplete.ifPresent(
+                    a ->
+                            a.start(
+                                    mDataProvider.getCurrentGurl(),
+                                    mDataProvider.getPageClassification(
+                                            /* isFocusedFromFakebox= */ false,
+                                            /* isPrefetch= */ false),
+                                    query,
+                                    -1,
+                                    false));
         }
     }
 
@@ -1111,12 +1114,11 @@ class AutocompleteMediator
         // addresses cases where hardware keyboard is attached to a device, or where user explicitly
         // called the keyboard back after we hid it.
         if (mDelegate.isKeyboardActive()) {
-            if (!mNativeInitialized || mAutocomplete == null) return;
-
             int suggestionHeight =
                     mContext.getResources()
                             .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
-            mAutocomplete.onSuggestionDropdownHeightChanged(newHeight, suggestionHeight);
+            mAutocomplete.ifPresent(
+                    a -> a.onSuggestionDropdownHeightChanged(newHeight, suggestionHeight));
         }
     }
 
@@ -1160,15 +1162,17 @@ class AutocompleteMediator
         var tab = mDataProvider.getTab();
         WebContents webContents = tab != null ? tab.getWebContents() : null;
 
-        mAutocomplete.onSuggestionSelected(
-                match,
-                suggestionLine,
-                disposition,
-                currentPageUrl,
-                pageClassification,
-                elapsedTimeSinceModified,
-                autocompleteLength,
-                webContents);
+        mAutocomplete.ifPresent(
+                a ->
+                        a.onSuggestionSelected(
+                                match,
+                                suggestionLine,
+                                disposition,
+                                currentPageUrl,
+                                pageClassification,
+                                elapsedTimeSinceModified,
+                                autocompleteLength,
+                                webContents));
     }
 
     @Override
@@ -1224,13 +1228,12 @@ class AutocompleteMediator
 
         // In the event we got Native Ready signal but no Profile yet (or the other way around),
         // delay execution of the Autocomplete request.
-        if (!mNativeInitialized || mAutocomplete == null) return;
+        if (!mNativeInitialized || mAutocomplete.isEmpty()) return;
         mCurrentAutocompleteRequest.ifPresent(
                 request -> {
                     if (delayMillis == SCHEDULE_FOR_IMMEDIATE_EXECUTION) {
                         // TODO(crbug.com/40167699): Replace the following with postAtFrontOfQueue()
-                        // and
-                        // correct any tests that expect data instantly.
+                        // and correct any tests that expect data instantly.
                         request.run();
                     } else {
                         mHandler.postDelayed(request, delayMillis);
@@ -1247,7 +1250,7 @@ class AutocompleteMediator
 
     /** Execute any pending Autocomplete requests, if the Autocomplete subsystem is ready. */
     private void runPendingAutocompleteRequests() {
-        if (!mNativeInitialized || mAutocomplete == null) return;
+        if (!mNativeInitialized || mAutocomplete.isEmpty()) return;
 
         mDeferredLoadAction
                 // If deferred load action is present, cancel all autocomplete and load the URL.

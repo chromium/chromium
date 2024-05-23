@@ -133,7 +133,6 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
     : profile_{profile},
       java_controller_{Java_AutocompleteController_Constructor(
           AttachCurrentThread(),
-          profile->GetJavaObject(),
           reinterpret_cast<intptr_t>(this))},
       autocomplete_controller_{std::make_unique<AutocompleteController>(
           std::move(client),

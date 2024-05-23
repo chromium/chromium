@@ -68,12 +68,11 @@ public class AutocompleteController {
     /**
      * Acquire an instance of AutocompleteController associated with the supplied Profile.
      *
-     * @param profile The profile to get the AutocompleteController for.
      * @return An existing (if one is available) or new (otherwise) instance of the
      *     AutocompleteController associated with the supplied profile.
      */
     @CalledByNative
-    private AutocompleteController(@NonNull Profile profile, long nativeController) {
+    private AutocompleteController(long nativeController) {
         mNativeController = nativeController;
     }
 
@@ -409,10 +408,9 @@ public class AutocompleteController {
      * @return An existing (if one is available) or new (otherwise) instance of the
      *     AutocompleteController associated with the supplied profile.
      */
-    public static AutocompleteController getForProfile(Profile profile) {
-        assert profile != null : "AutocompleteController cannot be created for null profile";
-        if (profile == null) return null;
-        return AutocompleteControllerJni.get().getForProfile(profile);
+    public static Optional<AutocompleteController> getForProfile(Profile profile) {
+        return Optional.ofNullable(
+                profile == null ? null : AutocompleteControllerJni.get().getForProfile(profile));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
