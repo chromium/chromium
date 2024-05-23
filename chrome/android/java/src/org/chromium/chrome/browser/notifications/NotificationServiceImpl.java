@@ -16,6 +16,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -147,8 +148,16 @@ public class NotificationServiceImpl extends NotificationService.Impl {
     }
 
     /**
-     * Called when a Notification has been interacted with by the user. If we can verify that
-     * the Intent has a notification Id, start Chrome (if needed) on the UI thread.
+     * Whether to use a service-type intent for handling the given `action` and synchronously handle
+     * native startup for minimum latency.
+     */
+    public static boolean shouldUseServiceIntentWithSyncStartupForAction(String action) {
+        return NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(action);
+    }
+
+    /**
+     * Called when a Notification has been interacted with by the user. If we can verify that the
+     * Intent has a notification Id, start Chrome (if needed) on the UI thread.
      *
      * @param intent The intent containing the specific information.
      */
@@ -156,6 +165,12 @@ public class NotificationServiceImpl extends NotificationService.Impl {
     public void onHandleIntent(final Intent intent) {
         if (!intent.hasExtra(NotificationConstants.EXTRA_NOTIFICATION_ID)
                 || !intent.hasExtra(NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN)) {
+            return;
+        }
+
+        if (shouldUseServiceIntentWithSyncStartupForAction(intent.getAction())) {
+            Receiver receiver = new Receiver();
+            receiver.onReceive(ContextUtils.getApplicationContext(), intent);
             return;
         }
 
@@ -219,7 +234,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
         // TODO(crbug.com/324827395): A blocking start-up ensures that `onStartJob` does not return
         // `false` and does not release the wake lock prematurely. Clean this up once we have
         // confirmation in telemetry that this solution is effective.
-        boolean isAsync = !NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction());
+        boolean isAsync = !shouldUseServiceIntentWithSyncStartupForAction(intent.getAction());
         ChromeBrowserInitializer.getInstance().handlePostNativeStartup(isAsync, parts);
     }
 }

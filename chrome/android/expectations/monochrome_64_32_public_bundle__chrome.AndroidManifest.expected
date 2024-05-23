@@ -957,6 +957,10 @@
         <action android:name="android.intent.action.MEDIA_BUTTON"/>
       </intent-filter>  # DIFF-ANCHOR: f401157d
     </service>  # DIFF-ANCHOR: 1260bca4
+    <service  # DIFF-ANCHOR: 4b2c1adc
+        android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$Service"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: 4b2c1adc
     <service  # DIFF-ANCHOR: 4b2220c4
         android:name="org.chromium.chrome.browser.notifications.NotificationJobService"
         android:exported="false"

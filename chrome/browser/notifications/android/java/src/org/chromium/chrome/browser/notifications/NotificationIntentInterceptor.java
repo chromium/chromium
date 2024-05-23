@@ -19,6 +19,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
@@ -73,6 +75,23 @@ public class NotificationIntentInterceptor {
         @Override
         public void onReceive(Context context, Intent intent) {
             processIntent(context, intent);
+        }
+    }
+
+    public static final class Service extends SplitCompatIntentService {
+        private static @IdentifierNameString String sImplClassName =
+                "org.chromium.chrome.browser.notifications."
+                        + "NotificationIntentInterceptor$Service$Impl";
+
+        public static final class Impl extends SplitCompatIntentService.Impl {
+            @Override
+            protected void onHandleIntent(Intent intent) {
+                processIntent(ContextUtils.getApplicationContext(), intent);
+            }
+        }
+
+        public Service() {
+            super(sImplClassName, TAG);
         }
     }
 
@@ -148,6 +167,7 @@ public class NotificationIntentInterceptor {
 
         // The delete intent needs to be handled by broadcast receiver from Q due to background
         // activity start restriction.
+        boolean shouldUseService = actionType == NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE;
         boolean shouldUseBroadcast =
                 intentType == NotificationIntentInterceptor.IntentType.DELETE_INTENT
                         || actionType == NotificationUmaTracker.ActionType.UNDO_UNSUBSCRIBE
@@ -156,10 +176,14 @@ public class NotificationIntentInterceptor {
                         || actionType
                                 == NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT;
         Context applicationContext = ContextUtils.getApplicationContext();
-        Intent intent =
-                shouldUseBroadcast
-                        ? new Intent(applicationContext, Receiver.class)
-                        : new Intent(applicationContext, TrampolineActivity.class);
+        Intent intent = null;
+        if (shouldUseService) {
+            intent = new Intent(applicationContext, Service.class);
+        } else if (shouldUseBroadcast) {
+            intent = new Intent(applicationContext, Receiver.class);
+        } else {
+            intent = new Intent(applicationContext, TrampolineActivity.class);
+        }
 
         intent.setAction(INTENT_ACTION);
         intent.putExtra(EXTRA_PENDING_INTENT, pendingIntent);
@@ -184,6 +208,10 @@ public class NotificationIntentInterceptor {
         int originalRequestCode =
                 pendingIntentProvider != null ? pendingIntentProvider.getRequestCode() : 0;
         int requestCode = computeHashCode(metadata, intentType, actionType, originalRequestCode);
+
+        if (shouldUseService) {
+            return PendingIntent.getService(applicationContext, requestCode, intent, flags);
+        }
 
         return shouldUseBroadcast
                 ? PendingIntent.getBroadcast(applicationContext, requestCode, intent, flags)

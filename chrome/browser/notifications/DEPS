@@ -1,4 +1,5 @@
 include_rules = [
+  "+chrome/android/java/src/org/chromium/chrome/browser/base",
   "+chrome/services/mac_notifications",
   "+chrome/services/mac_notifications/public",
   "+dbus",

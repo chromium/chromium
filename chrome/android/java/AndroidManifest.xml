@@ -1092,6 +1092,9 @@ by a child template that "extends" this file.
         <receiver android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver"
             android:exported="false"/>
 
+        <service android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$Service"
+            android:exported="false"/>
+
         <receiver android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$Receiver"
             android:exported="false"/>
 

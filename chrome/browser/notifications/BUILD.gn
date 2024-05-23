@@ -67,6 +67,8 @@ if (is_android) {
     deps = [
       ":java_resources",
       "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/android:base_module_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
