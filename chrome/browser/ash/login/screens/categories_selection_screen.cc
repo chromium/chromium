@@ -105,6 +105,7 @@ void CategoriesSelectionScreen::OnResponseReceived(
     AppsFetchingResult result) {
   if (result != AppsFetchingResult::kSuccess) {
     exit_callback_.Run(Result::kError);
+    return;
   }
 
   base::Value::List categories_list;
