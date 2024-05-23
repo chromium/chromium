@@ -706,4 +706,64 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksCompletedHistogram) {
       focus_mode_histogram_names::kTasksCompletedHistogramName, 1);
 }
 
+TEST_F(FocusModeControllerMultiUserTest, CheckSessionDurationHistogram) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  controller->SetInactiveSessionDuration(kShortDuration);
+
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  const auto& current_session = controller->current_session();
+  EXPECT_TRUE(current_session.has_value());
+
+  AdvanceClock(base::Minutes(2));
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kSessionDurationHistogramName, /*sample=*/2,
+      /*expected_count=*/1);
+}
+
+TEST_F(FocusModeControllerMultiUserTest,
+       CheckEndingMomentBubbleActionHistogram) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  controller->SetInactiveSessionDuration(kShortDuration);
+
+  // 1. Bubble was never opened.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  AdvanceClock(kShortDuration);
+  EXPECT_TRUE(controller->in_ending_moment());
+
+  // After the ending moment expires, the histogram will record 100%.
+  AdvanceClock(focus_mode_util::kEndingMomentDuration);
+  EXPECT_FALSE(controller->in_ending_moment());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kEndingMomentBubbleActionHistogram,
+      /*sample=*/
+      focus_mode_histogram_names::EndingMomentBubbleClosedReason::kIgnored,
+      /*expected_count=*/1);
+
+  // 2. Bubble was opened and minutes were added to the session
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  AdvanceClock(kShortDuration);
+  EXPECT_TRUE(controller->in_ending_moment());
+
+  // Extend the session during the ending moment.
+  controller->ExtendSessionDuration();
+  EXPECT_FALSE(controller->in_ending_moment());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kEndingMomentBubbleActionHistogram,
+      /*sample=*/
+      focus_mode_histogram_names::EndingMomentBubbleClosedReason::kExtended,
+      /*expected_count=*/1);
+}
+
 }  // namespace ash

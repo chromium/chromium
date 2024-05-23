@@ -24,6 +24,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -370,6 +371,8 @@ TEST_F(FocusModeTrayTest, EndingMoment) {
 // Tests that if the tray bubble is open during the ending moment, that the
 // bubble will persist until user action terminates it.
 TEST_F(FocusModeTrayTest, EndingMomentPersists) {
+  base::HistogramTester histogram_tester;
+
   // Start a focus session.
   FocusModeController* controller = FocusModeController::Get();
   controller->ToggleFocusMode();
@@ -397,6 +400,13 @@ TEST_F(FocusModeTrayTest, EndingMomentPersists) {
   EXPECT_FALSE(focus_mode_tray_->is_active());
   EXPECT_FALSE(focus_mode_tray_->GetVisible());
   EXPECT_FALSE(controller->in_ending_moment());
+
+  // Verify the histogram.
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kEndingMomentBubbleActionHistogram,
+      /*sample=*/
+      focus_mode_histogram_names::EndingMomentBubbleClosedReason::kOpended,
+      /*expected_count=*/1);
 }
 
 // Verifies that the tray contents are updated between an in-session state and

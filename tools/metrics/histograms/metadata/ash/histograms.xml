@@ -3751,6 +3751,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.FocusMode.EndingMomentBubbleAction"
+    enum="FocusModeEndingMomentBubbleClosedReason" expires_after="2025-05-01">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>nupurjain@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>Record the reason for the ending moment bubble closed.</summary>
+</histogram>
+
 <histogram name="Ash.FocusMode.PercentOfSessionCompleted.{SessionDurationType}"
     units="%" expires_after="2025-05-01">
   <owner>nupurjain@google.com</owner>
@@ -3769,6 +3778,17 @@ chromium-metrics-reviews@google.com.
     <variant name="Medium"/>
     <variant name="Short"/>
   </token>
+</histogram>
+
+<histogram name="Ash.FocusMode.SessionDuration" units="minutes"
+    expires_after="2025-05-01">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>nupurjain@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Record the time in minutes since the session started when the session ends.
+  </summary>
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.HasSelectedTask" enum="Boolean"

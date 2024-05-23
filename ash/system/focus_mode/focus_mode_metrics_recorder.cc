@@ -121,6 +121,15 @@ void RecordPercentCompletedHistogram(double progress,
       /*percent=*/(progress * 100));
 }
 
+void RecordSessionDurationHistogram(const int time_elapsed) {
+  base::UmaHistogramCustomCounts(
+      /*name=*/focus_mode_histogram_names::kSessionDurationHistogramName,
+      /*sample=*/time_elapsed,
+      /*min=*/0,
+      /*exclusive_max=*/focus_mode_util::kMaximumDuration.InMinutes(),
+      /*buckets=*/50);
+}
+
 }  // namespace
 
 FocusModeMetricsRecorder::FocusModeMetricsRecorder(
@@ -173,6 +182,14 @@ void FocusModeMetricsRecorder::RecordHistogramsOnEnd() {
       session_snapshot.session_duration.InMinutes());
   RecordPercentCompletedHistogram(
       session_snapshot.progress, session_snapshot.session_duration.InMinutes());
+  RecordSessionDurationHistogram(session_snapshot.time_elapsed.InMinutes());
+}
+
+void FocusModeMetricsRecorder::RecordHistogramOnEndingMoment(
+    focus_mode_histogram_names::EndingMomentBubbleClosedReason reason) {
+  base::UmaHistogramEnumeration(
+      /*name=*/focus_mode_histogram_names::kEndingMomentBubbleActionHistogram,
+      /*sample=*/reason);
 }
 
 }  // namespace ash

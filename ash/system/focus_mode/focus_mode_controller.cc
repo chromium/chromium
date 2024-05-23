@@ -216,6 +216,9 @@ void FocusModeController::ExtendSessionDuration() {
 
   std::string message;
   if (was_in_ending_moment) {
+    focus_mode_metrics_recorder_->RecordHistogramOnEndingMoment(
+        focus_mode_histogram_names::EndingMomentBubbleClosedReason::kExtended);
+
     message = l10n_util::GetStringUTF8(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ALERT);
   } else {
@@ -250,6 +253,15 @@ void FocusModeController::ExtendSessionDuration() {
 void FocusModeController::ResetFocusSession() {
   if (focus_mode_metrics_recorder_) {
     focus_mode_metrics_recorder_->RecordHistogramsOnEnd();
+    if (!in_focus_session()) {
+      focus_mode_metrics_recorder_->RecordHistogramOnEndingMoment(
+          current_session()->persistent_ending()
+              ? focus_mode_histogram_names::EndingMomentBubbleClosedReason::
+                    kOpended
+              : focus_mode_histogram_names::EndingMomentBubbleClosedReason::
+                    kIgnored);
+    }
+
     focus_mode_metrics_recorder_.reset();
   }
 

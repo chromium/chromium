@@ -33,6 +33,9 @@ class ASH_EXPORT FocusModeMetricsRecorder
   // session completing.
   void RecordHistogramsOnEnd();
 
+  void RecordHistogramOnEndingMoment(
+      focus_mode_histogram_names::EndingMomentBubbleClosedReason reason);
+
  private:
   // Counts the number of tasks selected during a session.
   int tasks_selected_count_ = 0;

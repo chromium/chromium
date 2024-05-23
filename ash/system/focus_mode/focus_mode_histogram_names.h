@@ -31,6 +31,10 @@ constexpr char kTimeAddedOnSessionEndPrefix[] = "Ash.FocusMode.TimeAdded.";
 constexpr char kPercentCompletedPrefix[] =
     "Ash.FocusMode.PercentOfSessionCompleted.";
 constexpr char kTasksCompletedHistogramName[] = "Ash.FocusMode.TasksCompleted";
+constexpr char kSessionDurationHistogramName[] =
+    "Ash.FocusMode.SessionDuration";
+constexpr char kEndingMomentBubbleActionHistogram[] =
+    "Ash.FocusMode.EndingMomentBubbleAction";
 
 // This enum is used for metrics, so enum values should not be changed. New enum
 // values can be added, but existing enums must never be renumbered or deleted
@@ -74,6 +78,18 @@ enum class DNDStateOnFocusEndType {
   kTurnedOff = 4,  // The user manually toggled DND during the focus session,
                    // and the session ends with DND off.
   kMaxValue = kTurnedOff,
+};
+
+// This enum is used for metrics, so enum values should not be changed. New enum
+// values can be added, but existing enums must never be renumbered or deleted
+// and reused.
+// This should be kept in sync with `FocusModeEndingMomentBubbleClosedReason`
+// enum in tools/metrics/histograms/metadata/ash/enums.xml.
+enum class EndingMomentBubbleClosedReason {
+  kIgnored = 0,   // Bubble was never opened.
+  kExtended = 1,  // Bubble was opened and minutes were added to the session.
+  kOpended = 2,   // Bubble was opened but no action was taken.
+  kMaxValue = kOpended,
 };
 
 }  // namespace ash::focus_mode_histogram_names
