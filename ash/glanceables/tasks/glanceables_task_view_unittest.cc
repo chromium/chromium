@@ -28,8 +28,10 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -591,6 +593,69 @@ TEST_F(GlanceablesTaskViewTest, HandlesPressingCheckButtonWhileAdding) {
   std::move(callback).Run(&created_task);
   EXPECT_TRUE(view->GetCheckButtonForTest()->GetEnabled());
   EXPECT_TRUE(title_button->GetEnabled());
+}
+
+TEST_F(GlanceablesTaskViewTest, DisplaysOriginSurfaceType) {
+  for (auto origin_surface_type : {api::Task::OriginSurfaceType::kRegular,
+                                   api::Task::OriginSurfaceType::kDocument,
+                                   api::Task::OriginSurfaceType::kSpace,
+                                   api::Task::OriginSurfaceType::kUnknown}) {
+    SCOPED_TRACE(::testing::Message()
+                 << "origin_surface_type="
+                 << base::to_underlying(origin_surface_type));
+
+    const auto task = api::Task("task-id", "Task title",
+                                /*due=*/std::nullopt, /*completed=*/false,
+                                /*has_subtasks=*/false,
+                                /*has_email_link=*/false,
+                                /*has_notes=*/false,
+                                /*updated=*/base::Time::Now(),
+                                /*web_view_link=*/GURL(), origin_surface_type);
+    const auto widget = CreateFramelessTestWidget();
+    widget->SetFullscreen(true);
+    const auto* const view =
+        widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
+            &task, /*mark_as_completed_callback=*/base::DoNothing(),
+            /*save_callback=*/base::DoNothing(),
+            /*edit_in_browser_callback=*/base::DoNothing(),
+            /*show_error_message_callback=*/base::DoNothing()));
+
+    const auto* const origin_surface_type_icon =
+        views::AsViewClass<views::ImageView>(view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kOriginSurfaceTypeIcon)));
+
+    // Check presence of the origin surface type icon. It's only added to
+    // assigned/shared tasks except `kUnknown` and visible by default.
+    if (origin_surface_type == api::Task::OriginSurfaceType::kDocument ||
+        origin_surface_type == api::Task::OriginSurfaceType::kSpace) {
+      ASSERT_TRUE(origin_surface_type_icon);
+      EXPECT_TRUE(origin_surface_type_icon->GetVisible());
+      EXPECT_FALSE(views::AsViewClass<views::View>(view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kAssignedTaskNotice))));
+    } else {
+      EXPECT_FALSE(origin_surface_type_icon);
+    }
+
+    {
+      const auto* const title_label =
+          views::AsViewClass<views::Label>(view->GetViewByID(
+              base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+      ASSERT_TRUE(title_label);
+      LeftClickOn(title_label);
+    }
+
+    // The icon should disappear after switching to edit mode...
+    if (origin_surface_type == api::Task::OriginSurfaceType::kDocument ||
+        origin_surface_type == api::Task::OriginSurfaceType::kSpace) {
+      EXPECT_FALSE(origin_surface_type_icon->GetVisible());
+    }
+
+    // ...and the notice should appear for all tasks except `kRegular`.
+    if (origin_surface_type != api::Task::OriginSurfaceType::kRegular) {
+      EXPECT_TRUE(views::AsViewClass<views::View>(view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kAssignedTaskNotice))));
+    }
+  }
 }
 
 }  // namespace ash

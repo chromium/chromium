@@ -7579,6 +7579,10 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_ERROR_EDIT_TASK_FAILED_WHILE_OFFLINE" desc="The error message used in the task glanceable to notify users that the glanceables failed to commit the task that they edited because the device is offline. Also guide the user to try again when the device is connected to the network.">
         Couldn't edit task. Try again when online.
       </message>
+      <message name="IDS_GLANCEABLES_TASKS_ASSIGNED_TASK_NOTICE" desc="The glanceable displays tasks fetched from Google Tasks API. Some of them can be created and assigned by other users (e.g. via Google Docs). This is a privacy notice warning that any changes will be visible to others (e.g. everyone having access to the same origin document).">
+        Others can see changes that you make to this task
+      </message>
+
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
         Do Not Disturb is on
