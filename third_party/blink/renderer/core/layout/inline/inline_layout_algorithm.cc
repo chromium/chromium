@@ -648,6 +648,11 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
 
   if (should_apply_end) {
     // Ask the block layout algorithm to trim the end of the line box.
+    const LayoutUnit block_end_to_be_trimmed =
+        UNLIKELY(is_flipped_line)
+            ? line_box_metrics.ascent - intrinsic_metrics.ascent
+            : line_box_metrics.descent - intrinsic_metrics.descent;
+    container_builder_.SetTrimBlockEndBy(block_end_to_be_trimmed);
     container_builder_.SetIsBlockEndTrimmed();
   }
 

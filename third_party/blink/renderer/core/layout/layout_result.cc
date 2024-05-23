@@ -122,13 +122,20 @@ LayoutResult::LayoutResult(LineBoxFragmentBuilderPassKey passkey,
     EnsureRareData()->SetLineBoxBfcBlockOffset(
         *builder->line_box_bfc_block_offset_);
   }
+
+  // `EnsureLineData()` must be done before `EnsureLineSmallData()`.
+  DCHECK(!rare_data_ || !rare_data_->HasData(RareData::kLineSmallData));
   if (builder->annotation_block_offset_adjustment_) {
     EnsureRareData()->EnsureLineData()->annotation_block_offset_adjustment =
         builder->annotation_block_offset_adjustment_;
   }
   if (builder->clearance_after_line_) {
-    EnsureRareData()->EnsureLineData()->clearance_after_line =
+    EnsureRareData()->EnsureLineSmallData()->clearance_after_line =
         builder->clearance_after_line_;
+  }
+  if (builder->trim_block_end_by_) {
+    EnsureRareData()->EnsureLineSmallData()->trim_block_end_by =
+        *builder->trim_block_end_by_;
   }
 }
 

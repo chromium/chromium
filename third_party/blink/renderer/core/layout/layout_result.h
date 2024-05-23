@@ -314,8 +314,16 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     if (!rare_data_) {
       return LayoutUnit();
     }
-    const RareData::LineData* data = rare_data_->GetLineData();
+    const RareData::LineSmallData* data = rare_data_->GetLineSmallData();
     return data ? data->clearance_after_line : LayoutUnit();
+  }
+
+  // Return the amount to trim the block size by the `text-box-trim` property.
+  std::optional<LayoutUnit> TrimBlockEndBy() const {
+    if (!rare_data_) {
+      return std::nullopt;
+    }
+    return rare_data_->TrimBlockEndBy();
   }
 
   std::optional<LayoutUnit> MinimalSpaceShortage() const {
@@ -619,6 +627,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       kBlockData,
       kFlexData,
       kGridData,
+      kLineSmallData,
       kLineData,
       kMathData,
       kTableData,
@@ -664,9 +673,31 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       std::unique_ptr<const GridLayoutData> grid_layout_data;
     };
 
-    struct LineData {
+    // `LineSmallData` can save allocations When only fields in it are needed.
+    struct LineSmallData {
+      std::optional<LayoutUnit> TrimBlockEndBy() const {
+        if (trim_block_end_by == LayoutUnit::Min()) {
+          return std::nullopt;
+        }
+        return trim_block_end_by;
+      }
+
       LayoutUnit clearance_after_line;
+      LayoutUnit trim_block_end_by = LayoutUnit::Min();
+    };
+
+    // `LineData` is allocated separately as it's larger than data unions.
+    struct LineData : public LineSmallData {
       LayoutUnit annotation_block_offset_adjustment;
+    };
+
+    struct LineDataPtr {
+      LineDataPtr() = default;
+      LineDataPtr(const LineDataPtr& other) {
+        line_data = std::make_unique<LineData>(*other.line_data);
+      }
+
+      std::unique_ptr<LineData> line_data = std::make_unique<LineData>();
     };
 
     struct MathData {
@@ -744,6 +775,9 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       }
       return address;
     }
+    bool HasData(DataUnionType data_type) const {
+      return data_union_type() == data_type;
+    }
     template <typename DataType>
     const DataType* GetData(const DataType* address,
                             DataUnionType data_type) const {
@@ -768,11 +802,25 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     const GridData* GetGridData() const {
       return GetData<GridData>(&grid_data, kGridData);
     }
+    // When both `EnsureLineData()` and `EnsureLineSmallData()` are needed,
+    // `EnsureLineData()` must be done first. Upgrading `kLineSmallData` to
+    // `kLineData` isn't supported due to the lack of the needs.
     LineData* EnsureLineData() {
-      return EnsureData<LineData>(&line_data, kLineData);
+      return EnsureData(&line_data, kLineData)->line_data.get();
     }
     const LineData* GetLineData() const {
-      return GetData<LineData>(&line_data, kLineData);
+      const LineDataPtr* data = GetData(&line_data, kLineData);
+      return data ? data->line_data.get() : nullptr;
+    }
+    LineSmallData* EnsureLineSmallData() {
+      return UNLIKELY(HasData(kLineData))
+                 ? EnsureLineData()
+                 : EnsureData(&line_small_data, kLineSmallData);
+    }
+    const LineSmallData* GetLineSmallData() const {
+      return UNLIKELY(HasData(kLineData))
+                 ? GetLineData()
+                 : GetData(&line_small_data, kLineSmallData);
     }
     MathData* EnsureMathData() {
       return EnsureData<MathData>(&math_data, kMathData);
@@ -818,8 +866,11 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
         case kGridData:
           new (&grid_data) GridData(rare_data.grid_data);
           break;
+        case kLineSmallData:
+          new (&line_small_data) LineSmallData(rare_data.line_small_data);
+          break;
         case kLineData:
-          new (&line_data) LineData(rare_data.line_data);
+          new (&line_data) LineDataPtr(rare_data.line_data);
           break;
         case kMathData:
           new (&math_data) MathData(rare_data.math_data);
@@ -845,8 +896,11 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
         case kGridData:
           grid_data.~GridData();
           break;
+        case kLineSmallData:
+          line_small_data.~LineSmallData();
+          break;
         case kLineData:
-          line_data.~LineData();
+          line_data.~LineDataPtr();
           break;
         case kMathData:
           math_data.~MathData();
@@ -867,6 +921,11 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       if (!line_box_bfc_block_offset_is_set())
         return std::nullopt;
       return line_box_bfc_block_offset;
+    }
+
+    std::optional<LayoutUnit> TrimBlockEndBy() const {
+      const RareData::LineSmallData* data = GetLineSmallData();
+      return data ? data->TrimBlockEndBy() : std::nullopt;
     }
 
     void SetNonOverflowingScrollRanges(
@@ -930,7 +989,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       BlockData block_data;
       FlexData flex_data;
       GridData grid_data;
-      LineData line_data;
+      LineSmallData line_small_data;
+      LineDataPtr line_data;
       MathData math_data;
       TableData table_data;
     };

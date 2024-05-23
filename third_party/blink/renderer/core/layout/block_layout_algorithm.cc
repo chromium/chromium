@@ -2570,32 +2570,25 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     }
     if (!container_builder_.BfcBlockOffset())
       DCHECK_EQ(logical_block_offset, LayoutUnit());
-  } else if (layout_result.IsBlockEndTrimmed() && child.IsInline()) {
-    // Trim the space to respect the `text-box-trim` property here. Only trim
-    // inline nodes as its containers will adjust themselves accordingly.
-    const PhysicalFragment& inline_physical_fragment =
-        layout_result.GetPhysicalFragment();
-    CHECK(inline_physical_fragment.IsLineBox());
-    const auto& line_box =
-        To<PhysicalLineBoxFragment>(inline_physical_fragment);
-    LayoutUnit block_end_to_be_trimmed =
-        Style().IsFlippedLinesWritingMode()
-            ? line_box.Metrics().ascent - line_box.IntrinsicMetrics().ascent
-            : line_box.Metrics().descent - line_box.IntrinsicMetrics().descent;
-    logical_block_offset = logical_offset.block_offset + fragment.BlockSize() -
-                           block_end_to_be_trimmed;
   } else {
-    // We add the greater of AnnotationOverflow and ClearanceAfterLine here.
-    // Then, we cancel the AnnotationOverflow part if
-    //  - The next line box has block-start annotation space, or
-    //  - There are no following child boxes and this container has block-end
-    //    padding.
-    //
-    // See InlineLayoutAlgorithm::CreateLine() and
-    // BlockLayoutAlgorithm::Layout().
-    logical_block_offset = logical_offset.block_offset + fragment.BlockSize() +
-                           std::max(layout_result.AnnotationOverflow(),
-                                    layout_result.ClearanceAfterLine());
+    logical_block_offset = logical_offset.block_offset + fragment.BlockSize();
+
+    if (const std::optional<LayoutUnit> trim_block_end_by =
+            layout_result.TrimBlockEndBy()) {
+      // Trim the space to respect the `text-box-trim` property here.
+      logical_block_offset -= *trim_block_end_by;
+    } else {
+      // We add the greater of AnnotationOverflow and ClearanceAfterLine here.
+      // Then, we cancel the AnnotationOverflow part if
+      //  - The next line box has block-start annotation space, or
+      //  - There are no following child boxes and this container has block-end
+      //    padding.
+      //
+      // See InlineLayoutAlgorithm::CreateLine() and
+      // BlockLayoutAlgorithm::Layout().
+      logical_block_offset += std::max(layout_result.AnnotationOverflow(),
+                                       layout_result.ClearanceAfterLine());
+    }
   }
 
   MarginStrut margin_strut = layout_result.EndMarginStrut();

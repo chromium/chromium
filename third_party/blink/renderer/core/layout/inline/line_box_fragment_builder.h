@@ -68,6 +68,10 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
     line_box_bfc_block_offset_ = offset;
   }
 
+  void SetTrimBlockEndBy(LayoutUnit trim_block_end_by) {
+    trim_block_end_by_ = trim_block_end_by;
+  }
+
   void SetAnnotationBlockOffsetAdjustment(LayoutUnit adjustment) {
     annotation_block_offset_adjustment_ = adjustment;
   }
@@ -104,6 +108,7 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   void PropagateChildrenDataFromLineItems(LogicalLineItems& children);
 
   std::optional<LayoutUnit> line_box_bfc_block_offset_;
+  std::optional<LayoutUnit> trim_block_end_by_;
   LayoutUnit annotation_block_offset_adjustment_;
   FontHeight metrics_ = FontHeight::Empty();
   FontHeight intrinsic_metrics_ = FontHeight::Empty();
