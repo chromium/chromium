@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"

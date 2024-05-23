@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_TEST_UTIL_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_TEST_UTIL_H_
 
+#include <string_view>
+
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
@@ -82,8 +84,8 @@ password_manager::BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
 // Creates a form for the password manager with a given username, password and
 // origin. If |is_leaked| is set to |true|, the password will be considered a
 // leaked password.
-password_manager::PasswordForm MakeForm(base::StringPiece16 username,
-                                        base::StringPiece16 password,
+password_manager::PasswordForm MakeForm(std::u16string_view username,
+                                        std::u16string_view password,
                                         std::string origin,
                                         bool is_leaked = false);
 

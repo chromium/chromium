@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_UTIL_H_
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "ui/base/webui/resource_path.h"
 

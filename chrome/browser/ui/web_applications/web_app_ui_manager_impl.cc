@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -21,7 +20,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/one_shot_event.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
