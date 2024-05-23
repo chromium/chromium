@@ -366,8 +366,11 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   for (auto& tab : recent_tab_data_.items) {
     all_items.push_back(std::make_unique<BirchTabItem>(tab));
   }
-  for (auto& item : url_to_most_visited_item) {
-    all_items.push_back(std::make_unique<BirchMostVisitedItem>(item.second));
+  if (ShouldShowMostVisited()) {
+    for (auto& item : url_to_most_visited_item) {
+      all_items.push_back(std::make_unique<BirchMostVisitedItem>(item.second));
+    }
+    most_visited_last_shown_ = GetNow();
   }
   for (auto& event : url_to_self_share_item) {
     all_items.push_back(std::make_unique<BirchSelfShareItem>(event.second));
@@ -656,6 +659,14 @@ void BirchModel::RecordProviderHiddenHistograms() {
 
 bool BirchModel::IsItemRemoverInitialized() {
   return item_remover_ && item_remover_->Initialized();
+}
+
+bool BirchModel::ShouldShowMostVisited() {
+  if (most_visited_last_shown_.is_null()) {
+    return true;  // Never been shown.
+  }
+  // Re-show for up to 2 minutes.
+  return GetNow() - most_visited_last_shown_ < base::Minutes(2);
 }
 
 }  // namespace ash

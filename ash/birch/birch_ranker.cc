@@ -177,8 +177,10 @@ void BirchRanker::RankMostVisitedItems(
   CHECK(items);
 
   for (BirchMostVisitedItem& item : *items) {
-    // TODO(jamescook): Finalize ranking.
-    item.set_ranking(17.f);
+    if (IsMorning()) {
+      item.set_ranking(9.f);
+      continue;
+    }
   }
 }
 

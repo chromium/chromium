@@ -1482,6 +1482,9 @@ TEST_F(BirchModelTest, DuplicateSelfShareAndRecentTabItem) {
 TEST_F(BirchModelTest, DuplicateMostVisitedAndRecentTabItem) {
   BirchModel* model = Shell::Get()->birch_model();
 
+  // Set the time to morning so that most visited items will be ranked.
+  test_clock_.SetNow(TimeFromString("22 Feb 2024 7:00 UTC"));
+
   // Create a recent tab from more than an hour ago.
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
@@ -1588,6 +1591,40 @@ TEST_F(BirchModelTest, RecordProviderHiddenHistograms) {
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.Weather", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.ReleaseNotes", true,
                                1);
+}
+
+TEST_F(BirchModelTest, MostVisitedItemShownByTime) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Set the time to morning so that most visited items will be ranked.
+  test_clock_.SetNow(TimeFromString("22 Feb 2024 7:00 UTC"));
+
+  // Create a most visited item.
+  std::vector<BirchMostVisitedItem> most_visited_item_list;
+  most_visited_item_list.emplace_back(
+      u"most visited", GURL("https://www.example.com/"), ui::ImageModel());
+  model->SetMostVisitedItems(std::move(most_visited_item_list));
+
+  // The first time we query for items, it is shown.
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 1u);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kMostVisited);
+
+  // Advance the time by 1 minute.
+  test_clock_.Advance(base::Minutes(1));
+
+  // The item is still shown.
+  all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 1u);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kMostVisited);
+
+  // Advance the time by 2 minutes (for a total of 3, past the threshold for
+  // showing most visited items).
+  test_clock_.Advance(base::Minutes(2));
+
+  // The item is not shown.
+  all_items = model->GetAllItems();
+  EXPECT_TRUE(all_items.empty());
 }
 
 }  // namespace ash

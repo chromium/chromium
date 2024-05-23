@@ -213,6 +213,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void StartDataFetchIfNeeded(DataTypeInfo<T>& data_info,
                               BirchDataProvider* data_provider);
 
+  // Returns true if most visited items should be included in the results.
+  bool ShouldShowMostVisited();
+
   // Whether this is a post-login fetch (occurring right after login).
   bool is_post_login_fetch_ = false;
 
@@ -263,6 +266,10 @@ class ASH_EXPORT BirchModel : public SessionObserver,
 
   // Invoked when a data fetch completes.
   base::OnceClosure data_fetch_callback_for_test_;
+
+  // When we last returned a most visited item. Used to suppress showing the
+  // most visited items too often.
+  base::Time most_visited_last_shown_;
 };
 
 }  // namespace ash
