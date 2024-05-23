@@ -64,14 +64,7 @@ class AtspiInProcessFuzzer
       ScopedAtspiAccessible& node);
   static std::string GetNodeName(ScopedAtspiAccessible& node);
   static bool InvokeAction(ScopedAtspiAccessible& node, size_t action_id);
-
-  // A record of all the paths to controls which currently, or in the past,
-  // have belonged to valid controls. A mutator points the attention of the
-  // fuzzer towards these instead of wasting time.
-  static std::set<std::vector<uint32_t>> known_control_paths;
 };
-
-std::set<std::vector<uint32_t>> AtspiInProcessFuzzer::known_control_paths;
 
 REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER(AtspiInProcessFuzzer)
 
@@ -85,10 +78,6 @@ AtspiInProcessFuzzer::AtspiInProcessFuzzer() {
 void AtspiInProcessFuzzer::SetUpOnMainThread() {
   InProcessProtoFuzzer<
       test::fuzzing::atspi_fuzzing::FuzzCase>::SetUpOnMainThread();
-  // Populate the dataset used by our custom mutator to focus on valid nodes.
-  std::vector<uint32_t> root_node;
-  known_control_paths.insert(root_node);
-
   LoadAPage();
   // LoadAPage will wait until the load event has completed, but we also
   // want to wait until the browser has had time to draw its complete UI
@@ -153,21 +142,12 @@ int AtspiInProcessFuzzer::Fuzz(
       children = GetChildren(current_control);
     }
 
-    // Let's keep a record of all the node's children to
-    // help us explore them later with our custom mutator
-    for (uint32_t i = 0; i < children.size(); i++) {
-      std::vector<uint32_t> path = current_control_path;
-      path.push_back(i);
-      known_control_paths.insert(path);
-    }
-
     if (action.path_to_control_size() < 2) {
       // The first couple of levels deep in the accessibility tree are things
       // like the application itself, which are not really interactive.
       // The libfuzzer mutator seems to bias to producing small test cases
       // which want to explore just those nodes. Shortcut things a bit by
       // skipping those without pointlessly poking at the controls.
-      // NB we do this after potentially populating known_control_paths
       return 0;
     }
 
@@ -277,42 +257,3 @@ bool AtspiInProcessFuzzer::InvokeAction(ScopedAtspiAccessible& node,
   }
   return true;
 }
-
-// There's quite a large space of possible controls to explore, arranged as a
-// hierarchic tree. When randomly mutated, the fuzzer biases towards:
-// * short paths to controls, fiddling mostly with top-level controls
-// * nodes which probably don't exist at all
-// Added to which, the ordinals generated are large (space of a uint32_t)
-// and we have to clamp them using %, which is ugly.
-// To improve matters, we have a custom mutator which tries to give us a
-// valid path to a control each time.
-// Each time our main fuzzing loop finds a control with
-// children, it records the path to that child. We then use this custom mutator
-// to nudge the test cases towards children which actually exist.
-void AtspiInProcessFuzzer::MutateControlPath(
-    test::fuzzing::atspi_fuzzing::Action* message,
-    unsigned int seed) {
-  std::vector<uint32_t> chosen_path(message->path_to_control().begin(),
-                                    message->path_to_control().end());
-  if (known_control_paths.contains(chosen_path)) {
-    // This is a valid control path selected for exploration by the fuzzing
-    // engine. Allow it to do so.
-    return;
-  }
-  // This is not a valid control path - let's pick one which is, or at least,
-  // has been in the past.
-  message->clear_path_to_control();
-  // Get the nth from known_control_paths
-  uint32_t n = seed % known_control_paths.size();
-  auto it = known_control_paths.begin();
-  std::advance(it, n);
-  for (uint32_t path_element : *it) {
-    message->add_path_to_control(path_element);
-  }
-}
-
-// Register an extra mutator for the control path to try to find more
-// deeply nested controls
-static protobuf_mutator::libfuzzer::PostProcessorRegistration<
-    test::fuzzing::atspi_fuzzing::Action>
-    reg = {AtspiInProcessFuzzer::MutateControlPath};
