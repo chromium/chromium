@@ -38,7 +38,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   // Create and add various types of users.
   user_manager::User* AddGuestUser();
   user_manager::User* AddKioskAppUser(const AccountId& account_id);
-  user_manager::User* AddArcKioskAppUser(const AccountId& account_id);
   user_manager::User* AddWebKioskAppUser(const AccountId& account_id);
   user_manager::User* AddPublicAccountUser(const AccountId& account_id);
 

@@ -90,7 +90,7 @@ class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     const AccountId account_id(AccountId::FromUserEmail(kFakeUserName));
-    fake_user_manager_->AddArcKioskAppUser(account_id);
+    fake_user_manager_->AddPublicAccountUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 
     if (cloud_policy_client_setup_ == CloudPolicyClientSetup::kSkip)

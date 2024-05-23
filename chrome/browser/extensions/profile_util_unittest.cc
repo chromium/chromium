@@ -70,14 +70,6 @@ TEST_F(ProfileUtilUnitTest,
   EXPECT_FALSE(ProfileCanUseNonComponentExtensions(testing_profile()));
 }
 
-TEST_F(ProfileUtilUnitTest,
-       ProfileCannotUseNonComponentExtensions_ArcKioskAppUser) {
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
-      GetFakeUserManager()->AddArcKioskAppUser(account_id_), account_id_));
-
-  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(testing_profile()));
-}
-
 TEST_F(ProfileUtilUnitTest, ProfileCannotUseNonComponentExtensions_PublicUser) {
   ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
       GetFakeUserManager()->AddPublicAccountUser(account_id_), account_id_));

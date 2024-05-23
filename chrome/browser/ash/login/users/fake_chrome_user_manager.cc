@@ -143,17 +143,6 @@ user_manager::User* FakeChromeUserManager::AddKioskAppUser(
   return user;
 }
 
-user_manager::User* FakeChromeUserManager::AddArcKioskAppUser(
-    const AccountId& account_id) {
-  user_manager::User* user =
-      user_manager::User::CreateArcKioskAppUser(account_id);
-  user->set_username_hash(
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
-  user_storage_.emplace_back(user);
-  users_.push_back(user);
-  return user;
-}
-
 user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
     const AccountId& account_id) {
   user_manager::User* user =

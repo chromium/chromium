@@ -342,14 +342,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
   }
-  {
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* user = user_manager->AddArcKioskAppUser(account_id);
-    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
-    user_manager::ScopedUserManager enabler(std::move(user_manager));
-    EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
-  }
 #endif
 }
 

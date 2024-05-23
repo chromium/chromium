@@ -150,17 +150,14 @@ TEST_F(ArcUtilTest, IsArcAvailable_Installed) {
 
   // Not available, by-default.
   EXPECT_FALSE(IsArcAvailable());
-  EXPECT_FALSE(IsArcKioskAvailable());
 
   {
     ScopedArcFeature feature(true);
     EXPECT_FALSE(IsArcAvailable());
-    EXPECT_FALSE(IsArcKioskAvailable());
   }
   {
     ScopedArcFeature feature(false);
     EXPECT_FALSE(IsArcAvailable());
-    EXPECT_FALSE(IsArcKioskAvailable());
   }
 
   // If ARC is installed, IsArcAvailable() should return true when EnableARC
@@ -170,18 +167,13 @@ TEST_F(ArcUtilTest, IsArcAvailable_Installed) {
   // Not available, by-default, too.
   EXPECT_FALSE(IsArcAvailable());
 
-  // ARC is available in kiosk mode if installed.
-  EXPECT_TRUE(IsArcKioskAvailable());
-
   {
     ScopedArcFeature feature(true);
     EXPECT_TRUE(IsArcAvailable());
-    EXPECT_TRUE(IsArcKioskAvailable());
   }
   {
     ScopedArcFeature feature(false);
     EXPECT_FALSE(IsArcAvailable());
-    EXPECT_TRUE(IsArcKioskAvailable());
   }
 
   // If ARC is installed, IsArcAvailable() should return true when EnableARC
@@ -191,18 +183,13 @@ TEST_F(ArcUtilTest, IsArcAvailable_Installed) {
   // Not available, by-default, too.
   EXPECT_FALSE(IsArcAvailable());
 
-  // ARC is available in kiosk mode if installed.
-  EXPECT_TRUE(IsArcKioskAvailable());
-
   {
     ScopedArcFeature feature(true);
     EXPECT_TRUE(IsArcAvailable());
-    EXPECT_TRUE(IsArcKioskAvailable());
   }
   {
     ScopedArcFeature feature(false);
     EXPECT_FALSE(IsArcAvailable());
-    EXPECT_TRUE(IsArcKioskAvailable());
   }
 }
 
@@ -211,11 +198,9 @@ TEST_F(ArcUtilTest, IsArcAvailable_OfficiallySupported) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--enable-arc"});
   EXPECT_TRUE(IsArcAvailable());
-  EXPECT_TRUE(IsArcKioskAvailable());
 
   command_line->InitFromArgv({"", "--arc-availability=officially-supported"});
   EXPECT_TRUE(IsArcAvailable());
-  EXPECT_TRUE(IsArcKioskAvailable());
 }
 
 TEST_F(ArcUtilTest, IsArcVmEnabled) {
@@ -319,10 +304,6 @@ TEST_F(ArcUtilTest, UseDevCachesSet) {
   EXPECT_TRUE(IsArcUseDevCaches());
 }
 
-// TODO(hidehiko): Add test for IsArcKioskMode().
-// It depends on UserManager, but a utility to inject fake instance is
-// available only in chrome/. To use it in components/, refactoring is needed.
-
 TEST_F(ArcUtilTest, IsArcOptInVerificationDisabled) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({""});
@@ -347,8 +328,6 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
       AccountId::FromUserEmailGaiaId("user4@test.com", "1234567890-4"))));
   EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddChildUser(
       AccountId::FromUserEmailGaiaId("user5@test.com", "1234567890-5"))));
-  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddArcKioskAppUser(
-      AccountId::FromUserEmailGaiaId("user6@test.com", "1234567890-6"))));
 
   // An ephemeral user is a logged in user but unknown to UserManager when
   // ephemeral policy is set.
@@ -364,9 +343,6 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   ASSERT_TRUE(ephemeral_user);
   ASSERT_TRUE(fake_user_manager->IsUserCryptohomeDataEphemeral(
       ephemeral_user->GetAccountId()));
-
-  // Ephemeral user is also allowed for ARC.
-  EXPECT_TRUE(IsArcAllowedForUser(ephemeral_user));
 }
 
 TEST_F(ArcUtilTest, ArcStartModeDefault) {

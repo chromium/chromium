@@ -100,9 +100,6 @@ class ScopedLogIn {
       case user_manager::UserType::kPublicAccount:
         LogInAsPublicAccount();
         break;
-      case user_manager::UserType::kArcKioskApp:
-        LogInArcKioskApp();
-        break;
       default:
         NOTREACHED_IN_MIGRATION();
     }
@@ -121,11 +118,6 @@ class ScopedLogIn {
 
   void LogInAsPublicAccount() {
     fake_user_manager_->AddPublicAccountUser(account_id_);
-    fake_user_manager_->LoginUser(account_id_);
-  }
-
-  void LogInArcKioskApp() {
-    fake_user_manager_->AddArcKioskAppUser(account_id_);
     fake_user_manager_->LoginUser(account_id_);
   }
 
@@ -266,37 +258,6 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_PublicAccount) {
   EXPECT_TRUE(IsArcAllowedForProfile(profile()));
 }
 
-TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_KioskArcNotAvailable) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv({""});
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::FromUserEmail(profile()->GetProfileUserName()),
-                    user_manager::UserType::kArcKioskApp);
-  EXPECT_FALSE(
-      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
-  EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
-}
-
-TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_KioskArcInstalled) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"", "--arc-availability=installed"});
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::FromUserEmail(profile()->GetProfileUserName()),
-                    user_manager::UserType::kArcKioskApp);
-  EXPECT_FALSE(
-      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
-  EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
-}
-
-TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_KioskArcSupported) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"", "--arc-availability=officially-supported"});
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::FromUserEmail(profile()->GetProfileUserName()),
-                    user_manager::UserType::kArcKioskApp);
-  EXPECT_FALSE(
-      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
-  EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
-}
 
 // Guest account is interpreted as EphemeralDataUser.
 TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_GuestAccount) {
@@ -329,13 +290,6 @@ TEST_F(ChromeArcUtilTest, IsArcBlockedDueToIncompatibleFileSystem) {
     ScopedLogIn login(GetFakeUserManager(), user_id,
                       user_manager::UserType::kRegular);
     EXPECT_TRUE(IsArcBlockedDueToIncompatibleFileSystem(profile()));
-  }
-
-  // Never blocked for an ARC kiosk.
-  {
-    ScopedLogIn login(GetFakeUserManager(), robot_id,
-                      user_manager::UserType::kArcKioskApp);
-    EXPECT_FALSE(IsArcBlockedDueToIncompatibleFileSystem(profile()));
   }
 
   // Never blocked for a public session.

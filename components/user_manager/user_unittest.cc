@@ -43,8 +43,8 @@ TEST(UserTest, DeviceLocalAccountAffiliation) {
   ScopedUser public_session_user(User::CreatePublicAccountUser(account_id));
   EXPECT_TRUE(public_session_user.IsAffiliated());
 
-  ScopedUser arc_kiosk_user(User::CreateArcKioskAppUser(account_id));
-  EXPECT_TRUE(arc_kiosk_user.IsAffiliated());
+  ScopedUser web_kiosk_user(User::CreateWebKioskAppUser(account_id));
+  EXPECT_TRUE(web_kiosk_user.IsAffiliated());
 }
 
 }  // namespace user_manager

@@ -1874,46 +1874,6 @@ INSTANTIATE_TEST_SUITE_P(
                                      1,     // base::Value(false)
                                      2)));  // base::Value(true)
 
-class ArcSessionManagerKioskTest : public ArcSessionManagerTestBase {
- public:
-  ArcSessionManagerKioskTest() = default;
-
-  ArcSessionManagerKioskTest(const ArcSessionManagerKioskTest&) = delete;
-  ArcSessionManagerKioskTest& operator=(const ArcSessionManagerKioskTest&) =
-      delete;
-
-  void SetUp() override {
-    ArcSessionManagerTestBase::SetUp();
-    const AccountId account_id(
-        AccountId::FromUserEmail(profile()->GetProfileUserName()));
-    GetFakeUserManager()->AddArcKioskAppUser(account_id);
-    GetFakeUserManager()->LoginUser(account_id);
-  }
-};
-
-TEST_F(ArcSessionManagerKioskTest, AuthFailure) {
-  arc_session_manager()->SetProfile(profile());
-  arc_session_manager()->Initialize();
-  arc_session_manager()->RequestEnable();
-  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
-
-  // Replace chrome::AttemptUserExit() for testing.
-  // At the end of test, leave the dangling pointer |terminated|,
-  // assuming the callback is invoked exactly once in OnProvisioningFinished()
-  // and not invoked then, including TearDown().
-  bool terminated = false;
-  arc_session_manager()->SetAttemptUserExitCallbackForTesting(
-      base::BindRepeating([](bool* terminated) { *terminated = true; },
-                          &terminated));
-
-  arc::mojom::ArcSignInResultPtr result = arc::mojom::ArcSignInResult::NewError(
-      arc::mojom::ArcSignInError::NewGeneralError(
-          arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR));
-  arc_session_manager()->OnProvisioningFinished(
-      ArcProvisioningResult(std::move(result)));
-  EXPECT_TRUE(terminated);
-}
-
 class ArcSessionManagerPublicSessionTest : public ArcSessionManagerTestBase {
  public:
   ArcSessionManagerPublicSessionTest() = default;

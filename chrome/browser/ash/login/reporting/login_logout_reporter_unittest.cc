@@ -88,14 +88,6 @@ class LoginLogoutTestHelper {
     return CreateProfile(user);
   }
 
-  std::unique_ptr<TestingProfile> CreateArcKioskAppProfile() {
-    AccountId account_id =
-        AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-            "arc_kiosk", policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP));
-    auto* const user = fake_user_manager_->AddArcKioskAppUser(account_id);
-    return CreateProfile(user);
-  }
-
   std::unique_ptr<TestingProfile> CreateWebKioskAppProfile() {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
@@ -115,10 +107,9 @@ class LoginLogoutTestHelper {
         return CreatePublicAccountProfile();
       case user_manager::UserType::kKioskApp:
         return CreateKioskAppProfile();
-      case user_manager::UserType::kArcKioskApp:
-        return CreateArcKioskAppProfile();
       case user_manager::UserType::kWebKioskApp:
         return CreateWebKioskAppProfile();
+      case user_manager::UserType::kArcKioskApp:
       default:
         NOTREACHED_IN_MIGRATION();
         return nullptr;
@@ -339,8 +330,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                               {user_manager::UserType::kPublicAccount,
                                LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION},
                               {user_manager::UserType::kKioskApp,
-                               LoginLogoutSessionType::KIOSK_SESSION},
-                              {user_manager::UserType::kArcKioskApp,
                                LoginLogoutSessionType::KIOSK_SESSION},
                               {user_manager::UserType::kWebKioskApp,
                                LoginLogoutSessionType::KIOSK_SESSION}}));

@@ -26,6 +26,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -1081,8 +1082,7 @@ class DeviceStatusCollectorTest : public testing::Test {
         user = user_manager->AddKioskAppUser(account_id);
         break;
       case DeviceLocalAccount::TYPE_ARC_KIOSK_APP:
-        user = user_manager->AddArcKioskAppUser(account_id);
-        break;
+        NOTREACHED_NORETURN();
       case DeviceLocalAccount::TYPE_WEB_KIOSK_APP:
         user = user_manager->AddWebKioskAppUser(account_id);
         break;
