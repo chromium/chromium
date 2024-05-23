@@ -84,7 +84,9 @@ void NativeAppWindowViews::InitializeWindow(
     extensions::AppWindow* app_window,
     const extensions::AppWindow::CreateParams& create_params) {
   // Stub implementation. See also ChromeNativeAppWindowViews.
-  views::Widget::InitParams init_params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams init_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   init_params.delegate = this;
   if (create_params.always_on_top)
     init_params.z_order = ui::ZOrderLevel::kFloatingWindow;

@@ -21,8 +21,8 @@
 class NonClientFrameViewTest : public ChromeOSBrowserUITest {
  public:
   void SetUpOnMainThread() override {
-    views::Widget::InitParams params;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_.Init(std::move(params));
     widget_.Show();
   }

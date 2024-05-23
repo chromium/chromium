@@ -68,7 +68,9 @@ base::Time GetTime() {
 }
 
 std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "MultitaskNudgeWidget";
   params.accept_events = false;
