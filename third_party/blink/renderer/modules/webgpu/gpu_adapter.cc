@@ -59,6 +59,8 @@ std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(wgpu::FeatureName f) {
       return V8GPUFeatureName::Enum::kShaderF16;
     case wgpu::FeatureName::Float32Filterable:
       return V8GPUFeatureName::Enum::kFloat32Filterable;
+    case wgpu::FeatureName::DualSourceBlending:
+      return V8GPUFeatureName::Enum::kDualSourceBlending;
     default:
       return std::nullopt;
   }

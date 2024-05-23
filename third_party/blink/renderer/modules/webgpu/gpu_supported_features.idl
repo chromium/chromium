@@ -21,6 +21,7 @@ enum GPUFeatureName {
     "chromium-experimental-timestamp-query-inside-passes",
     "chromium-experimental-subgroups",
     "chromium-experimental-subgroup-uniform-control-flow",
+    "dual-source-blending",
 };
 
 [
