@@ -75,7 +75,11 @@ FeatureSupportStatus MantaService::SupportsOrca() {
   if (is_demo_mode_) {
     return FeatureSupportStatus::kSupported;
   }
+  return CanAccessMantaFeaturesWithoutMinorRestrictions();
+}
 
+FeatureSupportStatus
+MantaService::CanAccessMantaFeaturesWithoutMinorRestrictions() {
   if (identity_manager_ == nullptr) {
     return FeatureSupportStatus::kUnknown;
   }
@@ -90,9 +94,7 @@ FeatureSupportStatus MantaService::SupportsOrca() {
   const AccountInfo extended_account_info =
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
 
-  // Temporarily fetches and uses the shared account capability for manta
-  // service.
-  // TODO(b:321624868): Switch to using Orca's own capability.
+  // Fetches and uses the shared account capability for manta service.
   return ConvertToMantaFeatureSupportStatus(
       extended_account_info.capabilities.can_use_manta_service());
 }

@@ -57,6 +57,7 @@ include_rules = [
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/extensions/extension_tab_util.h",
   "+chrome/browser/lifetime",
+  "+chrome/browser/manta/manta_service_factory.h",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/metrics",
   "+chrome/browser/notifications",
@@ -118,5 +119,8 @@ specific_include_rules = {
     "+ash/ambient/test/ambient_ash_test_helper.h",
     "+chrome/browser/ui/views/frame/browser_view.h",
     "+ui/message_center/message_center.h",
+  ],
+  "personalization_app_utils_unittest.cc": [
+    "+chrome/browser/signin/identity_manager_factory.h",
   ],
 }

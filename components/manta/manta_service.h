@@ -72,6 +72,13 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
   // Determines whether the profile for this KeyedService support Orca feature.
   FeatureSupportStatus SupportsOrca();
 
+  // Determines whether the profile for this KeyedService can access Manta
+  // features without minor restrictions.
+  // If the requirements for which users can access Manta features changes, then
+  // per-feature capabilities will need to be added, which will take a few weeks
+  // to migrate.
+  FeatureSupportStatus CanAccessMantaFeaturesWithoutMinorRestrictions();
+
   // KeyedService:
   void Shutdown() override;
 

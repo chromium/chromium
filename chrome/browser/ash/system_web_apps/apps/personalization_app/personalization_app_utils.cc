@@ -21,10 +21,12 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_user_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/manta/manta_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -96,6 +98,23 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
   }
 }
 
+bool IsManagedUserEligibleForSeaPen(Profile* profile) {
+  DCHECK(profile->GetProfilePolicyConnector()->IsManaged());
+  if (!features::IsSeaPenEnterpriseEnabled()) {
+    // Without the experiment, managed users are not allowed for SeaPen.
+    DVLOG(1) << __func__ << " managed profile";
+    return false;
+  }
+  // Only users who can access manta features without minor restrictions will
+  // have SeaPen enabled.
+  auto* manta_service = manta::MantaServiceFactory::GetForProfile(profile);
+  const bool canAccessMantaFeaturesWithoutMinorRestrictions =
+      manta_service &&
+      manta_service->CanAccessMantaFeaturesWithoutMinorRestrictions() ==
+          manta::FeatureSupportStatus::kSupported;
+  return canAccessMantaFeaturesWithoutMinorRestrictions;
+}
+
 bool IsEligibleForSeaPen(Profile* profile) {
   if (!profile) {
     LOG(ERROR) << __func__ << " no profile";
@@ -116,9 +135,8 @@ bool IsEligibleForSeaPen(Profile* profile) {
            user->GetType() == user_manager::UserType::kPublicAccount;
   }
 
-  // Do not show for managed profiles.
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    DVLOG(1) << __func__ << " managed profile";
+  if (profile->GetProfilePolicyConnector()->IsManaged() &&
+      !IsManagedUserEligibleForSeaPen(profile)) {
     return false;
   }
 
