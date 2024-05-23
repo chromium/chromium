@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
@@ -57,6 +58,10 @@ class CertificateManagerPageHandler
       certificate_manager_v2::mojom::CertificateSource source_id) override;
 
   void GetPolicyInformation(GetPolicyInformationCallback callback) override;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  void ShowNativeManageCertificates() override;
+#endif
 
  private:
   // Returns a reference to the CertSource object corresponding to `source`.

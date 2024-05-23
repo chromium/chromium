@@ -78,10 +78,13 @@
         label="View imported certificates from Windows"
         hidden="[[!importOsCertsEnabled_]]">
     </cr-link-row>
-    <cr-link-row external id="manageOsImportedCerts"
-        label="Manage imported certificates from Windows"
-        hidden="[[!importOsCertsEnabled_]]">
-    </cr-link-row>
+    <if expr="is_win or is_macosx">
+      <cr-link-row external id="manageOsImportedCerts"
+          label="Manage imported certificates from Windows"
+          on-click="onManageCertsExternal_"
+          hidden="[[!importOsCertsEnabled_]]">
+      </cr-link-row>
+    </if>
 
     <h3> Custom </h3>
 

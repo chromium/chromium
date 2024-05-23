@@ -64,6 +64,11 @@ interface CertificateManagerPageHandler {
 
   // Export all the certificates from a given source.
   ExportCertificates(CertificateSource source);
+
+  // Show the platform's native certificate management UI.
+  [EnableIf=native_cert_management]
+  ShowNativeManageCertificates();
+
 };
 
 // Calls from C++ -> TS (Browser -> Renderer).

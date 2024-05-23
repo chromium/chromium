@@ -39,6 +39,7 @@ class FakePageHandler extends TestBrowserProxy implements
       'getPolicyInformation',
       'viewCertificate',
       'exportCertificates',
+      'showNativeManageCertificates',
     ]);
   }
 
@@ -70,6 +71,11 @@ class FakePageHandler extends TestBrowserProxy implements
   setPolicyInformation(policyInfo: CertPolicyInfo) {
     this.policyInfo_ = policyInfo;
   }
+  // <if expr="is_win or is_macosx">
+  showNativeManageCertificates() {
+    this.methodCalled('showNativeManageCertificates');
+  }
+  // </if>
 }
 
 class TestCertificateManagerProxy {
@@ -343,9 +349,11 @@ suite('CertificateManagerV2Test', () => {
     assertFalse(
         certManager.$.viewOsImportedCerts.hidden,
         'view imported os certs link visibility wrong');
+    // <if expr="is_win or is_macosx">
     assertFalse(
         certManager.$.manageOsImportedCerts.hidden,
         'imported os certs external link visibility wrong');
+    // </if>
   });
 
   test('Policy - OS certs imported but not managed', async () => {
@@ -367,9 +375,11 @@ suite('CertificateManagerV2Test', () => {
     assertFalse(
         certManager.$.viewOsImportedCerts.hidden,
         'view imported os certs link visibility wrong');
+    // <if expr="is_win or is_macosx">
     assertFalse(
         certManager.$.manageOsImportedCerts.hidden,
         'imported os certs external link visibility wrong');
+    // </if>
   });
 
   test('Policy - OS certs not imported but managed', async () => {
@@ -391,9 +401,11 @@ suite('CertificateManagerV2Test', () => {
     assertTrue(
         certManager.$.viewOsImportedCerts.hidden,
         'view imported os certs link visibility wrong');
+    // <if expr="is_win or is_macosx">
     assertTrue(
         certManager.$.manageOsImportedCerts.hidden,
         'imported os certs external link visibility wrong');
+    // </if>
   });
 
   test('Policy - OS certs not imported and not managed', async () => {
@@ -415,8 +427,29 @@ suite('CertificateManagerV2Test', () => {
     assertTrue(
         certManager.$.viewOsImportedCerts.hidden,
         'view imported os certs link visibility wrong');
+    // <if expr="is_win or is_macosx">
     assertTrue(
         certManager.$.manageOsImportedCerts.hidden,
         'imported os certs external link visibility wrong');
+    // </if>
   });
+
+  // <if expr="is_win or is_macosx">
+  test('Open native certificate management', async () => {
+    const policyInfo: CertPolicyInfo = {
+      includeSystemTrustStore: true,
+      isIncludeSystemTrustStoreManaged: true,
+    };
+    testProxy.handler.setPolicyInformation(policyInfo);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getPolicyInformation');
+    await microtasksFinished();
+    assertFalse(
+        certManager.$.manageOsImportedCerts.hidden,
+        'imported os certs external link visibility wrong');
+    certManager.$.manageOsImportedCerts.click();
+    await testProxy.handler.whenCalled('showNativeManageCertificates');
+  });
+  // </if>
 });

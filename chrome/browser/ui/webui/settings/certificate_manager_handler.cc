@@ -44,6 +44,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/client_certificates_service.h"
 #include "components/enterprise/client_certificates/core/features.h"
@@ -386,3 +387,9 @@ void CertificateManagerPageHandler::GetPolicyInformation(
 #endif
   std::move(callback).Run(std::move(cert_policy_info));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void CertificateManagerPageHandler::ShowNativeManageCertificates() {
+  settings_utils::ShowManageSSLCertificates(web_contents_);
+}
+#endif

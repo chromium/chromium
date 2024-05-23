@@ -44,7 +44,9 @@ export interface CertificateManagerV2Element {
     importOsCerts: CrToggleElement,
     importOsCertsManagedIcon: HTMLElement,
     viewOsImportedCerts: HTMLElement,
+    // <if expr="is_win or is_macosx">
     manageOsImportedCerts: HTMLElement,
+    // </if>
   };
 }
 
@@ -115,6 +117,13 @@ export class CertificateManagerV2Element extends
   private computeImportOsCertsManaged_(): boolean {
     return this.certPolicy_.isIncludeSystemTrustStoreManaged;
   }
+
+  // <if expr="is_win or is_macosx">
+  private onManageCertsExternal_() {
+    const proxy = CertificatesV2BrowserProxy.getInstance();
+    proxy.handler.showNativeManageCertificates();
+  }
+  // </if>
 }
 
 declare global {

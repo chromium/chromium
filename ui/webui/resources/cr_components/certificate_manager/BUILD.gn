@@ -20,7 +20,10 @@ if (chrome_root_store_cert_management_ui) {
 
     enabled_features = []
     if (is_win || is_mac) {
-      enabled_features += [ "enable_provisioned_client_certs" ]
+      enabled_features += [
+        "enable_provisioned_client_certs",
+        "native_cert_management",
+      ]
     }
   }
 }
