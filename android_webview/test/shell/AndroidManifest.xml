@@ -124,6 +124,13 @@
               android:launchMode="singleTask"
               android:windowSoftInputMode="adjustPan">
     </activity>
+    <provider android:name="androidx.core.content.FileProvider"
+              android:exported="false"
+              android:authorities="org.chromium.android_webview.shell.fileprovider"
+              android:grantUriPermissions="true">
+              <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                  android:resource="@xml/provider_paths" />
+    </provider>
     <provider android:name="org.chromium.android_webview.services.DeveloperModeContentProvider"
               android:exported="true"
               android:authorities="org.chromium.android_webview.shell.DeveloperModeContentProvider"/>

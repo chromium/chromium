@@ -5,17 +5,29 @@
 package org.chromium.android_webview.test.devui;
 
 import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.greaterThan;
 
+import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.ListView;
 
 import androidx.test.espresso.DataInteraction;
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -136,19 +148,9 @@ public class NetLogsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    public void testCorrectNumberOfFiles() throws Throwable {
-        ListView filesList = mRule.getActivity().findViewById(R.id.net_log_list);
-        int totalNumFiles = filesList.getCount();
-        Assert.assertEquals(5, totalNumFiles);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
     public void testCorrectListDisplay() throws Throwable {
         ListView filesList = mRule.getActivity().findViewById(R.id.net_log_list);
-        int totalNumFiles = filesList.getCount();
-        Assert.assertEquals(5, totalNumFiles);
+        Assert.assertEquals(5, filesList.getCount());
 
         String package_num = "";
         DateFormat dateFormat = DateFormat.getDateTimeInstance();
@@ -168,6 +170,100 @@ public class NetLogsFragmentTest {
             String date = dateFormat.format(new Date(mFileTime + i));
 
             fileInteraction.onChildView(withId(R.id.file_time)).check(matches(withText(date)));
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testDeleteAllNetLogsButton() throws Throwable {
+        onView(withId(R.id.delete_all_net_logs_button)).perform(click());
+
+        ListView filesList = mRule.getActivity().findViewById(R.id.net_log_list);
+        Assert.assertEquals(0, filesList.getCount());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testSortedFiles() throws Throwable {
+        ListView filesList = mRule.getActivity().findViewById(R.id.net_log_list);
+
+        File prevFile = (File) filesList.getAdapter().getItem(0);
+        long prevTime = NetLogsFragment.getCreationTimeFromFileName(prevFile.getName());
+
+        for (int i = 1; i < filesList.getCount(); i++) {
+            File currFile = (File) filesList.getAdapter().getItem(i);
+            long currTime = NetLogsFragment.getCreationTimeFromFileName(currFile.getName());
+            assertThat(currTime, greaterThan(prevTime));
+
+            prevTime = currTime;
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMenuDelete() throws Throwable {
+        ListView filesList = mRule.getActivity().findViewById(R.id.net_log_list);
+        Assert.assertEquals(5, filesList.getCount());
+
+        File firstFile = (File) filesList.getAdapter().getItem(1);
+        String firstFileName = NetLogsFragment.getFilePackageName(firstFile);
+        onData(anything()).inAdapterView(withId(R.id.net_log_list)).atPosition(1).perform(click());
+        onView(withText(firstFileName)).perform(click());
+        onView(withText("Delete")).check(matches(isDisplayed()));
+        onView(withText("Delete")).perform(click());
+
+        Assert.assertEquals(4, filesList.getCount());
+
+        for (int i = 0; i < filesList.getCount(); i++) {
+            File file = (File) filesList.getAdapter().getItem(i);
+
+            // Ensuring that the remaining files are not the first file that was deleted.
+            Assert.assertNotEquals(NetLogsFragment.getFilePackageName(file), firstFileName);
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMenuShare() throws Throwable {
+        try {
+            Intents.init();
+
+            // Stub out the Intent to the File Provider, to verify the case where the File Provider
+            // Intent
+            // resolves.
+            intending(
+                            allOf(
+                                    IntentMatchers.hasAction(Intent.ACTION_CHOOSER),
+                                    IntentMatchers.hasExtra(
+                                            Intent.EXTRA_INTENT,
+                                            allOf(
+                                                    IntentMatchers.hasAction(Intent.ACTION_SEND),
+                                                    IntentMatchers.hasType("application/json")))))
+                    .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+            String firstFileName = NetLogsFragment.getFilePackageName(sMockFileList.get(1));
+            onData(anything())
+                    .inAdapterView(withId(R.id.net_log_list))
+                    .atPosition(1)
+                    .perform(click());
+            onView(withText(firstFileName)).perform(click());
+            onView(withText("Share")).check(matches(isDisplayed()));
+            onView(withText("Share")).perform(click());
+
+            intended(
+                    allOf(
+                            IntentMatchers.hasAction(Intent.ACTION_CHOOSER),
+                            IntentMatchers.hasExtra(
+                                    Intent.EXTRA_INTENT,
+                                    allOf(
+                                            IntentMatchers.hasAction(Intent.ACTION_SEND),
+                                            IntentMatchers.hasType("application/json")))));
+        } finally {
+            Intents.release();
         }
     }
 }

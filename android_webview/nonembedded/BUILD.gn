@@ -262,6 +262,7 @@ android_resources("devui_resources") {
     "java/res_devui/values/colors.xml",
     "java/res_devui/values/strings.xml",
     "java/res_devui/values/styles.xml",
+    "java/res_devui/xml/provider_paths.xml",
   ]
 }
 

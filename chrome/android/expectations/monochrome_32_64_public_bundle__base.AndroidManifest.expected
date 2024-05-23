@@ -172,6 +172,15 @@
     <meta-data android:name="com.samsung.android.sdk.multiwindow.penwindow.enable" android:value="true"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="5"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
+    <provider  # DIFF-ANCHOR: d3ae412b
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="$PACKAGE.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths"/>
+    </provider>  # DIFF-ANCHOR: d3ae412b
     <provider  # DIFF-ANCHOR: bc0a9a7a
         android:name="com.google.firebase.provider.FirebaseInitProvider"
         android:authorities="$PACKAGE.firebaseinitprovider"

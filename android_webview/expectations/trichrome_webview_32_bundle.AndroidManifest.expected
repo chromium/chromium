@@ -72,6 +72,15 @@
     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="0"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
+    <provider  # DIFF-ANCHOR: d3ae412b
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="$PACKAGE.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths"/>
+    </provider>  # DIFF-ANCHOR: d3ae412b
     <provider  # DIFF-ANCHOR: a5e78e63
         android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
         android:authorities="$PACKAGE.LicenseContentProvider"

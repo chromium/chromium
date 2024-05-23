@@ -6,6 +6,8 @@ package org.chromium.android_webview.devui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -13,20 +15,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.ui.widget.Toast;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -58,6 +66,12 @@ public class NetLogsFragment extends DevUiBaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Activity activity = (Activity) mContext;
         activity.setTitle("WebView Net Logs");
+
+        Button deleteAllNetLogsButton = view.findViewById(R.id.delete_all_net_logs_button);
+        deleteAllNetLogsButton.setOnClickListener(
+                (View flagButton) -> {
+                    deleteAllNetLogs();
+                });
 
         updateTotalCapacityText(view.findViewById(R.id.net_logs_total_capacity));
 
@@ -107,7 +121,23 @@ public class NetLogsFragment extends DevUiBaseFragment {
             }
         }
 
-        return allFiles;
+        return sortFilesForDisplay(allFiles);
+    }
+
+    public static List<File> sortFilesForDisplay(List<File> fileList) {
+        List<Long> timeList = new ArrayList<Long>();
+        HashMap<Long, File> fileMap = new HashMap<Long, File>();
+        for (int i = 0; i < fileList.size(); i++) {
+            Long creationTime = getCreationTimeFromFileName(fileList.get(i).getName());
+            fileMap.put(creationTime, fileList.get(i));
+            timeList.add(creationTime);
+        }
+        List<File> sortedFileList = new ArrayList<File>();
+        Collections.sort(timeList);
+        for (int i = timeList.size() - 1; i >= 0; i--) {
+            sortedFileList.add(fileMap.get(timeList.get(i)));
+        }
+        return sortedFileList;
     }
 
     public static Long getCreationTimeFromFileName(String fileName) {
@@ -138,6 +168,28 @@ public class NetLogsFragment extends DevUiBaseFragment {
     public static void updateFileListForTesting(File file) {
         ThreadUtils.assertOnUiThread();
         sFileList.add(file);
+    }
+
+    private static void deleteAllNetLogs() {
+        ArrayList<File> filesToDelete = new ArrayList<>(sFileList);
+        for (File file : filesToDelete) {
+            deleteNetLogFile(file);
+        }
+    }
+
+    private static void deleteNetLogFile(File file) {
+        if (file.exists()) {
+            long capacity = file.length();
+            boolean deleted = file.delete();
+            if (deleted) {
+                sFileList.remove(file);
+                sLogAdapter.remove(file);
+                sLogAdapter.notifyDataSetChanged();
+                sTotalBytes -= capacity;
+            } else {
+                Log.w(TAG, "Failed to delete file: " + file.getAbsolutePath());
+            }
+        }
     }
 
     public static String getFilePackageName(File file) {
@@ -214,17 +266,36 @@ public class NetLogsFragment extends DevUiBaseFragment {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             int id = item.getItemId();
+                            File file = getItem(position);
                             if (id == R.id.net_log_menu_delete) {
-                                // TODO(thomasbull): Implement Delete
+                                deleteNetLogFile(file);
                                 return true;
                             } else if (id == R.id.net_log_menu_share) {
-                                // TODO(thomasbull): Implement Share
+                                shareFile(file);
                                 return true;
                             }
                             return false;
                         }
                     });
             popup.show();
+        }
+
+        public void shareFile(File file) {
+            try {
+                Uri contentUri =
+                        FileProvider.getUriForFile(
+                                mContext, mContext.getPackageName() + ".fileprovider", file);
+
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("application/json");
+                intent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                startActivity(Intent.createChooser(intent, "Share JSON File"));
+            } catch (Exception e) {
+                Toast.makeText(mContext, "Error sharing net log file", Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Error sharing net log file:", e);
+            }
         }
     }
 }
