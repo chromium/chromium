@@ -165,8 +165,13 @@ void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
 
     app_menu_prompt_dismiss_timer_.Start(
         FROM_HERE, app_menu_remaining_duration, base::BindOnce([]() {
-          chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
-              BrowserList::GetInstance()->GetLastActive()->profile());
+          Browser* last_active = BrowserList::GetInstance()->GetLastActive();
+          // If there is no active browser, just dismiss the prompts and the
+          // prefs will be updated on the next startup.
+          if (last_active) {
+            chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
+                last_active->profile());
+          }
           DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
               CloseReason::kDismiss);
         }));

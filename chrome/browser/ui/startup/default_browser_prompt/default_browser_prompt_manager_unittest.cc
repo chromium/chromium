@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
@@ -385,4 +386,23 @@ TEST_F(DefaultBrowserPromptManagerTest, StopShowingIfFirstShownTimeTooOld) {
   EXPECT_EQ(base::Time::Now(),
             local_state()->GetTime(prefs::kDefaultBrowserLastDeclinedTime));
   EXPECT_EQ(2, local_state()->GetInteger(prefs::kDefaultBrowserDeclinedCount));
+}
+
+// This is a regression test for a crash that occurred when the default prompt
+// timer expired after a browser was closed.
+TEST_F(DefaultBrowserPromptManagerTest, DoesNotWritePrefWhenBrowserIsClosed) {
+  EnableDefaultBrowserPromptRefreshFeatureWithParams(
+      {{features::kShowDefaultBrowserAppMenuChip.name, "true"},
+       {features::kDefaultBrowserAppMenuDuration.name, "1d"}});
+  chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(profile());
+  manager()->MaybeShowPrompt();
+  EXPECT_TRUE(manager()->get_show_app_menu_prompt());
+  EXPECT_EQ(0, local_state()->GetInteger(prefs::kDefaultBrowserDeclinedCount));
+
+  // Close browser then trigger timer
+  BrowserList::RemoveBrowser(BrowserList::GetInstance()->GetLastActive());
+  task_environment()->FastForwardBy(base::Days(1));
+
+  EXPECT_FALSE(manager()->get_show_app_menu_prompt());
+  EXPECT_EQ(0, local_state()->GetInteger(prefs::kDefaultBrowserDeclinedCount));
 }
