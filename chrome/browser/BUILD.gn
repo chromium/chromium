@@ -4920,6 +4920,7 @@ static_library("browser") {
         "accessibility/live_caption/live_caption_unavailability_notifier.cc",
         "accessibility/live_caption/live_caption_unavailability_notifier.h",
       ]
+      deps += [ "//components/live_caption:utils" ]
     }
 
     if (is_mac) {

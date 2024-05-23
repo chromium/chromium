@@ -142,6 +142,8 @@ source_set("utils") {
   sources = [
     "caption_util.cc",
     "caption_util.h",
+    "translation_util.cc",
+    "translation_util.h",
   ]
 
   deps = [
@@ -149,6 +151,8 @@ source_set("utils") {
     "//base",
     "//components/prefs",
     "//media",
+    "//third_party/icu",
+    "//third_party/re2:re2",
     "//ui/base",
     "//ui/native_theme",
   ]
