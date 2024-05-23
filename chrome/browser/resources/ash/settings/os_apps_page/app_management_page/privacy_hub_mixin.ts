@@ -11,25 +11,59 @@ import {assertNotReached} from '//resources/js/assert.js';
 import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from '../../os_privacy_page/privacy_hub_browser_proxy.js';
 import {GeolocationAccessLevel} from '../../os_privacy_page/privacy_hub_geolocation_subpage.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
 export interface PrivacyHubMixinInterface {
+  microphoneHardwareToggleActive: boolean;
   isSensorBlocked(permissionType: PermissionTypeIndex|undefined): boolean;
 }
 
 export const PrivacyHubMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<PrivacyHubMixinInterface> => {
-      const superClassBase = PrefsMixin(superClass);
+      const superClassBase = WebUiListenerMixin(PrefsMixin(superClass));
 
       class PrivacyHubMixin extends superClassBase implements
           PrivacyHubMixinInterface {
+        static get properties() {
+          return {
+            microphoneHardwareToggleActive: {
+              type: Boolean,
+              value: false,
+            },
+          };
+        }
+
+        microphoneHardwareToggleActive: boolean;
+        private privacyHubBrowserProxy_: PrivacyHubBrowserProxy;
+
+        constructor() {
+          super();
+          this.privacyHubBrowserProxy_ =
+              PrivacyHubBrowserProxyImpl.getInstance();
+        }
+
+        override connectedCallback(): void {
+          super.connectedCallback();
+
+          this.addWebUiListener(
+              'microphone-hardware-toggle-changed', (enabled: boolean) => {
+                this.microphoneHardwareToggleActive = enabled;
+              });
+          this.privacyHubBrowserProxy_.getInitialMicrophoneHardwareToggleState()
+              .then((enabled: boolean) => {
+                this.microphoneHardwareToggleActive = enabled;
+              });
+        }
+
         // Access to Camera, Microphone and Location can be blocked system wide
         // from privacy hub. This function returns true if the relevant sensor
         // is blocked.

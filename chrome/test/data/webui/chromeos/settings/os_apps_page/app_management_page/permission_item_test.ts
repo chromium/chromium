@@ -12,6 +12,7 @@ import {AppManagementUserAction} from 'chrome://resources/cr_components/app_mana
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -295,6 +296,45 @@ suite('AppManagementPermissionItemTest', function() {
               'kMicrophone',
               loadTimeData.getString(
                   'permissionAllowedButNoMicrophoneConnectedText'));
+        });
+
+    test(
+        'Permission description updated when microphone hw switch ON',
+        async () => {
+          createPermissionItem('kMicrophone');
+
+          // Permission state is kAsk at the beginning of the test.
+          assertEquals(
+              loadTimeData.getString('appManagementPermissionAsk'),
+              getPermissionDescriptionString());
+
+          await togglePermission();
+
+          assertEquals(
+              loadTimeData.getString(
+                  'permissionAllowedButNoMicrophoneConnectedText'),
+              getPermissionDescriptionString());
+
+          await addFakeSensor(mediaDevices, 'kMicrophone');
+
+          assertEquals(
+              loadTimeData.getString('appManagementPermissionAllowed'),
+              getPermissionDescriptionString());
+
+          webUIListenerCallback('microphone-hardware-toggle-changed', true);
+          await waitAfterNextRender(permissionItem);
+
+          assertEquals(
+              loadTimeData.getString(
+                  'permissionAllowedButMicrophoneHwSwitchActiveText'),
+              getPermissionDescriptionString());
+
+          webUIListenerCallback('microphone-hardware-toggle-changed', false);
+          await waitAfterNextRender(permissionItem);
+
+          assertEquals(
+              loadTimeData.getString('appManagementPermissionAllowed'),
+              getPermissionDescriptionString());
         });
   });
 });

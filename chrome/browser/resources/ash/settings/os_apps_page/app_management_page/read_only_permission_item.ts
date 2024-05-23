@@ -115,7 +115,8 @@ export class AppManagementReadOnlyPermissionItemElement extends
         loadTimeData.getBoolean('privacyHubAppPermissionsV2Enabled') &&
         this.isSensorBlocked(permissionType);
     return getPermissionDescriptionString(
-        app, permissionType, this.sensorAvailable_, isSensorBlocked);
+        app, permissionType, this.sensorAvailable_, isSensorBlocked,
+        this.microphoneHardwareToggleActive);
   }
 
   private isManaged_(

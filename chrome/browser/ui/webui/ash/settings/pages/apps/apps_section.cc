@@ -561,6 +561,10 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_CAMERA_CONNECTED_TEXT_WITH_DETAILS},
       {"permissionAllowedButNoMicrophoneConnectedTextWithDetails",
        IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_MICROPHONE_CONNECTED_TEXT_WITH_DETAILS},
+      {"permissionAllowedButMicrophoneHwSwitchActiveText",
+       IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT},
+      {"permissionAllowedButMicrophoneHwSwitchActiveTextWithDetails",
+       IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT_WITH_DETAILS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
