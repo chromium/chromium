@@ -142,12 +142,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="IncorrectlyLocked"/>
 </enum>
 
-<enum name="CellularCarrierLockOobeResult">
-  <int value="0" label="DevModeCarrierLocked"/>
-  <int value="1" label="DevModeLocked"/>
-  <int value="2" label="DevModeUnlocked"/>
-</enum>
-
 <enum name="CellularCarrierLockProvisioningResult">
   <int value="0" label="ConfigLocked"/>
   <int value="1" label="ConfigUnlocked"/>
