@@ -24,23 +24,6 @@ constexpr size_t kLiveMailboxIndex = GL_MAILBOX_SIZE_CHROMIUM - 1;
 // work).
 constexpr int8_t kLiveMailboxFlag = 0x1;
 
-Mailbox GenerateMailbox() {
-  Mailbox result;
-  // Generates cryptographically-secure bytes.
-  base::RandBytes(base::as_writable_byte_span(result.name));
-
-  // Ensure that the mailbox is non-zero.
-  result.name[kLiveMailboxIndex] |= kLiveMailboxFlag;
-
-#if !defined(NDEBUG)
-  int8_t value = 1;
-  for (size_t i = 1; i < sizeof(result.name); ++i)
-    value ^= result.name[i];
-  result.name[0] = value;
-#endif
-  return result;
-}
-
 }  // namespace
 
 Mailbox::Mailbox() {
@@ -65,7 +48,21 @@ void Mailbox::SetName(const int8_t* n) {
 }
 
 Mailbox Mailbox::Generate() {
-  return GenerateMailbox();
+  Mailbox result;
+  // Generates cryptographically-secure bytes.
+  base::RandBytes(base::as_writable_byte_span(result.name));
+
+  // Ensure that the mailbox is non-zero.
+  result.name[kLiveMailboxIndex] |= kLiveMailboxFlag;
+
+#if !defined(NDEBUG)
+  int8_t value = 1;
+  for (size_t i = 1; i < sizeof(result.name); ++i) {
+    value ^= result.name[i];
+  }
+  result.name[0] = value;
+#endif
+  return result;
 }
 
 bool Mailbox::Verify() const {
