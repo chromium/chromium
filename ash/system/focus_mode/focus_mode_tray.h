@@ -75,6 +75,13 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // TODO(b/314022131): Move `TaskItemView` to its own files.
   class TaskItemView;
 
+  // Called when the selected task has been fetched from the tasks provider.
+  // Used to determine if it is completed or not.
+  void OnTaskFetched(const FocusModeTask& task_entry);
+
+  // Helper function for creating and setting up the `TaskItemView`.
+  void CreateTaskItemView(const std::string& task_title);
+
   // Updates the image and color of the icon.
   void UpdateTrayIcon();
 
@@ -92,7 +99,7 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
       const FocusModeSession::Snapshot& session_snapshot);
 
   // Called when the user clicks the radio button to mark a selected task as
-  // completed.
+  // completed, or if the task is already completed when we show the bubble.
   void OnCompleteTask();
 
   // Called when the animation in `AnimateBubbleResize` starts.

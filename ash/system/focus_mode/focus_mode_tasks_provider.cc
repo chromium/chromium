@@ -151,7 +151,7 @@ class TaskFetcher {
                   base::RepeatingClosure barrier,
                   bool success,
                   const ui::ListModel<api::Task>* api_tasks) {
-    // TODO: Skip completed tasks?
+    // NOTE: Completed tasks will not show up in `api_tasks`.
     if (success && api_tasks) {
       for (const auto& api_task : *api_tasks) {
         FocusModeTask& task = tasks_.emplace_back();
@@ -206,6 +206,16 @@ void FocusModeTasksProvider::GetSortedTaskList(OnGetTasksCallback callback) {
   ScheduleTaskListUpdate();
 }
 
+void FocusModeTasksProvider::GetTask(const std::string& task_list_id,
+                                     const std::string& task_id,
+                                     OnGetTaskCallback callback) {
+  api::TasksController::Get()->tasks_delegate()->GetTasks(
+      task_list_id, /*force_fetch=*/true,
+      base::BindOnce(&FocusModeTasksProvider::OnTasksFetchedForTask,
+                     weak_factory_.GetWeakPtr(), task_list_id, task_id,
+                     std::move(callback)));
+}
+
 void FocusModeTasksProvider::AddTask(const std::string& title,
                                      OnTaskSavedCallback callback) {
   if (task_list_for_new_task_.empty()) {
@@ -258,6 +268,36 @@ void FocusModeTasksProvider::OnTasksFetched() {
   for (auto& callback : pending) {
     std::move(callback).Run(tasks);
   }
+}
+
+void FocusModeTasksProvider::OnTasksFetchedForTask(
+    const std::string& task_list_id,
+    const std::string& task_id,
+    OnGetTaskCallback callback,
+    bool success,
+    const ui::ListModel<api::Task>* api_tasks) {
+  FocusModeTask task;
+
+  if (success) {
+    // NOTE: Completed tasks will not show up in `api_tasks`, so we first assume
+    // it's completed and update the state if the task is found in `api_tasks`.
+    // TODO: Can we actually verify that the task is complete instead of making
+    // this assumption?
+    task.task_list_id = task_list_id;
+    task.task_id = task_id;
+    task.completed = true;
+
+    for (const auto& api_task : *api_tasks) {
+      if (api_task->id == task_id) {
+        task.title = api_task->title;
+        task.updated = api_task->updated;
+        task.completed = api_task->completed;
+        break;
+      }
+    }
+  }
+
+  std::move(callback).Run(task);
 }
 
 void FocusModeTasksProvider::OnTaskSaved(const std::string& task_list_id,

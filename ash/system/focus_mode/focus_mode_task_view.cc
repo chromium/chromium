@@ -288,14 +288,29 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected) {
           &FocusModeTaskView::OnTaskSelected, base::Unretained(this))));
   auto* controller = FocusModeController::Get();
   const bool has_selected_task = controller->HasSelectedTask();
+  const std::string& selected_task_title = controller->selected_task_title();
   if (has_selected_task) {
-    task_title_ = base::UTF8ToUTF16(controller->selected_task_title());
+    // There is a chance that we have a selected task but the title isn't
+    // updated yet, since we do not save that to user prefs.
+    if (!selected_task_title.empty()) {
+      task_title_ = base::UTF8ToUTF16(selected_task_title);
+    }
+
+    if (is_network_connected) {
+      // Fetch the selected task to verify if it is still in the uncompleted
+      // state.
+      controller->tasks_provider().GetTask(
+          controller->selected_task_list_id(), controller->selected_task_id(),
+          base::BindOnce(&FocusModeTaskView::OnTaskFetched,
+                         weak_factory_.GetWeakPtr()));
+    }
   } else if (is_network_connected) {
     controller->tasks_provider().GetSortedTaskList(base::BindOnce(
         &FocusModeTaskView::OnTasksFetched, weak_factory_.GetWeakPtr()));
   }
 
-  UpdateStyle(/*show_selected_state=*/has_selected_task,
+  UpdateStyle(/*show_selected_state=*/(has_selected_task &&
+                                       !selected_task_title.empty()),
               /*is_network_connected=*/is_network_connected);
 
   textfield_controller_ =
@@ -412,6 +427,19 @@ void FocusModeTaskView::OnTasksFetched(
     const std::vector<FocusModeTask>& tasks) {
   chip_carousel_->SetTasks(tasks);
   chip_carousel_->SetVisible(!tasks.empty());
+}
+
+void FocusModeTaskView::OnTaskFetched(const FocusModeTask& task_entry) {
+  // If the selected task could not be found, then an error has occurred.
+  if (task_entry.task_id.empty()) {
+    return;
+  }
+
+  if (task_entry.completed) {
+    OnCompleteTask();
+  } else {
+    OnTaskSelected(task_entry);
+  }
 }
 
 void FocusModeTaskView::UpdateStyle(bool show_selected_state,

@@ -38,6 +38,8 @@ struct ASH_EXPORT FocusModeTask {
   std::string task_id;
   std::string title;
 
+  bool completed;
+
   // The time when this task was last updated.
   base::Time updated;
 
@@ -59,6 +61,9 @@ class ASH_EXPORT FocusModeTasksProvider {
   using OnGetTasksCallback =
       base::OnceCallback<void(const std::vector<FocusModeTask>& tasks)>;
 
+  using OnGetTaskCallback =
+      base::OnceCallback<void(const FocusModeTask& task_entry)>;
+
   FocusModeTasksProvider();
   FocusModeTasksProvider(const FocusModeTasksProvider&) = delete;
   FocusModeTasksProvider& operator=(const FocusModeTasksProvider&) = delete;
@@ -68,6 +73,15 @@ class ASH_EXPORT FocusModeTasksProvider {
   // in Focus Mode. The provided `callback` is invoked asynchronously when tasks
   // have been fetched.
   void GetSortedTaskList(OnGetTasksCallback callback);
+
+  // Gets an individual task from the `task_list_id` with `task_id`. Since
+  // completed tasks will not be returned by the delegate, we will update the
+  // `completed` field to signifiy if the task has been completed or not.
+  // Returns a `FocusModeTask` in `callback`, or an empty `FocusModeTask` if an
+  // error has occurred.
+  void GetTask(const std::string& task_list_id,
+               const std::string& task_id,
+               OnGetTaskCallback callback);
 
   // Creates a new task with name `title` and adds it to `task_list_`. Returns
   // the added `FocusModeTask` in `callback`, or an empty `FocusModeTask` if an
@@ -88,6 +102,11 @@ class ASH_EXPORT FocusModeTasksProvider {
 
  private:
   void OnTasksFetched();
+  void OnTasksFetchedForTask(const std::string& task_list_id,
+                             const std::string& task_id,
+                             OnGetTaskCallback callback,
+                             bool success,
+                             const ui::ListModel<api::Task>* api_tasks);
   void OnTaskSaved(const std::string& task_list_id,
                    const std::string& task_id,
                    bool completed,

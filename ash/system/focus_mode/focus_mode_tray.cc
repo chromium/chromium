@@ -341,13 +341,21 @@ void FocusModeTray::ShowBubble() {
   UpdateBubbleViews(session_snapshot_.value());
 
   if (controller->HasSelectedTask()) {
-    task_item_view_ =
-        bubble_view_container_->AddChildView(std::make_unique<TaskItemView>(
-            base::UTF8ToUTF16(controller->selected_task_title()),
-            base::BindRepeating(&FocusModeTray::OnCompleteTask,
-                                weak_ptr_factory_.GetWeakPtr())));
-    task_item_view_->SetProperty(views::kBoxLayoutFlexKey,
-                                 views::BoxLayoutFlexSpecification());
+    // There is a chance that we have a selected task but the title isn't
+    // updated yet, since we do not save that to user prefs.
+    if (const std::string& task_title = controller->selected_task_title();
+        !task_title.empty()) {
+      CreateTaskItemView(task_title);
+    }
+
+    if (glanceables_util::IsNetworkConnected()) {
+      // Fetch the selected task to verify if it is still in the uncompleted
+      // state.
+      controller->tasks_provider().GetTask(
+          controller->selected_task_list_id(), controller->selected_task_id(),
+          base::BindOnce(&FocusModeTray::OnTaskFetched,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
@@ -443,6 +451,47 @@ const views::Label* FocusModeTray::GetTaskTitleForTesting() const {
   return task_item_view_->GetTaskTitle();
 }
 
+void FocusModeTray::OnTaskFetched(const FocusModeTask& task_entry) {
+  if (!bubble_) {
+    return;
+  }
+
+  // If the selected task could not be found, then an error has occurred.
+  if (task_entry.task_id.empty()) {
+    return;
+  }
+
+  if (task_entry.completed) {
+    OnCompleteTask();
+    return;
+  }
+
+  // TODO(b/342268177): Move this to the `FocusModeController`.
+  FocusModeController::Get()->SetSelectedTask(task_entry);
+
+  if (!task_item_view_) {
+    CreateTaskItemView(task_entry.title);
+
+    // We need to update the bubble after creating the `task_item_view_` so the
+    // widget bounds are updated and shows the view.
+    bubble_->bubble_view()->UpdateBubble();
+  }
+}
+
+void FocusModeTray::CreateTaskItemView(const std::string& task_title) {
+  if (task_title.empty()) {
+    return;
+  }
+
+  task_item_view_ =
+      bubble_view_container_->AddChildView(std::make_unique<TaskItemView>(
+          base::UTF8ToUTF16(task_title),
+          base::BindRepeating(&FocusModeTray::OnCompleteTask,
+                              weak_ptr_factory_.GetWeakPtr())));
+  task_item_view_->SetProperty(views::kBoxLayoutFlexKey,
+                               views::BoxLayoutFlexSpecification());
+}
+
 void FocusModeTray::UpdateTrayIcon() {
   SkColor color;
   if (chromeos::features::IsJellyEnabled()) {
@@ -500,7 +549,6 @@ void FocusModeTray::OnCompleteTask() {
 
   task_item_view_->UpdateStyleToCompleted();
 
-  // TODO(b/309857026): Call the task API to mark the task as completed.
   FocusModeController::Get()->CompleteTask();
 
   // We want to show the check icon and a strikethrough on the label for

@@ -300,15 +300,15 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
   EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
 
   FocusModeController* controller = FocusModeController::Get();
-  const std::string task_name = "Podcast interview script";
+  const std::string task_name = "Task 1";
   const base::TimeDelta session_duration = base::Minutes(40);
   const std::u16string time_remaining = focus_mode_util::GetDurationString(
       session_duration, /*digital_format=*/false);
   controller->SetInactiveSessionDuration(session_duration);
 
   FocusModeTask task;
-  task.task_list_id = "abc";
-  task.task_id = "1";
+  task.task_list_id = "default";
+  task.task_id = "task1";
   task.title = task_name;
   task.updated = base::Time::Now();
 
