@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -83,8 +82,4 @@ public interface SuggestionHost {
 
     /** Clear focus, close the suggestions list and complete the interaction with the Omnibox. */
     void finishInteraction();
-
-    /** Returns query extracted from GURL. */
-    @Nullable
-    String queryFromGurl(GURL url);
 }

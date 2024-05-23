@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -68,7 +67,6 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -89,7 +87,6 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -110,7 +107,6 @@ import java.util.Set;
         manifest = Config.NONE,
         shadows = {
             AutocompleteMediatorUnitTest.ShadowCachedSuggestionsManager.class,
-            AutocompleteMediatorUnitTest.ShadowTemplateUrlServiceFactory.class,
             ShadowLooper.class
         })
 public class AutocompleteMediatorUnitTest {
@@ -139,7 +135,6 @@ public class AutocompleteMediatorUnitTest {
     private @Mock OmniboxActionDelegate mOmniboxActionDelegate;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeJniMock;
     private @Mock OmniboxActionFactoryJni mActionFactoryJni;
-    private @Mock TemplateUrlService mTemplateUrlService;
     private @Mock NavigationHandle mNavigationHandle;
     private @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private @Mock WindowAndroid mWindowAndroid;
@@ -157,17 +152,6 @@ public class AutocompleteMediatorUnitTest {
     private ModelList mSuggestionModels;
     private ObservableSupplierImpl<TabWindowManager> mTabWindowManagerSupplier;
     private Activity mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-
-    // TemplateUrlServiceFactory shadow that can return <null> TemplateUrlService.
-    @Implements(TemplateUrlServiceFactory.class)
-    public static class ShadowTemplateUrlServiceFactory {
-        public static TemplateUrlService sService;
-
-        @Implementation
-        public static TemplateUrlService getForProfile(Profile p) {
-            return sService;
-        }
-    }
 
     // Interface abstracting calls to CachedZeroSuggestionsManager, making interactions with that
     // more idiomatic.
@@ -202,7 +186,6 @@ public class AutocompleteMediatorUnitTest {
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
 
         doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
-        ShadowTemplateUrlServiceFactory.sService = mTemplateUrlService;
 
         mSuggestionModels = new ModelList();
         mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
@@ -1180,34 +1163,6 @@ public class AutocompleteMediatorUnitTest {
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(2, 100, 1, 100);
-    }
-
-    @Test
-    public void queryFromGurl_notServedBeforeProfile() {
-        GURL url = JUnitTestGURLs.BLUE_1;
-        assertNull(mMediator.queryFromGurl(url));
-        verifyNoMoreInteractions(mTemplateUrlService);
-    }
-
-    @Test
-    public void queryFromGurl_notServedIfTemplateUrlServiceIsNone() {
-        ShadowTemplateUrlServiceFactory.sService = null;
-        mMediator.setAutocompleteProfile(mProfile);
-
-        GURL url = JUnitTestGURLs.BLUE_1;
-        assertNull(mMediator.queryFromGurl(url));
-        verifyNoMoreInteractions(mTemplateUrlService);
-    }
-
-    @Test
-    public void queryFromGurl_servesDataFromTemplateUrlService() {
-        mMediator.setAutocompleteProfile(mProfile);
-
-        GURL url = JUnitTestGURLs.BLUE_1;
-        doReturn("query").when(mTemplateUrlService).getSearchQueryForUrl(url);
-        assertEquals("query", mMediator.queryFromGurl(url));
-        verify(mTemplateUrlService).getSearchQueryForUrl(url);
-        verifyNoMoreInteractions(mTemplateUrlService);
     }
 
     @Test

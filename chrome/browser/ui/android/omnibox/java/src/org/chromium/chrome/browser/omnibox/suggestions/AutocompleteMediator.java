@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFacto
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -55,7 +54,6 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -107,7 +105,6 @@ class AutocompleteMediator
     private @NonNull Optional<Runnable> mCurrentAutocompleteRequest = Optional.empty();
     private @NonNull Optional<Runnable> mDeferredLoadAction = Optional.empty();
     private @NonNull Optional<PropertyModel> mDeleteDialogModel = Optional.empty();
-    private @NonNull Optional<TemplateUrlService> mTemplateUrlService = Optional.empty();
 
     private boolean mNativeInitialized;
     private boolean mIsInZeroPrefixContext;
@@ -464,7 +461,6 @@ class AutocompleteMediator
         }
         mAutocomplete = AutocompleteController.getForProfile(profile);
         mAutocomplete.addOnSuggestionsReceivedListener(this);
-        mTemplateUrlService = Optional.ofNullable(TemplateUrlServiceFactory.getForProfile(profile));
         mDropdownViewInfoListBuilder.setProfile(profile);
 
         runPendingAutocompleteRequests();
@@ -652,11 +648,6 @@ class AutocompleteMediator
     @Override
     public void finishInteraction() {
         mDelegate.clearOmniboxFocus();
-    }
-
-    @Override
-    public @Nullable String queryFromGurl(GURL url) {
-        return mTemplateUrlService.map(svc -> svc.getSearchQueryForUrl(url)).orElse(null);
     }
 
     public void showDeleteDialog(
