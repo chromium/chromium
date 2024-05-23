@@ -1614,6 +1614,9 @@ static inline bool StringImplContentEqual(const StringImpl* a,
   if (a_length != b_length)
     return false;
 
+  if (!a_length)
+    return true;
+
   if (a->Is8Bit()) {
     if (b->Is8Bit())
       return Equal(a->Characters8(), b->Characters8(), a_length);
