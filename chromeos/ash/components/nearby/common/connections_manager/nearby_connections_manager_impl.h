@@ -229,6 +229,10 @@ class NearbyConnectionsManagerImpl
   // For metrics. A map of endpoint_id to current upgraded medium for V3
   // connections.
   base::flat_map<std::string, Medium> current_upgraded_mediums_v3_;
+  // For metrics. A map of endpoint_id to `base::TimeTicks` representing the
+  // start time when `ConnectV3()` is called.
+  base::flat_map<std::string, base::TimeTicks>
+      endpoint_id_to_connect_v3_start_time_;
 
   mojo::Receiver<EndpointDiscoveryListener> endpoint_discovery_listener_{this};
   mojo::ReceiverSet<ConnectionLifecycleListener>

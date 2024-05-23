@@ -693,6 +693,9 @@ void NearbyConnectionsManagerImpl::ConnectV3(
                      weak_ptr_factory_.GetWeakPtr(), endpoint_id));
   connect_timeout_timers_v3_.emplace(endpoint_id, std::move(timeout_timer));
 
+  endpoint_id_to_connect_v3_start_time_.emplace(endpoint_id,
+                                                base::TimeTicks::Now());
+
   auto presence_device =
       *endpoint_id_to_presence_device_map_.at(endpoint_id).get();
 
@@ -1062,7 +1065,8 @@ void NearbyConnectionsManagerImpl::OnConnectionResultV3(
   CD_LOG(INFO, Feature::NEARBY_INFRA) << __func__ << ": result=" << status;
 
   auto it = pending_outgoing_connections_.find(endpoint_id);
-  if (it == pending_outgoing_connections_.end()) {
+  if (it == pending_outgoing_connections_.end() ||
+      !base::Contains(endpoint_id_to_connect_v3_start_time_, endpoint_id)) {
     connection_listener_v3s_.ReportBadMessage(base::StringPrintf(
         "OnConnectionResultV3() received endpoint_id=%s which "
         "does not exist in connections V3",
@@ -1077,6 +1081,11 @@ void NearbyConnectionsManagerImpl::OnConnectionResultV3(
     std::move(it->second)
         .Run(
             /*nearby_connection=*/result.first->second.get());
+
+    base::UmaHistogramTimes(
+        "Nearby.Connections.V3.ConnectionResult.Success.Latency",
+        base::TimeTicks::Now() -
+            endpoint_id_to_connect_v3_start_time_.at(endpoint_id));
   } else {
     std::move(it->second).Run(/*nearby_connection=*/nullptr);
   }
@@ -1085,6 +1094,7 @@ void NearbyConnectionsManagerImpl::OnConnectionResultV3(
                                 status);
   pending_outgoing_connections_.erase(it);
   connect_timeout_timers_v3_.erase(endpoint_id);
+  endpoint_id_to_connect_v3_start_time_.erase(endpoint_id);
 }
 
 void NearbyConnectionsManagerImpl::OnDisconnectedV3(
@@ -1245,6 +1255,7 @@ void NearbyConnectionsManagerImpl::Reset() {
   on_bandwidth_changed_endpoint_ids_v3_.clear();
   current_upgraded_mediums_.clear();
   current_upgraded_mediums_v3_.clear();
+  endpoint_id_to_connect_v3_start_time_.clear();
 
   for (auto& entry : pending_outgoing_connections_) {
     std::move(entry.second).Run(/*connection=*/nullptr);

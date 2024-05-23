@@ -57,6 +57,9 @@ const std::vector<uint8_t> kInvalidBluetoothMacAddress = {0x07, 0x07, 0x07};
 // Timeout for initiating a connection to a remote device.
 constexpr base::TimeDelta kInitiateNearbyConnectionTimeout = base::Seconds(60);
 
+constexpr base::TimeDelta kConnectV3ToSuccessfulConnectionLatency =
+    base::Milliseconds(123u);
+
 void VerifyFileReadWrite(base::File& input_file, base::File& output_file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   const std::vector<uint8_t> expected_bytes(std::begin(kPayload),
@@ -498,6 +501,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
             EXPECT_FALSE(nearby_connection);
           }
         }));
+    task_environment_.FastForwardBy(kConnectV3ToSuccessfulConnectionLatency);
 
     request_connection_run_loop.Run();
     if (info_v3->authentication_status ==
@@ -2077,6 +2081,9 @@ TEST_F(NearbyConnectionsManagerImplTest, OnConnectionTimedOutV3) {
   on_connection_timed_out_run_loop.Run();
 
   EXPECT_FALSE(nearby_connection);
+  histogram_tester()->ExpectTimeBucketCount(
+      "Nearby.Connections.V3.ConnectionResult.Success.Latency",
+      kConnectV3ToSuccessfulConnectionLatency, 0);
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Accept) {
@@ -2097,6 +2104,9 @@ TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Accept) {
       "Nearby.Connections.V3.Connection.Result", Status::kSuccess, 1);
   histogram_tester()->ExpectTotalCount(
       "Nearby.Connections.V3.Connection.Result", 1);
+  histogram_tester()->ExpectTimeBucketCount(
+      "Nearby.Connections.V3.ConnectionResult.Success.Latency",
+      kConnectV3ToSuccessfulConnectionLatency, 1);
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Reject) {
@@ -2132,6 +2142,9 @@ TEST_F(NearbyConnectionsManagerImplTest, OnConnectionResultV3Rejected) {
       "Nearby.Connections.V3.Connection.Result", Status::kError, 1);
   histogram_tester()->ExpectTotalCount(
       "Nearby.Connections.V3.Connection.Result", 1);
+  histogram_tester()->ExpectTimeBucketCount(
+      "Nearby.Connections.V3.ConnectionResult.Success.Latency",
+      kConnectV3ToSuccessfulConnectionLatency, 0);
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, DisconnectV3) {
@@ -2147,6 +2160,10 @@ TEST_F(NearbyConnectionsManagerImplTest, DisconnectV3) {
                 /*is_incoming_connection=*/false,
                 nearby::connections::mojom::AuthenticationStatus::kSuccess),
             /*on_connection_result_status=*/Status::kSuccess);
+
+  histogram_tester()->ExpectTimeBucketCount(
+      "Nearby.Connections.V3.ConnectionResult.Success.Latency",
+      kConnectV3ToSuccessfulConnectionLatency, 1);
 
   base::RunLoop disconnect_run_loop;
   EXPECT_CALL(nearby_connections_, DisconnectFromDeviceV3)
