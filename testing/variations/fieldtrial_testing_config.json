@@ -2608,6 +2608,21 @@
             ]
         }
     ],
+    "BackToHomeAnimation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240423",
+                    "enable_features": [
+                        "BackToHomeAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackgroundCrxDownloaderMac": [
         {
             "platforms": [
