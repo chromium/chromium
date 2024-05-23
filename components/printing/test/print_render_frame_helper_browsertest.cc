@@ -648,12 +648,10 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
   };
   PixelCount CheckPixels(const Image& image,
                          uint32_t target_color,
-                         int width,
-                         int top,
-                         int bottom) {
+                         const gfx::Rect& rect) {
     PixelCount count;
-    for (int y = top; y < bottom; y++) {
-      for (int x = 0; x < width; x++) {
+    for (int y = rect.y(); y < rect.bottom(); y++) {
+      for (int x = rect.x(); x < rect.right(); x++) {
         uint32_t pixel = image.pixel_at(x, y);
         if (pixel == target_color) {
           count.with_target_color++;
@@ -1071,13 +1069,14 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooter) {
   ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
 
   // Look for the blue square in the header area.
-  PixelCount pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 24);
+  PixelCount pixel_count =
+      CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 24));
   EXPECT_EQ(pixel_count.with_target_color, 81u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 
   // Look for the yellow square in the footer area.
-  pixel_count =
-      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 24, kPageHeight);
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
   EXPECT_EQ(pixel_count.with_target_color, 81u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 
@@ -1088,14 +1087,14 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooter) {
   ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
 
   // Look for the blue square in the header area.
-  pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 24);
+  pixel_count = CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 24));
   EXPECT_EQ(pixel_count.with_target_color, 81u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 
   // Look for the yellow square in the footer area. It will be missing, because
   // the margin isn't large enough.
-  pixel_count =
-      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 21, kPageHeight);
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 21, kPageWidth, 21));
   EXPECT_EQ(pixel_count.with_target_color, 0u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 
@@ -1107,13 +1106,13 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooter) {
 
   // Look for the blue square in the header area. It will be missing, because
   // the margin isn't large enough.
-  pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 21);
+  pixel_count = CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 21));
   EXPECT_EQ(pixel_count.with_target_color, 0u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 
   // Look for the yellow square in the footer area.
-  pixel_count =
-      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 24, kPageHeight);
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
   EXPECT_EQ(pixel_count.with_target_color, 81u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 }
@@ -1181,13 +1180,14 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooterFitToPrinter) {
   ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
 
   // Look for the blue square in the header area.
-  PixelCount pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 24);
+  PixelCount pixel_count =
+      CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 24));
   EXPECT_EQ(pixel_count.with_target_color, 81u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 
   // Look for the yellow square in the footer area.
-  pixel_count =
-      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 24, kPageHeight);
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
   EXPECT_EQ(pixel_count.with_target_color, 81u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 
@@ -1201,14 +1201,14 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooterFitToPrinter) {
   // particular page is extral large, so there should be room for the header,
   // even if the margins have been scaled down along with the rest of the page
   // box.
-  pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 24);
+  pixel_count = CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 24));
   EXPECT_EQ(pixel_count.with_target_color, 81u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 
   // Look for the yellow square in the footer area. It shouldn't be there, since
   // there isn't enough room for it.
-  pixel_count =
-      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 24, kPageHeight);
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
   EXPECT_EQ(pixel_count.with_target_color, 0u);
   // Due to the margin downscaling, the red body background will intersect with
   // this area.
@@ -1223,15 +1223,15 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooterFitToPrinter) {
   // Look for the blue square in the header area. Even if the specified margins
   // on this particular page are 0, the page is small and centered on the page,
   // leaving plenty of space for headers and footers.
-  pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 24);
+  pixel_count = CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 24));
   EXPECT_EQ(pixel_count.with_target_color, 81u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 
   // Look for the yellow square in the footer area. Even if the specified
   // margins on this particular page are 0, the page is small and centered on
   // the page, leaving plenty of space for headers and footers.
-  pixel_count =
-      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 24, kPageHeight);
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
   EXPECT_EQ(pixel_count.with_target_color, 81u);
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 }
