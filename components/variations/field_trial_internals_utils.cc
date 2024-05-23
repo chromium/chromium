@@ -4,13 +4,13 @@
 
 #include "components/variations/field_trial_internals_utils.h"
 
-#include <string>
-
 #include <algorithm>
+#include <string>
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
-#include "base/strings/string_piece.h"
 #include "base/version.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -29,8 +29,8 @@ using variations::HashNameAsHexString;
 
 // Returns whether (`study_name`, `experiment_name`) is found in `studies`.
 bool ContainsExperiment(const std::vector<variations::StudyGroupNames>& studies,
-                        const base::StringPiece study_name,
-                        const base::StringPiece experiment_name) {
+                        const std::string_view study_name,
+                        const std::string_view experiment_name) {
   for (const auto& study : studies) {
     if (study.name == study_name) {
       if (base::Contains(study.groups, experiment_name)) {

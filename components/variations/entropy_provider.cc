@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -24,7 +25,7 @@ SHA1EntropyProvider::SHA1EntropyProvider(std::string_view entropy_source)
 SHA1EntropyProvider::~SHA1EntropyProvider() = default;
 
 double SHA1EntropyProvider::GetEntropyForTrial(
-    base::StringPiece trial_name,
+    std::string_view trial_name,
     uint32_t randomization_seed) const {
   // Given enough input entropy, SHA-1 will produce a uniformly random spread
   // in its output space. In this case, the input entropy that is used is the
@@ -56,7 +57,7 @@ NormalizedMurmurHashEntropyProvider::NormalizedMurmurHashEntropyProvider(
 NormalizedMurmurHashEntropyProvider::~NormalizedMurmurHashEntropyProvider() {}
 
 double NormalizedMurmurHashEntropyProvider::GetEntropyForTrial(
-    base::StringPiece trial_name,
+    std::string_view trial_name,
     uint32_t randomization_seed) const {
   if (randomization_seed == 0) {
     randomization_seed = internal::VariationsMurmurHash::Hash(
@@ -82,7 +83,7 @@ double NormalizedMurmurHashEntropyProvider::GetEntropyForTrial(
 SessionEntropyProvider::~SessionEntropyProvider() = default;
 
 double SessionEntropyProvider::GetEntropyForTrial(
-    base::StringPiece trial_name,
+    std::string_view trial_name,
     uint32_t randomization_seed) const {
   return base::RandDouble();
 }

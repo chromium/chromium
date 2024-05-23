@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -244,7 +245,7 @@ int ProcessedStudy::GetExperimentIndexByName(const std::string& name) const {
   return -1;
 }
 
-const base::StringPiece ProcessedStudy::GetDefaultExperimentName() const {
+const std::string_view ProcessedStudy::GetDefaultExperimentName() const {
   if (study_->default_experiment_name().empty())
     return kGenericDefaultExperimentName;
 

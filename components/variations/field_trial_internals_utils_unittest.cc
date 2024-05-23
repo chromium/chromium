@@ -4,6 +4,8 @@
 
 #include "components/variations/field_trial_internals_utils.h"
 
+#include <string_view>
+
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -24,7 +26,7 @@ using ::variations::prefs::kVariationsForcedFieldTrials;
 using ::variations::prefs::kVariationsForcedTrialExpiration;
 using ::variations::prefs::kVariationsForcedTrialStarts;
 
-variations::StudyGroupNames MakeStudy(base::StringPiece name) {
+variations::StudyGroupNames MakeStudy(std::string_view name) {
   variations::StudyGroupNames study;
   study.name = name;
   study.groups.push_back("On");

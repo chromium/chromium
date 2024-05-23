@@ -6,6 +6,7 @@
 #define COMPONENTS_VARIATIONS_PROCESSED_STUDY_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -67,7 +68,7 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
 
   // Gets the default experiment name for the study, or a generic one if none is
   // specified.
-  const base::StringPiece GetDefaultExperimentName() const;
+  const std::string_view GetDefaultExperimentName() const;
 
  private:
   // Corresponding Study object. Weak reference.

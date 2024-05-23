@@ -6,6 +6,8 @@
 
 #include <string.h>
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -16,7 +18,7 @@ namespace internal {
 
 // static
 std::vector<uint32_t> VariationsMurmurHash::StringToLE32(
-    base::StringPiece string) {
+    std::string_view string) {
   auto data = base::as_byte_span(string);
   const size_t data_size = data.size();
   const size_t full_words = data_size / 4u;

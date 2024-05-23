@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -167,7 +168,7 @@ ResourceRequestsAllowedState ResourceRequestStateToHistogramValue(
 // Returns the header value for |name| from |headers| or an empty string if not
 // set.
 std::string GetHeaderValue(const net::HttpResponseHeaders* headers,
-                           const base::StringPiece& name) {
+                           const std::string_view& name) {
   std::string value;
   headers->EnumerateHeader(nullptr, name, &value);
   return value;
@@ -177,7 +178,7 @@ std::string GetHeaderValue(const net::HttpResponseHeaders* headers,
 // set, return an empty list.
 std::vector<std::string> GetHeaderValuesList(
     const net::HttpResponseHeaders* headers,
-    const base::StringPiece& name) {
+    const std::string_view& name) {
   std::vector<std::string> values;
   size_t iter = 0;
   std::string value;

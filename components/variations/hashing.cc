@@ -6,16 +6,18 @@
 
 #include <string.h>
 
+#include <string_view>
+
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/stringprintf.h"
 
 namespace variations {
 
-uint32_t HashName(base::StringPiece name) {
+uint32_t HashName(std::string_view name) {
   return base::HashFieldTrialName(name);
 }
 
-std::string HashNameAsHexString(base::StringPiece name) {
+std::string HashNameAsHexString(std::string_view name) {
   return base::StringPrintf("%x", HashName(name));
 }
 

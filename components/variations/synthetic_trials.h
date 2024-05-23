@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -37,8 +38,8 @@ enum class SyntheticTrialAnnotationMode {
 // value.
 class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialGroup {
  public:
-  SyntheticTrialGroup(base::StringPiece trial_name,
-                      base::StringPiece group_name,
+  SyntheticTrialGroup(std::string_view trial_name,
+                      std::string_view group_name,
                       SyntheticTrialAnnotationMode annotation_mode);
 
   SyntheticTrialGroup(const SyntheticTrialGroup&);
@@ -46,8 +47,8 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialGroup {
   ~SyntheticTrialGroup() = default;
 
   base::FieldTrial::ActiveGroup active_group() const { return active_group_; }
-  base::StringPiece trial_name() const { return active_group_.trial_name; }
-  base::StringPiece group_name() const { return active_group_.group_name; }
+  std::string_view trial_name() const { return active_group_.trial_name; }
+  std::string_view group_name() const { return active_group_.group_name; }
   ActiveGroupId id() const { return id_; }
   base::TimeTicks start_time() const { return start_time_; }
   SyntheticTrialAnnotationMode annotation_mode() const {
@@ -55,8 +56,8 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialGroup {
   }
   bool is_external() const { return is_external_; }
 
-  void SetTrialName(base::StringPiece trial_name);
-  void SetGroupName(base::StringPiece group_name);
+  void SetTrialName(std::string_view trial_name);
+  void SetGroupName(std::string_view group_name);
   void SetStartTime(base::TimeTicks start_time) { start_time_ = start_time; }
   void SetAnnotationMode(SyntheticTrialAnnotationMode annotation_mode) {
     annotation_mode_ = annotation_mode;
