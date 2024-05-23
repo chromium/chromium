@@ -44,10 +44,36 @@ body {
 }
 ```
 
-`chrome/browser/resources/hello_world/app.html`
-```html
+`chrome/browser/resources/hello_world/app.css`
+```css
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#example-div {
+  color: blue;
+}
+```
+
+`chrome/browser/resources/hello_world/app.html.ts`
+```js
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {HelloWorldAppElement} from './app.js';
+
+export function getHtml(this: HelloWorldAppElement) {
+  return html`
 <h1>Hello World</h1>
-<div id="example-div">[[message_]]</div>
+<div id="example-div">${this.message_}</div>`;
+}
 ```
 
 `chrome/browser/resources/hello_world/app.ts`
@@ -55,26 +81,31 @@ body {
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './app.html.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-export class HelloWorldAppElement extends PolymerElement {
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
+
+export class HelloWorldAppElement extends CrLitElement {
   static get is() {
     return 'hello-world-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      message_: {
-        type: String,
-        value: () => loadTimeData.getString('message'),
-      },
+      message_: {String}
     };
   }
+
+  protected message_: string = loadTimeData.getString('message');
 }
 
 declare global {
@@ -84,26 +115,6 @@ declare global {
 }
 
 customElements.define(HelloWorldAppElement.is, HelloWorldAppElement);
-```
-
-Add a `tsconfig_base.json` file to configure TypeScript options. Typical
-options needed by Polymer UIs include:
-- disabling `noUncheckedIndexAccess`
-- disabling `noUnusedLocals`: private members from Elements are accessed from
-  their HTML template
-- disabling `strictPropertyInitialization`: Element properties can be
-  initialized via the `property` map.
-
-`chrome/browser/resources/hello_world/tsconfig_base.json`
-```json
-{
-  "extends": "../../../../tools/typescript/tsconfig_base.json",
-  "compilerOptions": {
-    "noUncheckedIndexedAccess": false,
-    "noUnusedLocals": false,
-    "strictPropertyInitialization": false
-  }
-}
 ```
 
 Add a `BUILD.gn` file to get TypeScript compilation and to generate the JS file
@@ -118,14 +129,11 @@ build_webui("build") {
 
   static_files = [ "hello_world.html", "hello_world.css" ]
 
-  web_component_files = [ "app.ts" ]
-
-  non_web_component_files = [
-    # For example the BrowserProxy file would go here.
-  ]
+  non_web_component_files = [ "app.ts", "app.html.ts" ]
+  css_files = [ "app.css" ]
 
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }
@@ -277,35 +285,20 @@ by the `WebUIController` subclass. It also can enable or disable the UI for
 different conditions (e.g. feature flag status). You can create a
 `WebUIConfig` subclass and register it in the `WebUIConfigMap` to ensure your
 request handler is instantiated and used to handle any requests to the desired
-scheme + host.
+scheme + host. If you don't need to pass any arguments to your controller
+class, inherit from `DefaultWebUIConfig` to reduce the amount of code required:
 
 `chrome/browser/ui/webui/hello_world/hello_world_ui.h`
 ```c++
-class HelloWorldUIConfig : public content::WebUIConfig {
+// Forward declaration so that config definition can come before controller.
+class HelloWorldUI;
+
+class HelloWorldUIConfig : public content::DefaultWebUIConfig<HelloWorldUI> {
  public:
-  HelloWorldUIConfig();
-  ~HelloWorldUIConfig() override;
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
+  HelloWorldUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIHelloWorldHost) {}
 };
-
-```
-
-`chrome/browser/ui/webui/hello_world/hello_world_ui.cc`
-```c++
-HelloWorldUIConfig::HelloWorldUIConfig()
-    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIHelloWorldHost) {}
-
-HelloWorldUIConfig::~HelloWorldUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-HelloWorldUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                         const GURL& url) {
-  return std::make_unique<HelloWorldUI>(web_ui);
-}
 ```
 
 Register your config in `chrome_web_ui_configs.cc`, for trusted UIs, or
@@ -440,15 +433,16 @@ Finally, you will need to do something to actually show your dialog, which can b
 ## More elaborate configurations
 
 ### Referencing resources from another webui page
+Any code that is located in `ui/webui/resources` and served from
+`chrome://resources` and `chrome-untrusted://resources` can be used from any
+WebUI page. If you want to share some additional code from another WebUI page
+that is not in the shared resources, first see
+[Sharing Code in WebUI](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_code_sharing.md) to determine the best approach.
 
-There are already mechanisms to make resources available chrome-wide, by
-publishing them under `chrome://resources`. If this is not appropriate, there
-are some ways to serve a file from some other webui page directly through
-another host.
+If you determine that the code should be narrowly shared, the following
+explains how to add the narrowly shared resources to your WebUI data source.
 
-First, a few explanations. The configuration based on the `build_webui()` BUILD
-target as presented above generates a few helpers that hide the complexity of
-the page's configuration. For example, considering the snippet below:
+In the snippet below:
 
 ```cpp
 //...
@@ -477,19 +471,25 @@ const webui::ResourcePath kHelloWorldResources[] = {
 };
 ```
 
-Using `WebUIDataSource::AddResourcePaths()` we can add other resources,
-looking for the right way to declare them by looking through the generated
-grit files (e.g. via codesearch), or manual registrations if they exist.
+Using `WebUIDataSource::AddResourcePaths()` we can add the resources from grit
+files that are generated by limited sharing `build_webui()` targets as follows:
 
 ```cpp
-#include "chrome/grit/signin_resources.h"
+#include "chrome/grit/foo_shared_resources.h"
+#include "chrome/grit/bar_shared_resources.h"
 // ...
 HelloWorldUI::HelloWorldUI(content::WebUI* web_ui) {
   // ...
+  // Add selected resources from foo_shared
   static constexpr webui::ResourcePath kResources[] = {
-      {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
-      {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
+      {"foo_shared/foo_shared.css.js", IDR_FOO_SHARED_FOO_SHARED_CSS_JS},
+      {"foo_shared/foo_shared_vars.css.js",
+       IDR_FOO_SHARED_FOO_SHARED_VARS_CSS_JS},
   };
   source->AddResourcePaths(kResources);
+
+  // Add all shared resources from bar_shared
+  source->AddResourcePaths(
+      base::make_span(kBarSharedResources, kBarSharedResourcesSize));
 }
 ```

@@ -387,6 +387,11 @@ if (!enterKey) {
 
 ## Polymer
 
+***note
+Lit is now recommended (over Polymer) for any new WebUI development. The
+guide below still applies for the many existing Polymer UIs in the codebase.
+***
+
 Also see the [Google Polymer Style Guide](http://go/polymer-style).
 
 * Elements with UI should have their HTML in a .html file and logic in a TS file
@@ -399,7 +404,7 @@ Also see the [Google Polymer Style Guide](http://go/polymer-style).
   }
 ```
 
-* In new code, use class based syntax for custom elements. Example:
+* Use class based syntax for custom elements. Example:
 ```js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './my_app.html.js';
@@ -516,6 +521,10 @@ https://www.polymer-project.org/2.0/docs/devguide/templates#dom-if):
     * Include the SVG in a WebUI page-specific icon file. e.g. `chrome/browser/resources/settings/icons.html`.
     * If reused across multiple WebUI pages, include the SVG in `ui/webui/resources/cr_elements/icons.html` .
   * You may copy the SVG code from [iron-icons files](https://github.com/PolymerElements/iron-icons/blob/master/iron-icons.js).
+
+## Lit
+Lit is now recommended (over Polymer) for new WebUI development. Guidance on
+Lit use in Chromium can be found in a [dedicated doc](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md).
 
 ## Grit processing
 
