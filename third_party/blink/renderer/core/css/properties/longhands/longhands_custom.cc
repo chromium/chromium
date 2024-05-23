@@ -10847,11 +10847,8 @@ const CSSValue* WillChange::ParseSingleValue(
       }
     }
 
-    if (stream.AtEnd()) {
-      break;
-    }
     if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
-      return nullptr;
+      break;
     }
   }
 

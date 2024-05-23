@@ -4171,15 +4171,20 @@ CSSValue* ConsumeFilterFunctionList(CSSParserTokenStream& stream,
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   do {
+    CSSParserSavePoint savepoint(stream);
     CSSValue* filter_value = ConsumeUrl(stream, context);
     if (!filter_value) {
       filter_value = ConsumeFilterFunction(stream, context);
       if (!filter_value) {
-        return nullptr;
+        break;
       }
     }
+    savepoint.Release();
     list->Append(*filter_value);
   } while (!stream.AtEnd());
+  if (list->length() == 0) {
+    return nullptr;
+  }
   return list;
 }
 
