@@ -26,6 +26,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/common/process_type.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -136,7 +137,9 @@ const char kHistogramLargestContentfulPaintMainFrameContentType[] =
 const char kHistogramLargestContentfulPaintCrossSiteSubFrame[] =
     "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2."
     "CrossSiteSubFrame";
-
+const char kHistogramLargestContentfulPaintSetSpeculationRulesPrerender[] =
+    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2."
+    "SetSpeculationRulesPrerender";
 const char kHistogramNumInteractions[] =
     "PageLoad.InteractiveTiming.NumInteractions";
 const char kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[] =
@@ -911,30 +914,41 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
               .GetLargestContentfulPaintHandler()
               .MergeMainFrameAndSubframes();
   if (all_frames_largest_contentful_paint.ContainsValidTime()) {
+    const base::TimeDelta lcp_time =
+        all_frames_largest_contentful_paint.Time().value();
     if (WasStartedInForegroundOptionalEventInForeground(
             all_frames_largest_contentful_paint.Time(), GetDelegate())) {
-      EmitLCPTraceEvent(all_frames_largest_contentful_paint.Time().value());
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaint,
-                          all_frames_largest_contentful_paint.Time().value());
+      EmitLCPTraceEvent(lcp_time);
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaint, lcp_time);
+
+      if (content::WebContents* web_contents = GetDelegate().GetWebContents()) {
+        if (content::PreloadingData* preloading_data =
+                content::PreloadingData::GetForWebContents(web_contents)) {
+          if (preloading_data->HasSpeculationRulesPrerender()) {
+            PAGE_LOAD_HISTOGRAM(
+                internal::
+                    kHistogramLargestContentfulPaintSetSpeculationRulesPrerender,
+                lcp_time);
+          }
+        }
+      }
       // The pseudo metric of |kHistogramLargestContentfulPaint|. Only used to
       // assess field trial data quality.
       PAGE_LOAD_HISTOGRAM(
           "UMA.Pseudo.PageLoad.PaintTiming.NavigationToLargestContentfulPaint2",
-          metrics::GetPseudoMetricsSample(
-              all_frames_largest_contentful_paint.Time().value()));
+          metrics::GetPseudoMetricsSample(lcp_time));
       UMA_HISTOGRAM_ENUMERATION(
           internal::kHistogramLargestContentfulPaintContentType,
           all_frames_largest_contentful_paint.TextOrImage());
       TRACE_EVENT_MARK_WITH_TIMESTAMP1(
           "loading", "NavStartToLargestContentfulPaint::AllFrames::UMA",
-          GetDelegate().GetNavigationStart() +
-              all_frames_largest_contentful_paint.Time().value(),
-          "data", all_frames_largest_contentful_paint.DataAsTraceValue());
+          GetDelegate().GetNavigationStart() + lcp_time, "data",
+          all_frames_largest_contentful_paint.DataAsTraceValue());
     } else {
       PAGE_LOAD_HISTOGRAM(
           internal::
               kBackgroundHttpsOrDataOrFileSchemeHistogramLargestContentfulPaint,
-          all_frames_largest_contentful_paint.Time().value());
+          lcp_time);
     }
   }
 

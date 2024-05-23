@@ -45,6 +45,8 @@ extern const char kHistogramLargestContentfulPaintContentType[];
 extern const char kHistogramLargestContentfulPaintMainFrame[];
 extern const char kHistogramLargestContentfulPaintMainFrameContentType[];
 extern const char kHistogramLargestContentfulPaintCrossSiteSubFrame[];
+extern const char
+    kHistogramLargestContentfulPaintSetSpeculationRulesPrerender[];
 extern const char kHistogramParseBlockedOnScriptLoad[];
 extern const char kHistogramParseBlockedOnScriptExecution[];
 

@@ -94,6 +94,7 @@ class CONTENT_EXPORT PreloadingData {
   // Please see content/browser/preloading/preloading_data_impl.cc for more
   // details.
   static PreloadingData* GetOrCreateForWebContents(WebContents* web_contents);
+  static PreloadingData* GetForWebContents(WebContents* web_contents);
 
   // Helper method to return the PreloadingURLMatchCallback for
   // `destination_url`. This method will return true only for exact matches to
@@ -145,6 +146,10 @@ class CONTENT_EXPORT PreloadingData {
   virtual void SetIsNavigationInDomainCallback(
       PreloadingPredictor predictor,
       PredictorDomainCallback is_navigation_in_domain_callback) = 0;
+
+  // This flag will be true if there's been at least 1 attempt to do a
+  // speculation-rules based prerender.
+  virtual bool HasSpeculationRulesPrerender() = 0;
 
  protected:
   virtual ~PreloadingData() = default;

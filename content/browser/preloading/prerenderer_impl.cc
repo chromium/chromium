@@ -241,6 +241,10 @@ bool PrerendererImpl::MaybePrerender(
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       &rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
+  auto* preloading_data = static_cast<PreloadingDataImpl*>(
+      PreloadingData::GetOrCreateForWebContents(web_contents));
+  preloading_data->SetHasSpeculationRulesPrerender();
+
   IncrementReceivedPrerendersCountForMetrics(
       PreloadingTriggerTypeFromSpeculationInjectionType(
           candidate->injection_type),

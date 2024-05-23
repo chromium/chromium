@@ -3367,6 +3367,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.SetSpeculationRulesPrerender"
+    units="ms" expires_after="2024-11-01">
+  <owner>yoichio@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
+  <summary>
+    Similar to PaintTiming.NavigationToLargestContentfulPaint2, this measures
+    the time from navigation timing's navigation start to the time the largest
+    content (text or image) is first painted only for pages using Speculation
+    Rules API and calls Prerender2, across all frames. Excludes any content
+    painted after user input. Includes content that has been removed from the
+    page. See web.dev/lcp for more details.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.{Scheme}"
     units="ms" expires_after="2024-06-30">
   <owner>iclelland@chromium.org</owner>

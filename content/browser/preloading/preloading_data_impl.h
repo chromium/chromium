@@ -86,6 +86,8 @@ class CONTENT_EXPORT PreloadingDataImpl
       PreloadingPredictor predictor) {
     return is_navigation_in_predictor_domain_callbacks_.count(predictor);
   }
+  void SetHasSpeculationRulesPrerender();
+  bool HasSpeculationRulesPrerender() override;
 
   void AddPreloadingPrediction(const PreloadingPredictor& predictor,
                                PreloadingConfidence confidence,
@@ -178,6 +180,10 @@ class CONTENT_EXPORT PreloadingDataImpl
   // Stores all the preloading predictions that are happening for the next
   // navigation until the navigation takes place.
   std::vector<PreloadingPrediction> preloading_predictions_;
+
+  // This flag will be true if there's been at least 1 attempt to do a
+  // speculation-rules based prerender.
+  bool has_speculation_rules_prerender_ = false;
 
   // The random seed used to determine if a preloading attempt should be sampled
   // in UKM logs. We use a different random seed for each session and then hash

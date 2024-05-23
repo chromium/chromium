@@ -99,6 +99,11 @@ PreloadingData* PreloadingData::GetOrCreateForWebContents(
 }
 
 // static
+PreloadingData* PreloadingData::GetForWebContents(WebContents* web_contents) {
+  return PreloadingDataImpl::FromWebContents(web_contents);
+}
+
+// static
 PreloadingDataImpl* PreloadingDataImpl::GetOrCreateForWebContents(
     WebContents* web_contents) {
   auto* preloading_impl = PreloadingDataImpl::FromWebContents(web_contents);
@@ -371,6 +376,13 @@ void PreloadingDataImpl::SetIsAccurateTriggeringAndPrediction(
     RecordPredictionPrecisionToUMA(prediction);
     UpdatePredictionRecallStats(prediction);
   }
+}
+
+void PreloadingDataImpl::SetHasSpeculationRulesPrerender() {
+  has_speculation_rules_prerender_ = true;
+}
+bool PreloadingDataImpl::HasSpeculationRulesPrerender() {
+  return has_speculation_rules_prerender_;
 }
 
 void PreloadingDataImpl::RecordMetricsForPreloadingAttempts(
