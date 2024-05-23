@@ -33,7 +33,9 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
 
   // Implementation of corresponding JNI methods in
   // DigitalIdentityProviderAndroid.Natives.*
-  void OnReceive(JNIEnv*, jstring vc, jint status_for_metrics);
+  void OnReceive(JNIEnv*,
+                 jstring j_digital_identity,
+                 jint j_status_for_metrics);
 
   // Triggers a request for a digital credential.
   void Request(content::WebContents* web_contents,

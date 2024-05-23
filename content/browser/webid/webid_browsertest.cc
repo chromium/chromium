@@ -1050,9 +1050,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       .WillOnce(WithArg<3>(
           [kIdentityProviderResponse](
               DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run(
-                kIdentityProviderResponse,
-                DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
+            std::move(callback).Run(kIdentityProviderResponse);
           }));
 
   EXPECT_EQ(kIdentityProviderResponse, RunDigitalIdentityValidRequest(shell()));
@@ -1074,9 +1072,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                 "NotAllowedError: Only one navigator.credentials.get request "
                 "may be outstanding at one time.",
                 ExtractJsError(RunDigitalIdentityValidRequest(shell())));
-            std::move(callback).Run(
-                "test-mdoc",
-                DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
+            std::move(callback).Run("test-mdoc");
           }));
 
   EXPECT_EQ("test-mdoc", RunDigitalIdentityValidRequest(shell()));
@@ -1095,9 +1091,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   EXPECT_CALL(*digital_identity_provider, Request(_, _, _, _))
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run(
-                "test-mdoc", DigitalIdentityProvider::RequestStatusForMetrics::
-                                 kErrorUserDeclined);
+            std::move(callback).Run(base::unexpected(
+                DigitalIdentityProvider::RequestStatusForMetrics::
+                    kErrorUserDeclined));
           }));
 
   EXPECT_EQ("NetworkError: Error retrieving a token.",
@@ -1118,9 +1114,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   EXPECT_CALL(*digital_identity_provider, Request(_, _, _, _))
       .WillOnce(WithArg<3>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run(
-                "test-mdoc",
-                DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
+            std::move(callback).Run("test-mdoc");
           }));
 
   RunDigitalIdentityValidRequest(shell());

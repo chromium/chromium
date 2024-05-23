@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/flags.h"
@@ -111,27 +112,26 @@ DigitalIdentityRequestImpl::DigitalIdentityRequestImpl(
 DigitalIdentityRequestImpl::~DigitalIdentityRequestImpl() = default;
 
 void DigitalIdentityRequestImpl::CompleteRequest(
-    const std::string& response,
-    RequestStatusForMetrics status_for_metrics) {
-  CompleteRequestWithStatus(
-      (status_for_metrics == RequestStatusForMetrics::kSuccess)
-          ? RequestDigitalIdentityStatus::kSuccess
-          : RequestDigitalIdentityStatus::kError,
-      response, status_for_metrics);
+    const base::expected<std::string, RequestStatusForMetrics>& response) {
+  CompleteRequestWithStatus(response.has_value()
+                                ? RequestDigitalIdentityStatus::kSuccess
+                                : RequestDigitalIdentityStatus::kError,
+                            response);
 }
 
 void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
     RequestDigitalIdentityStatus status,
-    const std::string& response,
-    RequestStatusForMetrics status_for_metrics) {
+    const base::expected<std::string, RequestStatusForMetrics>& response) {
   // Invalidate pending requests in case that the request gets aborted.
   weak_ptr_factory_.InvalidateWeakPtrs();
   provider_.reset();
 
   base::UmaHistogramEnumeration("Blink.DigitalIdentityRequest.Status",
-                                status_for_metrics);
+                                response.has_value()
+                                    ? RequestStatusForMetrics::kSuccess
+                                    : response.error());
 
-  std::move(callback_).Run(status, response);
+  std::move(callback_).Run(status, base::OptionalFromExpected(response));
 }
 
 std::string BuildRequest(blink::mojom::DigitalCredentialProviderPtr provider) {
@@ -178,7 +178,7 @@ void DigitalIdentityRequestImpl::Request(
   callback_ = std::move(callback);
 
   if (!render_frame_host().HasTransientUserActivation()) {
-    CompleteRequest("", RequestStatusForMetrics::kErrorOther);
+    CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
     return;
   }
 
@@ -188,7 +188,7 @@ void DigitalIdentityRequestImpl::Request(
       BuildRequest(std::move(digital_credential_provider));
 
   if (!request_json_string || request_to_send.empty()) {
-    CompleteRequest("", RequestStatusForMetrics::kErrorOther);
+    CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
     return;
   }
 
@@ -200,8 +200,9 @@ void DigitalIdentityRequestImpl::Request(
 }
 
 void DigitalIdentityRequestImpl::Abort() {
-  CompleteRequestWithStatus(RequestDigitalIdentityStatus::kErrorCanceled, "",
-                            RequestStatusForMetrics::kErrorAborted);
+  CompleteRequestWithStatus(
+      RequestDigitalIdentityStatus::kErrorCanceled,
+      base::unexpected(RequestStatusForMetrics::kErrorAborted));
 }
 
 void DigitalIdentityRequestImpl::OnRequestJsonParsed(
@@ -213,15 +214,14 @@ void DigitalIdentityRequestImpl::OnRequestJsonParsed(
     GetUIThreadTaskRunner()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
-                       weak_ptr_factory_.GetWeakPtr(), "fake_test_token",
-                       RequestStatusForMetrics::kSuccess),
+                       weak_ptr_factory_.GetWeakPtr(), "fake_test_token"),
         base::Milliseconds(1));
     return;
   }
 
   provider_ = GetContentClient()->browser()->CreateDigitalIdentityProvider();
   if (!provider_) {
-    CompleteRequest("", RequestStatusForMetrics::kErrorOther);
+    CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
     return;
   }
 
@@ -236,23 +236,31 @@ void DigitalIdentityRequestImpl::OnRequestJsonParsed(
 
 void DigitalIdentityRequestImpl::ShowInterstitialIfNeeded(
     bool is_only_requesting_age,
-    const std::string& response,
-    RequestStatusForMetrics status_for_metrics) {
-  if (status_for_metrics != RequestStatusForMetrics::kSuccess) {
-    CompleteRequest("", status_for_metrics);
+    base::expected<std::string, RequestStatusForMetrics> response) {
+  if (!response.has_value()) {
+    CompleteRequest(response);
     return;
   }
 
   if (!render_frame_host().IsActive()) {
-    CompleteRequest("", RequestStatusForMetrics::kErrorOther);
+    CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
     return;
   }
 
   GetContentClient()->browser()->ShowDigitalIdentityInterstitialIfNeeded(
       *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
       is_only_requesting_age,
-      base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
-                     weak_ptr_factory_.GetWeakPtr(), response));
+      base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
+                     weak_ptr_factory_.GetWeakPtr(), response.value()));
+}
+
+void DigitalIdentityRequestImpl::OnInterstitialDone(
+    const std::string& response,
+    RequestStatusForMetrics status_after_interstitial) {
+  CompleteRequest(
+      status_after_interstitial == RequestStatusForMetrics::kSuccess
+          ? base::expected<std::string, RequestStatusForMetrics>(response)
+          : base::unexpected(status_after_interstitial));
 }
 
 }  // namespace content

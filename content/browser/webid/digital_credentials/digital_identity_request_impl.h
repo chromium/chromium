@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/document_service.h"
@@ -65,19 +66,29 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // Called after fetching the user's identity. Shows an interstitial if needed.
   void ShowInterstitialIfNeeded(
       bool is_only_requesting_age,
-      const std::string& response,
-      DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics);
+      base::expected<std::string,
+                     DigitalIdentityProvider::RequestStatusForMetrics>
+          response);
+
+  // Called when the user has fulfilled the interstitial requirement. Will be
+  // called immediately after ShowInterstitialIfNeeded() if no interstitial is
+  // needed.
+  void OnInterstitialDone(const std::string& response,
+                          DigitalIdentityProvider::RequestStatusForMetrics
+                              status_after_interstitial);
 
   // Infers one of [kError, kSuccess] for RequestDigitalIdentityStatus based on
   // `status_for_metrics`.
   void CompleteRequest(
-      const std::string& response,
-      DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics);
+      const base::expected<std::string,
+                           DigitalIdentityProvider::RequestStatusForMetrics>&
+          status_for_metrics);
 
   void CompleteRequestWithStatus(
       blink::mojom::RequestDigitalIdentityStatus status,
-      const std::string& response,
-      DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics);
+      const base::expected<std::string,
+                           DigitalIdentityProvider::RequestStatusForMetrics>&
+          response);
 
   std::unique_ptr<DigitalIdentityProvider> provider_;
   RequestCallback callback_;

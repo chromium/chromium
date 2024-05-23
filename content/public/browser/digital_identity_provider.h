@@ -6,13 +6,13 @@
 #define CONTENT_PUBLIC_BROWSER_DIGITAL_IDENTITY_PROVIDER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
-
-#include <string>
 
 namespace content {
 
@@ -44,8 +44,7 @@ class CONTENT_EXPORT DigitalIdentityProvider {
   DigitalIdentityProvider& operator=(const DigitalIdentityProvider&) = delete;
 
   using DigitalIdentityCallback = base::OnceCallback<void(
-      const std::string&,
-      RequestStatusForMetrics status_for_metrics)>;
+      base::expected<std::string, RequestStatusForMetrics>)>;
   virtual void Request(WebContents* web_contents,
                        const url::Origin& origin,
                        const std::string& request,

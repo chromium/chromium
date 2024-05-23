@@ -97,5 +97,6 @@ void DigitalIdentityProviderDesktop::OnQrCodeDialogCanceled() {
     return;
   }
 
-  std::move(callback_).Run("", RequestStatusForMetrics::kErrorOther);
+  std::move(callback_).Run(
+      base::unexpected(RequestStatusForMetrics::kErrorOther));
 }
