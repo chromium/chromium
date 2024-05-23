@@ -265,8 +265,9 @@ void CloudFileSystem::OnReadFileFromCacheCompleted(
   }
 
   if (result == base::File::FILE_ERROR_NOT_FOUND) {
-    // The file doesn't exist in the cache, we need to make a cloud request
-    // first and write the result into the cache upon successful return.
+    // The file doesn't exist in the cache or is not available, we need to make
+    // a cloud request first and attempt to write the result into the cache upon
+    // successful return.
     file_system_->ReadFile(
         file_handle, buffer.get(), offset, length,
         base::BindRepeating(&CloudFileSystem::OnReadFileCompleted,

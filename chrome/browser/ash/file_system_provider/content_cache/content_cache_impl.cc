@@ -354,6 +354,10 @@ void ContentCacheImpl::ReadBytes(
     VLOG(1) << "Cache miss: not possible to read the file on disk";
     callback.Run(/*bytes_read=*/-1, /*has_more=*/false,
                  base::File::FILE_ERROR_NOT_FOUND);
+    if (file.version_tag != ctx.version_tag()) {
+      // The cached file is out of date.
+      Evict(file.file_path);
+    }
     return;
   }
 

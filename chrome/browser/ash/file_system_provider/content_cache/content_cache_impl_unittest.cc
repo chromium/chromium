@@ -426,18 +426,24 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
-       ReadBytesShouldReturnNotFoundIfVersionTagMismatch) {
+       ReadBytesShouldReturnNotFoundAndEvictIfVersionTagMismatch) {
   // Write to cache a file with `versionA`.
   const base::FilePath fsp_path("random-path");
-  WriteFileToCache(fsp_path, "versionA", kDefaultChunkSize);
+  OpenedCloudFile file =
+      WriteFileToCache(fsp_path, "versionA", kDefaultChunkSize);
+  content_cache_->CloseFile(file);
 
-  // Attempt to read from the cache the same file with `versionB`.
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
-                       ++request_id_,
-                       /*version_tag=*/"versionB", kDefaultChunkSize);
-  EXPECT_THAT(ReadBytesFromContentCache(file, /*buffer=*/nullptr,
+  // Attempt to read from the cache the same file with `versionB`. Expect this
+  // leads to a NOT_FOUND and the eviction and removal of the cached file.
+  std::unique_ptr<base::RunLoop> run_loop =
+      CreateItemRemovedRunLoop(fsp_path, /*bytes_removed*/ kDefaultChunkSize);
+  OpenedCloudFile file2(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                        ++request_id_,
+                        /*version_tag=*/"versionB", kDefaultChunkSize);
+  EXPECT_THAT(ReadBytesFromContentCache(file2, /*buffer=*/nullptr,
                                         /*offset=*/0, kDefaultChunkSize),
               Pair(-1, base::File::FILE_ERROR_NOT_FOUND));
+  run_loop->Run();
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
