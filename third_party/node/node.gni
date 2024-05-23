@@ -20,28 +20,16 @@ template("node") {
     # When use_remoteexec=true or use_siso=true, node actions run on remote
     # Linux worker. So it should include linux node binary in inputs.
     if (is_linux || is_chromeos || use_remoteexec || use_siso) {
-      inputs += [
-        "//third_party/node/linux/node-linux-x64.tar.gz.sha1",
-        "//third_party/node/linux/node-linux-x64/bin/node",
-      ]
+      inputs += [ "//third_party/node/linux/node-linux-x64/bin/node" ]
     }
     if (is_win && host_os == "win") {
-      inputs += [
-        "//third_party/node/win/node.exe",
-        "//third_party/node/win/node.exe.sha1",
-      ]
+      inputs += [ "//third_party/node/win/node.exe" ]
     }
     if (is_mac && host_os == "mac") {
       if (host_cpu == "arm64") {
-        inputs += [
-          "//third_party/node/mac/node-darwin-arm64.tar.gz.sha1",
-          "//third_party/node/mac/node-darwin-arm64/bin/node",
-        ]
+        inputs += [ "//third_party/node/mac_arm64/node-darwin-arm64/bin/node" ]
       } else {
-        inputs += [
-          "//third_party/node/mac/node-darwin-x64.tar.gz.sha1",
-          "//third_party/node/mac/node-darwin-x64/bin/node",
-        ]
+        inputs += [ "//third_party/node/mac/node-darwin-x64/bin/node" ]
       }
     }
   }
