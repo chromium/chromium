@@ -129,14 +129,18 @@ NSString* BannerImageName(bool landscape) {
   [super viewWillLayoutSubviews];
   [self updateTableViewHeightConstraint];
   self.bannerName = BannerImageName(IsLandscape(self.view.window));
-  // Make the navigation bar buttons white when the banner is visible.
-  self.navigationController.navigationBar.tintColor =
-      self.shouldHideBanner ? nil : UIColor.whiteColor;
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  // Make the navigation bar buttons white when the banner is visible.
+  self.navigationController.navigationBar.tintColor =
+      self.shouldHideBanner ? nil : UIColor.whiteColor;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
