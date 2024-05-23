@@ -320,6 +320,12 @@ class BrowserSetLastActiveWaiter : public BrowserListObserver {
 // Toggles browser fullscreen mode, then wait for its completion.
 void ToggleFullscreenModeAndWait(Browser* browser);
 
+// Waits until |browser| becomes active.
+void WaitUntilBrowserBecomeActive(Browser* browser);
+
+// Returns true if |browser| is active.
+bool IsBrowserActive(Browser* browser);
+
 // Waits for |browser| becomes the last active browser.
 // By default, the waiting will be satisfied if the expected |browser| is the
 // last active browser in BrowserList. In most cases, this is enough for the
