@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include <climits>
+#include <initializer_list>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
+#include "base/check.h"
 #include "base/functional/function_ref.h"
+#include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -75,6 +79,8 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
     PWAProtocolTestWithoutApp::SetUpOnMainThread();
     override_registration_ =
         web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+    test_data_path_ =
+        base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
   }
 
   void TearDownOnMainThread() override {
@@ -148,13 +154,21 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
     EXPECT_TRUE(AppExists(InstallableWebAppManifestId()));
   }
 
+  void InstallFromUrl(const ManifestId& manifest_id, const GURL& url) {
+    EXPECT_TRUE(SendCommandSync("PWA.install",
+                                base::Value::Dict{}
+                                    .Set("manifestId", manifest_id.spec())
+                                    .Set("installUrlOrBundleUrl", url.spec())));
+    EXPECT_TRUE(AppExists(manifest_id));
+  }
+
+  void InstallFromMatchingUrlAndManifestId(
+      const GURL& install_url_and_manifest_id) {
+    InstallFromUrl(install_url_and_manifest_id, install_url_and_manifest_id);
+  }
+
   void InstallFromUrl() {
-    EXPECT_TRUE(SendCommandSync(
-        "PWA.install",
-        base::Value::Dict{}
-            .Set("manifestId", InstallableWebAppManifestId().spec())
-            .Set("installUrlOrBundleUrl", InstallableWebAppUrl().spec())));
-    EXPECT_TRUE(AppExists(InstallableWebAppManifestId()));
+    InstallFromUrl(InstallableWebAppManifestId(), InstallableWebAppUrl());
   }
 
   static GURL UpperCaseScheme(const GURL& origin) {
@@ -165,8 +179,8 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
     return GURL{spec};
   }
 
-  void AssertActiveWebContentsIs(const GURL& url,
-                                 const webapps::AppId& app_id) {
+  void AssertActiveWebContentsBelongToApp(const GURL& url,
+                                          const webapps::AppId& app_id) {
     content::WebContents* contents =
         chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(contents);
@@ -178,15 +192,37 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
     EXPECT_EQ(*contents_app_id, app_id);
   }
 
-  void AssertActiveWebContentsIs(const ManifestId& manifest_id) {
-    AssertActiveWebContentsIs(
+  void AssertActiveWebContentsBelongToApp(const ManifestId& manifest_id) {
+    AssertActiveWebContentsBelongToApp(
         manifest_id, web_app::GenerateAppIdFromManifestId(manifest_id));
+  }
+
+  base::Value::List AbsolutePaths(std::initializer_list<std::string> paths) {
+    base::Value::List result{};
+    for (const auto& path : paths) {
+      result.Append(
+          test_data_path_.Append(FILE_PATH_LITERAL("chrome/test/data"))
+              .AppendASCII(path)
+              .AsUTF8Unsafe());
+    }
+    return result;
+  }
+
+  bool AttachToLaunchFilesInAppResult() {
+    const base::Value::List* ids = result()->FindList("targetIds");
+    if (ids == nullptr || ids->size() != 1 || !ids->front().is_string()) {
+      return false;
+    }
+    return SendCommandSync(
+        "Target.attachToTarget",
+        base::Value::Dict{}.Set("targetId", ids->front().GetString()));
   }
 
  private:
   net::test_server::EmbeddedTestServerHandle test_server_closer_;
   std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
+  base::FilePath test_data_path_;
 };
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTestWithoutApp, GetOsAppState_CannotFindApp) {
@@ -481,6 +517,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
   ASSERT_FALSE(SendCommandSync(
       "PWA.install",
       base::Value::Dict{}.Set("manifestId", HasManifestIdWebAppUrl().spec())));
+  ASSERT_TRUE(error());
   const std::string& message = *error()->FindString("message");
   ASSERT_NE(message.find(HasManifestIdWebAppUrl().spec()), std::string::npos);
   ASSERT_FALSE(AppExists(HasManifestIdWebAppManifestId()));
@@ -530,6 +567,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_Unreachable) {
       base::Value::Dict{}
           .Set("manifestId", InstallableWebAppManifestId().spec())
           .Set("installUrlOrBundleUrl", "http://hello/this/is/not/existing")));
+  ASSERT_TRUE(error());
   const std::string& message = *error()->FindString("message");
   ASSERT_NE(message.find(InstallableWebAppUrl().spec()), std::string::npos);
   ASSERT_NE(message.find("http://hello/this/is/not/existing"),
@@ -543,6 +581,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_UnmatchManifestId) {
       base::Value::Dict{}
           .Set("manifestId", NotInstallableWebAppUrl().spec())
           .Set("installUrlOrBundleUrl", InstallableWebAppUrl().spec())));
+  ASSERT_TRUE(error());
   const std::string& message = *error()->FindString("message");
   ASSERT_NE(message.find(InstallableWebAppUrl().spec()), std::string::npos);
   ASSERT_NE(message.find(NotInstallableWebAppUrl().spec()), std::string::npos);
@@ -633,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch) {
       "PWA.launch", base::Value::Dict{}.Set(
                         "manifestId", InstallableWebAppManifestId().spec())));
   ASSERT_FALSE(error());
-  AssertActiveWebContentsIs(InstallableWebAppUrl());
+  AssertActiveWebContentsBelongToApp(InstallableWebAppUrl());
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_ReturnsAttachableTargetId) {
@@ -692,14 +731,11 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_NoApp) {
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_InFullScreenMode) {
   GURL url{embedded_test_server()->GetURL("/web_apps/display_fullscreen.html")};
-  ASSERT_TRUE(SendCommandSync("PWA.install",
-                              base::Value::Dict{}
-                                  .Set("manifestId", url.spec())
-                                  .Set("installUrlOrBundleUrl", url.spec())));
+  InstallFromMatchingUrlAndManifestId(url);
   ASSERT_TRUE(SendCommandSync(
       "PWA.launch", base::Value::Dict{}.Set("manifestId", url.spec())));
   ASSERT_FALSE(error());
-  AssertActiveWebContentsIs(url);
+  AssertActiveWebContentsBelongToApp(url);
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl) {
@@ -709,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl) {
                         .Set("manifestId", InstallableWebAppManifestId().spec())
                         .Set("url", InstallableWebAppUrl().spec())));
   ASSERT_FALSE(error());
-  AssertActiveWebContentsIs(InstallableWebAppUrl());
+  AssertActiveWebContentsBelongToApp(InstallableWebAppUrl());
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl_InScope) {
@@ -721,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl_InScope) {
                         .Set("manifestId", InstallableWebAppManifestId().spec())
                         .Set("url", url.spec())));
   ASSERT_FALSE(error());
-  AssertActiveWebContentsIs(
+  AssertActiveWebContentsBelongToApp(
       url, web_app::GenerateAppIdFromManifestId(InstallableWebAppManifestId()));
 }
 
@@ -757,6 +793,196 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl_OutOfScopeUrl) {
   ASSERT_TRUE(error());
   const std::string& message = *error()->FindString("message");
   ASSERT_NE(message.find("https://www.google.com"), std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp) {
+  GURL url{embedded_test_server()->GetURL("/web_apps/file_handler_index.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  ASSERT_TRUE(
+      SendCommandSync("PWA.launchFilesInApp",
+                      base::Value::Dict{}
+                          .Set("manifestId", url.spec())
+                          .Set("files", AbsolutePaths({"cors-ok.txt"}))));
+  ASSERT_TRUE(AttachToLaunchFilesInAppResult());
+  AssertActiveWebContentsBelongToApp(
+      embedded_test_server()->GetURL("/web_apps/file_handler_action.html"),
+      web_app::GenerateAppIdFromManifestId(url));
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_MultipleFiles) {
+  GURL url{embedded_test_server()->GetURL("/web_apps/file_handler_index.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.launchFilesInApp",
+      base::Value::Dict{}
+          .Set("manifestId", url.spec())
+          .Set("files",
+               AbsolutePaths({"cors-ok.txt", "download-autoopen.txt"}))));
+  ASSERT_TRUE(AttachToLaunchFilesInAppResult());
+  AssertActiveWebContentsBelongToApp(
+      embedded_test_server()->GetURL("/web_apps/file_handler_action.html"),
+      web_app::GenerateAppIdFromManifestId(url));
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_RepeatedFiles) {
+  GURL url{embedded_test_server()->GetURL("/web_apps/file_handler_index.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.launchFilesInApp",
+      base::Value::Dict{}
+          .Set("manifestId", url.spec())
+          .Set("files", AbsolutePaths({"cors-ok.txt", "cors-ok.txt"}))));
+  ASSERT_TRUE(AttachToLaunchFilesInAppResult());
+  AssertActiveWebContentsBelongToApp(
+      embedded_test_server()->GetURL("/web_apps/file_handler_action.html"),
+      web_app::GenerateAppIdFromManifestId(url));
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_MultipleTypes) {
+  GURL url{embedded_test_server()->GetURL(
+      "/webapps_integration/file_handler/basic.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.launchFilesInApp",
+      base::Value::Dict{}
+          .Set("manifestId", url.spec())
+          .Set("files",
+               AbsolutePaths({"cors-ok.txt", "web_apps/basic-192.png"}))));
+  ASSERT_TRUE(result()->FindList("targetIds")->size() == 2);
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
+                       LaunchFilesInApp_OneTypeMultipleFilesPerRequest) {
+  GURL url{embedded_test_server()->GetURL(
+      "/webapps_integration/file_handler/basic.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.launchFilesInApp",
+      base::Value::Dict{}
+          .Set("manifestId", url.spec())
+          .Set("files",
+               AbsolutePaths({"cors-ok.txt", "download-autoopen.txt"}))));
+  ASSERT_TRUE(AttachToLaunchFilesInAppResult());
+  // Multiple-Clients launch type should open one page per file.
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.launchFilesInApp",
+      base::Value::Dict{}
+          .Set("manifestId", url.spec())
+          .Set("files", AbsolutePaths({"web_apps/basic-192.png",
+                                       "web_apps/basic-48.png"}))));
+  ASSERT_TRUE(result()->FindList("targetIds")->size() == 2);
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
+                       LaunchFilesInApp_MultipleTypesMultipleFiles) {
+  GURL url{embedded_test_server()->GetURL(
+      "/webapps_integration/file_handler/basic.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.launchFilesInApp",
+      base::Value::Dict{}
+          .Set("manifestId", url.spec())
+          .Set("files",
+               AbsolutePaths({"web_apps/basic-192.png", "web_apps/basic-48.png",
+                              "cors-ok.txt", "download-autoopen.txt"}))));
+  ASSERT_TRUE(result()->FindList("targetIds")->size() == 3);
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_PartiallyUnsupported) {
+  GURL url{embedded_test_server()->GetURL(
+      "/webapps_integration/file_handler/basic.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.launchFilesInApp",
+      base::Value::Dict{}
+          .Set("manifestId", url.spec())
+          .Set("files",
+               AbsolutePaths({"web_apps/basic-192.png", "web_apps/basic-48.png",
+                              "web_apps/basic.html", "cors-ok.txt",
+                              "download-autoopen.txt"}))));
+  ASSERT_TRUE(result()->FindList("targetIds")->size() == 3);
+}
+
+// TODO(crbug.com/331214986): May want a test to trigger the LaunchFilesInApp
+// failure in LaunchApp callback.
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_PartiallyFailed) {
+  GURL url{embedded_test_server()->GetURL(
+      "/webapps_integration/file_handler/basic.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  // The action for "jpg" is out of scope, and should be ignored.
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.launchFilesInApp",
+      base::Value::Dict{}
+          .Set("manifestId", url.spec())
+          .Set("files",
+               AbsolutePaths({"web_apps/basic-192.png", "web_apps/basic-48.png",
+                              "web_apps/basic.html", "cors-ok.txt",
+                              "android/watch.jpg", "download-autoopen.txt"}))));
+  ASSERT_TRUE(result()->FindList("targetIds")->size() == 3);
+}
+
+// The existence of the files should be checked somewhere, but now the launch
+// app command still succeed. So this test does not check the return value of
+// the command, but only ensure it won't crash the browser.
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_NonexistentFiles) {
+  GURL url{embedded_test_server()->GetURL(
+      "/webapps_integration/file_handler/basic.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  SendCommandSync("PWA.launchFilesInApp",
+                  base::Value::Dict{}
+                      .Set("manifestId", url.spec())
+                      .Set("files", "/hey/this/file/should/not/exist.txt"));
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_NoFileHandlers) {
+  InstallFromUrl();
+  ASSERT_FALSE(SendCommandSync(
+      "PWA.launchFilesInApp",
+      base::Value::Dict{}
+          .Set("manifestId", InstallableWebAppManifestId().spec())
+          .Set("files", AbsolutePaths({"cors-ok.txt"}))));
+  ASSERT_TRUE(error());
+  const std::string& message = *error()->FindString("message");
+  ASSERT_NE(message.find(InstallableWebAppManifestId().spec()),
+            std::string::npos);
+}
+
+// This scenario does not reach the handler itself, but it's worth ensuring that
+// running pWA.launchFilesInApp without "files" parameter would always fail.
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_NoFilesField) {
+  GURL url{embedded_test_server()->GetURL(
+      "/webapps_integration/file_handler/basic.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  ASSERT_FALSE(
+      SendCommandSync("PWA.launchFilesInApp",
+                      base::Value::Dict{}.Set("manifestId", url.spec())));
+  ASSERT_TRUE(error());
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_NoFile) {
+  GURL url{embedded_test_server()->GetURL(
+      "/webapps_integration/file_handler/basic.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  ASSERT_FALSE(SendCommandSync("PWA.launchFilesInApp",
+                               base::Value::Dict{}
+                                   .Set("manifestId", url.spec())
+                                   .Set("files", base::Value::List{})));
+  ASSERT_TRUE(error());
+  const std::string& message = *error()->FindString("message");
+  ASSERT_NE(message.find(url.spec()), std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_UnsupportedFile) {
+  GURL url{embedded_test_server()->GetURL("/web_apps/file_handler_index.html")};
+  InstallFromMatchingUrlAndManifestId(url);
+  ASSERT_FALSE(SendCommandSync("PWA.launchFilesInApp",
+                               base::Value::Dict{}
+                                   .Set("manifestId", url.spec())
+                                   .Set("files", AbsolutePaths({"file.png"}))));
+  ASSERT_TRUE(error());
+  const std::string& message = *error()->FindString("message");
+  ASSERT_NE(message.find(url.spec()), std::string::npos);
 }
 
 }  // namespace
