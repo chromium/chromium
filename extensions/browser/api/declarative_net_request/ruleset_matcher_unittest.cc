@@ -48,13 +48,6 @@ namespace dnr_api = api::declarative_net_request;
 
 using RulesetMatcherTest = ExtensionsTest;
 
-RequestParams CreateRequestWithResponseHeaders(
-    const GURL& url,
-    const net::HttpResponseHeaders* headers) {
-  return RequestParams(url, url::Origin(), dnr_api::ResourceType::kSubFrame,
-                       dnr_api::RequestMethod::kGet, -1, headers);
-}
-
 // Tests a simple blocking rule.
 TEST_F(RulesetMatcherTest, BlockingRule) {
   TestRule rule = CreateGenericRule();

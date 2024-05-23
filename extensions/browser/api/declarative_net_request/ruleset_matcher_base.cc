@@ -270,6 +270,9 @@ void RulesetMatcherBase::OnDidFinishNavigation(
   // be matched here, similar to what's done in the webrequest event router for
   // OnBeforeRequest and OnHeadersReceived.
   if (navigation_handle->GetResponseHeaders()) {
+    // The allow rule cache from `params` does not need to be copied into
+    // `params_with_headers` since it won't have an effect on the final value of
+    // `frame_action`.
     RequestParams params_with_headers(host, navigation_handle->IsPost(),
                                       navigation_handle->GetResponseHeaders());
     // Take the matching allowAllRequests action with the highest priority

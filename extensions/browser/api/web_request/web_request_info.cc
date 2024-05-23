@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/web_request/web_request_info.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -21,6 +22,7 @@
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#include "extensions/common/extension_id.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
@@ -274,8 +276,19 @@ void WebRequestInfo::EraseOutprioritizedDNRActions() {
     std::erase_if(
         *dnr_actions,
         [this](const declarative_net_request::RequestAction& action) {
-          return action.index_priority <
-                 allow_rule_max_priority[action.extension_id].value_or(0);
+          // Check that the cache contains the action's extension ID
+          // to make sure that rule matching was performed for that
+          // extension.
+          DCHECK(
+              base::Contains(max_priority_allow_action, action.extension_id));
+
+          uint64_t allow_rule_priority_for_extension = 0u;
+          if (auto& allow_action =
+                  max_priority_allow_action.at(action.extension_id)) {
+            allow_rule_priority_for_extension = allow_action->index_priority;
+          }
+
+          return action.index_priority < allow_rule_priority_for_extension;
         });
   }
 }

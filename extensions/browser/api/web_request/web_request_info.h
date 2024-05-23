@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "content/public/browser/global_routing_id.h"
@@ -188,11 +189,12 @@ struct WebRequestInfo {
       dnr_actions;
 
   // A map from an extension ID to the highest priority matching allow or
-  // allowAllRequests rule's priority for this request. This is set from the
-  // same field as what's in declarative_net_request::RequestParams so it can be
-  // used between different request stages where DNR rules will be matched.
-  mutable base::flat_map<ExtensionId, std::optional<uint64_t>>
-      allow_rule_max_priority;
+  // allowAllRequests rule for this request. This is set from the same field as
+  // what's in declarative_net_request::RequestParams so it can be used between
+  // different request stages where DNR rules will be matched.
+  mutable base::flat_map<ExtensionId,
+                         std::optional<declarative_net_request::RequestAction>>
+      max_priority_allow_action;
 
   const bool is_service_worker_script;
 

@@ -374,6 +374,13 @@ void OnDNRActionMatched(content::BrowserContext* browser_context,
 
   action_tracker.OnRuleMatched(action, request);
   action.tracked = true;
+
+  // If `action` is tracked and it may match an entry in
+  // `request.max_priority_allow_action`, the entry doesn't need to have its
+  // `tracked` updated.
+  // `request.ShouldRecordMatchedAllowRuleInOnHeadersReceived` will only record
+  // an allow rule matched in OnHeadersReceived with a greater priority than one
+  // matched in OnBeforeRequest.
 }
 
 using CallbacksForPageLoad = std::list<base::OnceClosure>;

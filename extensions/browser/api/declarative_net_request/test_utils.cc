@@ -17,6 +17,7 @@
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
+#include "extensions/browser/api/declarative_net_request/request_params.h"
 #include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
@@ -24,6 +25,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions::declarative_net_request {
@@ -572,6 +574,13 @@ base::flat_set<int> GetDisabledRuleIdsFromMatcherForTesting(
     return matcher->GetDisabledRuleIdsForTesting();
   }
   return {};
+}
+
+RequestParams CreateRequestWithResponseHeaders(
+    const GURL& url,
+    const net::HttpResponseHeaders* headers) {
+  return RequestParams(url, url::Origin(), dnr_api::ResourceType::kSubFrame,
+                       dnr_api::RequestMethod::kGet, -1, headers);
 }
 
 }  // namespace extensions::declarative_net_request

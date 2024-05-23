@@ -7766,6 +7766,12 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
        blank_resp_header_action},
       {12, 200, "modifyHeaders", "f.test2", blank_header_condition,
        std::nullopt, blank_resp_header_action},
+
+      // Used for sub-test 7.
+      {13, 1000, "modifyHeaders", "g.test", std::nullopt,
+       blank_req_header_action},
+      {14, 102, "allow", "g.test"},
+      {15, 101, "block", "g.test", blank_header_condition},
   };
 
   std::vector<TestRule> rules;
@@ -7832,6 +7838,13 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
       // header conditions in the onHeadersReceived phase.
       {"f.test", "1"},
       {"f.test2", "12"},
+
+      // Sub-test 7:
+      // In OnBeforeRequest, rule 13 (modify request headers) matches since it
+      // outprioritizes rule 14 (allow). However, rule 14 carries over to
+      // OnHeadersReceived where it outprioritizes both rules 1 and 15 (it
+      // prevents the latter rule from blocking the request) so it is matched.
+      {"g.test", "13,14"},
   };
 
   for (const auto& test_case : test_cases) {
@@ -7905,12 +7918,11 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
 
       // In onBeforeRequest, `extension_2_allow` takes precedence over
       // `before_request_allow` since extension 2 was more recently installed.
-      // Once the request reaches onHeadersReceived, it should match with
+      // Once the request reaches onHeadersReceived, `headers_received_allow`
+      // matches, but only `extension_2_allow` should be tracked since it
+      // carries over to onHeadersReceived and outprioritizes
       // `headers_received_allow`.
-      // TODO(crbug.com/40727004): this should not match anything for
-      // `extension_1` since `extension_2_allow` carries over to
-      // onHeadersReceived and should outprioritize `headers_received_allow`.
-      {"google.xyz", "2", "3"},
+      {"google.xyz", "", "3"},
   };
 
   for (const auto& test_case : test_cases) {

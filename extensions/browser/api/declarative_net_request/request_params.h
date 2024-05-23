@@ -67,12 +67,15 @@ struct RequestParams {
   url_pattern_index::UrlPatternIndexMatcher::EmbedderConditionsMatcher
       embedder_conditions_matcher;
 
-  // A map from an extension ID to the priority of its CompositeMatcher's
-  // highest priority matching allow or allowAllRequests rule (for the request
-  // associated with this instance) if there is one, or std::nullopt otherwise.
-  // Used as a cache to prevent additional calls to GetAction.
-  mutable base::flat_map<ExtensionId, std::optional<uint64_t>>
-      allow_rule_max_priority;
+  // A map from an extension ID to its CompositeMatcher's highest priority
+  // matching allow or allowAllRequests rule (for the request associated with
+  // this instance). Used as a cache to prevent additional calls to GetAction.
+  // - If there is no entry for an extension ID: the extension's rulesets have
+  // not matched against this request yet.
+  // - If the entry for the extension ID is nullopt: the extension has no
+  // matching allow/allowAllRequest rules for this request.
+  mutable base::flat_map<ExtensionId, std::optional<RequestAction>>
+      max_priority_allow_action;
 
   // Lower cased url, used for regex matching. Cached for performance.
   mutable std::optional<std::string> lower_cased_url_spec;
