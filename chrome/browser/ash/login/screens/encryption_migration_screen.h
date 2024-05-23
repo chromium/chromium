@@ -107,9 +107,6 @@ class EncryptionMigrationScreen : public BaseScreen,
   // Removes cryptohome and shows the error screen after the removal finishes.
   void RemoveCryptohome();
 
-  // Creates authorization request for MountEx method using |user_context_|.
-  cryptohome::AuthorizationRequest CreateAuthorizationRequest();
-
   // True if the session is in ARC kiosk mode.
   bool IsArcKiosk() const;
 

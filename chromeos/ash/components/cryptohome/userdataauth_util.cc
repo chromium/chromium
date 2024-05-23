@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace user_data_auth {

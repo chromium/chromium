@@ -33,8 +33,6 @@ component("cryptohome") {
     "auth_factor_input.h",
     "cryptohome_parameters.cc",
     "cryptohome_parameters.h",
-    "cryptohome_util.cc",
-    "cryptohome_util.h",
     "system_salt_getter.cc",
     "system_salt_getter.h",
     "userdataauth_util.cc",
@@ -74,7 +72,6 @@ source_set("unit_tests") {
   ]
   sources = [
     "auth_factor_conversions_unittest.cc",
-    "cryptohome_util_unittest.cc",
     "system_salt_getter_unittest.cc",
     "userdataauth_util_unittest.cc",
   ]

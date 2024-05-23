@@ -174,12 +174,16 @@ class QuickUnlockPrivateUnitTest
                   ash::SystemSaltGetter::ConvertRawSaltToHexString(
                       ash::FakeCryptohomeMiscClient::GetStubSystemSalt()));
 
-    cryptohome::Key cryptohome_key;
-    cryptohome_key.mutable_data()->set_label(ash::kCryptohomeGaiaKeyLabel);
-    cryptohome_key.set_secret(key.GetSecret());
+    user_data_auth::AuthFactor auth_factor;
+    user_data_auth::AuthInput auth_input;
 
+    auth_factor.set_label(ash::kCryptohomeGaiaKeyLabel);
+    auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+
+    auth_input.mutable_password_input()->set_secret(key.GetSecret());
     fake_userdataauth_client_testapi->AddExistingUser(account_id);
-    fake_userdataauth_client_testapi->AddKey(account_id, cryptohome_key);
+    fake_userdataauth_client_testapi->AddAuthFactor(account_id, auth_factor,
+                                                    auth_input);
 
     ash::SystemSaltGetter::Initialize();
 

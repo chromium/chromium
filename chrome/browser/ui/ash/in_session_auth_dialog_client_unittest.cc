@@ -94,21 +94,27 @@ class InSessionAuthDialogClientTest : public testing::Test {
                                                std::move(callback));
   }
 
-  void ConfigureExistingUserWithPassword(const AccountId& user,
+  void ConfigureExistingUserWithPassword(const AccountId& account_id,
                                          const std::string& password) {
     Key key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password);
     key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
                   ash::SystemSaltGetter::ConvertRawSaltToHexString(
                       ash::FakeCryptohomeMiscClient::GetStubSystemSalt()));
 
-    cryptohome::Key cryptohome_key;
-    cryptohome_key.mutable_data()->set_label(ash::kCryptohomeGaiaKeyLabel);
-    cryptohome_key.set_secret(key.GetSecret());
+    user_data_auth::AuthFactor auth_factor;
+    user_data_auth::AuthInput auth_input;
 
+    auth_factor.set_label(ash::kCryptohomeGaiaKeyLabel);
+    auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+
+    auth_input.mutable_password_input()->set_secret(key.GetSecret());
+
+    // Add the password key to the user.
     auto* test_api = ash::FakeUserDataAuthClient::TestApi::Get();
-    auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(user);
-    test_api->AddExistingUser(account_id);
-    test_api->AddKey(account_id, cryptohome_key);
+    auto cryptohome_account_id =
+        cryptohome::CreateAccountIdentifierFromAccountId(account_id);
+    test_api->AddExistingUser(cryptohome_account_id);
+    test_api->AddAuthFactor(cryptohome_account_id, auth_factor, auth_input);
   }
 
   void StartAuthSessionForActiveUser() {

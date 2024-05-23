@@ -72,12 +72,17 @@ void CryptohomeMixin::AddGaiaPassword(const AccountId& user,
                 SystemSaltGetter::ConvertRawSaltToHexString(
                     FakeCryptohomeMiscClient::GetStubSystemSalt()));
 
+  user_data_auth::AuthFactor auth_factor;
+  user_data_auth::AuthInput auth_input;
+
+  auth_factor.set_label(ash::kCryptohomeGaiaKeyLabel);
+  auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+
+  auth_input.mutable_password_input()->set_secret(key.GetSecret());
+
   // Add the password key to the user.
-  cryptohome::Key cryptohome_key;
-  cryptohome_key.mutable_data()->set_label(kCryptohomeGaiaKeyLabel);
-  cryptohome_key.set_secret(key.GetSecret());
-  FakeUserDataAuthClient::TestApi::Get()->AddKey(account_identifier,
-                                                 cryptohome_key);
+  FakeUserDataAuthClient::TestApi::Get()->AddAuthFactor(
+      account_identifier, auth_factor, auth_input);
 }
 
 void CryptohomeMixin::AddLocalPassword(const AccountId& user,
@@ -92,12 +97,17 @@ void CryptohomeMixin::AddLocalPassword(const AccountId& user,
                 SystemSaltGetter::ConvertRawSaltToHexString(
                     FakeCryptohomeMiscClient::GetStubSystemSalt()));
 
+  user_data_auth::AuthFactor auth_factor;
+  user_data_auth::AuthInput auth_input;
+
+  auth_factor.set_label(ash::kCryptohomeLocalPasswordKeyLabel);
+  auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+
+  auth_input.mutable_password_input()->set_secret(key.GetSecret());
+
   // Add the password key to the user.
-  cryptohome::Key cryptohome_key;
-  cryptohome_key.mutable_data()->set_label(kCryptohomeLocalPasswordKeyLabel);
-  cryptohome_key.set_secret(key.GetSecret());
-  FakeUserDataAuthClient::TestApi::Get()->AddKey(account_identifier,
-                                                 cryptohome_key);
+  FakeUserDataAuthClient::TestApi::Get()->AddAuthFactor(
+      account_identifier, auth_factor, auth_input);
 }
 
 void CryptohomeMixin::AddCryptohomePin(const AccountId& user,
@@ -115,14 +125,17 @@ void CryptohomeMixin::AddCryptohomePin(const AccountId& user,
   key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, pin_salt);
 
   // Add the pin key to the user.
-  cryptohome::Key cryptohome_key;
-  cryptohome::KeyData* data = cryptohome_key.mutable_data();
-  data->set_label(kCryptohomePinLabel);
-  data->set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-  data->mutable_policy()->set_low_entropy_credential(true);
-  cryptohome_key.set_secret(key.GetSecret());
-  FakeUserDataAuthClient::TestApi::Get()->AddKey(account_identifier,
-                                                 cryptohome_key);
+  user_data_auth::AuthFactor auth_factor;
+  user_data_auth::AuthInput auth_input;
+
+  auth_factor.set_label(ash::kCryptohomePinLabel);
+  auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+
+  auth_input.mutable_password_input()->set_secret(key.GetSecret());
+
+  // Add the password key to the user.
+  FakeUserDataAuthClient::TestApi::Get()->AddAuthFactor(
+      account_identifier, auth_factor, auth_input);
 }
 
 void CryptohomeMixin::SetPinLocked(const AccountId& user, bool locked) {

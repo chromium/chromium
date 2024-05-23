@@ -175,44 +175,6 @@ FunctorWithReturnType<ReturnType, OverloadedFunctor<Functors...>> Overload(
   return {{std::move(functors)...}};
 }
 
-std::optional<cryptohome::KeyData> FakeAuthFactorToKeyData(
-    std::string label,
-    const FakeAuthFactor& factor) {
-  return absl::visit(
-      Overload<std::optional<cryptohome::KeyData>>(
-          [&](const PasswordFactor& password) {
-            cryptohome::KeyData data;
-            data.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-            data.set_label(std::move(label));
-            return data;
-          },
-          [&](const PinFactor& pin) {
-            cryptohome::KeyData data;
-            data.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-            data.set_label(std::move(label));
-            data.mutable_policy()->set_low_entropy_credential(true);
-            data.mutable_policy()->set_auth_locked(pin.locked);
-            return data;
-          },
-          [&](const RecoveryFactor&) { return std::nullopt; },
-          [&](const SmartCardFactor& smart_card) {
-            cryptohome::KeyData data;
-            data.set_type(cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
-            data.set_label(std::move(label));
-            data.add_challenge_response_key()->set_public_key_spki_der(
-                smart_card.public_key_spki_der);
-            // TODO (b/241259026): populate algorithms.
-            return data;
-          },
-          [&](const KioskFactor& kiosk) {
-            cryptohome::KeyData data;
-            data.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
-            data.set_label(std::move(label));
-            return data;
-          }),
-      factor);
-}
-
 std::optional<user_data_auth::AuthFactor> FakeAuthFactorToAuthFactor(
     std::string label,
     const FakeAuthFactor& factor) {
@@ -280,37 +242,6 @@ FakeAuthFactorToRecoverableKeyStore(const FakeAuthFactor& factor) {
           },
           [&](const auto&) { return std::nullopt; }),
       factor);
-}
-
-// Turns a cryptohome::Key into a pair of label and FakeAuthFactor.
-std::pair<std::string, FakeAuthFactor> KeyToFakeAuthFactor(
-    const cryptohome::Key& key,
-    bool save_secret) {
-  const cryptohome::KeyData& data = key.data();
-  const std::string& label = data.label();
-  CHECK_NE(label, "") << "Key label must not be empty string";
-  std::optional<std::string> secret = std::nullopt;
-  if (save_secret && key.has_secret()) {
-    secret = key.secret();
-  }
-
-  switch (data.type()) {
-    case cryptohome::KeyData::KEY_TYPE_FINGERPRINT:
-      LOG(FATAL) << "Unsupported key type: " << data.type();
-      __builtin_unreachable();
-    case cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE:
-      return {label,
-              SmartCardFactor{
-                  .public_key_spki_der =
-                      data.challenge_response_key(0).public_key_spki_der()}};
-    case cryptohome::KeyData::KEY_TYPE_PASSWORD:
-      if (data.has_policy() && data.policy().low_entropy_credential()) {
-        return {label, PinFactor{.pin = secret, .locked = false}};
-      }
-      return {label, PasswordFactor{.password = secret}};
-    case cryptohome::KeyData::KEY_TYPE_KIOSK:
-      return {label, KioskFactor{}};
-  }
 }
 
 // Turns AuthFactor+AuthInput into a pair of label and FakeAuthFactor.
@@ -575,13 +506,14 @@ void FakeUserDataAuthClient::TestApi::CreatePostponedDirectories() {
   }
 }
 
-void FakeUserDataAuthClient::TestApi::AddKey(
+void FakeUserDataAuthClient::TestApi::AddAuthFactor(
     const cryptohome::AccountIdentifier& account_id,
-    const cryptohome::Key& key) {
+    const user_data_auth::AuthFactor& factor,
+    const user_data_auth::AuthInput& input) {
   UserCryptohomeState& user_state = GetUserState(account_id);
 
-  const auto [factor_it, was_inserted] =
-      user_state.auth_factors.insert(KeyToFakeAuthFactor(key, true));
+  const auto [factor_it, was_inserted] = user_state.auth_factors.insert(
+      AuthFactorWithInputToFakeAuthFactor(factor, input, true));
   CHECK(was_inserted) << "Factor already exists";
 }
 
@@ -935,17 +867,10 @@ void FakeUserDataAuthClient::StartAuthSession(
     }
 
     for (const auto& [label, factor] : user_state.auth_factors) {
-      std::optional<cryptohome::KeyData> key_data =
-          FakeAuthFactorToKeyData(label, factor);
       std::optional<user_data_auth::AuthFactor> auth_factor =
           FakeAuthFactorToAuthFactor(label, factor);
-      if (key_data) {
-        *reply.add_auth_factors() = *auth_factor;
-      } else {
-        LOG(WARNING)
-            << "Ignoring auth factor incompatible with AuthFactor API: "
-            << label;
-      }
+      DCHECK(auth_factor);
+      *reply.add_auth_factors() = *auth_factor;
     }
   }
 }

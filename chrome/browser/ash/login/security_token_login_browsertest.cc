@@ -291,23 +291,22 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
   }
 
   void RegisterCryptohomeKey() {
-    cryptohome::Key cryptohome_key;
-    cryptohome_key.mutable_data()->set_type(
-        cryptohome::KeyData_KeyType_KEY_TYPE_CHALLENGE_RESPONSE);
+    user_data_auth::AuthFactor auth_factor;
+    user_data_auth::AuthInput auth_input;
     ChallengeResponseKey challenge_response_key;
     challenge_response_key.set_public_key_spki_der(
         certificate_provider_extension()->GetCertificateSpki());
-    cryptohome_key.mutable_data()->set_label(
-        GenerateChallengeResponseKeyLabel({challenge_response_key}));
-    cryptohome_key.mutable_data()
-        ->add_challenge_response_key()
-        ->set_public_key_spki_der(
-            TestCertificateProviderExtension::GetCertificateSpki());
 
-    FakeUserDataAuthClient::TestApi::Get()->AddKey(
+    auth_factor.set_label(
+        GenerateChallengeResponseKeyLabel({challenge_response_key}));
+    auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD);
+    auth_factor.mutable_smart_card_metadata()->set_public_key_spki_der(
+        TestCertificateProviderExtension::GetCertificateSpki());
+
+    FakeUserDataAuthClient::TestApi::Get()->AddAuthFactor(
         cryptohome::CreateAccountIdentifierFromAccountId(
             GetChallengeResponseAccountId()),
-        cryptohome_key);
+        auth_factor, auth_input);
   }
 
   void StartLoginAndWaitForPinDialog() {

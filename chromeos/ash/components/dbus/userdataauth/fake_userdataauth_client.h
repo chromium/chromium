@@ -136,8 +136,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     // Adds the given key as a fake auth factor to the user (the user must
     // already exist).
-    void AddKey(const cryptohome::AccountIdentifier& account_id,
-                const cryptohome::Key& key);
+    void AddAuthFactor(const cryptohome::AccountIdentifier& account_id,
+                       const user_data_auth::AuthFactor& factor,
+                       const user_data_auth::AuthInput& input);
 
     void AddRecoveryFactor(const cryptohome::AccountIdentifier& account_id);
     bool HasRecoveryFactor(const cryptohome::AccountIdentifier& account_id);
