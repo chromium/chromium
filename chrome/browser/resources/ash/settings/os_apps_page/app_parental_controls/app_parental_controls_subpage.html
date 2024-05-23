@@ -1,8 +1,6 @@
-<template is="dom-if" if="[[isVerified]]">
-  <div id="appParentalControlsList" class="hr">
-    <template is="dom-repeat" items="[[appList_]]" as="app"
-        sort="alphabeticalSort_">
+<div id="appParentalControlsList" class="hr">
+  <template is="dom-repeat" items="[[appList_]]" as="app"
+      sort="alphabeticalSort_">
       <block-app-item app="[[app]]"></block-app-item>
-    </template>
-  </div>
-</template>
+  </template>
+</div>

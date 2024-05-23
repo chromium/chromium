@@ -214,11 +214,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         value: false,
       },
 
-      isPinVerified_: {
-        type: Boolean,
-        value: false,
-      },
-
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -274,7 +269,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private appsWithNotifications_: AppWithNotifications[];
   private isArcVmManageUsbAvailable_: boolean;
   private isDndEnabled_: boolean;
-  private isPinVerified_: boolean;
   private readonly isPlayStoreAvailable_: boolean;
   private isPluginVmAvailable_: boolean;
   private isRevampWayfindingEnabled_: boolean;
@@ -388,7 +382,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     this.showParentalControlsVerifyPinDialog_ = false;
     // TODO(b/332936481): Only navigate to the subpage on successful PIN
     // verification.
-    this.isPinVerified_ = true;
     Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
   }
 
