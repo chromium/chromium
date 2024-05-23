@@ -159,6 +159,8 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
 }
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {
+  local_side_panel_switch_delay_timer_.Stop();
+
   if (features::IsReadAnythingDocsIntegrationEnabled()) {
     RemoveGDocsHelperExtension();
   }
@@ -266,12 +268,17 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryShown() {
     obs.Activate(true);
   }
 
-  // TODO(crbug.com/324143642): Handle the installation of a11y helper extension
-  // for local side panels.
-  if (features::IsReadAnythingDocsIntegrationEnabled() &&
-      !features::IsReadAnythingLocalSidePanelEnabled()) {
-    InstallGDocsHelperExtension();
+  if (!features::IsReadAnythingDocsIntegrationEnabled()) {
+    return;
   }
+
+  if (!features::IsReadAnythingLocalSidePanelEnabled()) {
+    InstallGDocsHelperExtension();
+    return;
+  }
+
+  active_local_side_panel_count_++;
+  InstallGDocsHelperExtension();
 }
 
 void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
@@ -279,12 +286,22 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
     obs.Activate(false);
   }
 
-  // TODO(crbug.com/324143642): Handle the uninstallation of a11y helper
-  // extension for local side panels.
-  if (features::IsReadAnythingDocsIntegrationEnabled() &&
-      !features::IsReadAnythingLocalSidePanelEnabled()) {
-    RemoveGDocsHelperExtension();
+  if (!features::IsReadAnythingDocsIntegrationEnabled()) {
+    return;
   }
+
+  if (!features::IsReadAnythingLocalSidePanelEnabled()) {
+    RemoveGDocsHelperExtension();
+    return;
+  }
+
+  active_local_side_panel_count_--;
+  local_side_panel_switch_delay_timer_.Stop();
+  local_side_panel_switch_delay_timer_.Start(
+      FROM_HERE, base::Seconds(30),
+      base::BindRepeating(
+          &ReadAnythingCoordinator::OnLocalSidePanelSwitchDelayTimeout,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
@@ -462,6 +479,14 @@ void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {
   if (side_panel_ui->GetCurrentEntryId() != SidePanelEntryId::kReadAnything) {
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   }
+}
+
+void ReadAnythingCoordinator::OnLocalSidePanelSwitchDelayTimeout() {
+  if (active_local_side_panel_count_ > 0) {
+    return;
+  }
+
+  RemoveGDocsHelperExtension();
 }
 
 BROWSER_USER_DATA_KEY_IMPL(ReadAnythingCoordinator);

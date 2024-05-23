@@ -40,10 +40,21 @@ class MockReadAnythingCoordinatorObserver
 
 class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
+  ReadAnythingCoordinatorTest()
+      : TestWithBrowserView(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  ReadAnythingCoordinatorTest(const ReadAnythingCoordinatorTest&) = delete;
+  ReadAnythingCoordinatorTest& operator=(const ReadAnythingCoordinatorTest&) =
+      delete;
+
   void SetUp() override {
     base::test::ScopedFeatureList features;
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything, features::kReadAnythingDocsIntegration}, {});
+        {features::kReadAnything, features::kReadAnythingDocsIntegration,
+         features::kReadAnythingLocalSidePanel,
+         features::kReadAnythingWebUIToolbar},
+        {});
     TestWithBrowserView::SetUp();
 
     side_panel_coordinator_ =
@@ -180,42 +191,51 @@ TEST_F(ReadAnythingCoordinatorTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(b/324143642): enable this test when reading mode local side panels work
-// with Docs.
-TEST_F(
-    ReadAnythingCoordinatorTest,
-    DISABLED_SidePanelShowAndHide_NonLacros_CallEmbeddedA11yExtensionLoader) {
+TEST_F(ReadAnythingCoordinatorTest,
+       SidePanelShowAndHide_NonLacros_CallEmbeddedA11yExtensionLoader) {
   SidePanelEntry* entry = contextual_registries_[0]->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   EXPECT_FALSE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
       extension_misc::kReadingModeGDocsHelperExtensionId));
 
+  // If the local side panel entry is shown, install the helper extension.
   entry->OnEntryShown();
   EXPECT_TRUE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
       extension_misc::kReadingModeGDocsHelperExtensionId));
 
-  // Called once when calling OnEntryHidden and once on destruction.
+  // If the local side panel entry is hidden, remove the helper extension after
+  // a timeout.
   entry->OnEntryHidden();
+  // The helper extension is not removed immediately.
+  EXPECT_TRUE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
+      extension_misc::kReadingModeGDocsHelperExtensionId));
+  // The helper extension is removed after a timeout.
+  task_environment()->FastForwardBy(base::Seconds(30));
   EXPECT_FALSE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
       extension_misc::kReadingModeGDocsHelperExtensionId));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(b/324143642): enable this test when reading mode local side panels work
-// with Docs.
 TEST_F(
     ReadAnythingCoordinatorTest,
-    DISABLED_SidePanelShowAndHide_Lacros_EmbeddedA11yManagerLacrosUpdateReadingModeState) {
+    SidePanelShowAndHide_Lacros_EmbeddedA11yManagerLacrosUpdateReadingModeState) {
   SidePanelEntry* entry = contextual_registries_[0]->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   EXPECT_FALSE(
       EmbeddedA11yManagerLacros::GetInstance()->IsReadingModeEnabled());
 
+  // If the local side panel entry is shown, set reading mode enabled to true.
   entry->OnEntryShown();
   EXPECT_TRUE(EmbeddedA11yManagerLacros::GetInstance()->IsReadingModeEnabled());
 
+  // If the local side panel entry is hidden, set reading mode enabled to false
+  // after a timeout.
   entry->OnEntryHidden();
+  // The reading mode setting is not updated immediately.
+  EXPECT_TRUE(EmbeddedA11yManagerLacros::GetInstance()->IsReadingModeEnabled());
+  // The reading mode setting is updated after a timeout.
+  task_environment()->FastForwardBy(base::Seconds(30));
   EXPECT_FALSE(
       EmbeddedA11yManagerLacros::GetInstance()->IsReadingModeEnabled());
 }

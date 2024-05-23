@@ -113,6 +113,16 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
 
   void InstallGDocsHelperExtension();
   void RemoveGDocsHelperExtension();
+  // The number of active local side panel that is currently shown in the
+  // browser. If there is no active local side panel (count is 0) after a
+  // timeout, we can safely remove the gdocs helper extension.
+  int active_local_side_panel_count_ = 0;
+  // Start a timer when the user leaves a local side panel. If they switch to
+  // another local side panel before it expires, keep the extension installed;
+  // otherwise, uninstall it. This prevents frequent
+  // installations/uninstallations.
+  base::RepeatingTimer local_side_panel_switch_delay_timer_;
+  void OnLocalSidePanelSwitchDelayTimeout();
 
   std::string default_language_code_;
   std::unique_ptr<ReadAnythingModel> model_;
@@ -127,6 +137,8 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
+
+  base::WeakPtrFactory<ReadAnythingCoordinator> weak_ptr_factory_{this};
 
   BROWSER_USER_DATA_KEY_DECL();
 };
