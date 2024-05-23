@@ -3195,6 +3195,8 @@ bool ArePromiseIconsForWebAppsEnabled() {
 
 bool AreSideAlignedToastsEnabled() {
   // Side aligned toasts are launching together with Notifier Collision.
+  // TODO(b/342455518): Remove `kSideAlignedToasts` and its usage and just use
+  // kNotifierCollision to avoid confusions.
   return IsNotifierCollisionEnabled() ||
          base::FeatureList::IsEnabled(kSideAlignedToasts);
 }

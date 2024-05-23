@@ -97,7 +97,9 @@ class ToastManagerImplTest : public AshTestBase,
   ~ToastManagerImplTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(features::kSideAlignedToasts,
+    // Side-aligned toasts project is launching with Notifier Collision, so we
+    // use the flag `kNotifierCollision` here.
+    scoped_feature_list_.InitWithFeatureState(features::kNotifierCollision,
                                               AreSideAlignedToastsEnabled());
 
     AshTestBase::SetUp();
