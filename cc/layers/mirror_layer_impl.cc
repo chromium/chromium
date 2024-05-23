@@ -20,6 +20,10 @@ MirrorLayerImpl::MirrorLayerImpl(LayerTreeImpl* tree_impl, int id)
 
 MirrorLayerImpl::~MirrorLayerImpl() = default;
 
+mojom::LayerType MirrorLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kMirror;
+}
+
 std::unique_ptr<LayerImpl> MirrorLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return MirrorLayerImpl::Create(tree_impl, id());
@@ -102,10 +106,6 @@ gfx::Rect MirrorLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
   float scale =
       mirrored_layer ? mirrored_layer->GetIdealContentsScaleKey() : 1.0f;
   return GetScaledEnclosingVisibleRectInTargetSpace(scale);
-}
-
-const char* MirrorLayerImpl::LayerTypeAsString() const {
-  return "cc::MirrorLayerImpl";
 }
 
 }  // namespace cc

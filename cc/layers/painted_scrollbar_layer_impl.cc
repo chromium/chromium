@@ -50,6 +50,10 @@ PaintedScrollbarLayerImpl::PaintedScrollbarLayerImpl(
 
 PaintedScrollbarLayerImpl::~PaintedScrollbarLayerImpl() = default;
 
+mojom::LayerType PaintedScrollbarLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kPaintedScrollbar;
+}
+
 std::unique_ptr<LayerImpl> PaintedScrollbarLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return PaintedScrollbarLayerImpl::Create(tree_impl, id(), orientation(),
@@ -379,10 +383,6 @@ float PaintedScrollbarLayerImpl::TrackLength() const {
 
 bool PaintedScrollbarLayerImpl::IsThumbResizable() const {
   return false;
-}
-
-const char* PaintedScrollbarLayerImpl::LayerTypeAsString() const {
-  return "cc::PaintedScrollbarLayerImpl";
 }
 
 LayerTreeSettings::ScrollbarAnimator

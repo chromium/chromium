@@ -41,6 +41,10 @@ TextureLayerImpl::~TextureLayerImpl() {
   }
 }
 
+mojom::LayerType TextureLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kTexture;
+}
+
 std::unique_ptr<LayerImpl> TextureLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return TextureLayerImpl::Create(tree_impl, id());
@@ -287,10 +291,6 @@ void TextureLayerImpl::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
     // had a chance to replace it with activation.
     to_unregister_bitmap_ids_.push_back(id);
   }
-}
-
-const char* TextureLayerImpl::LayerTypeAsString() const {
-  return "cc::TextureLayerImpl";
 }
 
 void TextureLayerImpl::FreeTransferableResource() {

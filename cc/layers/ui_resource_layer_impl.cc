@@ -24,6 +24,10 @@ UIResourceLayerImpl::UIResourceLayerImpl(LayerTreeImpl* tree_impl, int id)
 
 UIResourceLayerImpl::~UIResourceLayerImpl() = default;
 
+mojom::LayerType UIResourceLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kUIResource;
+}
+
 std::unique_ptr<LayerImpl> UIResourceLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return UIResourceLayerImpl::Create(tree_impl, id());
@@ -115,10 +119,6 @@ void UIResourceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                SkColors::kTransparent, flipped, nearest_neighbor,
                /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
   ValidateQuadResources(quad);
-}
-
-const char* UIResourceLayerImpl::LayerTypeAsString() const {
-  return "cc::UIResourceLayerImpl";
 }
 
 void UIResourceLayerImpl::AsValueInto(

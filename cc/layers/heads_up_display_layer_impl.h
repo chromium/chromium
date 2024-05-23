@@ -54,6 +54,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
+  mojom::LayerType GetLayerType() const override;
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
   void DidDraw(viz::ClientResourceProvider* resource_provider) override;
@@ -89,8 +90,6 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   HeadsUpDisplayLayerImpl(LayerTreeImpl* tree_impl,
                           int id,
                           const std::string& paused_localized_message);
-
-  const char* LayerTypeAsString() const override;
 
   void AsValueInto(base::trace_event::TracedValue* dict) const override;
 

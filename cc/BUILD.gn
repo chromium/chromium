@@ -455,6 +455,7 @@ cc_component("cc") {
 
   public_deps = [
     "//cc/base",
+    "//cc/mojom:layer_type",
     "//cc/paint",
     "//components/viz/common",
     "//skia",

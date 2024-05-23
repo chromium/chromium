@@ -37,6 +37,7 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
   VideoLayerImpl& operator=(const VideoLayerImpl&) = delete;
 
   // LayerImpl implementation.
+  mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   bool WillDraw(DrawMode draw_mode,
@@ -61,8 +62,6 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
       int id,
       scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl,
       const media::VideoTransformation& video_transform);
-
-  const char* LayerTypeAsString() const override;
 
   scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl_;
 

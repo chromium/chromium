@@ -128,8 +128,8 @@ PictureLayerImpl::~PictureLayerImpl() {
   UnregisterAnimatedImages();
 }
 
-const char* PictureLayerImpl::LayerTypeAsString() const {
-  return "cc::PictureLayerImpl";
+mojom::LayerType PictureLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kPicture;
 }
 
 std::unique_ptr<LayerImpl> PictureLayerImpl::CreateLayerImpl(

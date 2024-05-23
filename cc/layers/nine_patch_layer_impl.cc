@@ -23,6 +23,10 @@ NinePatchLayerImpl::NinePatchLayerImpl(LayerTreeImpl* tree_impl, int id)
 
 NinePatchLayerImpl::~NinePatchLayerImpl() = default;
 
+mojom::LayerType NinePatchLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kNinePatch;
+}
+
 std::unique_ptr<LayerImpl> NinePatchLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return NinePatchLayerImpl::Create(tree_impl, id());
@@ -82,10 +86,6 @@ void NinePatchLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
   quad_generator_.AppendQuadsForCc(this, ui_resource_id_, render_pass,
                                    shared_quad_state, patches);
-}
-
-const char* NinePatchLayerImpl::LayerTypeAsString() const {
-  return "cc::NinePatchLayerImpl";
 }
 
 void NinePatchLayerImpl::AsValueInto(

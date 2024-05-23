@@ -71,6 +71,10 @@ VideoLayerImpl::~VideoLayerImpl() {
   }
 }
 
+mojom::LayerType VideoLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kVideo;
+}
+
 std::unique_ptr<LayerImpl> VideoLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return base::WrapUnique(new VideoLayerImpl(
@@ -214,10 +218,6 @@ gfx::ContentColorUsage VideoLayerImpl::GetContentColorUsage() const {
 void VideoLayerImpl::SetNeedsRedraw() {
   UnionUpdateRect(gfx::Rect(bounds()));
   layer_tree_impl()->SetNeedsRedraw();
-}
-
-const char* VideoLayerImpl::LayerTypeAsString() const {
-  return "cc::VideoLayerImpl";
 }
 
 }  // namespace cc

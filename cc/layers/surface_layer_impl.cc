@@ -59,6 +59,10 @@ SurfaceLayerImpl::~SurfaceLayerImpl() {
   // the right thing already.
 }
 
+mojom::LayerType SurfaceLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kSurface;
+}
+
 std::unique_ptr<LayerImpl> SurfaceLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return SurfaceLayerImpl::Create(tree_impl, id(),
@@ -329,10 +333,6 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
 void SurfaceLayerImpl::AsValueInto(base::trace_event::TracedValue* dict) const {
   LayerImpl::AsValueInto(dict);
   dict->SetString("surface_range", surface_range_.ToString());
-}
-
-const char* SurfaceLayerImpl::LayerTypeAsString() const {
-  return "cc::SurfaceLayerImpl";
 }
 
 }  // namespace cc

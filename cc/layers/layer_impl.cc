@@ -44,6 +44,8 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
+namespace cc {
+
 namespace {
 
 template <typename T>
@@ -51,9 +53,41 @@ std::unique_ptr<T> ClonePtr(const std::unique_ptr<T>& value) {
   return value ? std::make_unique<T>(*value) : nullptr;
 }
 
+const char* LayerTypeAsString(mojom::LayerType type) {
+  switch (type) {
+    case mojom::LayerType::kLayer:
+      return "cc::LayerImpl";
+    case mojom::LayerType::kSolidColor:
+      return "cc::SolidColorLayerImpl";
+    case mojom::LayerType::kTexture:
+      return "cc::TextureLayerImpl";
+    case mojom::LayerType::kSurface:
+      return "cc::SurfaceLayerImpl";
+    case mojom::LayerType::kPicture:
+      return "cc::PictureLayerImpl";
+    case mojom::LayerType::kMirror:
+      return "cc::MirrorLayerImpl";
+    case mojom::LayerType::kHeadsUpDisplay:
+      return "cc::HeadsUpDisplayLayerImpl";
+    case mojom::LayerType::kUIResource:
+      return "cc::UIResourceLayerImpl";
+    case mojom::LayerType::kNinePatch:
+      return "cc::NinePatchLayerImpl";
+    case mojom::LayerType::kSolidColorScrollbar:
+      return "cc::SolidColorScrollbarLayerImpl";
+    case mojom::LayerType::kPaintedScrollbar:
+      return "cc::PaintedScrollbarLayerImpl";
+    case mojom::LayerType::kNinePatchThumbScrollbar:
+      return "cc::NinePatchThumbScrollbarLayerImpl";
+    case mojom::LayerType::kVideo:
+      return "cc::VideoLayerImpl";
+    case mojom::LayerType::kViewTransitionContent:
+      return "cc::ViewTransitionContentLayerImpl";
+  }
+}
+
 }  // namespace
 
-namespace cc {
 LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
                      int id,
                      bool will_always_push_properties)
@@ -77,6 +111,10 @@ LayerImpl::~LayerImpl() {
   layer_tree_impl_->UnregisterLayer(this);
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), "cc::LayerImpl", this);
+}
+
+mojom::LayerType LayerImpl::GetLayerType() const {
+  return mojom::LayerType::kLayer;
 }
 
 ElementListType LayerImpl::GetElementTypeForAnimation() const {
@@ -481,10 +519,6 @@ gfx::Transform LayerImpl::GetScaledDrawTransform(
   return scaled_draw_transform;
 }
 
-const char* LayerImpl::LayerTypeAsString() const {
-  return "cc::LayerImpl";
-}
-
 void LayerImpl::ResetChangeTracking() {
   layer_property_changed_not_from_property_trees_ = false;
   layer_property_changed_from_property_trees_ = false;
@@ -671,7 +705,7 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
   // consumers.
   viz::TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), state, "cc::LayerImpl",
-      LayerTypeAsString(), this);
+      LayerTypeAsString(GetLayerType()), this);
   state->SetInteger("layer_id", id());
   MathUtil::AddToTracedValue("bounds", bounds_, state);
 

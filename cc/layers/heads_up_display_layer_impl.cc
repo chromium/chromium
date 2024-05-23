@@ -142,6 +142,10 @@ HeadsUpDisplayLayerImpl::~HeadsUpDisplayLayerImpl() {
   ReleaseResources();
 }
 
+mojom::LayerType HeadsUpDisplayLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kHeadsUpDisplay;
+}
+
 std::unique_ptr<LayerImpl> HeadsUpDisplayLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return HeadsUpDisplayLayerImpl::Create(tree_impl, id(),
@@ -1316,10 +1320,6 @@ SkRect HeadsUpDisplayLayerImpl::DrawSmoothnessMetrics(PaintCanvas* canvas,
                                  "95th Percentile DF", percentile_smoothness);
 
   return area;
-}
-
-const char* HeadsUpDisplayLayerImpl::LayerTypeAsString() const {
-  return "cc::HeadsUpDisplayLayerImpl";
 }
 
 void HeadsUpDisplayLayerImpl::AsValueInto(

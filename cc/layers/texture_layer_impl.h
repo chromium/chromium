@@ -33,6 +33,7 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
 
   TextureLayerImpl& operator=(const TextureLayerImpl&) = delete;
 
+  mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* layer_tree_impl) const override;
   bool IsSnappedToPixelGridInTarget() override;
@@ -82,7 +83,6 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
  private:
   TextureLayerImpl(LayerTreeImpl* tree_impl, int id);
 
-  const char* LayerTypeAsString() const override;
   void FreeTransferableResource();
   void OnResourceEvicted();
 

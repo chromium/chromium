@@ -30,6 +30,7 @@
 #include "cc/layers/performance_properties.h"
 #include "cc/layers/render_surface_impl.h"
 #include "cc/layers/touch_action_region.h"
+#include "cc/mojom/layer_type.mojom.h"
 #include "cc/paint/element_id.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/trees/target_property.h"
@@ -76,6 +77,8 @@ class CC_EXPORT LayerImpl {
 
   LayerImpl(const LayerImpl&) = delete;
   virtual ~LayerImpl();
+
+  virtual mojom::LayerType GetLayerType() const;
 
   LayerImpl& operator=(const LayerImpl&) = delete;
 
@@ -496,8 +499,6 @@ class CC_EXPORT LayerImpl {
  private:
   void ValidateQuadResourcesInternal(viz::DrawQuad* quad) const;
   gfx::Transform GetScaledDrawTransform(float layer_to_content_scale) const;
-
-  virtual const char* LayerTypeAsString() const;
 
   const int layer_id_;
   const raw_ptr<LayerTreeImpl> layer_tree_impl_;

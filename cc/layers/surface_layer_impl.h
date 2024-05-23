@@ -63,6 +63,7 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void ResetStateForUpdateSubmissionStateCallback();
 
   // LayerImpl overrides.
+  mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
@@ -80,7 +81,6 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void GetDebugBorderProperties(SkColor4f* color, float* width) const override;
   void AppendRainbowDebugBorder(viz::CompositorRenderPass* render_pass);
   void AsValueInto(base::trace_event::TracedValue* dict) const override;
-  const char* LayerTypeAsString() const override;
 
   UpdateSubmissionStateCB update_submission_state_callback_;
   viz::SurfaceRange surface_range_;

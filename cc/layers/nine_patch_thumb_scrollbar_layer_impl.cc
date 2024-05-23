@@ -42,6 +42,10 @@ NinePatchThumbScrollbarLayerImpl::NinePatchThumbScrollbarLayerImpl(
 
 NinePatchThumbScrollbarLayerImpl::~NinePatchThumbScrollbarLayerImpl() = default;
 
+mojom::LayerType NinePatchThumbScrollbarLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kNinePatchThumbScrollbar;
+}
+
 std::unique_ptr<LayerImpl> NinePatchThumbScrollbarLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return NinePatchThumbScrollbarLayerImpl::Create(
@@ -231,10 +235,6 @@ float NinePatchThumbScrollbarLayerImpl::TrackLength() const {
 
 bool NinePatchThumbScrollbarLayerImpl::IsThumbResizable() const {
   return false;
-}
-
-const char* NinePatchThumbScrollbarLayerImpl::LayerTypeAsString() const {
-  return "cc::NinePatchThumbScrollbarLayerImpl";
 }
 
 }  // namespace cc

@@ -31,6 +31,7 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
       delete;
 
   // LayerImpl implementation.
+  mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
@@ -91,7 +92,6 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   bool IsThumbResizable() const override;
 
  private:
-  const char* LayerTypeAsString() const override;
   // Expand the scrollbar thumb's hit testable rect to be able to capture the
   // thumb across the entire width of the track rect.
   gfx::Rect ExpandFluentScrollbarThumb(gfx::Rect thumb_rect) const;

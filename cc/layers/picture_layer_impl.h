@@ -54,7 +54,7 @@ class CC_EXPORT PictureLayerImpl
   bool is_backdrop_filter_mask() const { return is_backdrop_filter_mask_; }
 
   // LayerImpl overrides.
-  const char* LayerTypeAsString() const override;
+  mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
