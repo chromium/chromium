@@ -355,18 +355,14 @@ TEST(PasswordManagerUtil, FindBestMatches) {
     SCOPED_TRACE(testing::Message("Test description: ")
                  << test_case.description);
     // Convert TestMatch to PasswordForm.
-    std::vector<PasswordForm> owning_matches;
+    std::vector<PasswordForm> matches;
     for (const TestMatch& match : test_case.matches) {
       PasswordForm form;
       form.match_type = match.match_type;
       form.signon_realm = match.signon_realm;
       form.date_last_used = match.date_last_used;
       form.username_value = match.username;
-      owning_matches.push_back(form);
-    }
-    std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches;
-    for (const PasswordForm& match : owning_matches) {
-      matches.push_back(&match);
+      matches.push_back(form);
     }
 
     const PasswordForm* preferred_match = nullptr;
@@ -385,7 +381,7 @@ TEST(PasswordManagerUtil, FindBestMatches) {
       EXPECT_TRUE(best_matches.empty());
     } else {
       // Check |preferred_match|.
-      EXPECT_EQ(*matches[test_case.expected_preferred_match_index],
+      EXPECT_EQ(matches[test_case.expected_preferred_match_index],
                 *preferred_match);
       // Check best matches.
       ASSERT_EQ(test_case.expected_best_matches_indices.size(),
@@ -400,7 +396,7 @@ TEST(PasswordManagerUtil, FindBestMatches) {
         size_t actual_index = std::distance(
             matches.begin(),
             base::ranges::find_if(matches, [&match](const auto& non_federated) {
-              return *non_federated == match;
+              return non_federated == match;
             }));
         EXPECT_EQ(expected_index, actual_index);
       }
@@ -438,11 +434,8 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   profile_form2.password_value = kPassword2;
   profile_form2.in_store = PasswordForm::Store::kProfileStore;
 
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches;
-  matches.push_back(&account_form1);
-  matches.push_back(&profile_form1);
-  matches.push_back(&account_form2);
-  matches.push_back(&profile_form2);
+  std::vector<const PasswordForm> matches{account_form1, profile_form1,
+                                          account_form2, profile_form2};
 
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       same_scheme_matches;

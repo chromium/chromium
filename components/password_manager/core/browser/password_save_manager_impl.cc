@@ -250,6 +250,18 @@ void PopulateAlternativeUsernames(base::span<const PasswordForm> best_matches,
   }
 }
 
+// TODO(crbug.com/327343301) Remove after refactoring of GetFederatedMatches.
+// Helper function used because GetNonFederatedMatches has to be converted to a
+// vector of pointers.
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MakeWeakCopies(
+    base::span<const PasswordForm> matches) {
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result;
+  for (const PasswordForm& form : matches) {
+    result.push_back(&form);
+  }
+  return result;
+}
+
 }  // namespace
 
 PendingCredentialsStates ComputePendingCredentialsStates(
@@ -473,9 +485,14 @@ void PasswordSaveManagerImpl::GeneratedPasswordAccepted(
     PasswordForm parsed_form,
     base::WeakPtr<PasswordManagerDriver> driver) {
   generation_manager_ = std::make_unique<PasswordGenerationManager>(client_);
+
+  // TODO(crbug.com/327343301) Remove after refactoring of GetFederatedMatches.
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      non_federated_matches =
+          MakeWeakCopies(form_fetcher_->GetNonFederatedMatches());
   generation_manager_->GeneratedPasswordAccepted(
       std::move(parsed_form),
-      GetRelevantMatchesForGeneration(form_fetcher_->GetNonFederatedMatches()),
+      GetRelevantMatchesForGeneration(non_federated_matches),
       GetRelevantMatchesForGeneration(form_fetcher_->GetFederatedMatches()),
       ShouldStoreGeneratedPasswordsInAccountStore()
           ? PasswordForm::Store::kAccountStore
@@ -507,10 +524,11 @@ void PasswordSaveManagerImpl::MoveCredentialsToAccountStore(
   // TODO(crbug.com/40111151): Moving credentials upon an update. FormFetch will
   // have an outdated credentials. Fix it if this turns out to be a product
   // requirement.
-
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      account_store_matches =
-          AccountStoreMatches(form_fetcher_->GetNonFederatedMatches());
+      non_federated_matches =
+          MakeWeakCopies(form_fetcher_->GetNonFederatedMatches());
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      account_store_matches = AccountStoreMatches(non_federated_matches);
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       account_store_federated_matches =
           AccountStoreMatches(form_fetcher_->GetFederatedMatches());
@@ -519,8 +537,7 @@ void PasswordSaveManagerImpl::MoveCredentialsToAccountStore(
                                account_store_federated_matches.end());
 
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      profile_store_matches =
-          ProfileStoreMatches(form_fetcher_->GetNonFederatedMatches());
+      profile_store_matches = ProfileStoreMatches(non_federated_matches);
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       profile_store_federated_matches =
           ProfileStoreMatches(form_fetcher_->GetFederatedMatches());

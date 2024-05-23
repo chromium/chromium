@@ -7,6 +7,7 @@
 #include <iterator>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -174,9 +175,8 @@ base::span<const PasswordForm> FormFetcherImpl::GetInsecureCredentials() const {
   return insecure_credentials_;
 }
 
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-FormFetcherImpl::GetNonFederatedMatches() const {
-  return MakeWeakCopies(non_federated_);
+base::span<const PasswordForm> FormFetcherImpl::GetNonFederatedMatches() const {
+  return non_federated_;
 }
 
 std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
@@ -195,8 +195,12 @@ bool FormFetcherImpl::IsBlocklisted() const {
 
 bool FormFetcherImpl::IsMovingBlocked(const signin::GaiaIdHash& destination,
                                       const std::u16string& username) const {
+  // TODO(crbug.com/327343301) Remove the copy after refactoring of
+  // GetFederatedMatches.
+  const std::vector<std::unique_ptr<PasswordForm>> non_federated =
+      ConvertToUniquePtr(non_federated_);
   for (const std::vector<std::unique_ptr<PasswordForm>>* matches_vector :
-       {&federated_, &non_federated_}) {
+       {&federated_, &non_federated}) {
     for (const auto& form : *matches_vector) {
       // Only local entries can be moved to the account store (though
       // account store matches should never have |moving_blocked_for_list|
@@ -248,12 +252,12 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
     return result;
   }
 
-  result->non_federated_ = MakeCopies(non_federated_);
+  result->non_federated_ = non_federated_;
   result->federated_ = MakeCopies(federated_);
   result->is_blocklisted_in_account_store_ = is_blocklisted_in_account_store_;
   result->is_blocklisted_in_profile_store_ = is_blocklisted_in_profile_store_;
   result->best_matches_ = password_manager_util::FindBestMatches(
-      MakeWeakCopies(result->non_federated_), form_digest_.scheme,
+      result->non_federated_, form_digest_.scheme,
       &result->non_federated_same_scheme_);
 
   result->interactions_stats_ = interactions_stats_;
@@ -285,8 +289,7 @@ void FormFetcherImpl::FindMatchesAndNotifyConsumers(
   SplitResults(std::move(results));
 
   best_matches_ = password_manager_util::FindBestMatches(
-      MakeWeakCopies(non_federated_), form_digest_.scheme,
-      &non_federated_same_scheme_);
+      non_federated_, form_digest_.scheme, &non_federated_same_scheme_);
 
   state_ = State::NOT_WAITING;
   for (auto& consumer : consumers_) {
@@ -321,7 +324,7 @@ void FormFetcherImpl::SplitResults(
       if (form->IsFederatedCredential()) {
         federated_.push_back(std::move(form));
       } else {
-        non_federated_.push_back(std::move(form));
+        non_federated_.push_back(*form);
       }
     }
   }

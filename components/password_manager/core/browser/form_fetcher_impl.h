@@ -50,8 +50,7 @@ class FormFetcherImpl : public FormFetcher,
   State GetState() const override;
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
   base::span<const PasswordForm> GetInsecureCredentials() const override;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-  GetNonFederatedMatches() const override;
+  base::span<const PasswordForm> GetNonFederatedMatches() const override;
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
   GetFederatedMatches() const override;
   bool IsBlocklisted() const override;
@@ -96,7 +95,7 @@ class FormFetcherImpl : public FormFetcher,
   bool need_to_refetch_ = false;
 
   // Results obtained from PasswordStore:
-  std::vector<std::unique_ptr<PasswordForm>> non_federated_;
+  std::vector<PasswordForm> non_federated_;
 
   // Federated credentials relevant to the observed form. They are neither
   // filled not saved by PasswordFormManager, so they are kept separately from

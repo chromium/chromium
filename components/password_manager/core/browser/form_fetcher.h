@@ -73,10 +73,7 @@ class FormFetcher {
   virtual base::span<const PasswordForm> GetInsecureCredentials() const = 0;
 
   // Non-federated matches obtained from the backend.
-  // Do not store the result of this call. The pointers become invalid if `this`
-  // receives new results from a password store.
-  virtual std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-  GetNonFederatedMatches() const = 0;
+  virtual base::span<const PasswordForm> GetNonFederatedMatches() const = 0;
 
   // Federated matches obtained from the backend.
   // Do not store the result of this call. The pointers become invalid if `this`

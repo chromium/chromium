@@ -169,15 +169,14 @@ PasswordGenerationManagerTest::SetUpOverwritingUI(
   saved.username_value = u"";
   const PasswordForm federated = CreateSavedFederated();
   FakeFormFetcher fetcher;
-  fetcher.SetNonFederated({&saved});
+  fetcher.SetNonFederated({saved});
   fetcher.set_federated({&federated});
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordMock(true))
       .WillOnce(testing::Return(true));
   manager().GeneratedPasswordAccepted(
-      std::move(generated), fetcher.GetNonFederatedMatches(),
-      fetcher.GetFederatedMatches(), PasswordForm::Store::kAccountStore,
-      std::move(driver));
+      std::move(generated), {&saved}, fetcher.GetFederatedMatches(),
+      PasswordForm::Store::kAccountStore, std::move(driver));
   return client_.MoveForm();
 }
 
@@ -199,9 +198,8 @@ TEST_F(PasswordGenerationManagerTest, GeneratedPasswordAccepted_EmptyStore) {
 
   EXPECT_CALL(driver, GeneratedPasswordAccepted(generated.password_value));
   manager().GeneratedPasswordAccepted(
-      std::move(generated), fetcher.GetNonFederatedMatches(),
-      fetcher.GetFederatedMatches(), PasswordForm::Store::kAccountStore,
-      driver.AsWeakPtr());
+      std::move(generated), {}, fetcher.GetFederatedMatches(),
+      PasswordForm::Store::kAccountStore, driver.AsWeakPtr());
   EXPECT_FALSE(manager().HasGeneratedPassword());
 }
 
@@ -214,13 +212,12 @@ TEST_F(PasswordGenerationManagerTest, GeneratedPasswordAccepted_Conflict) {
   generated.username_value = saved.username_value;
   MockPasswordManagerDriver driver;
   FakeFormFetcher fetcher;
-  fetcher.SetNonFederated({&saved});
+  fetcher.SetNonFederated({saved});
 
   EXPECT_CALL(driver, GeneratedPasswordAccepted(generated.password_value));
   manager().GeneratedPasswordAccepted(
-      std::move(generated), fetcher.GetNonFederatedMatches(),
-      fetcher.GetFederatedMatches(), PasswordForm::Store::kAccountStore,
-      driver.AsWeakPtr());
+      std::move(generated), {&saved}, fetcher.GetFederatedMatches(),
+      PasswordForm::Store::kAccountStore, driver.AsWeakPtr());
   EXPECT_FALSE(manager().HasGeneratedPassword());
 }
 

@@ -209,8 +209,7 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
 }
 
 std::vector<PasswordForm> FindBestMatches(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        non_federated_matches,
+    base::span<const PasswordForm> non_federated_matches,
     PasswordForm::Scheme scheme,
     std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
         non_federated_same_scheme) {
@@ -221,9 +220,9 @@ std::vector<PasswordForm> FindBestMatches(
   std::vector<PasswordForm> best_matches;
   non_federated_same_scheme->clear();
 
-  for (const password_manager::PasswordForm* match : non_federated_matches) {
-    if (match->scheme == scheme) {
-      non_federated_same_scheme->push_back(match);
+  for (const password_manager::PasswordForm& match : non_federated_matches) {
+    if (match.scheme == scheme) {
+      non_federated_same_scheme->push_back(&match);
     }
   }
 

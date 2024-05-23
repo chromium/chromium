@@ -104,8 +104,7 @@ class CredentialManagerPasswordFormManagerTest : public testing::Test {
 
   void SetNonFederatedAndNotifyFetchCompleted(
       FormFetcher* fetcher,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          non_federated) {
+      const std::vector<PasswordForm>& non_federated) {
     auto* fake_fetcher = static_cast<FakeFormFetcher*>(fetcher);
     fake_fetcher->SetNonFederated(non_federated);
     fake_fetcher->NotifyFetchCompleted();
@@ -160,7 +159,7 @@ TEST_F(CredentialManagerPasswordFormManagerTest,
 
   EXPECT_CALL(delegate_, OnProvisionalSaveComplete());
   SetNonFederatedAndNotifyFetchCompleted(form_manager->GetFormFetcher(),
-                                         {&saved_match});
+                                         {saved_match});
   EXPECT_TRUE(form_manager->IsNewLogin());
   EXPECT_TRUE(form_manager->is_submitted());
   EXPECT_EQ(form_to_save_.url, form_manager->GetURL());
@@ -182,7 +181,7 @@ TEST_F(CredentialManagerPasswordFormManagerTest, UpdatePasswordCredentialAPI) {
 
   EXPECT_CALL(delegate_, OnProvisionalSaveComplete());
   SetNonFederatedAndNotifyFetchCompleted(form_manager->GetFormFetcher(),
-                                         {&saved_match});
+                                         {saved_match});
   EXPECT_FALSE(form_manager->IsNewLogin());
   EXPECT_TRUE(form_manager->is_submitted());
 

@@ -1323,14 +1323,14 @@ void PasswordFormManager::CalculateFillingAssistanceMetric(
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_usernames;
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_passwords;
 
-  for (const password_manager::PasswordForm* saved_form :
+  for (const password_manager::PasswordForm& saved_form :
        form_fetcher_->GetNonFederatedMatches()) {
     // Saved credentials might have empty usernames which are not interesting
     // for filling assistance metric.
-    if (!saved_form->username_value.empty()) {
-      saved_usernames.emplace(saved_form->username_value, saved_form->in_store);
+    if (!saved_form.username_value.empty()) {
+      saved_usernames.emplace(saved_form.username_value, saved_form.in_store);
     }
-    saved_passwords.emplace(saved_form->password_value, saved_form->in_store);
+    saved_passwords.emplace(saved_form.password_value, saved_form.in_store);
   }
 
   metrics_recorder_->CalculateFillingAssistanceMetric(

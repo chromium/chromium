@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -97,8 +98,7 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form);
 // matches. In case of tie, an arbitrary credential from the tied ones is chosen
 // for |best_matches|.
 std::vector<password_manager::PasswordForm> FindBestMatches(
-    const std::vector<raw_ptr<const password_manager::PasswordForm,
-                              VectorExperimental>>& non_federated_matches,
+    base::span<const password_manager::PasswordForm> non_federated_matches,
     password_manager::PasswordForm::Scheme scheme,
     std::vector<raw_ptr<const password_manager::PasswordForm,
                         VectorExperimental>>* non_federated_same_scheme);
