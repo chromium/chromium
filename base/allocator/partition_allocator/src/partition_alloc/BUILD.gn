@@ -226,6 +226,7 @@ pa_buildflag_header("partition_alloc_buildflags") {
 
     "FORWARD_THROUGH_MALLOC=$forward_through_malloc",
     "ASSERT_CPP_20=$assert_cpp20",
+    "IS_DEBUG=$is_debug",
   ]
 }
 

@@ -454,6 +454,13 @@ namespace {
 
 internal::PartitionLock g_stack_trace_buffer_lock;
 
+constexpr size_t kDanglingPtrStackTraceSize =
+    PA_BUILDFLAG(IS_DEBUG)
+        ? 32  // Symbolizing large stack traces can be expensive in debug
+              // builds. We prefer displaying a reasonably sized one instead
+              // of timing out.
+        : base::debug::StackTrace::kMaxTraces;
+
 struct DanglingPointerFreeInfo {
   debug::StackTrace stack_trace;
   debug::TaskTrace task_trace;
@@ -476,7 +483,11 @@ void DanglingRawPtrDetected(uintptr_t id) {
 
   for (std::optional<DanglingPointerFreeInfo>& entry : g_stack_trace_buffer) {
     if (!entry) {
-      entry = {debug::StackTrace(), debug::TaskTrace(), id};
+      entry = {
+          debug::StackTrace(kDanglingPtrStackTraceSize),
+          debug::TaskTrace(),
+          id,
+      };
       return;
     }
   }
@@ -634,7 +645,8 @@ void DanglingRawPtrReleased(uintptr_t id) {
   // This is called from raw_ptr<>'s release operation. Making allocations is
   // allowed. In particular, symbolizing and printing the StackTraces may
   // allocate memory.
-  debug::StackTrace stack_trace_release;
+
+  debug::StackTrace stack_trace_release(kDanglingPtrStackTraceSize);
   debug::TaskTrace task_trace_release;
   std::optional<DanglingPointerFreeInfo> free_info =
       TakeDanglingPointerFreeInfo(id);
