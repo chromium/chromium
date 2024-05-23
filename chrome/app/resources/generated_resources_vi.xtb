@@ -1589,6 +1589,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2156877321344104010">Chạy lại tính năng kiểm tra an toàn</translation>
 <translation id="2157474325782140681">Để có thêm tính năng, hãy sử dụng đế sạc Dell tương thích với Chromebook này.</translation>
 <translation id="215753907730220065">Thoát khỏi Chế độ Toàn màn hình</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> của bạn tích hợp Gemini</translation>
 <translation id="2158249272743343757">Xoá dữ liệu cá nhân hoá...</translation>
 <translation id="2158475082070321257">Sao chép đường liên kết đến văn bản được làm nổi bật</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8309,6 +8310,8 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7353261921908507769">Những người liên hệ của bạn có thể chia sẻ với bạn khi họ ở gần. Quá trình truyền tệp sẽ bắt đầu khi bạn chấp nhận.</translation>
 <translation id="735361434055555355">Đang cài đặt Linux...</translation>
 <translation id="7354120289251608189">Giờ đây, bạn có thể thay đổi giao diện của trình duyệt bất cứ lúc nào.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Trò chuyện với Gemini để bắt đầu viết, lập kế hoạch, học tập và làm nhiều việc khác bằng AI của Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Sau khi thiết lập, hãy chọn ứng dụng Gemini trên thanh ứng dụng ở cuối màn hình để bắt đầu sử dụng Gemini.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Các quyền bạn đã chọn sẽ bị xoá</translation>
 <translation id="7356908624372060336">Nhật ký mạng</translation>
 <translation id="7357271391997763660">Chạy tính năng kiểm tra mật khẩu?</translation>

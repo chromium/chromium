@@ -1587,6 +1587,7 @@
 <translation id="2156877321344104010">ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພອີກຄັ້ງ</translation>
 <translation id="2157474325782140681">ເພື່ອຮັບຄຸນສົມບັດເພີ່ມເຕີມ, ກະລຸນາໃຊ້ສະຖານີແທ່ນສາກ Dell ທີ່ຖືກອອກແບບມາໃຫ້ໃຊ້ໄດ້ກັບ Chromebook ນີ້.</translation>
 <translation id="215753907730220065">ອອກຈາກເຕັມໜ້າຈໍ</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> ຂອງທ່ານມາພ້ອມກັບ Gemini</translation>
 <translation id="2158249272743343757">ກຳລັງລຶບຂໍ້ມູນການປັບແຕ່ງເປັນແບບສ່ວນຕົວ...</translation>
 <translation id="2158475082070321257">ສຳເນົາລິ້ງໄປຍັງໄຮໄລ້</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8304,6 +8305,8 @@
 <translation id="7353261921908507769">ລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານສາມາດແບ່ງປັນກັບທ່ານເມື່ອພວກເຂົາຢູ່ໃກ້ຄຽງ. ການໂອນຍ້າຍຈະບໍ່ເລີ່ມຂຶ້ນຈົນກວ່າທ່ານຍອມຮັບ.</translation>
 <translation id="735361434055555355">ກຳລັງຕິດຕັ້ງ Linux...</translation>
 <translation id="7354120289251608189">ຕອນນີ້ທ່ານສາມາດໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານມີຮູບລັກໃໝ່ໄດ້ເວລາໃດກໍໄດ້.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />ສົນທະນາກັບ Gemini ເພື່ອເລີ່ມຕົ້ນຂຽນ, ວາງແຜນ, ຮຽນຮູ້ ແລະ ອື່ນໆອີກຫຼາຍຢ່າງດ້ວຍ Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />ຫຼັງຈາກຕັ້ງຄ່າແລ້ວ, ໃຫ້ເລີ່ມຕົ້ນນຳໃຊ້ Gemini ໂດຍເລືອກແອັບ Gemini ຢູ່ຖ້ານຂອງທ່ານທາງລຸ່ມສຸດຂອງໜ້າຈໍຂອງທ່ານ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">ການອະນຸຍາດທີ່ທ່ານເລືອກຈະຖືກລຶບອອກ</translation>
 <translation id="7356908624372060336">ບັນທຶກເຄືອຂ່າຍ</translation>
 <translation id="7357271391997763660">ເອີ້ນໃຊ້ການກວດສອບລະຫັດຜ່ານບໍ?</translation>

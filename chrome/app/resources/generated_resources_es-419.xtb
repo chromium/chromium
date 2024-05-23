@@ -1574,6 +1574,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2156877321344104010">Volver a ejecutar la Verificación de seguridad</translation>
 <translation id="2157474325782140681">Para obtener más funciones, usa una estación de conexión Dell diseñada para funcionar con esta Chromebook.</translation>
 <translation id="215753907730220065">Salir de pantalla completa</translation>
+<translation id="2157779167749714207">Tu <ph name="DEVICE_TYPE" /> incluye Gemini</translation>
 <translation id="2158249272743343757">Borrar datos de personalización…</translation>
 <translation id="2158475082070321257">Copiar el vínculo al texto destacado</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8288,6 +8289,8 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7353261921908507769">Tus contactos pueden compartir contenido contigo cuando están cerca. Las transferencias no comenzarán hasta que las aceptes.</translation>
 <translation id="735361434055555355">Instalando Linux…</translation>
 <translation id="7354120289251608189">Ahora puedes darle un nuevo aspecto a tu navegador en cualquier momento.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Chatea con Gemini para comenzar a escribir, planificar, aprender y mucho más con la IA de Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Después de la configuración, selecciona la app de Gemini en la barra, en la parte inferior de la pantalla, para comenzar a usarla.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Se quitarán los permisos que elegiste</translation>
 <translation id="7356908624372060336">Registros de red</translation>
 <translation id="7357271391997763660">¿Deseas verificar las contraseñas?</translation>

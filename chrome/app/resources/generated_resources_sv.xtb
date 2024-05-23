@@ -1589,6 +1589,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2156877321344104010">Kontrollera säkerheten igen</translation>
 <translation id="2157474325782140681">Använd en dockningsstation som är gjord för att användas med denna Chromebook om du vill ha tillgång till ytterligare funktioner.</translation>
 <translation id="215753907730220065">Avsluta helskärmsläge</translation>
+<translation id="2157779167749714207">Gemini ingår med <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">Radera anpassningsdata …</translation>
 <translation id="2158475082070321257">Kopiera länk till markering</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8307,6 +8308,8 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7353261921908507769">Dina kontakter kan dela med dig när de är i närheten. Inga överföringar startas förrän du har godkänt dem.</translation>
 <translation id="735361434055555355">Linux installeras …</translation>
 <translation id="7354120289251608189">Nu kan du ge webbläsaren ett nytt utseende när som helst.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Chatta med Gemini och börja skriva, planera, lära dig saker och mycket annat med Googles AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />När du har konfigurerat Gemini kan du börja använda den genom att välja Gemini-appen på hyllan längst ned på skärmen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Dina valda behörigheter tas bort</translation>
 <translation id="7356908624372060336">Nätverksloggar</translation>
 <translation id="7357271391997763660">Vill du köra lösenordskontrollen?</translation>

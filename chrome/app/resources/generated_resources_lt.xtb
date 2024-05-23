@@ -1592,6 +1592,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2156877321344104010">Dar kartą vykdyti saugos patikrą</translation>
 <translation id="2157474325782140681">Norėdami naudotis papildomomis funkcijomis, naudokite „Dell“ doką, sukurtą specialiai šiam „Chromebook“.</translation>
 <translation id="215753907730220065">Išeiti iš viso ekrano režimo</translation>
+<translation id="2157779167749714207">Įsigiję „<ph name="DEVICE_TYPE" />“ gaunate „Gemini“</translation>
 <translation id="2158249272743343757">Ištrinti suasmeninimo duomenis...</translation>
 <translation id="2158475082070321257">Kopijuoti nuorodą į paryškintą tekstą</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8317,6 +8318,8 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7353261921908507769">Jūsų kontaktai gali bendrinti su jumis, kai būna netoliese. Perdavimai nebus pradėti, kol nesutiksite.</translation>
 <translation id="735361434055555355">Įdiegiama „Linux“...</translation>
 <translation id="7354120289251608189">Dabar galite bet kuriuo metu pakeisti naršyklės išvaizdą.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Kalbėkitės su „Gemini“ ir rašykite, planuokite, mokykitės ar užsiimkite kita veikla naudodami „Google“ DI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Baigę sąranką pradėkite naudoti „Gemini“ pasirinkdami „Gemini“ programą lentynoje, kuri rodoma ekrano apačioje.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Pasirinkti leidimai bus pašalinti</translation>
 <translation id="7356908624372060336">Tinklo žurnalai</translation>
 <translation id="7357271391997763660">Paleisti slaptažodžio patikrą?</translation>

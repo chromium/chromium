@@ -1574,6 +1574,7 @@
 <translation id="2156877321344104010">फेरि सुरक्षा जाँच गर्नुहोस्</translation>
 <translation id="2157474325782140681">अतिरिक्त सुविधाहरू प्राप्त गर्न यो Chromebook का लागि उपयुक्त हुने गरी डिजाइन गरिएको Dell डकिङ स्टेसन प्रयोग गर्नुहोस्।</translation>
 <translation id="215753907730220065">पूरा स्क्रिन मोडबाट निस्कनुहोस्</translation>
+<translation id="2157779167749714207">तपाईंको <ph name="DEVICE_TYPE" /> मा Gemini एप उपलब्ध हुन्छ</translation>
 <translation id="2158249272743343757">पर्सनलाइजेसन डेटा मेटाउनुहोस्...</translation>
 <translation id="2158475082070321257">हाइलाइट गरिएको पाठको लिंक कपी गर्नुहोस्</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8286,6 +8287,8 @@
 <translation id="7353261921908507769">तपाईं वरपर हुँदा तपाईंको कन्ट्याक्टमा भएका व्यक्तिहरू सामग्री सेयर गर्न सक्छन्। तपाईंले सामग्री सार्ने निम्तो स्वीकार नगरेसम्म सामग्री सार्ने काम सुरु हुँदैन।</translation>
 <translation id="735361434055555355">Linux स्थापना गर्दै...</translation>
 <translation id="7354120289251608189">तपाईं अब जुनसुकै बेला आफ्नो ब्राउजरलाई नयाँ स्वरूप दिन सक्नुहुन्छ।</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Google AI मार्फत लेख्ने, योजना बनाउने, नयाँ कुरा सिक्नेलगायतका कार्य सुरु गर्न Gemini सँग च्याट गर्नुहोस्।<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />सेटअप गरिसकेपछि स्क्रिनको पुछारमा रहेको सेल्फमा Gemini एप चयन गरेर Gemini प्रयोग गर्न थाल्नुहोस्।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">तपाईंले छनौट गर्नुभएका अनुमतिहरू रद्द गरिने छन्</translation>
 <translation id="7356908624372060336">नेटवर्क लगहरू</translation>
 <translation id="7357271391997763660">पासवर्ड जाँच गर्ने हो?</translation>

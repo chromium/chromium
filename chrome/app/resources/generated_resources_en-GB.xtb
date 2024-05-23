@@ -1589,6 +1589,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2156877321344104010">Run safety check again</translation>
 <translation id="2157474325782140681">To get additional features, use a Dell docking station designed to work with this Chromebook.</translation>
 <translation id="215753907730220065">Exit Full Screen</translation>
+<translation id="2157779167749714207">Your <ph name="DEVICE_TYPE" /> comes with Gemini</translation>
 <translation id="2158249272743343757">Delete personalisation data...</translation>
 <translation id="2158475082070321257">Copy link to highlight</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8307,6 +8308,8 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7353261921908507769">Your contacts can share with you when they are nearby. Transfers won't start until you accept.</translation>
 <translation id="735361434055555355">Installing Linux...</translation>
 <translation id="7354120289251608189">You can now give your browser a new look at any time.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Chat with Gemini to start writing, planning, learning and more with Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />After setup, start using Gemini by selecting the Gemini app on your shelf, at the bottom of your screen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Your chosen permissions will be removed</translation>
 <translation id="7356908624372060336">Network logs</translation>
 <translation id="7357271391997763660">Run password check?</translation>

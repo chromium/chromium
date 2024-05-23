@@ -1578,6 +1578,7 @@
 <translation id="2156877321344104010">سیفٹی چیک دوبارہ چلائیں</translation>
 <translation id="2157474325782140681">‏اضافی خصوصیات حاصل کرنے کیلئے، اس Chromebook کے ساتھ کام کرنے کیلئے ڈیزائن کردہ ایک Dell ڈاکنگ اسٹیشن استعمال کریں۔</translation>
 <translation id="215753907730220065">پوری اسکرین سے خارج ہوں</translation>
+<translation id="2157779167749714207">‏آپ کا <ph name="DEVICE_TYPE" /> Gemini کے ساتھ آتا ہے</translation>
 <translation id="2158249272743343757">ذاتی نوعیت کا ڈیٹا حذف کریں...</translation>
 <translation id="2158475082070321257">نمایاں کرنے کا لنک کاپی کریں</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8291,6 +8292,8 @@
 <translation id="7353261921908507769">ان کے قریب ہونے پر آپ کے رابطے آپ کے ساتھ اشتراک کر سکتے ہیں۔ آپ کے قبول کئے بغیر منتقلیاں شروع نہیں ہوں گی۔</translation>
 <translation id="735361434055555355">‏Linux کو انسٹال کیا جا رہا ہے…</translation>
 <translation id="7354120289251608189">آپ اب کسی بھی وقت اپنے براؤزر کو نئی شکل دے سکتے ہیں۔</translation>
+<translation id="7355031985273420630">‏<ph name="BEGIN_PARAGRAPH1" />‫Google AI کے ساتھ لکھنے، منصوبہ بندی کرنے، سیکھنے اور بہت کچھ شروع کرنے کے لیے Gemini کے ساتھ چیٹ کریں۔<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />سیٹ اپ کے بعد، اپنی سکرین کے نیچے اپنے شیلف پر Gemini ایپ کو منتخب کر کے Gemini کا استعمال شروع کریں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">آپ کی منتخب کردہ اجازتیں ہٹا دی جائیں گی</translation>
 <translation id="7356908624372060336">نیٹ ورک لاگز</translation>
 <translation id="7357271391997763660">پاس ورڈ چیک چلائیں؟</translation>

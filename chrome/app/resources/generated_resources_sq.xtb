@@ -1574,6 +1574,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2156877321344104010">Ekzekuto përsëri kontrollin e sigurisë</translation>
 <translation id="2157474325782140681">Për të marrë veçori shtesë, përdor një stacion lidhjeje Dell të projektuar për të funksionuar me këtë Chromebook.</translation>
 <translation id="215753907730220065">Dil nga ekrani i plotë</translation>
+<translation id="2157779167749714207">Pajisja jote <ph name="DEVICE_TYPE" /> vjen me Gemini</translation>
 <translation id="2158249272743343757">Fshi të dhënat e personalizimit...</translation>
 <translation id="2158475082070321257">Kopjo lidhjen për te teksti i theksuar</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8288,6 +8289,8 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7353261921908507769">Kontaktet e tua mund të ndajnë me ty kur të jenë në afërsi. Transferimet nuk do të fillojnë derisa të pranosh.</translation>
 <translation id="735361434055555355">Po instalohet Linux...</translation>
 <translation id="7354120289251608189">Tani mund t'i japësh në çdo kohë një pamje të re shfletuesit tënd.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Bisedo me Gemini për të filluar të shkruash, të planifikosh, të mësosh etj. me IA-në e Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Pas konfigurimit, fillo të përdorësh Gemini duke zgjedhur aplikacionin Gemini në raftin tënd në fund të ekranit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Lejet e zgjedhura do të hiqen</translation>
 <translation id="7356908624372060336">Evidencat e rrjetit</translation>
 <translation id="7357271391997763660">Të ekzekutohet kontrolli i fjalëkalimeve?</translation>

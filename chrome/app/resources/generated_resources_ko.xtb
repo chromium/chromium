@@ -1590,6 +1590,7 @@
 <translation id="2156877321344104010">안전 확인 다시 실행</translation>
 <translation id="2157474325782140681">추가 기능을 사용하려면 이 Chromebook과 호환되는 Dell 도킹 스테이션을 사용하세요.</translation>
 <translation id="215753907730220065">전체화면 종료</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" />의 경우 Gemini가 탑재되어 출시됩니다</translation>
 <translation id="2158249272743343757">맞춤설정 데이터 삭제…</translation>
 <translation id="2158475082070321257">하이라이트 링크 복사</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8307,6 +8308,8 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7353261921908507769">연락처에 있는 사용자가 근처에 있는 경우 나와 공유할 수 있습니다. 내가 수락하지 않으면 전송이 시작되지 않습니다.</translation>
 <translation id="735361434055555355">Linux 설치 중...</translation>
 <translation id="7354120289251608189">이제 언제든지 브라우저를 새로운 디자인으로 변경할 수 있습니다.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Gemini와 채팅하며 Google AI를 활용해 글쓰기, 계획, 학습 등을 시작해 보세요.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />설정 후 화면 하단의 앱 표시줄에서 Gemini 앱을 선택하여 Gemini 사용을 시작하세요<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">선택한 권한이 삭제됩니다.</translation>
 <translation id="7356908624372060336">네트워크 로그</translation>
 <translation id="7357271391997763660">비밀번호 진단을 실행하시겠습니까?</translation>

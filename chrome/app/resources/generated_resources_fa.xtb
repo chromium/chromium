@@ -1586,6 +1586,7 @@
 <translation id="2156877321344104010">اجرای مجدد «بررسی ایمنی»</translation>
 <translation id="2157474325782140681">‏برای دریافت ویژگی‌های اضافی، از ایستگاه پایه اتصال Dell که برای کار با این Chromebook طراحی شده است، استفاده کنید.</translation>
 <translation id="215753907730220065">خروج از حالت تمام صفحه</translation>
+<translation id="2157779167749714207">‏‫<ph name="DEVICE_TYPE" /> شما با Gemini ارائه می‌شود</translation>
 <translation id="2158249272743343757">حذف داده‌های شخصی‌سازی…</translation>
 <translation id="2158475082070321257">کپی کردن پیوند به مورد برجسته‌شده</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8306,6 +8307,8 @@
 <translation id="7353261921908507769">وقتی مخاطبینتان نزدیک شما باشند می‌توانند با شما هم‌رسانی کنند. تا درخواست را نپذیرید، انتقال شروع نخواهد شد.</translation>
 <translation id="735361434055555355">‏درحال نصب Linux…</translation>
 <translation id="7354120289251608189">اکنون می‌توانید هرزمان خواستید ظاهر جدیدی به مرورگرتان بدهید.</translation>
+<translation id="7355031985273420630">‏<ph name="BEGIN_PARAGRAPH1" />برای شروع نوشتن، برنامه‌ریزی، یادگیری، و کارهای دیگر با کمک «هوش مصنوعی Google»، با Gemini گپ بزنید.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />پس‌از راه‌اندازی، با انتخاب برنامه Gemini در قفسه پایین صفحه‌نمایش، شروع به استفاده از Gemini کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">اجازه‌های انتخابی‌تان برداشته خواهد شد</translation>
 <translation id="7356908624372060336">گزارش‌های شبکه</translation>
 <translation id="7357271391997763660">بررسی گذرواژه اجرا شود؟</translation>

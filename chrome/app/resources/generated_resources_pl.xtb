@@ -1574,6 +1574,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2156877321344104010">Uruchom ponownie kontrolę zabezpieczeń</translation>
 <translation id="2157474325782140681">Aby korzystać z większej liczby funkcji, używaj stacji dokującej Dell przeznaczonej do tego Chromebooka.</translation>
 <translation id="215753907730220065">Zamknij pełny ekran</translation>
+<translation id="2157779167749714207">Urządzenie <ph name="DEVICE_TYPE" /> jest wyposażone w Gemini</translation>
 <translation id="2158249272743343757">Usuń dane personalizacji…</translation>
 <translation id="2158475082070321257">Kopiuj link do podświetlenia</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8273,6 +8274,8 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7353261921908507769">Twoje kontakty mogą udostępniać Ci dane, gdy znajdują się w pobliżu. Przesyłanie danych nie rozpocznie się bez Twojej zgody.</translation>
 <translation id="735361434055555355">Instaluję Linuksa...</translation>
 <translation id="7354120289251608189">Teraz możesz w każdej chwili zmienić wygląd przeglądarki.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Porozmawiaj z Gemini, aby zacząć pisać, planować, uczyć się lub wykonywać inne zadania dzięki AI od Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Po zakończeniu konfiguracji zacznij korzystać z Gemini, wybierając aplikację Gemini na półce u dołu ekranu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Wybrane uprawnienia zostaną usunięte</translation>
 <translation id="7356908624372060336">Dzienniki sieci</translation>
 <translation id="7357271391997763660">Uruchomić sprawdzanie hasła?</translation>

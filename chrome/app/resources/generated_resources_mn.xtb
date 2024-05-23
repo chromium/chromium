@@ -1585,6 +1585,7 @@
 <translation id="2156877321344104010">Аюулгүй байдлын шалгалтыг дахин ажиллуулах</translation>
 <translation id="2157474325782140681">Нэмэлт онцлогийг авахын тулд энэ Chromebook-тэй ажиллахад зориулсан Dell холбогч станцыг ашиглана уу.</translation>
 <translation id="215753907730220065">Дэлгэц дүүрэн харах горимоос гарах</translation>
+<translation id="2157779167749714207">Таны <ph name="DEVICE_TYPE" />-д Gemini дагалддаг</translation>
 <translation id="2158249272743343757">Хувийн болгосон өгөгдлийг устгах...</translation>
 <translation id="2158475082070321257">Тодруулсан текстийн холбоосыг хуулах</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8301,6 +8302,8 @@
 <translation id="7353261921908507769">Таны харилцагчид ойролцоо байх үедээ тантай хуваалцах боломжтой. Таныг зөвшөөрөх хүртэл шилжүүлгийг эхлүүлэхгүй.</translation>
 <translation id="735361434055555355">Linux-г суулгаж байна...</translation>
 <translation id="7354120289251608189">Та одоо хөтчидөө хүссэн үедээ шинэ дүр төрх өгөх боломжтой.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Google AI-р бичих, төлөвлөх, сурах болон илүү ихийг хийхийн тулд Gemini-тэй чатална уу.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Тохируулгын дараа дэлгэцийнхээ доод талд байх тавиур дээрээс Gemini-тэй харилцах аппыг сонгосноор Gemini-г ашиглаж эхэлнэ үү.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Таны сонгосон зөвшөөрлүүдийг хасна</translation>
 <translation id="7356908624372060336">Сүлжээний логууд</translation>
 <translation id="7357271391997763660">Нууц үгний шалгалт явуулах уу?</translation>

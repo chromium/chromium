@@ -1590,6 +1590,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2156877321344104010">Keyra öryggisathugun aftur</translation>
 <translation id="2157474325782140681">Til að fá viðbótareiginleika skaltu nota Dell-dokku sem er hönnuð fyrir þessa Chromebook tölvu.</translation>
 <translation id="215753907730220065">Hætta að nota allan skjáinn</translation>
+<translation id="2157779167749714207">Gemini fylgir með <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">Eyða sérsniðsgögnum...</translation>
 <translation id="2158475082070321257">Afrita tengil í merktan texta</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8309,6 +8310,8 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7353261921908507769">Tengiliðirnir þínir geta deilt með þér þegar þeir eru nálægt. Flutningur hefst ekki fyrr en þú samþykkir.</translation>
 <translation id="735361434055555355">Setur upp Linux...</translation>
 <translation id="7354120289251608189">Nú geturðu skipt um útlit á vafranum hvenær sem er.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Spjallaðu við Gemini til að byrja að skrifa, skipuleggja, læra og fleira með aðstoð gervigreindar Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Þegar þú hefur lokið við uppsetningu geturðu byrjað að nota Gemini með því að velja Gemini-forritið á hillunni neðst á skjánum.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Valdar heimildir verða fjarlægðar</translation>
 <translation id="7356908624372060336">Annálar netkerfis</translation>
 <translation id="7357271391997763660">Athuga aðgangsorð?</translation>

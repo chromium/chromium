@@ -1587,6 +1587,7 @@
 <translation id="2156877321344104010">সুৰক্ষা পৰীক্ষা পুনৰ চলাওক</translation>
 <translation id="2157474325782140681">অতিৰিক্ত সুবিধাসমূহ পাবলৈ এই Chromebookৰ সৈতে কাম কৰিবলৈ ডিজাইন কৰা এটা Dell ড’কিং ষ্টেচন ব্যৱহাৰ কৰক।</translation>
 <translation id="215753907730220065">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হওক</translation>
+<translation id="2157779167749714207">আপোনাৰ <ph name="DEVICE_TYPE" /> Geminiৰ সৈতে উপলব্ধ হয়</translation>
 <translation id="2158249272743343757">ব্যক্তিগতকৰণৰ ডেটা মচক...</translation>
 <translation id="2158475082070321257">হাইলাইটৰ লিংকৰ প্ৰতিলিপি কৰক</translation>
 <translation id="2159488579268505102">ইউএছবি-চি</translation>
@@ -8305,6 +8306,8 @@
 <translation id="7353261921908507769">ওচৰত থাকিলে আপোনাৰ সম্পৰ্কসূচীত থকা লোকসকলে আপোনাৰ সৈতে শ্বেয়াৰ কৰিব পাৰে। আপুনি গ্ৰহণ নকৰালৈকে স্থানান্তৰণ আৰম্ভ নহ’ব।</translation>
 <translation id="735361434055555355">Linux ইনষ্টল কৰি থকা হৈছে...</translation>
 <translation id="7354120289251608189">এতিয়া আপুনি যিকোনো সময়তে আপোনাৰ ব্ৰাউজাৰক এটা নতুন ৰূপ প্ৰদান কৰিব পাৰে।</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Google AI-ৰ সৈতে লিখা, পৰিকল্পনা কৰা, শিকা আৰু অধিক কাৰ্য কৰিবলৈ আৰম্ভ কৰাৰ বাবে Geminiৰ সৈতে চাট কৰক।<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />ছেট আপ কৰাৰ পাছত, আপোনাৰ স্ক্ৰীনখনৰ একেবাৰে তলত থকা শ্বেল্ফত Gemini এপ্‌টো বাছনি কৰি Gemini ব্যৱহাৰ কৰিবলৈ আৰম্ভ কৰক।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">আপুনি বাছনি কৰা অনুমতিসমূহ আঁতৰোৱা হ'ব</translation>
 <translation id="7356908624372060336">নেটৱৰ্কৰ লগসমূহ</translation>
 <translation id="7357271391997763660">পাছৱৰ্ড সম্পৰ্কীয় পৰীক্ষা চলাবনে?</translation>

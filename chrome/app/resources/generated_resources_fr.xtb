@@ -1578,6 +1578,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2156877321344104010">Relancer le contrôle de sécurité</translation>
 <translation id="2157474325782140681">Pour bénéficier de fonctionnalités supplémentaires, utilisez une station d'accueil Dell compatible avec ce Chromebook.</translation>
 <translation id="215753907730220065">Quitter le mode plein écran</translation>
+<translation id="2157779167749714207">Gemini est fourni avec votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">Supprimer les données de personnalisation</translation>
 <translation id="2158475082070321257">Copier le lien vers le texte en surbrillance</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8295,6 +8296,8 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7353261921908507769">Vos contacts peuvent partager du contenu avec vous lorsqu'ils sont à proximité. Les transferts ne démarreront pas tant que vous ne les aurez pas acceptés.</translation>
 <translation id="735361434055555355">Installation de Linux…</translation>
 <translation id="7354120289251608189">Vous pouvez à présent modifier l'apparence de votre navigateur à tout moment.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Discutez avec Gemini pour commencer à écrire, planifier, apprendre, et plus encore, avec l'IA de Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Après la configuration, commencez à utiliser Gemini en sélectionnant l'application Gemini sur votre étagère, en bas de l'écran.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Les autorisations que vous avez choisies seront supprimées</translation>
 <translation id="7356908624372060336">Journaux réseau</translation>
 <translation id="7357271391997763660">Lancer la vérification du mot de passe ?</translation>

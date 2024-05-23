@@ -1577,6 +1577,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2156877321344104010">Executar novamente a verificação de segurança</translation>
 <translation id="2157474325782140681">Para ter acesso a mais funcionalidades, utilize uma estação de carregamento Dell concebida para trabalhar com este Chromebook.</translation>
 <translation id="215753907730220065">Sair do modo de ecrã inteiro</translation>
+<translation id="2157779167749714207">O seu <ph name="DEVICE_TYPE" /> inclui o Gemini</translation>
 <translation id="2158249272743343757">Eliminar dados de personalização…</translation>
 <translation id="2158475082070321257">Copiar link para realçar</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8293,6 +8294,8 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7353261921908507769">Os seus contactos podem partilhar consigo quando estiver nas proximidades. As transferências só irão começar quando aceitar.</translation>
 <translation id="735361434055555355">A instalar o Linux…</translation>
 <translation id="7354120289251608189">Agora pode dar ao seu navegador um novo aspeto em qualquer altura.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Converse com o Gemini para começar a escrever, planear, aprender e muito mais com a IA da Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Após a configuração, comece a usar o Gemini selecionando a app Gemini na prateleira, na parte inferior do ecrã.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">As suas autorizações escolhidas são removidas</translation>
 <translation id="7356908624372060336">Registos de rede</translation>
 <translation id="7357271391997763660">Executar a verificação da palavra-passe?</translation>

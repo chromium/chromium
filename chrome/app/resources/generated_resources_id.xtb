@@ -1589,6 +1589,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2156877321344104010">Jalankan pemeriksaan keamanan lagi</translation>
 <translation id="2157474325782140681">Untuk mendapatkan fitur tambahan, gunakan docking station Dell yang didesain untuk berfungsi dengan Chromebook ini.</translation>
 <translation id="215753907730220065">Keluar dari Tampilan Layar Penuh</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> Anda dilengkapi dengan Gemini</translation>
 <translation id="2158249272743343757">Hapus data personalisasi...</translation>
 <translation id="2158475082070321257">Salin link ke sorotan</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8307,6 +8308,8 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7353261921908507769">Kontak dapat berbagi dengan Anda saat mereka berada di sekitar. Transfer tidak akan dimulai sampai Anda menerimanya.</translation>
 <translation id="735361434055555355">Menginstal Linux...</translation>
 <translation id="7354120289251608189">Anda kini dapat memberikan tampilan baru ke browser kapan saja.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Mulai percakapan dengan Gemini untuk mulai menulis, membuat rencana, belajar, dan banyak lagi dengan AI Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Setelah penyiapan, mulai gunakan Gemini dengan memilih aplikasi Gemini di panel aplikasi Anda, di bagian bawah layar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Izin yang Anda pilih akan dihapus</translation>
 <translation id="7356908624372060336">Log Jaringan</translation>
 <translation id="7357271391997763660">Jalankan pemeriksaan sandi?</translation>

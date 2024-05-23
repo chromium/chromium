@@ -1579,6 +1579,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2156877321344104010">Ponovo pokreni sigurnosnu provjeru</translation>
 <translation id="2157474325782140681">Za biste dobili dodatne značajke, upotrijebite priključnu stanicu Dell namijenjenu za ovaj Chromebook.</translation>
 <translation id="215753907730220065">Napusti potpuni ekran</translation>
+<translation id="2157779167749714207">Uz uređaj <ph name="DEVICE_TYPE" /> dobivate Gemini</translation>
 <translation id="2158249272743343757">Brisanje podataka personalizacije...</translation>
 <translation id="2158475082070321257">Kopiraj vezu na istaknuti tekst</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8295,6 +8296,8 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7353261921908507769">Vaši kontakti mogu dijeliti s vama kad su u blizini. Prijenosi neće početi prije nego što ih prihvatite.</translation>
 <translation id="735361434055555355">Instaliranje Linuxa...</translation>
 <translation id="7354120289251608189">Sada svojem pregledniku možete dati novi izgled kad god poželite.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Razgovarajte s Geminijem da biste počeli pisati, planirati, učiti i još mnogo toga uz Googleov AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Nakon postavljanja počnite upotrebljavati Gemini odabirom aplikacije Gemini na polici pri dnu zaslona.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Uklonit će se vaša odabrana dopuštenja</translation>
 <translation id="7356908624372060336">Mrežni zapisnici</translation>
 <translation id="7357271391997763660">Želite li pokrenuti provjeru zaporke?</translation>

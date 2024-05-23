@@ -1577,6 +1577,7 @@
 <translation id="2156877321344104010">เรียกใช้การตรวจสอบความปลอดภัยอีกครั้ง</translation>
 <translation id="2157474325782140681">โปรดใช้แท่นชาร์จ Dell ที่ออกแบบมาให้ใช้งานกับ Chromebook นี้เพื่อใช้ฟีเจอร์เพิ่มเติม</translation>
 <translation id="215753907730220065">ออกจากการแสดงเต็มหน้าจอ</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> ของคุณมาพร้อมกับ Gemini</translation>
 <translation id="2158249272743343757">ลบข้อมูลการปรับเปลี่ยนในแบบของคุณ...</translation>
 <translation id="2158475082070321257">คัดลอกลิงก์ไปยังไฮไลต์</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8288,6 +8289,8 @@
 <translation id="7353261921908507769">รายชื่อติดต่อจะแชร์เนื้อหากับคุณได้เมื่ออยู่ใกล้เคียง การโอนจะไม่เริ่มจนกว่าคุณจะยอมรับ</translation>
 <translation id="735361434055555355">กำลังติดตั้ง Linux...</translation>
 <translation id="7354120289251608189">ตอนนี้คุณเปลี่ยนโฉมเบราว์เซอร์ของตัวเองได้ทุกเมื่อแล้ว</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />แชทกับ Gemini เพื่อเริ่มเขียน วางแผน เรียนรู้ และอีกมากมายด้วย AI ของ Google<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />หลังจากตั้งค่าแล้ว ก็เริ่มใช้ Gemini ได้เลยโดยเลือกแอป Gemini บนแถบที่ด้านล่างของหน้าจอ<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">ระบบจะนำสิทธิ์ที่คุณเลือกไว้ออก</translation>
 <translation id="7356908624372060336">บันทึกเครือข่าย</translation>
 <translation id="7357271391997763660">เรียกใช้การตรวจสอบรหัสผ่านใช่ไหม</translation>

@@ -1578,6 +1578,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2156877321344104010">Rulează din nou verificarea de siguranță</translation>
 <translation id="2157474325782140681">Pentru a beneficia de mai multe funcții, folosește o stație de andocare Dell proiectată să funcționeze cu acest Chromebook.</translation>
 <translation id="215753907730220065">Ieși din ecranul complet</translation>
+<translation id="2157779167749714207">Dispozitivul <ph name="DEVICE_TYPE" /> este livrat cu Gemini</translation>
 <translation id="2158249272743343757">Șterge datele de personalizare...</translation>
 <translation id="2158475082070321257">Copiază linkul către textul evidențiat</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8294,6 +8295,8 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7353261921908507769">Persoanele de contact îți pot trimite fișiere când sunt în apropiere. Transferurile nu vor începe până când nu accepți.</translation>
 <translation id="735361434055555355">Se instalează Linux...</translation>
 <translation id="7354120289251608189">Acum îi poți oferi browserului un nou aspect oricând.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Conversează prin chat cu Gemini pentru a începe să scrii, să planifici, să înveți și multe altele cu Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />După configurare, începe să folosești Gemini selectând aplicația Gemini de pe raft, din partea de jos a ecranului.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Permisiunile alese vor fi eliminate</translation>
 <translation id="7356908624372060336">Jurnale de rețea</translation>
 <translation id="7357271391997763660">Rulezi verificarea parolelor?</translation>

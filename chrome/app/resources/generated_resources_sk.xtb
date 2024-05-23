@@ -1579,6 +1579,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2156877321344104010">Znova spustiť kontrolu bezpečnosti</translation>
 <translation id="2157474325782140681">Ak chcete získať ďalšie funkcie, použite dokovaciu stanicu od spoločnosti Dell, ktorá je navrhnutá pre tento Chromebook.</translation>
 <translation id="215753907730220065">Ukončiť zobrazenie na celú obrazovku</translation>
+<translation id="2157779167749714207">Vaše zariadenie <ph name="DEVICE_TYPE" /> sa dodáva s Gemini</translation>
 <translation id="2158249272743343757">Odstrániť údaje prispôsobenia…</translation>
 <translation id="2158475082070321257">Kopírovať odkaz na zvýraznenie</translation>
 <translation id="2159488579268505102">USB‑C</translation>
@@ -8297,6 +8298,8 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7353261921908507769">Vaše kontakty s vami môžu zdieľať obsah, keď sú nablízku. Prenosy sa začnú až vtedy, keď ich prijmete.</translation>
 <translation id="735361434055555355">Inštaluje sa Linux…</translation>
 <translation id="7354120289251608189">Teraz môžete svojmu prehliadaču dať nový vzhľad kedykoľvek.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Četujte s Gemini a začnite písať, plánovať, učiť sa a mnoho iného pomocou umelej inteligencie od Googlu.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Po nastavení začnite používať Gemini výberom aplikácie Gemini na poličke v dolnej časti obrazovky.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Vybrané povolenia budú odstránené</translation>
 <translation id="7356908624372060336">Denníky siete</translation>
 <translation id="7357271391997763660">Chcete spustiť kontrolu hesiel?</translation>

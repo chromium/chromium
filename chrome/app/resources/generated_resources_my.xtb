@@ -1587,6 +1587,7 @@
 <translation id="2156877321344104010">လုံခြုံရေးစစ်ဆေးမှု ထပ်လုပ်ဆောင်ရန်</translation>
 <translation id="2157474325782140681">နောက်ထပ်ဝန်ဆောင်မှုများ ရရှိရန် ဤ Chromebook နှင့်တွဲသုံးရန် ထုတ်လုပ်ထားသော Dell အထိုင်စက်ကို အသုံးပြုပါ။</translation>
 <translation id="215753907730220065">မျက်နှာပြင် အပြည့်မှ ထွက်ရန်</translation>
+<translation id="2157779167749714207">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Gemini ပါဝင်သည်</translation>
 <translation id="2158249272743343757">ပုဂ္ဂိုလ်ရေးသီးသန့်အချက်အလက်များ ဖျက်ရန်…</translation>
 <translation id="2158475082070321257">မြင်သာအောင်လုပ်ထားသော စာသားသို့ လင့်ခ်ကို မိတ္တူကူးရန်</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8302,6 +8303,8 @@
 <translation id="7353261921908507769">အနီးတစ်ဝိုက်ရှိ အဆက်အသွယ်များက သင်နှင့်မျှဝေနိုင်သည်။ သင်လက်မခံမချင်း လွှဲပြောင်းမှုကို စတင်မည်မဟုတ်ပါ။</translation>
 <translation id="735361434055555355">Linux ကို ထည့်သွင်းနေသည်...</translation>
 <translation id="7354120289251608189">ယခုအခါ ဘရောင်ဇာတွင် အချိန်မရွေး အသွင်သစ်သုံးနိုင်ပါပြီ။</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Google AI ဖြင့် စာရေးခြင်း၊ စီစဉ်ခြင်း၊ လေ့လာခြင်း စသည်တို့စတင်ရန် Gemini နှင့် ချတ်လုပ်ပါ။<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />စနစ်ထည့်သွင်းပြီးနောက် စခရင်အောက်ခြေရှိ စင်ပေါ်တွင် Gemini အက်ပ်ကို ရွေးခြင်းဖြင့် Gemini စသုံးပါ။<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">သင်ရွေးထားသော ခွင့်ပြုချက်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="7356908624372060336">ကွန်ရက် မှတ်တမ်းများ</translation>
 <translation id="7357271391997763660">စကားဝှက်စစ်ဆေးမှု လုပ်ဆောင်မလား။</translation>

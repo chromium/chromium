@@ -1577,6 +1577,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2156877321344104010">Ripeti il controllo di sicurezza</translation>
 <translation id="2157474325782140681">Per avere a disposizione funzionalità aggiuntive, usa una dock station Dell progettata per supportare questo Chromebook.</translation>
 <translation id="215753907730220065">Esci da schermo intero</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> insieme a Gemini</translation>
 <translation id="2158249272743343757">Elimina dati personalizzazione…</translation>
 <translation id="2158475082070321257">Copia link al testo evidenziato</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8287,6 +8288,8 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7353261921908507769">I tuoi contatti possono condividere dei contenuti con te quando si trovano nelle vicinanze. I trasferimenti non inizieranno finché non accetti.</translation>
 <translation id="735361434055555355">Installazione di Linux...</translation>
 <translation id="7354120289251608189">Ora puoi dare un nuovo look al tuo browser in qualsiasi momento.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Prova Gemini per iniziare a scrivere, pianificare, imparare e altro ancora con Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Dopo la configurazione, inizia a utilizzare Gemini selezionando l'app Gemini nella barra delle app posizionata nella parte inferiore dello schermo.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Le autorizzazioni che hai scelto verranno rimosse</translation>
 <translation id="7356908624372060336">Log di rete</translation>
 <translation id="7357271391997763660">Eseguire il controllo della password?</translation>
@@ -9829,7 +9832,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
     <ph name="BEGIN_PARAGRAPH4" />Se l'impostazione Attività web e app è attiva per l'Account Google di tuo figlio, i suoi dati potrebbero essere salvati nel suo account. Scopri di più su queste impostazioni e su come configurarle all'indirizzo families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Inserisci la password del file</translation>
 <translation id="8476942730579767658">Finestre e scrivanie</translation>
-<translation id="8477178913400731244">Elimina i dati</translation>
+<translation id="8477178913400731244">Elimina dati</translation>
 <translation id="8477241577829954800">Sostituito</translation>
 <translation id="8477384620836102176">&amp;Generali</translation>
 <translation id="8479176401914456949">Codice non valido. Riprova.</translation>

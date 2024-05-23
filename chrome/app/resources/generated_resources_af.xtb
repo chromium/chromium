@@ -1589,6 +1589,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2156877321344104010">Doen veiligheidskontrole weer</translation>
 <translation id="2157474325782140681">Gebruik 'n Dell-dokstasie wat ontwerp is om saam met hierdie Chromebook te gebruik om bykomende kenmerke te kry.</translation>
 <translation id="215753907730220065">Gaan by Volskerm uit</translation>
+<translation id="2157779167749714207">Gemini is reeds op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">Vee personaliseringdata uit …</translation>
 <translation id="2158475082070321257">Kopieer skakel na hoogtepunt</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8307,6 +8308,8 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7353261921908507769">Jou kontakte kan met jou deel wanneer hulle in die omtrek is. Oordragte sal nie begin voordat jy aanvaar het nie.</translation>
 <translation id="735361434055555355">Installeer tans Linux …</translation>
 <translation id="7354120289251608189">Jy kan nou enige tyd vir jou blaaier ’n nuwe voorkoms gee.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Klets met Gemini om met Google AI te begin skryf, beplan, leer en meer.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Begin ná opstelling Gemini gebruik deur die Gemini-app op jou rak onderaan jou skerm te kies.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Jou gekose toestemmings sal verwyder word</translation>
 <translation id="7356908624372060336">Netwerkloglêers</translation>
 <translation id="7357271391997763660">Voer wagwoordkontrole uit?</translation>

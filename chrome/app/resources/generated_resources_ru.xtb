@@ -1579,6 +1579,7 @@
 <translation id="2156877321344104010">Снова запустить проверку безопасности</translation>
 <translation id="2157474325782140681">Чтобы получить доступ к дополнительным возможностям, используйте док-станцию Dell, предназначенную для этого устройства Chromebook.</translation>
 <translation id="215753907730220065">Выход из полноэкранного режима</translation>
+<translation id="2157779167749714207">На вашем устройстве <ph name="DEVICE_TYPE" /> установлено приложение Gemini</translation>
 <translation id="2158249272743343757">Удалить данные для персонализации…</translation>
 <translation id="2158475082070321257">Копировать ссылку на выделенный текст</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -3160,7 +3161,7 @@
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369067987974711168">Показать ещё действия для этого порта</translation>
 <translation id="3369624026883419694">Определение хоста...</translation>
-<translation id="3370260763947406229">Автоисправление</translation>
+<translation id="3370260763947406229">Автозамена</translation>
 <translation id="3371140690572404006">Устройство USB-C (ближний порт справа)</translation>
 <translation id="3371351218553893534">Слишком длинная строка: <ph name="ERROR_LINE" />.</translation>
 <translation id="3372602033006349389">На других устройствах</translation>
@@ -8299,6 +8300,8 @@
 <translation id="7353261921908507769">Ваши контакты могут обмениваться с вами контентом, когда находятся поблизости. Передача данных не начинается без вашего согласия.</translation>
 <translation id="735361434055555355">Установка Linux...</translation>
 <translation id="7354120289251608189">Теперь вы можете менять внешний вид браузера в любое время.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Пишите тексты, составляйте планы, учитесь и выполняйте другие задачи с помощью ИИ от Google, общаясь с Gemini.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />После установки выберите приложение Gemini на панели запуска внизу экрана.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Выбранные разрешения будут удалены.</translation>
 <translation id="7356908624372060336">Сетевые журналы</translation>
 <translation id="7357271391997763660">Запустить проверку паролей?</translation>

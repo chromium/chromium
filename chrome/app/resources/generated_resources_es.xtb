@@ -1577,6 +1577,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2156877321344104010">Volver a ejecutar la comprobación de seguridad</translation>
 <translation id="2157474325782140681">Si quieres obtener funciones adicionales, usa una base Dell que se haya diseñado para funcionar con este Chromebook.</translation>
 <translation id="215753907730220065">Desactivar pantalla completa</translation>
+<translation id="2157779167749714207">Tu <ph name="DEVICE_TYPE" /> incluye Gemini</translation>
 <translation id="2158249272743343757">Eliminar datos de personalización...</translation>
 <translation id="2158475082070321257">Copiar enlace al texto destacado</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8290,6 +8291,8 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7353261921908507769">Tus contactos pueden compartir archivos contigo cuando estén cerca de ti. Las transferencias no se iniciarán hasta que las aceptes.</translation>
 <translation id="735361434055555355">Instalando Linux...</translation>
 <translation id="7354120289251608189">Ahora puedes renovar el aspecto de tu navegador en cualquier momento.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Chatea con Gemini para empezar a escribir, planificar, aprender y más con la IA de Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Después de la configuración, selecciona la aplicación de Gemini en tu estantería, en la parte inferior de la pantalla, para empezar a usarla.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Se quitarán los permisos que hayas elegido</translation>
 <translation id="7356908624372060336">Registros de la red</translation>
 <translation id="7357271391997763660">¿Revisar contraseñas?</translation>

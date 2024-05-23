@@ -1589,6 +1589,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2156877321344104010">Коопсуздукту кайра текшерүү</translation>
 <translation id="2157474325782140681">Кошумча функцияларын колдонуу үчүн ушул Chromebook менен иштөөгө арналган Dell док станциясын колдонуңуз.</translation>
 <translation id="215753907730220065">Толук экран режиминен чыгуу</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> түзмөгүңүз Gemini менен коштолот</translation>
 <translation id="2158249272743343757">Жекелештирүү дайындарын өчүрүү...</translation>
 <translation id="2158475082070321257">Бөлүнүп көрсөтүлгөн нерсеге шилтемени көчүрүү</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8306,6 +8307,8 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7353261921908507769">Жакын жердеги байланыштар сиз менен бөлүшө алышат. Маалымат сиздин макулдугуңуз менен гана өткөрүлө баштайт.</translation>
 <translation id="735361434055555355">Linux орнотулууда...</translation>
 <translation id="7354120289251608189">Эми серепчинин көрүнүшүн каалаган убакта жаңырта аласыз.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Gemini менен кеңешип, Google ЖИнин жардамы менен жазып, пландап, үйрөнүп жана башка нерселерди жасаңыз.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Тууралагандан кийин экраныңыздын ылдый жагындагы текчеден Gemini колдонмосун тандап, Gemini'ни пайдалана баштаңыз.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Тандалган уруксаттар өчүрүлөт</translation>
 <translation id="7356908624372060336">Тармак таржымалдары</translation>
 <translation id="7357271391997763660">Сырсөздөрдү текшересизби?</translation>

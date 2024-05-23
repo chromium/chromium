@@ -1583,6 +1583,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2156877321344104010">Kjør sikkerhetssjekken på nytt</translation>
 <translation id="2157474325782140681">For å få flere funksjoner, bruk en Dell-dokkingstasjon som er laget for å fungere sammen med denne Chromebooken.</translation>
 <translation id="215753907730220065">Avslutt fullskjermmodus</translation>
+<translation id="2157779167749714207">Gemini følger med <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">Slett data for personlig tilpassing…</translation>
 <translation id="2158475082070321257">Kopiér link til markert tekst</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8298,6 +8299,8 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7353261921908507769">Kontaktene dine kan dele med deg når de er i nærheten. Overføringer starter ikke før du godtar.</translation>
 <translation id="735361434055555355">Installerer Linux ...</translation>
 <translation id="7354120289251608189">Nå kan du når som helst gi nettleseren et nytt utseende.</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Chat med Gemini for å komme i gang med skriving, planlegging, læring med mer ved hjelp av AI fra Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Etter konfigureringen kan du begynne å bruke Gemini ved å velge Gemini-appen på hyllen nederst på skjermen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Tillatelsene du har valgt, blir fjernet</translation>
 <translation id="7356908624372060336">Nettverkslogger</translation>
 <translation id="7357271391997763660">Vil du kjøre passordsjekk?</translation>

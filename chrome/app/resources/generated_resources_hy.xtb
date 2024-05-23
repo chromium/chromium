@@ -1579,6 +1579,7 @@
 <translation id="2156877321344104010">Նորից անցնել անվտանգություն ստուգում</translation>
 <translation id="2157474325782140681">Լրացուցիչ գործառույթների համար օգտագործեք այս Chromebook-ի համար նախատեսված Dell դոկ-կայան:</translation>
 <translation id="215753907730220065">Ելնել լիաէկրան ռեժիմից</translation>
+<translation id="2157779167749714207">Gemini-ն արդեն ներառված է ձեր <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="2158249272743343757">Ջնջել անհատականացման տվյալները...</translation>
 <translation id="2158475082070321257">Պատճենել հղումը որպես ընդգծված տեքստ</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8288,6 +8289,8 @@
 <translation id="7353261921908507769">Ձեր կոնտակտները կարող են տվյալներով կիսվել ձեզ հետ, երբ մոտակայքում են։ Տվյալների փոխանցումը չի սկսվի, մինչև դուք չհաստատեք։</translation>
 <translation id="735361434055555355">Linux-ը տեղադրվում է...</translation>
 <translation id="7354120289251608189">Այժմ դուք ցանկացած ժամանակ կարող եք փոխել դիտարկիչի տեսքը</translation>
+<translation id="7355031985273420630"><ph name="BEGIN_PARAGRAPH1" />Գրեք տեքստեր, պլանավորեք գործեր, սովորեք և արեք ավելին Gemini AI-ի օգնությամբ։<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Կարգավորումից հետո սկսեք օգտագործել Gemini-ը՝ էկրանի ներքևի դարակում ընտրելով Gemini հավելվածը։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7356696499551368971">Ձեր ընտրած թույլտվությունները կհեռացվեն</translation>
 <translation id="7356908624372060336">Ցանցային մատյաններ</translation>
 <translation id="7357271391997763660">Կատարե՞լ գաղտնաբառերի ստուգում</translation>
