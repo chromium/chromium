@@ -1648,12 +1648,8 @@ void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
       UADefinedTwoDimensionalVariable::kViewportSegmentWidth,
       UADefinedTwoDimensionalVariable::kViewportSegmentHeight,
   };
-  ExecutionContext* context =
-      GetDocument() ? GetDocument()->GetExecutionContext() : nullptr;
-  if (!context) {
-    return;
-  }
 
+  ExecutionContext* context = GetDocument()->GetExecutionContext();
   for (auto var : vars_to_remove) {
     vars.RemoveVariable(var, context);
   }
