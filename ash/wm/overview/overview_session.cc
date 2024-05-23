@@ -293,7 +293,10 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
   overview_focus_widget_ = std::make_unique<views::Widget>(std::move(params));
   overview_focus_widget_->SetContentsView(
       views::Builder<views::View>()
+          .SetAccessibleName(std::u16string(),
+                             ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
           .SetAccessibleRole(ax::mojom::Role::kButton)
+          .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
           .Build());
 
   num_start_windows_ = GetNumWindows();
@@ -1244,6 +1247,11 @@ bool OverviewSession::ShouldEnterWithoutAnimations() const {
 void OverviewSession::UpdateAccessibilityFocus() {
   if (is_shutting_down())
     return;
+
+  if (focus_cycler_) {
+    focus_cycler_->UpdateAccessibilityFocus();
+    return;
+  }
 
   // Construct the list of accessible widgets, these are the overview focus
   // widget, desk bar widget, all the item widgets and the no window indicator

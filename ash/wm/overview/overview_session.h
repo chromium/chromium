@@ -361,6 +361,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   OverviewDelegate* delegate() { return delegate_; }
 
+  views::Widget* overview_focus_widget() {
+    return overview_focus_widget_.get();
+  }
+
   bool ignore_activations() const { return ignore_activations_; }
   void set_ignore_activations(bool ignore_activations) {
     ignore_activations_ = ignore_activations;

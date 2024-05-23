@@ -5,16 +5,42 @@
 #include "ash/wm/overview/overview_focus_cycler.h"
 
 #include "ash/shell.h"
+#include "ash/style/rounded_label_widget.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
+
+// Returns true if any child is focusable in `view`'s tree.
+bool IsViewFocusable(const views::View* view, bool for_accessibility) {
+  CHECK(view);
+
+  // A regular focusable view is focusable for ChromeVox as well.
+  if (view->IsFocusable()) {
+    return true;
+  }
+
+  if (for_accessibility &&
+      view->GetViewAccessibility().IsAccessibilityFocusable()) {
+    return true;
+  }
+
+  // If any of the children are focusable we are done.
+  for (const views::View* child : view->children()) {
+    if (IsViewFocusable(child, for_accessibility)) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 views::View* GetFirstOrLastFocusableView(views::Widget* widget, bool reverse) {
   views::View* view = widget->GetFocusManager()->GetNextFocusableView(
@@ -55,7 +81,8 @@ void OverviewFocusCycler::MoveFocus(bool reverse) {
     return;
   }
 
-  const std::vector<views::Widget*> widgets = GetTraversableWidgets();
+  const std::vector<views::Widget*> widgets =
+      GetTraversableWidgets(/*for_accessibility=*/false);
   // `widgets` can be empty when there are only non traversable overview widgets
   // shown (ex. "No recent items" label).
   if (widgets.empty()) {
@@ -102,25 +129,65 @@ views::View* OverviewFocusCycler::GetOverviewFocusedView() {
   return widget->GetFocusManager()->GetFocusedView();
 }
 
-std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets() const {
+void OverviewFocusCycler::UpdateAccessibilityFocus() {
+  const std::vector<views::Widget*> a11y_widgets =
+      GetTraversableWidgets(/*for_accessibility=*/true);
+  if (a11y_widgets.empty()) {
+    return;
+  }
+
+  auto get_view_a11y = [&a11y_widgets](int index) -> views::ViewAccessibility& {
+    return a11y_widgets[index]->GetContentsView()->GetViewAccessibility();
+  };
+
+  // If there is only one widget left, clear the focus overrides so that they
+  // do not point to deleted objects.
+  if (a11y_widgets.size() == 1) {
+    get_view_a11y(/*index=*/0).SetPreviousFocus(nullptr);
+    get_view_a11y(/*index=*/0).SetNextFocus(nullptr);
+    a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kTreeChanged, true);
+    return;
+  }
+
+  int size = a11y_widgets.size();
+  for (int i = 0; i < size; ++i) {
+    int previous_index = (i + size - 1) % size;
+    int next_index = (i + 1) % size;
+    get_view_a11y(i).SetPreviousFocus(a11y_widgets[previous_index]);
+    get_view_a11y(i).SetNextFocus(a11y_widgets[next_index]);
+    a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kTreeChanged, true);
+  }
+}
+
+std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
+    bool for_accessibility) const {
   std::vector<views::Widget*> traversable_widgets;
 
-  auto maybe_add_widget = [&traversable_widgets](views::Widget* widget) {
-    if (!widget || !widget->CanActivate()) {
+  auto maybe_add_widget = [for_accessibility,
+                           &traversable_widgets](views::Widget* widget) {
+    if (!widget) {
+      return;
+    }
+
+    // Focus is tied to activation except in ChromeVox where labels and other
+    // normally unfocusable elements can be ChromeVox focused.
+    if (!for_accessibility && !widget->CanActivate()) {
       return;
     }
 
     // Skip this widget if it has no focusable views. (i.e. Saved desks library
     // with all saved desks deleted or saved desk button container with all
     // buttons disabled.)
-    if (!widget->GetFocusManager()->GetNextFocusableView(
-            /*starting_view=*/nullptr, widget, /*reverse=*/false,
-            /*dont_loop=*/false)) {
+    if (!IsViewFocusable(widget->GetContentsView(), for_accessibility)) {
       return;
     }
 
     traversable_widgets.push_back(widget);
   };
+
+  maybe_add_widget(overview_session_->overview_focus_widget());
 
   // TODO(http://b/325335020): Handle multidisplay focus.
   OverviewGrid* primary_grid =
@@ -131,6 +198,7 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets() const {
   maybe_add_widget(primary_grid->feedback_widget());
   maybe_add_widget(primary_grid->birch_bar_widget());
   maybe_add_widget(primary_grid->saved_desk_library_widget());
+  maybe_add_widget(primary_grid->no_windows_widget());
   return traversable_widgets;
 }
 

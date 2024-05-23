@@ -32,9 +32,12 @@ class ASH_EXPORT OverviewFocusCycler {
   // Returns the current overview UI focused view if there is one.
   views::View* GetOverviewFocusedView();
 
+  void UpdateAccessibilityFocus();
+
  private:
   // Gets the list of traversable widgets in overview.
-  std::vector<views::Widget*> GetTraversableWidgets() const;
+  std::vector<views::Widget*> GetTraversableWidgets(
+      bool for_accessibility) const;
 
   // The overview session which owns this object. Guaranteed to be non-null for
   // the lifetime of `this`.
