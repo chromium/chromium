@@ -253,9 +253,9 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
     // Create a widget containing a single, focusable textfield.
     widget_ = std::make_unique<views::Widget>();
 
-    views::Widget::InitParams params;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     widget_->Init(std::move(params));
     textfield_ = widget_->SetContentsView(std::make_unique<views::Textfield>());
     textfield_->SetAccessibleName(u"Textfield");

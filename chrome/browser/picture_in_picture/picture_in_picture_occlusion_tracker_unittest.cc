@@ -146,10 +146,10 @@ TEST_F(PictureInPictureOcclusionTrackerTest,
 
   // Create an occludable widget that is a child of `parent_widget`.
   views::Widget::InitParams params =
-      CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.parent = parent_widget->GetNativeView();
   params.child = true;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 50, 50);
   std::unique_ptr<views::Widget> occludable_widget =
       CreateTestWidget(std::move(params));
@@ -226,10 +226,10 @@ TEST_F(PictureInPictureOcclusionTrackerTest,
 
   // Create an occludable widget that is a child of `picture_in_picture_widget`.
   views::Widget::InitParams params =
-      CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.parent = picture_in_picture_widget->GetNativeView();
   params.child = true;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 50, 50);
   std::unique_ptr<views::Widget> occludable_widget =
       CreateTestWidget(std::move(params));

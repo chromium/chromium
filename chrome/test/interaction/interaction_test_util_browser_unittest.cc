@@ -32,8 +32,8 @@ class InteractionTestUtilBrowserTest : public views::ViewsTestBase {
   std::unique_ptr<views::Widget> CreateWidget() {
     auto widget = std::make_unique<views::Widget>();
     views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+        CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 650, 650);
     widget->Init(std::move(params));
     auto* contents = widget->SetContentsView(std::make_unique<views::View>());

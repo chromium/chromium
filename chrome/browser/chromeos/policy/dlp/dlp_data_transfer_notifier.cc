@@ -100,10 +100,10 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
 
 views::Widget::InitParams GetWidgetInitParams(views::WidgetDelegate* delegate) {
   views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.z_order = ui::ZOrderLevel::kNormal;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
   params.name = kBubbleName;
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;

@@ -44,10 +44,10 @@ std::unique_ptr<views::Widget> CreateWidget(content::WebContents& parent,
                                             views::WidgetObserver* observer) {
   // TODO(b:292184832): Create with own buttons
 
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_WINDOW;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   const gfx::Rect& rect = parent.GetViewBounds();
   params.bounds =
       gfx::Rect(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2,

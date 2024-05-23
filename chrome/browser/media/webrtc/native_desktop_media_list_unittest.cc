@@ -294,8 +294,9 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
 #if defined(USE_AURA)
   views::UniqueWidgetPtr CreateDesktopWidget() {
     views::UniqueWidgetPtr widget(std::make_unique<views::Widget>());
-    views::Widget::InitParams params;
-    params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.accept_events = false;
     params.native_widget = new views::DesktopNativeWidgetAura(widget.get());
     params.bounds = gfx::Rect(0, 0, 20, 20);

@@ -165,10 +165,10 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest,
   }
 
   // Create a textfield.
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = gfx::Rect(200, 200);
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   auto textfield_widget = std::make_unique<views::Widget>();
   textfield_widget->Init(std::move(params));
   views::Textfield* textfield =

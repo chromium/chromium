@@ -91,9 +91,10 @@ std::unique_ptr<Browser> TestBrowserWindowAura::CreateBrowser(
 
 TestBrowserWindowViews::TestBrowserWindowViews(aura::Window* parent)
     : widget_(std::make_unique<views::Widget>()) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(5, 5, 20, 20);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = parent;
   widget_->Init(std::move(params));
 }
