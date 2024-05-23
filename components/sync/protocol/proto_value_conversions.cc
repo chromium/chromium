@@ -38,6 +38,7 @@
 #include "components/sync/protocol/os_priority_preference_specifics.pb.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
+#include "components/sync/protocol/plus_address_setting_specifics.pb.h"
 #include "components/sync/protocol/plus_address_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/printer_specifics.pb.h"
@@ -377,6 +378,7 @@ IMPLEMENT_PROTO_TO_VALUE(PasswordSpecificsData_Notes)
 IMPLEMENT_PROTO_TO_VALUE(PasswordSpecificsData_Notes_Note)
 IMPLEMENT_PROTO_TO_VALUE(PaymentInstrument)
 IMPLEMENT_PROTO_TO_VALUE(PaymentsCustomerData)
+IMPLEMENT_PROTO_TO_VALUE(PlusAddressSettingSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(PlusAddressSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(PowerBookmarkSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(PreferenceSpecifics)

@@ -41,6 +41,7 @@ import "components/sync/protocol/os_preference_specifics.proto";
 import "components/sync/protocol/os_priority_preference_specifics.proto";
 import "components/sync/protocol/password_sharing_invitation_specifics.proto";
 import "components/sync/protocol/password_specifics.proto";
+import "components/sync/protocol/plus_address_setting_specifics.proto";
 import "components/sync/protocol/plus_address_specifics.proto";
 import "components/sync/protocol/power_bookmark_specifics.proto";
 import "components/sync/protocol/preference_specifics.proto";
@@ -157,6 +158,7 @@ message EntitySpecifics {
     CompareSpecifics compare = 1329438;
     PlusAddressSpecifics plus_address = 1267844;
     CookieSpecifics cookie = 1281100;
+    PlusAddressSettingSpecifics plus_address_setting = 1303742;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/

@@ -692,6 +692,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(outgoing_password_sharing_invitation);
   VISIT(password);
   VISIT(plus_address);
+  VISIT(plus_address_setting);
   VISIT(power_bookmark);
   VISIT(preference);
   VISIT(printer);
