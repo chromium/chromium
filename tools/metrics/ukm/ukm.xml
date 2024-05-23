@@ -20579,6 +20579,13 @@ be describing additional metrics about the same event.
     <summary>
       Records the outcome of a password form submission.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Submission.SubmittedFormType2" enum="PasswordFormType2">
     <summary>
