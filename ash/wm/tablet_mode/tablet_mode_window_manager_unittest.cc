@@ -1739,13 +1739,14 @@ TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   DestroyTabletModeWindowManager();
-  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_TRUE(overview_controller->InOverviewSession());
+  const bool is_snap_group_disabled = !IsSnapGroupEnabledInClamshellMode();
+  EXPECT_EQ(is_snap_group_disabled, split_view_controller()->InSplitViewMode());
+  EXPECT_EQ(is_snap_group_disabled, overview_controller->InOverviewSession());
 
   // 11. Clamshell -> Tablet. The same as 10.
   CreateTabletModeWindowManager();
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_EQ(is_snap_group_disabled, overview_controller->InOverviewSession());
 }
 
 // Test the divider position value during tablet <-> clamshell transition.
@@ -1828,7 +1829,7 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
                              ->GetDividerBoundsInScreen(
                                  /*is_dragging=*/false)
                              .x();
-  const int divider_delta = kSplitviewDividerShortSideLength / 2;
+  int divider_delta = kSplitviewDividerShortSideLength / 2;
   EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
             window1->bounds().width() + divider_delta);
   EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
@@ -1870,8 +1871,9 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
   DestroyTabletModeWindowManager();
   EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
             window1->bounds().width());
+  divider_delta = IsSnapGroupEnabledInClamshellMode() ? divider_delta : 0;
   EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kOneThirdSnapRatio),
-            window2->bounds().width());
+            window2->bounds().width() + divider_delta);
 }
 
 // Test that when switching from clamshell mode to tablet mode, if overview mode
