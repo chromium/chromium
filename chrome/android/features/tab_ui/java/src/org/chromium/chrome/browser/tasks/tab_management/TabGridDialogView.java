@@ -84,6 +84,7 @@ public class TabGridDialogView extends FrameLayout {
     private final Context mContext;
     private final int mToolbarHeight;
     private final float mTabGridCardPadding;
+    private FrameLayout mAnimationClip;
     private View mBackgroundFrame;
     private View mAnimationCardView;
     private View mItemView;
@@ -189,6 +190,7 @@ public class TabGridDialogView extends FrameLayout {
         mDialogContainerView.setLayoutParams(mContainerParams);
         mUngroupBar = findViewById(R.id.dialog_ungroup_bar);
         mUngroupBarTextView = mUngroupBar.findViewById(R.id.dialog_ungroup_bar_text);
+        mAnimationClip = findViewById(R.id.dialog_animation_clip);
         mBackgroundFrame = findViewById(R.id.dialog_frame);
         mBackgroundFrame.setLayoutParams(mContainerParams);
         mAnimationCardView = findViewById(R.id.dialog_animation_card_view);
@@ -378,9 +380,9 @@ public class TabGridDialogView extends FrameLayout {
         Rect rect = new Rect();
         mItemView.getGlobalVisibleRect(rect);
         // Offset for status bar (top) and nav bar when landscape (left).
-        Rect parentRect = new Rect();
-        mParent.getGlobalVisibleRect(parentRect);
-        rect.offset(-parentRect.left, -parentRect.top);
+        Rect dialogParentRect = new Rect();
+        mParent.getGlobalVisibleRect(dialogParentRect);
+        rect.offset(-dialogParentRect.left, -dialogParentRect.top);
         // Setup a stand-in animation card that looks the same as the original tab grid card for
         // animation.
         updateAnimationCardView(mItemView);
@@ -389,10 +391,61 @@ public class TabGridDialogView extends FrameLayout {
         int dialogHeight = mParentHeight - 2 * mTopMargin;
         int dialogWidth = mParentWidth - 2 * mSideMargin;
 
+        // Calculate a clip mask to avoid any source view that is not fully visible from drawing
+        // over other UI.
+        Rect itemViewParentRect = new Rect();
+        ((View) mItemView.getParent()).getGlobalVisibleRect(itemViewParentRect);
+        int clipTop = itemViewParentRect.top - dialogParentRect.top;
+        FrameLayout.LayoutParams params =
+                (FrameLayout.LayoutParams) mAnimationClip.getLayoutParams();
+        params.setMargins(0, clipTop, 0, 0);
+        mAnimationClip.setLayoutParams(params);
+
+        // Because the mAnimationCardView is offset by clip top we need to compensate in the
+        // opposite direction for its animation only.
+        float yClipCompensation = clipTop;
+
+        // If the item view is clipped by being offsceen the height of the visible rect and the
+        // item view will differ. This is the `yClip`. If this amount is less than the card's
+        // padding we need to still apply the part of the padding that is visible otherwise we
+        // can ignore the padding entirely.
+        int yClip = mItemView.getHeight() - rect.height();
+
+        // The dialog and mBackgroundFrame are not clipped by the mAnimationClip (the math would be
+        // broken due to those object relying on MATCH_PARENT for dimensions). So we need to use the
+        // clipped height of the mItemView. Here we apply one side of the mTabGridCardPadding. The
+        // other side might be clipped.
+        float clippedSourceHeight = rect.height() - mTabGridCardPadding;
+
+        // Apply the remaining tab grid card padding if the `yClip` doesn't result in it being
+        // entirely occluded.
+        boolean isYClipLessThanPadding = yClip < mTabGridCardPadding;
+        if (isYClipLessThanPadding) {
+            clippedSourceHeight += yClip - mTabGridCardPadding;
+        }
+
         // Calculate position and size info about the original tab grid card.
+        float sourceTop = rect.top;
         float sourceLeft = rect.left + mTabGridCardPadding;
-        float sourceTop = rect.top + mTabGridCardPadding;
-        float sourceHeight = rect.height() - 2 * mTabGridCardPadding;
+        if (rect.top == clipTop) {
+            // If the clipping is off the "top" of the screen i.e. the rect is touching the clip
+            // bound. Then we need to add clip compensation when animating the card by starting it
+            // in its original position. However, if the clip is less than padding we also need to
+            // take whatever top padding is visible into account.
+            if (isYClipLessThanPadding) {
+                float clipDelta = mTabGridCardPadding - yClip;
+                sourceTop += clipDelta;
+                yClipCompensation += clipDelta + yClip;
+            } else {
+                yClipCompensation += yClip;
+            }
+        } else {
+            // If the clipping either doesn't exist or is off the bottom of the screen we can assume
+            // the clipping is to the bottom of the card and include the full padding.
+            sourceTop += mTabGridCardPadding;
+            yClipCompensation += mTabGridCardPadding;
+        }
+        float unclippedSourceHeight = mItemView.getHeight() - 2 * mTabGridCardPadding;
         float sourceWidth = rect.width() - 2 * mTabGridCardPadding;
         if (sSourceRectCallbackForTesting != null) {
             sSourceRectCallbackForTesting.onResult(
@@ -400,32 +453,31 @@ public class TabGridDialogView extends FrameLayout {
                             sourceLeft,
                             sourceTop,
                             sourceLeft + sourceWidth,
-                            sourceTop + sourceHeight));
+                            sourceTop + unclippedSourceHeight));
         }
 
         // Setup animation position info and scale ratio of the background frame.
-        float frameInitYPosition = -(dialogHeight / 2 + mTopMargin - sourceHeight / 2 - sourceTop);
+        float frameInitYPosition =
+                -(dialogHeight / 2 + mTopMargin - clippedSourceHeight / 2 - sourceTop);
         float frameInitXPosition = -(dialogWidth / 2 + mSideMargin - sourceWidth / 2 - sourceLeft);
-        float frameScaleY = sourceHeight / dialogHeight;
+        float frameScaleY = clippedSourceHeight / dialogHeight;
         float frameScaleX = sourceWidth / dialogWidth;
 
         // Setup scale ratio of card and dialog. Height and Width for both dialog and card scale at
         // the same rate during scaling animations.
-        float cardScale =
-                mOrientation == Configuration.ORIENTATION_PORTRAIT
-                        ? (float) dialogWidth / rect.width()
-                        : (float) dialogHeight / rect.height();
+        float cardScale = (float) dialogWidth / rect.width();
         float dialogScale = frameScaleX;
 
         // Setup animation position info of the animation card.
-        float cardScaledYPosition = mTopMargin + ((cardScale - 1f) / 2) * sourceHeight;
+        float cardScaledYPosition =
+                mTopMargin + ((cardScale - 1f) / 2) * unclippedSourceHeight - clipTop;
         float cardScaledXPosition = mSideMargin + ((cardScale - 1f) / 2) * sourceWidth;
-        float cardInitYPosition = sourceTop - mTabGridCardPadding;
+        float cardInitYPosition = sourceTop - yClipCompensation;
         float cardInitXPosition = sourceLeft - mTabGridCardPadding;
 
         // Setup animation position info of the dialog.
         float dialogInitYPosition =
-                frameInitYPosition - (sourceHeight - (dialogHeight * dialogScale)) / 2f;
+                frameInitYPosition - (clippedSourceHeight - (dialogHeight * dialogScale)) / 2f;
         float dialogInitXPosition = frameInitXPosition;
 
         // In the first half of the dialog showing animation, the animation card scales up and moves
@@ -529,6 +581,7 @@ public class TabGridDialogView extends FrameLayout {
                         // frame and the animation card should be above the the dialog view, and
                         // their alpha should be set to 1.
                         mBackgroundFrame.bringToFront();
+                        mAnimationClip.bringToFront();
                         mAnimationCardView.bringToFront();
                         mDialogContainerView.setAlpha(0f);
                         mBackgroundFrame.setAlpha(1f);
@@ -648,6 +701,7 @@ public class TabGridDialogView extends FrameLayout {
                         // At the beginning of the second half of the hiding animation, the white
                         // frame and the animation card should be above the the dialog view.
                         mBackgroundFrame.bringToFront();
+                        mAnimationClip.bringToFront();
                         mAnimationCardView.bringToFront();
                     }
 
@@ -752,6 +806,7 @@ public class TabGridDialogView extends FrameLayout {
                 (FrameLayout.LayoutParams) mAnimationCardView.getLayoutParams();
         params.width = view.getWidth();
         params.height = view.getHeight();
+        mAnimationCardView.setLayoutParams(params);
         if (view.findViewById(R.id.tab_title) == null) return;
 
         // Sometimes we get clip artifacting when sharing a drawable, unclear why, so make a copy.

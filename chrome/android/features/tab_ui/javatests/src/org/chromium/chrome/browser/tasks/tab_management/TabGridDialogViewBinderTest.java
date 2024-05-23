@@ -344,7 +344,9 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                 mTabGridDialogView.getShowDialogAnimationForTesting().getChildAnimations().size());
 
         // Create a placeholder source view to setup the dialog animation.
+        ViewGroup sourceViewParent = new FrameLayout(getActivity());
         View sourceView = new View(getActivity());
+        sourceViewParent.addView(sourceView);
 
         // When set with a specific animation source view, the show animation contains 6 child
         // animations.

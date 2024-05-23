@@ -2074,7 +2074,7 @@ public class TabGridDialogTest {
                 .check((v, e) -> assertEquals(0f, v.getAlpha(), 0.0));
         onView(
                         allOf(
-                                withParent(withId(R.id.dialog_parent_view)),
+                                isDescendantOfA(withId(R.id.dialog_parent_view)),
                                 withId(R.id.dialog_animation_card_view)))
                 .check((v, e) -> assertEquals(0f, v.getAlpha(), 0.0));
 

@@ -408,7 +408,11 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         // to the top.
         CriteriaHelper.pollUiThread(
                 () ->
-                        mAnimationCardView == parent.getChildAt(parent.getChildCount() - 1)
+                        mAnimationCardView
+                                        == ((ViewGroup)
+                                                        parent.getChildAt(
+                                                                parent.getChildCount() - 1))
+                                                .getChildAt(0)
                                 && mBackgroundFrameView
                                         == parent.getChildAt(parent.getChildCount() - 2));
         TestThreadUtils.runOnUiThreadBlocking(
