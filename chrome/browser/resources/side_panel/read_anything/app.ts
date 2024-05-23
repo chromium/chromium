@@ -917,8 +917,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // Only call sendInstallVoicePackRequest() if it's not already
         // downloading
         if (this.getVoicePackStatus_(lang) !== VoicePackStatus.INSTALLING) {
-          // TODO(b/326130935): Hide the message when installation completes or
-          // show an error message if something fails.
           this.setVoicePackStatus_(lang, VoicePackStatus.INSTALLING);
           chrome.readingMode.sendInstallVoicePackRequest(lang);
         }
@@ -1172,7 +1170,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     const defaultUtteranceSettings = this.defaultUtteranceSettings();
-    // TODO(crbug.com/40927698): Finalize the default voice preview text.
     const utterance = new SpeechSynthesisUtterance(
         loadTimeData.getString('readingModeVoicePreviewText'));
     const voice = event.detail.previewVoice;
@@ -1182,7 +1179,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     utterance.pitch = defaultUtteranceSettings.pitch;
     utterance.rate = defaultUtteranceSettings.rate;
 
-    // TODO(crbug.com/40927698): Add tests for pause button
     utterance.onstart = event => {
       this.previewVoicePlaying = event.utterance.voice;
     };
@@ -1836,7 +1832,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // TODO(crbug.com/40927698): Ensure the rate is valid for the current
       // speech engine.
       rate: this.rate,
-      // TODO(crbug.com/40927698): Ensure the correct default values are used.
       volume: 1,
       pitch: 1,
     };
