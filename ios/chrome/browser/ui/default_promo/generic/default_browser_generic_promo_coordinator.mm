@@ -166,6 +166,8 @@ using base::UserMetricsAction;
 
   LogFullscreenDefaultBrowserPromoDisplayed();
   RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
+  base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
+                                DefaultPromoTypeForUMA::kGeneral);
 }
 
 @end
