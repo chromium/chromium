@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/metrics/histogram_functions.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 
@@ -19,7 +20,14 @@ EnhancedSafeBrowsingInfobarDelegate::~EnhancedSafeBrowsingInfobarDelegate() =
     default;
 
 void EnhancedSafeBrowsingInfobarDelegate::ShowSafeBrowsingSettings() {
+  RecordInteraction(EnhancedSafeBrowsingInfobarInteraction::kTapped);
   [settings_commands_handler_ showSafeBrowsingSettings];
+}
+
+void EnhancedSafeBrowsingInfobarDelegate::RecordInteraction(
+    EnhancedSafeBrowsingInfobarInteraction interaction) {
+  base::UmaHistogramEnumeration("IOS.SafeBrowsing.Enhanced.Infobar.Interaction",
+                                interaction);
 }
 
 #pragma mark - ConfirmInfoBarDelegate

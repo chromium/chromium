@@ -69,6 +69,8 @@
   std::unique_ptr<EnhancedSafeBrowsingInfobarDelegate> delegate =
       std::make_unique<EnhancedSafeBrowsingInfobarDelegate>(activeWebState,
                                                             settingsHandler);
+  delegate->RecordInteraction(EnhancedSafeBrowsingInfobarInteraction::kViewed);
+
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(activeWebState);
 

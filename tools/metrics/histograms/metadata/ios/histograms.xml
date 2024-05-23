@@ -3177,6 +3177,18 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.SafeBrowsing.Enhanced.Infobar.Interaction"
+    enum="IOSEnhancedSafeBrowseringInfobarInteraction"
+    expires_after="2024-05-23">
+  <owner>danieltwhite@google.com</owner>
+  <owner>ajuma@google.com</owner>
+  <summary>
+    This histogram tracks the Enhanced Safe Browsing Infobar promo's conversion
+    rate by comparing how many times the infobar is surfaced to users and how
+    many times it is tapped on.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SafeBrowsing.RedirectedRequestResponseHostsMatch"
     enum="BooleanMatched" expires_after="2025-06-19">
   <owner>ajuma@chromium.org</owner>

@@ -299,6 +299,11 @@ the generic promo launch. -->
   <int value="21" label="More Than Ten"/>
 </enum>
 
+<enum name="IOSEnhancedSafeBrowseringInfobarInteraction">
+  <int value="0" label="Viewed"/>
+  <int value="1" label="Tapped"/>
+</enum>
+
 <enum name="IOSErrorPagePresentationFailed">
   <int value="0" label="Unknown"/>
   <int value="1" label="Web View Released Error"/>
