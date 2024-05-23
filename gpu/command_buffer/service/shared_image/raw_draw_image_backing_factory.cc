@@ -13,9 +13,8 @@ namespace gpu {
 // works only with OOP-raster (since it must store PaintOps for playback during
 // compositing).
 constexpr uint32_t kSupportedUsage =
-    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_READ |
-    SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-    SHARED_IMAGE_USAGE_RAW_DRAW;
+    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_RAW_DRAW;
 
 RawDrawImageBackingFactory::RawDrawImageBackingFactory()
     : SharedImageBackingFactory(kSupportedUsage) {}
