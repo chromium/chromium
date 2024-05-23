@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
@@ -154,6 +155,24 @@ TEST_P(SafeBrowsingTabHelperTest, SingleSafeRequestAndResponse) {
   GURL url("http://chromium.test");
   EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
 
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+}
+
+// Tests the case of a single navigation request and response, for a URL that is
+// safe.
+TEST_P(SafeBrowsingTabHelperTest, SingleSafeRequestAndResponseSyncQuery) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+  GURL url("http://chromium.test");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+
   if (SafeBrowsingDecisionArrivesBeforeResponse())
     base::RunLoop().RunUntilIdle();
 
@@ -171,6 +190,25 @@ TEST_P(SafeBrowsingTabHelperTest, SingleUnsafeRequestAndResponse) {
 
   if (SafeBrowsingDecisionArrivesBeforeResponse())
     base::RunLoop().RunUntilIdle();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url);
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+}
+
+// Tests the case of a single navigation request and response, for a URL that is
+// unsafe.
+TEST_P(SafeBrowsingTabHelperTest, SingleUnsafeRequestAndResponseSyncQuery) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+  GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  StoreUnsafeResource(url);
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(url);

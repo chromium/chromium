@@ -36,6 +36,13 @@ class MockQueryManagerObserver : public SafeBrowsingQueryManager::Observer {
                     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
                         performed_check));
 
+  MOCK_METHOD4(SafeBrowsingSyncQueryFinished,
+               void(SafeBrowsingQueryManager*,
+                    const SafeBrowsingQueryManager::Query&,
+                    const SafeBrowsingQueryManager::Result&,
+                    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+                        performed_check));
+
   // Override rather than mocking so that the observer can remove itself.
   void SafeBrowsingQueryManagerDestroyed(
       SafeBrowsingQueryManager* manager) override {
@@ -116,7 +123,7 @@ TEST_F(SafeBrowsingQueryManagerTest, SafeURLQueryWithAsyncRealTimeCheck) {
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
   GURL url("http://chromium.test");
-  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
+  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(manager(), _, _, _))
       .WillOnce(VerifyQueryFinished(url, http_method_,
                                     /*is_url_safe=*/true));
 

@@ -157,12 +157,52 @@ bool SafeBrowsingTabHelper::PolicyDecider::IsQueryStale(
   return !GetOldestPendingMainFrameQuery(url);
 }
 
+web::WebStatePolicyDecider::PolicyDecision
+SafeBrowsingTabHelper::PolicyDecider::CreatePolicyDecision(
+    const SafeBrowsingQueryManager::Query& query,
+    const SafeBrowsingQueryManager::Result& result,
+    web::WebState* web_state) {
+  // Create a policy decision using the query result.
+  web::WebStatePolicyDecider::PolicyDecision policy_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+  if (result.show_error_page) {
+    policy_decision = CreateSafeBrowsingErrorDecision();
+  } else if (!result.proceed) {
+    policy_decision = web::WebStatePolicyDecider::PolicyDecision::Cancel();
+  }
+
+  // If an error page needs to be displayed, record the pending decision and
+  // store the unsafe resource.
+  if (policy_decision.ShouldDisplayError()) {
+    DCHECK(result.resource);
+
+    // Store the navigation URL for the resource.
+    UnsafeResource resource = *result.resource;
+    resource.navigation_url = query.url;
+    SafeBrowsingUrlAllowList::FromWebState(web_state)
+        ->AddPendingUnsafeNavigationDecision(resource.navigation_url,
+                                             resource.threat_type);
+
+    // Store the UnsafeResource to be fetched later to populate the error page.
+    SafeBrowsingUnsafeResourceContainer* container =
+        SafeBrowsingUnsafeResourceContainer::FromWebState(web_state);
+    container->StoreMainFrameUnsafeResource(resource);
+  }
+
+  return policy_decision;
+}
+
 void SafeBrowsingTabHelper::PolicyDecider::HandlePolicyDecision(
     const SafeBrowsingQueryManager::Query& query,
     const web::WebStatePolicyDecider::PolicyDecision& policy_decision,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   DCHECK(!IsQueryStale(query));
-  OnMainFrameUrlQueryDecided(query.url, policy_decision, performed_check);
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    OnMainFrameUrlSyncQueryDecided(query.url, policy_decision, performed_check);
+  } else {
+    OnMainFrameUrlQueryDecided(query.url, policy_decision, performed_check);
+  }
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::UpdateForMainFrameDocumentChange() {
@@ -344,6 +384,40 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlQueryDecided(
   }
 }
 
+void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
+    const GURL& url,
+    web::WebStatePolicyDecider::PolicyDecision decision,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  GetOldestPendingMainFrameQuery(url)->decision = decision;
+
+  // If ShouldAllowResponse() has already been called for this URL, and if
+  // an overall decision for the redirect chain can be computed, invoke this
+  // URL's callback with the overall decision.
+  auto& response_callback = pending_main_frame_query_->response_callback;
+  if (!response_callback.is_null()) {
+    std::optional<web::WebStatePolicyDecider::PolicyDecision> overall_decision =
+        MainFrameRedirectChainDecision();
+    if (overall_decision) {
+      if (overall_decision->ShouldAllowNavigation()) {
+        RecordTotalDelayMetricForDelayedAllowedNavigation(
+            pending_main_frame_query_->delay_start_time, performed_check);
+      } else {
+        base::TimeDelta delay = base::TimeTicks::Now() -
+                                pending_main_frame_query_->delay_start_time;
+        RecordTotalDelay2MetricForNavigation(delay, performed_check);
+      }
+      std::move(response_callback).Run(*overall_decision);
+      pending_main_frame_redirect_chain_.clear();
+    }
+  } else {
+    RecordTotalDelay2MetricForNavigation(base::TimeDelta(), performed_check);
+  }
+
+  if (decision.ShouldCancelNavigation()) {
+    client_->OnMainFrameUrlQueryCancellationDecided(web_state(), url);
+  }
+}
+
 std::optional<web::WebStatePolicyDecider::PolicyDecision>
 SafeBrowsingTabHelper::PolicyDecider::MainFrameRedirectChainDecision() {
   if (pending_main_frame_query_->decision &&
@@ -410,31 +484,22 @@ void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryFinished(
 
   // Create a policy decision using the query result.
   web::WebStatePolicyDecider::PolicyDecision policy_decision =
-      web::WebStatePolicyDecider::PolicyDecision::Allow();
-  if (result.show_error_page) {
-    policy_decision = CreateSafeBrowsingErrorDecision();
-  } else if (!result.proceed) {
-    policy_decision = web::WebStatePolicyDecider::PolicyDecision::Cancel();
+      policy_decider_->CreatePolicyDecision(query, result, web_state_);
+  policy_decider_->HandlePolicyDecision(query, policy_decision,
+                                        performed_check);
+}
+
+void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingSyncQueryFinished(
+    SafeBrowsingQueryManager* manager,
+    const SafeBrowsingQueryManager::Query& query,
+    const SafeBrowsingQueryManager::Result& result,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  if (policy_decider_->IsQueryStale(query)) {
+    return;
   }
 
-  // If an error page needs to be displayed, record the pending decision and
-  // store the unsafe resource.
-  if (policy_decision.ShouldDisplayError()) {
-    DCHECK(result.resource);
-
-    // Store the navigation URL for the resource.
-    UnsafeResource resource = *result.resource;
-    resource.navigation_url = query.url;
-    SafeBrowsingUrlAllowList::FromWebState(web_state_)
-        ->AddPendingUnsafeNavigationDecision(resource.navigation_url,
-                                             resource.threat_type);
-
-    // Store the UnsafeResource to be fetched later to populate the error page.
-    SafeBrowsingUnsafeResourceContainer* container =
-        SafeBrowsingUnsafeResourceContainer::FromWebState(web_state_);
-    container->StoreMainFrameUnsafeResource(resource);
-  }
-
+  web::WebStatePolicyDecider::PolicyDecision policy_decision =
+      policy_decider_->CreatePolicyDecision(query, result, web_state_);
   policy_decider_->HandlePolicyDecision(query, policy_decision,
                                         performed_check);
 }

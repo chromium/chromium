@@ -76,7 +76,14 @@ class SafeBrowsingQueryManager
         const Result& result,
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check) {}
-
+    // Notifies observers that a sync `query` check has completed with `result`
+    // after performing a check of type `performed_check`.
+    virtual void SafeBrowsingSyncQueryFinished(
+        SafeBrowsingQueryManager* manager,
+        const SafeBrowsingQueryManager::Query& query,
+        const SafeBrowsingQueryManager::Result& result,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+            performed_check) {}
     // Called when `manager` is about to be destroyed.
     virtual void SafeBrowsingQueryManagerDestroyed(
         SafeBrowsingQueryManager* manager) {}

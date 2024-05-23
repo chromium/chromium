@@ -63,6 +63,12 @@ class SafeBrowsingTabHelper
     // navigations occurred before the URL check has finished.
     bool IsQueryStale(const SafeBrowsingQueryManager::Query& query);
 
+    // Returns a policy decision based on query `result`.
+    web::WebStatePolicyDecider::PolicyDecision CreatePolicyDecision(
+        const SafeBrowsingQueryManager::Query& query,
+        const SafeBrowsingQueryManager::Result& result,
+        web::WebState* web_state);
+
     // Stores `policy_decision` for `query`.  `query` must not be stale.
     // `performed_check` is the type of check that was performed when deciding
     // the query.
@@ -122,6 +128,14 @@ class SafeBrowsingTabHelper
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check);
 
+    // Callback invoked when a main frame query for `url` has finished with
+    // `decision` after performing a sync check of type `performed_check`.
+    void OnMainFrameUrlSyncQueryDecided(
+        const GURL& url,
+        web::WebStatePolicyDecider::PolicyDecision decision,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+            performed_check);
+
     // Returns the policy decision determined by the results of queries for URLs
     // in the main-frame redirect chain and the `pending_main_frame_query`. If
     // at least one such query has received a decision to cancel the navigation,
@@ -158,6 +172,12 @@ class SafeBrowsingTabHelper
    private:
     // SafeBrowsingQueryManager::Observer:
     void SafeBrowsingQueryFinished(
+        SafeBrowsingQueryManager* manager,
+        const SafeBrowsingQueryManager::Query& query,
+        const SafeBrowsingQueryManager::Result& result,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+            performed_check) override;
+    void SafeBrowsingSyncQueryFinished(
         SafeBrowsingQueryManager* manager,
         const SafeBrowsingQueryManager::Query& query,
         const SafeBrowsingQueryManager::Result& result,
