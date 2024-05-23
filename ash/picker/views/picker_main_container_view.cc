@@ -81,6 +81,7 @@ PickerContentsView* PickerMainContainerView::AddContentsView(
 
 void PickerMainContainerView::SetActivePage(PickerPageView* page_view) {
   contents_view_->SetActivePage(page_view);
+  active_page_ = page_view;
 }
 
 BEGIN_METADATA(PickerMainContainerView)

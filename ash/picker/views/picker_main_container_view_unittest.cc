@@ -90,7 +90,7 @@ TEST_F(PickerMainContainerViewTest, LayoutWithContentsAboveSearchField) {
             search_field->GetBoundsInScreen().y());
 }
 
-TEST_F(PickerMainContainerViewTest, SetActivePageChangesVisibility) {
+TEST_F(PickerMainContainerViewTest, SetsActivePage) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   auto* container =
       widget->SetContentsView(std::make_unique<PickerMainContainerView>());
@@ -100,11 +100,13 @@ TEST_F(PickerMainContainerViewTest, SetActivePageChangesVisibility) {
 
   container->SetActivePage(page1);
 
+  EXPECT_EQ(container->active_page(), page1);
   EXPECT_TRUE(page1->GetVisible());
   EXPECT_FALSE(page2->GetVisible());
 
   container->SetActivePage(page2);
 
+  EXPECT_EQ(container->active_page(), page2);
   EXPECT_FALSE(page1->GetVisible());
   EXPECT_TRUE(page2->GetVisible());
 }

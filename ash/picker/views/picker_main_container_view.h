@@ -44,7 +44,7 @@ class ASH_EXPORT PickerMainContainerView : public views::View {
     return contents_view_->AddPage(std::move(view));
   }
 
-  // Sets `page_view` as the active page in `contents_view_`.
+  PickerPageView* active_page() { return active_page_; }
   void SetActivePage(PickerPageView* page_view);
 
  private:
@@ -52,6 +52,10 @@ class ASH_EXPORT PickerMainContainerView : public views::View {
 
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerContentsView> contents_view_ = nullptr;
+
+  // The currently visible page of `contents_view_`, or nullptr if there is no
+  // such page.
+  raw_ptr<PickerPageView> active_page_ = nullptr;
 };
 
 }  // namespace ash

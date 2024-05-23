@@ -12,6 +12,7 @@
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -44,7 +45,8 @@ class PickerCategoryView;
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView,
                               public PickerZeroStateViewDelegate,
-                              public PickerSearchResultsViewDelegate {
+                              public PickerSearchResultsViewDelegate,
+                              public PickerPseudoFocusHandler {
   METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
  public:
@@ -75,6 +77,14 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;
   void SelectMoreResults(PickerSectionType type) override;
+
+  // PickerPseudoFocusHandler:
+  bool DoPseudoFocusedAction() override;
+  bool MovePseudoFocusUp() override;
+  bool MovePseudoFocusDown() override;
+  bool MovePseudoFocusLeft() override;
+  bool MovePseudoFocusRight() override;
+  void AdvancePseudoFocus(PseudoFocusDirection direction) override;
 
   // Returns the target bounds for this Picker view. The target bounds try to
   // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`

@@ -161,6 +161,7 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   SetInitiallyFocusedView(search_field_view_);
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+  key_event_handler_.SetActivePseudoFocusHandler(this);
 }
 
 PickerView::~PickerView() = default;
@@ -237,6 +238,48 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
 void PickerView::SelectMoreResults(PickerSectionType type) {
   SelectCategoryWithQuery(GetCategoryForMoreResults(type),
                           search_field_view_->GetQueryText());
+}
+
+bool PickerView::DoPseudoFocusedAction() {
+  if (main_container_view_->active_page() == nullptr) {
+    return false;
+  }
+  return main_container_view_->active_page()->DoPseudoFocusedAction();
+}
+
+bool PickerView::MovePseudoFocusUp() {
+  if (main_container_view_->active_page() == nullptr) {
+    return false;
+  }
+  return main_container_view_->active_page()->MovePseudoFocusUp();
+}
+
+bool PickerView::MovePseudoFocusDown() {
+  if (main_container_view_->active_page() == nullptr) {
+    return false;
+  }
+  return main_container_view_->active_page()->MovePseudoFocusDown();
+}
+
+bool PickerView::MovePseudoFocusLeft() {
+  if (main_container_view_->active_page() == nullptr) {
+    return false;
+  }
+  return main_container_view_->active_page()->MovePseudoFocusLeft();
+}
+
+bool PickerView::MovePseudoFocusRight() {
+  if (main_container_view_->active_page() == nullptr) {
+    return false;
+  }
+  return main_container_view_->active_page()->MovePseudoFocusRight();
+}
+
+void PickerView::AdvancePseudoFocus(PseudoFocusDirection direction) {
+  if (main_container_view_->active_page() == nullptr) {
+    return;
+  }
+  main_container_view_->active_page()->AdvancePseudoFocus(direction);
 }
 
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
@@ -390,7 +433,6 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
 
 void PickerView::SetActivePage(PickerPageView* page_view) {
   main_container_view_->SetActivePage(page_view);
-  key_event_handler_.SetActivePseudoFocusHandler(page_view);
 }
 
 BEGIN_METADATA(PickerView)
