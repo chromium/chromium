@@ -46,6 +46,9 @@ namespace {
 const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // The minimum height of the feed container.
 const CGFloat kFeedContainerMinimumHeight = 1000;
+// Added height to the feed container so that it doesn't end abruptly on
+// overscroll.
+const CGFloat kFeedContainerExtraHeight = 500;
 
 // Constants that define the sizing of NTP modules when feed containment is not
 // enabeld.
@@ -824,6 +827,14 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   }
 
   [self updateScrollPositionToSave];
+
+  // The feed model callbacks don't always reliably tell us that the content has
+  // paginated, so check if the container should be extended.
+  if (IsFeedContainmentEnabled() &&
+      self.collectionView.contentSize.height >
+          self.feedContainerHeightConstraint.constant) {
+    [self updateFeedContainerHeight];
+  }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
@@ -1681,7 +1692,8 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   CGFloat containerHeight =
       std::max((self.collectionView.contentSize.height +
                 [self feedHeaderHeight] + [self feedTopSectionHeight]),
-               kFeedContainerMinimumHeight);
+               kFeedContainerMinimumHeight) +
+      kFeedContainerExtraHeight;
   self.feedContainerHeightConstraint =
       [_feedContainer.heightAnchor constraintEqualToConstant:containerHeight];
   self.feedContainerHeightConstraint.active = YES;
