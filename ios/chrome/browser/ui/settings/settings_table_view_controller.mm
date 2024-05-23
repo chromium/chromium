@@ -700,6 +700,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   //   2.) Have Chrome set to default browser.
   //   3.) Have Safe Browsing standard protection enabled.
   //   4.) One of the trigerring criteria has been met.
+  //   5.) Not have their Safe Browsing preferences enterprise-managed.
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   feature_engagement::Tracker* tracker =
@@ -712,9 +713,12 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
   bool triggerCriteriaMet = tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  bool isEnterpriseManaged =
+      safe_browsing::IsSafeBrowsingPolicyManaged(*_browserState->GetPrefs());
 
   if (!isSignedInAndSynced || !isDefaultBrowser ||
-      !isStandardProtectionEnabled || !triggerCriteriaMet) {
+      !isStandardProtectionEnabled || !triggerCriteriaMet ||
+      isEnterpriseManaged) {
     return;
   }
 

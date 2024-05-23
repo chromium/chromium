@@ -212,7 +212,12 @@ void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
 
 void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
     ShowEnhancedSafeBrowsingInfobar() {
-  if (web_state()) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState());
+  const PrefService* prefs = browser_state->GetPrefs();
+  bool is_enterprise_managed =
+      safe_browsing::IsSafeBrowsingPolicyManaged(*prefs);
+  if (web_state() && !is_enterprise_managed) {
     SafeBrowsingTabHelper::FromWebState(web_state())
         ->ShowEnhancedSafeBrowsingInfobar();
   }
