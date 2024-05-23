@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -58,6 +59,18 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
   scoped_feature_list.InitAndDisableFeature(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
+}
+
+TEST_F(LocalPasswordsMigrationWarningUtilTest,
+       TestShouldNotShowWithDataLossWarning) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
+       password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning},
+      {});
   EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
 }
 

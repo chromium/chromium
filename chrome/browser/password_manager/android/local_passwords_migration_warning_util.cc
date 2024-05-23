@@ -83,6 +83,13 @@ bool ShouldShowWarning(Profile* profile) {
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     return false;
   }
+  // If we're showing the access loss warnings, there is no need to show the
+  // migration warning anymore.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
+    return false;
+  }
   if (password_manager::UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
     return false;
   }

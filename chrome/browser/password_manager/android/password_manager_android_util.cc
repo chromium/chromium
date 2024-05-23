@@ -146,6 +146,8 @@ bool ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
           password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
     return false;
   }
+  // TODO - b/342376844 : Don't delay migration because of warning
+  // acknowledgment if the access loss warning UI is active.
   return !pref_service->GetBoolean(
       password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning);
 }
