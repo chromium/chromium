@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -347,6 +348,10 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // after the script loading finishes, to prevent leaking the shared storage
   // data after that.
   std::unique_ptr<SharedStorageCodeCacheHostProxy> code_cache_host_proxy_;
+
+  // Handles code cache requests after being proxied from
+  // `SharedStorageCodeCacheHostProxy`.
+  std::unique_ptr<CodeCacheHostImpl::ReceiverSet> code_cache_host_receivers_;
 
   base::WeakPtrFactory<SharedStorageWorkletHost> weak_ptr_factory_{this};
 };

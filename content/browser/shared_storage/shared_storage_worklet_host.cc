@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
@@ -1330,13 +1331,20 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
         document_service_->render_frame_host().IsFeatureEnabled(
             blink::mojom::PermissionsPolicyFeature::kPrivateAggregation);
 
+    code_cache_host_receivers_ =
+        std::make_unique<CodeCacheHostImpl::ReceiverSet>(
+            storage_partition_->GetGeneratedCodeCacheContext());
+
+    RenderFrameHostImpl& rfh = static_cast<RenderFrameHostImpl&>(
+        document_service_->render_frame_host());
+
     mojo::PendingRemote<blink::mojom::CodeCacheHost> actual_code_cache_host;
-    static_cast<RenderFrameHostImpl&>(document_service_->render_frame_host())
-        .CreateCodeCacheHost(
-            actual_code_cache_host.InitWithNewPipeAndPassReceiver());
+    code_cache_host_receivers_->Add(
+        rfh.GetProcess()->GetID(), rfh.GetNetworkIsolationKey(),
+        rfh.GetStorageKey(),
+        actual_code_cache_host.InitWithNewPipeAndPassReceiver());
 
     mojo::PendingRemote<blink::mojom::CodeCacheHost> proxied_code_cache_host;
-
     code_cache_host_proxy_ = std::make_unique<SharedStorageCodeCacheHostProxy>(
         std::move(actual_code_cache_host),
         proxied_code_cache_host.InitWithNewPipeAndPassReceiver(),
