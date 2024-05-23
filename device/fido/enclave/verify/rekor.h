@@ -139,9 +139,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) RekorSignatureBundle {
 // 1. the signature in `body.spec.generic_signature` using the endorser's public
 //    key,
 // 1. that the content of the body equals `endorsement`.
-bool VerifyRekorLogEntry(base::span<const uint8_t> log_entry,
-                         base::span<const uint8_t> rekor_public_key,
-                         base::span<const uint8_t> endorsement);
+bool COMPONENT_EXPORT(DEVICE_FIDO)
+    VerifyRekorLogEntry(base::span<const uint8_t> log_entry,
+                        base::span<const uint8_t> rekor_public_key,
+                        base::span<const uint8_t> endorsement);
 
 // Parses the given bytes into a Rekor `LogEntry` object.
 std::optional<LogEntry> COMPONENT_EXPORT(DEVICE_FIDO)

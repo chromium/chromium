@@ -242,4 +242,17 @@ bool VerifyRekorBody(const Body& body,
       .has_value();
 }
 
+bool VerifyRekorLogEntry(base::span<const uint8_t> log_entry,
+                         base::span<const uint8_t> rekor_public_key,
+                         base::span<const uint8_t> endorsement) {
+  if (!VerifyRekorSignature(log_entry, rekor_public_key)) {
+    return false;
+  }
+  std::optional<Body> body = GetRekorLogEntryBody(log_entry);
+  if (!body.has_value()) {
+    return false;
+  }
+  return VerifyRekorBody(body.value(), endorsement);
+}
+
 }  // namespace device::enclave

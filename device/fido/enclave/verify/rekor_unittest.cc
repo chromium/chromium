@@ -218,4 +218,40 @@ TEST(RekorTest, VerifyRekorBodyWrongPublicKeyFails) {
   EXPECT_FALSE(VerifyRekorBody(log_entry_body.value(), content_span));
 }
 
+TEST(RekorTest, VerifyRekorLogEntrySuccess) {
+  auto pub_key = ConvertPemToRaw(GetContentsFromFile("rekor_pub_key.pem"));
+  ASSERT_TRUE(pub_key.has_value());
+  std::string json = GetContentsFromFile("logentry.json");
+  std::string endorsement = GetContentsFromFile("endorsement.json");
+  base::span<const uint8_t> log_entry = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  base::span<const uint8_t> endorsement_span = base::make_span(
+      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
+  EXPECT_TRUE(VerifyRekorLogEntry(log_entry, *pub_key, endorsement_span));
+}
+
+TEST(RekorTest, VerifyRekorLogEntryBadLogEntryFails) {
+  auto pub_key = ConvertPemToRaw(GetContentsFromFile("rekor_pub_key.pem"));
+  ASSERT_TRUE(pub_key.has_value());
+  std::string json = GetContentsFromFile("logentry_backslash.json");
+  std::string endorsement = GetContentsFromFile("endorsement.json");
+  base::span<const uint8_t> log_entry = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  base::span<const uint8_t> endorsement_span = base::make_span(
+      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
+  EXPECT_FALSE(VerifyRekorLogEntry(log_entry, *pub_key, endorsement_span));
+}
+
+TEST(RekorTest, VerifyRekorLogEntryBadEndorsementFails) {
+  auto pub_key = ConvertPemToRaw(GetContentsFromFile("rekor_pub_key.pem"));
+  ASSERT_TRUE(pub_key.has_value());
+  std::string json = GetContentsFromFile("logentry.json");
+  std::string endorsement = "abcd";
+  base::span<const uint8_t> log_entry = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  base::span<const uint8_t> endorsement_span = base::make_span(
+      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
+  EXPECT_FALSE(VerifyRekorLogEntry(log_entry, *pub_key, endorsement_span));
+}
+
 }  // namespace device::enclave
