@@ -17,15 +17,17 @@
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
+#include "url/origin.h"
 
 namespace compose {
 namespace {
 
 using base::test::TestFuture;
 using testing::_;
+using testing::Pair;
 const autofill::FieldRendererId kFieldRendererId(123);
 const autofill::FieldRendererId kFieldRendererId2(4);
 
@@ -37,10 +39,37 @@ segmentation_platform::TrainingRequestId TrainingRequestId(
 autofill::FormFieldData CreateTestFormFieldData(
     autofill::FieldRendererId renderer_id = kFieldRendererId) {
   autofill::FormFieldData f;
+  f.set_max_length(524);
   f.set_host_frame(autofill::test::MakeLocalFrameToken());
   f.set_renderer_id(renderer_id);
   f.set_value(u"FormFieldDataInitialValue");
+  f.set_selected_text(u"selected text");
+  f.set_placeholder(u"Please enter your value");
+  f.set_bounds(gfx::RectF(300, 100));
+  f.set_form_control_type(autofill::FormControlType::kTextArea);
+  f.set_label(u"field label");
+  f.set_aria_label(u"aria label");
+  f.set_aria_description(u"aria description");
+
   return f;
+}
+
+autofill::FormData CreateFormData() {
+  // Set up a form with two fields, the compose-eligible field is the first one.
+  autofill::FormData form_data;
+  form_data.fields.push_back(CreateTestFormFieldData());
+
+  autofill::FormFieldData other_field;
+  other_field.set_form_control_type(autofill::FormControlType::kInputMonth);
+  form_data.fields.push_back(std::move(other_field));
+  return form_data;
+}
+
+GURL TestURL() {
+  return GURL("https://example.com/test");
+}
+url::Origin TestOrigin() {
+  return url::Origin::Create(TestURL());
 }
 
 class MockProactiveNudgeTrackerDelegate
@@ -142,29 +171,46 @@ class ProactiveNudgeTrackerTest : public ProactiveNudgeTrackerTestBase,
   bool uses_segmentation() { return GetParam(); }
 };
 
+ProactiveNudgeTracker::Signals TestSignals(
+    autofill::FormFieldData field = CreateTestFormFieldData(),
+    base::TimeTicks page_change_time = base::TimeTicks::Now()) {
+  ProactiveNudgeTracker::Signals signals;
+  signals.field = field;
+  signals.form = CreateFormData();
+  signals.page_change_time = page_change_time;
+  signals.page_origin = TestOrigin();
+  signals.page_url = TestURL();
+  return signals;
+}
+
 TEST_P(ProactiveNudgeTrackerTest, TestWait) {
   base::test::TestFuture<segmentation_platform::ClassificationResultCallback>
       future;
   BindFutureToSegmentationRequest(future);
 
   auto field = CreateTestFormFieldData();
+
   EXPECT_CALL(delegate(),
               ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
       .Times(1);
 
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   // Should not nudge if nudge is requested too soon.
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 
   task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
   if (uses_segmentation()) {
-    EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+    EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+        TestSignals(field)));
     auto result = segmentation_platform::ClassificationResult(
         segmentation_platform::PredictionStatus::kSucceeded);
     result.ordered_labels = {"Show"};
     future.Take().Run(result);
   }
-  EXPECT_TRUE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_TRUE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
 
 TEST_P(ProactiveNudgeTrackerTest, TestWaitSegmentationFirst) {
@@ -177,7 +223,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestWaitSegmentationFirst) {
               ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
       .Times(1);
 
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   if (uses_segmentation()) {
     auto result = segmentation_platform::ClassificationResult(
         segmentation_platform::PredictionStatus::kSucceeded);
@@ -185,10 +232,12 @@ TEST_P(ProactiveNudgeTrackerTest, TestWaitSegmentationFirst) {
     future.Take().Run(result);
   }
   // Should not nudge if nudge is requested too soon.
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 
   task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
-  EXPECT_TRUE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_TRUE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
 
 TEST_P(ProactiveNudgeTrackerTest, TestFocusChangePreventsNudge) {
@@ -197,11 +246,13 @@ TEST_P(ProactiveNudgeTrackerTest, TestFocusChangePreventsNudge) {
               ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
       .Times(0);
 
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   nudge_tracker().FocusChangedInPage();
 
   task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
 
 TEST_P(ProactiveNudgeTrackerTest, TestTrackingDifferentFormField) {
@@ -215,10 +266,13 @@ TEST_P(ProactiveNudgeTrackerTest, TestTrackingDifferentFormField) {
               ShowProactiveNudge(field2.renderer_form_id(), field2.global_id()))
       .Times(1);
 
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field2));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field2)));
   task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
 
 TEST_P(ProactiveNudgeTrackerTest, TestFocusChangeInUninitializedState) {
@@ -243,7 +297,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestNoNudgeDelay) {
     EXPECT_CALL(delegate(),
                 ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
         .Times(1);
-    EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+    EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+        TestSignals(field)));
     auto result = segmentation_platform::ClassificationResult(
         segmentation_platform::PredictionStatus::kSucceeded);
     result.ordered_labels = {"Show"};
@@ -252,7 +307,8 @@ TEST_P(ProactiveNudgeTrackerTest, TestNoNudgeDelay) {
     EXPECT_CALL(delegate(),
                 ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
         .Times(0);
-    EXPECT_TRUE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+    EXPECT_TRUE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+        TestSignals(field)));
     // Wait just in case the timer could be pending.
     task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
   }
@@ -284,17 +340,20 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, SegmentationDontShow) {
               ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
       .Times(0);
 
-  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
 
-  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   auto result = segmentation_platform::ClassificationResult(
       segmentation_platform::PredictionStatus::kSucceeded);
   result.ordered_labels = {
       segmentation_platform::kComposePrmotionLabelDontShow};
   future.Take().Run(result);
 
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
 
 TEST_F(ProactiveNudgeTrackerSegmentationTest,
@@ -312,15 +371,18 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
               ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
       .Times(0);
 
-  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
 
-  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   auto result = segmentation_platform::ClassificationResult(
       segmentation_platform::PredictionStatus::kNotReady);
   future.Take().Run(result);
 
-  EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
 
 TEST_F(ProactiveNudgeTrackerSegmentationTest,
@@ -338,15 +400,70 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest,
               ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
       .Times(1);
 
-  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
 
-  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
   auto result = segmentation_platform::ClassificationResult(
       segmentation_platform::PredictionStatus::kNotReady);
   future.Take().Run(result);
 
-  EXPECT_TRUE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+  EXPECT_TRUE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+}
+
+TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContext) {
+  scoped_refptr<segmentation_platform::InputContext> input_context;
+  base::test::TestFuture<segmentation_platform::ClassificationResultCallback>
+      future;
+  auto field = CreateTestFormFieldData();
+
+  ON_CALL(segmentation_service(), GetClassificationResult(_, _, _, _))
+      .WillByDefault(testing::Invoke(
+          [&](auto, auto, scoped_refptr<segmentation_platform::InputContext> ic,
+              segmentation_platform::ClassificationResultCallback cb) {
+            input_context = ic;
+            future.SetValue(std::move(cb));
+          }));
+  auto page_load_time = base::TimeTicks::Now();
+  task_environment().FastForwardBy(base::Seconds(63));
+  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+      TestSignals(field, page_load_time)));
+  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+      TestSignals(field, page_load_time)));
+
+  auto result = segmentation_platform::ClassificationResult(
+      segmentation_platform::PredictionStatus::kSucceeded);
+  result.ordered_labels = {
+      segmentation_platform::kComposePrmotionLabelDontShow};
+  future.Take().Run(result);
+  ASSERT_TRUE(input_context);
+
+  using Val = segmentation_platform::processing::ProcessedValue;
+  EXPECT_THAT(
+      input_context->metadata_args,
+      testing::UnorderedElementsAre(
+          Pair("field_max_length", Val(524)),
+          Pair("field_width_pixels", Val(300.0f)),
+          Pair("field_height_pixels", Val(100.0f)),
+          Pair("field_form_control_type",
+               Val(static_cast<int>(autofill::FormControlType::kTextArea))),
+          Pair("total_field_count", Val(2)),
+          Pair("multiline_field_count", Val(1)),
+          Pair("time_spent_on_page", Val(63.0f)),
+          Pair("page_url", Val(GURL("https://example.com/test"))),
+          Pair("origin", Val(GURL("https://example.com"))),
+          Pair("field_value", Val(std::string("FormFieldDataInitialValue"))),
+          Pair("field_selected_text", Val(std::string("selected text"))),
+          Pair("field_placeholder_text",
+               Val(std::string("Please enter your value"))),
+          Pair("field_label", Val(std::string("field label"))),
+          Pair("field_aria_label", Val(std::string("aria label"))),
+          Pair("field_aria_description",
+               Val(std::string("aria description")))));
 }
 
 class ProactiveNudgeTrackerDerivedEngagementTest
@@ -364,9 +481,11 @@ class ProactiveNudgeTrackerDerivedEngagementTest
                 ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
         .Times(1);
 
-    EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+    EXPECT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+        TestSignals(field)));
     task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
-    EXPECT_TRUE(nudge_tracker().ProactiveNudgeRequestedForFormField(field));
+    EXPECT_TRUE(nudge_tracker().ProactiveNudgeRequestedForFormField(
+        TestSignals(field)));
 
     TestFuture<segmentation_platform::TrainingLabels>& training_labels =
         training_labels_futures_.emplace_back();

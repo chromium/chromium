@@ -68,6 +68,7 @@ class ChromeComposeClient
       ComposeCallback callback) override;
   bool HasSession(const autofill::FieldGlobalId& trigger_field_id) override;
   bool ShouldTriggerPopup(
+      const autofill::FormData& form_data,
       const autofill::FormFieldData& trigger_field,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   compose::PageUkmTracker* getPageUkmTracker() override;
@@ -286,6 +287,8 @@ class ChromeComposeClient
       this};
 
   BooleanPrefMember proactive_nudge_enabled_;
+
+  base::TimeTicks page_change_time_;
 
   base::WeakPtrFactory<ChromeComposeClient> weak_ptr_factory_{this};
 

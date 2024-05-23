@@ -19,6 +19,7 @@
 #include "base/third_party/icu/icu_utf.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/compose/compose_text_usage_logger.h"
+#include "chrome/browser/compose/proactive_nudge_tracker.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -499,6 +500,7 @@ compose::PageUkmTracker* ChromeComposeClient::getPageUkmTracker() {
 }
 
 bool ChromeComposeClient::ShouldTriggerPopup(
+    const autofill::FormData& form_data,
     const autofill::FormFieldData& form_field_data,
     autofill::AutofillSuggestionTriggerSource trigger_source) {
   // Saved state notification needs the active field set earlier here at nudge
@@ -542,8 +544,17 @@ bool ChromeComposeClient::ShouldTriggerPopup(
     return true;
   }
 
-  bool nudge_can_show =
-      nudge_tracker_.ProactiveNudgeRequestedForFormField(form_field_data);
+  // Time since page load, or time since page has changed if it's not loaded
+  // yet.
+  compose::ProactiveNudgeTracker::Signals nudge_signals;
+  nudge_signals.page_origin =
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  nudge_signals.page_url = web_contents()->GetURL();
+  nudge_signals.form = form_data;
+  nudge_signals.field = form_field_data;
+  nudge_signals.page_change_time = page_change_time_;
+  bool nudge_can_show = nudge_tracker_.ProactiveNudgeRequestedForFormField(
+      std::move(nudge_signals));
   if (nudge_can_show) {
     compose::LogComposeProactiveNudgeCtr(
         compose::ComposeProactiveNudgeCtrEvent::kNudgeDisplayed);
@@ -682,6 +693,8 @@ void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
 
   compose::ComposeTextUsageLogger::GetOrCreateForCurrentDocument(
       &page.GetMainDocument());
+
+  page_change_time_ = base::TimeTicks::Now();
 }
 
 void ChromeComposeClient::OnWebContentsFocused(

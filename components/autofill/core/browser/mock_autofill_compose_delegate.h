@@ -29,7 +29,9 @@ class MockAutofillComposeDelegate : public AutofillComposeDelegate {
       (override));
   MOCK_METHOD(std::optional<autofill::Suggestion>,
               GetSuggestion,
-              (const FormFieldData&, AutofillSuggestionTriggerSource),
+              (const autofill::FormData&,
+               const FormFieldData&,
+               AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(void,
               NeverShowComposeForOrigin,

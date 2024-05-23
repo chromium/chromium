@@ -59,6 +59,21 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
 
   enum class ShowState { kWaiting, kCanBeShown, kShown };
 
+  // Signals that determine whether the nudge should be shown.
+  struct Signals {
+    Signals();
+    Signals(Signals&&);
+    Signals& operator=(Signals&&);
+    ~Signals();
+
+    url::Origin page_origin;
+    GURL page_url;
+    autofill::FormData form;
+    autofill::FormFieldData field;
+    // Time the page started to show in a tab.
+    base::TimeTicks page_change_time;
+  };
+
   class State : public base::SupportsWeakPtr<State> {
    public:
     State();
@@ -88,14 +103,13 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   // If the current state is UNINITIALIZED, begins tracking the state of a form
   // field, and updates the state to WAITING.
   //
-  // IF the current state is REQUESTED, updates the state to SHOWN.
+  // If the current state is REQUESTED, updates the state to SHOWN.
   //
   // If the state is not UNINITIALIZED or REQUESTED,
   // ProactiveNudgeRequestedForFormField is a no-op.
   //
   // Returns true if the nudge can be shown immediately.
-  bool ProactiveNudgeRequestedForFormField(
-      const autofill::FormFieldData& field_to_track);
+  bool ProactiveNudgeRequestedForFormField(Signals signals);
 
   void FocusChangedInPage();
 

@@ -53,7 +53,8 @@ class MockComposeClient : public compose::ComposeClient {
               (override));
   MOCK_METHOD(bool,
               ShouldTriggerPopup,
-              (const autofill::FormFieldData& trigger_field,
+              (const autofill::FormData& form,
+               const autofill::FormFieldData& trigger_field,
                autofill::AutofillSuggestionTriggerSource trigger_source),
               (override));
   MOCK_METHOD(compose::PageUkmTracker*, getPageUkmTracker, (), (override));
@@ -125,6 +126,7 @@ class ComposeManagerImplTest : public testing::Test {
     ON_CALL(mock_compose_client(), HasSession)
         .WillByDefault(testing::Return(has_session));
     return compose_manager_impl().GetSuggestion(
+        autofill::FormData(),
         autofill::test::CreateTestFormField(
             "label0", "name0", "value0", autofill::FormControlType::kTextArea),
         trigger_source);
