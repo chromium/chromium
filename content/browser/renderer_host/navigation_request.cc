@@ -6083,14 +6083,9 @@ void NavigationRequest::CommitNavigation() {
   // cross-origin subframes to use their reporting metadata to send
   // `reportEvent()` beacons. The cross-origin subframes still require a
   // separate per-report opt-in.
-  {
-    std::string allow;
-    if (fenced_frame_properties_.has_value() && response() &&
-        response()->headers->GetNormalizedHeader(
-            "Allow-Cross-Origin-Event-Reporting", &allow) &&
-        allow == "true") {
-      fenced_frame_properties_->SetAllowCrossOriginEventReporting();
-    }
+  if (fenced_frame_properties_.has_value() && response_head_ &&
+      response_head_->parsed_headers->allow_cross_origin_event_reporting) {
+    fenced_frame_properties_->SetAllowCrossOriginEventReporting();
   }
 
   // Create a view of the fenced frame properties from the perspective of the
