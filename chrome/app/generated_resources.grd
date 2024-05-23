@@ -17383,6 +17383,26 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Inactive tab
       </message>
     </if>
+    <!-- Performance Intervention Strings-->
+    <!-- TODO(crbug.com/341709409): Finalize the intervention strings and mark them as translateable -->
+    <if expr="not is_android">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE" desc="Title text for a dialog with information on tabs that could be causing performance issues." translateable="false">
+        Performance Issue Detected
+        </message>
+      <if expr="use_titlecase">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked." translateable="false">
+        Deactivate Tabs
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON" desc="Label on a dialog button that deactivate the specified tabs in the dialog when clicked." translateable="false">
+        Deactivate tabs
+      </message>
+      </if>
+      <message name="IDS_PERFORMANCE_INTERVENTION_DISMISS_BUTTON" desc="Label on a dialog button that dismisses the dialog when clicked." translateable="false">
+        Dismiss
+      </message>
+    </if>
     <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
       Location
     </message>

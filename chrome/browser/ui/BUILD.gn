@@ -5880,6 +5880,8 @@ static_library("ui") {
       "views/performance_controls/memory_saver_chip_view.h",
       "views/performance_controls/memory_saver_resource_view.cc",
       "views/performance_controls/memory_saver_resource_view.h",
+      "views/performance_controls/performance_intervention_bubble.cc",
+      "views/performance_controls/performance_intervention_bubble.h",
       "views/performance_controls/performance_intervention_button.cc",
       "views/performance_controls/performance_intervention_button.h",
       "views/permissions/chip/chip_controller.cc",

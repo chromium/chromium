@@ -2266,6 +2266,14 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
       </if>
 
+      <!-- Performance Intervention Dialog strings -->
+      <!-- TODO(crbug.com/341709409): Finalize the intervention strings and mark them as translateable -->
+      <if expr="not is_android">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance." translateable="false">
+          To improve your browsing experience, Chrome recommends deactivating these background tabs:
+        </message>
+      </if>
+
       <!-- Delete Browsing Data -->
       <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_SIGNED_IN" desc="Description in the footer of the Delete Browsing Data dialog when the user is signed.">
         To delete browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>sign out of Chrome<ph name="END_LINK">&lt;/a&gt;</ph>.

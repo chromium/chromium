@@ -55,7 +55,8 @@ void PerformanceInterventionButtonController::OnActionableTabListChanged(
     auto* const tracker =
         feature_engagement::TrackerFactory::GetForBrowserContext(profile);
     CHECK(tracker);
-    if (tracker->ShouldTriggerHelpUI(
+    if (!delegate_->IsButtonShowing() &&
+        tracker->ShouldTriggerHelpUI(
             feature_engagement::kIPHPerformanceInterventionDialogFeature)) {
       delegate_->Show();
       // Immediately dismiss the feature engagement tracker because the
@@ -64,7 +65,8 @@ void PerformanceInterventionButtonController::OnActionableTabListChanged(
       tracker->Dismissed(
           feature_engagement::kIPHPerformanceInterventionDialogFeature);
     }
-  } else {
+  } else if (!delegate_->IsBubbleShowing()) {
+    // Intervention button shouldn't hide while the dialog is being shown.
     delegate_->Hide();
   }
 }

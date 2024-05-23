@@ -10,8 +10,12 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-class PerformanceInterventionButtonController;
 class BrowserView;
+class PerformanceInterventionButtonController;
+
+namespace views {
+class BubbleDialogModelHost;
+}  // namespace views
 
 class PerformanceInterventionButton
     : public ToolbarButton,
@@ -29,16 +33,24 @@ class PerformanceInterventionButton
   // PerformanceInterventionButtonControllerDelegate:
   void Show() override;
   void Hide() override;
+  bool IsButtonShowing() override;
+  bool IsBubbleShowing() override;
 
   // views::View:
   void OnThemeChanged() override;
+
+  void OnBubbleDestroyed();
 
   PerformanceInterventionButtonController* controller() {
     return controller_.get();
   }
 
  private:
+  void OnClicked();
+
   std::unique_ptr<PerformanceInterventionButtonController> controller_;
+  const raw_ptr<BrowserView> browser_view_;
+  raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUTTON_H_

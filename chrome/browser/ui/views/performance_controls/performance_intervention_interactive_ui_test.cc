@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/performance_controls/performance_intervention_bubble.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -100,13 +101,21 @@ class PerformanceInterventionInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                        ShowAndHideButton) {
-  RunTestSequence(AddInstrumentedTab(kSecondTab, GetURL()),
-                  TriggerOnActionableTabListChange({0}),
-                  WaitForShow(kToolbarPerformanceInterventionButtonElementId),
-                  // Flush the event queue to ensure that we trigger the button
-                  // to hide after it is shown.
-                  FlushEvents(), TriggerOnActionableTabListChange({}),
-                  WaitForHide(kToolbarPerformanceInterventionButtonElementId));
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      TriggerOnActionableTabListChange({0}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      // Flush the event queue to ensure that we trigger the button
+      // to hide after it is shown.
+      FlushEvents(),
+      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      WaitForHide(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      EnsurePresent(kToolbarPerformanceInterventionButtonElementId),
+      FlushEvents(), TriggerOnActionableTabListChange({}),
+      WaitForHide(kToolbarPerformanceInterventionButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
@@ -116,11 +125,16 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       EnsureNotPresent(kToolbarPerformanceInterventionButtonElementId),
       TriggerOnActionableTabListChange({0}),
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      WaitForHide(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       // Flush the event queue to ensure that we trigger the button to hide
       // after it is shown.
       FlushEvents(), TriggerOnActionableTabListChange({}),
       WaitForHide(kToolbarPerformanceInterventionButtonElementId),
-      TriggerOnActionableTabListChange({0}),
+      FlushEvents(), TriggerOnActionableTabListChange({0}),
       EnsureNotPresent(kToolbarPerformanceInterventionButtonElementId));
 }
 
@@ -134,6 +148,12 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       EnsureNotPresent(kToolbarPerformanceInterventionButtonElementId),
       TriggerOnActionableTabListChange({0, 1}),
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      WaitForHide(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      EnsurePresent(kToolbarPerformanceInterventionButtonElementId),
       // Flush the event queue to ensure that we trigger the button to hide
       // after it is shown.
       FlushEvents(), SelectTab(kTabStripElementId, 0), WaitForShow(kFirstTab),
@@ -162,15 +182,60 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 // button looks correct.
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                        InterventionToolbarButton) {
-  RunTestSequence(AddInstrumentedTab(kSecondTab, GetURL()),
-                  TriggerOnActionableTabListChange({0}),
-                  WaitForShow(kToolbarPerformanceInterventionButtonElementId),
-                  // Flush the event queue to ensure that the screenshot happens
-                  // after the button is shown.
-                  FlushEvents(),
-                  SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                                          kSkipPixelTestsReason),
-                  Screenshot(kToolbarPerformanceInterventionButtonElementId,
-                             /*screenshot_name=*/"InterventionToolbarButton",
-                             /*baseline_cl=*/"5503223"));
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      TriggerOnActionableTabListChange({0}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      // Flush the event queue to ensure that the screenshot happens
+      // after the button is shown.
+      FlushEvents(),
+      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      WaitForHide(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      Screenshot(kToolbarPerformanceInterventionButtonElementId,
+                 /*screenshot_name=*/"InterventionToolbarButton",
+                 /*baseline_cl=*/"5503223"));
+}
+
+// Dialog toggles between open and close when clicking on toolbar button
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       DialogRespondsToToolbarButtonClick) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      TriggerOnActionableTabListChange({0}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      WaitForHide(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody));
+}
+
+// While the dialog is already visible, any changes to the actionable tab list
+// should not affect the button and dialog visibility.
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       DialogUnaffectedByActionableTabChange) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()),
+      TriggerOnActionableTabListChange({0}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      FlushEvents(),
+      // Triggering the actionable tab list again shouldn't affect
+      // dialog visibility
+      TriggerOnActionableTabListChange({0, 1}),
+      EnsurePresent(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      FlushEvents(),
+      // Dialog should stay open even though no tabs are actionable
+      TriggerOnActionableTabListChange({}),
+      EnsurePresent(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody));
 }

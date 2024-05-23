@@ -7,10 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/performance_controls/performance_intervention_bubble.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -23,7 +26,10 @@
 
 PerformanceInterventionButton::PerformanceInterventionButton(
     BrowserView* browser_view)
-    : ToolbarButton(PressedCallback()) {
+    : ToolbarButton(
+          base::BindRepeating(&PerformanceInterventionButton::OnClicked,
+                              base::Unretained(this))),
+      browser_view_(browser_view) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   SetFlipCanvasOnPaintForRTLUI(false);
@@ -44,11 +50,22 @@ PerformanceInterventionButton::~PerformanceInterventionButton() = default;
 void PerformanceInterventionButton::Show() {
   SetVisible(true);
   PreferredSizeChanged();
+  CHECK(GetWidget());
+  bubble_ = PerformanceInterventionBubble::CreateBubble(
+      browser_view_->browser(), this);
 }
 
 void PerformanceInterventionButton::Hide() {
   SetVisible(false);
   PreferredSizeChanged();
+}
+
+bool PerformanceInterventionButton::IsButtonShowing() {
+  return GetVisible();
+}
+
+bool PerformanceInterventionButton::IsBubbleShowing() {
+  return bubble_ != nullptr;
 }
 
 void PerformanceInterventionButton::OnThemeChanged() {
@@ -58,6 +75,20 @@ void PerformanceInterventionButton::OnThemeChanged() {
       ui::ImageModel::FromVectorIcon(
           kMemorySaverChromeRefreshIcon,
           GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)));
+}
+
+void PerformanceInterventionButton::OnBubbleDestroyed() {
+  bubble_ = nullptr;
+}
+
+void PerformanceInterventionButton::OnClicked() {
+  if (IsBubbleShowing()) {
+    PerformanceInterventionBubble::CloseBubble(bubble_);
+  } else {
+    CHECK(GetWidget());
+    bubble_ = PerformanceInterventionBubble::CreateBubble(
+        browser_view_->browser(), this);
+  }
 }
 
 BEGIN_METADATA(PerformanceInterventionButton)
