@@ -201,13 +201,9 @@ bool ModelQualityLogsUploaderService::CanUploadLogs(
 void ModelQualityLogsUploaderService::SetSystemProfileProto(
     proto::LoggingMetadata* logging_metadata) {}
 
-void ModelQualityLogsUploaderService::UploadModelQualityLogs(
-    std::unique_ptr<ModelQualityLogEntry> log_entry) {
-  if (!log_entry) {
-    return;
-  }
-
-  UploadModelQualityLogs(std::move(log_entry->log_ai_data_request_));
+void ModelQualityLogsUploaderService::SetUrlLoaderFactoryForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  url_loader_factory_ = url_loader_factory;
 }
 
 void ModelQualityLogsUploaderService::UploadModelQualityLogs(
@@ -236,6 +232,8 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
   if (client_id != 0) {
     logging_metadata->set_client_id(client_id);
   }
+
+  SetSystemProfileProto(logging_metadata);
 
   proto::PerformanceClass perf_class = GetPerformanceClass(pref_service_);
   if (perf_class != proto::PERFORMANCE_CLASS_UNSPECIFIED) {

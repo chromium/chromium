@@ -56,7 +56,7 @@ class ModelQualityLogEntry {
   }
 
  private:
-  friend class ModelQualityLogsUploaderService;
+  friend class ModelQualityLogsUploaderServiceTest;
 
   // Holds feature's model execution and quality data.
   std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request_;

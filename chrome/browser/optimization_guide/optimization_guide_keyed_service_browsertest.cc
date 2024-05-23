@@ -66,7 +66,9 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "services/network/test/test_url_loader_factory.h"
 
 namespace optimization_guide {
 
@@ -1445,17 +1447,25 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   ASSERT_FALSE(
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
+  // Intercept network requests.
+  network::TestURLLoaderFactory url_loader_factory;
+  service()
+      ->GetChromeModelQualityLogsUploaderService()
+      ->SetUrlLoaderFactoryForTesting(
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &url_loader_factory));
+
   // Create a new ModelQualityLogEntry for compose.
   std::unique_ptr<ModelQualityLogEntry> log_entry =
       GetModelQualityLogEntryForCompose();
 
   // Destruct the log entry, this should trigger uploading the logs.
   log_entry.reset();
-  base::RunLoop().RunUntilIdle();
 
   // Upload should be stopped on destruction as there is no metrics consent.
-  histogram_tester()->ExpectUniqueSample(
-      "OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction", false, 1);
+  base::RunLoop().RunUntilIdle();
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(0, url_loader_factory.NumPending());
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1775,17 +1785,25 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
+  // Intercept network requests.
+  network::TestURLLoaderFactory url_loader_factory;
+  service()
+      ->GetChromeModelQualityLogsUploaderService()
+      ->SetUrlLoaderFactoryForTesting(
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &url_loader_factory));
+
   // Create a new ModelQualityLogEntry for compose.
   std::unique_ptr<ModelQualityLogEntry> log_entry =
       GetModelQualityLogEntryForCompose();
 
   // Destruct the log entry, this should upload the logs.
   log_entry.reset();
-  base::RunLoop().RunUntilIdle();
 
   // Logs should be uploaded on destruction.
-  histogram_tester()->ExpectUniqueSample(
-      "OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction", true, 1);
+  base::RunLoop().RunUntilIdle();
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1, url_loader_factory.NumPending());
 }
 
 }  // namespace optimization_guide
