@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -530,6 +531,9 @@ void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
         SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
             kLocalApprovalGranted);
   }
+  base::UmaHistogramCounts1000(
+      kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName,
+      approved_extensions_dict.size());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -567,6 +571,7 @@ void SupervisedUserExtensionsManager::
 
   auto unapproved_extensions_dict =
       GetExtensionsMissingApproval(*user_prefs_.get());
+  int installed_extensions_approvals_count = 0;
   for (auto extension_entry : unapproved_extensions_dict) {
     const Extension* extension =
         extension_registry_->GetInstalledExtension(extension_entry.first);
@@ -581,12 +586,16 @@ void SupervisedUserExtensionsManager::
                 SupervisedUserExtensionsMetricsRecorder::
                     ImplicitExtensionApprovalEntryPoint::
                         kOnExtensionsSwitchFlippedToEnabled);
+        installed_extensions_approvals_count += 1;
       }
       // If the extension id from the preferences has not been installed yet,
       // the approval will be granted at the end of installation.
       // See `OnExtensionInstalled`.
     }
   }
+  base::UmaHistogramCounts1000(
+      kExtensionApprovalsCountOnExtensionToggleHistogramName,
+      installed_extensions_approvals_count);
 }
 
 }  // namespace extensions

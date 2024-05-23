@@ -305,6 +305,9 @@ TEST_P(SupervisedUserExtensionsManagerTest,
       SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
           kLocalApprovalGranted,
       approved_extensions_count);
+  histogram_tester.ExpectTotalCount(
+      extensions::kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName,
+      approved_extensions_count);
 }
 
 // Tests that extensions missing parent approval are granted parent approval
@@ -348,6 +351,8 @@ TEST_P(SupervisedUserExtensionsManagerTest,
   EXPECT_TRUE(manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason,
                                            &error));
 
+  histogram_tester.ExpectTotalCount(
+      extensions::kExtensionApprovalsCountOnExtensionToggleHistogramName, 0);
   // Set the Extensions switch to ON. Install another extension which should be
   // granted parental approval by the end of the installation, if the Extensions
   // switch manages them.
@@ -372,6 +377,10 @@ TEST_P(SupervisedUserExtensionsManagerTest,
       SupervisedUserExtensionsMetricsRecorder::
           ImplicitExtensionApprovalEntryPoint::
               kOnExtensionsSwitchFlippedToEnabled,
+      approved_extensions_count);
+  // The number of auto-approved extensions is reco
+  histogram_tester.ExpectTotalCount(
+      extensions::kExtensionApprovalsCountOnExtensionToggleHistogramName,
       approved_extensions_count);
 
   // Install an extension.
@@ -404,6 +413,9 @@ TEST_P(SupervisedUserExtensionsManagerTest,
       SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName,
       SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
           kLocalApprovalGranted,
+      0);
+  histogram_tester.ExpectTotalCount(
+      extensions::kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName,
       0);
   // The entry point of the implicit approval is recorded.
   histogram_tester.ExpectBucketCount(

@@ -24,6 +24,12 @@ class ExtensionPrefs;
 class ExtensionSystem;
 class ExtensionRegistry;
 
+// UMA metrics for auto-approved extensions.
+constexpr char kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName[] =
+    "SupervisedUsers.InitialLocallyApprovedExtensionsCountOnWinLinuxMac";
+constexpr char kExtensionApprovalsCountOnExtensionToggleHistogramName[] =
+    "SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle";
+
 // This class groups all the functionality to handle extensions
 // for supervised users.
 class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
@@ -79,6 +85,7 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const Extension* extension,
                               UninstallReason reason) override;
+
  private:
   // These enum values represent operations to manage the
   // kSupervisedUserApprovedExtensions user pref, which stores parent approved
