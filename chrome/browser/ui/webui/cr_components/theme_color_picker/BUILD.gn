@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("theme_color_picker") {
+  sources = [
+    "customize_chrome_colors.cc",
+    "customize_chrome_colors.h",
+  ]
+  deps = [
+    "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
+    "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
+    "//ui/base/mojom",
+  ]
+}

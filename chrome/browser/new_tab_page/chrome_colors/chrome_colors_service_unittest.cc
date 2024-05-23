@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_service.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_factory.h"
+#include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_util.h"
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -182,20 +184,19 @@ TEST_F(TestChromeColorsService, RevertThemeChangesForTab) {
 
 TEST_F(TestChromeColorsService, RecordColorOnLoadHistogram) {
   constexpr size_t kTestColorIndex = 3;
-  chrome_colors::ChromeColorsService::RecordColorOnLoadHistogram(
+  chrome_colors::RecordColorOnLoadHistogram(
       chrome_colors::kGeneratedColorsInfo[kTestColorIndex].color);
   EXPECT_EQ(1, histogram_tester_.GetBucketCount(
                    "ChromeColors.ColorOnLoad",
                    chrome_colors::kGeneratedColorsInfo[kTestColorIndex].id));
 
-  chrome_colors::ChromeColorsService::RecordColorOnLoadHistogram(SK_ColorWHITE);
+  chrome_colors::RecordColorOnLoadHistogram(SK_ColorWHITE);
   EXPECT_EQ(1, histogram_tester_.GetBucketCount("ChromeColors.ColorOnLoad",
                                                 chrome_colors::kOtherColorId));
 }
 
 TEST_F(TestChromeColorsService, RecordDynamicColorOnLoadHistogramForGrayscale) {
-  chrome_colors::ChromeColorsService::
-      RecordDynamicColorOnLoadHistogramForGrayscale();
+  chrome_colors::RecordDynamicColorOnLoadHistogramForGrayscale();
   EXPECT_EQ(1, histogram_tester_.GetBucketCount(
                    "ChromeColors.DynamicColorOnLoad",
                    chrome_colors::kGrayscaleDynamicColorId));
@@ -203,14 +204,14 @@ TEST_F(TestChromeColorsService, RecordDynamicColorOnLoadHistogramForGrayscale) {
 
 TEST_F(TestChromeColorsService, RecordDynamicColorOnLoadHistogram) {
   constexpr size_t kTestColorIndex = 3;
-  chrome_colors::ChromeColorsService::RecordDynamicColorOnLoadHistogram(
+  chrome_colors::RecordDynamicColorOnLoadHistogram(
       kDynamicCustomizeChromeColors[kTestColorIndex].color,
       kDynamicCustomizeChromeColors[kTestColorIndex].variant);
   EXPECT_EQ(1, histogram_tester_.GetBucketCount(
                    "ChromeColors.DynamicColorOnLoad",
                    kDynamicCustomizeChromeColors[kTestColorIndex].id));
 
-  chrome_colors::ChromeColorsService::RecordDynamicColorOnLoadHistogram(
+  chrome_colors::RecordDynamicColorOnLoadHistogram(
       SK_ColorWHITE, ui::mojom::BrowserColorVariant::kTonalSpot);
   EXPECT_EQ(
       1, histogram_tester_.GetBucketCount("ChromeColors.DynamicColorOnLoad",

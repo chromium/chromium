@@ -16,74 +16,12 @@ namespace chrome_colors {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ChromeColorType {
-  kChromeColor = 0,
-  kDynamicChromeColor = 1,
-  kMaxValue = kDynamicChromeColor,
-};
-
-int GetDynamicColorId(const SkColor color,
-                      ui::mojom::BrowserColorVariant variant) {
-  auto it = base::ranges::find_if(kDynamicCustomizeChromeColors,
-                                  [&](const DynamicColorInfo& dynamic_color) {
-                                    return dynamic_color.color == color &&
-                                           dynamic_color.variant == variant;
-                                  });
-  return it == kDynamicCustomizeChromeColors.end() ? kOtherDynamicColorId
-                                                   : it->id;
-}
-
-void RecordChromeColorsColorType(ChromeColorType type) {
-  base::UmaHistogramEnumeration("ChromeColors.ColorType", type);
-}
-
-void RecordChromeColorsDynamicColor(int color_id) {
-  base::UmaHistogramExactLinear(
-      "ChromeColors.DynamicColorOnLoad", color_id,
-      base::ranges::max_element(kDynamicCustomizeChromeColors, {},
-                                &DynamicColorInfo::id)
-          ->id);
-  RecordChromeColorsColorType(ChromeColorType::kDynamicChromeColor);
-}
-
 }  // namespace
 
 ChromeColorsService::ChromeColorsService(Profile* profile)
     : theme_service_(ThemeServiceFactory::GetForProfile(profile)) {}
 
 ChromeColorsService::~ChromeColorsService() = default;
-
-// static
-int ChromeColorsService::GetColorId(const SkColor color) {
-  for (chrome_colors::ColorInfo color_info :
-       chrome_colors::kGeneratedColorsInfo) {
-    if (color == color_info.color)
-      return color_info.id;
-  }
-
-  return kOtherColorId;
-}
-
-// static
-void ChromeColorsService::RecordColorOnLoadHistogram(SkColor color) {
-  base::UmaHistogramExactLinear("ChromeColors.ColorOnLoad", GetColorId(color),
-                                kNumColorsInfo);
-  RecordChromeColorsColorType(ChromeColorType::kChromeColor);
-}
-
-// static
-void ChromeColorsService::RecordDynamicColorOnLoadHistogramForGrayscale() {
-  RecordChromeColorsDynamicColor(kGrayscaleDynamicColorId);
-}
-
-// static
-void ChromeColorsService::RecordDynamicColorOnLoadHistogram(
-    SkColor color,
-    ui::mojom::BrowserColorVariant variant) {
-  RecordChromeColorsDynamicColor(GetDynamicColorId(color, variant));
-}
 
 void ChromeColorsService::ApplyDefaultTheme(content::WebContents* tab) {
   SaveThemeRevertState(tab);
