@@ -203,8 +203,8 @@ class StorageHandlerTest : public testing::Test {
   // space state determined by the UpdateOverallStatistics function, provided
   // that the spaced client is not available.
   int GetSpaceStateNoSpacedClient(int64_t total_size, int64_t available_size) {
-    total_disk_space_test_api_->SimulateOnGetTotalDiskSpace(&total_size);
-    free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(&available_size);
+    total_disk_space_test_api_->SimulateOnGetTotalDiskSpace(total_size);
+    free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(available_size);
     task_environment_.RunUntilIdle();
     const base::Value* dictionary =
         GetWebUICallbackMessage("storage-size-stat-changed");
@@ -589,7 +589,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
   int64_t total_size = TB;
   int64_t available_size = 100 * GB;
   total_disk_space_test_api_->SimulateOnGetRootDeviceSize(total_size);
-  free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(&available_size);
+  free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(available_size);
   drive_offline_size_test_api_->SimulateOnGetOfflineItemsSize(50 * GB);
   const base::Value* callback =
       GetWebUICallbackMessage("storage-size-stat-changed");
