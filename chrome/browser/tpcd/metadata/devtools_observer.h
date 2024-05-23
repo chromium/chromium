@@ -7,6 +7,7 @@
 
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -32,11 +33,15 @@ class TpcdMetadataDevtoolsObserver
 
   void OnCookiesAccessedImpl(const content::CookieAccessDetails& details);
 
-  // Emit a devtools issue when `url` is allowed cookie access as a third-party
-  // site on the current page.
-  void EmitMetadataGrantDevtoolsIssue(const GURL& url);
+  // Emit a devtools issue when `third_party_url` is allowed cookie access as a
+  // third-party site on `first_party_url`.
+  void EmitMetadataGrantDevtoolsIssue(
+      const GURL& third_party_url,
+      const GURL& first_party_url,
+      const content::CookieAccessDetails::Type cookie_access_type);
 
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  raw_ptr<tpcd::metadata::Manager> tpcd_metadata_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

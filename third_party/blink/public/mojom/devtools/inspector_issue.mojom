@@ -282,6 +282,9 @@ struct BounceTrackingIssueDetails {
 
 struct CookieDeprecationMetadataIssueDetails {
   array<string> allowed_sites;
+  uint32 opt_out_percentage;
+  bool is_opt_out_top_level;
+  CookieOperation operation;
 };
 
 enum GenericIssueErrorType {
