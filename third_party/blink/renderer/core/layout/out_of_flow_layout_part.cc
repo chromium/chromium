@@ -324,10 +324,13 @@ class OOFCandidateStyleIterator {
 const Element* GetPositionAnchorElement(
     const BlockNode& node,
     const ComputedStyle& style,
-    const LogicalAnchorQuery& anchor_query) {
+    const LogicalAnchorQuery* anchor_query) {
+  if (!anchor_query) {
+    return nullptr;
+  }
   if (const ScopedCSSName* specifier = style.PositionAnchor()) {
     if (const LogicalAnchorReference* reference =
-            anchor_query.AnchorReference(*node.GetLayoutBox(), specifier);
+            anchor_query->AnchorReference(*node.GetLayoutBox(), specifier);
         reference && reference->layout_object) {
       return DynamicTo<Element>(reference->layout_object->GetNode());
     }
@@ -342,7 +345,7 @@ const Element* GetPositionAnchorElement(
 const LayoutObject* GetPositionAnchorObject(
     const BlockNode& node,
     const ComputedStyle& style,
-    const LogicalAnchorQuery& anchor_query) {
+    const LogicalAnchorQuery* anchor_query) {
   if (const Element* element =
           GetPositionAnchorElement(node, style, anchor_query)) {
     return element->GetLayoutObject();
@@ -352,7 +355,7 @@ const LayoutObject* GetPositionAnchorObject(
 
 gfx::Vector2dF GetAnchorOffset(const BlockNode& node,
                                const ComputedStyle& style,
-                               const LogicalAnchorQuery& anchor_query) {
+                               const LogicalAnchorQuery* anchor_query) {
   if (const LayoutObject* anchor_object =
           GetPositionAnchorObject(node, style, anchor_query)) {
     if (const AnchorPositionScrollData* data =
@@ -403,7 +406,7 @@ void UpdatePositionVisibilityAfterLayout(
   // The spec is still in-flux about whether we should use multiple anchors
   // (from `anchor()` and `anchor-size()`), or just the default anchor.
   const Element* anchor =
-      anchored ? GetPositionAnchorElement(node, node.Style(), *anchor_query)
+      anchored ? GetPositionAnchorElement(node, node.Style(), anchor_query)
                : nullptr;
   if (is_anchor_positioned && has_anchors_visible_visibility && anchor) {
     anchored->EnsureAnchorPositionScrollData()
@@ -1942,7 +1945,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
       if (try_fit_available_space) {
         non_overflowing_scroll_ranges.push_back(non_overflowing_range);
         if (!non_overflowing_range.Contains(GetAnchorOffset(
-                node_info.node, style, *anchor_evaluator.AnchorQuery()))) {
+                node_info.node, style, anchor_evaluator.AnchorQuery()))) {
           continue;
         }
       }
@@ -2268,7 +2271,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                            block_scroll_min, block_scroll_max}
             .ToPhysical(candidate_writing_direction);
     out_non_overflowing_range->anchor_object = GetPositionAnchorObject(
-        node_info.node, candidate_style, *anchor_evaluator.AnchorQuery());
+        node_info.node, candidate_style, anchor_evaluator.AnchorQuery());
   }
 
   bool anchor_center_x = anchor_center_position.inline_offset.has_value();
