@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -529,6 +530,32 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptWithNoNext) {
   EXPECT_THAT(GetTypes(fields),
               ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
                           /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT));
+}
+
+// Verifies that fields classified as ADDRESS_HOME_LINE1 without a following
+// ADDRESS_HOME_LINE2 are reclassified as ADDRESS_HOME_STREET_ADDRESS for PL
+// forms.
+TEST(FormStructureRationalizationEngine, TestPLAddressLine1WithNoNext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUsePLAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Imię", u"n", NAME_FIRST},
+      {u"Nachname", u"a", NAME_LAST},
+      {u"Ulica i Nomeru domu", u"ulica i nomeru domu", ADDRESS_HOME_LINE1},
+      {u"Kod pocztowy", u"kod pocztowy", ADDRESS_HOME_ZIP},
+  });
+
+  GeoIpCountryCode kPL = GeoIpCountryCode("PL");
+  ParsingContext kPLContext(kPL, LanguageCode("pl"), PatternSource::kLegacy);
+  ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
+
+  EXPECT_THAT(GetTypes(fields),
+              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_ADDRESS,
+                          /*changed*/ ADDRESS_HOME_ZIP));
 }
 
 }  // namespace

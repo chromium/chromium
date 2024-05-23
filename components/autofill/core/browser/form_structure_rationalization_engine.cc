@@ -407,6 +407,28 @@ void ApplyRationalizationEngineRules(
                 },
             })
             .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix ADDRESS_HOME_LINE1 for PL")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("PL")})
+                    .SetFeature(&features::kAutofillUsePLAddressModel)
+                    .Build())
+
+            .SetTriggerField(FieldCondition{
+                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}})
+            .SetFieldsWithConditionsDoNotExist({
+                FieldCondition{
+                    .location = FieldLocation::kNextClassifiedSuccessor,
+                    .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2}},
+            })
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
+                },
+            })
+            .Build(),
     });
   };
   static const base::NoDestructor<decltype(create_rules())>
