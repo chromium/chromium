@@ -71,6 +71,11 @@ config("avif_fuzztest_config") {
     "src/include",
     "src/apps/shared",
   ]
+  if (is_android) {
+    defines = [ "TEST_DATA_DIRS=/data/local/tmp/chromium_tests_root/third_party/libavif/src/tests/data" ]
+  } else {
+    defines = [ string_join("", [ "TEST_DATA_DIRS=", rebase_path("src/tests/data", root_build_dir) ]) ]
+  }
 }
 
 # This is used to satisfy dependencies in avif_fuzztest_helpers. The encoder
