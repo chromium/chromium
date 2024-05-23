@@ -540,10 +540,6 @@ bool IsAccessibilityMouseKeysEnabled() {
   return ::features::IsAccessibilityMouseKeysEnabled();
 }
 
-bool IsAccessibilityExtraLargeCursorEnabled() {
-  return ::features::IsAccessibilityExtraLargeCursorEnabled();
-}
-
 bool IsAccessibilityOverscrollSettingFeatureEnabled() {
   return ::features::IsAccessibilityOverscrollSettingFeatureEnabled();
 }
@@ -1278,9 +1274,6 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isAccessibilityMouseKeysEnabled",
                           IsAccessibilityMouseKeysEnabled());
-
-  html_source->AddBoolean("isAccessibilityExtraLargeCursorEnabled",
-                          IsAccessibilityExtraLargeCursorEnabled());
 
   html_source->AddBoolean(
       "isAccessibilityCaretBlinkIntervalSettingEnabled",

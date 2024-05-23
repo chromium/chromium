@@ -82,9 +82,6 @@ class CursorWindowControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityExtraLargeCursor);
-
     // Shell hides the cursor by default; show it for these tests.
     Shell::Get()->cursor_manager()->ShowCursor();
 

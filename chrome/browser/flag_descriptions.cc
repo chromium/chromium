@@ -1149,11 +1149,6 @@ const char kAccessibilityChromeVoxPageMigrationDescription[] =
     "This option enables ChromeVox page migration from extension options page "
     "to a Chrome OS settings page.";
 
-const char kAccessibilityExtraLargeCursorName[] =
-    "Experimental extra large cursor";
-const char kAccessibilityExtraLargeCursorDescription[] =
-    "This option lets users make their large mouse cursor even larger";
-
 const char kAccessibilityReducedAnimationsName[] =
     "Experimental Reduced Animations";
 const char kAccessibilityReducedAnimationsDescription[] =

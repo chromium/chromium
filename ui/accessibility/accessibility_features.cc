@@ -183,14 +183,6 @@ bool IsExperimentalAccessibilityDictationContextCheckingEnabled() {
       ::features::kExperimentalAccessibilityDictationContextChecking);
 }
 
-BASE_FEATURE(kAccessibilityExtraLargeCursor,
-             "AccessibilityExtraLargeCursor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityExtraLargeCursorEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityExtraLargeCursor);
-}
-
 BASE_FEATURE(kAccessibilityMagnifierFollowsSts,
              "AccessibilityMagnifierFollowsSts",
              base::FEATURE_ENABLED_BY_DEFAULT);

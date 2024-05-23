@@ -257,10 +257,7 @@ void CursorWindowController::RemoveObserver(Observer* observer) {
 void CursorWindowController::SetLargeCursorSizeInDip(
     int large_cursor_size_in_dip) {
   large_cursor_size_in_dip =
-      std::min(large_cursor_size_in_dip,
-               ::features::IsAccessibilityExtraLargeCursorEnabled()
-                   ? kMaxExtraLargeCursorSize
-                   : kMaxLargeCursorSize);
+      std::min(large_cursor_size_in_dip, kMaxLargeCursorSize);
   large_cursor_size_in_dip =
       std::max(large_cursor_size_in_dip, kMinLargeCursorSize);
 

@@ -146,7 +146,7 @@ TEST_F(AccessibilityControllerTest, ChangingCursorSizePrefChangesCursorSize) {
       Shell::Get()->window_tree_host_manager()->cursor_window_controller();
 
   // Test all possible sizes
-  for (int size = 25; size <= 64; ++size) {
+  for (int size = 25; size <= 128; ++size) {
     prefs->SetInteger(prefs::kAccessibilityLargeCursorDipSize, size);
     auto bounds = cursor_window_controller->GetBoundsForTest();
     EXPECT_EQ(bounds.height(), size);

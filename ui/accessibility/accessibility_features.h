@@ -150,10 +150,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT bool
 IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
 
-// Whether the extra-large cursor size feature is enabled.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityExtraLargeCursor);
-AX_BASE_EXPORT bool IsAccessibilityExtraLargeCursorEnabled();
-
 // Whether the screen magnifier can follow the Select to Speak focus.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifierFollowsSts);
 AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsStsEnabled();

@@ -268,21 +268,6 @@ export class SettingsCursorAndTouchpadPageElement extends
       },
 
       /**
-       * The maximum size in density-independent pixels of the large mouse
-       * cursor. Note that this has no effect if it is larger than the maximum
-       * set in CursorWindowController.
-       */
-      largeCursorMaxSize_: {
-        type: Number,
-        value() {
-          return loadTimeData.getBoolean(
-                     'isAccessibilityExtraLargeCursorEnabled') ?
-              128 :
-              64;
-        },
-      },
-
-      /**
        * Whether to show the overscroll history navigation setting.
        */
       isAccessibilityOverscrollSettingFeatureEnabled_: {
