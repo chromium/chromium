@@ -37,7 +37,7 @@ rootWebArea
 ++++++link expanded
 ++++++list
 ++++++++listItem
-++++++listBox expanded
+++++++listBox
 ++++++log
 ++++++main
 ++++++marquee
