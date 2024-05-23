@@ -23,9 +23,10 @@ void MahiMediaAppHandlerFactory::CreateMahiMediaAppUntrustedHandler(
     mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
         receiver,
     mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
-    const std::string& file_name) {
+    const std::string& file_name,
+    aura::Window* window) {
   auto mahi_pdf_handler =
-      std::make_unique<MahiMediaAppClient>(std::move(page), file_name);
+      std::make_unique<MahiMediaAppClient>(std::move(page), file_name, window);
   media_app_receivers_.Add(std::move(mahi_pdf_handler), std::move(receiver));
 }
 

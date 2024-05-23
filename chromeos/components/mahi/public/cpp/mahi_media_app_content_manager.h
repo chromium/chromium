@@ -17,6 +17,10 @@
 namespace ash {
 class MahiMediaAppClient;
 }
+
+namespace aura {
+class Window;
+}
 namespace chromeos {
 using GetMediaAppContentCallback =
     base::OnceCallback<void(crosapi::mojom::MahiPageContentPtr)>;
@@ -51,8 +55,13 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiMediaAppContentManager {
 
   // Client registration/removal.
   virtual void AddClient(base::UnguessableToken client_id,
-                         raw_ptr<ash::MahiMediaAppClient> client) = 0;
+                         ash::MahiMediaAppClient* client) = 0;
   virtual void RemoveClient(base::UnguessableToken client_id) = 0;
+
+  // Whether a Window* is observed by `MahiMediaAppContentManager`. Callers may
+  // suppress focus events of this window (i.e. not report to Mahi system) to
+  // avoid overriding the media app pdf focus events.
+  virtual bool ObservingWindow(const aura::Window* window) const = 0;
 
  protected:
   MahiMediaAppContentManager();

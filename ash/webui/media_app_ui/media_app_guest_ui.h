@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
@@ -42,7 +43,8 @@ class MediaAppGuestUIDelegate {
       mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
-      const std::string& file_name) = 0;
+      const std::string& file_name,
+      gfx::NativeWindow window) = 0;
 };
 
 // The webui for chrome-untrusted://media-app.

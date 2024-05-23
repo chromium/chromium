@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_client.h"
 
+#include "ash/shell.h"
 #include "base/check_deref.h"
 #include "base/i18n/break_iterator.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -51,17 +53,46 @@ bool ContentsWordCountSatisfied(std::u16string_view contents,
 
 MahiMediaAppClient::MahiMediaAppClient(
     mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
-    const std::string& file_name)
+    const std::string& file_name,
+    aura::Window* media_app_window)
     : client_id_(base::UnguessableToken::Create()),
       media_app_pdf_file_(std::move(page)),
-      file_name_(file_name) {
+      file_name_(file_name),
+      media_app_window_(media_app_window) {
+  if (!ash::Shell::HasInstance()) {
+    return;
+  }
+  CHECK(media_app_window_);
+
   // Registers self to `MahiMediaAppContentManager` as a client.
   chromeos::MahiMediaAppContentManager::Get()->AddClient(client_id_, this);
+
+  // Registers self as the window observer.
+  media_app_window_->AddObserver(this);
+
+  // Registers self as a focus event observer.
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->AddObserver(this);
+
+  // Checks the current focused window.
+  OnWindowFocused(focus_client->GetFocusedWindow(), nullptr);
 }
 
 MahiMediaAppClient::~MahiMediaAppClient() {
-  // Manually calling `RemoveClient()` when disconnecting.
+  // Manually calls `RemoveClient()` when disconnecting.
   chromeos::MahiMediaAppContentManager::Get()->RemoveClient(client_id_);
+
+  // Unregisters window observer.
+  if (media_app_window_) {
+    media_app_window_->RemoveObserver(this);
+  }
+
+  // Unregisters focus observer.
+  if (ash::Shell::HasInstance()) {
+    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+        ->RemoveObserver(this);
+  }
 }
 
 void MahiMediaAppClient::OnPdfContextMenuShow(const ::gfx::RectF& anchor) {
@@ -107,6 +138,25 @@ void MahiMediaAppClient::GetPdfContent(GetContentCallback callback) {
 
 void MahiMediaAppClient::HideMediaAppContextMenu() {
   media_app_pdf_file_->HidePdfContextMenu();
+}
+
+void MahiMediaAppClient::OnWindowFocused(aura::Window* gained_focus,
+                                         aura::Window* lost_focus) {
+  if (gained_focus == nullptr || gained_focus == lost_focus) {
+    return;
+  }
+
+  if (gained_focus == media_app_window_ ||
+      gained_focus->GetToplevelWindow() == media_app_window_) {
+    // Observed media app window get focus.
+    chromeos::MahiMediaAppEventsProxy::Get()->OnPdfGetFocus(client_id_);
+  }
+}
+
+void MahiMediaAppClient::OnWindowDestroying(aura::Window* window) {
+  if (window == media_app_window_) {
+    media_app_window_ = nullptr;
+  }
 }
 
 }  // namespace ash

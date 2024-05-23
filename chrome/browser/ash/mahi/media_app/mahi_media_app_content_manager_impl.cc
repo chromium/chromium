@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_content_manager_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -92,10 +93,10 @@ void MahiMediaAppContentManagerImpl::OnMahiContextMenuClicked(
   }
 }
 
-void MahiMediaAppContentManagerImpl::AddClient(
-    base::UnguessableToken client_id,
-    raw_ptr<MahiMediaAppClient> client) {
+void MahiMediaAppContentManagerImpl::AddClient(base::UnguessableToken client_id,
+                                               MahiMediaAppClient* client) {
   client_id_to_client_[client_id] = client;
+  observed_windows_.insert(client->media_app_window());
 }
 
 void MahiMediaAppContentManagerImpl::RemoveClient(
@@ -105,7 +106,14 @@ void MahiMediaAppContentManagerImpl::RemoveClient(
     LOG(ERROR) << "Tried to remove a non-existing client id, do nothing";
     return;
   }
+
+  observed_windows_.erase(it->second->media_app_window());
   client_id_to_client_.erase(it);
+}
+
+bool MahiMediaAppContentManagerImpl::ObservingWindow(
+    const aura::Window* window) const {
+  return observed_windows_.contains(window);
 }
 
 }  // namespace ash

@@ -8,6 +8,7 @@
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -26,7 +27,8 @@ class MahiMediaAppHandlerFactory final {
       mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
-      const std::string& file_name);
+      const std::string& file_name,
+      aura::Window* window);
 
   mojo::UniqueReceiverSet<ash::media_app_ui::mojom::MahiUntrustedPageHandler>&
   media_app_receivers() {

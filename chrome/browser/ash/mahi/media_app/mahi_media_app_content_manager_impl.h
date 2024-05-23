@@ -45,12 +45,14 @@ class MahiMediaAppContentManagerImpl
                                 chromeos::mahi::ButtonType button_type,
                                 const std::u16string& question) override;
   void AddClient(base::UnguessableToken client_id,
-                 raw_ptr<MahiMediaAppClient> client) override;
+                 MahiMediaAppClient* client) override;
   void RemoveClient(base::UnguessableToken client_id) override;
+  bool ObservingWindow(const aura::Window* window) const override;
 
  private:
   std::map<base::UnguessableToken, raw_ptr<MahiMediaAppClient>>
       client_id_to_client_;
+  std::set<raw_ptr<const aura::Window, SetExperimental>> observed_windows_;
 };
 
 }  // namespace ash

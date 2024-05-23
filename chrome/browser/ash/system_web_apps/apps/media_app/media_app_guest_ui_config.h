@@ -38,7 +38,8 @@ class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
       mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
-      const std::string& file_name) override;
+      const std::string& file_name,
+      aura::Window* window) override;
 };
 
 // A webui config for the chrome-untrusted:// part of media-app.

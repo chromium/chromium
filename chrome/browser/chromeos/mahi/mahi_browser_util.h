@@ -8,8 +8,10 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/aura/window.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -25,6 +27,9 @@ struct WebContentState {
 
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   ui::AXTreeUpdate snapshot;
+  // It's not a raw_ptr because we only use its address as identifier and never
+  // dereference it.
+  RAW_PTR_EXCLUSION aura::Window* top_level_native_window = nullptr;
 
   WebContentState(const WebContentState& state);
   WebContentState& operator=(const WebContentState& state) = default;

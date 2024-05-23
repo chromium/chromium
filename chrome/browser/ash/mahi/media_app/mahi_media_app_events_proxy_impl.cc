@@ -22,9 +22,6 @@ void MahiMediaAppEventsProxyImpl::OnPdfContextMenuShown(
     base::UnguessableToken client_id,
     const gfx::Rect& anchor) {
   for (auto& observer : observers_) {
-    // TODO(b/335741382): notify focus for test purpose. Remove after we have a
-    // proper focus event.
-    observer.OnPdfGetFocus(client_id);
     observer.OnPdfContextMenuShown(anchor);
   }
 }

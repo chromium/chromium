@@ -119,10 +119,11 @@ void ChromeMediaAppGuestUIDelegate::CreateAndBindMahiHandler(
     mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
         receiver,
     mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
-    const std::string& file_name) {
+    const std::string& file_name,
+    aura::Window* window) {
   ash::MahiMediaAppHandlerFactory::GetInstance()
       ->CreateMahiMediaAppUntrustedHandler(std::move(receiver), std::move(page),
-                                           file_name);
+                                           file_name, window);
 }
 
 MediaAppGuestUIConfig::MediaAppGuestUIConfig()

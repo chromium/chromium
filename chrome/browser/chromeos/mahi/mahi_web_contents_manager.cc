@@ -169,7 +169,7 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
   }
 
   if (ShouldSkip(web_contents)) {
-    ClearFocusedWebContentState();
+    ClearFocusedWebContentState(web_contents->GetTopLevelNativeWindow());
     return;
   }
 
@@ -180,6 +180,8 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
       WebContentState(focused_web_contents_->GetLastCommittedURL(),
                       focused_web_contents_->GetTitle());
   focused_web_content_state_.favicon = GetFavicon(focused_web_contents_);
+  focused_web_content_state_.top_level_native_window =
+      web_contents->GetTopLevelNativeWindow();
 
   // Skip the distillable check for PDF content.
   if (IsPDFWebContents(web_contents)) {
@@ -205,10 +207,14 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
                      focused_web_content_state_.page_id, start_time));
 }
 
-void MahiWebContentsManager::ClearFocusedWebContentState() {
+void MahiWebContentsManager::ClearFocusedWebContentState(
+    raw_ptr<aura::Window> top_level_window) {
   focused_web_contents_ = nullptr;
   is_pdf_focused_web_contents_ = false;
   focused_web_content_state_ = WebContentState(/*url=*/GURL(), /*title=*/u"");
+  if (top_level_window != nullptr) {
+    focused_web_content_state_.top_level_native_window = top_level_window;
+  }
   if (!is_initialized_) {
     return;
   }
@@ -220,7 +226,7 @@ void MahiWebContentsManager::ClearFocusedWebContentState() {
 void MahiWebContentsManager::WebContentsDestroyed(
     content::WebContents* web_contents) {
   if (focused_web_contents_ == web_contents) {
-    ClearFocusedWebContentState();
+    ClearFocusedWebContentState(web_contents->GetTopLevelNativeWindow());
   }
 }
 

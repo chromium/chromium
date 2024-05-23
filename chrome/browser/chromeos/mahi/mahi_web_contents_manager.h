@@ -86,7 +86,11 @@ class MahiWebContentsManager {
   virtual void OnFocusedPageLoadComplete(content::WebContents* web_contents);
 
   // Clears the focused web content state, and notifies mahi manager.
-  void ClearFocusedWebContentState();
+  // Passes the `top_level_window` downstream if it is set. This may suppress
+  // the notification if it is a media app window that is observed by media app
+  // content manager.
+  void ClearFocusedWebContentState(
+      raw_ptr<aura::Window> top_level_window = nullptr);
 
   // Clears the focused web content and its state if the focused content is
   // destroyed.

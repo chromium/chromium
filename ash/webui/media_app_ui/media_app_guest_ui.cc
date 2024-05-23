@@ -302,8 +302,9 @@ void MediaAppGuestUI::CreateMahiUntrustedPageHandler(
     return;
   }
 
-  delegate_->CreateAndBindMahiHandler(std::move(receiver), std::move(page),
-                                      file_name);
+  delegate_->CreateAndBindMahiHandler(
+      std::move(receiver), std::move(page), file_name,
+      web_ui()->GetWebContents()->GetTopLevelNativeWindow());
 }
 
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {
