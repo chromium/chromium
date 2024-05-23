@@ -217,7 +217,7 @@ interface Source {
   dedupKeys: bigint[];
   priority: bigint;
   status: string;
-  aggregatableBudgetConsumed: bigint;
+  remainingAggregatableAttributionBudget: number;
   aggregatableDedupKeys: bigint[];
   triggerDataMatching: string;
   eventLevelEpsilon: number;
@@ -244,7 +244,8 @@ function newSource(mojo: WebUISource): Source {
     aggregationKeys: JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' '),
     debugKey: mojo.debugKey ?? undefined,
     dedupKeys: mojo.dedupKeys.sort(compareDefault),
-    aggregatableBudgetConsumed: mojo.aggregatableBudgetConsumed,
+    remainingAggregatableAttributionBudget:
+        mojo.remainingAggregatableAttributionBudget,
     aggregatableDedupKeys: mojo.aggregatableDedupKeys.sort(compareDefault),
     triggerDataMatching: triggerDataMatchingText[mojo.triggerDataMatching],
     eventLevelEpsilon: mojo.eventLevelEpsilon,
@@ -290,7 +291,8 @@ function initSourceTable(panel: HTMLElement):
         valueColumn(
             'Report Window Time', 'aggregatableReportWindowTime', asDate),
         valueColumn(
-            'Budget Consumed', 'aggregatableBudgetConsumed',
+            'Remaining Aggregatable Attribution Budget',
+            'remainingAggregatableAttributionBudget',
             asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
         valueColumn('Aggregation Keys', 'aggregationKeys', asCode),
         valueColumn('Dedup Keys', 'aggregatableDedupKeys', asList(asNumber)),

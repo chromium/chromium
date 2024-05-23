@@ -236,16 +236,16 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion52ToCurrent) {
               NormalizeSchema(db.GetSchema()));
 
     // Verify that data is preserved across the migration.
-    sql::Statement s(
-        db.GetUniqueStatement("SELECT aggregatable_budget_consumed, "
-                              "num_aggregatable_reports FROM sources"));
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT remaining_aggregatable_attribution_budget, "
+        "num_aggregatable_attribution_reports FROM sources"));
     ASSERT_TRUE(s.Step());
     // First source has no budget consumed so hasn't made any reports.
-    ASSERT_EQ(0, s.ColumnInt(0));
+    ASSERT_EQ(65536, s.ColumnInt(0));
     ASSERT_EQ(0, s.ColumnInt(1));
     ASSERT_TRUE(s.Step());
     // Second source has budget consumed so we set their num reports to 1.
-    ASSERT_EQ(200, s.ColumnInt(0));
+    ASSERT_EQ(65336, s.ColumnInt(0));
     ASSERT_EQ(1, s.ColumnInt(1));
     ASSERT_FALSE(s.Step());
   }
@@ -495,6 +495,51 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion58ToCurrent) {
     ASSERT_EQ("https://b.r.test", s.ColumnString(0));
     ASSERT_EQ(2, s.ColumnInt(1));
     ASSERT_EQ(-1, s.ColumnInt(2));
+    ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion59ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(59), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT aggregatable_budget_consumed,"
+                              "num_aggregatable_reports FROM sources"));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(300, s.ColumnInt(0));
+    ASSERT_EQ(6, s.ColumnInt(1));
+    ASSERT_FALSE(s.Step());
+  }
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    // Verify that data is preserved across the migration.
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT remaining_aggregatable_attribution_budget,"
+        "num_aggregatable_attribution_reports FROM sources"));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(65236, s.ColumnInt(0));
+    ASSERT_EQ(6, s.ColumnInt(1));
     ASSERT_FALSE(s.Step());
   }
 

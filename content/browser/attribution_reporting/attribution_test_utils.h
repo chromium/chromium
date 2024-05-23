@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
@@ -101,8 +102,8 @@ class SourceBuilder {
   SourceBuilder& SetAggregationKeys(
       attribution_reporting::AggregationKeys aggregation_keys);
 
-  SourceBuilder& SetAggregatableBudgetConsumed(
-      int64_t aggregatable_budget_consumed);
+  SourceBuilder& SetRemainingAggregatableAttributionBudget(
+      int remaining_aggregatable_attribution_budget);
 
   SourceBuilder& SetRandomizedResponseRate(double randomized_response_rate);
 
@@ -140,7 +141,8 @@ class SourceBuilder {
   // Ensure that we don't use uninitialized memory.
   StoredSource::Id source_id_{0};
   std::vector<uint64_t> dedup_keys_;
-  int64_t aggregatable_budget_consumed_ = 0;
+  int remaining_aggregatable_attribution_budget_ =
+      attribution_reporting::kMaxAggregatableValue;
   double randomized_response_rate_ = 0;
   std::vector<uint64_t> aggregatable_dedup_keys_;
   bool is_within_fenced_frame_ = false;
@@ -427,8 +429,9 @@ MATCHER_P(AggregationKeysAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.aggregation_keys(), result_listener);
 }
 
-MATCHER_P(AggregatableBudgetConsumedIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.aggregatable_budget_consumed(),
+MATCHER_P(RemainingAggregatableAttributionBudgetIs, matcher, "") {
+  return ExplainMatchResult(matcher,
+                            arg.remaining_aggregatable_attribution_budget(),
                             result_listener);
 }
 

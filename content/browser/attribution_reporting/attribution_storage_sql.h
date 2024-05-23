@@ -48,11 +48,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 59;
+  static constexpr int kCurrentVersionNumber = 60;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 59;
+  static constexpr int kCompatibleVersionNumber = 60;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -356,15 +356,14 @@ class CONTENT_EXPORT AttributionStorageSql {
   RateLimitResult AggregatableAttributionAllowedForBudgetLimit(
       const AttributionReport::AggregatableAttributionData&
           aggregatable_attribution,
-      int64_t aggregatable_budget_consumed)
+      int remaining_aggregatable_attribution_budget)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Adjusts the aggregatable budget for the source event by
   // `additional_budget_consumed`.
   [[nodiscard]] bool AdjustBudgetConsumedForSource(
       StoredSource::Id source_id,
-      int64_t additional_budget_consumed)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      int additional_budget_consumed) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::AggregatableResult
   MaybeCreateAggregatableAttributionReport(
@@ -383,8 +382,8 @@ class CONTENT_EXPORT AttributionStorageSql {
   AttributionTrigger::AggregatableResult
   MaybeStoreAggregatableAttributionReportData(
       AttributionReport& report,
-      int64_t aggregatable_budget_consumed,
-      int num_aggregatable_reports,
+      int remaining_aggregatable_attribution_budget,
+      int num_aggregatable_attribution_reports,
       std::optional<uint64_t> dedup_key,
       std::optional<int>& max_aggregatable_reports_per_source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);

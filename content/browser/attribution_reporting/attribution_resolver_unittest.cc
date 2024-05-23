@@ -1250,7 +1250,8 @@ TEST_F(AttributionResolverTest, MaxAttributionsBetweenSites) {
             DroppedEventLevelReportIs(std::nullopt)));
 
   const auto source =
-      source_builder.SetAggregatableBudgetConsumed(8).BuildStored();
+      source_builder.SetRemainingAggregatableAttributionBudget(65536 - 8)
+          .BuildStored();
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(EventLevelDataIs(TriggerDataIs(1)),
                           EventLevelDataIs(TriggerDataIs(2)),
@@ -1840,7 +1841,7 @@ TEST_F(AttributionResolverTest, FalselyAttributeImpression_ReportStored) {
               .SetTime(fake_trigger_time)
               .Build(),
           builder.SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
-              .SetAggregatableBudgetConsumed(2)
+              .SetRemainingAggregatableAttributionBudget(65536 - 2)
               .SetExpiry(kExpiry)
               .SetActiveState(
                   StoredSource::ActiveState::kReachedEventLevelAttributionLimit)
@@ -1851,7 +1852,8 @@ TEST_F(AttributionResolverTest, FalselyAttributeImpression_ReportStored) {
 
   const AttributionReport expected_aggregatable_report =
       GetExpectedAggregatableReport(
-          builder.SetAggregatableBudgetConsumed(2).BuildStored(),
+          builder.SetRemainingAggregatableAttributionBudget(65536 - 2)
+              .BuildStored(),
           DefaultAggregatableHistogramContributions({1}), trigger);
 
   task_environment_.FastForwardBy(kExpiry);
@@ -3136,7 +3138,7 @@ TEST_F(AttributionResolverTest, MaxReportingOriginsPerAttribution) {
 TEST_F(AttributionResolverTest, SourceBudgetValueRetrieved) {
   storage()->StoreSource(SourceBuilder().Build());
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(AggregatableBudgetConsumedIs(0)));
+              ElementsAre(RemainingAggregatableAttributionBudgetIs(65536)));
 }
 
 TEST_F(AttributionResolverTest, MaxAggregatableBudgetPerSource) {
@@ -3201,7 +3203,7 @@ TEST_F(AttributionResolverTest, BudgetConsumedAfterTriggerIsRetrieved) {
       AttributionTrigger::AggregatableResult::kSuccess);
 
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(AggregatableBudgetConsumedIs(2)));
+              ElementsAre(RemainingAggregatableAttributionBudgetIs(65536 - 2)));
 }
 
 TEST_F(AttributionResolverTest,
@@ -3626,8 +3628,9 @@ TEST_F(AttributionResolverTest, AggregatableAttribution_ReportsScheduled) {
             NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
                 AggregatableHistogramContributionsAre(contributions))))));
 
-  const auto source = source_builder.SetAggregatableBudgetConsumed(5)
-                          .BuildStored();
+  const auto source =
+      source_builder.SetRemainingAggregatableAttributionBudget(65536 - 5)
+          .BuildStored();
   auto expected_aggregatable_report =
       GetExpectedAggregatableReport(source, std::move(contributions), trigger);
 
@@ -3881,10 +3884,10 @@ TEST_F(AttributionResolverTest, BothRealAndNullAggregatableReports) {
           .BuildNullAggregatable();
 
   const AttributionReport expected_aggregatable_report =
-      GetExpectedAggregatableReport(builder.SetAggregatableBudgetConsumed(1)
-                                        .BuildStored(),
-                                    DefaultAggregatableHistogramContributions(),
-                                    trigger);
+      GetExpectedAggregatableReport(
+          builder.SetRemainingAggregatableAttributionBudget(65536 - 1)
+              .BuildStored(),
+          DefaultAggregatableHistogramContributions(), trigger);
 
   EXPECT_THAT(
       storage()->GetAttributionReports(base::Time::Max()),

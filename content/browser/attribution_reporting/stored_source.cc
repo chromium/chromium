@@ -34,15 +34,17 @@ bool IsExpiryOrReportWindowTimeValid(base::Time expiry_or_report_window_time,
              attribution_reporting::kMaxSourceExpiry;
 }
 
-bool AreFieldsValid(int64_t aggregatable_budget_consumed,
+bool AreFieldsValid(int remaining_aggregatable_attribution_budget,
                     double randomized_response_rate,
                     base::Time source_time,
                     base::Time expiry_time,
                     base::Time aggregatable_report_window_time,
                     std::optional<uint64_t> debug_key,
                     bool debug_cookie_set) {
-  return aggregatable_budget_consumed >= 0 && randomized_response_rate >= 0 &&
-         randomized_response_rate <= 1 &&
+  return remaining_aggregatable_attribution_budget >= 0 &&
+         remaining_aggregatable_attribution_budget <=
+             attribution_reporting::kMaxAggregatableValue &&
+         randomized_response_rate >= 0 && randomized_response_rate <= 1 &&
          IsExpiryOrReportWindowTimeValid(expiry_time, source_time) &&
          IsExpiryOrReportWindowTimeValid(aggregatable_report_window_time,
                                          source_time) &&
@@ -68,13 +70,14 @@ std::optional<StoredSource> StoredSource::Create(
     AttributionLogic attribution_logic,
     ActiveState active_state,
     Id source_id,
-    int64_t aggregatable_budget_consumed,
+    int remaining_aggregatable_attribution_budget,
     double randomized_response_rate,
     attribution_reporting::mojom::TriggerDataMatching trigger_data_matching,
     attribution_reporting::EventLevelEpsilon event_level_epsilon) {
-  if (!AreFieldsValid(aggregatable_budget_consumed, randomized_response_rate,
-                      source_time, expiry_time, aggregatable_report_window_time,
-                      debug_key, common_info.debug_cookie_set())) {
+  if (!AreFieldsValid(remaining_aggregatable_attribution_budget,
+                      randomized_response_rate, source_time, expiry_time,
+                      aggregatable_report_window_time, debug_key,
+                      common_info.debug_cookie_set())) {
     return std::nullopt;
   }
 
@@ -83,8 +86,9 @@ std::optional<StoredSource> StoredSource::Create(
       source_time, expiry_time, std::move(trigger_specs),
       aggregatable_report_window_time, max_event_level_reports, priority,
       std::move(filter_data), debug_key, std::move(aggregation_keys),
-      attribution_logic, active_state, source_id, aggregatable_budget_consumed,
-      randomized_response_rate, trigger_data_matching, event_level_epsilon);
+      attribution_logic, active_state, source_id,
+      remaining_aggregatable_attribution_budget, randomized_response_rate,
+      trigger_data_matching, event_level_epsilon);
 }
 
 StoredSource::StoredSource(
@@ -103,7 +107,7 @@ StoredSource::StoredSource(
     AttributionLogic attribution_logic,
     ActiveState active_state,
     Id source_id,
-    int64_t aggregatable_budget_consumed,
+    int remaining_aggregatable_attribution_budget,
     double randomized_response_rate,
     attribution_reporting::mojom::TriggerDataMatching trigger_data_matching,
     attribution_reporting::EventLevelEpsilon event_level_epsilon)
@@ -122,11 +126,12 @@ StoredSource::StoredSource(
       attribution_logic_(attribution_logic),
       active_state_(active_state),
       source_id_(source_id),
-      aggregatable_budget_consumed_(aggregatable_budget_consumed),
+      remaining_aggregatable_attribution_budget_(
+          remaining_aggregatable_attribution_budget),
       randomized_response_rate_(randomized_response_rate),
       trigger_data_matching_(std::move(trigger_data_matching)),
       event_level_epsilon_(event_level_epsilon) {
-  DCHECK(AreFieldsValid(aggregatable_budget_consumed_,
+  DCHECK(AreFieldsValid(remaining_aggregatable_attribution_budget_,
                         randomized_response_rate_, source_time_, expiry_time_,
                         aggregatable_report_window_time_, debug_key_,
                         common_info_.debug_cookie_set()));

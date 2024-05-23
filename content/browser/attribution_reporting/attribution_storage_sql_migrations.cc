@@ -478,6 +478,33 @@ bool To59(sql::Database& db) {
   return true;
 }
 
+bool To60(sql::Database& db) {
+  static constexpr char kRenameNumAggregatableReportsSql[] =
+      "ALTER TABLE sources "
+      "RENAME num_aggregatable_reports TO num_aggregatable_attribution_reports";
+  if (!db.Execute(kRenameNumAggregatableReportsSql)) {
+    return false;
+  }
+
+  static constexpr char kRenameAggregatableBudgetConsumedSql[] =
+      "ALTER TABLE sources "
+      "RENAME aggregatable_budget_consumed TO "
+      "remaining_aggregatable_attribution_budget";
+  if (!db.Execute(kRenameAggregatableBudgetConsumedSql)) {
+    return false;
+  }
+
+  static constexpr char kComputeRemainingAggregatableBudgetSql[] =
+      "UPDATE sources "
+      "SET remaining_aggregatable_attribution_budget="
+      "65536-remaining_aggregatable_attribution_budget";
+  if (!db.Execute(kComputeRemainingAggregatableBudgetSql)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
@@ -497,14 +524,15 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
             MaybeMigrate(db, meta_table, 55, &To56) &&  //
             MaybeMigrate(db, meta_table, 56, &To57) &&
             MaybeMigrate(db, meta_table, 57, &To58) &&
-            MaybeMigrate(db, meta_table, 58, &To59);
+            MaybeMigrate(db, meta_table, 58, &To59) &&
+            MaybeMigrate(db, meta_table, 59, &To60);
   if (!ok) {
     return false;
   }
 
   DeleteCorruptedReports(storage);
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 59,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 60,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

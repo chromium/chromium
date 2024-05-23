@@ -104,7 +104,7 @@ struct AttributionSourceRecord {
   int64_t priority;
   std::string source_site;
   int num_conversions;
-  int num_aggregatable_reports;
+  int num_aggregatable_attribution_reports;
   int event_level_active;
   int aggregatable_active;
   std::optional<uint64_t> debug_key;
@@ -351,7 +351,7 @@ class AttributionStorageSqlTest : public testing::Test {
       statement.BindNull(14);
     }
 
-    statement.BindInt(15, record.num_aggregatable_reports);
+    statement.BindInt(15, record.num_aggregatable_attribution_reports);
     statement.BindBlob(16, record.aggregation_keys);
     statement.BindBlob(17, record.filter_data);
     statement.BindBlob(18, record.read_only_source_data);
@@ -2588,15 +2588,16 @@ TEST_F(AttributionStorageSqlTest,
   ASSERT_THAT(sources, SizeIs(1));
   CloseDatabase();
 
-  AttributionSourceRecord source_record{.source_id = 2,
-                                        .source_type = 3,
-                                        .attribution_logic = 5,
-                                        .num_conversions = -1,
-                                        .num_aggregatable_reports = -1,
-                                        .event_level_active = 2,
-                                        .aggregation_keys = "foo",
-                                        .filter_data = "bar",
-                                        .read_only_source_data = "baz"};
+  AttributionSourceRecord source_record{
+      .source_id = 2,
+      .source_type = 3,
+      .attribution_logic = 5,
+      .num_conversions = -1,
+      .num_aggregatable_attribution_reports = -1,
+      .event_level_active = 2,
+      .aggregation_keys = "foo",
+      .filter_data = "bar",
+      .read_only_source_data = "baz"};
   AttributionReportRecord report_record{
       .report_id = 1,
       .source_id = 2,

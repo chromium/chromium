@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetMaxEventLevelReports(3)
               .SetPriority(std::numeric_limits<int64_t>::max())
               .SetDedupKeys({13, 17})
-              .SetAggregatableBudgetConsumed(1300)
+              .SetRemainingAggregatableAttributionBudget(1300)
               .SetFilterData(*attribution_reporting::FilterData::Create(
                   {{"a", {"b", "c"}}}))
               .SetAggregationKeys(

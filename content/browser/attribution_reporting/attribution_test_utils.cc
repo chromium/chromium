@@ -176,9 +176,10 @@ SourceBuilder& SourceBuilder::SetAggregationKeys(
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetAggregatableBudgetConsumed(
-    int64_t aggregatable_budget_consumed) {
-  aggregatable_budget_consumed_ = aggregatable_budget_consumed;
+SourceBuilder& SourceBuilder::SetRemainingAggregatableAttributionBudget(
+    int remaining_aggregatable_attribution_budget) {
+  remaining_aggregatable_attribution_budget_ =
+      remaining_aggregatable_attribution_budget;
   return *this;
 }
 
@@ -247,8 +248,9 @@ StoredSource SourceBuilder::BuildStored() const {
       registration_.max_event_level_reports, registration_.priority,
       registration_.filter_data, registration_.debug_key,
       registration_.aggregation_keys, attribution_logic_, active_state_,
-      source_id_, aggregatable_budget_consumed_, randomized_response_rate_,
-      registration_.trigger_data_matching, registration_.event_level_epsilon);
+      source_id_, remaining_aggregatable_attribution_budget_,
+      randomized_response_rate_, registration_.trigger_data_matching,
+      registration_.event_level_epsilon);
   source.dedup_keys() = dedup_keys_;
   source.aggregatable_dedup_keys() = aggregatable_dedup_keys_;
   return source;
@@ -530,9 +532,9 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
         source.max_event_level_reports(), source.priority(),
         source.filter_data(), source.debug_key(), source.aggregation_keys(),
         source.attribution_logic(), source.active_state(), source.dedup_keys(),
-        source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
-        source.randomized_response_rate(), source.trigger_data_matching(),
-        source.event_level_epsilon());
+        source.remaining_aggregatable_attribution_budget(),
+        source.aggregatable_dedup_keys(), source.randomized_response_rate(),
+        source.trigger_data_matching(), source.event_level_epsilon());
   };
   return tie(a) == tie(b);
 }
@@ -680,8 +682,8 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
       << ",attribution_logic=" << source.attribution_logic()
       << ",active_state=" << source.active_state()
       << ",source_id=" << *source.source_id()
-      << ",aggregatable_budget_consumed="
-      << source.aggregatable_budget_consumed()
+      << ",remaining_aggregatable_attribution_budget="
+      << source.remaining_aggregatable_attribution_budget()
       << ",randomized_response_rate=" << source.randomized_response_rate()
       << ",event_level_epsilon=" << source.event_level_epsilon()
       << ",trigger_data_matching=" << source.trigger_data_matching()
