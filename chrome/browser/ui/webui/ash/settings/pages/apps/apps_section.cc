@@ -439,6 +439,9 @@ void AddAppParentalControlsStrings(content::WebUIDataSource* html_source) {
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString("appParentalControlsLearnMoreUrl",
+                         chrome::kAppParentalControlsLearnMoreUrl);
 }
 
 bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {

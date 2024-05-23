@@ -55,8 +55,10 @@
     </div>
   </div>
   <div slot="button-container">
-    <!--TODO(b/339219535): Link to help center article here. -->
-    <a id="forgotPinLink">$i18n{appParentalControlsForgotPinLinkName}</a>
+    <a id="forgotPinLink" href="$i18n{appParentalControlsLearnMoreUrl}"
+        target="_blank">
+      $i18n{appParentalControlsForgotPinLinkName}
+    </a>
     <cr-button class="cancel-button" on-click="onCancelClick_">
       $i18n{cancel}
     </cr-button>

@@ -53,6 +53,10 @@ inline constexpr char kAdvancedProtectionDownloadLearnMoreURL[] =
 inline constexpr char kAppNotificationsBrowserSettingsURL[] =
     "chrome://settings/content/notifications";
 
+// "Learn more" URL for App Parental Controls.
+inline constexpr char kAppParentalControlsLearnMoreUrl[] =
+    "https://support.google.com/chromebook?p=local_app_controls";
+
 // "Learn more" URL for Battery Saver Mode.
 inline constexpr char kBatterySaverModeLearnMoreUrl[] =
     "https://support.google.com/chrome?p=chrome_battery_saver";
