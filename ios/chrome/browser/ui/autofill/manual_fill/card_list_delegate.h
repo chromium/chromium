@@ -16,6 +16,9 @@
 // Opens feature to add a credit card.
 - (void)openAddCreditCard;
 
+// Opens the details of the given card.
+- (void)openCardDetails:(const autofill::CreditCard*)card;
+
 // Opens cards settings.
 - (void)openCardSettings;
 

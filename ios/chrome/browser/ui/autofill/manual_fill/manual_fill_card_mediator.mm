@@ -128,20 +128,21 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
         card->virtual_card_enrollment_state() ==
             CreditCard::VirtualCardEnrollmentState::kEnrolled) {
       CreditCard virtualCard = CreditCard::CreateVirtualCard(*card);
-      [cardItems addObject:[self createManualFillCardItemForCard:virtualCard]];
+      [cardItems addObject:[self createManualFillCardItemForCard:&virtualCard]];
     }
-    [cardItems addObject:[self createManualFillCardItemForCard:*card]];
+    [cardItems addObject:[self createManualFillCardItemForCard:card]];
   }
 
   [self.consumer presentCards:cardItems];
 }
 
 // Creates a ManualFillCardItem for the given `card`.
-- (ManualFillCardItem*)createManualFillCardItemForCard:(CreditCard)card {
+- (ManualFillCardItem*)createManualFillCardItemForCard:(CreditCard*)card {
   ManualFillCreditCard* manualFillCreditCard =
-      [[ManualFillCreditCard alloc] initWithCreditCard:card];
-  NSArray<UIAction*>* menuActions =
-      IsKeyboardAccessoryUpgradeEnabled() ? [self createMenuActions] : @[];
+      [[ManualFillCreditCard alloc] initWithCreditCard:*card];
+  NSArray<UIAction*>* menuActions = IsKeyboardAccessoryUpgradeEnabled()
+                                        ? [self createMenuActionsForCard:card]
+                                        : @[];
 
   return [[ManualFillCardItem alloc] initWithCreditCard:manualFillCreditCard
                                         contentInjector:self.contentInjector
@@ -182,16 +183,18 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
 }
 
 // Creates an "Edit" and a "Show Details" UIAction to be used with a UIMenu.
-- (NSArray<UIAction*>*)createMenuActions {
+- (NSArray<UIAction*>*)createMenuActionsForCard:(const CreditCard*)card {
   ActionFactory* actionFactory = [[ActionFactory alloc]
       initWithScenario:
           kMenuScenarioHistogramAutofillManualFallbackPaymentEntry];
+
+  __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
       // TODO(crbug.com/326413453): Handle tap.
   }];
 
   UIAction* showDetailsAction = [actionFactory actionToShowDetailsWithBlock:^{
-      // TODO(crbug.com/326413453): Handle tap.
+    [weakSelf.navigationDelegate openCardDetails:card];
   }];
 
   return @[ editAction, showDetailsAction ];

@@ -873,7 +873,7 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
 }
 
 // Tests the "Show Details" action of the overflow menu button displays the
-// card's details in edit mode.
+// card's details.
 - (void)testShowCardDetailsFromOverflowMenu {
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
@@ -898,7 +898,16 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   [[EarlGrey selectElementWithMatcher:OverflowMenuShowDetailsAction()]
       performAction:grey_tap()];
 
-  // TODO(crbug.com/326413453): Check that the card details opened.
+  // Verify that the card's details are visible.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          AutofillCreditCardEditTableView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap Cancel Button.
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // TODO(crbug.com/332956674): Check that the expanded view is still visible.
 }
 
 // Tests that tapping the "Autofill Form" button fills the payment form with

@@ -7,6 +7,10 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_coordinator.h"
 
+namespace autofill {
+class CreditCard;
+}
+
 // Delegate for the coordinator actions.
 // TODO(crbug.com/40577448): revise delegate method names.
 @protocol CardCoordinatorDelegate<FallbackCoordinatorDelegate>
@@ -16,6 +20,9 @@
 
 // Opens the cards settings.
 - (void)openCardSettings;
+
+// Opens the details of the given card.
+- (void)openCardDetails:(const autofill::CreditCard*)card;
 
 @end
 

@@ -102,17 +102,24 @@
 
 #pragma mark - CardListDelegate
 
-- (void)openCardSettings {
-  __weak __typeof(self) weakSelf = self;
-  [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate openCardSettings];
-  }];
-}
-
 - (void)openAddCreditCard {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
     [weakSelf.delegate openAddCreditCard];
+  }];
+}
+
+- (void)openCardDetails:(const autofill::CreditCard*)card {
+  __weak __typeof(self) weakSelf = self;
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [weakSelf.delegate openCardDetails:card];
+  }];
+}
+
+- (void)openCardSettings {
+  __weak __typeof(self) weakSelf = self;
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [weakSelf.delegate openCardSettings];
   }];
 }
 

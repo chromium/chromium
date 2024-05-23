@@ -542,6 +542,14 @@ const CGFloat kIPHVerticalOffset = -5;
   [handler showAddCreditCard];
 }
 
+- (void)openCardDetails:(const autofill::CreditCard*)card {
+  [self reset];
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<SettingsCommands> settingsCommandsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+  [settingsCommandsHandler showCreditCardDetails:card];
+}
+
 #pragma mark - AddressCoordinatorDelegate
 
 - (void)openAddressSettings {
