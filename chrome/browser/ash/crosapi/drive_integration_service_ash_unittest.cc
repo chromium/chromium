@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
@@ -61,17 +61,16 @@ class MockNativeMessagingPort : drivefs::mojom::NativeMessagingPort {
 
 TEST_F(DriveIntegrationServiceAshTest,
        CreateNativeHostSessionWithoutDriveService) {
-  base::RunLoop run_loop;
-
   MockNativeMessagingPort mock_port;
   mojo::Remote<drivefs::mojom::NativeMessagingHost> drivefs_remote;
   auto extension_remote = mock_port.receiver()->BindNewPipeAndPassRemote();
 
   base::MockCallback<mojo::ConnectionErrorWithReasonCallback>
       disconnect_callback;
+  base::test::TestFuture<void> waiter;
   EXPECT_CALL(disconnect_callback, Run(-drive::FILE_ERROR_SERVICE_UNAVAILABLE,
                                        "DriveFS is unavailable."))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+      .WillOnce([&] { waiter.SetValue(); });
   mock_port.receiver()->set_disconnect_with_reason_handler(
       disconnect_callback.Get());
 
@@ -79,7 +78,7 @@ TEST_F(DriveIntegrationServiceAshTest,
       drivefs::mojom::ExtensionConnectionParams::New(),
       drivefs_remote.BindNewPipeAndPassReceiver(), std::move(extension_remote));
 
-  run_loop.Run();
+  EXPECT_TRUE(waiter.Wait());
 }
 
 }  // namespace crosapi

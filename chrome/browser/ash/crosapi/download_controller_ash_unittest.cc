@@ -7,9 +7,9 @@
 #include <string>
 #include <vector>
 
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +67,12 @@ class DownloadControllerAshTest : public testing::Test {
     return &download_controller_ash_;
   }
 
+  std::vector<mojom::DownloadItemPtr> GetAllDownloads() {
+    base::test::TestFuture<std::vector<mojom::DownloadItemPtr>> future;
+    download_controller_ash()->GetAllDownloads(future.GetCallback());
+    return future.Take();
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   DownloadControllerAsh download_controller_ash_;
@@ -76,13 +82,9 @@ class DownloadControllerAshTest : public testing::Test {
 
 TEST_F(DownloadControllerAshTest, GetAllDownloads_NoBoundClients) {
   // Invoke `GetAllDownloads()` with no clients bound.
-  base::RunLoop run_loop;
-  download_controller_ash()->GetAllDownloads(base::BindLambdaForTesting(
-      [&](std::vector<mojom::DownloadItemPtr> downloads) {
-        EXPECT_EQ(downloads.size(), 0u);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  const std::vector<mojom::DownloadItemPtr> downloads = GetAllDownloads();
+
+  EXPECT_EQ(downloads.size(), 0u);
 }
 
 TEST_F(DownloadControllerAshTest, GetAllDownloads_MultipleBoundClients) {
@@ -125,14 +127,10 @@ TEST_F(DownloadControllerAshTest, GetAllDownloads_MultipleBoundClients) {
           }));
 
   // Invoke `GetAllDownloads()`.
-  base::RunLoop run_loop;
-  download_controller_ash()->GetAllDownloads(base::BindLambdaForTesting(
-      [&](std::vector<mojom::DownloadItemPtr> downloads) {
-        EXPECT_EQ(downloads.size(), 4u);
-        EXPECT_TRUE(IsSortedChronologicallyByStartTime(downloads));
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  const std::vector<mojom::DownloadItemPtr> downloads = GetAllDownloads();
+
+  EXPECT_EQ(downloads.size(), 4u);
+  EXPECT_TRUE(IsSortedChronologicallyByStartTime(downloads));
 }
 
 }  // namespace crosapi
