@@ -102,7 +102,14 @@ IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest,
   EXPECT_FALSE(session().is_shutting_down());
 }
 
-IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, ShouldAllowSettingsWindow) {
+// TODO(b/342108781): Disable the test on ci/linux-chromeos-chrome-with-lacros
+// since it fails.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_ShouldAllowSettingsWindow DISABLED_ShouldAllowSettingsWindow
+#else
+#define MAYBE_ShouldAllowSettingsWindow ShouldAllowSettingsWindow
+#endif
+IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, MAYBE_ShouldAllowSettingsWindow) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
