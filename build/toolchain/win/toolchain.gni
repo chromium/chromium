@@ -52,24 +52,24 @@ template("msvc_toolchain") {
       toolchain_is_clang = is_clang
     }
 
-    # When the invoker has explicitly overridden use_remoteexec or cc_wrapper in
+    # When the invoker has explicitly overridden use_reclient or cc_wrapper in
     # the toolchain args, use those values, otherwise default to the global one.
     # This works because the only reasonable override that toolchains might
     # supply for these values are to force-disable them.
-    if (defined(toolchain_args.use_remoteexec)) {
-      toolchain_uses_remoteexec = toolchain_args.use_remoteexec
+    if (defined(toolchain_args.use_reclient)) {
+      toolchain_uses_reclient = toolchain_args.use_reclient
     } else {
-      toolchain_uses_remoteexec = use_remoteexec
+      toolchain_uses_reclient = use_reclient
     }
     if (defined(toolchain_args.cc_wrapper)) {
       toolchain_cc_wrapper = toolchain_args.cc_wrapper
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
-    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_remoteexec),
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_reclient),
            "re-client and cc_wrapper can't be used together.")
 
-    if (toolchain_uses_remoteexec) {
+    if (toolchain_uses_reclient) {
       if (toolchain_is_clang) {
         cl_prefix = "${rbe_bin_dir}/rewrapper -cfg=${rbe_cc_cfg_file}${rbe_bug_326584510_missing_inputs} -exec_root=${rbe_exec_root} -labels=type=compile,compiler=clang-cl,lang=cpp "
       } else {

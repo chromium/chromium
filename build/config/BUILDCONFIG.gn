@@ -782,7 +782,7 @@ foreach(_target_type, [ "action" ]) {
       # Siso doesn't use action_remote.py wrapper because it sends requests to
       # Reproxy directly without actions_remote.py/rewrapper.
       # TODO(b/259381924): Investigate enabling in nacl config.
-      if (allow_remote && use_remoteexec && !is_nacl && !use_siso) {
+      if (allow_remote && use_reclient && !is_nacl && !use_siso) {
         pool = "//build/toolchain:remote_action_pool($default_toolchain)"
         script = "//build/util/action_remote.py"
         inputs = [ invoker.script ]

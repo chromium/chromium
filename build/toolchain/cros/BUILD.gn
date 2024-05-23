@@ -28,7 +28,7 @@ template("cros_toolchain") {
       # pass it the rewrapper path via cmd-line arg. Otherwise, for both CrOS's
       # host wrapper (used in the ebuild) and Chrome's clang (used in Simple
       # Chrome), prepend rewrapper like normal.
-      if (use_remoteexec && invoker.needs_rewrapper_path_arg) {
+      if (use_reclient && invoker.needs_rewrapper_path_arg) {
         extra_cppflags += "--rewrapper-path $rbe_cros_cc_wrapper --rewrapper-cfg ${rbe_cc_cfg_file}"
       }
 

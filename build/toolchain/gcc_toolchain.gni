@@ -161,15 +161,15 @@ template("single_gcc_toolchain") {
     # cc_wrapper in the toolchain args, use those values, otherwise default
     # to the global one.  This works because the only reasonable override
     # that toolchains might supply for these values are to force-disable them.
-    if (defined(toolchain_args.use_remoteexec)) {
-      toolchain_uses_remoteexec = toolchain_args.use_remoteexec
+    if (defined(toolchain_args.use_reclient)) {
+      toolchain_uses_reclient = toolchain_args.use_reclient
     } else {
-      toolchain_uses_remoteexec = use_remoteexec
+      toolchain_uses_reclient = use_reclient
     }
     if (defined(toolchain_args.use_remoteexec_links)) {
-      toolchain_uses_remoteexec_links = toolchain_args.use_remoteexec_links
+      toolchain_uses_reclient_links = toolchain_args.use_remoteexec_links
     } else {
-      toolchain_uses_remoteexec_links = use_remoteexec_links
+      toolchain_uses_reclient_links = use_remoteexec_links
     }
 
     if (defined(toolchain_args.cc_wrapper)) {
@@ -177,7 +177,7 @@ template("single_gcc_toolchain") {
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
-    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_remoteexec),
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_reclient),
            "re-client and cc_wrapper can't be used together.")
 
     # When the invoker has explicitly overridden cc_wrapper in the
@@ -187,7 +187,7 @@ template("single_gcc_toolchain") {
     # But if needs_rewrapper_path_arg is set in a Chrome OS build, the
     # toolchain wrapper will have picked up rewrapper via cmd-line arg. So
     # need to prepend rewrapper in that case.
-    if (toolchain_uses_remoteexec &&
+    if (toolchain_uses_reclient &&
         (!defined(invoker.needs_rewrapper_path_arg) ||
          !invoker.needs_rewrapper_path_arg)) {
       if (defined(toolchain_args.rbe_cc_cfg_file)) {
@@ -196,7 +196,7 @@ template("single_gcc_toolchain") {
         toolchain_rbe_cc_cfg_file = rbe_cc_cfg_file
       }
 
-      # C/C++ (clang) rewrapper prefix to use when use_remoteexec is true.
+      # C/C++ (clang) rewrapper prefix to use when use_reclient is true.
       compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file}${rbe_bug_326584510_missing_inputs} -exec_root=${rbe_exec_root} "
     } else {
       compiler_prefix = "${toolchain_cc_wrapper} "
@@ -206,7 +206,7 @@ template("single_gcc_toolchain") {
       not_needed(invoker, [ "needs_rewrapper_path_arg" ])
     }
 
-    if (toolchain_uses_remoteexec_links) {
+    if (toolchain_uses_reclient_links) {
       if (defined(toolchain_args.rbe_link_cfg_file)) {
         toolchain_rbe_link_cfg_file = toolchain_args.rbe_link_cfg_file
       } else {
@@ -264,7 +264,7 @@ template("single_gcc_toolchain") {
     cxx = compiler_prefix + invoker.cxx
 
     # "asm" doesn't support any of toolchain_cc_wrapper and
-    # toolchain_uses_remoteexec. The coverage flags are also nonsensical on
+    # toolchain_uses_reclient. The coverage flags are also nonsensical on
     # assembler runs.
     asm = invoker.cc
     ar = invoker.ar

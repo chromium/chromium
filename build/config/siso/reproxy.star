@@ -232,12 +232,18 @@ __handlers = {
     "strip_rewrapper": __strip_rewrapper,
 }
 
-def __use_remoteexec(ctx):
+def __use_reclient(ctx):
+    use_remoteexec = False
+    use_reclient = None
     if "args.gn" in ctx.metadata:
         gn_args = gn.args(ctx)
         if gn_args.get("use_remoteexec") == "true":
-            return True
-    return False
+            use_remoteexec = True
+        if gn_args.get("use_reclient") == "false":
+            use_reclient = False
+    if use_reclient == None:
+        use_reclient = use_remoteexec
+    return use_reclient
 
 def __step_config(ctx, step_config):
     # New rules to convert commands calling rewrapper to use reproxy instead.
@@ -321,7 +327,7 @@ def __step_config(ctx, step_config):
 
 reproxy = module(
     "reproxy",
-    enabled = __use_remoteexec,
+    enabled = __use_reclient,
     step_config = __step_config,
     filegroups = __filegroups,
     handlers = __handlers,

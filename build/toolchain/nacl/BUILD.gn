@@ -48,10 +48,10 @@ if (host_os == "win") {
   scriptsuffix = ""
 }
 
-# When the compilers are run via rbe or ccache rather than directly by
-# GN/Ninja, the rbe/ccache wrapper handles .bat files but gets confused
+# When the compilers are run via reclient or ccache rather than directly by
+# GN/Ninja, the reclient/ccache wrapper handles .bat files but gets confused
 # by being given the scriptprefix.
-if (host_os == "win" && !use_remoteexec && cc_wrapper == "") {
+if (host_os == "win" && !use_reclient && cc_wrapper == "") {
   compiler_scriptprefix = scriptprefix
 } else {
   compiler_scriptprefix = ""
