@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,11 @@ class FacilityCheckIn extends Transition {
         // and FacilityCheckOut#exitSync().
         onBeforeTransition();
         mWaits = createWaits();
-        ConditionWaiter.preCheck(mWaits, mOptions, mTrigger);
+        try {
+            ConditionWaiter.preCheck(mWaits, mOptions, mTrigger);
+        } catch (CriteriaNotSatisfiedException e) {
+            throw newTransitionException(e);
+        }
         for (ConditionWait wait : mWaits) {
             wait.getCondition().onStartMonitoring();
         }

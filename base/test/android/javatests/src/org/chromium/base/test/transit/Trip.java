@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Log;
 import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
 import org.chromium.base.test.transit.ConditionalState.Phase;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -79,7 +80,11 @@ class Trip extends Transition {
         mDestination.setStateTransitioningTo();
 
         mWaits = calculateConditionWaits(mOrigin, mDestination, getTransitionConditions());
-        ConditionWaiter.preCheck(mWaits, mOptions, mTrigger);
+        try {
+            ConditionWaiter.preCheck(mWaits, mOptions, mTrigger);
+        } catch (CriteriaNotSatisfiedException e) {
+            throw newTransitionException(e);
+        }
         for (ConditionWait wait : mWaits) {
             wait.getCondition().onStartMonitoring();
         }
