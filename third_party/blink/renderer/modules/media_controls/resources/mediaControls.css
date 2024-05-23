@@ -23,6 +23,10 @@ video::-webkit-media-controls {
   align-items: center;
   font-size: 14px;
 
+  /* The overflow menus use anchor positioning with explicit anchor-names.
+  Ensure those names stay scoped within each media element. */
+  anchor-scope: all;
+
   margin-top: env(safe-area-inset-top);
   margin-left: env(safe-area-inset-left);
   margin-right: env(safe-area-inset-right);
@@ -216,11 +220,6 @@ video::-internal-media-controls-picture-in-picture-button {
 
   /* These buttons form the anchor for anchor positioning. */
   anchor-name: --internal-media-control-button-anchor;
-
-  /* TODO(crbug.com/40281992) Once anchor-scope is implemented, verify that this
-     anchor name is not observable outside the media element tree.
-     https://drafts.csswg.org/css-anchor-position-1/#anchor-scope */
-  anchor-scope: --internal-media-control-button-anchor;
 }
 
 /*

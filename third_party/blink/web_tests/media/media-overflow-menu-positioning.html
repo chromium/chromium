@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>Overflow menu positioning</title>
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+<script src='media-controls.js'></script>
+
+<video controls id=first></video>
+<video controls></video>
+<video controls></video>
+<style> video { width: 200px; } </style>
+
+<script>
+async_test(t => {
+  Array.from(document.querySelectorAll('video')).forEach(video => {
+    enableTestMode(video);
+    video.src = 'content/test.ogv';
+  });
+  const firstVideo = document.getElementById('first');
+  //  const track = firstVideo.addTextTrack('captions');
+  firstVideo.onloadeddata = t.step_func(() => {
+    singleTapOnControl(overflowButton(firstVideo), t.step_func(() => {
+      const menu = overflowMenu(firstVideo);
+      assert_not_equals(getComputedStyle(menu).display, 'none');
+      // Overflow menu should be over the left-hand video element:
+      assert_equals(menu.offsetLeft,4,'Menu should be over the left element');
+      t.done();
+    }));
+  });
+});
+</script>
