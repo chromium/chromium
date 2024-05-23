@@ -78,9 +78,12 @@ base::FilePath ResolvePath(const std::string& path_str) {
       return base::FilePath();
     }
     std::string result_str = path_str;
-    const base::FilePath resolved = base::FilePath(result_str.replace(
-        google_drive_position, strlen(kGoogleDrivePolicyVariableName),
-        drive_path.Append("root").AsUTF8Unsafe()));
+    const base::FilePath resolved =
+        base::FilePath(
+            result_str.replace(google_drive_position,
+                               strlen(kGoogleDrivePolicyVariableName),
+                               drive_path.Append("root").AsUTF8Unsafe()))
+            .StripTrailingSeparators();
     return resolved;
   }
 
@@ -93,9 +96,11 @@ base::FilePath ResolvePath(const std::string& path_str) {
     }
 
     std::string result_str = path_str;
-    const base::FilePath resolved = base::FilePath(result_str.replace(
-        one_drive_position, strlen(kOneDrivePolicyVariableName),
-        one_drive_path.AsUTF8Unsafe()));
+    const base::FilePath resolved =
+        base::FilePath(result_str.replace(one_drive_position,
+                                          strlen(kOneDrivePolicyVariableName),
+                                          one_drive_path.AsUTF8Unsafe()))
+            .StripTrailingSeparators();
     return resolved;
   }
 
