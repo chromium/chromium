@@ -2088,7 +2088,6 @@ int TabStripModel::InsertTabAtImpl(
   WebContents* active_contents = GetActiveWebContents();
   WebContents* raw_contents = tab->contents();
   CHECK_EQ(this, tab->owning_model());
-  tab->set_pinned(pin);
   if ((add_types & ADD_INHERIT_OPENER) && active_contents) {
     if (active) {
       // Forget any existing relationships, we don't want to make things too
@@ -2107,40 +2106,7 @@ int TabStripModel::InsertTabAtImpl(
     tab->set_blocked(manager->IsDialogActive());
   }
 
-  // Force the group value to be set since we perform contiguity checks on the
-  // tab groups when rendered in views. this will not inform the observers of
-  // the group change until GroupTab called after OnTabStripModelChanged.
-  tab->set_group(group);
-
-  TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
-
-  GetContentsDataAsVector().insert(GetContentsDataAsVector().begin() + index,
-                                   std::move(tab));
-
-  selection_model_.IncrementFrom(index);
-
-  if (active) {
-    ui::ListSelectionModel new_model = selection_model_;
-    new_model.SetSelectedIndex(index);
-    selection = SetSelection(std::move(new_model),
-                             TabStripModelObserver::CHANGE_REASON_NONE,
-                             /*triggered_by_other_operation=*/true);
-  }
-
-  CHECK(empty() || selection_model_.active().has_value(),
-        base::NotFatalUntil::M124);
-
-  TabStripModelChange::Insert insert;
-  insert.contents.push_back({raw_contents, index});
-  TabStripModelChange change(std::move(insert));
-  OnChange(change, selection);
-
-  if (group_model_ && group.has_value()) {
-    // Unset the group at the index of the inserted WebContents so that the
-    // GroupTab functionality isn't skipped.
-    GetTabAtIndex(index)->set_group(std::nullopt);
-    GroupTab(index, group.value());
-  }
+  InsertTabAtIndexImpl(std::move(tab), index, group, pin, active);
 
   return index;
 }
@@ -2676,6 +2642,137 @@ void TabStripModel::MoveAndSetGroup(
 void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
   for (int index : indices)
     delegate_->AddToReadLater(GetWebContentsAt(index));
+}
+
+void TabStripModel::InsertTabAtIndexImpl(
+    std::unique_ptr<tabs::TabModel> tab_model,
+    int index,
+    std::optional<tab_groups::TabGroupId> group,
+    bool pin,
+    bool active) {
+  WebContents* web_contents = tab_model->contents();
+
+  tab_model->set_group(group);
+  tab_model->set_pinned(pin);
+
+  GetContentsDataAsVector().insert(GetContentsDataAsVector().begin() + index,
+                                   std::move(tab_model));
+
+  DCHECK(ValidateTabStripModel());
+
+  // Update selection model and send the notification.
+  TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
+  selection_model_.IncrementFrom(index);
+  if (active) {
+    ui::ListSelectionModel new_model = selection_model_;
+    new_model.SetSelectedIndex(index);
+    selection = SetSelection(std::move(new_model),
+                             TabStripModelObserver::CHANGE_REASON_NONE,
+                             /*triggered_by_other_operation=*/true);
+  }
+
+  CHECK(empty() || selection_model_.active().has_value());
+
+  TabStripModelChange::Insert insert;
+  insert.contents.push_back({web_contents, index});
+  TabStripModelChange change(std::move(insert));
+  OnChange(change, selection);
+
+  if (group_model_ && group.has_value()) {
+    TabGroupStateChanged(index, web_contents, std::nullopt, group);
+  }
+}
+
+void TabStripModel::TabGroupStateChanged(
+    int index,
+    WebContents* web_contents,
+    const std::optional<tab_groups::TabGroupId> initial_group,
+    const std::optional<tab_groups::TabGroupId> new_group) {
+  if (!group_model_) {
+    return;
+  }
+
+  if (initial_group == new_group) {
+    return;
+  }
+
+  if (initial_group.has_value()) {
+    // Send the observation
+    for (auto& observer : observers_) {
+      observer.TabGroupedStateChanged(std::nullopt, web_contents, index);
+    }
+    // Update the group model.
+    RemoveTabFromGroupModel(initial_group.value());
+  }
+
+  if (new_group.has_value()) {
+    // Send the observation
+    for (auto& observer : observers_) {
+      observer.TabGroupedStateChanged(new_group.value(), web_contents, index);
+    }
+    // Update the group model.
+    AddTabToGroupModel(new_group.value());
+  }
+}
+
+void TabStripModel::RemoveTabFromGroupModel(
+    const tab_groups::TabGroupId& group) {
+  if (!group_model_) {
+    return;
+  }
+
+  TabGroup* tab_group = group_model_->GetTabGroup(group);
+  tab_group->RemoveTab();
+
+  if (tab_group->IsEmpty()) {
+    group_model_->RemoveTabGroup(group);
+  }
+}
+
+void TabStripModel::AddTabToGroupModel(const tab_groups::TabGroupId& group) {
+  if (!group_model_) {
+    return;
+  }
+
+  TabGroup* tab_group = group_model_->GetTabGroup(group);
+  tab_group->AddTab();
+}
+
+bool TabStripModel::ValidateTabStripModel() {
+  if (empty()) {
+    return true;
+  }
+
+  // Check for pinned validity.
+  bool unpinned_found = IsTabPinned(0) ? false : true;
+  for (int i = 1; i < count(); i++) {
+    if (!unpinned_found) {
+      if (!IsTabPinned(i)) {
+        unpinned_found = true;
+      }
+    } else {
+      if (IsTabPinned(i)) {
+        return false;
+      }
+    }
+  }
+
+  // If tab groups are not supported return true.
+  if (!group_model_) {
+    return true;
+  }
+
+  for (const auto& group_id : group_model_->ListTabGroups()) {
+    gfx::Range tabs_in_group = group_model()->GetTabGroup(group_id)->ListTabs();
+    if (!tabs_in_group.is_empty()) {
+      for (size_t index = tabs_in_group.start(); index < tabs_in_group.end();
+           ++index) {
+        DCHECK(GetTabGroupForTab(index) == group_id);
+      }
+    }
+  }
+
+  return true;
 }
 
 std::optional<tab_groups::TabGroupId> TabStripModel::UngroupTab(int index) {

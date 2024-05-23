@@ -857,6 +857,32 @@ class TabStripModel : public TabGroupController {
   // index would change.
   void GroupTab(int index, const tab_groups::TabGroupId& group);
 
+  // Updates the `contents_data_` and sends out observer notifications for
+  // inserting a new tab in  the tabstrip.
+  void InsertTabAtIndexImpl(std::unique_ptr<tabs::TabModel> tab_model,
+                            int index,
+                            std::optional<tab_groups::TabGroupId> group,
+                            bool pin,
+                            bool active);
+
+  // Sends group notifications for a tab at `index` based on its initial_group
+  // and `final_group` and updates the `group_model_`.
+  void TabGroupStateChanged(
+      int index,
+      content::WebContents* web_contents,
+      const std::optional<tab_groups::TabGroupId> initial_group,
+      const std::optional<tab_groups::TabGroupId> new_group);
+
+  // Updates the `group_model` by decrementing the tab count of `group`.
+  void RemoveTabFromGroupModel(const tab_groups::TabGroupId& group);
+
+  // Updates the `group_model` by incrementing the tab count of `group`.
+  void AddTabToGroupModel(const tab_groups::TabGroupId& group);
+
+  // Checks if the `contents_data_` is in a valid order. This checks for
+  // pinned tabs placement and group contiguity.
+  bool ValidateTabStripModel();
+
   // Changes the pinned state of the tab at `index`, moving it in the process if
   // necessary. Returns the new index of the tab.
   int SetTabPinnedImpl(int index, bool pinned);
