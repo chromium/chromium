@@ -489,8 +489,8 @@ size_t SubstringSetMatcher::AhoCorasickNode::EstimateMemoryUsage() const {
   if (edges_capacity_ == 0) {
     return 0;
   } else {
-    return base::trace_event::EstimateMemoryUsage(edges_.edges,
-                                                  edges_capacity_);
+    return base::trace_event::EstimateMemoryUsage(
+        base::span<const AhoCorasickEdge>(edges_.edges, edges_capacity_));
   }
 }
 

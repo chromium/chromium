@@ -34,6 +34,7 @@
 #include "base/containers/linked_list.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
 #include "base/types/always_false.h"
@@ -115,16 +116,12 @@ template <class T, size_t N>
 size_t EstimateMemoryUsage(T (&array)[N]);
 
 template <class T>
-size_t EstimateMemoryUsage(const T* array, size_t array_length);
+size_t EstimateMemoryUsage(base::span<const T> span);
 
 // std::unique_ptr
 
 template <class T, class D>
 size_t EstimateMemoryUsage(const std::unique_ptr<T, D>& ptr);
-
-template <class T, class D>
-size_t EstimateMemoryUsage(const std::unique_ptr<T[], D>& array,
-                           size_t array_length);
 
 // std::shared_ptr
 
@@ -328,10 +325,10 @@ size_t EstimateMemoryUsage(T (&array)[N]) {
 }
 
 template <class T>
-size_t EstimateMemoryUsage(const T* array, size_t array_length) {
-  size_t memory_usage = sizeof(T) * array_length;
-  for (size_t i = 0; i != array_length; ++i) {
-    memory_usage += EstimateItemMemoryUsage(array[i]);
+size_t EstimateMemoryUsage(base::span<const T> span) {
+  size_t memory_usage = sizeof(T) * span.size();
+  for (size_t i = 0; i != span.size(); ++i) {
+    memory_usage += EstimateItemMemoryUsage(span[i]);
   }
   return memory_usage;
 }
@@ -341,12 +338,6 @@ size_t EstimateMemoryUsage(const T* array, size_t array_length) {
 template <class T, class D>
 size_t EstimateMemoryUsage(const std::unique_ptr<T, D>& ptr) {
   return ptr ? (sizeof(T) + EstimateItemMemoryUsage(*ptr)) : 0;
-}
-
-template <class T, class D>
-size_t EstimateMemoryUsage(const std::unique_ptr<T[], D>& array,
-                           size_t array_length) {
-  return EstimateMemoryUsage(array.get(), array_length);
 }
 
 // std::shared_ptr
