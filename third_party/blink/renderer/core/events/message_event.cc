@@ -343,9 +343,6 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
 
 ScriptValue MessageEvent::data(ScriptState* script_state) {
   is_data_dirty_ = false;
-
-  recordreplay::Assert("[RUN-2037-2976] MessageEvent::data %d", RecordReplayId());
-
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Value> value;
   switch (data_type_) {
@@ -363,7 +360,8 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
     case MessageEvent::kDataTypeSerializedScriptValue:
 
       if (data_as_serialized_script_value_) {
-        recordreplay::Assert("[RUN-2037-2976] MessageEvent::data #1 %zu",
+        recordreplay::Assert("[RUN-2037-2976] MessageEvent::data %d %zu",
+          RecordReplayId(),
           data_as_serialized_script_value_->Value()->DataLengthInBytes());
         // The data is put on the V8 GC heap here, and therefore the V8 GC does
         // the accounting from here on. We unregister the registered memory to

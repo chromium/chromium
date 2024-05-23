@@ -29,6 +29,7 @@ scoped_refptr<SerializedScriptValue> PostMessageHelper::SerializeMessageByMove(
     }
   }
 
+  recordreplay::AutoAssertBufferAllocations bufferAssets("TT-358-1249");
   SerializedScriptValue::SerializeOptions serialize_options;
   serialize_options.transferables = &transferables;
   scoped_refptr<SerializedScriptValue> serialized_message =
