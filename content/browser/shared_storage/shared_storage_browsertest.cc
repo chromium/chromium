@@ -1054,12 +1054,19 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
     }
   }
 
-  FrameTreeNode* CreateIFrame(FrameTreeNode* root, const GURL& url) {
+  FrameTreeNode* CreateIFrame(FrameTreeNode* root,
+                              const GURL& url,
+                              std::string sandbox_flags = "") {
     size_t initial_child_count = root->child_count();
 
-    EXPECT_TRUE(ExecJs(root,
-                       "var f = document.createElement('iframe');"
-                       "document.body.appendChild(f);"));
+    EXPECT_TRUE(ExecJs(root, JsReplace(R"(
+                          var f = document.createElement('iframe');
+                          if ($1) {
+                            f.sandbox = $1;
+                          }
+                          document.body.appendChild(f);
+                        )",
+                                       sandbox_flags)));
 
     EXPECT_EQ(initial_child_count + 1, root->child_count());
     FrameTreeNode* child_node = root->child_at(initial_child_count);
@@ -6825,6 +6832,31 @@ IN_PROC_BROWSER_TEST_F(
   )");
 
   EXPECT_EQ(get_result, "apple");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameDocumentGetBrowserTest,
+                       GetNotAllowedInSandboxedIframeInFencedFrameTree) {
+  GURL main_frame_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  GURL fenced_frame_url = https_server()->GetURL("a.test", kFencedFramePath);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(fenced_frame_url);
+
+  FrameTreeNode* nested_iframe_node =
+      CreateIFrame(fenced_frame_root_node, fenced_frame_url,
+                   /*sandbox_flags=*/"allow-scripts");
+
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node, R"(
+      window.fence.disableUntrustedNetwork();
+  )"));
+
+  EvalJsResult get_result = EvalJs(nested_iframe_node, R"(
+      sharedStorage.get('test');
+  )");
+
+  EXPECT_THAT(get_result.error,
+              testing::HasSubstr("the method on sharedStorage is not allowed "
+                                 "in an opaque origin context"));
 }
 
 IN_PROC_BROWSER_TEST_F(

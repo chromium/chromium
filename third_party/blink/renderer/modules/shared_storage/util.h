@@ -23,6 +23,9 @@ class SharedStorageRunOperationMethodOptions;
 
 static constexpr size_t kMaximumFilteringIdMaxBytes = 8;
 
+static constexpr char kOpaqueOriginCheckErrorMessage[] =
+    "the method on sharedStorage is not allowed in an opaque origin context";
+
 // Helper method to convert v8 string to WTF::String.
 bool StringFromV8(v8::Isolate* isolate,
                   v8::Local<v8::Value> val,

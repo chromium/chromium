@@ -116,6 +116,13 @@ void SharedStorageWorklet::AddModuleHelper(ScriptState* script_state,
     return;
   }
 
+  if (execution_context->GetSecurityOrigin()->IsOpaque()) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
+        kOpaqueOriginCheckErrorMessage));
+    return;
+  }
+
   KURL script_source_url = execution_context->CompleteURL(module_url);
 
   if (!CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
@@ -301,6 +308,10 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
 
     return promise;
   }
+
+  // The opaque origin should have been checked in addModule() or
+  // createWorklet() already.
+  CHECK(!execution_context->GetSecurityOrigin()->IsOpaque());
 
   if (!IsValidSharedStorageURLsArrayLength(urls.size())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
@@ -546,6 +557,10 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
 
     return promise;
   }
+
+  // The opaque origin should have been checked in addModule() or
+  // createWorklet() already.
+  CHECK(!execution_context->GetSecurityOrigin()->IsOpaque());
 
   if (!keep_alive_after_operation_) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
