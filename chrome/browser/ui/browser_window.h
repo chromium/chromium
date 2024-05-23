@@ -36,6 +36,7 @@
 #include "components/user_education/common/feature_promo_specification.h"
 #include "ui/base/base_window.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/origin.h"
@@ -662,7 +663,8 @@ class BrowserWindow : public ui::BaseWindow {
   // `feature`; the badge must be registered for the feature in
   // browser_user_education_service.cc. Call exactly once per time the surface
   // containing the badge will be shown to the user.
-  virtual bool MaybeShowNewBadgeFor(const base::Feature& feature) = 0;
+  virtual ui::IsNewFeatureAtValue MaybeShowNewBadgeFor(
+      const base::Feature& feature) = 0;
 
   // Shows an Incognito clear browsing data dialog.
   virtual void ShowIncognitoClearBrowsingDataDialog() = 0;

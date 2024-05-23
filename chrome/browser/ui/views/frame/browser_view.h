@@ -655,7 +655,8 @@ class BrowserView : public BrowserWindow,
       const base::Feature& iph_feature) override;
   void NotifyFeatureEngagementEvent(const char* event_name) override;
   void NotifyPromoFeatureUsed(const base::Feature& feature) override;
-  bool MaybeShowNewBadgeFor(const base::Feature& feature) override;
+  ui::IsNewFeatureAtValue MaybeShowNewBadgeFor(
+      const base::Feature& feature) override;
 
   void ShowIncognitoClearBrowsingDataDialog() override;
 

@@ -23,6 +23,7 @@
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_registry.h"
 #include "content/public/browser/browser_context.h"
+#include "ui/base/models/simple_menu_model.h"
 
 // Kill switch for recent session tracking. Enabled by default.
 BASE_DECLARE_FEATURE(kAllowRecentSessionTracking);
@@ -82,8 +83,9 @@ class UserEducationService : public KeyedService {
 
   // Checks if a "New" Badge should be shown for the given `context` (or
   // profile), for `feature`.
-  static bool MaybeShowNewBadge(content::BrowserContext* context,
-                                const base::Feature& feature);
+  static ui::IsNewFeatureAtValue MaybeShowNewBadge(
+      content::BrowserContext* context,
+      const base::Feature& feature);
 
   // Notifies that a feature associated with an IPH or "New" Badge was used in
   // `context` (or profile), but only if the context supports user education.

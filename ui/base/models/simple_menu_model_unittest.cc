@@ -208,8 +208,10 @@ TEST(SimpleMenuModelTest, SetIsNewFeatureAt) {
   simple_menu_model.AddItem(/*command_id*/ 5, u"menu item 0");
   simple_menu_model.AddItem(/*command_id*/ 6, u"menu item 1");
 
-  simple_menu_model.SetIsNewFeatureAt(/*index*/ 0, false);
-  simple_menu_model.SetIsNewFeatureAt(/*index*/ 1, true);
+  simple_menu_model.SetIsNewFeatureAt(
+      /*index*/ 0, IsNewFeatureAtValue::create_for_test(false));
+  simple_menu_model.SetIsNewFeatureAt(
+      /*index*/ 1, IsNewFeatureAtValue::create_for_test(true));
 
   ASSERT_FALSE(simple_menu_model.IsNewFeatureAt(0));
   ASSERT_TRUE(simple_menu_model.IsNewFeatureAt(1));

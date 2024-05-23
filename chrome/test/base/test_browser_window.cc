@@ -15,6 +15,7 @@
 #include "components/user_education/common/feature_promo_handle.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/rect.h"
@@ -408,9 +409,9 @@ void TestBrowserWindow::NotifyFeatureEngagementEvent(const char* event_name) {}
 
 void TestBrowserWindow::NotifyPromoFeatureUsed(const base::Feature& feature) {}
 
-bool TestBrowserWindow::MaybeShowNewBadgeFor(
+ui::IsNewFeatureAtValue TestBrowserWindow::MaybeShowNewBadgeFor(
     const base::Feature& new_badge_feature) {
-  return false;
+  return ui::IsNewFeatureAtValue();
 }
 
 user_education::FeaturePromoController*

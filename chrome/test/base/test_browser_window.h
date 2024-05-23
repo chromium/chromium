@@ -24,6 +24,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/models/simple_menu_model.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
@@ -259,7 +260,8 @@ class TestBrowserWindow : public BrowserWindow {
       const base::Feature& iph_feature) override;
   void NotifyFeatureEngagementEvent(const char* event_name) override;
   void NotifyPromoFeatureUsed(const base::Feature& feature) override;
-  bool MaybeShowNewBadgeFor(const base::Feature& new_badge_feature) override;
+  ui::IsNewFeatureAtValue MaybeShowNewBadgeFor(
+      const base::Feature& new_badge_feature) override;
 
   // Sets the controller returned by GetFeaturePromoController().
   // Deletes the existing one, if any.

@@ -13,13 +13,47 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 
+namespace user_education {
+class NewBadgeController;
+}
+
 namespace ui {
 
 class ButtonMenuItemModel;
+
+// Boolean-like value that determines if a menu item should be marked as
+// "new". Cannot be constructed in a truthy sate except by a fixed set of
+// classes, forcing the use of those classes (or wrappers around those classes)
+// in order to display as new. This prevents creating menu items which are
+// marked as "new" for an extended/indefinite period of time.
+class COMPONENT_EXPORT(UI_BASE) IsNewFeatureAtValue {
+ public:
+  // For other platforms, add appropriate PassKey.
+  IsNewFeatureAtValue(base::PassKey<user_education::NewBadgeController>,
+                      bool value)
+      : value_(value) {}
+  IsNewFeatureAtValue() = default;
+  IsNewFeatureAtValue(const IsNewFeatureAtValue&) = default;
+  IsNewFeatureAtValue& operator=(const IsNewFeatureAtValue&) = default;
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  /* implicit */ operator bool() const { return value_; }
+  bool operator!() const { return !value_; }
+
+  static IsNewFeatureAtValue create_for_test(bool value) {
+    IsNewFeatureAtValue result;
+    result.value_ = value;
+    return result;
+  }
+
+ private:
+  bool value_ = false;
+};
 
 // A simple MenuModel implementation with an imperative API for adding menu
 // items. This makes it easy to construct fixed menus. Menus populated by
@@ -187,7 +221,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   void SetVisibleAt(size_t index, bool visible);
 
   // Sets whether the item at |index| is new.
-  void SetIsNewFeatureAt(size_t index, bool is_new_feature);
+  void SetIsNewFeatureAt(size_t index, IsNewFeatureAtValue is_new_feature);
 
   // Sets whether the item at |index| is may have mnemonics.
   void SetMayHaveMnemonicsAt(size_t index, bool may_have_mnemonics);

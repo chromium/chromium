@@ -62,12 +62,13 @@ UserEducationService::UserEducationService(
 }
 
 // static
-bool UserEducationService::MaybeShowNewBadge(content::BrowserContext* context,
-                                             const base::Feature& feature) {
+ui::IsNewFeatureAtValue UserEducationService::MaybeShowNewBadge(
+    content::BrowserContext* context,
+    const base::Feature& feature) {
   auto* const service =
       UserEducationServiceFactory::GetForBrowserContext(context);
   if (!service || !service->new_badge_controller()) {
-    return false;
+    return ui::IsNewFeatureAtValue();
   }
 
   // For some tests, browser initialization is never done so there are no
@@ -76,7 +77,7 @@ bool UserEducationService::MaybeShowNewBadge(content::BrowserContext* context,
           user_education::features::kNewBadgeTestFeature)) {
     // Verify that this is actually a testing situation, and then fail.
     CHECK(Profile::FromBrowserContext(context)->AsTestingProfile());
-    return false;
+    return ui::IsNewFeatureAtValue();
   }
 
   return service->new_badge_controller()->MaybeShowNewBadge(feature);
