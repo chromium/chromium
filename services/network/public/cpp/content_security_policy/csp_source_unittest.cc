@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
+
+#include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
+#include "url/url_features.h"
 
 namespace network {
 
@@ -27,29 +30,47 @@ network::mojom::CSPSourcePtr CSPSource(const std::string& raw) {
       policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]->sources[0]);
 }
 
+enum class NonSpecialUrlBehavior { Compliant, NonCompliant };
+
 }  // namespace
 
-class CSPSourceTest : public testing::TestWithParam<CSPSourceContext> {
+class CSPSourceTest : public testing::TestWithParam<
+                          std::tuple<CSPSourceContext, NonSpecialUrlBehavior>> {
  public:
+  CSPSourceTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        url::kStandardCompliantNonSpecialSchemeURLParsing,
+        std::get<1>(GetParam()) == NonSpecialUrlBehavior::Compliant);
+  }
+
   bool Allow(const network::mojom::CSPSource& source,
              const GURL& url,
              const network::mojom::CSPSource& self_source = no_self,
              bool is_redirect = false,
              bool is_opaque_fenced_frame = false) {
-    return CheckCSPSource(source, url, self_source, GetParam(), is_redirect,
-                          is_opaque_fenced_frame);
+    return CheckCSPSource(source, url, self_source, std::get<0>(GetParam()),
+                          is_redirect, is_opaque_fenced_frame);
   }
 
   bool IsPermissionsPolicyContext() {
-    return GetParam() == CSPSourceContext::PermissionsPolicy;
+    return std::get<0>(GetParam()) == CSPSourceContext::PermissionsPolicy;
   }
+
+  bool UseStandardCompliantNonSpecialSchemeUrlParsing() {
+    return std::get<1>(GetParam()) == NonSpecialUrlBehavior::Compliant;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     CSPSourceTest,
-    ::testing::Values(CSPSourceContext::ContentSecurityPolicy,
-                      CSPSourceContext::PermissionsPolicy));
+    ::testing::Combine(testing::Values(CSPSourceContext::ContentSecurityPolicy,
+                                       CSPSourceContext::PermissionsPolicy),
+                       testing::Values(NonSpecialUrlBehavior::Compliant,
+                                       NonSpecialUrlBehavior::NonCompliant)));
 
 TEST_P(CSPSourceTest, BasicMatching) {
   auto source = network::mojom::CSPSource::New("http", "example.com", 8000,
@@ -673,13 +694,7 @@ TEST_P(CSPSourceTest, CustomSchemeWithHost) {
   auto csp_source = CSPSource(uri);
   auto url = GURL(uri);
 
-  // Most URI schemes do not define a host part. As a result, contrary to
-  // CSPSource, the GURL do not populate the host when the scheme is unknown.
-  // See also: https://crbug.com/1236651
-  EXPECT_EQ("", url.host());
   EXPECT_EQ("a", csp_source->host);
-
-  // ... as a result the URL doesn't match the CSPSource.
   EXPECT_FALSE(Allow(*csp_source, url));
 
   // It is still possible for developers to use a scheme-only CSPSource.

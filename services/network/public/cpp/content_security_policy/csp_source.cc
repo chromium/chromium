@@ -13,6 +13,7 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "url/url_canon.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 
 namespace network {
@@ -85,7 +86,17 @@ bool SourceAllowHost(const mojom::CSPSource& source, const std::string& host) {
 }
 
 bool SourceAllowHost(const mojom::CSPSource& source, const GURL& url) {
-  return SourceAllowHost(source, url.host());
+  // Chromium currently has an issue handling non-special URLs. The url.host()
+  // function returns an empty string for them. See
+  // crbug.com/40063064 for details.
+  //
+  // In the future, once non-special URLs are fully supported, we might consider
+  // checking the host information for them too.
+  //
+  // For now, we check `url.IsStandard()` to maintain consistent behavior
+  // regardless of the url::StandardCompliantNonSpecialSchemeURLParsing feature
+  // state.
+  return SourceAllowHost(source, url.IsStandard() ? url.host() : "");
 }
 
 PortMatchingResult SourceAllowPort(const mojom::CSPSource& source,
