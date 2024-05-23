@@ -318,12 +318,10 @@ void AutocompleteResult::Sort(
         GetMatchComparisonFields(default_match_to_preserve.value());
     const auto preserved_default_match =
         base::ranges::find_if(matches_, [&](const AutocompleteMatch& match) {
-          // Find a match that is a duplicate AND has the same fill_into_edit.
-          // Don't preserve suggestions that are not default-able; e.g.,
-          // typing 'xy' shouldn't preserve default 'xz.com/xy'.
+          // Find a duplicate match. Don't preserve suggestions that are not
+          // default-able; e.g., typing 'xy' shouldn't preserve default
+          // 'xz.com/xy'.
           return default_match_fields == GetMatchComparisonFields(match) &&
-                 default_match_to_preserve->fill_into_edit ==
-                     match.fill_into_edit &&
                  match.allowed_to_be_default_match;
         });
     if (preserved_default_match != matches_.end())
