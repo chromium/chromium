@@ -983,48 +983,47 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
     return false;
   }
 
-  // TODO(https://crbug.com/325331788): `GoToIndex()` can return a bool to
-  // signal the creation of the navigation request.
-  nav_controller->GoToIndex(index);
-
-  auto& frame_tree = nav_controller->frame_tree();
-  // TODO(https://crbug.com/325331788): This request might not be the one we
-  // started.
-  if (auto* request = frame_tree.root()->navigation_request()) {
-    // TOOD(https://crbug.com/1518341): We shouldn't animate same-doc history
-    // navigations because we don't capture the screenshots for them.
-    CHECK(!request->IsSameDocument());
-    // If the request isn't associated with a navigation entry, we shouldn't
-    // start the navigation.
+  base::WeakPtr<NavigationRequest> primary_main_frame_request =
+      nav_controller->GoToIndexAndReturnPrimaryMainFrameRequest(index);
+  if (!primary_main_frame_request) {
+    // The gesture did not start a navigation in the primary main frame.
     //
-    // TODO(https://crbug.com/325331788): Turn this early return into a CHECK.
-    if (!request->GetNavigationEntry()) {
-      return false;
-    }
-    int request_entry_id = request->GetNavigationEntry()->GetUniqueID();
-    // If the request's navigation entry ID does not match the entry ID of the
-    // screenshot of the destination, we shouldn't start the navigation.
-    //
-    // TODO(crbug.com/325331788): Turn this early return into a CHECK.
-    if (destination_entry_id_ != request_entry_id) {
-      return false;
-    }
-
-    primary_main_frame_navigation_request_id_of_gesture_nav_ =
-        request->GetNavigationId();
-    if (request->IsNavigationStarted()) {
-      navigation_state_ = NavigationState::kStarted;
-    } else {
-      CHECK(request->IsWaitingForBeforeUnload());
-      navigation_state_ = NavigationState::kBeforeUnloadDispatched;
-    }
-    return true;
+    // TODO(crbug.com/41490714): Collect subframe requests.
+    return false;
   }
-  // TOOD(https://crbug.com/1518341): Collect the requests for the same-doc
-  // navigations.
-  // TODO(crbug.com/41490714): Collect subframe requests from the
-  // subframe FrameTreeNodes.
-  return false;
+
+  if (primary_main_frame_request->IsSameDocument()) {
+    // TODO(https://crbug.com/339208674): Animate the same-doc navigations
+    // end-to-end.
+    return false;
+  }
+
+  // The resulting `NavigationRequest` must be associated with the intended
+  // `NavigationEntry`, to safely start the animation.
+  //
+  // NOTE: A `NavigationRequest` does not always have a `NavigationEntry`, since
+  // the entry can be deleted at any time (e.g., clearing history), even during
+  // a pending navigation. It's fine to CHECK the entry here because we just
+  // created the requests in the same stack. No code yet had a chance to delete
+  // the entry.
+  CHECK(primary_main_frame_request->GetNavigationEntry());
+
+  int request_entry_id =
+      primary_main_frame_request->GetNavigationEntry()->GetUniqueID();
+
+  // `destination_entry_id_` is initialized in the same stack as
+  // `GoToIndexAndReturnPrimaryMainFrameRequest()`. Thus they must equal.
+  CHECK_EQ(destination_entry_id_, request_entry_id);
+
+  primary_main_frame_navigation_request_id_of_gesture_nav_ =
+      primary_main_frame_request->GetNavigationId();
+  if (primary_main_frame_request->IsNavigationStarted()) {
+    navigation_state_ = NavigationState::kStarted;
+  } else {
+    CHECK(primary_main_frame_request->IsWaitingForBeforeUnload());
+    navigation_state_ = NavigationState::kBeforeUnloadDispatched;
+  }
+  return true;
 }
 
 cc::UIResourceId BackForwardTransitionAnimator::CreateUIResource(
