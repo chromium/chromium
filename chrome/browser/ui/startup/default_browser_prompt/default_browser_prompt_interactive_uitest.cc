@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/switches.h"
 
 #if !BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/chrome_pages.h"
@@ -161,4 +162,18 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTestWithAppMenuDuration,
       CheckView(kToolbarAppMenuButtonElementId,
                 IsAppMenuChipDefaultBrowserPromptShowing(false)),
       DoesAppMenuItemExist(true));
+}
+
+class DefaultBrowserPromptHeadlessBrowserTest
+    : public DefaultBrowserPromptInteractiveTest {
+ public:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kHeadless);
+    DefaultBrowserPromptInteractiveTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptHeadlessBrowserTest, DoesNotCrash) {
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
+  RunTestSequence(WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
