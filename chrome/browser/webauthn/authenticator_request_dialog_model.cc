@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/string_compare.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -438,6 +439,21 @@ bool HaveTouchId() {
 #endif
 }
 
+bool CanDefaultToEnclave(Profile* profile) {
+  const bool enclave_decline_limit_reached =
+      profile->GetPrefs()->GetInteger(
+          webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount) >=
+      kMaxPriorityGPMCredentialCreations;
+  // If a user has declined bootstrapping too many times then GPM will still
+  // be available in the mechanism selection screen for credential creation,
+  // but it can no longer be a priority mechanism.
+  const bool enclave_bootstrap_limit_reached =
+      profile->GetPrefs()->GetInteger(
+          webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount) >=
+      device::enclave::kMaxGPMBootstrapPrompts;
+  return !enclave_decline_limit_reached && !enclave_bootstrap_limit_reached;
+}
+
 }  // namespace
 
 #define AUTHENTICATOR_REQUEST_EVENT_0(name) \
@@ -734,8 +750,7 @@ void AuthenticatorRequestDialogController::
     }
   } else if (transport_availability_.request_type ==
                  device::FidoRequestType::kMakeCredential &&
-             hints_.transport &&
-             StartGuidedFlowForMakeCredentialFromHint(*hints_.transport)) {
+             hints_.transport && StartGuidedFlowForHint(*hints_.transport)) {
   } else if (model_->priority_mechanism_index) {
     Mechanism& mechanism =
         model_->mechanisms[*model_->priority_mechanism_index];
@@ -769,7 +784,7 @@ void AuthenticatorRequestDialogController::
     } else if (cred != nullptr || !hints_.transport.has_value() ||
                transport_availability_.request_type !=
                    device::FidoRequestType::kGetAssertion ||
-               !StartGuidedFlowForGetAssertionFromHint(*hints_.transport)) {
+               !StartGuidedFlowForHint(*hints_.transport)) {
       if (absl::holds_alternative<Mechanism::Enclave>(mechanism.type)) {
         device::enclave::RecordEvent(
             device::enclave::Event::kMakeCredentialPriorityShown);
@@ -864,120 +879,57 @@ void AuthenticatorRequestDialogController::
                                return absl::get_if<Mechanism::Credential>(
                                    &mech.type);
                              }) ||
-        !StartGuidedFlowForGetAssertionFromHint(*hints_.transport)) {
+        !StartGuidedFlowForHint(*hints_.transport)) {
       SetCurrentStep(Step::kMechanismSelection);
     }
   }
 }
 
-bool AuthenticatorRequestDialogController::
-    StartGuidedFlowForMakeCredentialFromHint(AuthenticatorTransport transport) {
-  CHECK_EQ(transport_availability_.request_type,
-           device::FidoRequestType::kMakeCredential);
+bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
+    AuthenticatorTransport transport) {
+  Profile* const profile =
+      Profile::FromBrowserContext(
+          model_->GetRenderFrameHost()->GetBrowserContext())
+          ->GetOriginalProfile();
+  const auto mechanism_is_transport = [](const Mechanism& mech,
+                                         AuthenticatorTransport transport) {
+    const auto* mech_transport = absl::get_if<Mechanism::Transport>(&mech.type);
+    return mech_transport && mech_transport->value() == transport;
+  };
 
   // The RP has given a hint about the expected transport for a create() call.
   // See https://w3c.github.io/webauthn/#enum-hints
-  switch (*hints_.transport) {
-    case AuthenticatorTransport::kUsbHumanInterfaceDevice:
-      if (transport_availability_.has_win_native_api_authenticator) {
-        StartWinNativeApi();
-      } else if (base::Contains(
-                     transport_availability_.available_transports,
-                     AuthenticatorTransport::kUsbHumanInterfaceDevice)) {
-        StartGuidedFlowForTransport(*hints_.transport);
-      } else {
-        return false;
-      }
-      break;
-    case AuthenticatorTransport::kHybrid:
-      if (WebAuthnApiSupportsHybrid()) {
-        StartWinNativeApi();
-      } else if (base::Contains(transport_availability_.available_transports,
-                                AuthenticatorTransport::kHybrid)) {
-        if (!paired_phones_.empty()) {
-          SetCurrentStep(Step::kMechanismSelection);
-        } else {
-          StartGuidedFlowForAddPhone();
+  const auto mech_it = base::ranges::find_if(
+      model_->mechanisms,
+      [mechanism_is_transport, transport, profile](const auto& mech) {
+        switch (transport) {
+          case AuthenticatorTransport::kUsbHumanInterfaceDevice:
+            return absl::get_if<Mechanism::WindowsAPI>(&mech.type) ||
+                   mechanism_is_transport(
+                       mech, AuthenticatorTransport::kUsbHumanInterfaceDevice);
+          case AuthenticatorTransport::kHybrid:
+            return (WebAuthnApiSupportsHybrid() &&
+                    absl::get_if<Mechanism::WindowsAPI>(&mech.type)) ||
+                   absl::get_if<Mechanism::AddPhone>(&mech.type);
+          case AuthenticatorTransport::kInternal:
+            return (absl::get_if<Mechanism::WindowsAPI>(&mech.type)) ||
+                   absl::get_if<Mechanism::ICloudKeychain>(&mech.type) ||
+                   (absl::get_if<Mechanism::Enclave>(&mech.type) &&
+                    CanDefaultToEnclave(profile)) ||
+                   mechanism_is_transport(mech,
+                                          AuthenticatorTransport::kInternal);
+          default:
+            NOTREACHED_NORETURN();
+            return false;
         }
-      } else {
-        return false;
-      }
-      break;
-    case AuthenticatorTransport::kInternal:
-      if (transport_availability_.has_win_native_api_authenticator) {
-        StartWinNativeApi();
-      } else if (transport_availability_.has_icloud_keychain &&
-                 should_create_in_icloud_keychain_) {
-        StartICloudKeychain();
-      } else if (base::Contains(transport_availability_.available_transports,
-                                AuthenticatorTransport::kInternal)) {
-        StartGuidedFlowForTransport(*hints_.transport);
-      } else {
-        return false;
-      }
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
-  }
-  return true;
-}
+      });
 
-bool AuthenticatorRequestDialogController::
-    StartGuidedFlowForGetAssertionFromHint(AuthenticatorTransport transport) {
-  CHECK_EQ(transport_availability_.request_type,
-           device::FidoRequestType::kGetAssertion);
-
-  // The RP has given a hint about the expected transport for a get() call.
-  // See https://w3c.github.io/webauthn/#enum-hints
-  switch (*hints_.transport) {
-    case AuthenticatorTransport::kUsbHumanInterfaceDevice:
-      if (transport_availability_.has_win_native_api_authenticator) {
-        StartWinNativeApi();
-      } else if (base::Contains(
-                     transport_availability_.available_transports,
-                     AuthenticatorTransport::kUsbHumanInterfaceDevice)) {
-        StartGuidedFlowForTransport(*hints_.transport);
-      } else {
-        return false;
-      }
-      break;
-    case AuthenticatorTransport::kHybrid:
-      if (WebAuthnApiSupportsHybrid()) {
-        StartWinNativeApi();
-      } else if (base::Contains(transport_availability_.available_transports,
-                                AuthenticatorTransport::kHybrid)) {
-        if (base::ranges::any_of(model_->mechanisms, [](const auto& mechanism) {
-              return absl::get_if<Mechanism::Phone>(&mechanism.type) != nullptr;
-            })) {
-          SetCurrentStep(Step::kMechanismSelection);
-        } else {
-          StartGuidedFlowForAddPhone();
-        }
-      } else {
-        return false;
-      }
-      return true;
-    case AuthenticatorTransport::kInternal:
-      // If we can enumerate platform credentials, and there's a match, we'll
-      // either jump to it immediately, or show an account selector.
-      if (transport_availability_.has_win_native_api_authenticator) {
-        StartWinNativeApi();
-      } else {
-        // We might not be able to enumerate iCloud Keychain because of
-        // permissions issues, but that UI is bit limiting once we have jumped
-        // to it, and people who have denied Chrome that permission are a bit of
-        // a corner case, so we'll not currently jump to iCloud Keychain based
-        // on this hint. (It's only a click away.)
-        return false;
-      }
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+  if (mech_it != model_->mechanisms.end()) {
+    mech_it->callback.Run();
+    return true;
   }
 
-  return true;
+  return false;
 }
 
 void AuthenticatorRequestDialogController::OnPhoneContactFailed(
@@ -2537,20 +2489,8 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
     Profile* profile = Profile::FromBrowserContext(
                            model_->GetRenderFrameHost()->GetBrowserContext())
                            ->GetOriginalProfile();
-    const bool enclave_decline_limit_reached =
-        profile->GetPrefs()->GetInteger(
-            webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount) >=
-        kMaxPriorityGPMCredentialCreations;
-    // If a user has declined bootstrapping too many times then GPM will still
-    // be available in the mechanism selection screen for credential creation,
-    // but it can no longer be a priority mechanism.
-    const bool enclave_bootstrap_limit_reached =
-        profile->GetPrefs()->GetInteger(
-            webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount) >=
-        device::enclave::kMaxGPMBootstrapPrompts;
     if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-        !enclave_decline_limit_reached && !enclave_bootstrap_limit_reached &&
-        enclave_enabled_ &&
+        CanDefaultToEnclave(profile) && enclave_enabled_ &&
         *transport_availability_.make_credential_attachment ==
             device::AuthenticatorAttachment::kPlatform) {
       priority_list.emplace_back(Mechanism::Enclave());

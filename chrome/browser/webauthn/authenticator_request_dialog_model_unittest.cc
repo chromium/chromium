@@ -988,9 +988,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        // create(): Hybrid hint should show QR.
        {L, mc, {usb, internal, cable}, {rk, hint_hybrid}, {},
         {add, t(internal)}, qr},
-       // Unless there are paired phones, in which case show the MSS.
+       // ... even if there are paired phones.
        {L, mc, {usb, internal, cable}, {rk, hint_hybrid}, {psync("a")}, {p("a"),
-        add, t(internal)}, mss},
+        add, t(internal)}, qr},
        // But not if Hybrid isn't a valid transport.
        {L, mc, {usb, internal}, {rk, hint_hybrid}, {}, {t(internal), t(usb)},
 #if BUILDFLAG(IS_MAC)
@@ -1040,9 +1040,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 
        // get(): Hybrid hint should show QR.
        {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {}, {add}, qr},
-       // Unless there are paired phones listed, in which case show the MSS
+       // ... even if there are paired phones.
        {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {psync("a")},
-        {p("a"), add}, mss},
+        {p("a"), add}, qr},
        // But not if hybrid isn't available.
        {L, ga, {usb, internal}, {rk, hint_hybrid}, {}, {t(usb)}, usb_ui},
        // If older webauthn.dll is present, don't jump to it since it doesn't do

@@ -1358,22 +1358,6 @@ std::u16string AuthenticatorQRSheetModel::GetSecurityKeyLabel() const {
   }
 }
 
-std::u16string AuthenticatorQRSheetModel::GetOtherMechanismButtonLabel() const {
-  // If the QR code sheet was the priority mechanism, the button taking the user
-  // to the selection sheet should read "Use a different passkey".
-  if (dialog_model()->priority_mechanism_index &&
-      absl::holds_alternative<
-          AuthenticatorRequestDialogModel::Mechanism::AddPhone>(
-          dialog_model()
-              ->mechanisms[*dialog_model()->priority_mechanism_index]
-              .type)) {
-    return AuthenticatorSheetModelBase::GetOtherMechanismButtonLabel();
-  }
-  // Otherwise, the user must have tapped a button on the selection sheet to get
-  // here. The button taking the user to the selection sheet should read "Back".
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_BACK);
-}
-
 // AuthenticatorConnectingSheetModel ------------------------------------------
 
 AuthenticatorConnectingSheetModel::AuthenticatorConnectingSheetModel(

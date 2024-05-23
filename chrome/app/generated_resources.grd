@@ -16215,9 +16215,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_QR_USE_PASSKEY_ON_SECURITY_KEY_LABEL" desc="Label on a modal dialog with a QR code. The label indicates to the user that instead of scanning the QR code with a phone, they can insert and activate a security key to sign in with a passkey instead. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
          If your passkey for <ph name="APP_NAME">$1<ex>google.com</ex></ph> is on a USB security key, insert and touch it now
       </message>
-      <message name="IDS_WEBAUTHN_BACK" desc="Label on a button on a dialog for creating or using a passkey to sign into a website. Pressing the button will take the user to the previous step.">
-         Back
-      </message>
 
       <!-- Multi source passkey picker -->
       <message name="IDS_WEBAUTHN_CHOOSE_PASSKEY_FOR_RP_TITLE" desc="The title of a dialog prompting the user to choose a passkey from a list to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">

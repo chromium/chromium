@@ -557,7 +557,6 @@ class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
   // AuthenticatorSheetModelBase:
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  std::u16string GetOtherMechanismButtonLabel() const override;
 };
 
 class AuthenticatorConnectingSheetModel : public AuthenticatorSheetModelBase {

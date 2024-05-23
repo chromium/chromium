@@ -604,9 +604,7 @@ class AuthenticatorRequestDialogController
   // Valid action when at step: kNotStarted.
   void StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
 
-  bool StartGuidedFlowForMakeCredentialFromHint(
-      AuthenticatorTransport transport);
-  bool StartGuidedFlowForGetAssertionFromHint(AuthenticatorTransport transport);
+  bool StartGuidedFlowForHint(AuthenticatorTransport transport);
 
   // Proceeds straight to the platform authenticator prompt. If `type` is
   // `nullopt` then it actives the default platform authenticator. Otherwise it
