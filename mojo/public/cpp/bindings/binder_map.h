@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/contains.h"
@@ -123,6 +124,12 @@ class BinderMapWithContext {
                                    mojo::GenericPendingReceiver&)>;
   void SetDefaultBinderDeprecated(DefaultBinder binder) {
     default_binder_ = std::move(binder);
+  }
+
+  void GetInterfacesForTesting(std::vector<std::string>& out) {
+    for (const auto& [key, _] : binders_) {
+      out.push_back(key);
+    }
   }
 
  private:

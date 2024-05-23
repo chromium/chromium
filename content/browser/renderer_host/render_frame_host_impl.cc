@@ -16839,4 +16839,9 @@ void RenderFrameHostImpl::MarkClipboardOwner(
   SetLastClipboardWrite(*this, seqno);
 }
 
+void RenderFrameHostImpl::GetBoundInterfacesForTesting(
+    std::vector<std::string>& out) {
+  broker_.GetBinderMapInterfacesForTesting(out);  // IN-TEST
+}
+
 }  // namespace content

@@ -129,6 +129,12 @@ class BinderRegistryWithArgs {
     return weak_factory_.GetWeakPtr();
   }
 
+  void GetInterfacesForTesting(std::vector<std::string>& out) {
+    for (const auto& [key, _] : binders_) {
+      out.push_back(key);
+    }
+  }
+
  private:
   using InterfaceNameToBinderMap =
       std::map<std::string, std::unique_ptr<InterfaceBinder<BinderArgs...>>>;

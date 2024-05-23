@@ -25,7 +25,34 @@ if (fuzzing_engine_supports_custom_main) {
   }
 }
 
-if (!is_android) {
+# As for now, we cannot compile this fuzzer when `dcheck_always_on=true`,
+# because InProcessFuzzer aren't running properly. See crbug.com/40949031.
+# Relatedly, we are also checking for `fuzzing_engine_supports_custom_main`
+# because this is a necessary condition to most of the in_process_fuzzer
+# dependencies, which we are heavily relying upon here.
+if (!is_android && !dcheck_always_on && fuzzing_engine_supports_custom_main) {
+  executable("ipc_interfaces_dumper") {
+    testonly = true
+    sources = [
+      # We include those files so that we take into consideration the exact
+      # same setup as in_process_fuzzer, including the runtime flags. This is
+      # important because this can have an effect on which interfaces are
+      # being exposed.
+      "../in_process_fuzzer.cc",
+      "../in_process_fuzzer.h",
+      "ipc_fuzzing/ipc_interfaces_dumper.cc",
+    ]
+    deps = [
+      "//chrome/test:chrome_test_launcher",
+      "//chrome/test:test_support",
+      "//chrome/test/fuzzing:in_process_fuzzer_buildflags",
+      "//content/test:test_support",
+
+      # This is so that in_process_fuzzer internals work, but
+      # `ipc_interfaces_dumper` is not recognized as an actual fuzzer.
+      "//testing/libfuzzer:fuzzing_engine_no_main_core",
+    ]
+  }
   action("renderer_in_process_mojolpm_fuzzer_generator") {
     testonly = true
     script = "//chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/generate_testcase.py"

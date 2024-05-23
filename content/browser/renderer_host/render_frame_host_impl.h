@@ -3053,6 +3053,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   base::Uuid GetBaseAuctionNonce() const { return base_auction_nonce_; }
 
+  void GetBoundInterfacesForTesting(std::vector<std::string>& out);
+
+  void GetBoundAssociatedInterfacesForTesting(std::vector<std::string>& out) {
+    associated_registry_->GetInterfacesForTesting(out);
+  }
+
  protected:
   friend class RenderFrameHostFactory;
 

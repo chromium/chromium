@@ -1155,6 +1155,10 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
 
+  void GetInterfacesForTesting(std::vector<std::string>& out) {
+    binders_->GetInterfacesForTesting(out);  // IN-TEST
+  }
+
  private:
   // mojom::ChildProcessHost implementation:
   void Ping(PingCallback callback) override { std::move(callback).Run(); }
@@ -5673,5 +5677,12 @@ void RenderProcessHostImpl::NotifyMemoryPressureToRenderer(
 }
 
 #endif
+
+void RenderProcessHostImpl::GetBoundInterfacesForTesting(
+    std::vector<std::string>& out) {
+  io_thread_host_impl_->AsyncCall(&IOThreadHostImpl::GetInterfacesForTesting)
+      .WithArgs(std::ref(out));
+  io_thread_host_impl_->FlushPostedTasksForTesting();  // IN-TEST
+}
 
 }  // namespace content
