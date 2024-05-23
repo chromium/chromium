@@ -3089,6 +3089,12 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     }
   }
 
+  // Check whether serializations are needed, or whether we are just here to
+  // update as part of a tree snapshot.
+  if (!ax_mode_.has_mode(ui::AXMode::kWebContents)) {
+    return;
+  }
+
   // Serialize the current tree changes unless not enough time has passed, or
   // another serialization is already in flight.
   if (IsSerializationInFlight()) {
@@ -3145,8 +3151,7 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
   CHECK(HasDirtyObjects());
   CHECK(!IsSerializationInFlight());
   DCHECK(!ax_mode_.is_mode_off());
-  // TODO(accessibility) This is not always true, but it should be.
-  // CHECK(ax_mode_.has_mode(ui::AXMode::kWebContents));
+  CHECK(ax_mode_.has_mode(ui::AXMode::kWebContents));
 
   if (!GetDocument().GetFrame()) {
     return false;

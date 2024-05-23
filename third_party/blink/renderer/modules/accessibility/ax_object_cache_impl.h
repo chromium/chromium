@@ -506,6 +506,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // called, it will only retrieve objects that have changed since now.
   void SerializeLocationChanges();
 
+  // This method is used to fulfill AXTreeSnapshotter requests.
   bool SerializeEntireTree(
       size_t max_node_count,
       base::TimeDelta timeout,
