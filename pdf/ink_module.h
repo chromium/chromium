@@ -64,9 +64,20 @@ class InkModule {
   const PdfInkBrush* GetPdfInkBrushForTesting() const;
 
  private:
+  // Returns whether the event was handled or not.
   bool OnMouseDown(const blink::WebMouseEvent& event);
   bool OnMouseUp(const blink::WebMouseEvent& event);
   bool OnMouseMove(const blink::WebMouseEvent& event);
+
+  // Return values have the same semantics as OnMouse()* above.
+  bool StartInkStroke(const gfx::PointF& position);
+  bool ContinueInkStroke(const gfx::PointF& position);
+  bool FinishInkStroke();
+
+  // Return values have the same semantics as OnMouse*() above.
+  bool StartEraseInkStroke(const gfx::PointF& position);
+  bool ContinueEraseInkStroke(const gfx::PointF& position);
+  bool FinishEraseInkStroke();
 
   void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationModeMessage(const base::Value::Dict& message);

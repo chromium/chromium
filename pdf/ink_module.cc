@@ -129,21 +129,10 @@ bool InkModule::OnMouseDown(const blink::WebMouseEvent& event) {
     return false;
   }
 
-  // TODO(crbug.com/335517471): Adjust `point` if needed.
-  gfx::PointF point = normalized_event.PositionInWidget();
-  if (client_->VisiblePageIndexFromPoint(point) < 0) {
-    // Do not draw when not on a page.
-    return false;
-  }
-
-  CHECK(!ink_start_time_.has_value());
-  ink_start_time_ = base::Time::Now();
-  ink_inputs_.push_back({
-      .position_x = point.x(),
-      .position_y = point.y(),
-      .elapsed_time_seconds = 0,
-  });
-  return true;
+  // TODO(crbug.com/335517471): Adjust `position` if needed.
+  gfx::PointF position = normalized_event.PositionInWidget();
+  return pdf_ink_brush_ ? StartInkStroke(position)
+                        : StartEraseInkStroke(position);
 }
 
 bool InkModule::OnMouseUp(const blink::WebMouseEvent& event) {
@@ -153,6 +142,52 @@ bool InkModule::OnMouseUp(const blink::WebMouseEvent& event) {
     return false;
   }
 
+  return pdf_ink_brush_ ? FinishInkStroke() : FinishEraseInkStroke();
+}
+
+bool InkModule::OnMouseMove(const blink::WebMouseEvent& event) {
+  CHECK(enabled());
+
+  // TODO(crbug.com/335517471): Adjust `position` if needed.
+  gfx::PointF position = event.PositionInWidget();
+  return pdf_ink_brush_ ? ContinueInkStroke(position)
+                        : ContinueEraseInkStroke(position);
+}
+
+bool InkModule::StartInkStroke(const gfx::PointF& position) {
+  if (client_->VisiblePageIndexFromPoint(position) < 0) {
+    // Do not draw when not on a page.
+    return false;
+  }
+
+  CHECK(!ink_start_time_.has_value());
+  ink_start_time_ = base::Time::Now();
+  ink_inputs_.push_back({
+      .position_x = position.x(),
+      .position_y = position.y(),
+      .elapsed_time_seconds = 0,
+  });
+  return true;
+}
+
+bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
+  if (!ink_start_time_.has_value()) {
+    // Ignore when not drawing.
+    return false;
+  }
+
+  base::TimeDelta time_diff = base::Time::Now() - ink_start_time_.value();
+  ink_inputs_.push_back({
+      .position_x = position.x(),
+      .position_y = position.y(),
+      .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
+  });
+
+  // TODO(crbug.com/335517471): Invalidate the appropriate rect here.
+  return true;
+}
+
+bool InkModule::FinishInkStroke() {
   if (!ink_start_time_.has_value()) {
     // Ignore when not drawing.
     return false;
@@ -162,30 +197,23 @@ bool InkModule::OnMouseUp(const blink::WebMouseEvent& event) {
 
   // Reset input fields.
   ink_inputs_.clear();
-
   ink_start_time_ = std::nullopt;
   return true;
 }
 
-bool InkModule::OnMouseMove(const blink::WebMouseEvent& event) {
-  CHECK(enabled());
+bool InkModule::StartEraseInkStroke(const gfx::PointF& position) {
+  // TODO(crbug.com/335524381): Implement.
+  return false;
+}
 
-  if (!ink_start_time_.has_value()) {
-    // Ignore when not drawing.
-    return false;
-  }
+bool InkModule::ContinueEraseInkStroke(const gfx::PointF& position) {
+  // TODO(crbug.com/335524381): Implement.
+  return false;
+}
 
-  // TODO(crbug.com/335517471): Adjust `point` if needed.
-  gfx::PointF point = event.PositionInWidget();
-  base::TimeDelta time_diff = base::Time::Now() - ink_start_time_.value();
-  ink_inputs_.push_back({
-      .position_x = point.x(),
-      .position_y = point.y(),
-      .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
-  });
-
-  // TODO(crbug.com/335517471): Invalidate the appropriate rect here.
-  return true;
+bool InkModule::FinishEraseInkStroke() {
+  // TODO(crbug.com/335524381): Implement.
+  return false;
 }
 
 void InkModule::HandleSetAnnotationBrushMessage(
