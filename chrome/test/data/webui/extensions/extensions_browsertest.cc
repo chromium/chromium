@@ -291,6 +291,16 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, SafetyCheckWarning) {
   RunTestCase("SafetyCheckWarning");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       Mv2DeprecationMessageWarning_Disabled) {
+  RunTestCase("Mv2DeprecationMessageWarning_Disabled");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       MvDeprecationMessageWarning_Enabled) {
+  RunTestCase("Mv2DeprecationMessageWarning_Enabled");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, PinnedToToolbar) {
   RunTestCase("PinnedToToolbar");
 }
