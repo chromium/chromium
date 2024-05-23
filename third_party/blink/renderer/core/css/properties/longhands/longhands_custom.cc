@@ -3996,7 +3996,7 @@ cssvalue::CSSFontVariationValue* ConsumeFontVariationTag(
   // Feature tag name consists of 4-letter characters.
   static const wtf_size_t kTagNameLength = 4;
 
-  const CSSParserToken& token = stream.ConsumeIncludingWhitespace();
+  const CSSParserToken& token = stream.Peek();
   // Feature tag name comes first
   if (token.GetType() != kStringToken) {
     return nullptr;
@@ -4005,6 +4005,7 @@ cssvalue::CSSFontVariationValue* ConsumeFontVariationTag(
     return nullptr;
   }
   AtomicString tag = token.Value().ToAtomicString();
+  stream.ConsumeIncludingWhitespace();
   for (wtf_size_t i = 0; i < kTagNameLength; ++i) {
     // Limits the range of characters to 0x20-0x7E, following the tag name
     // rules defined in the OpenType specification.
