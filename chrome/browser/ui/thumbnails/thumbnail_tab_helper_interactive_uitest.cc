@@ -198,8 +198,14 @@ class ThumbnailTabHelperUpdatedInteractiveTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/40883117): Failing on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_TabLoadTriggersScreenshot DISABLED_TabLoadTriggersScreenshot
+#else
+#define MAYBE_TabLoadTriggersScreenshot TabLoadTriggersScreenshot
+#endif
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
-                       TabLoadTriggersScreenshot) {
+                       MAYBE_TabLoadTriggersScreenshot) {
   RunTestSequence(
       Do([this]() {
         ui_test_utils::NavigateToURLWithDisposition(
