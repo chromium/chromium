@@ -60,6 +60,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/core/common/features.h"
@@ -337,8 +338,8 @@ RealtimeReportingClient::InitBrowserReportingClient(
 std::pair<std::string, policy::CloudPolicyClient*>
 RealtimeReportingClient::InitProfileReportingClient(
     const std::string& dm_token) {
-  policy::UserCloudPolicyManager* policy_manager =
-      Profile::FromBrowserContext(context_)->GetUserCloudPolicyManager();
+  policy::CloudPolicyManager* policy_manager =
+      Profile::FromBrowserContext(context_)->GetCloudPolicyManager();
   if (!policy_manager || !policy_manager->core() ||
       !policy_manager->core()->client()) {
     return {kProfilePolicyClientDescription, nullptr};
@@ -500,8 +501,18 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
 }
 
 std::string RealtimeReportingClient::GetProfileUserName() const {
-  return identity_manager_ ? safe_browsing::GetProfileEmail(identity_manager_)
-                           : std::string();
+  std::string username = identity_manager_
+                             ? safe_browsing::GetProfileEmail(identity_manager_)
+                             : std::string();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (username.empty()) {
+    username = Profile::FromBrowserContext(context_)->GetPrefs()->GetString(
+        enterprise_signin::prefs::kProfileUserEmail);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  return username;
 }
 
 std::string RealtimeReportingClient::GetProfileIdentifier() const {

@@ -51,12 +51,16 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #endif
 
 using testing::_;
 
 namespace enterprise_connectors {
+
+namespace {
 
 std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
     content::BrowserContext* context) {
@@ -173,6 +177,27 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
 #endif
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class RealtimeReportingClientOidcTest : public RealtimeReportingClientTestBase {
+ public:
+  RealtimeReportingClientOidcTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        profile_management::features::kOidcAuthProfileManagement);
+  }
+
+  void SetUp() override {
+    RealtimeReportingClientTestBase::SetUp();
+    profile_->GetPrefs()->SetString(enterprise_signin::prefs::kProfileUserEmail,
+                                    "oidc@user.email");
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+}  // namespace
+
 TEST_P(RealtimeReportingClientIsRealtimeReportingEnabledTest,
        ShouldInitRealtimeReportingClient) {
   EXPECT_EQ(should_init(),
@@ -283,6 +308,14 @@ TEST_F(RealtimeReportingClientTestBase,
   AddCrowdstrikeSignalsToEvent(event, response);
   EXPECT_EQ(event.Find("securityAgents"), nullptr);
 }
+
+TEST_F(RealtimeReportingClientOidcTest, Username) {
+  RealtimeReportingClient client(profile_);
+  ASSERT_EQ(client.GetProfileUserName(), "oidc@user.email");
+}
+
+// TODO(b/342232001): Add more tests for the `RealtimeReportingClientOidcTest`
+// fixture to cover key use cases.
 
 #endif
 }  // namespace enterprise_connectors
