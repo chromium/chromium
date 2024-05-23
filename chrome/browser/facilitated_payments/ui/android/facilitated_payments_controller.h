@@ -30,10 +30,15 @@ class FacilitatedPaymentsController {
           payments::facilitated::FacilitatedPaymentsBottomSheetBridge> view,
       content::WebContents* web_contents);
 
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+
  private:
   // View that displays the surface, owned by `this`.
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
       view_;
+  // The corresponding Java FacilitatedPaymentsControllerBridge. This bridge is
+  // used to delegate user actions from Java to native.
+  base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
 #endif  // CHROME_BROWSER_FACILITATED_PAYMENTS_UI_ANDROID_FACILITATED_PAYMENTS_PAYMENT_METHODS_CONTROLLER_H_

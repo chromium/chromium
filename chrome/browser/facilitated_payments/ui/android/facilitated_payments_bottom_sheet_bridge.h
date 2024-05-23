@@ -10,6 +10,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "ui/android/window_android.h"
 
+class FacilitatedPaymentsController;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -29,9 +31,16 @@ class FacilitatedPaymentsBottomSheetBridge {
 
   virtual ~FacilitatedPaymentsBottomSheetBridge();
 
-  virtual bool RequestShowContent(content::WebContents* web_contents);
+  // Request show the content of PIX bottom sheet.
+  // Return true if a new bottom sheet is created and shown. Otherwise, return
+  // false.
+  virtual bool RequestShowContent(FacilitatedPaymentsController* controller,
+                                  content::WebContents* web_contents);
 
  private:
+  // The corresponding Java FacilitatedPaymentsPaymentMethodsViewBridge. This
+  // bridge is used to pass info and commands from native side to Java side for
+  // showing UI prompts.
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 };
 

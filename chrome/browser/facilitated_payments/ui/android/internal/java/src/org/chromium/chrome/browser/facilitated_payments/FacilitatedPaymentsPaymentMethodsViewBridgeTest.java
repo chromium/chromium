@@ -44,6 +44,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Mock private WebContents mWebContents;
     @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
 
     private FacilitatedPaymentsPaymentMethodsViewBridge mViewBridge;
     private WindowAndroid mWindow;
@@ -54,7 +55,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         Context mApplicationContext = ApplicationProvider.getApplicationContext();
         mWindow = new WindowAndroid(mApplicationContext);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        mViewBridge = FacilitatedPaymentsPaymentMethodsViewBridge.create(mWindow);
+        mViewBridge = FacilitatedPaymentsPaymentMethodsViewBridge.create(mDelegateMock, mWindow);
     }
 
     @After

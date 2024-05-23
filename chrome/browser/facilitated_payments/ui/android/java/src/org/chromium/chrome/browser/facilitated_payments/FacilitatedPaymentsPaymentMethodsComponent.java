@@ -17,7 +17,8 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
     interface Delegate {}
 
     /** Initializes the component. */
-    void initialize(Context context, BottomSheetController bottomSheetController);
+    void initialize(
+            Context context, BottomSheetController bottomSheetController, Delegate delegate);
 
     /** Displays a new bottom sheet. */
     void showSheet(BankAccount[] bankAccounts);

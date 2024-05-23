@@ -4,21 +4,40 @@
 
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 
+#include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments::facilitated {
 namespace {
 
-using FacilitatedPaymentsBottomSheetBridgeTest =
-    ChromeRenderViewHostTestHarness;
+// TODO(b/337180783): Add the test for success when the flow is completed.
+class FacilitatedPaymentsBottomSheetBridgeTest
+    : public ChromeRenderViewHostTestHarness {
+ protected:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    // Create a scoped window so that
+    // WebContents::GetNativeView()->GetWindowAndroid() does not return null.
+    window_ = ui::WindowAndroid::CreateForTesting();
+    window_.get()->get()->AddChild(web_contents()->GetNativeView());
+  }
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
+};
 
 TEST_F(FacilitatedPaymentsBottomSheetBridgeTest, RequestShowContent) {
   FacilitatedPaymentsBottomSheetBridge bridge;
 
-  bool did_show = bridge.RequestShowContent(web_contents());
+  FacilitatedPaymentsController controller;
 
+  bool did_show = bridge.RequestShowContent(&controller, web_contents());
+
+  // A Java BottomSheetController can't be initialized from the native side. So
+  // no bottom sheet is shown.
   EXPECT_FALSE(did_show);
 }
 

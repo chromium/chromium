@@ -18,6 +18,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties;
 import org.chromium.components.autofill.payments.AccountType;
@@ -33,10 +34,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 class FacilitatedPaymentsPaymentMethodsMediator {
     private Context mContext;
     private PropertyModel mModel;
+    private Delegate mDelegate;
 
-    void initialize(Context context, PropertyModel model) {
+    void initialize(Context context, PropertyModel model, Delegate delegate) {
         mContext = context;
         mModel = model;
+        mDelegate = delegate;
     }
 
     void showSheet(BankAccount[] bankAccounts) {

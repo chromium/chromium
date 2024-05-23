@@ -6,7 +6,10 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni") {
-  sources = [ "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsControllerBridge.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBridge.java",
+  ]
 }
 
 android_library("java") {
@@ -14,6 +17,7 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/facilitated_payments/BankAccountViewBinder.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsControllerBridge.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsCoordinator.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsMediator.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsProperties.java",
@@ -26,6 +30,7 @@ android_library("java") {
 
   deps = [
     ":java_resources",
+    "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/facilitated_payments/ui/android:public_java",
     "//chrome/browser/touch_to_fill/common/android:java",

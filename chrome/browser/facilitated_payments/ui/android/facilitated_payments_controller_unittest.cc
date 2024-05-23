@@ -11,6 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::Return;
 
 namespace {
@@ -18,12 +19,17 @@ namespace {
 class MockFacilitatedPaymentsBottomSheetBridge
     : public payments::facilitated::FacilitatedPaymentsBottomSheetBridge {
  public:
-  MockFacilitatedPaymentsBottomSheetBridge() = default;
+  // The showResult parameter here stands for the expected result we can get
+  // from FacilitatedPaymentsBottomSheetBridge::RequestShowContent.
+  explicit MockFacilitatedPaymentsBottomSheetBridge(bool showResult) {
+    ON_CALL(*this, RequestShowContent(_, _)).WillByDefault(Return(showResult));
+  }
   ~MockFacilitatedPaymentsBottomSheetBridge() override = default;
 
   MOCK_METHOD(bool,
               RequestShowContent,
-              (content::WebContents * web_contents),
+              (FacilitatedPaymentsController * controller,
+               content::WebContents* web_contents),
               (override));
 };
 
@@ -37,7 +43,6 @@ class FacilitatedPaymentsControllerTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    mock_view_ = std::make_unique<MockFacilitatedPaymentsBottomSheetBridge>();
   }
 
   void TearDown() override {
@@ -49,8 +54,27 @@ class FacilitatedPaymentsControllerTest
   FacilitatedPaymentsController controller_;
 };
 
+// Test FacilitatedPaymentsController::Show
 TEST_F(FacilitatedPaymentsControllerTest, Show) {
-  EXPECT_CALL(*mock_view_, RequestShowContent(::testing::_));
+  mock_view_ = std::make_unique<MockFacilitatedPaymentsBottomSheetBridge>(
+      /*showResult=*/true);
 
-  controller_.Show(std::move(mock_view_), web_contents());
+  EXPECT_CALL(*mock_view_, RequestShowContent(&controller_, _));
+
+  // The first call should return true when no bottom sheet is shown yet.
+  EXPECT_TRUE(controller_.Show(std::move(mock_view_), web_contents()));
+  // The second call should return false because the bottom sheet is already
+  // shown after the first call.
+  EXPECT_FALSE(controller_.Show(std::move(mock_view_), web_contents()));
+}
+
+// Test FacilitatedPaymentsController::NotShow
+TEST_F(FacilitatedPaymentsControllerTest, NotShow) {
+  mock_view_ = std::make_unique<MockFacilitatedPaymentsBottomSheetBridge>(
+      /*showResult=*/false);
+
+  EXPECT_CALL(*mock_view_, RequestShowContent(&controller_, _));
+
+  // The  call should return false when bridge fails to show a bottom sheet.
+  EXPECT_FALSE(controller_.Show(std::move(mock_view_), web_contents()));
 }

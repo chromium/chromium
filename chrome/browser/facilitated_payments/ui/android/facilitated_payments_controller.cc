@@ -6,6 +6,9 @@
 
 #include <memory>
 
+#include "base/android/jni_android.h"
+#include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
+
 FacilitatedPaymentsController::FacilitatedPaymentsController() = default;
 FacilitatedPaymentsController::~FacilitatedPaymentsController() = default;
 
@@ -18,10 +21,22 @@ bool FacilitatedPaymentsController::Show(
     return false;
   }
 
-  if (!view->RequestShowContent(web_contents)) {
+  if (!view->RequestShowContent(this, web_contents)) {
+    java_object_.Reset();
     return false;
   }
 
   view_ = std::move(view);
   return true;
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+FacilitatedPaymentsController::GetJavaObject() {
+  if (!java_object_) {
+    java_object_ = payments::facilitated::
+        Java_FacilitatedPaymentsPaymentMethodsControllerBridge_create(
+            base::android::AttachCurrentThread(),
+            reinterpret_cast<intptr_t>(this));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(java_object_);
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsViewBridge_jni.h"
 #include "content/public/browser/web_contents.h"
 
@@ -17,9 +18,10 @@ FacilitatedPaymentsBottomSheetBridge::~FacilitatedPaymentsBottomSheetBridge() =
     default;
 
 bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
+    FacilitatedPaymentsController* controller,
     content::WebContents* web_contents) {
-  if (!web_contents) {
-    return false;
+  if (java_bridge_) {
+    return false;  // Already shown.
   }
 
   if (!web_contents->GetNativeView() ||
@@ -27,10 +29,18 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
     return false;  // No window attached (yet or anymore).
   }
 
+  DCHECK(controller);
+  base::android::ScopedJavaLocalRef<jobject> java_controller =
+      controller->GetJavaObject();
+  if (!java_controller) {
+    return false;
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
 
   java_bridge_.Reset(Java_FacilitatedPaymentsPaymentMethodsViewBridge_create(
-      env, web_contents->GetTopLevelNativeWindow()->GetJavaObject()));
+      env, java_controller,
+      web_contents->GetTopLevelNativeWindow()->GetJavaObject()));
   if (!java_bridge_) {
     return false;
   }

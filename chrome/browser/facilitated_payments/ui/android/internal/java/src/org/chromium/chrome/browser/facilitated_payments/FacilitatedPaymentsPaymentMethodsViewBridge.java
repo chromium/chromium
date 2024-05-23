@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.PaymentInstrument;
@@ -29,15 +30,15 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     private final FacilitatedPaymentsPaymentMethodsComponent mComponent;
 
     private FacilitatedPaymentsPaymentMethodsViewBridge(
-            Context context, BottomSheetController bottomSheetController) {
+            Context context, BottomSheetController bottomSheetController, Delegate delegate) {
         mComponent = new FacilitatedPaymentsPaymentMethodsCoordinator();
-        mComponent.initialize(context, bottomSheetController);
+        mComponent.initialize(context, bottomSheetController, delegate);
     }
 
     @CalledByNative
     @VisibleForTesting
     static @Nullable FacilitatedPaymentsPaymentMethodsViewBridge create(
-            WindowAndroid windowAndroid) {
+            Delegate delegate, WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
 
         Context context = windowAndroid.getContext().get();
@@ -47,7 +48,8 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return null;
 
-        return new FacilitatedPaymentsPaymentMethodsViewBridge(context, bottomSheetController);
+        return new FacilitatedPaymentsPaymentMethodsViewBridge(
+                context, bottomSheetController, delegate);
     }
 
     /**
