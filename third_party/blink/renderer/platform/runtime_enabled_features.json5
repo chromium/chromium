@@ -692,7 +692,7 @@
     },
     {
       name: "ConcurrentViewTransitionsSPA",
-      status: "test",
+      status: "stable",
     },
     {
       name: "ContactsManager",
