@@ -55,7 +55,9 @@ void InitContentsBorderWidget(content::WebContents* web_contents) {
   }
 
   views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   views::Widget* frame = browser_view->contents_web_view()->GetWidget();
   params.parent = frame->GetNativeView();

@@ -71,7 +71,9 @@ class DevToolsAttachWaiter : public content::DevToolsAgentHostObserver {
 
 views::UniqueWidgetPtr CreateTestTopLevelWidget() {
   views::UniqueWidgetPtr widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(params));
   widget->widget_delegate()->SetCanActivate(true);
   return widget;

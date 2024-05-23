@@ -232,9 +232,10 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
 
   views::Widget* widget = new views::Widget;
 
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.delegate = this;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.remove_standard_frame = true;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;

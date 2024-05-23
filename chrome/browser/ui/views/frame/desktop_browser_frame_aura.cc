@@ -69,7 +69,8 @@ void DesktopBrowserFrameAura::InitNativeWidget(
 // DesktopBrowserFrameAura, NativeBrowserFrame implementation:
 
 views::Widget::InitParams DesktopBrowserFrameAura::GetWidgetParams() {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.native_widget = this;
   return params;
 }

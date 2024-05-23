@@ -136,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
 #endif
   // Create a parent widget.
   Widget* widget = new views::Widget;
-  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
   params.bounds = {0, 0, 200, 200};
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
   params.native_widget = CreateNativeWidget(

@@ -108,7 +108,8 @@ class ProfilePickerWidget : public views::Widget {
  public:
   explicit ProfilePickerWidget(ProfilePickerView* profile_picker_view)
       : profile_picker_view_(profile_picker_view) {
-    views::Widget::InitParams params;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
     params.delegate = profile_picker_view_;
     Init(std::move(params));
   }

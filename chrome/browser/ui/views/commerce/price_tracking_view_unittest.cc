@@ -45,10 +45,9 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
 
     anchor_widget_ = std::make_unique<ChromeTestWidget>();
     views::Widget::InitParams widget_params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     widget_params.context = GetContext();
-    widget_params.ownership =
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     anchor_widget_->Init(std::move(widget_params));
   }
 

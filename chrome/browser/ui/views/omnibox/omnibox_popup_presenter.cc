@@ -55,7 +55,9 @@ void OmniboxPopupPresenter::Show() {
     widget_ = new ThemeCopyingWidget(location_bar_view_->GetWidget());
 
     views::Widget* parent_widget = location_bar_view_->GetWidget();
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
 #if BUILDFLAG(IS_WIN)
     // On Windows use the software compositor to ensure that we don't block
     // the UI thread during command buffer creation. See http://crbug.com/125248

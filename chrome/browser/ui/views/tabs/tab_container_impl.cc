@@ -1110,7 +1110,9 @@ TabContainerImpl::DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
                                        views::Widget* context)
     : index_(index), point_down_(point_down) {
   arrow_window_ = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.accept_events = false;

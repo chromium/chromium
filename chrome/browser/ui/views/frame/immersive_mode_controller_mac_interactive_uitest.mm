@@ -71,12 +71,13 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
     NSUInteger starting_child_window_count =
         browser_window().childWindows.count;
 
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(100, 100, 200, 200);
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     params.parent = browser_view->GetWidget()->GetNativeView();
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.z_order = ui::ZOrderLevel::kNormal;
 
     params.delegate = new views::WidgetDelegateView();

@@ -30,6 +30,7 @@ EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
     base::WeakPtr<Delegate> delegate,
     SkColor color) {
   views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   auto permission_prompt_delegate = delegate->GetPermissionPromptDelegate();
   CHECK(permission_prompt_delegate);

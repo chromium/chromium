@@ -117,11 +117,12 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameTest, ChildWidgetsReceiveThemeUpdates) {
 
   // Create a child popup Widget for the BrowserFrame.
   const auto child_widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.shadow_elevation = 1;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.bounds = {0, 0, 200, 200};
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = browser_view->GetWidget()->GetNativeView();
   params.child = true;
   // TODO(https://crbug.com/329271186): Theme updates do not propagate to bubble

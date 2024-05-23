@@ -429,7 +429,8 @@ void BrowserFrameMac::EnabledStateChangedForCommand(int id, bool enabled) {
 // BrowserFrameMac, NativeBrowserFrame implementation:
 
 views::Widget::InitParams BrowserFrameMac::GetWidgetParams() {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.native_widget = this;
   return params;
 }

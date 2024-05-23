@@ -128,9 +128,8 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   std::unique_ptr<views::Widget> OpenChildDialog(const gfx::Size& size) {
     views::Widget::InitParams init_params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW);
-    init_params.ownership =
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     init_params.child = true;
     init_params.parent = pip_frame_view_->GetWidget()->GetNativeWindow();
 

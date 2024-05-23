@@ -122,8 +122,8 @@ void SaveAddressProfileViewTest::CreateViewAndShow(
     std::unique_ptr<MockSaveAddressBubbleController> controller) {
   // The bubble needs the parent as an anchor.
   views::Widget::InitParams params =
-      CreateParams(views::Widget::InitParams::TYPE_WINDOW);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW);
 
   anchor_widget_ = std::make_unique<views::Widget>();
   anchor_widget_->Init(std::move(params));

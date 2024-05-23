@@ -51,8 +51,8 @@ class TabStripScrollContainerTest : public ChromeViewsTestBase {
 TEST_F(TabStripScrollContainerTest, AnchoredWidgetHidesOnScroll) {
   // set up the child widget
   views::Widget::InitParams params =
-      CreateParams(views::Widget::InitParams::TYPE_BUBBLE);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   views::Widget::InitParams::TYPE_BUBBLE);
   params.bounds = gfx::Rect(0, 0, 400, 400);
   params.delegate = new views::BubbleDialogDelegate(
       tab_strip_, views::BubbleBorder::Arrow::LEFT_TOP);

@@ -46,9 +46,9 @@ class TranslateIconViewTest : public InProcessBrowserTest {
   std::unique_ptr<views::Widget> CreateTestWidget() {
     auto widget = std::make_unique<views::Widget>();
 
-    views::Widget::InitParams params;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    params.type = views::Widget::InitParams::TYPE_WINDOW;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
     widget->Init(std::move(params));
     // TODO(https://crbug.com/329235190): The bubble child of a widget that is
     // invisible will not be mapped through wayland and hence never shown so

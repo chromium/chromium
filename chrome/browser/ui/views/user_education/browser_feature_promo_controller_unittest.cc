@@ -640,10 +640,10 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowsBubbleAnyContext) {
   // Create a second widget with an element with the target identifier.
   auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.context = browser_view()->GetWidget()->GetNativeWindow();
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget->Init(std::move(params));
   widget->SetContentsView(std::make_unique<views::View>())
       ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
@@ -727,10 +727,10 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowsBubbleWithFilterAnyContext) {
   // Create a second widget with an element with the target identifier.
   auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.context = browser_view()->GetWidget()->GetNativeWindow();
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget->Init(std::move(params));
   widget->SetContentsView(std::make_unique<views::View>())
       ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);

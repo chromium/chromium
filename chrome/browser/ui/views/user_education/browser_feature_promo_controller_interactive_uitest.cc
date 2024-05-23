@@ -330,10 +330,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerActivationUiTest,
       WithView(kBrowserViewElementId,
                [&widget](BrowserView* browser_view) {
                  views::Widget::InitParams params(
+                     views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
                      views::Widget::InitParams::TYPE_WINDOW);
                  params.context = browser_view->GetWidget()->GetNativeWindow();
-                 params.ownership =
-                     views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
                  params.bounds = gfx::Rect(0, 0, 200, 200);
                  widget->Init(std::move(params));
 

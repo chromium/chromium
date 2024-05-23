@@ -177,7 +177,8 @@ bool BrowserFrameAsh::HandleKeyboardEvent(
 }
 
 views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.native_widget = this;
   params.context = ash::Shell::GetPrimaryRootWindow();
 

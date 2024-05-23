@@ -50,7 +50,9 @@ class OmniboxPopupViewViews::AutocompletePopupWidget final
   ~AutocompletePopupWidget() override {}
 
   void InitOmniboxPopup(views::Widget* parent_widget) {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
 #if BUILDFLAG(IS_WIN)
     // On Windows use the software compositor to ensure that we don't block
     // the UI thread during command buffer creation. We can revert this change

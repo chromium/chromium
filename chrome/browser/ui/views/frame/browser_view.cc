@@ -3941,8 +3941,9 @@ views::View* BrowserView::CreateMacOverlayView() {
   DCHECK(UsesImmersiveFullscreenMode());
 
   auto create_overlay_widget = [this](views::Widget* parent) -> views::Widget* {
-    views::Widget::InitParams params;
-    params.type = views::Widget::InitParams::TYPE_POPUP;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
     params.child = true;
     params.parent = parent->GetNativeView();
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;

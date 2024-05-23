@@ -50,8 +50,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
  protected:
   void CreateAccountSelectionBubble(bool exclude_title, bool exclude_iframe) {
     views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+        CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW);
 
     anchor_widget_ = std::make_unique<views::Widget>();
     anchor_widget_->Init(std::move(params));

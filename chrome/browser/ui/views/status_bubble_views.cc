@@ -711,10 +711,15 @@ void StatusBubbleViews::InitPopup() {
     popup_ = std::make_unique<views::Widget>();
 
 #if BUILDFLAG(IS_MAC)
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_TOOLTIP);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_TOOLTIP);
 #else
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
 #endif
+
 #if BUILDFLAG(IS_WIN)
     // On Windows use the software compositor to ensure that we don't block
     // the UI thread blocking issue during command buffer creation. We can
@@ -723,7 +728,6 @@ void StatusBubbleViews::InitPopup() {
 #endif
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.accept_events = false;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     views::Widget* frame = base_view_->GetWidget();
     params.parent = frame->GetNativeView();
     params.context = frame->GetNativeWindow();

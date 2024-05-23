@@ -291,8 +291,9 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
   overlay_window->CalculateAndUpdateWindowBounds();
   overlay_window->SetUpViews();
 
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   // Just to have any non-empty bounds as required by Init(). The window is
   // resized to fit the video that is embedded right afterwards, anyway.
   params.bounds = gfx::Rect(overlay_window->GetMinimumSize());

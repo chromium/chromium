@@ -94,7 +94,8 @@ class MediaViewControllerBaseTestParameterized
   void InitializeWidget() {
     widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams init_params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+        CreateParams(views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     widget_->Init(std::move(init_params));
     widget_->Show();
     widget_->SetContentsView(std::move(media_view_));
