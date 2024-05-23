@@ -76,6 +76,21 @@ public class FakeBookmarkModel extends BookmarkModel {
         return addFolder(parent, title, /* isManaged= */ true);
     }
 
+    /** Adds a partner bookmark to the partner bookmark folder. */
+    public BookmarkId addPartnerBookmarkItem(String title, GURL url) {
+        BookmarkId id = new BookmarkId(mNextNodeId++, BookmarkType.PARTNER);
+        return addBookmarkItem(
+                id,
+                getPartnerFolderId(),
+                title,
+                url,
+                /* isFolder= */ false,
+                /* isEditable= */ false,
+                /* isManaged= */ false,
+                /* read= */ false,
+                /* isAccountBookmark= */ false);
+    }
+
     public void setAreAccountBookmarkFoldersActive(boolean active) {
         mAreAccountBookmarkFoldersActive = active;
     }
@@ -580,12 +595,12 @@ public class FakeBookmarkModel extends BookmarkModel {
 
         @Override
         public void startGroupingUndos(long nativeBookmarkBridge) {
-            assert false : "Not implemented!";
+            // No-op
         }
 
         @Override
         public void endGroupingUndos(long nativeBookmarkBridge) {
-            assert false : "Not implemented!";
+            // No-op
         }
 
         @Override

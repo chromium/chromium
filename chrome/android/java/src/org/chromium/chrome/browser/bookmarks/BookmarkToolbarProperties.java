@@ -19,11 +19,9 @@ import java.util.function.Function;
  */
 class BookmarkToolbarProperties {
     /** Dependencies */
-    static final WritableObjectPropertyKey<BookmarkModel> BOOKMARK_MODEL =
-            new WritableObjectPropertyKey<>();
-
     static final WritableObjectPropertyKey<BookmarkOpener> BOOKMARK_OPENER =
             new WritableObjectPropertyKey<>();
+
     static final WritableObjectPropertyKey<SelectionDelegate> SELECTION_DELEGATE =
             new WritableObjectPropertyKey<>();
 
@@ -54,6 +52,18 @@ class BookmarkToolbarProperties {
             new WritableBooleanPropertyKey();
     static final WritableIntPropertyKey CHECKED_SORT_MENU_ID = new WritableIntPropertyKey();
     static final WritableIntPropertyKey CHECKED_VIEW_MENU_ID = new WritableIntPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_EDIT =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_MOVE =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_MARK_READ =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_MARK_UNREAD =
+            new WritableBooleanPropertyKey();
 
     static final WritableObjectPropertyKey<Boolean> FAKE_SELECTION_STATE_CHANGE =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
@@ -66,7 +76,6 @@ class BookmarkToolbarProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
-        BOOKMARK_MODEL,
         BOOKMARK_OPENER,
         SELECTION_DELEGATE,
         TITLE,
@@ -85,6 +94,12 @@ class BookmarkToolbarProperties {
         CHECKED_VIEW_MENU_ID,
         MENU_ID_CLICKED_FUNCTION,
         NAVIGATE_BACK_RUNNABLE,
-        FAKE_SELECTION_STATE_CHANGE
+        FAKE_SELECTION_STATE_CHANGE,
+        SELECTION_MODE_SHOW_EDIT,
+        SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+        SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+        SELECTION_MODE_SHOW_MOVE,
+        SELECTION_MODE_SHOW_MARK_READ,
+        SELECTION_MODE_SHOW_MARK_UNREAD
     };
 }

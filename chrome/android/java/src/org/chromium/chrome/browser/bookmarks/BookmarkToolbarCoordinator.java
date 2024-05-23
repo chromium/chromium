@@ -27,7 +27,7 @@ public class BookmarkToolbarCoordinator {
     BookmarkToolbarCoordinator(
             Context context,
             SelectableListLayout<BookmarkId> selectableListLayout,
-            SelectionDelegate selectionDelegate,
+            SelectionDelegate<BookmarkId> selectionDelegate,
             SearchDelegate searchDelegate,
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
             boolean isDialogUi,
@@ -52,7 +52,6 @@ public class BookmarkToolbarCoordinator {
                 searchDelegate, R.string.bookmark_toolbar_search, R.id.search_menu_id);
 
         mModel = new PropertyModel.Builder(BookmarkToolbarProperties.ALL_KEYS).build();
-        mModel.set(BookmarkToolbarProperties.BOOKMARK_MODEL, bookmarkModel);
         mModel.set(BookmarkToolbarProperties.BOOKMARK_OPENER, bookmarkOpener);
         mModel.set(BookmarkToolbarProperties.SELECTION_DELEGATE, selectionDelegate);
         mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING);

@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.annotation.IdRes;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -37,6 +38,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
@@ -78,7 +80,9 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                     R.id.selection_mode_move_menu_id,
                     R.id.selection_mode_delete_menu_id,
                     R.id.selection_open_in_new_tab_id,
-                    R.id.selection_open_in_incognito_tab_id);
+                    R.id.selection_open_in_incognito_tab_id,
+                    R.id.reading_list_mark_as_read_id,
+                    R.id.reading_list_mark_as_unread_id);
     private static final BookmarkId BOOKMARK_ID_ROOT = new BookmarkId(0, BookmarkType.NORMAL);
     private static final BookmarkId BOOKMARK_ID_FOLDER = new BookmarkId(1, BookmarkType.NORMAL);
     private static final BookmarkId BOOKMARK_ID_ONE = new BookmarkId(2, BookmarkType.NORMAL);
@@ -209,7 +213,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         mBookmarkToolbar.initializeSearchView(
                 mSearchDelegate, R.string.bookmark_toolbar_search, R.id.search_menu_id);
         mBookmarkToolbar.setSortMenuIds(BookmarkToolbarMediator.SORT_MENU_IDS);
-        mBookmarkToolbar.setBookmarkModel(mBookmarkModel);
         mBookmarkToolbar.setBookmarkOpener(mBookmarkOpener);
         mBookmarkToolbar.setSelectionDelegate(mSelectionDelegate);
         mBookmarkToolbar.setBookmarkUiMode(BookmarkUiMode.FOLDER);
@@ -238,17 +241,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                         0,
                         false);
         when(mBookmarkModel.getBookmarkById(bookmarkId)).thenReturn(bookmarkItem);
-    }
-
-    /**
-     * {@link SelectionDelegate} has two accessors to get the currently selected {@link BookmarkId}
-     * objects. Instead of each test case trying to set mocks for the specific calls that are
-     * invoked, this helper sets up both every time.
-     */
-    private void setCurrentSelection(BookmarkId... bookmarkIdArray) {
-        List<BookmarkId> bookmarkIdList = Arrays.asList(bookmarkIdArray);
-        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(bookmarkIdList);
-        when(mSelectionDelegate.getSelectedItems()).thenReturn(new HashSet<>(bookmarkIdList));
     }
 
     private void verifySelectionMenuVisibility(int... hiddenMenuIds) {
@@ -310,135 +302,88 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         assertNull(menuItem);
     }
 
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnSelectionStateChange_nullBookmarkModel() {
+    private void verifySelectionModeMenuItem(
+            Callback<Boolean> visibilityFunction, @IdRes int menuId) {
         initializeNormal();
-        mBookmarkToolbar.setBookmarkModel(null);
-        setCurrentSelection(BOOKMARK_ID_ONE);
-
-        verifySelectionMenuVisibility(
-                R.id.selection_mode_edit_menu_id,
-                R.id.selection_mode_move_menu_id,
-                R.id.selection_mode_delete_menu_id,
-                R.id.selection_open_in_new_tab_id,
-                R.id.selection_open_in_incognito_tab_id);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnSelectionStateChange_nullBookmarkDelegate() {
-        mBookmarkToolbar.initialize(
-                mSelectionDelegate,
-                0,
-                R.id.normal_menu_group,
-                R.id.selection_mode_menu_group,
-                false);
-        mBookmarkToolbar.initializeSearchView(
-                mSearchDelegate, R.string.bookmark_toolbar_search, R.id.search_menu_id);
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
         mBookmarkToolbar.onSelectionStateChange(Collections.singletonList(BOOKMARK_ID_ONE));
 
-        verifySelectionMenuVisibility(
-                R.id.selection_mode_edit_menu_id,
-                R.id.selection_mode_move_menu_id,
-                R.id.selection_mode_delete_menu_id,
-                R.id.selection_open_in_new_tab_id,
-                R.id.selection_open_in_incognito_tab_id);
-    }
+        Set<Integer> mutableMenuItems = new HashSet<>(SELECTION_MENU_IDS);
+        assertTrue(
+                "Delete should have existed.",
+                mutableMenuItems.remove(R.id.selection_mode_delete_menu_id));
 
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnSelectionStateChange_selectionNotEnabled() {
-        initializeNormal();
-        mBookmarkToolbar.onSelectionStateChange(Collections.emptyList());
+        // Initially, all mutable items should be hidden.
+        verifySelectionMenuVisibility(Ints.toArray(mutableMenuItems));
 
-        verifySelectionMenuVisibility(
-                R.id.selection_mode_edit_menu_id,
-                R.id.selection_mode_move_menu_id,
-                R.id.selection_mode_delete_menu_id,
-                R.id.selection_open_in_new_tab_id,
-                R.id.selection_open_in_incognito_tab_id);
-    }
+        // Trigger the new menu item to show.
+        visibilityFunction.onResult(true);
 
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnSelectionStateChange_multiple() {
-        initializeNormal();
-        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        // Ensure the new item is showing.
+        Set<Integer> expectedMeunuItems = new HashSet<>(mutableMenuItems);
+        assertTrue(expectedMeunuItems.remove(menuId));
+        verifySelectionMenuVisibility(Ints.toArray(expectedMeunuItems));
 
-        mBookmarkToolbar.onSelectionStateChange(Arrays.asList(BOOKMARK_ID_ONE, BOOKMARK_ID_TWO));
-        verifySelectionMenuVisibility(R.id.selection_mode_edit_menu_id);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnSelectionStateChange_incognitoDisabled() {
-        IncognitoUtils.setEnabledForTesting(false);
-        initializeNormal();
-        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
-
+        // Ensure a subsequent selection event keeps the item visible.
         mBookmarkToolbar.onSelectionStateChange(Collections.singletonList(BOOKMARK_ID_ONE));
-        verifySelectionMenuVisibility(R.id.selection_open_in_incognito_tab_id);
-    }
+        verifySelectionMenuVisibility(Ints.toArray(expectedMeunuItems));
 
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnSelectionStateChange_folder() {
-        initializeNormal();
-        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        // Trigger the new menu item to hide.
+        visibilityFunction.onResult(false);
+        verifySelectionMenuVisibility(Ints.toArray(mutableMenuItems));
 
-        mBookmarkToolbar.onSelectionStateChange(Collections.singletonList(BOOKMARK_ID_FOLDER));
-        verifySelectionMenuVisibility(
-                R.id.selection_open_in_new_tab_id, R.id.selection_open_in_incognito_tab_id);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnSelectionStateChange_partner() {
-        initializeNormal();
-        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
-
-        mBookmarkToolbar.onSelectionStateChange(Collections.singletonList(BOOKMARK_ID_PARTNER));
-        verifySelectionMenuVisibility(R.id.selection_mode_move_menu_id);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnSelectionStateChange_readingList() {
-        initializeNormal();
-        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
-
-        mBookmarkToolbar.onSelectionStateChange(
-                Collections.singletonList(BOOKMARK_ID_READING_LIST));
-        verifySelectionMenuVisibility();
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnSelectionStateChange_selectedThenNot() {
-        initializeNormal();
-
-        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        // Ensure a subsequent selection event keeps the item hidden.
         mBookmarkToolbar.onSelectionStateChange(Collections.singletonList(BOOKMARK_ID_ONE));
-        verifySelectionMenuVisibility();
+        verifySelectionMenuVisibility(Ints.toArray(mutableMenuItems));
+    }
 
-        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
-        mBookmarkToolbar.onSelectionStateChange(Collections.emptyList());
-        verifySelectionMenuVisibility(
-                R.id.selection_mode_edit_menu_id,
-                R.id.selection_mode_move_menu_id,
-                R.id.selection_mode_delete_menu_id,
-                R.id.selection_open_in_new_tab_id,
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSelectionShowEdit() {
+        verifySelectionModeMenuItem(
+                mBookmarkToolbar::setSelectionShowEdit, R.id.selection_mode_edit_menu_id);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSelectionShowOpenInNewTab() {
+        verifySelectionModeMenuItem(
+                mBookmarkToolbar::setSelectionShowOpenInNewTab, R.id.selection_open_in_new_tab_id);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSelectionShowOpenInIncognitoTab() {
+        verifySelectionModeMenuItem(
+                mBookmarkToolbar::setSelectionShowOpenInIncognito,
                 R.id.selection_open_in_incognito_tab_id);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSelectionShowMove() {
+        verifySelectionModeMenuItem(
+                mBookmarkToolbar::setSelectionShowMove, R.id.selection_mode_move_menu_id);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSelectionShowMarkRead() {
+        verifySelectionModeMenuItem(
+                mBookmarkToolbar::setSelectionShowMarkRead, R.id.reading_list_mark_as_read_id);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSelectionShowMarkUnread() {
+        verifySelectionModeMenuItem(
+                mBookmarkToolbar::setSelectionShowMarkUnread, R.id.reading_list_mark_as_unread_id);
     }
 
     @Test
@@ -478,7 +423,14 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
 
         when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
         mBookmarkToolbar.onSelectionStateChange(Collections.singletonList(BOOKMARK_ID_ONE));
-        verifySelectionMenuVisibility();
+
+        verifySelectionMenuVisibility(
+                R.id.selection_mode_edit_menu_id,
+                R.id.selection_mode_move_menu_id,
+                R.id.selection_open_in_new_tab_id,
+                R.id.selection_open_in_incognito_tab_id,
+                R.id.reading_list_mark_as_read_id,
+                R.id.reading_list_mark_as_unread_id);
 
         when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
         mBookmarkToolbar.onSelectionStateChange(Collections.emptyList());
