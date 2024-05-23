@@ -82,6 +82,9 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Tests are batched, so reset the pref, otherwise the notice only shows once.
+                    // Additionally, if ReplaceSyncPromosWithSigninPromos is enabled,
+                    // addTestAccountThenSignin() sets the pref to true (to avoid showing the notice
+                    // to new signed-in users in production). So this call undoes that.
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .clearPref(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN);
                 });

@@ -54,6 +54,8 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
 
   // IdentityManager::Observer overrides.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;

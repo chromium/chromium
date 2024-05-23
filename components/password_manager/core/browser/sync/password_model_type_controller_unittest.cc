@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -17,6 +18,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/service/configure_context.h"
@@ -35,6 +37,8 @@ class PasswordModelTypeControllerTest : public ::testing::Test {
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kAccountStorageNoticeShown, false);
 #endif
 
     auto full_sync_delegate =
@@ -58,6 +62,11 @@ class PasswordModelTypeControllerTest : public ::testing::Test {
 
   syncer::MockModelTypeControllerDelegate* transport_only_delegate() {
     return transport_only_delegate_;
+  }
+
+  void SignIn() {
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "foo@gmail.com", signin::ConsentLevel::kSignin);
   }
 
  private:
@@ -104,6 +113,29 @@ TEST_F(PasswordModelTypeControllerTest,
   context.reason = syncer::CONFIGURE_REASON_RECONFIGURATION;
   context.configuration_start_time = base::Time::Now();
   controller()->LoadModels(context, base::DoNothing());
+}
+
+TEST_F(PasswordModelTypeControllerTest,
+       SetNoticePrefOnSigninIfSyncToSigninEnabled) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
+
+  SignIn();
+
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
+}
+
+TEST_F(PasswordModelTypeControllerTest,
+       DoNotSetNoticePrefOnSigninIfSyncToSigninDisabled) {
+  base::test::ScopedFeatureList disable_sync_to_signin;
+  disable_sync_to_signin.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
+
+  SignIn();
+
+  EXPECT_FALSE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

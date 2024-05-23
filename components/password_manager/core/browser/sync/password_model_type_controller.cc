@@ -12,7 +12,10 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -57,6 +60,27 @@ void PasswordModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                        StopCallback callback) {
   DCHECK(CalledOnValidThread());
   ModelTypeController::Stop(fate, std::move(callback));
+}
+
+void PasswordModelTypeController::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+#if BUILDFLAG(IS_ANDROID)
+  const bool did_signin =
+      event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kSet;
+  if (did_signin && base::FeatureList::IsEnabled(
+                        syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // If the flag is enabled, the transparency notice should not be shown to
+    // newly signed-in users (the assumption being that the sign-in UIs are
+    // transparent enough). Set the pref to true to prevent it from showing.
+    // Arguably this isn't the ideal object to house this call, since it's not
+    // related to the notice. But it has the right cardinality, access to all
+    // required dependencies (IdentityManager and PrefService), and is an object
+    // related to both passwords and identity. So good enough, especially given
+    // the code is temporary.
+    pref_service_->SetBoolean(prefs::kAccountStorageNoticeShown, true);
+  }
+#endif
 }
 
 void PasswordModelTypeController::OnAccountsInCookieUpdated(
