@@ -18,7 +18,7 @@ PlatformAuthPolicyObserver::PlatformAuthPolicyObserver(
     PrefService* local_state) {
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
-      prefs::kCloudApAuthEnabled,
+      GetPrefName(),
       base::BindRepeating(&PlatformAuthPolicyObserver::OnPrefChanged,
                           base::Unretained(this)));
   // Initialize `PlatformAuthProviderManager` using the current policy value.
@@ -28,14 +28,31 @@ PlatformAuthPolicyObserver::PlatformAuthPolicyObserver(
 // static
 void PlatformAuthPolicyObserver::RegisterPrefs(
     PrefRegistrySimple* pref_registry) {
-  pref_registry->RegisterIntegerPref(prefs::kCloudApAuthEnabled, 0);
+#if BUILDFLAG(IS_WIN)
+  pref_registry->RegisterIntegerPref(GetPrefName(), 0);
+#elif BUILDFLAG(IS_MAC)
+  pref_registry->RegisterIntegerPref(GetPrefName(), 1);
+#else
+#error Unsupported platform
+#endif
+}
+
+// static
+const char* PlatformAuthPolicyObserver::GetPrefName() {
+#if BUILDFLAG(IS_WIN)
+  return prefs::kCloudApAuthEnabled;
+#elif BUILDFLAG(IS_MAC)
+  return prefs::kExtensibleEnterpriseSSOEnabled;
+#else
+#error Unsupported platform
+#endif
 }
 
 void PlatformAuthPolicyObserver::OnPrefChanged() {
   // 0 == Disabled
   // 1 == Enabled
-  const bool enabled = pref_change_registrar_.prefs()->GetInteger(
-                           prefs::kCloudApAuthEnabled) != 0;
+  const bool enabled =
+      pref_change_registrar_.prefs()->GetInteger(GetPrefName()) != 0;
   enterprise_auth::PlatformAuthProviderManager::GetInstance().SetEnabled(
       enabled, base::OnceClosure());
 }

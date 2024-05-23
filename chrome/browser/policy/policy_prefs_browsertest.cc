@@ -79,14 +79,7 @@ size_t GetNumChunks() {
 
 typedef PlatformBrowserTest PolicyPrefsTestCoverageTest;
 
-// TODO(crbug.com/341097718): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AllPoliciesHaveATestCase DISABLED_AllPoliciesHaveATestCase
-#else
-#define MAYBE_AllPoliciesHaveATestCase AllPoliciesHaveATestCase
-#endif
-IN_PROC_BROWSER_TEST_F(PolicyPrefsTestCoverageTest,
-                       MAYBE_AllPoliciesHaveATestCase) {
+IN_PROC_BROWSER_TEST_F(PolicyPrefsTestCoverageTest, AllPoliciesHaveATestCase) {
   VerifyAllPoliciesHaveATestCase(GetTestCaseDir());
 }
 

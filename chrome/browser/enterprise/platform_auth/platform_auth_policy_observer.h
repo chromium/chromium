@@ -19,6 +19,7 @@ class PlatformAuthPolicyObserver {
   PlatformAuthPolicyObserver& operator=(const PlatformAuthPolicyObserver&) =
       delete;
 
+  static const char* GetPrefName();
   static void RegisterPrefs(PrefRegistrySimple* pref_registry);
 
  private:
