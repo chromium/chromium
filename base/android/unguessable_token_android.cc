@@ -6,6 +6,7 @@
 
 #include "build/robolectric_buildflags.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #if BUILDFLAG(IS_ROBOLECTRIC)
 #include "base/base_robolectric_jni/TokenBase_jni.h"  // nogncheck
 #include "base/base_robolectric_jni/UnguessableToken_jni.h"  // nogncheck
@@ -14,44 +15,6 @@
 #include "base/base_jni/UnguessableToken_jni.h"
 #endif
 
-namespace jni_zero {
-template <>
-BASE_EXPORT base::UnguessableToken FromJniType<base::UnguessableToken>(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_object) {
-  return base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
-      env, j_object);
-}
-
-template <>
-BASE_EXPORT std::optional<base::UnguessableToken>
-FromJniType<std::optional<base::UnguessableToken>>(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_object) {
-  if (!j_object) {
-    return std::nullopt;
-  }
-  return base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
-      env, j_object);
-}
-
-template <>
-BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniType<base::UnguessableToken>(
-    JNIEnv* env,
-    const base::UnguessableToken& token) {
-  return base::android::UnguessableTokenAndroid::Create(env, token);
-}
-template <>
-BASE_EXPORT ScopedJavaLocalRef<jobject>
-ToJniType<std::optional<base::UnguessableToken>>(
-    JNIEnv* env,
-    const std::optional<base::UnguessableToken>& token) {
-  if (!token) {
-    return nullptr;
-  }
-  return base::android::UnguessableTokenAndroid::Create(env, token.value());
-}
-}  // namespace jni_zero
 
 namespace base {
 namespace android {

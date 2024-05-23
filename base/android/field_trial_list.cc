@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <jni.h>
-
 #include <map>
 #include <string>
 
-#include "base/base_jni/FieldTrialList_jni.h"
+#include "base/android/jni_string.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_jni/FieldTrialList_jni.h"
 
 namespace {
 

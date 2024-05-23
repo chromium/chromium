@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -16,6 +15,8 @@
 #include "base/strings/string_util.h"
 #include "url/android/parsed_android.h"
 #include "url/third_party/mozilla/url_parse.h"
+//
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "url/url_jni_headers/GURL_jni.h"
 
 using jni_zero::AttachCurrentThread;
@@ -23,36 +24,8 @@ using jni_zero::JavaParamRef;
 using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
 
-namespace jni_zero {
-
-// Convert from java GURL.java pointer to native GURL object.
-template <>
-COMPONENT_EXPORT(URL)
-GURL FromJniType<GURL>(JNIEnv* env, const JavaRef<jobject>& j_gurl) {
-  return url::GURLAndroid::ToNativeGURL(env, j_gurl);
-}
-
-// Convert from native GURL object to a GURL.java object pointer.
-template <>
-COMPONENT_EXPORT(URL)
-ScopedJavaLocalRef<jobject> ToJniType<GURL>(JNIEnv* env, const GURL& gurl) {
-  return url::GURLAndroid::FromNativeGURL(env, gurl);
-}
-
-// Enables vector<const GURL*> to avoid copies.
-template <>
-COMPONENT_EXPORT(URL)
-ScopedJavaLocalRef<jobject> ToJniType<const GURL*>(JNIEnv* env,
-                                                   const GURL* const& gurl) {
-  if (!gurl) {
-    return nullptr;
-  }
-  return url::GURLAndroid::FromNativeGURL(env, *gurl);
-}
-}  // namespace jni_zero
 
 namespace url {
-
 namespace {
 
 static void InitFromGURL(JNIEnv* env,

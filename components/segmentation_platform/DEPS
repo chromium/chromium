@@ -10,6 +10,7 @@ include_rules = [
   "+services/metrics/public",
   "+services/network/public/cpp/shared_url_loader_factory.h",
   "+sql",
+  "+third_party/jni_zero",
   "+third_party/perfetto",
   "+third_party/tflite",
   "+third_party/tflite_support",

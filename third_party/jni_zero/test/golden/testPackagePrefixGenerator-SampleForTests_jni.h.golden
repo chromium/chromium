@@ -38,13 +38,6 @@ inline jclass this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerSt
 }
 #endif
 
-// Forward declare used conversion functions to avoid a compiler warning that
-// triggers if a conversion specialization exists within the including .cc file.
-namespace jni_zero {
-template<> jni_zero::ScopedJavaLocalRef<jobject> ToJniType<const char*>(JNIEnv*, const char* const&);
-template<> jni_zero::tests::CPPClass* FromJniType<jni_zero::tests::CPPClass*>(JNIEnv*, const JavaRef<jobject>&);
-template<> std::string FromJniType<std::string>(JNIEnv*, const JavaRef<jobject>&);
-}  // namespace jni_zero
 namespace jni_zero {
 namespace tests {
 // Java to native functions
@@ -66,7 +59,7 @@ JNI_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_th
     jlong nativeCPPClass,
     jobject caller,
     jbyteArray bytes) {
-  std::vector<uint8_t> bytes_converted = jni_zero::ConvertArray<std::vector<uint8_t>>::FromJniType(
+  std::vector<uint8_t> bytes_converted = jni_zero::FromJniArray<std::vector<uint8_t>>(
       env,
       jni_zero::JavaParamRef<jbyteArray>(env, static_cast<jbyteArray>(bytes)));
   reinterpret_cast<CPPClass*>(nativeCPPClass)->Destroy(
@@ -177,13 +170,13 @@ JNI_BOUNDARY_EXPORT jlong Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_t
     jbyteArray bytes,
     jobject convertedType,
     jobjectArray nonConvertedArray) {
-  jni_zero::ByteArrayView bytes_converted = jni_zero::ConvertArray<jni_zero::ByteArrayView>::FromJniType(
+  jni_zero::ByteArrayView bytes_converted = jni_zero::FromJniArray<jni_zero::ByteArrayView>(
       env,
       jni_zero::JavaParamRef<jbyteArray>(env, static_cast<jbyteArray>(bytes)));
   jni_zero::tests::CPPClass* convertedType_converted = jni_zero::FromJniType<jni_zero::tests::CPPClass*>(
       env,
       jni_zero::JavaParamRef<jobject>(env, convertedType));
-  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> nonConvertedArray_converted = jni_zero::ConvertArray<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>::FromJniType(
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> nonConvertedArray_converted = jni_zero::FromJniArray<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>(
       env,
       jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(nonConvertedArray)));
   auto _ret = JNI_SampleForTests_Init(
@@ -212,7 +205,7 @@ JNI_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_th
     jlong nativeCPPClass,
     jobject caller,
     jobjectArray strings) {
-  std::vector<std::string> strings_converted = jni_zero::ConvertArray<std::vector<std::string>>::FromJniType(
+  std::vector<std::string> strings_converted = jni_zero::FromJniArray<std::vector<std::string>>(
       env,
       jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(strings)));
   auto _ret = reinterpret_cast<CPPClass*>(nativeCPPClass)->Method(
@@ -338,11 +331,11 @@ static std::string Java_SampleForTests_getFirstString(
       "getFirstString",
       "([Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
       &cached_method_id);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_array = jni_zero::ConvertArray<std::vector<const char*>>::ToJniType(
+  jni_zero::ScopedJavaLocalRef<jobject> converted_array = jni_zero::ToJniArray(
       env,
       array,
       jni_zero::g_string_class);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_finalArg = jni_zero::ToJniType<const char*>(
+  jni_zero::ScopedJavaLocalRef<jobject> converted_finalArg = jni_zero::ToJniType(
       env,
       finalArg);
   auto _ret = env->CallObjectMethod(
@@ -486,7 +479,7 @@ static std::vector<int32_t> Java_SampleForTests_jniTypesAndAnnotations(
       "(I[IIJ)[I",
       &cached_method_id);
   jint converted_foo = static_cast<jint>(foo);
-  jni_zero::ScopedJavaLocalRef<jobject> converted_bar = jni_zero::ConvertArray<std::vector<int32_t>>::ToJniType(
+  jni_zero::ScopedJavaLocalRef<jobject> converted_bar = jni_zero::ToJniArray(
       env,
       bar);
   jlong converted_bat = static_cast<jlong>(bat);
@@ -497,7 +490,7 @@ static std::vector<int32_t> Java_SampleForTests_jniTypesAndAnnotations(
       converted_bar.obj(),
       as_jint(baz),
       converted_bat);
-  return jni_zero::ConvertArray<std::vector<int32_t>>::FromJniType(
+  return jni_zero::FromJniArray<std::vector<int32_t>>(
       env,
       jni_zero::ScopedJavaLocalRef<jintArray>(env, static_cast<jintArray>(_ret)));
 }

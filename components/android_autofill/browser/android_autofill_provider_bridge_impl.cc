@@ -13,9 +13,11 @@
 #include "base/memory/raw_ref.h"
 #include "components/android_autofill/browser/android_autofill_provider.h"
 #include "components/android_autofill/browser/form_data_android.h"
-#include "components/android_autofill/browser/jni_headers/AutofillProvider_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/android_autofill/browser/jni_headers/AutofillProvider_jni.h"
 
 namespace autofill {
 

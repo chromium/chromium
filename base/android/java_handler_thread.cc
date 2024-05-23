@@ -4,11 +4,8 @@
 
 #include "base/android/java_handler_thread.h"
 
-#include <jni.h>
-
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni/JavaHandlerThread_jni.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
@@ -18,6 +15,9 @@
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_restrictions.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_jni/JavaHandlerThread_jni.h"
 
 using base::android::AttachCurrentThread;
 

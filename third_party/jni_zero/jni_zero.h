@@ -25,6 +25,11 @@
 #define JNI_BOUNDARY_EXPORT extern "C" __attribute__((visibility("default")))
 #endif
 
+#if defined(__cpp_concepts) && __cpp_concepts >= 201907L
+#define JNI_ZERO_ENABLE_TYPE_CONVERSIONS 1
+#else
+#define JNI_ZERO_ENABLE_TYPE_CONVERSIONS 0
+#endif
 
 // Wrapper used to receive int when calling Java from native.
 // The wrapper disallows automatic conversion of long to int.
@@ -711,196 +716,69 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jclass> GetClass(
     JNIEnv* env,
     const char* class_name);
 
-// Primary templates for non-Array conversion fuctions. Embedding application
-// can specialize these functions for their own custom types in order to use
-// custom types in @JniType.
-template <typename T>
-T FromJniType(JNIEnv*, const JavaRef<jobject>&);
+#if JNI_ZERO_ENABLE_TYPE_CONVERSIONS
+#define JNI_ZERO_CONVERSION_FAILED_MSG(name)                               \
+  "Failed to find a " name                                                 \
+  " specialization for the given type. Did you forget to include the "     \
+  "header file that declares it?\n"                                        \
+  "If this error originates from a generated _jni.h file, make sure that " \
+  "the header that declares the specialization is #included before the "   \
+  "_jni.h one."
+#else
+#define JNI_ZERO_CONVERSION_FAILED_MSG(x) "Use of @JniType requires C++20."
+#endif
 
 template <typename T>
-ScopedJavaLocalRef<jobject> ToJniType(JNIEnv*, const T&);
-
-// Primary template for Array conversion.
-// This is in a struct so that we are able to write a default implementation for
-// container of any type as long as there is a conversion function from jobject
-// to that type. Partial specialized template functions are not allowed, but
-// functions inside a struct are.
-template <typename ContainerType>
-struct ConvertArray;
-
-#if defined(__cpp_concepts) && __cpp_concepts >= 201907L
-
-namespace internal {
-template <typename T>
-concept HasReserve = requires(T t) { t.reserve(0); };
+inline T FromJniType(JNIEnv* env, const JavaRef<jobject>& obj) {
+  static_assert(false, JNI_ZERO_CONVERSION_FAILED_MSG("FromJniType"));
+}
 
 template <typename T>
-concept HasPushBack = requires(T t, T::value_type v) { t.push_back(v); };
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env, const T& obj) {
+  static_assert(false, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniType"));
+}
+
+// Allow conversions using pointers by wrapping non-pointer conversions.
+// Cannot live in default_conversions.h because we want code to be able to
+// specialize it.
+template <typename T>
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env, T* value) {
+  if (!value) {
+    return nullptr;
+  }
+  return ToJniType(env, *value);
+}
+
+#if JNI_ZERO_ENABLE_TYPE_CONVERSIONS
+#undef JNI_ZERO_CONVERSION_FAILED_MSG
+#define JNI_ZERO_CONVERSION_FAILED_MSG(name)                             \
+  "Failed to find a " name                                               \
+  " specialization for the given type.\n"                                \
+  "If this error is from a generated _jni.h file, ensure that the type " \
+  "conforms to the container concepts defined in "                       \
+  "jni_zero/default_conversions.h.\n"                                    \
+  "If this error is from a non-generated call, ensure that there "       \
+  "exists an #include for jni_zero/default_conversions.h."
+#endif
 
 template <typename T>
-concept HasInsert = requires(T t, T::value_type v) { t.insert(v); };
+inline ScopedJavaLocalRef<jobjectArray> ToJniArray(JNIEnv* env,
+                                                   const T& obj,
+                                                   jclass array_class) {
+  static_assert(false, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniArray"));
+}
 
 template <typename T>
-concept IsContainer = requires(T t) {
-  typename T::value_type;
-  t.begin();
-  t.end();
-  t.size();
-};
+inline ScopedJavaLocalRef<jarray> ToJniArray(JNIEnv* env, const T& obj) {
+  static_assert(false, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniArray"));
+}
 
 template <typename T>
-concept IsObjectContainer =
-    IsContainer<T> && !std::is_arithmetic_v<typename T::value_type>;
-}  // namespace internal
+inline T FromJniArray(JNIEnv* env, const JavaRef<jobject>& obj) {
+  static_assert(false, JNI_ZERO_CONVERSION_FAILED_MSG("FromJniArray"));
+}
 
-// Partial specialization for converting java arrays into std containers
-template <internal::IsObjectContainer ContainerType>
-struct ConvertArray<ContainerType> {
- private:
-  using ElementType = std::remove_const_t<typename ContainerType::value_type>;
-
- public:
-  static ContainerType FromJniType(JNIEnv* env,
-                                   const JavaRef<jobjectArray>& j_array) {
-    constexpr bool has_push_back = internal::HasPushBack<ContainerType>;
-    constexpr bool has_insert = internal::HasInsert<ContainerType>;
-    static_assert(has_push_back || has_insert, "Template type not supported.");
-    jsize array_jsize = env->GetArrayLength(j_array.obj());
-
-    ContainerType ret;
-    if constexpr (internal::HasReserve<ContainerType>) {
-      size_t array_size = static_cast<size_t>(array_jsize);
-      ret.reserve(array_size);
-    }
-    for (jsize i = 0; i < array_jsize; ++i) {
-      jobject j_element = env->GetObjectArrayElement(j_array.obj(), i);
-      // Do not call FromJniType for jobject->jobject.
-      if constexpr (std::is_base_of_v<JavaRef<jobject>, ElementType>) {
-        if constexpr (has_push_back) {
-          ret.emplace_back(env, j_element);
-        } else if constexpr (has_insert) {
-          ret.emplace(env, j_element);
-        }
-      } else {
-        auto element =
-            jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, j_element);
-        if constexpr (has_push_back) {
-          ret.push_back(jni_zero::FromJniType<ElementType>(env, element));
-        } else if constexpr (has_insert) {
-          ret.insert(jni_zero::FromJniType<ElementType>(env, element));
-        }
-      }
-    }
-    return ret;
-  }
-
-  static ScopedJavaLocalRef<jobjectArray>
-  ToJniType(JNIEnv* env, const ContainerType& collection, jclass clazz) {
-    size_t array_size = collection.size();
-    jsize array_jsize = static_cast<jsize>(array_size);
-    jobjectArray j_array = env->NewObjectArray(array_jsize, clazz, nullptr);
-    CheckException(env);
-
-    jsize i = 0;
-    for (auto& value : collection) {
-      // Do not call ToJniType for jobject->jobject.
-      if constexpr (std::is_base_of_v<JavaRef<jobject>, ElementType>) {
-        env->SetObjectArrayElement(j_array, i, value.obj());
-      } else {
-        ScopedJavaLocalRef<jobject> element =
-            jni_zero::ToJniType<ElementType>(env, value);
-        env->SetObjectArrayElement(j_array, i, element.obj());
-      }
-      ++i;
-    }
-    return ScopedJavaLocalRef<jobjectArray>(env, j_array);
-  }
-};
-
-#endif  //  defined(__cpp_concepts) && __cpp_concepts >= 202002L
-
-// Specialization for int64_t.
-template <>
-struct ConvertArray<std::vector<int64_t>> {
-  static std::vector<int64_t> FromJniType(JNIEnv* env,
-                                          const JavaRef<jlongArray>& j_array) {
-    jsize array_jsize = env->GetArrayLength(j_array.obj());
-    size_t array_size = static_cast<size_t>(array_jsize);
-    std::vector<int64_t> ret;
-    ret.resize(array_size);
-    env->GetLongArrayRegion(j_array.obj(), 0, array_jsize, ret.data());
-    return ret;
-  }
-
-  static ScopedJavaLocalRef<jlongArray> ToJniType(
-      JNIEnv* env,
-      const std::vector<int64_t>& vec) {
-    jsize array_jsize = static_cast<jsize>(vec.size());
-    jlongArray jia = env->NewLongArray(array_jsize);
-    CheckException(env);
-    env->SetLongArrayRegion(jia, 0, array_jsize, vec.data());
-    return ScopedJavaLocalRef<jlongArray>(env, jia);
-  }
-};
-
-// Specialization for int32_t.
-template <>
-struct ConvertArray<std::vector<int32_t>> {
-  static std::vector<int32_t> FromJniType(JNIEnv* env,
-                                          const JavaRef<jintArray>& j_array) {
-    jsize array_jsize = env->GetArrayLength(j_array.obj());
-    size_t array_size = static_cast<size_t>(array_jsize);
-    std::vector<int32_t> ret;
-    ret.resize(array_size);
-    env->GetIntArrayRegion(j_array.obj(), 0, array_jsize, ret.data());
-    return ret;
-  }
-
-  static ScopedJavaLocalRef<jintArray> ToJniType(
-      JNIEnv* env,
-      const std::vector<int32_t>& vec) {
-    jsize array_jsize = static_cast<jsize>(vec.size());
-    jintArray jia = env->NewIntArray(array_jsize);
-    CheckException(env);
-    env->SetIntArrayRegion(jia, 0, array_jsize, vec.data());
-    return ScopedJavaLocalRef<jintArray>(env, jia);
-  }
-};
-
-// Specialization for byte array.
-template <>
-struct ConvertArray<std::vector<uint8_t>> {
-  static std::vector<uint8_t> FromJniType(JNIEnv* env,
-                                          const JavaRef<jbyteArray>& j_array) {
-    jsize array_jsize = env->GetArrayLength(j_array.obj());
-    size_t array_size = static_cast<size_t>(array_jsize);
-    std::vector<uint8_t> ret;
-    ret.resize(array_size);
-    env->GetByteArrayRegion(j_array.obj(), 0, array_jsize,
-                            reinterpret_cast<jbyte*>(ret.data()));
-    return ret;
-  }
-
-  static ScopedJavaLocalRef<jbyteArray> ToJniType(
-      JNIEnv* env,
-      const std::vector<uint8_t>& vec) {
-    jsize array_jsize = static_cast<jsize>(vec.size());
-    jbyteArray jia = env->NewByteArray(array_jsize);
-    CheckException(env);
-    env->SetByteArrayRegion(jia, 0, array_jsize,
-                            reinterpret_cast<const jbyte*>(vec.data()));
-    return ScopedJavaLocalRef<jbyteArray>(env, jia);
-  }
-};
-
-// Specialization for ByteArrayView.
-template <>
-struct ConvertArray<ByteArrayView> {
-  static ByteArrayView FromJniType(JNIEnv* env,
-                                   const JavaRef<jbyteArray>& array) {
-    return ByteArrayView(env, array.obj());
-  }
-};
+#undef JNI_ZERO_CONVERSION_FAILED_MSG
 
 // This class is a wrapper for JNIEnv Get(Static)MethodID.
 class JNI_ZERO_COMPONENT_BUILD_EXPORT MethodID {

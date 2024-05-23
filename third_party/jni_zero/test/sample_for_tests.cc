@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/jni_zero/test/sample_for_tests.h"
+
 #include <iostream>
 
-#include "third_party/jni_zero/test/sample_for_tests.h"
+#include "third_party/jni_zero/test/stub_conversions.h"
 
 // Generated file for JNI bindings from C++ to Java @CalledByNative methods.
 // Only to be included in one .cc file.
@@ -28,69 +30,7 @@ using jni_zero::AttachCurrentThread;
 using jni_zero::JavaParamRef;
 using jni_zero::ScopedJavaLocalRef;
 
-namespace jni_zero {
-
-// "conversion" functions, this file only has to compile not run.
-template <>
-tests::CPPClass FromJniType<tests::CPPClass>(JNIEnv* env,
-                                             const JavaRef<jobject>& j_obj) {
-  return {};
-}
-template <>
-std::string FromJniType<std::string>(JNIEnv* env,
-                                     const JavaRef<jobject>& input) {
-  return {};
-}
-template <>
-ScopedJavaLocalRef<jobject> ToJniType<std::string>(JNIEnv* env,
-                                                   const std::string& input) {
-  return {};
-}
-template <>
-std::u16string FromJniType<std::u16string>(JNIEnv* env,
-                                           const JavaRef<jobject>& input) {
-  return {};
-}
-template <>
-ScopedJavaLocalRef<jobject> ToJniType<std::u16string>(
-    JNIEnv* env,
-    const std::u16string& input) {
-  return {};
-}
-template <>
-ScopedJavaLocalRef<jobject> ToJniType<const char*>(JNIEnv* env,
-                                                   const char* const& input) {
-  return {};
-}
-template <>
-tests::CPPClass* FromJniType<tests::CPPClass*>(JNIEnv* env, const JavaRef<jobject>& j_obj) {
-  return nullptr;
-}
-
-// Specialized conversions for std::optional<std::basic_string<T>> since jstring
-// is a nullable type but std::basic_string<T> is not.
-template <>
-std::optional<std::string> FromJniType<std::optional<std::string>>(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_string) {
-  if (!j_string) {
-    return std::nullopt;
-  }
-  return std::optional<std::string>(FromJniType<std::string>(env, j_string));
-}
-
-template <>
-std::optional<std::u16string> FromJniType<std::optional<std::u16string>>(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_string) {
-  if (!j_string) {
-    return std::nullopt;
-  }
-  return std::optional<std::u16string>(
-      FromJniType<std::u16string>(env, j_string));
-}
-
-namespace tests {
+namespace jni_zero::tests {
 
 jdouble CPPClass::InnerClass::MethodOtherP0(
     JNIEnv* env,
@@ -205,8 +145,7 @@ static ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetMap(
   return ScopedJavaLocalRef<jobject>();
 }
 
-}  // namespace tests
-}  // namespace jni_zero
+}  // namespace jni_zero::tests
 
 // Proxy natives.
 static void JNI_SampleForAnnotationProcessor_Foo(JNIEnv* env) {}

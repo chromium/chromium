@@ -7,19 +7,20 @@
 #include <memory>
 #include <vector>
 
+#include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "components/android_autofill/browser/form_field_data_android.h"
-#include "components/android_autofill/browser/jni_headers/FormData_jni.h"
 #include "components/autofill/core/common/form_data.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/android_autofill/browser/jni_headers/FormData_jni.h"
 
 namespace autofill {
 
 namespace {
 
-using base::android::AttachCurrentThread;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::ScopedJavaLocalRef;
 
 }  // namespace
 
@@ -27,12 +28,11 @@ FormDataAndroidBridgeImpl::FormDataAndroidBridgeImpl() = default;
 
 FormDataAndroidBridgeImpl::~FormDataAndroidBridgeImpl() = default;
 
-base::android::ScopedJavaLocalRef<jobject>
-FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
+ScopedJavaLocalRef<jobject> FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
     const FormData& form,
     SessionId session_id,
     base::span<const std::unique_ptr<FormFieldDataAndroid>> fields_android) {
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   if (ScopedJavaLocalRef<jobject> obj = java_ref_.get(env); !obj.is_null()) {
     return obj;
   }

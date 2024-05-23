@@ -286,33 +286,6 @@ class JniObject:
     return f'Java_{escaped_name}_native{native.cpp_name}'
 
 
-def _UsesConvertType(java_type):
-  # Array conversions do not need to be declared and primitive conversions
-  # are just static_cast.
-  return bool(java_type.converted_type() and not java_type.is_array()
-              and not java_type.is_primitive())
-
-
-def _CollectConvertTypeTypes(natives, called_by_natives):
-  java_to_cpp_types = []
-  cpp_to_java_types = []
-
-  for native in natives:
-    java_to_cpp_types.extend(param.java_type for param in native.params
-                             if _UsesConvertType(param.java_type))
-    if _UsesConvertType(native.return_type):
-      cpp_to_java_types.append(native.return_type)
-
-  for called_by_native in called_by_natives:
-    cpp_to_java_types.extend(param.java_type
-                             for param in called_by_native.params
-                             if _UsesConvertType(param.java_type))
-    if _UsesConvertType(called_by_native.return_type):
-      java_to_cpp_types.append(called_by_native.return_type)
-
-  return java_to_cpp_types, cpp_to_java_types
-
-
 def _CollectReferencedClasses(jni_obj):
   ret = set()
   # @CalledByNatives can appear on nested classes, so check each one.
@@ -352,7 +325,6 @@ class InlHeaderFileGenerator:
     template = Template("""\
 ${PREAMBLE}\
 ${CLASS_ACCESSORS}\
-${CONVERSION_FUNCTION_DECLARATIONS}\
 ${OPEN_NAMESPACE}\
 ${CONSTANTS_ENUMS}\
 ${NATIVES}\
@@ -369,10 +341,6 @@ ${EPILOGUE}\
         self.options.extra_includes)
     class_accessors = header_common.class_accessors(java_classes,
                                                     self.jni_obj.module_name)
-    java_to_cpp_types, cpp_to_java_types = _CollectConvertTypeTypes(
-        self.natives, self.called_by_natives)
-    conversion_declarations = convert_type.conversion_declarations(
-        java_to_cpp_types, cpp_to_java_types)
     constants_enums = called_by_native_header.constants_enums(
         self.java_class, self.constant_fields)
 
@@ -384,7 +352,6 @@ ${EPILOGUE}\
         'PREAMBLE': preamble,
         'EPILOGUE': epilogue,
         'CLASS_ACCESSORS': class_accessors,
-        'CONVERSION_FUNCTION_DECLARATIONS': conversion_declarations,
         'CONSTANTS_ENUMS': constants_enums,
         'CALLED_BY_NATIVES': called_by_natives_code,
         'NATIVES': natives_code,

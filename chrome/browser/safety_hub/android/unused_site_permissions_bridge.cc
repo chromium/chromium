@@ -8,11 +8,11 @@
 
 #include <vector>
 
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/time/time.h"
-#include "chrome/browser/safety_hub/android/jni_headers/PermissionsData_jni.h"
-#include "chrome/browser/safety_hub/android/jni_headers/UnusedSitePermissionsBridge_jni.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -21,20 +21,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace jni_zero {
-
-template <>
-PermissionsData FromJniType<PermissionsData>(JNIEnv* env,
-                                             const JavaRef<jobject>& jobject) {
-  return FromJavaPermissionsData(env, jobject);
-}
-
-template <>
-ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env, const PermissionsData& obj) {
-  return ToJavaPermissionsData(env, obj);
-}
-
-}  // namespace jni_zero
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/safety_hub/android/jni_headers/PermissionsData_jni.h"
+#include "chrome/browser/safety_hub/android/jni_headers/UnusedSitePermissionsBridge_jni.h"
 
 PermissionsData FromJavaPermissionsData(
     JNIEnv* env,

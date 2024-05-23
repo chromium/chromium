@@ -63,7 +63,7 @@ void JavaGURLArrayToGURLVector(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& j_gurls,
     std::vector<GURL>* ret) {
-  *ret = jni_zero::ConvertArray<std::vector<GURL>>::FromJniType(env, j_gurls);
+  *ret = jni_zero::FromJniArray<std::vector<GURL>>(env, j_gurls);
 }
 
 static void JavaLongArrayToBaseTimeVector(

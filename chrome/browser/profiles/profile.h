@@ -585,4 +585,19 @@ struct ProfileCompare {
 std::ostream& operator<<(std::ostream& out,
                          const Profile::OTRProfileID& profile_id);
 
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+template <>
+inline Profile* FromJniType<Profile*>(JNIEnv* env,
+                                      const JavaRef<jobject>& j_profile) {
+  return Profile::FromJavaObject(j_profile);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<Profile>(JNIEnv* env,
+                                                      const Profile& profile) {
+  return profile.GetJavaObject();
+}
+}  // namespace jni_zero
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_H_

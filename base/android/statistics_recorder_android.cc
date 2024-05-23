@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/metrics/statistics_recorder.h"
+
 #include <string>
 
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/statistics_recorder.h"
 #include "base/system/sys_info.h"
 
-// Must come after other headers because it uses JSONVerbosityLevel.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/metrics_jni/StatisticsRecorderAndroid_jni.h"
 
 namespace base {

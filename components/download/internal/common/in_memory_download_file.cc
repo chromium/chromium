@@ -4,18 +4,17 @@
 
 #include "components/download/internal/common/in_memory_download_file.h"
 
-#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/download/internal/common/jni_headers/InMemoryDownloadFile_jni.h"
 #include "components/download/public/common/download_destination_observer.h"
 #include "crypto/secure_hash.h"
 
-using base::android::ConvertUTF8ToJavaString;
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/download/internal/common/jni_headers/InMemoryDownloadFile_jni.h"
 
 namespace download {
 namespace {

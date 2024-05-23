@@ -30,10 +30,11 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_array.h"
-#include "content/public/android/content_jni_headers/HostZoomMapImpl_jni.h"
+#include "base/android/jni_string.h"
 #include "content/public/browser/android/browser_context_handle.h"
-using base::android::ScopedJavaLocalRef;
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/HostZoomMapImpl_jni.h"
 #endif
 
 namespace content {
@@ -186,7 +187,7 @@ double HostZoomMapImpl::GetZoomLevelForHostAndSchemeAndroid(
   // method will return the adjusted zoom level considering OS settings. Note
   // that the OS |fontScale| will be factored in only when the Page Zoom feature
   // is enabled.
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   double adjusted_zoom_level =
       Java_HostZoomMapImpl_getAdjustedZoomLevel(env, zoom_level);
   return adjusted_zoom_level;
@@ -512,7 +513,7 @@ void HostZoomMapImpl::SetClockForTesting(base::Clock* clock) {
 
 #if BUILDFLAG(IS_ANDROID)
 void HostZoomMapImpl::SetSystemFontScaleForTesting(float scale) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_HostZoomMapImpl_setSystemFontScaleForTesting(env, scale);  // IN-TEST
 }
 
@@ -619,12 +620,12 @@ jdouble JNI_HostZoomMapImpl_GetDefaultZoomLevel(
   return host_zoom_map->GetDefaultZoomLevel();
 }
 
-std::vector<ScopedJavaLocalRef<jobject>>
+std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
 JNI_HostZoomMapImpl_GetAllHostZoomLevels(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<ScopedJavaLocalRef<jobject>> ret;
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ret;
 
   // Get instance of HostZoomMap.
   BrowserContext* context = BrowserContextFromJavaHandle(j_context);

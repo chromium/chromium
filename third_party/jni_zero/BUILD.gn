@@ -17,10 +17,14 @@ config("toolchain_define") {
 # This is the public target that we intend others to use.
 component("jni_zero") {
   # This is the public API.
-  sources = [ "jni_zero.h" ]
+  sources = [
+    "default_conversions.h",
+    "jni_zero.h",
+  ]
 
   # These are intended to only be used within jni_zero and the code it generates.
   sources += [
+    "default_conversions.cc",
     "jni_export.h",
     "jni_zero.cc",
     "jni_zero_internal.h",

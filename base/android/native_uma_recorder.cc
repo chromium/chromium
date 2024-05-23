@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/robolectric_buildflags.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #if BUILDFLAG(IS_ROBOLECTRIC)
 #include "base/base_robolectric_jni/NativeUmaRecorder_jni.h"  // nogncheck
 #else

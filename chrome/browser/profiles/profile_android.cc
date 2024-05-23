@@ -19,23 +19,6 @@ using jni_zero::JavaParamRef;
 using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
 
-namespace jni_zero {
-
-template <>
-Profile* FromJniType<Profile*>(JNIEnv* env, const JavaRef<jobject>& j_profile) {
-  return Profile::FromJavaObject(j_profile);
-}
-
-template <>
-ScopedJavaLocalRef<jobject> ToJniType<Profile*>(JNIEnv* env,
-                                                Profile* const& profile) {
-  if (!profile) {
-    return nullptr;
-  }
-  return profile->GetJavaObject();
-}
-
-}  // namespace jni_zero
 
 // static
 Profile* Profile::FromJavaObject(const JavaRef<jobject>& obj) {

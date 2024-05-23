@@ -49,4 +49,48 @@ BASE_EXPORT ScopedJavaLocalRef<jstring> ConvertUTF16ToJavaString(
 }  // namespace android
 }  // namespace base
 
+namespace jni_zero {
+template <>
+inline std::string FromJniType<std::string>(JNIEnv* env,
+                                            const JavaRef<jobject>& input) {
+  return base::android::ConvertJavaStringToUTF8(
+      env, static_cast<jstring>(input.obj()));
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<std::string>(
+    JNIEnv* env,
+    const std::string& input) {
+  return base::android::ConvertUTF8ToJavaString(env, input);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<const char>(JNIEnv* env,
+                                                   const char* input) {
+  return base::android::ConvertUTF8ToJavaString(env, input);
+}
+
+template <>
+inline std::u16string FromJniType<std::u16string>(
+    JNIEnv* env,
+    const JavaRef<jobject>& input) {
+  return base::android::ConvertJavaStringToUTF16(
+      env, static_cast<jstring>(input.obj()));
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<std::u16string>(
+    JNIEnv* env,
+    const std::u16string& input) {
+  return base::android::ConvertUTF16ToJavaString(env, input);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<std::u16string_view>(
+    JNIEnv* env,
+    const std::u16string_view& input) {
+  return base::android::ConvertUTF16ToJavaString(env, input);
+}
+}  // namespace jni_zero
+
 #endif  // BASE_ANDROID_JNI_STRING_H_

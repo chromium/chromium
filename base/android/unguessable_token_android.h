@@ -39,4 +39,21 @@ class BASE_EXPORT UnguessableTokenAndroid {
 }  // namespace android
 }  // namespace base
 
+namespace jni_zero {
+template <>
+inline base::UnguessableToken FromJniType<base::UnguessableToken>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_object) {
+  return base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
+      env, j_object);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<base::UnguessableToken>(
+    JNIEnv* env,
+    const base::UnguessableToken& token) {
+  return base::android::UnguessableTokenAndroid::Create(env, token);
+}
+}  // namespace jni_zero
+
 #endif  // BASE_ANDROID_UNGUESSABLE_TOKEN_ANDROID_H_

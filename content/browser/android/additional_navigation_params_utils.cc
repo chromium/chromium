@@ -4,8 +4,11 @@
 
 #include "content/browser/android/additional_navigation_params_utils.h"
 
+#include "base/android/jni_string.h"
 #include "base/android/unguessable_token_android.h"
 #include "base/numerics/safe_conversions.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/AdditionalNavigationParamsUtils_jni.h"
 
 namespace content {

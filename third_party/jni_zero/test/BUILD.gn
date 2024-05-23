@@ -43,6 +43,7 @@ source_set("test_native_side") {
   sources = [
     "sample_for_tests.cc",
     "sample_for_tests.h",
+    "stub_conversions.h",
   ]
 }
 

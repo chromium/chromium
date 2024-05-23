@@ -17,7 +17,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/prefs/pref_service.h"
+#include "components/prefs/android/pref_service_android.h"
 
 // Must come after other includes, because FromJniType() uses PrefService.
 #include "components/supervised_user/android/supervised_user_preferences_jni_headers/SupervisedUserPreferences_jni.h"

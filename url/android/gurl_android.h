@@ -23,4 +23,20 @@ class COMPONENT_EXPORT(URL) GURLAndroid {
 
 }  // namespace url
 
+namespace jni_zero {
+
+// Convert from java GURL.java pointer to native GURL object.
+template <>
+inline GURL FromJniType<GURL>(JNIEnv* env, const JavaRef<jobject>& j_gurl) {
+  return url::GURLAndroid::ToNativeGURL(env, j_gurl);
+}
+
+// Convert from native GURL object to a GURL.java object pointer.
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<GURL>(JNIEnv* env,
+                                                   const GURL& gurl) {
+  return url::GURLAndroid::FromNativeGURL(env, gurl);
+}
+}  // namespace jni_zero
+
 #endif  // URL_ANDROID_GURL_ANDROID_H_

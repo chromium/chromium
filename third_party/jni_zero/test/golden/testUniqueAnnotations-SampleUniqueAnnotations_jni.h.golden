@@ -20,11 +20,6 @@ inline jclass org_jni_1zero_SampleUniqueAnnotations_clazz(JNIEnv* env) {
 }
 #endif
 
-// Forward declare used conversion functions to avoid a compiler warning that
-// triggers if a conversion specialization exists within the including .cc file.
-namespace jni_zero {
-template<> std::string FromJniType<std::string>(JNIEnv*, const JavaRef<jobject>&);
-}  // namespace jni_zero
 // Java to native functions
 // Forward declaration. To be implemented by the including .cc file.
 static jint JNI_SampleUniqueAnnotations_Bar(JNIEnv* env, jint x, jint y);

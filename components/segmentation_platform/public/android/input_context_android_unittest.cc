@@ -7,16 +7,16 @@
 #include <array>
 #include <cstdint>
 #include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
-
-#include <jni.h>
 
 namespace segmentation_platform {
 
@@ -108,8 +108,7 @@ TEST_F(InputContextAndroidTest, FromJavaParams) {
   base::android::ScopedJavaLocalRef<jobjectArray> java_url_keys =
       base::android::ToJavaArrayOfStrings(jni_env, url_keys);
   base::android::ScopedJavaLocalRef<jobjectArray> java_url_values =
-      jni_zero::ConvertArray<std::vector<base::android::ScopedJavaLocalRef<
-          jobject>>>::ToJniType(jni_env, url_values, jni_zero::g_object_class);
+      jni_zero::ToJniArray(jni_env, url_values, jni_zero::g_object_class);
 
   segmentation_platform::InputContextAndroid::FromJavaParams(
       jni_env, reinterpret_cast<intptr_t>(native_input_context.get()),

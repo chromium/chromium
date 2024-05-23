@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/important_file_writer.h"
+
 #include <string>
 
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni/ImportantFileWriterAndroid_jni.h"
-#include "base/files/important_file_writer.h"
 #include "base/threading/thread_restrictions.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_jni/ImportantFileWriterAndroid_jni.h"
 
 namespace base {
 namespace android {

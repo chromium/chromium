@@ -223,7 +223,7 @@ public class FileUtils {
     @NativeMethods
     public interface Natives {
         /** Returns the canonicalised absolute pathname for |filePath|. */
-        @JniType("base::FilePath")
-        String getAbsoluteFilePath(@JniType("base::FilePath") String filePath);
+        @JniType("std::string")
+        String getAbsoluteFilePath(@JniType("std::string") String filePath);
     }
 }

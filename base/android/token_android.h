@@ -33,4 +33,18 @@ class BASE_EXPORT TokenAndroid {
 
 }  // namespace base::android
 
+namespace jni_zero {
+template <>
+inline base::Token FromJniType<base::Token>(JNIEnv* env,
+                                            const JavaRef<jobject>& j_object) {
+  return base::android::TokenAndroid::FromJavaToken(env, j_object);
+}
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<base::Token>(
+    JNIEnv* env,
+    const base::Token& token) {
+  return base::android::TokenAndroid::Create(env, token);
+}
+}  // namespace jni_zero
+
 #endif  // BASE_ANDROID_TOKEN_ANDROID_H_

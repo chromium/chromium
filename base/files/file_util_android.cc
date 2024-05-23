@@ -4,23 +4,19 @@
 
 #include "base/files/file_util.h"
 
-#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni/FileUtils_jni.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 
-using base::android::JavaParamRef;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_jni/FileUtils_jni.h"
 
 namespace base {
 namespace android {
 
-static base::FilePath JNI_FileUtils_GetAbsoluteFilePath(
-    JNIEnv* env,
-    base::FilePath& file_path) {
-  return MakeAbsoluteFilePath(file_path);
+static std::string JNI_FileUtils_GetAbsoluteFilePath(JNIEnv* env,
+                                                     std::string& file_path) {
+  return MakeAbsoluteFilePath(base::FilePath(file_path)).value();
 }
 
 }  // namespace android

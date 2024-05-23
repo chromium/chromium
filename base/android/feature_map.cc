@@ -4,16 +4,18 @@
 
 #include "base/android/feature_map.h"
 
-#include <jni.h>
 #include <stddef.h>
 
 #include <memory>
 #include <string>
 #include <string_view>
 
-#include "base/base_jni/FeatureMap_jni.h"
+#include "base/android/jni_string.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_jni/FeatureMap_jni.h"
 
 namespace base::android {
 

@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/base_jni/Features_jni.h"
+#include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_jni/Features_jni.h"
 
 namespace base {
 namespace android {
