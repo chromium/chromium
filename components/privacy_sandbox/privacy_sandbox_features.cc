@@ -184,8 +184,8 @@ BASE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi,
              "PrivacySandboxRelatedWebsiteSetsUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrackingProtectionContentSetting,
-             "TrackingProtectionContentSetting",
+BASE_FEATURE(kTrackingProtectionContentSettingUbControl,
+             "TrackingProtectionContentSettingUbControl",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

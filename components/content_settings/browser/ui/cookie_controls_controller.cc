@@ -250,7 +250,7 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
     cookie_settings_->ResetThirdPartyCookieSetting(url);
     if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kTrackingProtectionContentSetting)) {
+            privacy_sandbox::kTrackingProtectionContentSettingUbControl)) {
       tracking_protection_settings_->RemoveTrackingProtectionException(url);
     }
     return;
@@ -260,7 +260,7 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
   cookie_settings_->SetCookieSettingForUserBypass(url);
   if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtectionContentSetting)) {
+          privacy_sandbox::kTrackingProtectionContentSettingUbControl)) {
     tracking_protection_settings_->AddTrackingProtectionException(
         url, /*is_user_bypass_exception=*/true);
   }
