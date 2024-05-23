@@ -830,9 +830,7 @@ NET_ERROR(ZSTD_WINDOW_SIZE_TOO_BIG, -386)
 // The compression dictionary cannot be loaded.
 NET_ERROR(DICTIONARY_LOAD_FAILED, -387)
 
-// The "content-dictionary" response header is unexpected. This is used both
-// when there is no "content-dictionary" response header and when the received
-// "content-dictionary" response header does not match the expected value.
+// The header of dictionary compressed stream does not match the expected value.
 NET_ERROR(UNEXPECTED_CONTENT_DICTIONARY_HEADER, -388)
 
 // The cache does not have the requested entry.

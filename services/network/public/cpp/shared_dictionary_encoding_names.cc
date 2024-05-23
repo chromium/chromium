@@ -9,11 +9,11 @@
 namespace network {
 
 const char* GetSharedBrotliContentEncodingName() {
-  return "br-d";
+  return "dcb";
 }
 
 const char* GetSharedZstdContentEncodingName() {
-  return "zstd-d";
+  return "dcz";
 }
 
 }  // namespace network

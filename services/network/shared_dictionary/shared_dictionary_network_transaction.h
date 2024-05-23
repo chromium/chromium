@@ -39,9 +39,9 @@ class SharedDictionaryStorage;
 // that will be called just before the request is sent to the network. When this
 // callback is called, this class tries to get a registered dictionary from the
 // `shared_dictionary_manager`. If a matching dictionary is found, and the
-// "content-encoding" header of the response from the server is "sbr", this
-// class will decode the response body using a `BrotliSourceStream` with the
-// dictionary.
+// "content-encoding" header of the response from the server is "dcb" or "dcz",
+// this class will decode the response body using a `BrotliSourceStream` or
+// `ZstdSourceStream` with the dictionary.
 class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
     : public net::HttpTransaction {
  public:
@@ -136,8 +136,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
     net::CompletionOnceCallback callback;
   };
 
-  base::expected<SharedDictionaryEncodingType, net::Error>
-  ParseSharedDictionaryEncodingType(const net::HttpResponseHeaders& headers);
+  SharedDictionaryEncodingType ParseSharedDictionaryEncodingType(
+      const net::HttpResponseHeaders& headers);
 
   void OnStartCompleted(net::CompletionOnceCallback callback, int result);
 

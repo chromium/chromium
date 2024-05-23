@@ -389,7 +389,7 @@ BASE_FEATURE(kCookieIndicesHeader,
 //   * The network service loads the metadata database.
 //   * If there is a matching dictionary for a sending request, it adds the
 //     `sec-available-dictionary` header.
-//   * And if the `content-encoding` header of the response is `sbr`, it
+//   * And if the `content-encoding` header of the response is `dcb`, it
 //     decompresses the response body using the dictionary.
 BASE_FEATURE(kCompressionDictionaryTransportBackend,
              "CompressionDictionaryTransportBackend",

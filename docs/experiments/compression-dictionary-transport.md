@@ -224,6 +224,9 @@ changes in specifications.
 
 - `compression-dictionary` rel attribute is used for HTML `link` element and
   HTTP `Link:` header instead of `dictionary`.
+- Changed Content-Encoding to use "dcb" and "dcz".
+  See [this spec change](https://github.com/httpwg/http-extensions/pull/2784).
+
 
 ## Demo sites
 

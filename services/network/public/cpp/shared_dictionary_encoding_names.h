@@ -9,10 +9,10 @@
 
 namespace network {
 
-// Returns the content encoding name of Shared Brotli: "br-d"
+// Returns the content encoding name of Dictionary-Compressed Brotli: "dcb"
 COMPONENT_EXPORT(NETWORK_CPP) const char* GetSharedBrotliContentEncodingName();
 
-// Returns the content encoding name of Shared Zstd: "zstd-d".
+// Returns the content encoding name of Dictionary-Compressed Zstandard: "dcz".
 COMPONENT_EXPORT(NETWORK_CPP) const char* GetSharedZstdContentEncodingName();
 
 }  // namespace network

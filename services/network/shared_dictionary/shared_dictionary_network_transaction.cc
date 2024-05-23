@@ -41,6 +41,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
+#include "services/network/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 
@@ -138,36 +139,19 @@ int SharedDictionaryNetworkTransaction::Start(
       net_log);
 }
 
-base::expected<SharedDictionaryNetworkTransaction::SharedDictionaryEncodingType,
-               net::Error>
+SharedDictionaryNetworkTransaction::SharedDictionaryEncodingType
 SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
     const net::HttpResponseHeaders& headers) {
-  SharedDictionaryEncodingType result = SharedDictionaryEncodingType::kNotUsed;
-
   std::string content_encoding;
   if (!headers.GetNormalizedHeader("Content-Encoding", &content_encoding)) {
-    result = SharedDictionaryEncodingType::kNotUsed;
+    return SharedDictionaryEncodingType::kNotUsed;
   } else if (content_encoding == GetSharedBrotliContentEncodingName()) {
-    result = SharedDictionaryEncodingType::kSharedBrotli;
+    return SharedDictionaryEncodingType::kSharedBrotli;
   } else if (base::FeatureList::IsEnabled(network::features::kSharedZstd) &&
              content_encoding == GetSharedZstdContentEncodingName()) {
-    result = SharedDictionaryEncodingType::kSharedZstd;
+    return SharedDictionaryEncodingType::kSharedZstd;
   }
-
-  // Check "Content-Dictionary" header when the content encoding indicates that
-  // a dictionary is used.
-  if (result != SharedDictionaryEncodingType::kNotUsed) {
-    CHECK(!dictionary_hash_base64_.empty());
-    std::string content_dictionary;
-    if (!headers.GetNormalizedHeader(
-            shared_dictionary::kContentDictionaryHeaderName,
-            &content_dictionary) ||
-        dictionary_hash_base64_ != content_dictionary) {
-      return base::unexpected(net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
-    }
-  }
-
-  return result;
+  return SharedDictionaryEncodingType::kNotUsed;
 }
 
 void SharedDictionaryNetworkTransaction::OnStartCompleted(
@@ -187,14 +171,8 @@ void SharedDictionaryNetworkTransaction::OnStartCompleted(
     return;
   }
 
-  auto parse_result = ParseSharedDictionaryEncodingType(
+  shared_dictionary_encoding_type_ = ParseSharedDictionaryEncodingType(
       *network_transaction_->GetResponseInfo()->headers);
-  if (!parse_result.has_value()) {
-    std::move(callback).Run(parse_result.error());
-    return;
-  }
-
-  shared_dictionary_encoding_type_ = parse_result.value();
   if (shared_dictionary_encoding_type_ ==
       SharedDictionaryEncodingType::kNotUsed) {
     std::move(callback).Run(result);
@@ -391,6 +369,20 @@ int SharedDictionaryNetworkTransaction::Read(
       return net::ERR_IO_PENDING;
     case DictionaryStatus::kFinished:
       if (!shared_compression_stream_) {
+        // Wrap the source `network_transaction_` with a
+        // SharedDictionaryHeaderCheckerSourceStream to check the header
+        // of Dictionary-Compressed stream.
+        std::unique_ptr<net::SourceStream> header_checker_source_stream =
+            std::make_unique<SharedDictionaryHeaderCheckerSourceStream>(
+                std::make_unique<ProxyingSourceStream>(
+                    network_transaction_.get()),
+                shared_dictionary_encoding_type_ ==
+                        SharedDictionaryEncodingType::kSharedBrotli
+                    ? SharedDictionaryHeaderCheckerSourceStream::Type::
+                          kDictionaryCompressedBrotli
+                    : SharedDictionaryHeaderCheckerSourceStream::Type::
+                          kDictionaryCompressedZstd,
+                shared_dictionary_->hash());
         if (shared_dictionary_encoding_type_ ==
             SharedDictionaryEncodingType::kSharedBrotli) {
           SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
@@ -398,8 +390,7 @@ int SharedDictionaryNetworkTransaction::Read(
               "CreateBrotliSourceStreamWithDictionary");
           shared_compression_stream_ =
               net::CreateBrotliSourceStreamWithDictionary(
-                  std::make_unique<ProxyingSourceStream>(
-                      network_transaction_.get()),
+                  std::move(header_checker_source_stream),
                   shared_dictionary_->data(), shared_dictionary_->size());
         } else if (shared_dictionary_encoding_type_ ==
                    SharedDictionaryEncodingType::kSharedZstd) {
@@ -407,8 +398,7 @@ int SharedDictionaryNetworkTransaction::Read(
               "Network.SharedDictionary.CreateZstdSourceStreamWithDictionary");
           shared_compression_stream_ =
               net::CreateZstdSourceStreamWithDictionary(
-                  std::make_unique<ProxyingSourceStream>(
-                      network_transaction_.get()),
+                  std::move(header_checker_source_stream),
                   shared_dictionary_->data(), shared_dictionary_->size());
         }
 

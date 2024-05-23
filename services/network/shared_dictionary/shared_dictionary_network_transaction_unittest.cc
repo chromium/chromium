@@ -51,11 +51,16 @@ const std::string kTestData =
 // kBrotliEncodedData is generated using the following commands:
 // $ echo -n "HelloHallo你好こんにちは" > /tmp/dict
 // $ echo -n "HelloこんにちはHallo你好HelloこんにちはHallo你好" > /tmp/data
-// $ brotli -o /tmp/out.sbr -D /tmp/dict /tmp/data
-// $ xxd -i /tmp/out.sbr
-const uint8_t kBrotliEncodedData[] = {0xa1, 0xe8, 0x01, 0x00, 0x22, 0x8d, 0x54,
-                                      0xc6, 0xf6, 0x26, 0x81, 0x69, 0x46, 0x9d,
-                                      0xb2, 0x60, 0x0e, 0x6b, 0xf5, 0x07, 0x02};
+// $ echo -en '\xffDCB' > /tmp/out.dcb
+// $ openssl dgst -sha256 -binary /tmp/dict >> /tmp/out.dcb
+// $ brotli --stdout -D /tmp/dict /tmp/data >> /tmp/out.dcb
+// $ xxd -i /tmp/out.dcb
+const uint8_t kBrotliEncodedData[] = {
+    0xff, 0x44, 0x43, 0x42, 0xc1, 0x97, 0x28, 0xae, 0xd3, 0x65, 0x03, 0xcf,
+    0xc8, 0x1a, 0x0f, 0x53, 0x59, 0xe6, 0xf4, 0x72, 0xe1, 0x21, 0xf7, 0x7b,
+    0xf2, 0x0a, 0x2f, 0xaa, 0xc7, 0x99, 0x41, 0x91, 0x29, 0x3c, 0x06, 0x23,
+    0xa1, 0xe8, 0x01, 0x00, 0x22, 0x8d, 0x54, 0xc6, 0xf6, 0x26, 0x81, 0x69,
+    0x46, 0x9d, 0xb2, 0x60, 0x0e, 0x6b, 0xf5, 0x07, 0x02};
 const std::string kBrotliEncodedDataString =
     std::string(reinterpret_cast<const char*>(kBrotliEncodedData),
                 sizeof(kBrotliEncodedData));
@@ -65,11 +70,17 @@ const std::string kBrotliEncodedDataString =
 // kZstdEncodedData is generated using the following commands:
 // $ echo -n "HelloHallo你好こんにちは" > /tmp/dict
 // $ echo -n "HelloこんにちはHallo你好HelloこんにちはHallo你好" > /tmp/data
-// $ zstd -o /tmp/out.szst -D /tmp/dict /tmp/data
-// $ xxd -i /tmp/out.szst
+// $ echo -en '\x5e\x2a\x4d\x18\x20\x00\x00\x00' > /tmp/out.dcz
+// $ openssl dgst -sha256 -binary /tmp/dict >> /tmp/out.dcz
+// $ zstd -D /tmp/dict -f -o /tmp/tmp.zstd /tmp/data
+// $ cat /tmp/tmp.zstd >> /tmp/out.dcz
+// $ xxd -i /tmp/out.dcz
 const uint8_t kZstdEncodedData[] = {
-    0x28, 0xb5, 0x2f, 0xfd, 0x24, 0x3e, 0x85, 0x00, 0x00, 0x28,
-    0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x03, 0x00, 0x42, 0x35, 0x88,
+    0x5e, 0x2a, 0x4d, 0x18, 0x20, 0x00, 0x00, 0x00, 0xc1, 0x97, 0x28, 0xae,
+    0xd3, 0x65, 0x03, 0xcf, 0xc8, 0x1a, 0x0f, 0x53, 0x59, 0xe6, 0xf4, 0x72,
+    0xe1, 0x21, 0xf7, 0x7b, 0xf2, 0x0a, 0x2f, 0xaa, 0xc7, 0x99, 0x41, 0x91,
+    0x29, 0x3c, 0x06, 0x23, 0x28, 0xb5, 0x2f, 0xfd, 0x24, 0x3e, 0x85, 0x00,
+    0x00, 0x28, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x03, 0x00, 0x42, 0x35, 0x88,
     0x6a, 0x03, 0x87, 0x4c, 0x2d, 0xcd, 0x1e, 0xde, 0x25};
 const std::string kZstdEncodedDataString =
     std::string(reinterpret_cast<const char*>(kZstdEncodedData),
@@ -274,9 +285,7 @@ const net::MockTransaction kBrotliDictionaryTestTransaction = {
     .load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY,
     .transport_info = TestSpdyTransportInfo(),
     .status = "HTTP/1.1 200 OK",
-    .response_headers =
-        "content-encoding: br-d\n"
-        "content-dictionary: :wZcortNlA8/IGg9TWeb0cuEh93vyCi+qx5lBkSk8BiM=:\n",
+    .response_headers = "content-encoding: dcb\n",
     .response_time = base::Time(),
     .data = "",  // We set the body in the `handler` function.
     .dns_aliases = {},
@@ -300,9 +309,7 @@ const net::MockTransaction kZstdDictionaryTestTransaction = {
     .load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY,
     .transport_info = TestSpdyTransportInfo(),
     .status = "HTTP/1.1 200 OK",
-    .response_headers =
-        "content-encoding: zstd-d\n"
-        "content-dictionary: :wZcortNlA8/IGg9TWeb0cuEh93vyCi+qx5lBkSk8BiM=:\n",
+    .response_headers = "content-encoding: dcz\n",
     .response_time = base::Time(),
     .data = "",  // We set the body in the `handler` function.
     .dns_aliases = {},
@@ -748,7 +755,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
       base::MakeRefCounted<DummySharedDictionaryStorage>(
           std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
 
-  // Change MockTransaction to remove `content-encoding: sbr`.
+  // Change MockTransaction to remove `content-encoding: dcb`.
   scoped_mock_transaction_->response_headers = "";
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
@@ -771,19 +778,26 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
       net::test::IsError(net::ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
 
-  // When there is no "content-encoding: sbr" header,
+  // When there is no "content-encoding: dcb" header,
   // SharedDictionaryNetworkTransaction must not decode the body.
   EXPECT_THAT(read_result, kBrotliEncodedDataString.size());
   EXPECT_EQ(kBrotliEncodedDataString, std::string(buf->data(), read_result));
 }
 
-TEST_F(SharedDictionaryNetworkTransactionTest, NoContentDictionary) {
+TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
   DummySharedDictionaryManager manager(
       base::MakeRefCounted<DummySharedDictionaryStorage>(
           std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
 
-  // Change MockTransaction to remove "content-dictionary" header.
-  scoped_mock_transaction_->response_headers = "content-encoding: br-d\n";
+  scoped_mock_transaction_->handler = base::BindRepeating(
+      [](const net::HttpRequestInfo* request, std::string* response_status,
+         std::string* response_headers, std::string* response_data) {
+        std::string data = kBrotliEncodedDataString;
+        // Change the first byte of the compressed data to trigger
+        // UNEXPECTED_CONTENT_DICTIONARY_HEADER error.
+        ++data[0];
+        *response_data = data;
+      });
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
   SharedDictionaryNetworkTransaction transaction(manager,
@@ -792,52 +806,26 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoContentDictionary) {
       base::BindRepeating([]() { return true; }));
 
   net::TestCompletionCallback start_callback;
-  ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(
-      start_callback.WaitForResult(),
+  ASSERT_THAT(
+      start_callback.GetResult(transaction.Start(
+          &request, start_callback.callback(), net::NetLogWithSource())),
+      net::test::IsError(net::OK));
+  scoped_refptr<net::IOBufferWithSize> buf =
+      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
+  net::TestCompletionCallback read_callback;
+  ASSERT_THAT(
+      read_callback.GetResult(
+          transaction.Read(buf.get(), buf->size(), read_callback.callback())),
       net::test::IsError(net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER));
 }
-
-TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionary) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
-  // Change MockTransaction to change the "content-dictionary" header.
-  // The hash `kTestDictionaryData` is
-  // ":wZcortNlA8/IGg9TWeb0cuEh93vyCi+qx5lBkSk8BiM=:". But the header contains
-  // "content-dictionary" header with a different hash
-  // ":U5abz16WDg7b8KS93msLPpOB4Vbef1uRzoORYkJw9BY=:".
-  scoped_mock_transaction_->response_headers =
-      "content-encoding: br-d\n"
-      "content-dictionary: "
-      ":U5abz16WDg7b8KS93msLPpOB4Vbef1uRzoORYkJw9BY=:\n";
-
-  net::MockHttpRequest request(*scoped_mock_transaction_);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
-  transaction.SetIsSharedDictionaryReadAllowedCallback(
-      base::BindRepeating([]() { return true; }));
-
-  net::TestCompletionCallback start_callback;
-  ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(
-      start_callback.WaitForResult(),
-      net::test::IsError(net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER));
-}
-
 TEST_F(SharedDictionaryNetworkTransactionTest, MultipleContentEncodingWithSbr) {
   DummySharedDictionaryManager manager(
       base::MakeRefCounted<DummySharedDictionaryStorage>(
           std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
 
-  // Change MockTransaction to set `content-encoding: sbr, deflate`.
+  // Change MockTransaction to set `content-encoding: dcb, deflate`.
   scoped_mock_transaction_->response_headers =
-      "content-encoding: sbr, deflate\n";
+      "content-encoding: dcb, deflate\n";
 
   net::MockHttpRequest request(*scoped_mock_transaction_);
   SharedDictionaryNetworkTransaction transaction(manager,
@@ -859,7 +847,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, MultipleContentEncodingWithSbr) {
       net::test::IsError(net::ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
 
-  // When there is Content-Encoding header which value is other than "sbr",
+  // When there is Content-Encoding header which value is other than "dcb",
   // SharedDictionaryNetworkTransaction must not decode the body.
   EXPECT_THAT(read_result, kBrotliEncodedDataString.size());
   EXPECT_EQ(kBrotliEncodedDataString, std::string(buf->data(), read_result));
@@ -1157,7 +1145,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
       base::MakeRefCounted<DummySharedDictionaryStorage>(
           std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
 
-  // Override MockTransaction to use `content-encoding: zstd-d`.
+  // Override MockTransaction to use `content-encoding: dcz`.
   scoped_mock_transaction_.reset();
   net::ScopedMockTransaction new_mock_transaction(
       kZstdDictionaryTestTransaction);
@@ -1193,7 +1181,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoZstdDContentEncoding) {
       base::MakeRefCounted<DummySharedDictionaryStorage>(
           std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
 
-  // Change MockTransaction to remove `content-encoding: zstd-d`.
+  // Change MockTransaction to remove `content-encoding: dcz`.
   scoped_mock_transaction_.reset();
   net::ScopedMockTransaction scoped_mock_transaction(
       kZstdDictionaryTestTransaction);
@@ -1219,7 +1207,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoZstdDContentEncoding) {
       net::test::IsError(net::ERR_IO_PENDING));
   int read_result = read_callback.WaitForResult();
 
-  // When there is no "content-encoding: zstd-d" header,
+  // When there is no "content-encoding: dcz" header,
   // SharedDictionaryNetworkTransaction must not decode the body.
   EXPECT_THAT(read_result, kZstdEncodedDataString.size());
   EXPECT_EQ(kZstdEncodedDataString, std::string(buf->data(), read_result));

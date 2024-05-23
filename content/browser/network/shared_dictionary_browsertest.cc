@@ -118,7 +118,7 @@ constexpr std::string_view kUncompressedDataString =
 constexpr std::string_view kErrorInvalidHashString =
     "test(\"Invalid dictionary hash.\");";
 constexpr std::string_view kErrorNoSharedDictionaryAcceptEncodingString =
-    "test(\"sbr or zstd-d is not set in accept-encoding header.\");";
+    "test(\"dcb or dcz is not set in accept-encoding header.\");";
 
 constexpr std::string_view kCompressedDataOriginalString =
     "test(\"This is compressed test data using a test dictionary\");";
@@ -127,9 +127,14 @@ constexpr std::string_view kCompressedDataOriginalString =
 // $ echo "This is a test dictionary." > /tmp/dict
 // $ echo -n "test(\"This is compressed test data using a test dictionary\");" \
 //     > /tmp/data
-// $ brotli -o /tmp/out.sbr -D /tmp/dict /tmp/data
-// $ xxd -i /tmp/out.sbr
+// $ echo -en '\xffDCB' > /tmp/out.dcb
+// $ openssl dgst -sha256 -binary /tmp/dict >> /tmp/out.dcb
+// $ brotli --stdout -D /tmp/dict /tmp/data >> /tmp/out.dcb
+// $ xxd -i /tmp/out.dcb
 constexpr uint8_t kBrotliCompressedData[] = {
+    0xff, 0x44, 0x43, 0x42, 0x53, 0x96, 0x9b, 0xcf, 0x5e, 0x96, 0x0e, 0x0e,
+    0xdb, 0xf0, 0xa4, 0xbd, 0xde, 0x6b, 0x0b, 0x3e, 0x93, 0x81, 0xe1, 0x56,
+    0xde, 0x7f, 0x5b, 0x91, 0xce, 0x83, 0x91, 0x62, 0x42, 0x70, 0xf4, 0x16,
     0xa1, 0xe0, 0x01, 0x00, 0x64, 0x9c, 0xa4, 0xaa, 0xd7, 0x47, 0xe0, 0x26,
     0x4b, 0x95, 0x91, 0xb4, 0x46, 0x36, 0x09, 0xc9, 0xc7, 0x0e, 0x38, 0xe4,
     0x44, 0xe8, 0x72, 0x0d, 0x3c, 0x6e, 0xab, 0x35, 0x9b, 0x0f, 0x4b, 0xd1,
@@ -142,13 +147,19 @@ const std::string kBrotliCompressedDataString =
 // $ echo "This is a test dictionary." > /tmp/dict
 // $ echo -n "test(\"This is compressed test data using a test dictionary\");" \
 //     > /tmp/data
-// $ zstd -o /tmp/out.szst -D /tmp/dict /tmp/data
-// $ xxd -i /tmp/out.szst
+// $ echo -en '\x5e\x2a\x4d\x18\x20\x00\x00\x00' > /tmp/out.dcz
+// $ openssl dgst -sha256 -binary /tmp/dict >> /tmp/out.dcz
+// $ zstd -D /tmp/dict -f -o /tmp/tmp.zstd /tmp/data
+// $ cat /tmp/tmp.zstd >> /tmp/out.dcz
+// $ xxd -i /tmp/out.dcz
 constexpr uint8_t kZstdCompressedData[] = {
-    0x28, 0xb5, 0x2f, 0xfd, 0x24, 0x3d, 0x35, 0x01, 0x00, 0xe0, 0x74,
-    0x65, 0x73, 0x74, 0x28, 0x22, 0x63, 0x6f, 0x6d, 0x70, 0x72, 0x65,
-    0x73, 0x73, 0x65, 0x64, 0x61, 0x74, 0x61, 0x20, 0x75, 0x73, 0x69,
-    0x6e, 0x67, 0x22, 0x29, 0x3b, 0x03, 0x10, 0x05, 0xdf, 0x9f, 0x96,
+    0x5e, 0x2a, 0x4d, 0x18, 0x20, 0x00, 0x00, 0x00, 0x53, 0x96, 0x9b, 0xcf,
+    0x5e, 0x96, 0x0e, 0x0e, 0xdb, 0xf0, 0xa4, 0xbd, 0xde, 0x6b, 0x0b, 0x3e,
+    0x93, 0x81, 0xe1, 0x56, 0xde, 0x7f, 0x5b, 0x91, 0xce, 0x83, 0x91, 0x62,
+    0x42, 0x70, 0xf4, 0x16, 0x28, 0xb5, 0x2f, 0xfd, 0x24, 0x3d, 0x35, 0x01,
+    0x00, 0xe0, 0x74, 0x65, 0x73, 0x74, 0x28, 0x22, 0x63, 0x6f, 0x6d, 0x70,
+    0x72, 0x65, 0x73, 0x73, 0x65, 0x64, 0x61, 0x74, 0x61, 0x20, 0x75, 0x73,
+    0x69, 0x6e, 0x67, 0x22, 0x29, 0x3b, 0x03, 0x10, 0x05, 0xdf, 0x9f, 0x96,
     0x11, 0x21, 0x8a, 0x48, 0x20, 0xef, 0xeb};
 const std::string kZstdCompressedDataString =
     std::string(reinterpret_cast<const char*>(kZstdCompressedData),
@@ -406,10 +417,9 @@ bool HasSharedDictionaryAcceptEncoding(
     return false;
   }
   if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
-    return it->second == "br-d, zstd-d" ||
-           base::EndsWith(it->second, ", br-d, zstd-d");
+    return it->second == "dcb, dcz" || base::EndsWith(it->second, ", dcb, dcz");
   } else {
-    return it->second == "br-d" || base::EndsWith(it->second, ", br-d");
+    return it->second == "dcb" || base::EndsWith(it->second, ", dcb");
   }
 }
 
@@ -749,8 +759,6 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     if (dict_hash) {
       if (*dict_hash == kExpectedDictionaryHashBase64) {
         if (HasSharedDictionaryAcceptEncoding(request.headers)) {
-          response->AddCustomHeader("content-dictionary",
-                                    kExpectedDictionaryHashBase64);
           if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
             response->AddCustomHeader(
                 "content-encoding",
@@ -1397,9 +1405,7 @@ class SharedDictionaryBrowserTest
       if (dict_hash) {
         if (*dict_hash == kExpectedDictionaryHashBase64) {
           if (HasSharedDictionaryAcceptEncoding(request.headers)) {
-            response->AddCustomHeader("content-encoding", "br-d");
-            response->AddCustomHeader("content-dictionary",
-                                      kExpectedDictionaryHashBase64);
+            response->AddCustomHeader("content-encoding", "dcb");
             response->set_content(kBrotliCompressedDataString);
           } else {
             response->set_content(kErrorNoSharedDictionaryAcceptEncodingString);

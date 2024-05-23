@@ -41,7 +41,7 @@ compression_dictionary_promise_test(async (t) => {
       kDefaultDictionaryHashBase64);
   // Check if the data compressed using Brotli with the dictionary can be
   // decompressed.
-  const data_url = `${kCompressedDataPath}?content_encoding=br-d`;
+  const data_url = `${kCompressedDataPath}?content_encoding=dcb`;
   assert_equals(await (await fetch(data_url)).text(), kExpectedCompressedData);
 }, 'Fetch same origin dictionary using link element');
 
@@ -64,7 +64,7 @@ compression_dictionary_promise_test(async (t) => {
   // Check if the data compressed using Brotli with the dictionary can be
   // decompressed.
   const data_url =
-      getRemoteHostUrl(`${kCompressedDataPath}?content_encoding=br-d`);
+      getRemoteHostUrl(`${kCompressedDataPath}?content_encoding=dcb`);
   assert_equals(await (await fetch(data_url)).text(), kExpectedCompressedData);
 }, 'Fetch cross origin dictionary using link element');
 
