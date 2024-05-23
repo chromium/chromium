@@ -273,8 +273,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.website_settings_category_permission_loud` appears to be unused"/>
 
     <!-- TODO(crbug.com/324935631): Remove this once tab group sync is using these. -->
-    <ignore regexp="The resource `R.string.close_all_tabs_and_groups_dialog_message` appears to be unused"/>
-    <ignore regexp="The resource `R.string.close_all_tabs_and_groups_action` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_group_creation_dialog_sync_description` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_groups_category` appears to be unused"/>
     <ignore regexp="The resource `R.string.saved_tab_groups_data_summary` appears to be unused"/>

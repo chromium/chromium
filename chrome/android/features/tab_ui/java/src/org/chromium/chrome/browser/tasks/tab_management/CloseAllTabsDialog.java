@@ -89,7 +89,7 @@ public class CloseAllTabsDialog {
                                 getDialogDescriptionString(context, tabModelSelector))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                context.getString(R.string.menu_close_all_tabs))
+                                context.getString(R.string.close_all_tabs_and_groups_action))
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 context.getString(R.string.cancel))
@@ -117,7 +117,7 @@ public class CloseAllTabsDialog {
                                     R.plurals.close_all_tabs_dialog_message_with_incognito_tabs,
                                     incognitoCount,
                                     incognitoCount)
-                    : context.getString(R.string.close_all_tabs_dialog_message);
+                    : context.getString(R.string.close_all_tabs_and_groups_dialog_message);
         }
     }
 }
