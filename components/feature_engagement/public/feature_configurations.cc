@@ -2113,6 +2113,18 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
           GetClientSideiOSPromoFeatureConfig(feature)) {
     return ios_promo_feature_config;
   }
+
+  if (kIPHDiscoverFeedHeaderFeature.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("discover_feed_header_menu_iph_triggered",
+                                  Comparator(EQUAL, 0), 365, 365);
+    config->used = EventConfig("discover_feed_header_menu_clicked",
+                               Comparator(EQUAL, 0), 365, 365);
+    return config;
+  }
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -480,7 +480,7 @@ BASE_FEATURE(kIPHBadgedTranslateManualTriggerFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDiscoverFeedHeaderFeature,
              "IPH_DiscoverFeedHeaderMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDefaultSiteViewFeature,
              "IPH_DefaultSiteView",
              base::FEATURE_ENABLED_BY_DEFAULT);
