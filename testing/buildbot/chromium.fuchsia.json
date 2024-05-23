@@ -328,7 +328,6 @@
       },
       {
         "args": [
-          "--gtest_filter=-All/DumpAccessibility*/fuchsia",
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless"
@@ -1447,7 +1446,6 @@
       },
       {
         "args": [
-          "--gtest_filter=-All/DumpAccessibility*/fuchsia",
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless",
@@ -2814,7 +2812,6 @@
       },
       {
         "args": [
-          "--gtest_filter=-All/DumpAccessibility*/fuchsia",
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless",

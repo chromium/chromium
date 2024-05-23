@@ -1897,7 +1897,6 @@ targets.legacy_basic_suite(
         "compositor_unittests": targets.legacy_test_config(),
         "content_browsertests": targets.legacy_test_config(
             args = [
-                "--gtest_filter=-All/DumpAccessibility*/fuchsia",
                 "--test-arg=--disable-gpu",
                 "--test-arg=--headless",
                 "--test-arg=--ozone-platform=headless",
