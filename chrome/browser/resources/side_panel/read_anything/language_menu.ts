@@ -12,6 +12,7 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import './icons.html.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -80,6 +81,14 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
   // directly to better aid in testing.
   private baseLanguages = AVAILABLE_GOOGLE_TTS_LOCALES;
+
+  constructor() {
+    super();
+    this.addEventListener('cr-dialog-open', () => {
+      this.$.languageMenu.querySelector<CrInputElement>('.search-field')
+          ?.focus();
+    });
+  }
 
   private closeLanguageMenu_() {
     this.$.languageMenu.close();
