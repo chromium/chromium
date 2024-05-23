@@ -80,6 +80,7 @@ source_set("mixers") {
     deps += [
       "//chrome/browser:browser_themes",
       "//chrome/browser:titlebar_config",
+      "//chrome/browser/win:mica_titlebar",
       "//ui/base",
       "//ui/color:accent_color_observer",
       "//ui/native_theme",

@@ -12,7 +12,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/win/titlebar_config.h"
+#include "chrome/browser/win/mica_titlebar.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"

@@ -60,7 +60,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/win/titlebar_config.h"
+#include "chrome/browser/win/mica_titlebar.h"
 #endif
 
 namespace {

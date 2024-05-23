@@ -4756,6 +4756,7 @@ static_library("ui") {
     deps += [
       "//chrome/browser:titlebar_config",
       "//chrome/browser/ui/startup:buildflags",
+      "//chrome/browser/win:mica_titlebar",
       "//chrome/browser/win/conflicts:module_info",
       "//chrome/credential_provider/common:common_constants",
       "//chrome/services/util_win/public/mojom:mojom",

@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/win/mica_titlebar.h"
 #include "chrome/browser/win/titlebar_config.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
