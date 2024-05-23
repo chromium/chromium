@@ -504,10 +504,12 @@ def main():
     # flag that tells clang-cl to not auto-add it (and then explicitly pass
     # it via GN).
     reclient_inputs['clang'].extend([
+        'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone-x86_64.lib',
+        'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone_cxx-x86_64.lib',
         'lib/clang/$V/lib/windows/clang_rt.profile-i386.lib',
         'lib/clang/$V/lib/windows/clang_rt.profile-x86_64.lib',
         'lib/clang/$V/lib/windows/clang_rt.profile-aarch64.lib',
-    ])
+        ])
 
   # Check that all non-glob wanted files exist on disk.
   want = [w.replace('$V', RELEASE_VERSION) for w in want]

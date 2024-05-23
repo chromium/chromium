@@ -266,23 +266,15 @@ config("default_sanitizer_ldflags") {
     # Windows directly calls link.exe instead of the compiler driver when
     # linking.  Hence, pass the runtime libraries instead of -fsanitize=address
     # or -fsanitize=fuzzer.
-    if (is_component_build) {
-      # In the static-library build, sanitizer libraries are different for
-      # executables and dlls, see link_executable and link_shared_library
-      # below.  This here handles only the component build.
-      if (is_asan) {
-        assert(current_cpu == "x64", "Win ASan unsupported architecture")
-        libs = [
-          "clang_rt.asan_dynamic-x86_64.lib",
-          "clang_rt.asan_dynamic_runtime_thunk-x86_64.lib",
-        ]
-      } else if (is_ubsan) {
-        assert(current_cpu == "x64", "Win UBSan unsupported architecture")
-        libs = [
-          "clang_rt.ubsan_dynamic-x86_64.lib",
-          "clang_rt.ubsan_dynamic_runtime_thunk-x86_64.lib",
-        ]
-      }
+    if (is_asan && is_component_build) {
+      # In the static-library build, ASan libraries are different for
+      # executables and dlls, see link_executable and link_shared_library below.
+      # This here handles only the component build.
+      assert(current_cpu == "x64", "WinASan unsupported architecture")
+      libs = [
+        "clang_rt.asan_dynamic-x86_64.lib",
+        "clang_rt.asan_dynamic_runtime_thunk-x86_64.lib",
+      ]
     }
     if (use_libfuzzer) {
       assert(current_cpu == "x64", "LibFuzzer unsupported architecture")
@@ -343,26 +335,16 @@ config("asan_flags") {
 }
 
 config("link_executable") {
-  if (is_win && !is_component_build) {
-    if (is_asan) {
-      assert(current_cpu == "x64", "Win ASan unsupported architecture")
-      ldflags = [ "-wholearchive:clang_rt.asan-x86_64.lib" ]
-    } else if (is_ubsan) {
-      assert(current_cpu == "x64", "Win UBSan unsupported architecture")
-      ldflags = [ "-wholearchive:clang_rt.ubsan-x86_64.lib" ]
-    }
+  if (is_asan && is_win && !is_component_build) {
+    assert(current_cpu == "x64", "WinASan unsupported architecture")
+    ldflags = [ "-wholearchive:clang_rt.asan-x86_64.lib" ]
   }
 }
 
 config("link_shared_library") {
-  if (is_win && !is_component_build) {
-    if (is_asan) {
-      assert(current_cpu == "x64", "Win ASan unsupported architecture")
-      libs = [ "clang_rt.asan_dll_thunk-x86_64.lib" ]
-    } else if (is_ubsan) {
-      assert(current_cpu == "x64", "Win UBSan unsupported architecture")
-      libs = [ "clang_rt.ubsan_dll_thunk-x86_64.lib" ]
-    }
+  if (is_asan && is_win && !is_component_build) {
+    assert(current_cpu == "x64", "WinASan unsupported architecture")
+    libs = [ "clang_rt.asan_dll_thunk-x86_64.lib" ]
   }
 }
 
@@ -563,14 +545,6 @@ config("ubsan_flags") {
       "-fsanitize=vla-bound",
       "-fsanitize-ignorelist=$ubsan_ignorelist_path",
     ]
-
-    # Clang by default embeds /defaultlib: directives in .obj files when using
-    # ubsan to link the ubsan runtime. However, it checks for the presence of
-    # .lib files at compile time to decide which .lib to link to. Since we
-    # might run the compile remotely, the runtime .lib file we want to use might
-    # not be around. So disable this autolinking and manually link the right
-    # .lib file below. This also makes ubsan match asan behavior.
-    cflags += [ "-fno-rtlib-defaultlib" ]
   }
 }
 
