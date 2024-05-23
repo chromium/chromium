@@ -91,11 +91,13 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
     PrefService* prefs) {
   std::vector<std::unique_ptr<TemplateURLData>> t_urls;
 
-  if (search_engines::IsEeaChoiceCountry(country_id) &&
-      search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    CHECK(prefs);
-
+  if (!prefs) {
+    // Possible only in tests.
+    // TODO(crbug.com/40287734): Update tests and remove associated branches.
+    CHECK_IS_TEST();
+  } else if (search_engines::IsEeaChoiceCountry(country_id) &&
+             search_engines::IsChoiceScreenFlagEnabled(
+                 search_engines::ChoicePromo::kAny)) {
     if (search_engines::HasSearchEngineCountryListOverride()) {
       auto country_override =
           absl::get<search_engines::SearchEngineCountryListOverride>(
