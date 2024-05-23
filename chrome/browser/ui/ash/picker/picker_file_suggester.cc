@@ -23,6 +23,7 @@ using LocalFile = PickerFileSuggester::LocalFile;
 using DriveFile = PickerFileSuggester::DriveFile;
 
 constexpr base::TimeDelta kMaxFileRecencyDelta = base::Days(30);
+constexpr base::TimeDelta kScanTimeout = base::Seconds(1);
 
 storage::FileSystemContext* GetFileSystemContextForProfile(Profile* profile) {
   content::StoragePartition* storage = profile->GetDefaultStoragePartition();
@@ -44,6 +45,7 @@ void GetRecentFiles(Profile* profile,
   }
   ash::RecentModelOptions options = {
       .now_delta = kMaxFileRecencyDelta,
+      .scan_timeout = kScanTimeout,
       .file_type = file_type,
   };
 
