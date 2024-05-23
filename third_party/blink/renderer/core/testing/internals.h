@@ -470,7 +470,6 @@ class Internals final : public ScriptWrappable {
   void forceCompositingUpdate(Document*, ExceptionState&);
 
   void setDarkPreferredColorScheme(Document* document);
-  void setDarkPreferredRootScrollbarColorScheme(Document* document);
   void setForcedColorsAndDarkPreferredColorScheme(Document* document);
 
   void setShouldRevealPassword(Element*, bool, ExceptionState&);
