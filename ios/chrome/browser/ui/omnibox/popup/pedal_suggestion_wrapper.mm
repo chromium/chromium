@@ -108,4 +108,8 @@
   return self.text;
 }
 
+- (NSMutableArray*)actionsInSuggest {
+  return nil;
+}
+
 @end

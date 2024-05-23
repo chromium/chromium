@@ -9,6 +9,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/omnibox/browser/suggestion_answer.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -267,6 +269,21 @@ UIColor* DimColorIncognito() {
 
 - (id<OmniboxPedal>)pedal {
   return self.pedalData;
+}
+
+- (NSMutableArray<SuggestAction*>*)actionsInSuggest {
+  NSMutableArray<SuggestAction*>* suggestActions =
+      [[NSMutableArray alloc] init];
+
+  for (auto& action : _match.actions) {
+    SuggestAction* suggestAction =
+        [SuggestAction actionWithOmniboxAction:action.get()];
+    if (suggestAction) {
+      [suggestActions addObject:suggestAction];
+    }
+  }
+
+  return suggestActions;
 }
 
 - (UIImage*)matchTypeIcon {

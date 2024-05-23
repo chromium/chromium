@@ -32,6 +32,7 @@
 @property(nonatomic, strong) CrURL* destinationUrl;
 @property(nonatomic, strong) NSNumber* suggestionGroupId;
 @property(nonatomic, strong) NSNumber* suggestionSectionId;
+@property(nonatomic, strong) NSMutableArray<SuggestAction*>* actionsInSuggest;
 @end
 
 @implementation FakeAutocompleteMatch
