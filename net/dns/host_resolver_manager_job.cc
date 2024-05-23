@@ -300,6 +300,15 @@ void HostResolverManager::Job::CancelServiceEndpointRequest(
   }
 }
 
+void HostResolverManager::Job::ChangeServiceEndpointRequestPriority(
+    ServiceEndpointRequestImpl* request,
+    RequestPriority priority) {
+  priority_tracker_.Remove(request->priority());
+  request->set_priority(priority);
+  priority_tracker_.Add(request->priority());
+  UpdatePriority();
+}
+
 void HostResolverManager::Job::Abort() {
   CompleteRequestsWithError(ERR_NETWORK_CHANGED, /*task_type=*/std::nullopt);
 }

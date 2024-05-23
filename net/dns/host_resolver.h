@@ -248,6 +248,9 @@ class NET_EXPORT HostResolver {
     // while resolution is still ongoing. In general, should be called only
     // after resolution completed.
     virtual ResolveErrorInfo GetResolveErrorInfo() = 0;
+
+    // Change the priority of this request.
+    virtual void ChangeRequestPriority(RequestPriority priority) = 0;
   };
 
   // Handler for an activation of probes controlled by a HostResolver. Created

@@ -96,6 +96,10 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // this job.
   void CancelServiceEndpointRequest(ServiceEndpointRequestImpl* request);
 
+  // Similar to ChangeRequestPriority(), but for a ServiceEndpointRequest.
+  void ChangeServiceEndpointRequestPriority(ServiceEndpointRequestImpl* request,
+                                            RequestPriority priority);
+
   // Called from AbortJobsWithoutTargetNetwork(). Completes all requests and
   // destroys the job. This currently assumes the abort is due to a network
   // change.

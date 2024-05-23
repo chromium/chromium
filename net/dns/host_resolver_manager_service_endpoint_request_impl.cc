@@ -157,6 +157,16 @@ HostResolverManager::ServiceEndpointRequestImpl::GetResolveErrorInfo() {
   return error_info_;
 }
 
+void HostResolverManager::ServiceEndpointRequestImpl::ChangeRequestPriority(
+    RequestPriority priority) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!job_.has_value()) {
+    priority_ = priority;
+    return;
+  }
+  job_.value()->ChangeServiceEndpointRequestPriority(this, priority);
+}
+
 void HostResolverManager::ServiceEndpointRequestImpl::AssignJob(
     base::SafeRef<Job> job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

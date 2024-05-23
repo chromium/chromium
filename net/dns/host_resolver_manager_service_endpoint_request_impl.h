@@ -53,6 +53,7 @@ class HostResolverManager::ServiceEndpointRequestImpl
   const std::set<std::string>& GetDnsAliasResults() override;
   bool EndpointsCryptoReady() override;
   ResolveErrorInfo GetResolveErrorInfo() override;
+  void ChangeRequestPriority(RequestPriority priority) override;
 
   // These should only be called from HostResolver::Job.
   void AssignJob(base::SafeRef<Job> job);
@@ -64,8 +65,8 @@ class HostResolverManager::ServiceEndpointRequestImpl
 
   const ResolveHostParameters& parameters() const { return parameters_; }
 
-  // TODO(crbug.com/41493696): Support setting priority.
   RequestPriority priority() const { return priority_; }
+  void set_priority(RequestPriority priority) { priority_ = priority; }
 
   HostCache* host_cache() const {
     return resolve_context_ ? resolve_context_->host_cache() : nullptr;

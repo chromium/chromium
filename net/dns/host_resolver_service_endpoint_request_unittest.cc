@@ -18,6 +18,7 @@
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/request_priority.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_task_results_manager.h"
 #include "net/dns/dns_test_util.h"
@@ -934,6 +935,109 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   requester.WaitForFinished();
   EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
   EXPECT_THAT(*requester.finished_result(), IsOk());
+}
+
+TEST_F(HostResolverServiceEndpointRequestTest, ChangePriority) {
+  proc_->AddRuleForAllFamilies("req1", "192.0.2.1");
+  proc_->AddRuleForAllFamilies("req2", "192.0.2.2");
+  proc_->AddRuleForAllFamilies("req3", "192.0.2.3");
+
+  CreateSerialResolver(/*check_ipv6_on_wifi=*/true);
+
+  // Start three requests with the same initial priority, then change the
+  // priority of the third request to HIGHEST. The first request starts
+  // immediately so it should finish first. The third request should finish
+  // second because its priority is changed to HIGHEST. The second request
+  // should finish last.
+
+  ResolveHostParameters params;
+  params.initial_priority = RequestPriority::LOW;
+
+  size_t request_finish_order = 0;
+
+  Requester requester1 = CreateRequester("https://req1", params);
+  requester1.SetOnFinishedCallback(base::BindLambdaForTesting([&] {
+    ++request_finish_order;
+    ASSERT_EQ(request_finish_order, 1u);
+  }));
+  int rv = requester1.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  Requester requester2 = CreateRequester("https://req2", params);
+  requester2.SetOnFinishedCallback(base::BindLambdaForTesting([&] {
+    ++request_finish_order;
+    ASSERT_EQ(request_finish_order, 3u);
+  }));
+  rv = requester2.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  Requester requester3 = CreateRequester("https://req3", params);
+  requester3.SetOnFinishedCallback(base::BindLambdaForTesting([&] {
+    ++request_finish_order;
+    ASSERT_EQ(request_finish_order, 2u);
+  }));
+  rv = requester3.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  requester3.request()->ChangeRequestPriority(RequestPriority::HIGHEST);
+
+  proc_->SignalMultiple(3u);
+
+  requester1.WaitForFinished();
+  requester3.WaitForFinished();
+  requester2.WaitForFinished();
+}
+
+TEST_F(HostResolverServiceEndpointRequestTest, ChangePriorityBeforeStart) {
+  proc_->AddRuleForAllFamilies("req1", "192.0.2.1");
+  proc_->AddRuleForAllFamilies("req2", "192.0.2.2");
+  proc_->AddRuleForAllFamilies("req3", "192.0.2.3");
+
+  CreateSerialResolver(/*check_ipv6_on_wifi=*/true);
+
+  // Create three requests with the same initial priority, then change the
+  // priority of the third request to HIGHEST before starting the requests. The
+  // first request starts immediately so it should finish first. The third
+  // request should finish second because its priority is changed to HIGHEST.
+  // The second request should finish last.
+
+  ResolveHostParameters params;
+  params.initial_priority = RequestPriority::LOW;
+
+  size_t request_finish_order = 0;
+
+  Requester requester1 = CreateRequester("https://req1", params);
+  requester1.SetOnFinishedCallback(base::BindLambdaForTesting([&] {
+    ++request_finish_order;
+    ASSERT_EQ(request_finish_order, 1u);
+  }));
+
+  Requester requester2 = CreateRequester("https://req2", params);
+  requester2.SetOnFinishedCallback(base::BindLambdaForTesting([&] {
+    ++request_finish_order;
+    ASSERT_EQ(request_finish_order, 3u);
+  }));
+
+  Requester requester3 = CreateRequester("https://req3", params);
+  requester3.SetOnFinishedCallback(base::BindLambdaForTesting([&] {
+    ++request_finish_order;
+    ASSERT_EQ(request_finish_order, 2u);
+  }));
+
+  requester3.request()->ChangeRequestPriority(RequestPriority::HIGHEST);
+
+  int rv = requester1.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = requester2.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = requester3.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  proc_->SignalMultiple(3u);
+
+  requester1.WaitForFinished();
+  requester3.WaitForFinished();
+  requester2.WaitForFinished();
 }
 
 }  // namespace net
