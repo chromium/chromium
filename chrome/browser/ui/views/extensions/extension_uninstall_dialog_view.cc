@@ -140,14 +140,6 @@ std::unique_ptr<extensions::ExtensionUninstallDialog>
 extensions::ExtensionUninstallDialog::Create(Profile* profile,
                                              gfx::NativeWindow parent,
                                              Delegate* delegate) {
-  return CreateViews(profile, parent, delegate);
-}
-
-// static
-std::unique_ptr<extensions::ExtensionUninstallDialog>
-extensions::ExtensionUninstallDialog::CreateViews(Profile* profile,
-                                                  gfx::NativeWindow parent,
-                                                  Delegate* delegate) {
   return std::make_unique<ExtensionUninstallDialogViews>(profile, parent,
                                                          delegate);
 }

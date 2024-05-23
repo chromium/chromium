@@ -62,16 +62,10 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
     virtual ~Delegate() {}
   };
 
-  // Creates a platform specific implementation of ExtensionUninstallDialog. The
-  // dialog will be modal to |parent|, or a non-modal dialog if |parent| is
-  // NULL.
+  // Creates the Views implementation of ExtensionUninstallDialog. The dialog
+  // will be modal to `parent`, or a non-modal dialog if `parent` is NULL.
   static std::unique_ptr<ExtensionUninstallDialog>
   Create(Profile* profile, gfx::NativeWindow parent, Delegate* delegate);
-
-  // Create the Views implementation of ExtensionUninstallDialog, for use on
-  // platforms where that is not the native platform implementation.
-  static std::unique_ptr<ExtensionUninstallDialog>
-  CreateViews(Profile* profile, gfx::NativeWindow parent, Delegate* delegate);
 
   ExtensionUninstallDialog(const ExtensionUninstallDialog&) = delete;
   ExtensionUninstallDialog& operator=(const ExtensionUninstallDialog&) = delete;
