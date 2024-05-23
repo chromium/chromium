@@ -8,11 +8,11 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -42,18 +42,18 @@ LoginLogoutSessionType GetSessionType(const AccountId& account_id) {
     return LoginLogoutSessionType::GUEST_SESSION;
   }
 
-  policy::DeviceLocalAccount::Type type;
-  if (!IsDeviceLocalAccountUser(account_id.GetUserEmail(), &type)) {
+  auto type = policy::GetDeviceLocalAccountType(account_id.GetUserEmail());
+  if (!type.has_value()) {
     return LoginLogoutSessionType::REGULAR_USER_SESSION;
   }
 
-  switch (type) {
-    case policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION:
-    case policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION:
+  switch (type.value()) {
+    case policy::DeviceLocalAccountType::kPublicSession:
+    case policy::DeviceLocalAccountType::kSamlPublicSession:
       return LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION;
-    case policy::DeviceLocalAccount::TYPE_KIOSK_APP:
-    case policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP:
-    case policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP:
+    case policy::DeviceLocalAccountType::kKioskApp:
+    case policy::DeviceLocalAccountType::kArcKioskApp:
+    case policy::DeviceLocalAccountType::kWebKioskApp:
       return LoginLogoutSessionType::KIOSK_SESSION;
     default:
       NOTREACHED_IN_MIGRATION();

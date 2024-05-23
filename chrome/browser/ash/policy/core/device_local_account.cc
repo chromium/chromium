@@ -131,21 +131,6 @@ std::string GenerateDeviceLocalAccountUserId(const std::string& account_id,
       account_id, static_cast<DeviceLocalAccountType>(type));
 }
 
-bool IsDeviceLocalAccountUser(const std::string& user_id,
-                              DeviceLocalAccount::Type* type) {
-  auto ret = ::policy::GetDeviceLocalAccountType(user_id);
-  if (type) {
-    if (ret.has_value()) {
-      *type = static_cast<DeviceLocalAccount::Type>(ret.value());
-    } else if (ret == base::unexpected(
-                          GetDeviceLocalAccountTypeError::kUnknownDomain)) {
-      *type = DeviceLocalAccount::TYPE_COUNT;
-    }
-  }
-  return ret != base::unexpected(
-                    GetDeviceLocalAccountTypeError::kNoDeviceLocalAccountUser);
-}
-
 void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
                             const std::vector<DeviceLocalAccount>& accounts) {
   // TODO(crbug.com/40636049): handle TYPE_SAML_PUBLIC_SESSION

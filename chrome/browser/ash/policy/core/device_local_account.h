@@ -157,12 +157,6 @@ struct DeviceLocalAccount {
 std::string GenerateDeviceLocalAccountUserId(const std::string& account_id,
                                              DeviceLocalAccount::Type type);
 
-// DEPRECATED: please use the one defined in
-// components/policy/core/common/device_local_account_type.h
-// TODO(b/267685577): Remove this.
-bool IsDeviceLocalAccountUser(const std::string& user_id,
-                              DeviceLocalAccount::Type* type);
-
 // Stores a list of device-local accounts in |service|. The accounts are stored
 // as a list of dictionaries with each dictionary containing the information
 // about one |DeviceLocalAccount|.

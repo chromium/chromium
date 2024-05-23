@@ -92,6 +92,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -639,23 +640,23 @@ void ReadCrashReportInfo(
 
 em::ActiveTimePeriod::SessionType GetSessionType(
     const std::string& user_email) {
-  DeviceLocalAccount::Type type;
-  if (!IsDeviceLocalAccountUser(user_email, &type)) {
+  auto type = GetDeviceLocalAccountType(user_email);
+  if (!type.has_value()) {
     return em::ActiveTimePeriod::SESSION_AFFILIATED_USER;
   }
 
-  switch (type) {
-    case DeviceLocalAccount::TYPE_PUBLIC_SESSION:
-    case DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION:
+  switch (type.value()) {
+    case DeviceLocalAccountType::kPublicSession:
+    case DeviceLocalAccountType::kSamlPublicSession:
       return em::ActiveTimePeriod::SESSION_MANAGED_GUEST;
 
-    case DeviceLocalAccount::TYPE_KIOSK_APP:
+    case DeviceLocalAccountType::kKioskApp:
       return em::ActiveTimePeriod::SESSION_KIOSK;
 
-    case DeviceLocalAccount::TYPE_ARC_KIOSK_APP:
+    case DeviceLocalAccountType::kArcKioskApp:
       return em::ActiveTimePeriod::SESSION_ARC_KIOSK;
 
-    case DeviceLocalAccount::TYPE_WEB_KIOSK_APP:
+    case DeviceLocalAccountType::kWebKioskApp:
       return em::ActiveTimePeriod::SESSION_WEB_KIOSK;
 
     default:
@@ -3086,7 +3087,7 @@ bool DeviceStatusCollector::IsReportingActivityTimes() const {
     return false;
   }
   std::string user_email = GetUserForActivityReporting();
-  return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, nullptr);
+  return !user_email.empty() && !IsDeviceLocalAccountUser(user_email);
 }
 bool DeviceStatusCollector::IsReportingNetworkData() const {
   return report_network_configuration_ || report_network_status_;
@@ -3105,7 +3106,7 @@ bool DeviceStatusCollector::IsReportingUsers() const {
     return false;
   }
   std::string user_email = GetUserForActivityReporting();
-  return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, nullptr);
+  return !user_email.empty() && !IsDeviceLocalAccountUser(user_email);
 }
 bool DeviceStatusCollector::IsReportingCrashReportInfo() const {
   return report_crash_report_info_ && stat_reporting_pref_;

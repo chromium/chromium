@@ -253,6 +253,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/quirks/quirks_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -1064,7 +1065,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
-    if (policy::IsDeviceLocalAccountUser(account_id.GetUserEmail(), nullptr) &&
+    if (policy::IsDeviceLocalAccountUser(account_id.GetUserEmail()) &&
         !user_manager->IsKnownUser(account_id)) {
       // When a device-local account is removed, its policy is deleted from disk
       // immediately. If a session using this account happens to be in progress,

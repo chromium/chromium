@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
@@ -49,6 +48,7 @@
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/session_manager/core/session_manager.h"
@@ -145,9 +145,10 @@ void GetFilesIdSaltReady(
 // Returns true if |users| contains users other than device local accounts.
 bool HasNonDeviceLocalAccounts(const user_manager::UserList& users) {
   for (const user_manager::User* user : users) {
-    if (!policy::IsDeviceLocalAccountUser(user->GetAccountId().GetUserEmail(),
-                                          nullptr))
+    if (!policy::IsDeviceLocalAccountUser(
+            user->GetAccountId().GetUserEmail())) {
       return true;
+    }
   }
   return false;
 }

@@ -70,12 +70,12 @@
 #include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 #else
 #include "chrome/browser/extensions/preinstalled_apps.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -670,20 +670,22 @@ void ExternalProviderImpl::CreateExternalProviders(
   bool is_chrome_os_public_session = false;
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  policy::DeviceLocalAccount::Type account_type;
-  if (user && connector->IsDeviceEnterpriseManaged() &&
-      policy::IsDeviceLocalAccountUser(user->GetAccountId().GetUserEmail(),
-                                       &account_type)) {
-    if (account_type == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION)
-      is_chrome_os_public_session = true;
-    policy::DeviceLocalAccountPolicyBroker* broker =
-        connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
-            user->GetAccountId().GetUserEmail());
-    if (broker) {
-      external_loader = broker->extension_loader();
-      crx_location = ManifestLocation::kExternalPolicy;
-    } else {
-      NOTREACHED_IN_MIGRATION();
+  if (user && connector->IsDeviceEnterpriseManaged()) {
+    auto account_type =
+        policy::GetDeviceLocalAccountType(user->GetAccountId().GetUserEmail());
+    if (account_type.has_value()) {
+      if (account_type == policy::DeviceLocalAccountType::kPublicSession) {
+        is_chrome_os_public_session = true;
+      }
+      policy::DeviceLocalAccountPolicyBroker* broker =
+          connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
+              user->GetAccountId().GetUserEmail());
+      if (broker) {
+        external_loader = broker->extension_loader();
+        crx_location = ManifestLocation::kExternalPolicy;
+      } else {
+        NOTREACHED_IN_MIGRATION();
+      }
     }
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

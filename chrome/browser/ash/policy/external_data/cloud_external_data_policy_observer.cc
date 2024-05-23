@@ -24,6 +24,7 @@
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -63,7 +64,7 @@ CloudExternalDataPolicyObserver::PolicyServiceObserver::PolicyServiceObserver(
     : parent_(parent), user_id_(user_id), policy_service_(policy_service) {
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, this);
 
-  if (!IsDeviceLocalAccountUser(user_id, nullptr)) {
+  if (!IsDeviceLocalAccountUser(user_id)) {
     // Notify |parent_| if the external data reference for |user_id_| is set
     // during login. This is omitted for device-local accounts because their
     // policy is available before login and the external data reference will
