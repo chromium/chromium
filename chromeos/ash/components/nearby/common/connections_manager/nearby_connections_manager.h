@@ -148,6 +148,15 @@ class NearbyConnectionsManager {
   // Stops discovery through Nearby Connections.
   virtual void StopDiscovery() = 0;
 
+  // Inject a bluetooth endpoint into a Nearby Connections discovery session
+  // for the provided `service_id`.
+  virtual void InjectBluetoothEndpoint(
+      const std::string& service_id,
+      const std::string& endpoint_id,
+      const std::vector<uint8_t> endpoint_info,
+      const std::vector<uint8_t> remote_bluetooth_mac_address,
+      ConnectionsCallback callback) = 0;
+
   // Connects to remote |endpoint_id| through Nearby Connections.
   virtual void Connect(
       std::vector<uint8_t> endpoint_info,

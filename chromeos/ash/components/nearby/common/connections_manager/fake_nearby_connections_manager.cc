@@ -57,6 +57,27 @@ void FakeNearbyConnectionsManager::StopAdvertising(
   }
 }
 
+void FakeNearbyConnectionsManager::InjectBluetoothEndpoint(
+    const std::string& service_id,
+    const std::string& endpoint_id,
+    const std::vector<uint8_t> endpoint_info,
+    const std::vector<uint8_t> remote_bluetooth_mac_address,
+    ConnectionsCallback callback) {
+  // Assume that this FakeNearbyConnectionsManager object starts/stops
+  // the discovery session to inject into. This assumption doesn't hold for
+  // NearbyConnectionsManagerImpl: if one starts discovery, another can inject
+  // an endpoint into the former's discovery session if the same `service_id` is
+  // used for discovery start and injection.
+  if (!IsDiscovering()) {
+    std::move(callback).Run(
+        NearbyConnectionsManager::ConnectionsStatus::kError);
+  }
+
+  discovery_listener_->OnEndpointDiscovered(endpoint_id, endpoint_info);
+  std::move(callback).Run(
+      NearbyConnectionsManager::ConnectionsStatus::kSuccess);
+}
+
 void FakeNearbyConnectionsManager::StartDiscovery(
     DiscoveryListener* listener,
     DataUsage data_usage,

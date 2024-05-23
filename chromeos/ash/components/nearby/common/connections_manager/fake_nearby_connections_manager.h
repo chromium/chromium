@@ -36,6 +36,13 @@ class FakeNearbyConnectionsManager
                         DataUsage data_usage,
                         ConnectionsCallback callback) override;
   void StopAdvertising(ConnectionsCallback callback) override;
+
+  void InjectBluetoothEndpoint(
+      const std::string& service_id,
+      const std::string& endpoint_id,
+      const std::vector<uint8_t> endpoint_info,
+      const std::vector<uint8_t> remote_bluetooth_mac_address,
+      ConnectionsCallback callback) override;
   void StartDiscovery(DiscoveryListener* listener,
                       DataUsage data_usage,
                       ConnectionsCallback callback) override;

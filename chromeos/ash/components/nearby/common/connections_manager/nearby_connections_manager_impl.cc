@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager_impl.h"
 
+#include <string>
+
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -228,6 +230,52 @@ void NearbyConnectionsManagerImpl::StopAdvertising(
 
   process_reference_->GetNearbyConnections()->StopAdvertising(
       service_id_, std::move(callback));
+}
+
+void NearbyConnectionsManagerImpl::InjectBluetoothEndpoint(
+    const std::string& service_id,
+    const std::string& endpoint_id,
+    const std::vector<uint8_t> endpoint_info,
+    const std::vector<uint8_t> remote_bluetooth_mac_address,
+    ConnectionsCallback callback) {
+  nearby::connections::mojom::NearbyConnections* nearby_connections =
+      GetNearbyConnections();
+  if (!nearby_connections) {
+    CD_LOG(ERROR, Feature::NS)
+        << __func__ << " Nearby Connections cannot be retrieved.";
+    std::move(callback).Run(ConnectionsStatus::kError);
+    return;
+  }
+
+  if (endpoint_id.length() != 4) {
+    CD_LOG(ERROR, Feature::NS)
+        << __func__ << " endpoint ID must be length 4. Actual size: "
+        << base::NumberToString(endpoint_id.length());
+    std::move(callback).Run(ConnectionsStatus::kError);
+    return;
+  }
+
+  if (endpoint_info.size() == 0 || endpoint_info.size() > 130) {
+    CD_LOG(ERROR, Feature::NS)
+        << __func__
+        << " endpoint info must have size >0 and <131. Actual size: "
+        << base::NumberToString(endpoint_info.size());
+    std::move(callback).Run(ConnectionsStatus::kError);
+    return;
+  }
+
+  if (remote_bluetooth_mac_address.size() != 6) {
+    CD_LOG(ERROR, Feature::NS)
+        << __func__
+        << " bluetooth mac address size must be 6 bytes. Actual size: "
+        << base::NumberToString(remote_bluetooth_mac_address.size());
+    std::move(callback).Run(ConnectionsStatus::kError);
+    return;
+  }
+
+  nearby_connections->InjectBluetoothEndpoint(
+      service_id, endpoint_id, endpoint_info, remote_bluetooth_mac_address,
+      std::move(callback));
 }
 
 void NearbyConnectionsManagerImpl::StartDiscovery(

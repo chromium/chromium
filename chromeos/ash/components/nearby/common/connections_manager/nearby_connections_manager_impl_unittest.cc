@@ -2296,3 +2296,137 @@ TEST_F(NearbyConnectionsManagerImplTest, PayloadListenerV3RemoteCallbacks) {
                                  kTotalSize, /*bytes_transferred=*/kTotalSize));
   payload_transfer_update_run_loop.Run();
 }
+
+TEST_F(NearbyConnectionsManagerImplTest, InjectBluetoothEndpoint_Success) {
+  mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
+  testing::NiceMock<MockDiscoveryListener> discovery_listener;
+  StartDiscovery(discovery_listener_remote, discovery_listener);
+
+  const std::vector<uint8_t> endpoint_info(std::begin(kEndpointInfo),
+                                           std::end(kEndpointInfo));
+  base::RunLoop run_loop;
+  base::OnceCallback<void(nearby::connections::mojom::Status)> callback =
+      base::BindLambdaForTesting(
+          [&run_loop](nearby::connections::mojom::Status status) {
+            EXPECT_EQ(status, nearby::connections::mojom::Status::kSuccess);
+            run_loop.Quit();
+          });
+  EXPECT_CALL(
+      nearby_connections_,
+      InjectBluetoothEndpoint(testing::Eq(kServiceId), testing::Eq(kEndpointId),
+                              testing::Eq(endpoint_info),
+                              testing::Eq(kBluetoothMacAddress), testing::_))
+      .WillOnce([&](const std::string& service_id,
+                    const std::string& endpoint_id,
+                    const std::vector<uint8_t> endpoint_info,
+                    const std::vector<uint8_t> bluetooth_mac_address,
+                    base::OnceCallback<void(nearby::connections::mojom::Status)>
+                        callback) {
+        EXPECT_EQ(kServiceId, service_id);
+        EXPECT_EQ(kEndpointId, endpoint_id);
+        EXPECT_EQ(std::vector<uint8_t>(std::begin(kEndpointInfo),
+                                       std::end(kEndpointInfo)),
+                  endpoint_info);
+        EXPECT_EQ(kBluetoothMacAddress, bluetooth_mac_address);
+        std::move(callback).Run(nearby::connections::mojom::Status::kSuccess);
+      });
+
+  nearby_connections_manager_->InjectBluetoothEndpoint(
+      kServiceId, kEndpointId, endpoint_info, kBluetoothMacAddress,
+      std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(NearbyConnectionsManagerImplTest,
+       InjectBluetoothEndpoint_Error_EndpointIdShort) {
+  mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
+  testing::NiceMock<MockDiscoveryListener> discovery_listener;
+  StartDiscovery(discovery_listener_remote, discovery_listener);
+
+  const std::vector<uint8_t> endpoint_info(std::begin(kEndpointInfo),
+                                           std::end(kEndpointInfo));
+  base::RunLoop run_loop;
+  base::OnceCallback<void(nearby::connections::mojom::Status)> callback =
+      base::BindLambdaForTesting(
+          [&run_loop](nearby::connections::mojom::Status status) {
+            EXPECT_EQ(status, nearby::connections::mojom::Status::kError);
+            run_loop.Quit();
+          });
+
+  // Provide 2-byte endpoint id instead of required 4 byte endpoint id.
+  const std::string short_endpoint_id = "BS";
+
+  nearby_connections_manager_->InjectBluetoothEndpoint(
+      kServiceId, short_endpoint_id, endpoint_info, kBluetoothMacAddress,
+      std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(NearbyConnectionsManagerImplTest,
+       InjectBluetoothEndpoint_Error_EndpointInfoSize0) {
+  mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
+  testing::NiceMock<MockDiscoveryListener> discovery_listener;
+  StartDiscovery(discovery_listener_remote, discovery_listener);
+
+  // Provide endpoint info size 0 to expect an error.
+  const std::vector<uint8_t> endpoint_info;
+  base::RunLoop run_loop;
+  base::OnceCallback<void(nearby::connections::mojom::Status)> callback =
+      base::BindLambdaForTesting(
+          [&run_loop](nearby::connections::mojom::Status status) {
+            EXPECT_EQ(status, nearby::connections::mojom::Status::kError);
+            run_loop.Quit();
+          });
+
+  nearby_connections_manager_->InjectBluetoothEndpoint(
+      kServiceId, kEndpointId, endpoint_info, kBluetoothMacAddress,
+      std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(NearbyConnectionsManagerImplTest,
+       InjectBluetoothEndpoint_Error_EndpointInfoSize131) {
+  mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
+  testing::NiceMock<MockDiscoveryListener> discovery_listener;
+  StartDiscovery(discovery_listener_remote, discovery_listener);
+
+  // Provide endpoint info size >130 to expect an error.
+  const std::vector<uint8_t> endpoint_info(131, 0);
+  base::RunLoop run_loop;
+  base::OnceCallback<void(nearby::connections::mojom::Status)> callback =
+      base::BindLambdaForTesting(
+          [&run_loop](nearby::connections::mojom::Status status) {
+            EXPECT_EQ(status, nearby::connections::mojom::Status::kError);
+            run_loop.Quit();
+          });
+
+  nearby_connections_manager_->InjectBluetoothEndpoint(
+      kServiceId, kEndpointId, endpoint_info, kBluetoothMacAddress,
+      std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(NearbyConnectionsManagerImplTest,
+       InjectBluetoothEndpoint_Error_BluetoothMacAddressSizeNot6) {
+  mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
+  testing::NiceMock<MockDiscoveryListener> discovery_listener;
+  StartDiscovery(discovery_listener_remote, discovery_listener);
+
+  const std::vector<uint8_t> endpoint_info(std::begin(kEndpointInfo),
+                                           std::end(kEndpointInfo));
+  base::RunLoop run_loop;
+  base::OnceCallback<void(nearby::connections::mojom::Status)> callback =
+      base::BindLambdaForTesting(
+          [&run_loop](nearby::connections::mojom::Status status) {
+            EXPECT_EQ(status, nearby::connections::mojom::Status::kError);
+            run_loop.Quit();
+          });
+
+  // Provide a bluetooth mac address with size !=6 to expect an error.
+  const std::vector<uint8_t> err_bluetooth_mac_address(7, 0);
+
+  nearby_connections_manager_->InjectBluetoothEndpoint(
+      kServiceId, kEndpointId, endpoint_info, err_bluetooth_mac_address,
+      std::move(callback));
+  run_loop.Run();
+}
