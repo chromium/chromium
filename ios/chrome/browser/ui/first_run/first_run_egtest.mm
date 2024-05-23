@@ -1616,10 +1616,11 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // Set the country to one that is eligible for the choice screen (in this
-  // case, France).
+  // Need to use `switches::kEeaListCountryOverride` as the country to list all
+  // the search engines. This is to make sure the more button appears.
   config.additional_args.push_back(
-      "--" + std::string(switches::kSearchEngineChoiceCountry) + "=FR");
+      "--" + std::string(switches::kSearchEngineChoiceCountry) + "=" +
+      switches::kEeaListCountryOverride);
   config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
@@ -1645,8 +1646,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // Tests that the Search Engine Choice screen is displayed, that the primary
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
-// TODO(crbug.com/329210226): Re-enable the test.
-- (void)DISABLED_testSearchEngineChoiceScreenSelectThenScroll {
+- (void)testSearchEngineChoiceScreenSelectThenScroll {
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
@@ -1684,8 +1684,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // Tests that the Search Engine Choice screen is displayed, that the
 // primary button is correctly updated when the user scrolls down then selects a
 // search engine and that it correctly sets the default search engine.
-// TODO(crbug.com/329210226): Re-enable the test.
-- (void)DISABLED_testSearchEngineChoiceScreenScrollThenSelect {
+- (void)testSearchEngineChoiceScreenScrollThenSelect {
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
