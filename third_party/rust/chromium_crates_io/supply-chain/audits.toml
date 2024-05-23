@@ -649,27 +649,6 @@ in https://crrev.com/c/5347418.
 This crate has been added to Chromium in https://crrev.com/c/3321895.
 '''
 
-[[audits.libc]]
-who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "ub-risk-4"
-version = "0.2.152"
-notes = """
-Discussions related to the `unsafe` audit can be found in
-https://crrev.com/c/5178771.  (This audit covered multiple crates that have
-been rolled when processing a backlog of crate updates - `libc` was one of
-them.)
-
-The audit found an unsound usage of `unsafe` when the `extra_traits` feature of
-the `libc` crate is enabled.  See https://github.com/rust-lang/libc/issues/3560
-for more details.
-"""
-
-[[audits.libc]]
-who = "danakj <danakj@chromium.org>"
-criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-4"]
-delta = "0.2.153 -> 0.2.154"
-notes = "No change to unsafe risk profile here."
-
 [[audits.log]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1380,4 +1359,33 @@ notes = """
 Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
+"""
+
+[[trusted.libc]]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+user-id = 51017 # Yuki Okushi (JohnTitor)
+start = "2020-03-17"
+end = "2025-05-23"
+notes = """
+Chromium implicitly trusts the Rust toolchain (e.g. the `rustc` and
+`cargo` binaries maintained and published by the
+https://github.com/rust-lang organization and packaged and distributed
+via Chromium's `tools/rust/package_rust.py` scripts).  Here we extend
+this trust to the system libraries that are maintained and published by
+the same organization.
+
+user-id 51017 maps to https://crates.io/users/JohnTitor who has
+published https://crates.io/crates/libc/0.2.154
+"""
+
+[[trusted.libc]]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+user-id = 5820
+start = "2020-03-17"
+end = "2025-05-23"
+notes = """
+Same justification as for the other `trusted.libc` entry above.
+
+user-id 5820 maps to https://crates.io/users/the8472 who has published
+https://crates.io/crates/libc/0.2.155
 """
