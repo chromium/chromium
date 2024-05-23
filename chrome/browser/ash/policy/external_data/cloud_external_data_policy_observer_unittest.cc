@@ -38,6 +38,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -342,7 +343,7 @@ void CloudExternalDataPolicyObserverTest::LogInAsDeviceLocalAccount(
   device_local_account_policy_provider_ =
       std::make_unique<DeviceLocalAccountPolicyProvider>(
           account_id.GetUserEmail(), device_local_account_policy_service_.get(),
-          DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+          DeviceLocalAccountType::kPublicSession);
 
   PolicyServiceImpl::Providers providers;
   providers.push_back(device_local_account_policy_provider_.get());

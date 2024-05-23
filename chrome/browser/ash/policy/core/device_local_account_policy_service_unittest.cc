@@ -39,6 +39,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -135,7 +136,7 @@ class DeviceLocalAccountPolicyServiceTestBase
   void AddDeviceLocalAccountToPolicy(const std::string& account_id);
   void AddWebKioskToPolicy(const std::string& account_id);
   virtual void InstallDevicePolicy();
-  virtual DeviceLocalAccount::Type type() const;
+  virtual DeviceLocalAccountType type() const;
 
   const std::string account_1_user_id_;
   const std::string account_2_user_id_;
@@ -202,7 +203,7 @@ void DeviceLocalAccountPolicyServiceTestBase::SetUp() {
       TestingBrowserProcess::GetGlobal()->local_state());
   extension_cache_task_runner_ = new base::TestSimpleTaskRunner;
 
-  if (type() == DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
+  if (type() == DeviceLocalAccountType::kPublicSession) {
     expected_policy_map_.Set(key::kSearchSuggestEnabled, POLICY_LEVEL_MANDATORY,
                              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                              base::Value(true), nullptr);
@@ -295,8 +296,8 @@ void DeviceLocalAccountPolicyServiceTest::InstallDevicePolicy() {
   Mock::VerifyAndClearExpectations(&service_observer_);
 }
 
-DeviceLocalAccount::Type DeviceLocalAccountPolicyServiceTestBase::type() const {
-  return DeviceLocalAccount::TYPE_PUBLIC_SESSION;
+DeviceLocalAccountType DeviceLocalAccountPolicyServiceTestBase::type() const {
+  return DeviceLocalAccountType::kPublicSession;
 }
 
 TEST_F(DeviceLocalAccountPolicyServiceTest, NoAccounts) {
@@ -945,7 +946,7 @@ void DeviceLocalAccountPolicyProviderTest::SetUp() {
   provider_->AddObserver(&provider_observer_);
 
   // Values implicitly enforced for public accounts.
-  if (type() == DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
+  if (type() == DeviceLocalAccountType::kPublicSession) {
     expected_policy_map_.Set(key::kShelfAutoHideBehavior,
                              POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                              POLICY_SOURCE_ENTERPRISE_DEFAULT,
@@ -970,8 +971,8 @@ void DeviceLocalAccountPolicyProviderTest::TearDown() {
 class DeviceLocalAccountPolicyProviderKioskTest
     : public DeviceLocalAccountPolicyProviderTest {
  protected:
-  DeviceLocalAccount::Type type() const override {
-    return DeviceLocalAccount::TYPE_WEB_KIOSK_APP;
+  DeviceLocalAccountType type() const override {
+    return DeviceLocalAccountType::kWebKioskApp;
   }
 };
 
