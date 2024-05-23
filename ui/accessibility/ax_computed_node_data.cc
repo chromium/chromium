@@ -112,10 +112,7 @@ bool AXComputedNodeData::HasOrCanComputeAttribute(
       return owner_->data().IsNonAtomicTextField();
 
     case ax::mojom::StringAttribute::kName:
-      return ::features::IsAccessibilityPruneRedundantInlineTextEnabled() &&
-             owner_->data().role == ax::mojom::Role::kInlineTextBox &&
-             owner_->GetParent()->data().HasStringAttribute(
-                 ax::mojom::StringAttribute::kName);
+      return CanInferNameAttribute();
 
     default:
       return false;
@@ -160,10 +157,7 @@ const std::string& AXComputedNodeData::GetOrComputeAttributeUTF8(
       return base::EmptyString();
 
     case ax::mojom::StringAttribute::kName:
-      // The name may be suppressed when serializing an AXInlineTextBox if it
-      // can be inferred from the parent.
-      if (::features::IsAccessibilityPruneRedundantInlineTextEnabled() &&
-          owner_->data().role == ax::mojom::Role::kInlineTextBox) {
+      if (CanInferNameAttribute()) {
         return GetOrComputeTextContentUTF8();
       }
       return base::EmptyString();
@@ -191,6 +185,13 @@ std::u16string AXComputedNodeData::GetOrComputeAttributeUTF16(
       // such controls on the browser. The same for all other controls, other
       // than non-atomic text fields.
       return std::u16string();
+
+    case ax::mojom::StringAttribute::kName:
+      if (CanInferNameAttribute()) {
+        return GetOrComputeTextContentUTF16();
+      }
+      return std::u16string();
+
     default:
       return std::u16string();
   }
@@ -303,6 +304,18 @@ int AXComputedNodeData::GetOrComputeTextContentLengthUTF16() const {
     utf16_length_ = ComputeTextContentUTF16().length();
   }
   return utf16_length_.value();
+}
+
+bool AXComputedNodeData::CanInferNameAttribute() const {
+  // The name may be suppressed when serializing an AXInlineTextBox if it
+  // can be inferred from the parent.
+  return ::features::IsAccessibilityPruneRedundantInlineTextEnabled() &&
+         owner_->data().role == ax::mojom::Role::kInlineTextBox &&
+         owner_->data().GetNameFrom() == ax::mojom::NameFrom::kContents &&
+         owner_->GetParent()->data().GetNameFrom() ==
+             ax::mojom::NameFrom::kContents &&
+         owner_->GetParent()->data().HasStringAttribute(
+             ax::mojom::StringAttribute::kName);
 }
 
 void AXComputedNodeData::ComputeUnignoredValues(

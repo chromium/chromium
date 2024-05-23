@@ -144,6 +144,8 @@ class AX_EXPORT AXComputedNodeData final {
   std::string ComputeTextContentUTF8() const;
   std::u16string ComputeTextContentUTF16() const;
 
+  bool CanInferNameAttribute() const;
+
   // The node that is associated with this instance. Weak, owns us.
   const raw_ptr<const AXNode> owner_;
 
