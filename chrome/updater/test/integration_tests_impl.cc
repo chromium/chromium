@@ -1355,8 +1355,10 @@ void DMCleanup(UpdaterScope scope) {
   EXPECT_TRUE(base::DeletePathRecursively(storage->policy_cache_folder()));
 
 #if BUILDFLAG(IS_WIN)
+  RegDeleteKey(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyCloudManagement);
   RegDeleteKey(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement);
   RegDeleteKey(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY);
+  RegDeleteKey(HKEY_LOCAL_MACHINE, COMPANY_POLICIES_KEY);
 #endif
 }
 
