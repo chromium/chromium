@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 
+#include "base/time/default_clock.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -107,6 +109,13 @@ void AbusiveNotificationPermissionsManager::
       ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, {});
 }
 
+const base::Clock* AbusiveNotificationPermissionsManager::GetClock() {
+  if (clock_for_testing_) {
+    return clock_for_testing_.get();
+  }
+  return base::DefaultClock::GetInstance();
+}
+
 AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
     SafeBrowsingCheckClient(
         safe_browsing::SafeBrowsingDatabaseManager* database_manager,
@@ -115,12 +124,14 @@ AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
             safe_browsing_request_clients,
         raw_ptr<HostContentSettingsMap> hcsm,
         GURL url,
-        int safe_browsing_check_delay)
+        int safe_browsing_check_delay,
+        const base::Clock* clock)
     : database_manager_(database_manager),
       safe_browsing_request_clients_(safe_browsing_request_clients),
       hcsm_(hcsm),
       url_(url),
-      safe_browsing_check_delay_(safe_browsing_check_delay) {}
+      safe_browsing_check_delay_(safe_browsing_check_delay),
+      clock_(clock) {}
 
 AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
     ~SafeBrowsingCheckClient() {
@@ -173,8 +184,11 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
   if (threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     UpdateNotificationPermission(hcsm_.get(), url,
                                  ContentSetting::CONTENT_SETTING_ASK);
+    content_settings::ContentSettingConstraints default_constraint(
+        clock_->Now());
+    default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
     safety_hub_util::SetRevokedAbusiveNotificationPermission(
-        hcsm_.get(), url, /*is_ignored=*/false);
+        hcsm_.get(), url, /*is_ignored=*/false, default_constraint);
   }
   safe_browsing_request_clients_->erase(this);
   // The previous line results in deleting this object.
@@ -195,7 +209,7 @@ void AbusiveNotificationPermissionsManager::PerformSafeBrowsingChecks(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto new_sb_check = std::make_unique<SafeBrowsingCheckClient>(
       database_manager_.get(), &safe_browsing_request_clients_, hcsm_.get(),
-      url, safe_browsing_check_delay_);
+      url, safe_browsing_check_delay_, GetClock());
   auto new_sb_check_ptr = new_sb_check.get();
   safe_browsing_request_clients_[new_sb_check_ptr] = std::move(new_sb_check);
   new_sb_check_ptr->CheckSocialEngineeringBlocklist();

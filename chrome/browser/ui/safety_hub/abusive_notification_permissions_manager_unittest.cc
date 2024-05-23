@@ -160,9 +160,13 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void FastForwardBy(base::TimeDelta duration) {
+    task_environment_.FastForwardBy(duration);
+  }
+
   void VerifyTimeoutCallbackNotCalled() {
     // Verify timeout is not called even after fast forwarding.
-    task_environment_.FastForwardBy(base::Milliseconds(kCheckUrlTimeoutMs));
+    FastForwardBy(base::Milliseconds(kCheckUrlTimeoutMs));
     EXPECT_FALSE(mock_database_manager_->HasCalledCancelCheck());
   }
 
@@ -459,4 +463,46 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
   EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+}
+
+TEST_F(AbusiveNotificationPermissionsManagerTest,
+       CheckExpirationOfRevokedAbusiveNotifications) {
+  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
+
+  // Set up 2 urls with `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` settings,
+  // then regrant one of them.
+  auto manager =
+      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  ContentSettingsForOneType content_settings =
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
+  manager.RegrantPermissionForOriginIfNecessary(GURL(url1));
+
+  // The notifications should be allowed for `url1` and revoked for `url2`.
+  EXPECT_EQ(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
+      1u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueIgnore(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+
+  // After 40 days, the `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` settings
+  // should be cleaned up, `url1` should still have allowed notifications,
+  // `url2` should still have revoked notifications, and the list of revoked
+  // abusive notification permissions we show to the user should be empty.
+  FastForwardBy(base::Days(40));
+  EXPECT_EQ(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
+      0u);
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueIgnore(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueNone(&manager, url2));
 }

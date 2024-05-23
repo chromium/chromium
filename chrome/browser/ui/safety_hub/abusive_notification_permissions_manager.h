@@ -72,6 +72,15 @@ class AbusiveNotificationPermissionsManager {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 
+  // If there's a clock for testing, return that. Otherwise, return an instance
+  // of a default clock.
+  const base::Clock* GetClock();
+
+  // Test support:
+  void SetClockForTesting(std::unique_ptr<base::Clock> clock) {
+    clock_for_testing_ = std::move(clock);
+  }
+
  private:
   friend class AbusiveNotificationPermissionsManagerTest;
   FRIEND_TEST_ALL_PREFIXES(
@@ -110,7 +119,8 @@ class AbusiveNotificationPermissionsManager {
             safe_browsing_request_clients,
         raw_ptr<HostContentSettingsMap> hcsm,
         GURL url,
-        int safe_browsing_check_delay);
+        int safe_browsing_check_delay,
+        const base::Clock* clock);
 
     ~SafeBrowsingCheckClient() override;
 
@@ -124,8 +134,8 @@ class AbusiveNotificationPermissionsManager {
         safe_browsing::SBThreatType threat_type,
         const safe_browsing::ThreatMetadata& metadata) override;
 
-    // Callback to be run if we make a Safe Browsing blocklist request and have
-    // not received a response within `kCheckUrlTimeoutMs` time.
+    // Callback to be run if a Safe Browsing blocklist request does not return
+    // a response within `kCheckUrlTimeoutMs` time.
     void OnCheckBlocklistTimeout();
 
     // A pointer to the `database_manager_` of the
@@ -151,6 +161,11 @@ class AbusiveNotificationPermissionsManager {
     // time has passed, run `OnCheckBlocklistTimeout`.
     base::OneShotTimer timer_;
 
+    // To enable automatic cleanup after the threshold has passed, this is used
+    // to set the lifetime of the `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`
+    // value.
+    const raw_ptr<const base::Clock> clock_;
+
     base::WeakPtrFactory<
         AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient>
         weak_factory_{this};
@@ -168,7 +183,7 @@ class AbusiveNotificationPermissionsManager {
   bool ShouldCheckOrigin(const ContentSettingPatternSource& setting) const;
 
   // Clears any helper members that stored state from the previous safety check.
-  // Called each time we check a set of URLs with Safe Browsing.
+  // Called each time Safe Browsing checks are performed on a set of URLs.
   void ResetSafeBrowsingCheckHelpers();
 
   // Used for interactions with the local database, when checking the blocklist.
@@ -186,6 +201,11 @@ class AbusiveNotificationPermissionsManager {
   // Length of time allowed for Safe Browsing check before timeout. This allows
   // us to test timeout behavior.
   int safe_browsing_check_delay_;
+
+  // To enable automatic cleanup after the threshold has passed, this is used to
+  // set the lifetime of the `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` value.
+  // Pass this into each instance of the SafeBrowsingCheckClient class.
+  std::unique_ptr<base::Clock> clock_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_MANAGER_H_
