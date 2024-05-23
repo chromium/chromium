@@ -973,9 +973,6 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!initialized_);
 #endif
-  base::UmaHistogramEnumeration(
-      indexed_db::kBackingStoreActionUmaName,
-      indexed_db::IndexedDBAction::kBackingStoreOpenAttempt);
 
   const IndexedDBDataFormatVersion latest_known_data_version =
       IndexedDBDataFormatVersion::GetCurrent();

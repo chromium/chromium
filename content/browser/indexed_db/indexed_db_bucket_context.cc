@@ -1613,10 +1613,6 @@ IndexedDBBucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
     return {};
   }
 
-  UMA_HISTOGRAM_ENUMERATION(
-      indexed_db::kBackingStoreActionUmaName,
-      indexed_db::IndexedDBAction::kBackingStoreOpenAttempt);
-
   const bool in_memory = data_path_.empty();
   base::FilePath blob_path;
   base::FilePath database_path;
@@ -1672,6 +1668,12 @@ IndexedDBBucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
                                                   sanitized_message);
     }
   }
+
+  // Record this here because the !create_if_missing && not_found case shouldn't
+  // count as either a success or failure.
+  base::UmaHistogramEnumeration(
+      indexed_db::kBackingStoreActionUmaName,
+      indexed_db::IndexedDBAction::kBackingStoreOpenAttempt);
 
   UMA_HISTOGRAM_ENUMERATION(
       "WebCore.IndexedDB.BackingStore.OpenFirstTryResult",
