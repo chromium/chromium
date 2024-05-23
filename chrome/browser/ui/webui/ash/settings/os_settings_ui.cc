@@ -428,6 +428,12 @@ void OSSettingsUI::BindInterface(
       std::move(receiver));
 }
 
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<date_time::mojom::PageHandlerFactory> receiver) {
+  date_time_handler_factory_ = std::make_unique<DateTimeHandlerFactory>(
+      web_ui(), Profile::FromWebUI(web_ui()), std::move(receiver));
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)
 
 }  // namespace ash::settings
