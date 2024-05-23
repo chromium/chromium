@@ -48,7 +48,8 @@ void TrustedVaultDialogDelegate::ShowDialogForProfile(Profile* profile,
       profile, dialog_delegate.release(),
       std::make_unique<ChromeWebContentsHandler>(), contents);
 
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.delegate = view;
   params.name = kWidgetName;
 

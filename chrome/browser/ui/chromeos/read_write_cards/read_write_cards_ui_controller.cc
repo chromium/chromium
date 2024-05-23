@@ -35,10 +35,11 @@ namespace {
 constexpr int kQuickAnswersAndMahiSpacing = 10;
 
 views::Widget::InitParams CreateWidgetInitParams() {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.child = true;
   params.name = ReadWriteCardsUiController::kWidgetName;

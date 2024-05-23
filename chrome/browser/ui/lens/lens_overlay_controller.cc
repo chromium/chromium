@@ -1062,6 +1062,7 @@ void LensOverlayController::InitializeOverlayUI(
 views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
   content::WebContents* active_web_contents = tab_->GetContents();
   views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "LensOverlayWidget";
   params.child = true;

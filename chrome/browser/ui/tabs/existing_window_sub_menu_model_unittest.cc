@@ -58,10 +58,10 @@ std::unique_ptr<views::Widget>
 TestBrowserWindowViewsWithDesktopNativeWidgetAura::CreateDesktopWidget(
     bool popup) {
   auto widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params;
-  params.type = popup ? views::Widget::InitParams::TYPE_POPUP
-                      : views::Widget::InitParams::TYPE_WINDOW;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      popup ? views::Widget::InitParams::TYPE_POPUP
+            : views::Widget::InitParams::TYPE_WINDOW);
   params.native_widget = new views::DesktopNativeWidgetAura(widget.get());
   params.bounds = gfx::Rect(0, 0, 20, 20);
   widget->Init(std::move(params));
