@@ -120,9 +120,36 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
       count += element.count;
     });
     if (this.appsList.length !== 0 && count === this.appsList.length) {
+      this.setWebviewStyle();
       this.dispatchEvent(
           new CustomEvent('icons-loaded', {bubbles: true, composed: true}));
     }
+  }
+
+  setWebviewStyle(): void {
+    const iconWebviews =
+        this.shadowRoot?.querySelectorAll<chrome.webviewTag.WebView>(
+            '.app-icon');
+    if (iconWebviews) {
+      for (const iconWebview of iconWebviews) {
+        this.injectCss(iconWebview);
+      }
+    }
+  }
+
+  private injectCss(webview: chrome.webviewTag.WebView) {
+    webview.addEventListener('contentload', () => {
+      webview.insertCSS(
+          {
+            code: `body { background-color: transparent !important; }`,
+          },
+          () => {
+            if (chrome.runtime.lastError) {
+              console.warn(
+                  'Failed to insertCSS: ' + chrome.runtime.lastError.message);
+            }
+          });
+    });
   }
 
   /**

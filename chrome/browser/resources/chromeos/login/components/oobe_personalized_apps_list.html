@@ -25,6 +25,14 @@
     margin-bottom: 12px;
   }
 
+  .category-title:first-child {
+    margin-top: 0;
+  }
+
+  .category-title:last-child {
+    margin-bottom: 0;
+  }
+
   .app-title {
     color: var(--cros-sys-on_surface);
     font: var(--cros-button-2-font);
@@ -65,9 +73,9 @@
   .logo-container {
     border-radius: 8px;
     overflow: hidden;
-    width: 48px;
-    min-width: 48px;
-    height: 48px;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
     align-items: center;
     justify-content: center;
   }
@@ -77,8 +85,8 @@
     align-items: center;
     align-self: center;
     display: flex;
-    height: 48px;
-    width: 48px;
+    height: 40px;
+    width: 40px;
     pointer-events: none;
   }
 
@@ -86,16 +94,12 @@
     align-items: center;
     align-self: center;
     column-gap: 20px;
-    padding: 20px;
+    padding: 16px;
   }
 
   #personalizedApps {
     overflow-x: hidden;
     overflow-y: auto;
-  }
-
-  .app-checkbox {
-    margin-right: -20px;
   }
   </style>
 <div id="personalizedApps">
@@ -131,7 +135,8 @@
                   <div class="app-title"> [[item.name]]</div>
                   <div class="app-subtitle">[[item.subname]]</div>
                 </div>
-                  <cr-checkbox class="app-checkbox" checked="{{item.selected}}"
+                  <cr-checkbox class="app-checkbox no-label"
+                      checked="{{item.selected}}"
                       aria-label$="[[item.name]]"
                       aria-description$="[[item.subname]]"
                       on-change="updateCount"></cr-checkbox>
