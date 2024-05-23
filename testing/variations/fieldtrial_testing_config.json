@@ -7369,7 +7369,7 @@
             ],
             "experiments": [
                 {
-                    "name": "With64KiBBuffer",
+                    "name": "EnabledWith64KiBMay2024",
                     "params": {
                         "BufferSize": "65536"
                     },
@@ -7378,16 +7378,16 @@
                     ]
                 },
                 {
-                    "name": "With8KiBBuffer",
+                    "name": "EnabledWith32KiBMay2024",
                     "params": {
-                        "BufferSize": "8192"
+                        "BufferSize": "32768"
                     },
                     "enable_features": [
                         "EnableCustomInputStreamBufferSize"
                     ]
                 },
                 {
-                    "name": "With16KiBBuffer",
+                    "name": "EnabledWith16KiBMay2024",
                     "params": {
                         "BufferSize": "16384"
                     },
@@ -7396,9 +7396,9 @@
                     ]
                 },
                 {
-                    "name": "With32KiBBuffer",
+                    "name": "EnabledWith8KiBMay2024",
                     "params": {
-                        "BufferSize": "32768"
+                        "BufferSize": "8192"
                     },
                     "enable_features": [
                         "EnableCustomInputStreamBufferSize"
