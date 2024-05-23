@@ -69,6 +69,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"restoreDefaultConflictMessage",
        IDS_SHORTCUT_CUSTOMIZATION_RESTORE_DEFAULT_ERROR_MESSAGE},
       {"resetAllShortcuts", IDS_SHORTCUT_CUSTOMIZATION_RESET_ALL_SHORTCUTS},
+      {"blockRightAltKey", IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY},
       {"confirmResetAllShortcutsTitle",
        IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_ALL_SHORTCUTS_TITLE},
       {"confirmResetAllShortcutsButton",

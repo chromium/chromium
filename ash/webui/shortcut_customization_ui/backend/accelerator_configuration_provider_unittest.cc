@@ -1696,6 +1696,15 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorBadAccelerator) {
                           mail_accelerator, &result);
   EXPECT_EQ(mojom::AcceleratorConfigResult::kNonStandardWithSearch,
             result->result);
+
+  // Block right alt key pressing.
+  const ui::Accelerator right_alt_accelerator(ui::VKEY_RIGHT_ALT,
+                                              ui::EF_COMMAND_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          right_alt_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kBlockRightAlt, result->result);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorExceedsMaximum) {

@@ -417,6 +417,14 @@ std::optional<AcceleratorConfigResult> ValidateAccelerator(
     return AcceleratorConfigResult::kShiftOnlyNotAllowed;
   }
 
+  // Case: Accelerator cannot have right alt key.
+  if (accelerator.key_code() == ui::VKEY_RIGHT_ALT) {
+    VLOG(1) << "Failed to validate accelerator: "
+            << accelerator.GetShortcutText() << " with error: "
+            << static_cast<int>(AcceleratorConfigResult::kBlockRightAlt);
+    return AcceleratorConfigResult::kBlockRightAlt;
+  }
+
   // No errors with the accelerator.
   return std::nullopt;
 }

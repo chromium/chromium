@@ -5793,6 +5793,7 @@
         <!-- End of Feedback Tool -->
 
         <!-- Shortcut Customization -->
+        <!-- TODO(b/340668387): Update strings for split modifier keyboard.-->
         <message name="IDS_SHORTCUT_CUSTOMIZATION_APP_TITLE" desc="Title of the app">
           Key Shortcuts
         </message>
@@ -5875,6 +5876,11 @@
             desc="The status message that displays when user press a key combination
             that includes a top row key but does not include the search/launcher key">
           Shortcut with top row keys need to include the <ph name="meta_key">$1<ex>search</ex></ph> key.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY"
+            desc="The status message that displays when user press a key combination
+            that includes right alt key." translateable="false">
+          Press a new shortcut without right alt.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEACH_WITH_FUNCTION_KEY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
