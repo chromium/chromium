@@ -414,15 +414,22 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                                 SupervisedUserExtensionsMetricsRecorder::
                                     ParentPermissionDialogState::kOpened,
                                 1),
+      CheckHistogramBucketCount(
+          SupervisedUserExtensionsMetricsRecorder::
+              kParentPermissionDialogHistogramName,
+          SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
+              kIncorrectParentPasswordProvided,
+          1),
       CheckHistogramBucketCount(SupervisedUserExtensionsMetricsRecorder::
                                     kParentPermissionDialogHistogramName,
                                 SupervisedUserExtensionsMetricsRecorder::
                                     ParentPermissionDialogState::kFailed,
                                 1),
-      // The total histogram count is 2 (one for kOpened and one for kFailed).
+      // The total histogram count is 3 (one for kOpened, one for
+      // kIncorrectPassword and one for kFailed).
       CheckHistogramTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                    kParentPermissionDialogHistogramName,
-                               2),
+                               3),
       CheckResult(GetActionStatus(SupervisedUserExtensionsMetricsRecorder::
                                       kParentPermissionDialogOpenedActionName),
                   ActionStatus::kWasPerformed))));
@@ -446,6 +453,12 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                                 SupervisedUserExtensionsMetricsRecorder::
                                     ParentPermissionDialogState::kOpened,
                                 1),
+      CheckHistogramBucketCount(
+          SupervisedUserExtensionsMetricsRecorder::
+              kParentPermissionDialogHistogramName,
+          SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
+              kIncorrectParentPasswordProvided,
+          1),
       // The dialog remains open waiting for the correct password and has not
       // failed.
       EnsurePresent(ParentPermissionDialog::kDialogViewIdForTesting),

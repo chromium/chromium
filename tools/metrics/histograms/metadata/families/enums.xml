@@ -375,6 +375,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Parent Canceled"/>
   <int value="3" label="Failed"/>
   <int value="4" label="No Parent Error"/>
+  <int value="5" label="Incorrect Parent Password Error"/>
 </enum>
 
 <enum name="SupervisedUserSafetyFilterResult">

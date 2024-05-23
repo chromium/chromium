@@ -791,8 +791,11 @@ void ParentPermissionDialogView::OnReAuthProofTokenFailure(
     const GaiaAuthConsumer::ReAuthProofTokenStatus error) {
   reauth_token_fetcher_.reset();
   if (error == GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidGrant) {
+    supervised_user_metrics_recorder_.RecordParentPermissionDialogUmaMetrics(
+        SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
+            kIncorrectParentPasswordProvided);
     // If invalid password was entered, and the dialog is configured to
-    // re-prompt  show the dialog again with the invalid password error message.
+    // re-prompt, show the dialog again with the invalid password error message.
     // prompt again, this time with a password error message.
     invalid_credential_received_ = true;
     if (reprompt_after_incorrect_credential_) {

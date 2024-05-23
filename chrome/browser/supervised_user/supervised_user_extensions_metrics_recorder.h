@@ -80,11 +80,13 @@ class SupervisedUserExtensionsMetricsRecorder
     // Recorded when the supervised user has no parents, an error. Note that
     // this error triggers the kFailed metric as well.
     kNoParentError = 4,
+    // Recorded when the parent provides a wrong password.
+    kIncorrectParentPasswordProvided = 5,
     // Add future entries above this comment, in sync with
     // "SupervisedUserParentPermissionDialog" in
     // src/tools/metrics/histograms/enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kNoParentError
+    kMaxValue = kIncorrectParentPasswordProvided
   };
 
   // These enum values represent supervised user actions to enable or disable an
@@ -139,6 +141,7 @@ class SupervisedUserExtensionsMetricsRecorder
   static const char kApprovalRemovedActionName[];
   static const char kApprovalGrantedByDefaultName[];
   static const char kLocalApprovalGrantedName[];
+  static const char kIncorrectParentPasswordProvidedActionName[];
   // UMA metrics for the Extension Install Dialog.
   static const char kExtensionInstallDialogHistogramName[];
   static const char kExtensionInstallDialogOpenedActionName[];
