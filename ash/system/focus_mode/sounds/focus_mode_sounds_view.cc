@@ -30,6 +30,7 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 

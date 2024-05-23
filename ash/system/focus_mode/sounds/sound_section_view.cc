@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_utils.h"
 
@@ -41,14 +42,7 @@ std::unique_ptr<views::View> CreateSpacerView() {
 
 SoundSectionView::SoundSectionView(focus_mode_util::SoundType type)
     : type_(type) {
-  SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  SetOrientation(views::LayoutOrientation::kHorizontal);
-  SetDefault(views::kFlexBehaviorKey,
-             views::FlexSpecification(
-                 views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
-                 views::MaximumFlexSizeRule::kUnbounded));
-
+  SetLayoutManager(std::make_unique<views::FillLayout>());
   CreatePlaylistViewsContainer(type);
 }
 
@@ -99,9 +93,18 @@ void SoundSectionView::UpdateStateForSelectedPlaylist(
 void SoundSectionView::CreatePlaylistViewsContainer(
     focus_mode_util::SoundType type) {
   playlist_views_container_ =
-      AddChildView(std::make_unique<views::BoxLayoutView>());
+      AddChildView(std::make_unique<views::FlexLayoutView>());
+  playlist_views_container_->SetMainAxisAlignment(
+      views::LayoutAlignment::kCenter);
+  playlist_views_container_->SetCrossAxisAlignment(
+      views::LayoutAlignment::kCenter);
   playlist_views_container_->SetOrientation(
-      views::BoxLayout::Orientation::kHorizontal);
+      views::LayoutOrientation::kHorizontal);
+  playlist_views_container_->SetDefault(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(
+          views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
+          views::MaximumFlexSizeRule::kPreferred));
   playlist_views_container_->SetBorder(
       views::CreateEmptyBorder(kPlaylistsContainerViewInsets));
 
@@ -111,7 +114,8 @@ void SoundSectionView::CreatePlaylistViewsContainer(
     if (i > 0) {
       auto* spacer_view =
           playlist_views_container_->AddChildView(CreateSpacerView());
-      playlist_views_container_->SetFlexForView(spacer_view, 1);
+      spacer_view->SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification().WithWeight(1));
     }
 
     // `FocusModeSoundsController` is owned by `FocusModeController` which
