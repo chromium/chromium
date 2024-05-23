@@ -25,7 +25,6 @@ component("lacros") {
     "//chromeos/constants:constants",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/cpp:crosapi_constants",
-    "//chromeos/crosapi/mojom",
     "//chromeos/startup",
     "//components/crash/core/common",
     "//media/mojo/mojom/stable:stable_video_decoder",
@@ -33,6 +32,12 @@ component("lacros") {
     "//services/media_session/public/mojom",
     "//ui/native_theme",
   ]
+
+  # LacrosService provides some Crosapi related interfaces.
+  # Because of inline functions in Mojo's generated code,
+  # we need public dependency.
+  public_deps = [ "//chromeos/crosapi/mojom" ]
+
   sources = [
     "crosapi_pref_observer.cc",
     "crosapi_pref_observer.h",
