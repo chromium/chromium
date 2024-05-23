@@ -420,15 +420,6 @@ source_set("unit_tests_filters") {
   ]
 }
 
-source_set("updater_tests_filters") {
-  testonly = true
-
-  data = [
-    "//testing/buildbot/filters/release_ready/mac.updater_tests.release_blocker.filter",
-    "//testing/buildbot/filters/release_ready/win.updater_tests.release_blocker.filter",
-  ]
-}
-
 source_set("viz_unittests_filters") {
   testonly = true
 
