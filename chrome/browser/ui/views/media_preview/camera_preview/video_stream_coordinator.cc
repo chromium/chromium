@@ -89,6 +89,15 @@ void VideoStreamCoordinator::Stop() {
 void VideoStreamCoordinator::StopInternal(
     mojo::Remote<video_capture::mojom::VideoSourceProvider>
         video_source_provider) {
+  size_t rendered_frame_count = 0;
+  if (auto* view = GetVideoStreamView(); view) {
+    rendered_frame_count = view->GetRenderedFrameCount();
+    // ClearFrame() should be called before CameraVideoFrameHandler::Close().
+    // This order is needed as to clear all frame references before resetting
+    // the buffers which happens within Close().
+    view->ClearFrame();
+  }
+
   if (video_frame_handler_) {
     // Retrieve the settings actually being sent by the handler. If something
     // else has the stream open when the media preview requests it, then the
@@ -112,10 +121,9 @@ void VideoStreamCoordinator::StopInternal(
                                                          actual_fps);
       video_stream_start_time_.reset();
 
-      if (auto* view = GetVideoStreamView()) {
-        float rendered_percent =
-            static_cast<double>(view->GetRenderedFrameCount()) /
-            video_stream_total_frames_;
+      if (rendered_frame_count > 0) {
+        float rendered_percent = static_cast<double>(rendered_frame_count) /
+                                 video_stream_total_frames_;
         media_preview_metrics::RecordPreviewVideoFramesRenderedPercent(
             metrics_context_, rendered_percent);
       }
@@ -129,10 +137,6 @@ void VideoStreamCoordinator::StopInternal(
     std::exchange(handler_ptr, nullptr)
         ->Close(base::DoNothingWithBoundArgs(std::move(video_source_provider),
                                              std::move(video_frame_handler_)));
-  }
-
-  if (auto* view = GetVideoStreamView(); view) {
-    view->ClearFrame();
   }
 }
 
