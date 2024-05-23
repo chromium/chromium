@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.page_image_service;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -29,7 +31,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.page_image_service.ImageServiceMetrics.SalientImageUrlFetchResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.page_image_service.mojom.ClientId;
@@ -47,6 +51,9 @@ public final class ImageServiceBridgeUnitTest {
     private static final GURL PAGE_URL = JUnitTestGURLs.URL_1;
     private static final GURL SALIENT_IMAGE_URL = JUnitTestGURLs.URL_2;
     private static final int CLIENT_ID = ClientId.BOOKMARKS;
+    private static final String STRING_CLIENT_ID = "Test";
+    private static final String TEST_HISTOGRAM =
+            "PageImageService.Android.SalientImageUrlFetchResult." + STRING_CLIENT_ID;
 
     @Mock private ImageServiceBridge.Natives mImageServiceBridgeJni;
     @Mock private Profile mProfile;
@@ -67,11 +74,18 @@ public final class ImageServiceBridgeUnitTest {
                         mProfile,
                         mImageFetcher);
         verify(mImageServiceBridgeJni).init(eq(mProfile));
+        doReturn(STRING_CLIENT_ID).when(mImageServiceBridgeJni).clientIdToString(anyInt());
     }
 
     @Test
     @SmallTest
     public void testFetchImageUrlFor() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                TEST_HISTOGRAM, SalientImageUrlFetchResult.FAILED_FROM_NETWORK)
+                        .build();
+
         mImageServiceBridge.fetchImageUrlFor(/* isAccountData= */ true, PAGE_URL, mUrlCallback);
 
         verify(mImageServiceBridgeJni)
@@ -85,11 +99,34 @@ public final class ImageServiceBridgeUnitTest {
         // Verifies the case that no salient image URL is found.
         mUrlCallbackCaptor.getValue().onResult(null);
         verify(mUrlCallback).onResult(isNull());
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                TEST_HISTOGRAM, SalientImageUrlFetchResult.FAILED_FROM_CACHE)
+                        .build();
+
+        mImageServiceBridge.fetchImageUrlFor(/* isAccountData= */ true, PAGE_URL, mUrlCallback);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                TEST_HISTOGRAM, SalientImageUrlFetchResult.SUCCEED_FROM_NETWORK)
+                        .build();
 
         // Verifies the case that a salient image URL if found.
         mUrlCallbackCaptor.getValue().onResult(SALIENT_IMAGE_URL);
         verify(mUrlCallback).onResult(eq(SALIENT_IMAGE_URL));
         assertTrue(mImageServiceBridge.isUrlCachedForTesting(PAGE_URL, SALIENT_IMAGE_URL));
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                TEST_HISTOGRAM, SalientImageUrlFetchResult.SUCCEED_FROM_CACHE)
+                        .build();
 
         // Verifies that the cached salient image URL will be used immediately if exists.
         mImageServiceBridge.fetchImageUrlFor(/* isAccountData= */ true, PAGE_URL, mUrlCallback);

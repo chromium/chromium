@@ -58,6 +58,13 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Feedback Tool System Logs"/>
 </enum>
 
+<enum name="SalientImageUrlFetchResult">
+  <int value="0" label="Failed to fetch salient image url from network."/>
+  <int value="1" label="A previous network request failed."/>
+  <int value="2" label="Successfully fetched salient image url from network."/>
+  <int value="3" label="Succeessfully got salient image url from local cache."/>
+</enum>
+
 <enum name="SilentPushEvent">
   <int value="0" label="New Silent Push request"/>
   <int value="1" label="Notification enforcement skipped"/>

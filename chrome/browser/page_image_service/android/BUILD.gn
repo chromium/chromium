@@ -7,7 +7,10 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/chrome/browser/page_image_service/ImageServiceBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/page_image_service/ImageServiceBridge.java",
+    "java/src/org/chromium/chrome/browser/page_image_service/ImageServiceMetrics.java",
+  ]
   deps = [
     "//base:base_java",
     "//chrome/browser/profiles/android:java",
