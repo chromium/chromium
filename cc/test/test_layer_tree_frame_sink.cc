@@ -23,6 +23,7 @@
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -344,11 +345,16 @@ base::TimeDelta TestLayerTreeFrameSink::GetPreferredFrameIntervalForFrameSinkId(
 
 TestLayerTreeFrameSink::StubSharedImageInterfaceProvider::
     StubSharedImageInterfaceProvider()
-    : viz::SharedImageInterfaceProvider(nullptr) {}
+    : viz::SharedImageInterfaceProvider(nullptr),
+      shared_image_interface_(
+          base::MakeRefCounted<gpu::TestSharedImageInterface>()) {}
+
+TestLayerTreeFrameSink::StubSharedImageInterfaceProvider::
+    ~StubSharedImageInterfaceProvider() = default;
 
 gpu::SharedImageInterface* TestLayerTreeFrameSink::
     StubSharedImageInterfaceProvider::GetSharedImageInterface() {
-  return nullptr;
+  return shared_image_interface_.get();
 }
 
 }  // namespace cc

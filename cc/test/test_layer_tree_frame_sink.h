@@ -26,6 +26,10 @@
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
+namespace gpu {
+class SharedImageInterface;
+}  // namespace gpu
+
 namespace viz {
 class CompositorFrameSinkSupport;
 }  // namespace viz
@@ -142,7 +146,12 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
       : public viz::SharedImageInterfaceProvider {
    public:
     StubSharedImageInterfaceProvider();
+    ~StubSharedImageInterfaceProvider() override;
+
     gpu::SharedImageInterface* GetSharedImageInterface() override;
+
+   private:
+    scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
   };
 
   // ExternalBeginFrameSource implementation.

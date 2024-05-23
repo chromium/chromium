@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/blit_request.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
@@ -72,6 +73,11 @@ SurfaceSavedFrame::SurfaceSavedFrame(
     : directive_(std::move(directive)),
       shared_image_interface_(shared_image_interface),
       directive_finished_callback_(std::move(directive_finished_callback)) {
+  // If we're using BlitRequests, then we better have a shared image interface.
+  CHECK(
+      !base::FeatureList::IsEnabled(features::kBlitRequestsForViewTransition) ||
+      shared_image_interface_);
+
   // We should only be constructing a saved frame from a save directive.
   DCHECK_EQ(directive_.type(), CompositorFrameTransitionDirective::Type::kSave);
 }
