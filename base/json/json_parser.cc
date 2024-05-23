@@ -550,12 +550,15 @@ std::optional<std::string> JSONParser::ConsumeStringRaw() {
             }
 
             int hex_digit = 0;
-            if (!UnprefixedHexStringToInt(*escape_sequence, &hex_digit) ||
-                !IsValidCharacter(hex_digit)) {
+            if (!UnprefixedHexStringToInt(*escape_sequence, &hex_digit)) {
               ReportError(JSON_INVALID_ESCAPE, -3);
               return std::nullopt;
             }
 
+            // A two-character hex sequence is at most 0xff and all codepoints
+            // up to 0xff are valid.
+            DCHECK_LE(hex_digit, 0xff);
+            DCHECK(IsValidCharacter(hex_digit));
             WriteUnicodeCharacter(hex_digit, &string);
             break;
           }
