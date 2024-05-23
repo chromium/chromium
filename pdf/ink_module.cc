@@ -48,9 +48,10 @@ void CheckColorIsWithinRange(int color) {
 
 }  // namespace
 
-InkModule::InkModule(Client& client)
-    : client_(client), pdf_ink_brush_(CreateDefaultBrush()) {
+InkModule::InkModule(Client& client) : client_(client) {
   CHECK(base::FeatureList::IsEnabled(features::kPdfInk2));
+  CHECK(is_drawing_stroke());
+  drawing_stroke_state().ink_brush = CreateDefaultBrush();
 }
 
 InkModule::~InkModule() = default;
@@ -103,7 +104,7 @@ bool InkModule::OnMessage(const base::Value::Dict& message) {
 }
 
 const PdfInkBrush* InkModule::GetPdfInkBrushForTesting() const {
-  return pdf_ink_brush_.get();
+  return is_drawing_stroke() ? drawing_stroke_state().ink_brush.get() : nullptr;
 }
 
 bool InkModule::OnMouseDown(const blink::WebMouseEvent& event) {
@@ -116,8 +117,8 @@ bool InkModule::OnMouseDown(const blink::WebMouseEvent& event) {
 
   // TODO(crbug.com/335517471): Adjust `position` if needed.
   gfx::PointF position = normalized_event.PositionInWidget();
-  return pdf_ink_brush_ ? StartInkStroke(position)
-                        : StartEraseInkStroke(position);
+  return is_drawing_stroke() ? StartInkStroke(position)
+                             : StartEraseInkStroke(position);
 }
 
 bool InkModule::OnMouseUp(const blink::WebMouseEvent& event) {
@@ -127,7 +128,7 @@ bool InkModule::OnMouseUp(const blink::WebMouseEvent& event) {
     return false;
   }
 
-  return pdf_ink_brush_ ? FinishInkStroke() : FinishEraseInkStroke();
+  return is_drawing_stroke() ? FinishInkStroke() : FinishEraseInkStroke();
 }
 
 bool InkModule::OnMouseMove(const blink::WebMouseEvent& event) {
@@ -135,8 +136,8 @@ bool InkModule::OnMouseMove(const blink::WebMouseEvent& event) {
 
   // TODO(crbug.com/335517471): Adjust `position` if needed.
   gfx::PointF position = event.PositionInWidget();
-  return pdf_ink_brush_ ? ContinueInkStroke(position)
-                        : ContinueEraseInkStroke(position);
+  return is_drawing_stroke() ? ContinueInkStroke(position)
+                             : ContinueEraseInkStroke(position);
 }
 
 bool InkModule::StartInkStroke(const gfx::PointF& position) {
@@ -145,9 +146,11 @@ bool InkModule::StartInkStroke(const gfx::PointF& position) {
     return false;
   }
 
-  CHECK(!ink_start_time_.has_value());
-  ink_start_time_ = base::Time::Now();
-  ink_inputs_.push_back({
+  CHECK(is_drawing_stroke());
+  DrawingStrokeState& state = drawing_stroke_state();
+  CHECK(!state.ink_start_time.has_value());
+  state.ink_start_time = base::Time::Now();
+  state.ink_inputs.push_back({
       .position_x = position.x(),
       .position_y = position.y(),
       .elapsed_time_seconds = 0,
@@ -156,13 +159,15 @@ bool InkModule::StartInkStroke(const gfx::PointF& position) {
 }
 
 bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
-  if (!ink_start_time_.has_value()) {
+  CHECK(is_drawing_stroke());
+  DrawingStrokeState& state = drawing_stroke_state();
+  if (!state.ink_start_time.has_value()) {
     // Ignore when not drawing.
     return false;
   }
 
-  base::TimeDelta time_diff = base::Time::Now() - ink_start_time_.value();
-  ink_inputs_.push_back({
+  base::TimeDelta time_diff = base::Time::Now() - state.ink_start_time.value();
+  state.ink_inputs.push_back({
       .position_x = position.x(),
       .position_y = position.y(),
       .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
@@ -173,7 +178,9 @@ bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
 }
 
 bool InkModule::FinishInkStroke() {
-  if (!ink_start_time_.has_value()) {
+  CHECK(is_drawing_stroke());
+  DrawingStrokeState& state = drawing_stroke_state();
+  if (!state.ink_start_time.has_value()) {
     // Ignore when not drawing.
     return false;
   }
@@ -186,22 +193,25 @@ bool InkModule::FinishInkStroke() {
   }
 
   // Reset input fields.
-  ink_inputs_.clear();
-  ink_start_time_ = std::nullopt;
+  state.ink_inputs.clear();
+  state.ink_start_time = std::nullopt;
   return true;
 }
 
 bool InkModule::StartEraseInkStroke(const gfx::PointF& position) {
+  CHECK(is_erasing_stroke());
   // TODO(crbug.com/335524381): Implement.
   return false;
 }
 
 bool InkModule::ContinueEraseInkStroke(const gfx::PointF& position) {
+  CHECK(is_erasing_stroke());
   // TODO(crbug.com/335524381): Implement.
   return false;
 }
 
 bool InkModule::FinishEraseInkStroke() {
+  CHECK(is_erasing_stroke());
   // TODO(crbug.com/335524381): Implement.
   return false;
 }
@@ -212,7 +222,7 @@ void InkModule::HandleSetAnnotationBrushMessage(
 
   const std::string& brush_type_string = *message.FindString("brushType");
   if (brush_type_string == "eraser") {
-    pdf_ink_brush_.reset();
+    current_tool_state_.emplace<EraserState>();
     return;
   }
 
@@ -242,7 +252,9 @@ void InkModule::HandleSetAnnotationBrushMessage(
   std::optional<PdfInkBrush::Type> brush_type =
       PdfInkBrush::StringToType(brush_type_string);
   CHECK(brush_type.has_value());
-  pdf_ink_brush_ = std::make_unique<PdfInkBrush>(brush_type.value(), params);
+  current_tool_state_.emplace<DrawingStrokeState>();
+  drawing_stroke_state().ink_brush =
+      std::make_unique<PdfInkBrush>(brush_type.value(), params);
 }
 
 void InkModule::HandleSetAnnotationModeMessage(
@@ -252,7 +264,7 @@ void InkModule::HandleSetAnnotationModeMessage(
 
 std::unique_ptr<InkInProgressStroke>
 InkModule::CreateInProgressStrokeFromInputs() const {
-  if (!pdf_ink_brush_) {
+  if (!is_drawing_stroke()) {
     return nullptr;
   }
 
@@ -262,9 +274,12 @@ InkModule::CreateInProgressStrokeFromInputs() const {
     return nullptr;
   }
 
-  stroke->Start(pdf_ink_brush_->GetInkBrush());
-  auto input_batch = InkStrokeInputBatch::Create(ink_inputs_);
+  CHECK(is_drawing_stroke());
+  const DrawingStrokeState& state = drawing_stroke_state();
+  auto input_batch = InkStrokeInputBatch::Create(state.ink_inputs);
   CHECK(input_batch);
+
+  stroke->Start(state.ink_brush->GetInkBrush());
   bool enqueue_results = stroke->EnqueueInputs(input_batch.get(), nullptr);
   CHECK(enqueue_results);
   stroke->FinishInputs();
@@ -272,5 +287,9 @@ InkModule::CreateInProgressStrokeFromInputs() const {
   CHECK(update_results);
   return stroke;
 }
+
+InkModule::DrawingStrokeState::DrawingStrokeState() = default;
+
+InkModule::DrawingStrokeState::~DrawingStrokeState() = default;
 
 }  // namespace chrome_pdf
