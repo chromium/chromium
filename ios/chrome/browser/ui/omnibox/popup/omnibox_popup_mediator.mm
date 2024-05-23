@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/ui/omnibox/popup/remote_suggestions_service_observer_bridge.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_omnibox_consumer.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "third_party/omnibox_proto/groups.pb.h"
@@ -304,6 +305,15 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         << "Suggestion type " << NSStringFromClass(suggestion.class)
         << " not handled for selection.";
   }
+}
+
+- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
+         didSelectSuggestionAction:(SuggestAction*)action {
+  DCHECK(self.applicationCommandsHandler);
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:action.actionURI
+                                      inIncognito:NO];
+  [self.applicationCommandsHandler openURLInNewTab:command];
 }
 
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
