@@ -102,10 +102,17 @@ void RecordButtonClicked(SyncConfirmationScreenMode mode,
   std::optional<signin_metrics::SyncButtonClicked> button_clicked;
   switch (mode) {
     case SyncConfirmationScreenMode::kRestricted:
+    case SyncConfirmationScreenMode::kDeadlined:
       button_clicked = equal;
       break;
     case SyncConfirmationScreenMode::kUnrestricted:
       button_clicked = not_equal;
+      break;
+    case SyncConfirmationScreenMode::kPending:
+      // Special case: the only button that can be clicked in this mode is the
+      // settings button.
+      button_clicked =
+          signin_metrics::SyncButtonClicked::kSyncSettingsUnknownWeighted;
       break;
     default:
       NOTREACHED();
@@ -114,6 +121,24 @@ void RecordButtonClicked(SyncConfirmationScreenMode mode,
   base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *button_clicked);
 }
 
+// Translates screen `mode` to the corresponding metric describing what type of
+// buttons are presented.
+signin_metrics::SyncButtonsType GetButtonTypeMetricValue(
+    SyncConfirmationScreenMode mode) {
+  switch (mode) {
+    case SyncConfirmationScreenMode::kRestricted:
+      return signin_metrics::SyncButtonsType::kSyncEqualWeightedFromCapability;
+    case SyncConfirmationScreenMode::kDeadlined:
+      return signin_metrics::SyncButtonsType::kSyncEqualWeightedFromDeadline;
+    case SyncConfirmationScreenMode::kUnrestricted:
+      return signin_metrics::SyncButtonsType::kSyncNotEqualWeighted;
+
+    // Metric is not emitted for these cases:
+    case SyncConfirmationScreenMode::kUnsupported:
+    case SyncConfirmationScreenMode::kPending:
+      NOTREACHED_NORETURN();
+  }
+}
 }  // namespace
 
 SyncConfirmationScreenMode GetScreenMode(
@@ -323,27 +348,14 @@ void SyncConfirmationHandler::OnScreenModeChanged(
   }
 
   FireWebUIListener("screen-mode-changed", static_cast<int>(mode));
-
-  std::optional<signin_metrics::SyncButtonsType> buttons_type;
-  switch (mode) {
-    case SyncConfirmationScreenMode::kRestricted:
-      buttons_type = signin_metrics::SyncButtonsType::kSyncEqualWeighted;
-      break;
-    case SyncConfirmationScreenMode::kUnrestricted:
-      buttons_type = signin_metrics::SyncButtonsType::kSyncNotEqualWeighted;
-      break;
-    default:
-      // kPending and kUnsupported are ruled out in this method.
-      NOTREACHED();
-  }
-
-  base::UmaHistogramEnumeration("Signin.SyncButtons.Shown", *buttons_type);
+  base::UmaHistogramEnumeration("Signin.SyncButtons.Shown",
+                                GetButtonTypeMetricValue(mode));
 }
 
 void SyncConfirmationHandler::OnDeadline() {
   if (!screen_mode_notified_) {
     AllowJavascript();
-    OnScreenModeChanged(SyncConfirmationScreenMode::kRestricted);
+    OnScreenModeChanged(SyncConfirmationScreenMode::kDeadlined);
   }
 }
 

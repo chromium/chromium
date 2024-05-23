@@ -20,6 +20,7 @@ export enum ScreenMode {
   PENDING = 1,
   RESTRICTED = 2,
   UNRESTRICTED = 3,
+  DEADLINED = 4,
 }
 // LINT.ThenChange(//chrome/browser/ui/webui/signin/sync_confirmation_handler.h:screen_mode)
 

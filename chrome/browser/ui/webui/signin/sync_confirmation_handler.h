@@ -31,6 +31,7 @@ enum class SyncConfirmationScreenMode : int {
   kPending = 1,
   kRestricted = 2,
   kUnrestricted = 3,
+  kDeadlined = 4,
 };
 
 SyncConfirmationScreenMode GetScreenMode(

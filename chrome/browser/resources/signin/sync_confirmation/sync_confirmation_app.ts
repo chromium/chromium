@@ -185,11 +185,10 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     switch (this.screenMode_) {
       case ScreenMode.UNRESTRICTED:
         return 'action-button';
-      case ScreenMode.RESTRICTED:
-        return '';
       case ScreenMode.PENDING:
         return 'visibility-hidden';
       default:
+        // All other cases have no special appearance.
         return '';
     }
   }

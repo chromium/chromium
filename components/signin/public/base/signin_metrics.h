@@ -499,7 +499,12 @@ enum class SyncButtonsType : int {
   kSyncNotEqualWeighted = 1,
   kHistorySyncEqualWeighted = 2,
   kHistorySyncNotEqualWeighted = 3,
-  kMaxValue = kHistorySyncNotEqualWeighted,
+
+  // Either use one of the two or kSyncEqualWeighted.
+  kSyncEqualWeightedFromDeadline = 4,
+  kSyncEqualWeightedFromCapability = 5,
+
+  kMaxValue = kSyncEqualWeightedFromCapability,
 };
 
 // Tracks type of the button that was clicked by the user.
@@ -516,7 +521,8 @@ enum class SyncButtonClicked : int {
   kHistorySyncCancelEqualWeighted = 7,
   kHistorySyncOptInNotEqualWeighted = 8,
   kHistorySyncCancelNotEqualWeighted = 9,
-  kMaxValue = kHistorySyncCancelNotEqualWeighted,
+  kSyncSettingsUnknownWeighted = 10,
+  kMaxValue = kSyncSettingsUnknownWeighted,
 };
 
 // -----------------------------------------------------------------------------
