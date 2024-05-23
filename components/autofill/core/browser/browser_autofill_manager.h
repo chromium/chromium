@@ -579,6 +579,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
+      const SuggestionsContext& context,
       bool show_suggestions,
       std::vector<Suggestion> suggestions);
 

@@ -1286,10 +1286,10 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       BuildSuggestionsContext(form, field, trigger_source);
 
   GenerateSuggestionsAndMaybeShowUI(
-      form, field, trigger_source, std::move(context),
+      form, field, trigger_source, context,
       base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
                      weak_ptr_factory_.GetWeakPtr(), form, field,
-                     trigger_source));
+                     trigger_source, context));
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
@@ -1336,8 +1336,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
   if (context.is_autofill_available && ShouldSuppressSuggestions()) {
     return;
   }
-
-  LogSuggestionsCount(context, suggestions);
 
   const bool form_element_was_clicked =
       trigger_source ==
@@ -1490,8 +1488,10 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
+    const SuggestionsContext& context,
     bool show_suggestions,
     std::vector<Suggestion> suggestions) {
+  LogSuggestionsCount(context, suggestions);
   // When focusing on a field, log whether there is a suggestion for the user
   // and whether the suggestion is shown.
   FormStructure* form_structure = nullptr;
