@@ -148,6 +148,15 @@ class GraphBuilderTflite final {
       std::optional<int32_t> scale_tensor_index,
       std::optional<int32_t> bias_tensor_index);
 
+  // This function is called by `SerializeReduce` to serialize WebNN
+  // reduce operators or used to emulate WebNN operations.
+  OperatorOffset SerializeReduceOperation(
+      ::tflite::BuiltinOperator operator_code,
+      int32_t input_tensor_index,
+      int32_t output_tensor_index,
+      base::span<const int32_t> axes,
+      bool keep_dimensions);
+
   // This function is called by `SerializeReshape` to serialize WebNN
   // reshape operator or used to emulate WebNN operations.
   OperatorOffset SerializeReshapeOperation(int32_t input_tensor_index,
@@ -207,6 +216,8 @@ class GraphBuilderTflite final {
       const mojom::Gemm& gemm);
   OperatorOffset SerializeHardSigmoid(const mojom::HardSigmoid& hard_sigmoid);
   OperatorOffset SerializeHardSwish(const mojom::HardSwish& hard_swish);
+  base::expected<OperatorOffset, std::string> SerializeInstanceNormalization(
+      const mojom::InstanceNormalization& instance_normalization);
   OperatorOffset SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu);
   OperatorOffset SerializeLinear(const mojom::Linear& linear);
   OperatorOffset SerializeLogicalNot(

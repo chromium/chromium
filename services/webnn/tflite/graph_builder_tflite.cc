@@ -361,6 +361,11 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kHardSwish:
       operator_offset = SerializeHardSwish(*op.get_hard_swish());
       break;
+    case mojom::Operation::Tag::kInstanceNormalization: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeInstanceNormalization(
+                                            *op.get_instance_normalization()));
+      break;
+    }
     case mojom::Operation::Tag::kLeakyRelu:
       operator_offset = SerializeLeakyRelu(*op.get_leaky_relu());
       break;
@@ -437,7 +442,6 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kGru:
     case mojom::Operation::Tag::kGruCell:
     case mojom::Operation::Tag::kLayerNormalization:
-    case mojom::Operation::Tag::kInstanceNormalization:
     case mojom::Operation::Tag::kLstm:
     case mojom::Operation::Tag::kLstmCell:
     case mojom::Operation::Tag::kTriangular:
@@ -706,6 +710,29 @@ auto GraphBuilderTflite::SerializeNormalizationOperation(
   }
 
   return normalization_offset;
+}
+
+auto GraphBuilderTflite::SerializeReduceOperation(
+    ::tflite::BuiltinOperator operator_code,
+    int32_t input_tensor_index,
+    int32_t output_tensor_index,
+    base::span<const int32_t> axes,
+    bool keep_dimensions) -> OperatorOffset {
+  const std::array<int32_t, 1> axes_tensor_shape = {
+      base::checked_cast<int32_t>(axes.size())};
+  const int32_t axes_tensor_index =
+      SerializeTensorWithBuffer<int32_t>(axes, axes_tensor_shape);
+
+  const auto reduce_options =
+      ::tflite::CreateReducerOptions(builder_, keep_dimensions);
+  const uint32_t operator_code_index = GetOperatorCodeIndex(operator_code);
+  const std::array<int32_t, 2> op_inputs = {input_tensor_index,
+                                            axes_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
+      ::tflite::BuiltinOptions_ReducerOptions, reduce_options.Union());
 }
 
 auto GraphBuilderTflite::SerializeReshapeOperation(
@@ -1420,6 +1447,103 @@ auto GraphBuilderTflite::SerializeHardSwish(const mojom::HardSwish& hard_swish)
       operand_to_index_map_.at(hard_swish.output_operand_id));
 }
 
+auto GraphBuilderTflite::SerializeInstanceNormalization(
+    const mojom::InstanceNormalization& instance_normalization)
+    -> base::expected<OperatorOffset, std::string> {
+  const mojom::Operand& input_operand =
+      GetOperand(instance_normalization.input_operand_id);
+  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
+  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
+  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+    return base::unexpected("The 16-bit float data type is not supported.");
+  }
+  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kFloat32);
+  // The input shape has been validated to not overflow before creating tensor.
+  const auto signed_input_dimensions =
+      ToSignedDimensions(input_operand.dimensions);
+  CHECK(signed_input_dimensions.has_value());
+  CHECK_EQ(signed_input_dimensions->size(), 4u);
+  const ::tflite::TensorType input_tensor_type =
+      MojoOperandTypeToTFLite(input_operand.data_type);
+  std::array<int32_t, 2> spatial_dimensions;
+  uint32_t channel_axis;
+  switch (instance_normalization.layout) {
+    case mojom::InputOperandLayout::kChannelsFirst: {
+      spatial_dimensions = {2, 3};
+      channel_axis = 1;
+      break;
+    }
+    case mojom::InputOperandLayout::kChannelsLast:
+      spatial_dimensions = {1, 2};
+      channel_axis = 3;
+      break;
+  }
+  std::vector<int32_t> new_shape(signed_input_dimensions->size(), 1);
+  new_shape[channel_axis] = (*signed_input_dimensions)[channel_axis];
+
+  // Get mean values with reduceMean over the spatial dimensions of the input.
+  const int32_t input_tensor_index =
+      operand_to_index_map_.at(instance_normalization.input_operand_id);
+  const int32_t mean_tensor_index =
+      SerializeTemporaryTensor(new_shape, input_tensor_type);
+  operators_.emplace_back(SerializeReduceOperation(
+      ::tflite::BuiltinOperator_MEAN, input_tensor_index, mean_tensor_index,
+      spatial_dimensions, /*keep_dimensions=*/true));
+
+  // Get variance with expression `Variance = ReduceMean(Pow(Input - Mean, 2))`
+  // over the spatial dimensions of the input.
+  const int32_t output_tensor_index_of_sub =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_SUB, input_tensor_index, mean_tensor_index,
+      output_tensor_index_of_sub));
+  const int32_t pow_constant_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{2.0},
+      /*dimensions=*/{});
+  const int32_t output_tensor_index_of_pow =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_POW, output_tensor_index_of_sub,
+      pow_constant_tensor_index, output_tensor_index_of_pow));
+  const int32_t variance_tensor_index =
+      SerializeTemporaryTensor(new_shape, input_tensor_type);
+  operators_.emplace_back(SerializeReduceOperation(
+      ::tflite::BuiltinOperator_MEAN, output_tensor_index_of_pow,
+      variance_tensor_index, spatial_dimensions, /*keep_dimensions=*/true));
+
+  // Reshape the 1-D tensor of the scale operand to the new shape if needed.
+  std::optional<int32_t> reshape_scale_tensor_index;
+  if (instance_normalization.scale_operand_id) {
+    const mojom::Operand& scale_operand =
+        GetOperand(*instance_normalization.scale_operand_id);
+    CHECK_EQ(scale_operand.dimensions.size(), 1u);
+    reshape_scale_tensor_index =
+        SerializeTemporaryTensor(new_shape, input_tensor_type);
+    operators_.emplace_back(SerializeReshapeOperation(
+        operand_to_index_map_.at(*instance_normalization.scale_operand_id),
+        *reshape_scale_tensor_index, new_shape));
+  }
+
+  // Reshape the 1-D tensor of the bias operand to the new shape if needed.
+  std::optional<int32_t> reshape_bias_tensor_index;
+  if (instance_normalization.bias_operand_id) {
+    const mojom::Operand& bias_operand =
+        GetOperand(*instance_normalization.bias_operand_id);
+    CHECK_EQ(bias_operand.dimensions.size(), 1u);
+    reshape_bias_tensor_index =
+        SerializeTemporaryTensor(new_shape, input_tensor_type);
+    operators_.emplace_back(SerializeReshapeOperation(
+        operand_to_index_map_.at(*instance_normalization.bias_operand_id),
+        *reshape_bias_tensor_index, new_shape));
+  }
+
+  return SerializeNormalizationOperation(
+      *signed_input_dimensions, input_tensor_type, input_tensor_index,
+      operand_to_index_map_.at(instance_normalization.output_operand_id),
+      mean_tensor_index, variance_tensor_index, instance_normalization.epsilon,
+      reshape_scale_tensor_index, reshape_bias_tensor_index);
+}
+
 auto GraphBuilderTflite::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
     -> OperatorOffset {
   const auto leaky_rely_options =
@@ -1721,10 +1845,6 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
   // Serialize the axes tensor to reduce input tensor.
   ASSIGN_OR_RETURN(const std::vector<int32_t> signed_axes,
                    ToSignedDimensions(reduce.axes));
-  const std::array<int32_t, 1> axes_tensor_shape = {
-      base::checked_cast<int32_t>(signed_axes.size())};
-  const int32_t axes_tensor_index =
-      SerializeTensorWithBuffer<int32_t>(signed_axes, axes_tensor_shape);
 
   ::tflite::BuiltinOperator operator_code;
   const mojom::Operand& input_operand = GetOperand(reduce.input_operand_id);
@@ -1763,17 +1883,10 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
                               " is not implemented.");
   }
 
-  const auto reduce_options =
-      ::tflite::CreateReducerOptions(builder_, reduce.keep_dimensions);
-  const uint32_t operator_code_index = GetOperatorCodeIndex(operator_code);
-  const std::array<int32_t, 2> op_inputs = {
-      operand_to_index_map_.at(reduce.input_operand_id), axes_tensor_index};
-  const std::array<int32_t, 1> op_outputs = {
-      operand_to_index_map_.at(reduce.output_operand_id)};
-  return ::tflite::CreateOperator(
-      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
-      builder_.CreateVector<int32_t>(op_outputs),
-      ::tflite::BuiltinOptions_ReducerOptions, reduce_options.Union());
+  return SerializeReduceOperation(
+      operator_code, operand_to_index_map_.at(reduce.input_operand_id),
+      operand_to_index_map_.at(reduce.output_operand_id), signed_axes,
+      reduce.keep_dimensions);
 }
 
 auto GraphBuilderTflite::SerializeRelu(const mojom::Relu& relu)
