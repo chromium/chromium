@@ -11,6 +11,7 @@
 namespace ash {
 
 // Interface between enable kiosk screen and its representation.
+// TODO(b/256596599): Remove
 class KioskEnableScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"kiosk-enable",

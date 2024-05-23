@@ -797,62 +797,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, UpdateAndRemoveApp) {
   EXPECT_FALSE(GetCachedCrx(kTestLocalFsKioskApp, &v2_crx_path, &version));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, EnableConsumerKiosk) {
-  // Consumer kiosk is disabled by default. Enable it for test.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableConsumerKiosk);
-
-  TestFuture<KioskChromeAppManager::ConsumerKioskAutoLaunchStatus>
-      result_future;
-  manager()->GetConsumerKioskAutoLaunchStatus(result_future.GetCallback());
-  EXPECT_EQ(KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
-            result_future.Get());
-
-  TestFuture<bool> result_future2;
-  manager()->EnableConsumerKioskAutoLaunch(result_future2.GetCallback());
-  EXPECT_TRUE(result_future2.Get());
-
-  TestFuture<KioskChromeAppManager::ConsumerKioskAutoLaunchStatus>
-      result_future3;
-  manager()->GetConsumerKioskAutoLaunchStatus(result_future3.GetCallback());
-  EXPECT_EQ(KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kEnabled,
-            result_future3.Get());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, ConsumerKioskDisabled) {
-  TestFuture<KioskChromeAppManager::ConsumerKioskAutoLaunchStatus>
-      result_future;
-  manager()->GetConsumerKioskAutoLaunchStatus(result_future.GetCallback());
-  EXPECT_EQ(KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kDisabled,
-            result_future.Get());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
-                       PreventEnableConsumerKioskForEnterprise) {
-  // Consumer kiosk is disabled by default. Enable it for test.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableConsumerKiosk);
-
-  // Lock the device as enterprise.
-  EXPECT_EQ(LockDeviceForEnterprise(), InstallAttributes::LOCK_SUCCESS);
-
-  TestFuture<KioskChromeAppManager::ConsumerKioskAutoLaunchStatus>
-      result_future;
-  manager()->GetConsumerKioskAutoLaunchStatus(result_future.GetCallback());
-  EXPECT_EQ(KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kDisabled,
-            result_future.Get());
-
-  TestFuture<bool> result_future2;
-  manager()->EnableConsumerKioskAutoLaunch(result_future2.GetCallback());
-  EXPECT_FALSE(result_future2.Get());
-
-  TestFuture<KioskChromeAppManager::ConsumerKioskAutoLaunchStatus>
-      result_future3;
-  manager()->GetConsumerKioskAutoLaunchStatus(result_future3.GetCallback());
-  EXPECT_EQ(KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kDisabled,
-            result_future3.Get());
-}
-
 IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
                        GetAutoLaunchAppRequiredPlatformVersion) {
   const char kAppId[] = "app_with_required_platform_version";

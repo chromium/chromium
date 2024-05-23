@@ -80,7 +80,7 @@ class KioskEnterpriseTest : public KioskBaseTest {
   KioskEnterpriseTest& operator=(const KioskEnterpriseTest&) = delete;
 
  protected:
-  KioskEnterpriseTest() { set_use_consumer_kiosk_mode(false); }
+  KioskEnterpriseTest() = default;
 
   // KioskBaseTest:
   void SetUpOnMainThread() override {

@@ -74,9 +74,6 @@ class KioskBaseTest : public OobeBaseTest {
  protected:
   using NetworkStatus = NetworkPortalDetectorMixin::NetworkStatus;
 
-  static KioskChromeAppManager::ConsumerKioskAutoLaunchStatus
-  GetConsumerKioskModeStatus();
-
   // Waits for window width to change. Listens to a 'size_change' message sent
   // from DOM automation to `message_queue`.
   // The message is expected to be in JSON format:
@@ -138,8 +135,6 @@ class KioskBaseTest : public OobeBaseTest {
   const std::string& test_crx_file() const { return test_crx_file_; }
   FakeCWS* fake_cws() { return fake_cws_.get(); }
 
-  void set_use_consumer_kiosk_mode(bool use) { use_consumer_kiosk_mode_ = use; }
-
   ScopedCrosSettingsTestHelper settings_helper_;
   std::unique_ptr<FakeOwnerSettingsService> owner_settings_service_;
 
@@ -156,7 +151,6 @@ class KioskBaseTest : public OobeBaseTest {
   // Email of owner account for test.
   constexpr static const char kTestOwnerEmail[] = "owner@example.com";
 
-  bool use_consumer_kiosk_mode_ = true;
   std::string test_app_id_;
   std::string test_app_version_;
   std::string test_crx_file_;

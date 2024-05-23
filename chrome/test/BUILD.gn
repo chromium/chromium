@@ -4596,8 +4596,6 @@ if (!is_android) {
         "../browser/ash/login/app_mode/test/kiosk_ash_browser_test_starter.h",
         "../browser/ash/login/app_mode/test/kiosk_base_test.cc",
         "../browser/ash/login/app_mode/test/kiosk_base_test.h",
-        "../browser/ash/login/app_mode/test/kiosk_browsertest.cc",
-        "../browser/ash/login/app_mode/test/kiosk_consumer_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_device_owned_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_enterprise_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_enterprise_input_api_browsertest.cc",

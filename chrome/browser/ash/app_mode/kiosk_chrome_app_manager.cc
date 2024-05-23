@@ -231,8 +231,8 @@ void KioskChromeAppManager::RegisterProfilePrefs(
 
 // static
 bool KioskChromeAppManager::IsConsumerKioskEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableConsumerKiosk);
+  // TODO(b/256596599): Remove
+  return false;
 }
 
 std::string KioskChromeAppManager::GetAutoLaunchApp() const {

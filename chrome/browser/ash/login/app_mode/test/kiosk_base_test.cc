@@ -8,13 +8,11 @@
 #include <string>
 
 #include "apps/test/app_window_waiter.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/command_line.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
-#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -82,22 +80,6 @@ KioskBaseTest::KioskBaseTest()
 KioskBaseTest::~KioskBaseTest() = default;
 
 // static
-KioskChromeAppManager::ConsumerKioskAutoLaunchStatus
-KioskBaseTest::GetConsumerKioskModeStatus() {
-  base::test::TestFuture<KioskChromeAppManager::ConsumerKioskAutoLaunchStatus>
-      future;
-  KioskChromeAppManager::Get()->GetConsumerKioskAutoLaunchStatus(
-      future.GetCallback());
-  KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status = future.Take();
-  LOG(INFO) << "KioskChromeAppManager::ConsumerKioskModeStatus = "
-            << static_cast<int>(status);
-  EXPECT_NE(
-      status,
-      static_cast<KioskChromeAppManager::ConsumerKioskAutoLaunchStatus>(-1));
-  return status;
-}
-
-// static
 int KioskBaseTest::WaitForWidthChange(content::DOMMessageQueue* message_queue,
                                       int current_width) {
   std::string message;
@@ -161,10 +143,6 @@ void KioskBaseTest::TearDownOnMainThread() {
 void KioskBaseTest::SetUpCommandLine(base::CommandLine* command_line) {
   OobeBaseTest::SetUpCommandLine(command_line);
   fake_cws_->Init(embedded_test_server());
-
-  if (use_consumer_kiosk_mode_) {
-    command_line->AppendSwitch(switches::kEnableConsumerKiosk);
-  }
 }
 
 bool KioskBaseTest::LaunchApp(const std::string& app_id) {
