@@ -2138,7 +2138,7 @@ BASE_FEATURE(kFeatureManagementOobeSimon,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables OOBE tuna feature.
-BASE_FEATURE(kOobeTuna, "OobeTuna", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOobeTuna, "OobeTuna", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeatureManagementOobeTuna,
              "FeatureManagementOobeTuna",

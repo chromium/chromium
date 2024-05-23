@@ -1476,11 +1476,12 @@
     Navigate to extra content <ph name="CURRENT_ELEMENT">$1<ex>1</ex></ph> out of <ph name="TOTAL_ELEMENTS">$2<ex>2</ex></ph>
   </message>
   <!-- Strings for tuna screen -->
-  <message name="IDS_TUNA_TITLE" desc="The title of the tuna dialog" translateable="false">
-    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook Plus</ex></ph> comes with Google AI
+  <message name="IDS_TUNA_TITLE" desc="The title of the tuna dialog">
+    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook Plus</ex></ph> comes with Gemini
   </message>
-  <message name="IDS_TUNA_SUBTITLE" desc="The subtitle of the tuna dialog" translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Get help on writing, planning, learning and more.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+  <message name="IDS_TUNA_SUBTITLE" desc="The subtitle of the tuna dialog">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Chat with Gemini to start writing, planning, learning and more with Google AI.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>After setup, start using Gemini by selecting the Gemini app on your shelf, at the bottom of your screen.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <!-- Strings for marketing optin screen -->
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_TITLE" desc="The title of the last dialog in the set of screens that are always displayed to the user on the first login to the ChromeOS device.">
