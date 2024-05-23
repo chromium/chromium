@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -90,8 +91,8 @@ class PersonalizationProviderTest : public testing::Test {
         1;
 
     mock_handler_ = std::make_unique<MockSearchHandler>();
-    auto provider = std::make_unique<PersonalizationProvider>(
-        profile_, mock_handler_.get());
+    auto provider = std::make_unique<PersonalizationProvider>(profile_);
+    provider->Initialize(mock_handler_.get());
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
     task_environment_.RunUntilIdle();
@@ -120,6 +121,7 @@ class PersonalizationProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<MockSearchHandler> mock_handler_;
+  session_manager::SessionManager session_manager_;
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;

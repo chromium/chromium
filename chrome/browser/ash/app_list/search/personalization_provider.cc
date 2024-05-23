@@ -20,12 +20,16 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -69,28 +73,52 @@ void PersonalizationResult::Open(int event_flags) {
                                launch_params);
 }
 
-PersonalizationProvider::PersonalizationProvider(
-    Profile* profile,
-    ash::personalization_app::SearchHandler* search_handler)
-    : SearchProvider(SearchCategory::kSettings),
-      profile_(profile),
-      search_handler_(search_handler) {
-  app_registry_cache_observer_.Observe(
-      &apps::AppServiceProxyFactory::GetForProfile(profile_)
-           ->AppRegistryCache());
-  StartLoadIcon();
-
-  if (search_handler_) {
-    search_handler_->AddObserver(
-        search_results_observer_.BindNewPipeAndPassRemote());
+PersonalizationProvider::PersonalizationProvider(Profile* profile)
+    : SearchProvider(SearchCategory::kSettings), profile_(profile) {
+  auto* session_manager = session_manager::SessionManager::Get();
+  if (session_manager->IsUserSessionStartUpTaskCompleted()) {
+    // If user session start up task has completed, the initialization can
+    // start.
+    Initialize();
+  } else {
+    // Wait for the user session start up task completion to prioritize
+    // resources for them.
+    session_manager_observation_.Observe(session_manager);
   }
 }
 
 PersonalizationProvider::~PersonalizationProvider() = default;
 
+void PersonalizationProvider::Initialize(
+    ::ash::personalization_app::SearchHandler* fake_search_handler) {
+  // Initialization is happening, so we no longer need to wait for user session
+  // start up task completion.
+  session_manager_observation_.Reset();
+
+  app_registry_cache_observer_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile_)
+           ->AppRegistryCache());
+  StartLoadIcon();
+
+  // Use fake search handler if provided in tests, or get it from
+  // `personalization_app_manager`.
+  if (fake_search_handler) {
+    search_handler_ = fake_search_handler;
+  } else {
+    auto* personalization_app_manager = ash::personalization_app::
+        PersonalizationAppManagerFactory::GetForBrowserContext(profile_);
+    CHECK(personalization_app_manager);
+    search_handler_ = personalization_app_manager->search_handler();
+  }
+  CHECK(search_handler_);
+  search_handler_->AddObserver(
+      search_results_observer_.BindNewPipeAndPassRemote());
+}
+
 void PersonalizationProvider::Start(const std::u16string& query) {
-  if (!search_handler_)
+  if (!search_handler_) {
     return;
+  }
 
   if (query.size() < kMinQueryLength) {
     return;
@@ -157,6 +185,10 @@ void PersonalizationProvider::OnSearchDone(
                           base::TimeTicks::Now() - start_time);
 
   SwapResults(&search_results);
+}
+
+void PersonalizationProvider::OnUserSessionStartUpTaskCompleted() {
+  Initialize();
 }
 
 void PersonalizationProvider::StartLoadIcon() {
