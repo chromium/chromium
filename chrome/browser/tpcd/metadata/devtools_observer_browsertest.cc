@@ -181,8 +181,9 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   raw_ptr<TpcdMetadataDevtoolsObserver> devtools_observer_ = nullptr;
 };
 
+// TODO(https://crbug.com/341211478): Flaky.
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
-                       EmitsDevtoolsIssues) {
+                       DISABLED_EmitsDevtoolsIssues) {
   AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
   WaitForIssueAndCheckAllowedSites({"b.test"});
 
