@@ -795,7 +795,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
           WebStateSearchCriteria{
               .identifier =
                   _dragItems[destinationItemIndex].tabSwitcherItem.identifier});
-      if (_webStateList->GetGroupOfWebStateAt(webStateIndex)) {
+      if (_webStateList->ContainsIndex(webStateIndex) &&
+          _webStateList->GetGroupOfWebStateAt(webStateIndex)) {
         return UIDropOperationForbidden;
       }
     }
