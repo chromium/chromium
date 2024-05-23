@@ -67,6 +67,13 @@ function isStatBlocklisted(report, statName) {
       ['mid', 'rid', 'ssrc', 'rtxSsrc', 'fecSsrc'].includes(statName)) {
     return true;
   }
+  // Last packet sent/received timestamps on candidate-pair and inbound-rtp
+  // do not plot nicely.
+  if (['candidate-pair', 'inbound-rtp'].includes(report.type) &&
+      ['lastPacketSentTimestamp',
+        'lastPacketReceivedTimestamp'].includes(statName)) {
+    return true;
+  }
   return false;
 }
 
