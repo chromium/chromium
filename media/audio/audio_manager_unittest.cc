@@ -358,6 +358,21 @@ TEST_F(AudioManagerTest, EnumerateInputDevicesAlsa) {
   CheckDeviceDescriptions(device_descriptions);
 }
 
+TEST_F(AudioManagerTest, EnumerateInputDevicesAlsaWithInputDeviceSwitch) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAlsaInputDevice, "switch-input-device");
+
+  DVLOG(2) << "Testing AudioManagerAlsa.";
+  CreateAudioManagerForTesting<AudioManagerAlsa>();
+  AudioDeviceDescriptions device_descriptions;
+  device_info_accessor_->GetAudioInputDeviceDescriptions(&device_descriptions);
+  CheckDeviceDescriptions(device_descriptions);
+  EXPECT_TRUE(base::Contains(device_descriptions, "switch-input-device",
+                             [](const auto& device_description) {
+                               return device_description.unique_id;
+                             }));
+}
+
 TEST_F(AudioManagerTest, EnumerateOutputDevicesAlsa) {
   ABORT_AUDIO_TEST_IF_NOT(OutputDevicesAvailable());
 
@@ -366,6 +381,21 @@ TEST_F(AudioManagerTest, EnumerateOutputDevicesAlsa) {
   AudioDeviceDescriptions device_descriptions;
   device_info_accessor_->GetAudioOutputDeviceDescriptions(&device_descriptions);
   CheckDeviceDescriptions(device_descriptions);
+}
+
+TEST_F(AudioManagerTest, EnumerateOutputDevicesAlsaWithOutputDeviceSwitch) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAlsaOutputDevice, "switch-output-device");
+
+  DVLOG(2) << "Testing AudioManagerAlsa.";
+  CreateAudioManagerForTesting<AudioManagerAlsa>();
+  AudioDeviceDescriptions device_descriptions;
+  device_info_accessor_->GetAudioOutputDeviceDescriptions(&device_descriptions);
+  CheckDeviceDescriptions(device_descriptions);
+  EXPECT_TRUE(base::Contains(device_descriptions, "switch-output-device",
+                             [](const auto& device_description) {
+                               return device_description.unique_id;
+                             }));
 }
 #endif  // defined(USE_ALSA)
 

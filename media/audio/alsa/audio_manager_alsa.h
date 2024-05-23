@@ -76,6 +76,10 @@ class MEDIA_EXPORT AudioManagerAlsa : public AudioManagerBase {
   static bool IsAlsaDeviceAvailable(StreamType type,
                                     const char* device_name);
 
+  // Adds the switch-specified ALSA device if not present in device list.
+  static void AddAlsaDeviceFromSwitch(const char* switch_name,
+                                      AudioDeviceNames* device_names);
+
   static const char* UnwantedDeviceTypeWhenEnumerating(
       StreamType wanted_type);
 
