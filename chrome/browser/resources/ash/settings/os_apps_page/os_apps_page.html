@@ -262,7 +262,8 @@
   <template is="dom-if" if="[[isAppParentalControlsFeatureAvailable_]]">
     <template is="dom-if" route-path="/app-parental-controls">
       <os-settings-subpage page-title="$i18n{appParentalControlsTitle}">
-        <settings-app-parental-controls-subpage>
+        <settings-app-parental-controls-subpage
+            is-verified="[[isPinVerified_]]">
         </settings-app-parental-controls-subpage>
       </os-settings-subpage>
     </template>
