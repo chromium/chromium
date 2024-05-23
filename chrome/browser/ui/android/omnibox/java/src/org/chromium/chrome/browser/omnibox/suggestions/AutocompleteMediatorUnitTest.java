@@ -1184,8 +1184,9 @@ public class AutocompleteMediatorUnitTest {
                 .thenReturn(true);
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
-        // Simulate omnibox session start.
+        // Simulate omnibox session start, and offer suggestions.
         mMediator.onOmniboxSessionStateChange(true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
 
         // Simulate a suggestion being touched down.
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /* matchIndex= */ 0);
@@ -1224,8 +1225,9 @@ public class AutocompleteMediatorUnitTest {
                 .thenReturn(true);
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
-        // Simulate omnibox session start.
+        // Simulate omnibox session start, and offer suggestions.
         mMediator.onOmniboxSessionStateChange(true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
 
         // Simulate a suggestion being touched down.
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /* matchIndex= */ 0);
@@ -1262,8 +1264,9 @@ public class AutocompleteMediatorUnitTest {
         when(mLocationBarDataProvider.hasTab()).thenReturn(false);
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
-        // Simulate omnibox session start.
+        // Simulate omnibox session start, and offer suggestions.
         mMediator.onOmniboxSessionStateChange(true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
 
         // This will simulate the touch down trigger not starting a prefetch.
         when(mAutocompleteController.onSuggestionTouchDown(any(), anyInt(), any()))

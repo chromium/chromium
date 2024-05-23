@@ -1136,6 +1136,8 @@ class AutocompleteMediator
      */
     private void recordMetrics(
             @NonNull AutocompleteMatch match, int suggestionLine, int disposition) {
+        if (mAutocompleteResult.isEmpty()) return;
+
         boolean autocompleteResultIsFromCache =
                 mAutocompleteResult.map(r -> r.isFromCachedResult()).orElse(true);
 
