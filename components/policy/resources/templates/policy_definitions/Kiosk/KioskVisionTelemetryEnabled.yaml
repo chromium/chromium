@@ -1,0 +1,24 @@
+owners:
+- sseckler@chromium.org
+- file://chromeos/components/kiosk/OWNERS
+caption: Enable Kiosk Vision's telemetry reporting.
+desc: |-
+  Setting the policy to Enabled means Kiosk Vision's telemetry reporting is enabled.
+  It will start the Kiosk Vision framework and enable reporting of the audience telemetry.
+  Leaving this policy unset or setting it to Disabled means Kiosk Vision's telemetry reporting is disabled.
+features:
+  dynamic_refresh: true
+  per_profile: false
+type: main
+schema:
+  type: boolean
+items:
+- caption: Enable Kiosk Vision's telemetry reporting.
+  value: true
+- caption: Disable Kiosk Vision's telemetry reporting.
+  value: false
+default: false
+example_value: false
+future_on:
+- chrome_os
+tags: []

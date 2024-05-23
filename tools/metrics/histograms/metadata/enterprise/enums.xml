@@ -2137,6 +2137,7 @@ chromium-metrics-reviews@google.com.
   <int value="1259" label="ExtensibleEnterpriseSSOEnabled"/>
   <int value="1260" label="CSSCustomStateDeprecatedSyntaxEnabled"/>
   <int value="1261" label="MemorySaverModeSavings"/>
+  <int value="1262" label="KioskVisionTelemetryEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
