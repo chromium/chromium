@@ -75,7 +75,7 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
   timer_container->SetPreferredSize(gfx::Size(kBarWidth, kCountdownViewHeight));
   timer_container->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred,
                                /*adjust_height_for_width =*/false));
   timer_container->SetBorder(views::CreateEmptyBorder(

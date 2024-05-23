@@ -60,7 +60,7 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
   text_container->SetPreferredSize(kTextContainerSize);
   text_container->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred,
                                /*adjust_height_for_width =*/false));
 
