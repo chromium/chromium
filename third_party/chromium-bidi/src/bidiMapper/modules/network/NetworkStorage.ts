@@ -58,12 +58,9 @@ export class NetworkStorage {
   ) {
     this.#eventManager = eventManager;
 
-    browserClient.on(
-      'Target.detachedFromTarget',
-      ({sessionId}: Protocol.Target.DetachedFromTargetEvent) => {
-        this.disposeRequestMap(sessionId);
-      }
-    );
+    browserClient.on('Target.detachedFromTarget', ({sessionId}) => {
+      this.disposeRequestMap(sessionId);
+    });
 
     this.#logger = logger;
   }

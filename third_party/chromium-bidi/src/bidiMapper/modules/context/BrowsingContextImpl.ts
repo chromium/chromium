@@ -322,142 +322,129 @@ export class BrowsingContextImpl {
   }
 
   #initListeners() {
-    this.#cdpTarget.cdpClient.on(
-      'Page.frameNavigated',
-      (params: Protocol.Page.FrameNavigatedEvent) => {
-        if (this.id !== params.frame.id) {
-          return;
-        }
-        this.#url = params.frame.url + (params.frame.urlFragment ?? '');
-
-        // At the point the page is initialized, all the nested iframes from the
-        // previous page are detached and realms are destroyed.
-        // Remove children from context.
-        this.#deleteAllChildren();
+    this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
+      if (this.id !== params.frame.id) {
+        return;
       }
-    );
+      this.#url = params.frame.url + (params.frame.urlFragment ?? '');
 
-    this.#cdpTarget.cdpClient.on(
-      'Page.navigatedWithinDocument',
-      (params: Protocol.Page.NavigatedWithinDocumentEvent) => {
-        if (this.id !== params.frameId) {
-          return;
-        }
-        const timestamp = BrowsingContextImpl.getTimestamp();
-        this.#url = params.url;
-        this.#navigation.withinDocument.resolve();
+      // At the point the page is initialized, all the nested iframes from the
+      // previous page are detached and realms are destroyed.
+      // Remove children from context.
+      this.#deleteAllChildren();
+    });
 
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-            params: {
-              context: this.id,
-              navigation: null,
-              timestamp,
-              url: this.#url,
-            },
+    this.#cdpTarget.cdpClient.on('Page.navigatedWithinDocument', (params) => {
+      if (this.id !== params.frameId) {
+        return;
+      }
+      const timestamp = BrowsingContextImpl.getTimestamp();
+      this.#url = params.url;
+      this.#navigation.withinDocument.resolve();
+
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+          params: {
+            context: this.id,
+            navigation: null,
+            timestamp,
+            url: this.#url,
           },
-          this.id
-        );
-      }
-    );
+        },
+        this.id
+      );
+    });
 
-    this.#cdpTarget.cdpClient.on(
-      'Page.frameStartedLoading',
-      (params: Protocol.Page.FrameStartedLoadingEvent) => {
-        if (this.id !== params.frameId) {
-          return;
-        }
-        this.#eventManager.registerEvent(
-          {
-            type: 'event',
-            method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-            params: {
-              context: this.id,
-              navigation: null,
-              timestamp: BrowsingContextImpl.getTimestamp(),
-              url: '',
-            },
+    this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
+      if (this.id !== params.frameId) {
+        return;
+      }
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+          params: {
+            context: this.id,
+            navigation: null,
+            timestamp: BrowsingContextImpl.getTimestamp(),
+            url: '',
           },
-          this.id
-        );
+        },
+        this.id
+      );
+    });
+
+    this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
+      if (this.id !== params.frameId) {
+        return;
       }
-    );
 
-    this.#cdpTarget.cdpClient.on(
-      'Page.lifecycleEvent',
-      (params: Protocol.Page.LifecycleEventEvent) => {
-        if (this.id !== params.frameId) {
-          return;
-        }
-
-        if (params.name === 'init') {
-          this.#documentChanged(params.loaderId);
-          return;
-        }
-
-        if (params.name === 'commit') {
-          this.#loaderId = params.loaderId;
-          return;
-        }
-
-        // If mapper attached to the page late, it might miss init and
-        // commit events. In that case, save the first loaderId for this
-        // frameId.
-        if (!this.#loaderId) {
-          this.#loaderId = params.loaderId;
-        }
-
-        // Ignore event from not current navigation.
-        if (params.loaderId !== this.#loaderId) {
-          return;
-        }
-
-        const timestamp = BrowsingContextImpl.getTimestamp();
-
-        switch (params.name) {
-          case 'DOMContentLoaded':
-            this.#eventManager.registerEvent(
-              {
-                type: 'event',
-                method:
-                  ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
-                params: {
-                  context: this.id,
-                  navigation: this.#loaderId ?? null,
-                  timestamp,
-                  url: this.#url,
-                },
-              },
-              this.id
-            );
-            this.#lifecycle.DOMContentLoaded.resolve();
-            break;
-
-          case 'load':
-            this.#eventManager.registerEvent(
-              {
-                type: 'event',
-                method: ChromiumBidi.BrowsingContext.EventNames.Load,
-                params: {
-                  context: this.id,
-                  navigation: this.#loaderId ?? null,
-                  timestamp,
-                  url: this.#url,
-                },
-              },
-              this.id
-            );
-            this.#lifecycle.load.resolve();
-            break;
-        }
+      if (params.name === 'init') {
+        this.#documentChanged(params.loaderId);
+        return;
       }
-    );
+
+      if (params.name === 'commit') {
+        this.#loaderId = params.loaderId;
+        return;
+      }
+
+      // If mapper attached to the page late, it might miss init and
+      // commit events. In that case, save the first loaderId for this
+      // frameId.
+      if (!this.#loaderId) {
+        this.#loaderId = params.loaderId;
+      }
+
+      // Ignore event from not current navigation.
+      if (params.loaderId !== this.#loaderId) {
+        return;
+      }
+
+      const timestamp = BrowsingContextImpl.getTimestamp();
+
+      switch (params.name) {
+        case 'DOMContentLoaded':
+          this.#eventManager.registerEvent(
+            {
+              type: 'event',
+              method: ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+              params: {
+                context: this.id,
+                navigation: this.#loaderId ?? null,
+                timestamp,
+                url: this.#url,
+              },
+            },
+            this.id
+          );
+          this.#lifecycle.DOMContentLoaded.resolve();
+          break;
+
+        case 'load':
+          this.#eventManager.registerEvent(
+            {
+              type: 'event',
+              method: ChromiumBidi.BrowsingContext.EventNames.Load,
+              params: {
+                context: this.id,
+                navigation: this.#loaderId ?? null,
+                timestamp,
+                url: this.#url,
+              },
+            },
+            this.id
+          );
+          this.#lifecycle.load.resolve();
+          break;
+      }
+    });
 
     this.#cdpTarget.cdpClient.on(
       'Runtime.executionContextCreated',
-      (params: Protocol.Runtime.ExecutionContextCreatedEvent) => {
+      (params) => {
         const {auxData, name, uniqueId, id} = params.context;
         if (!auxData || auxData.frameId !== this.id) {
           return;
@@ -511,7 +498,7 @@ export class BrowsingContextImpl {
 
     this.#cdpTarget.cdpClient.on(
       'Runtime.executionContextDestroyed',
-      (params: Protocol.Runtime.ExecutionContextDestroyedEvent) => {
+      (params) => {
         this.#realmStorage.deleteRealms({
           cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.executionContextId,
