@@ -248,13 +248,9 @@ void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageThumbnail(
 void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
     const mojom::SeaPenFeedbackMetadataPtr metadata) {
   CHECK(last_query_);
-  // Text query is not supported.
-  if (last_query_->is_text_query()) {
-    return;
-  }
 
-  std::string feedback_text = wallpaper_handlers::GetFeedbackText(
-      last_query_->get_template_query(), metadata);
+  std::string feedback_text =
+      wallpaper_handlers::GetFeedbackText(last_query_, metadata);
 
   base::Value::Dict ai_metadata;
   ai_metadata.Set(feedback::kSeaPenMetadataKey, "true");

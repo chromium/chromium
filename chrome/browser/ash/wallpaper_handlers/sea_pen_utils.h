@@ -35,7 +35,7 @@ manta::proto::Request CreateMantaRequest(
     manta::proto::FeatureName feature_name);
 
 std::string GetFeedbackText(
-    const ash::personalization_app::mojom::SeaPenTemplateQueryPtr& query,
+    const ash::personalization_app::mojom::SeaPenQueryPtr& query,
     const ash::personalization_app::mojom::SeaPenFeedbackMetadataPtr& metadata);
 
 }  // namespace wallpaper_handlers
