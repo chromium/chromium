@@ -774,16 +774,8 @@ void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
   if (expanded) {
     message_center_utils::FadeOutView(
         collapsed_summary_view_,
-        base::BindRepeating(
-            [](base::WeakPtr<ash::AshNotificationView> parent,
-               views::View* collapsed_summary_view) {
-              if (parent) {
-                collapsed_summary_view->layer()->SetOpacity(1.0f);
-                collapsed_summary_view->SetVisible(false);
-              }
-            },
-            weak_factory_.GetWeakPtr(), collapsed_summary_view_),
-        0, kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
+        OnFadeOutAnimationEndedClosure(collapsed_summary_view_), 0,
+        kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
         "Ash.NotificationView.CollapsedSummaryView.FadeOut."
         "AnimationSmoothness");
     message_center_utils::FadeInView(
@@ -794,17 +786,8 @@ void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
   }
 
   message_center_utils::FadeOutView(
-      main_view_,
-      base::BindRepeating(
-          [](base::WeakPtr<ash::AshNotificationView> parent,
-             views::View* main_view) {
-            if (parent) {
-              main_view->layer()->SetOpacity(1.0f);
-              main_view->SetVisible(false);
-            }
-          },
-          weak_factory_.GetWeakPtr(), main_view_),
-      0, kChildMainViewFadeOutAnimationDurationMs, gfx::Tween::LINEAR,
+      main_view_, OnFadeOutAnimationEndedClosure(main_view_), 0,
+      kChildMainViewFadeOutAnimationDurationMs, gfx::Tween::LINEAR,
       "Ash.NotificationView.MainView.FadeOut.AnimationSmoothness");
   message_center_utils::FadeInView(
       collapsed_summary_view_, kChildMainViewFadeOutAnimationDurationMs,
@@ -908,15 +891,7 @@ void AshNotificationView::ToggleExpand() {
 
   if (inline_reply() && inline_reply()->GetVisible()) {
     message_center_utils::FadeOutView(
-        inline_reply(),
-        base::BindOnce(
-            [](base::WeakPtr<ash::AshNotificationView> parent,
-               views::View* inline_reply) {
-              if (parent) {
-                inline_reply->layer()->SetOpacity(1.0f);
-              }
-            },
-            weak_factory_.GetWeakPtr(), inline_reply()),
+        inline_reply(), OnFadeOutAnimationEndedClosure(inline_reply()),
         /*delay_in_ms=*/0, kInlineReplyFadeOutAnimationDurationMs,
         gfx::Tween::LINEAR,
         "Ash.NotificationView.InlineReply.FadeOut.AnimationSmoothness");
@@ -1556,15 +1531,7 @@ void AshNotificationView::OnInlineReplyUpdated() {
   message_center_utils::InitLayerForAnimations(action_buttons_row());
   message_center_utils::FadeOutView(
       action_buttons_row(),
-      base::BindOnce(
-          [](base::WeakPtr<ash::AshNotificationView> parent,
-             views::View* action_buttons_row) {
-            if (parent) {
-              action_buttons_row->layer()->SetOpacity(1.0f);
-              action_buttons_row->SetVisible(false);
-            }
-          },
-          weak_factory_.GetWeakPtr(), action_buttons_row()),
+      OnFadeOutAnimationEndedClosure(action_buttons_row()),
       /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs,
       gfx::Tween::LINEAR,
       "Ash.NotificationView.ActionButtonsRow.FadeOut.AnimationSmoothness");
@@ -1931,17 +1898,7 @@ void AshNotificationView::PerformLargeImageAnimation() {
   // `image_container_view()`, fade out and scale down `image_container_view()`.
   message_center_utils::FadeOutView(
       image_container_view(),
-      base::BindRepeating(
-          [](base::WeakPtr<ash::AshNotificationView> parent,
-             views::View* image_container_view) {
-            if (parent) {
-              image_container_view->layer()->SetOpacity(1.0f);
-              //
-              image_container_view->layer()->SetTransform(gfx::Transform());
-              image_container_view->SetVisible(false);
-            }
-          },
-          weak_factory_.GetWeakPtr(), image_container_view()),
+      OnFadeOutAnimationEndedClosure(image_container_view()),
       kLargeImageFadeOutAnimationDelayMs, kLargeImageFadeOutAnimationDurationMs,
       gfx::Tween::ACCEL_20_DECEL_100,
       "Ash.NotificationView.ImageContainerView.FadeOut.AnimationSmoothness");
@@ -1995,31 +1952,13 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
     if (left_content_->GetVisible()) {
       message_center_utils::InitLayerForAnimations(left_content());
       message_center_utils::FadeOutView(
-          left_content(),
-          base::BindRepeating(
-              [](base::WeakPtr<ash::AshNotificationView> parent,
-                 views::View* left_content) {
-                if (parent) {
-                  left_content->layer()->SetOpacity(1.0f);
-                  left_content->SetVisible(false);
-                }
-              },
-              weak_factory_.GetWeakPtr(), left_content()),
+          left_content(), OnFadeOutAnimationEndedClosure(left_content()),
           /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
           gfx::Tween::LINEAR,
           "Ash.NotificationView.LeftContent.FadeOut.AnimationSmoothness");
     }
     message_center_utils::FadeOutView(
-        expand_button_,
-        base::BindRepeating(
-            [](base::WeakPtr<ash::AshNotificationView> parent,
-               views::View* expand_button) {
-              if (parent) {
-                expand_button->layer()->SetOpacity(1.0f);
-                expand_button->SetVisible(false);
-              }
-            },
-            weak_factory_.GetWeakPtr(), expand_button_),
+        expand_button_, OnFadeOutAnimationEndedClosure(expand_button_),
         /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
         gfx::Tween::LINEAR,
         "Ash.NotificationView.ExpandButton.FadeOut.AnimationSmoothness");
@@ -2028,16 +1967,7 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
     if (icon_view()) {
       message_center_utils::InitLayerForAnimations(icon_view());
       message_center_utils::FadeOutView(
-          icon_view(),
-          base::BindRepeating(
-              [](base::WeakPtr<ash::AshNotificationView> parent,
-                 views::View* icon_view) {
-                if (parent) {
-                  icon_view->layer()->SetOpacity(1.0f);
-                  icon_view->SetVisible(false);
-                }
-              },
-              weak_factory_.GetWeakPtr(), icon_view()),
+          icon_view(), OnFadeOutAnimationEndedClosure(icon_view()),
           /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
           gfx::Tween::LINEAR,
           "Ash.NotificationView.IconView.FadeOut.AnimationSmoothness");
@@ -2045,15 +1975,7 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
   } else {
     message_center_utils::FadeOutView(
         inline_settings_row(),
-        base::BindRepeating(
-            [](base::WeakPtr<ash::AshNotificationView> parent,
-               views::View* inline_settings_row) {
-              if (parent) {
-                inline_settings_row->layer()->SetOpacity(1.0f);
-                inline_settings_row->SetVisible(false);
-              }
-            },
-            weak_factory_.GetWeakPtr(), inline_settings_row()),
+        OnFadeOutAnimationEndedClosure(inline_settings_row()),
         /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
         gfx::Tween::LINEAR,
         "Ash.NotificationView.InlineSettingsRow.FadeOut.AnimationSmoothness");
@@ -2135,6 +2057,21 @@ void AshNotificationView::AttachBinaryImageAsDropData(
           resized_image ? *resized_image->bitmap() : *image.bitmap())) {
     data->SetHtml(*html_snippet, /*base_url=*/GURL());
   }
+}
+
+void AshNotificationView::OnFadeOutAnimationEnded(views::View* view) {
+  view->layer()->SetOpacity(1.0f);
+  view->SetVisible(false);
+
+  if (view == image_container_view()) {
+    view->layer()->SetTransform(gfx::Transform());
+  }
+}
+
+base::OnceClosure AshNotificationView::OnFadeOutAnimationEndedClosure(
+    views::View* view) {
+  return base::BindOnce(&AshNotificationView::OnFadeOutAnimationEnded,
+                        weak_factory_.GetWeakPtr(), view);
 }
 
 BEGIN_METADATA(AshNotificationView)

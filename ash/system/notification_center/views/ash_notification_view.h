@@ -293,6 +293,13 @@ class ASH_EXPORT AshNotificationView
   // called only if this notification view is draggable.
   void AttachBinaryImageAsDropData(ui::OSExchangeData* data);
 
+  // Called when the fade out animation for `view` has ended. This function
+  // reset the views's opacity to 1.0f and make it invisible.
+  void OnFadeOutAnimationEnded(views::View* view);
+
+  // An helper wrapping `OnFadeOutAnimationEnded` for `view` as a closure.
+  base::OnceClosure OnFadeOutAnimationEndedClosure(views::View* view);
+
   // Owned by views hierarchy.
   raw_ptr<views::View> main_view_ = nullptr;
   raw_ptr<views::View> main_right_view_ = nullptr;
