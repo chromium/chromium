@@ -136,4 +136,8 @@ IbanManager* PaymentsAutofillClient::GetIbanManager() {
   return nullptr;
 }
 
+IbanAccessManager* PaymentsAutofillClient::GetIbanAccessManager() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

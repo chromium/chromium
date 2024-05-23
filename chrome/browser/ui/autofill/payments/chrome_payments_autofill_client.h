@@ -32,6 +32,7 @@ class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class ContentAutofillClient;
 class CreditCardRiskBasedAuthenticator;
+class IbanAccessManager;
 class IbanManager;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
@@ -129,6 +130,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::OnceClosure cancel_mandatory_reauth_callback,
       base::RepeatingClosure close_mandatory_reauth_callback) override;
   IbanManager* GetIbanManager() override;
+  IbanAccessManager* GetIbanAccessManager() override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {
@@ -191,6 +193,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<CardUnmaskAuthenticationSelectionDialogControllerImpl>
       card_unmask_authentication_selection_controller_;
+
+  std::unique_ptr<IbanAccessManager> iban_access_manager_;
 };
 
 }  // namespace payments

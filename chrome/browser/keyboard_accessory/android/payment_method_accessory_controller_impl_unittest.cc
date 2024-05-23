@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -138,8 +139,9 @@ class PaymentMethodAccessoryControllerTest
   }
 
   MockIbanAccessManager& iban_access_manager() {
-    return *static_cast<MockIbanAccessManager*>(
-        autofill_client().GetIbanAccessManager());
+    return *autofill_client()
+                .GetPaymentsAutofillClient()
+                ->GetIbanAccessManager();
   }
 
   syncer::TestSyncService sync_service_;

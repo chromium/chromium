@@ -27,6 +27,7 @@ class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class CreditCardRiskBasedAuthenticator;
 class Iban;
+class IbanAccessManager;
 class IbanManager;
 class MigratableCreditCard;
 class OtpUnmaskDelegate;
@@ -260,6 +261,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Gets the IbanManager instance associated with the client.
   virtual IbanManager* GetIbanManager();
+
+  // Gets the IbanAccessManager instance associated with the client.
+  virtual IbanAccessManager* GetIbanAccessManager();
 };
 
 }  // namespace payments

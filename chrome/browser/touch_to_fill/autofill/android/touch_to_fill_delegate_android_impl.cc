@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
@@ -316,24 +317,27 @@ void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(
     absl::variant<Iban::Guid, Iban::InstrumentId> backend_id) {
   HideTouchToFill();
 
-  manager_->client().GetIbanAccessManager()->FetchValue(
-      absl::holds_alternative<Iban::Guid>(backend_id)
-          ? Suggestion::BackendId(
-                Suggestion::Guid(absl::get<Iban::Guid>(backend_id).value()))
-          : Suggestion::BackendId(Suggestion::InstrumentId(
-                absl::get<Iban::InstrumentId>(backend_id).value())),
-      base::BindOnce(
-          [](base::WeakPtr<TouchToFillDelegateAndroidImpl> delegate,
-             const std::u16string& value) {
-            if (delegate) {
-              delegate->manager_->FillOrPreviewField(
-                  mojom::ActionPersistence::kFill,
-                  mojom::FieldActionType::kReplaceAll, delegate->query_form_,
-                  delegate->query_field_, value, SuggestionType::kIbanEntry,
-                  IBAN_VALUE);
-            }
-          },
-          GetWeakPtr()));
+  manager_->client()
+      .GetPaymentsAutofillClient()
+      ->GetIbanAccessManager()
+      ->FetchValue(
+          absl::holds_alternative<Iban::Guid>(backend_id)
+              ? Suggestion::BackendId(
+                    Suggestion::Guid(absl::get<Iban::Guid>(backend_id).value()))
+              : Suggestion::BackendId(Suggestion::InstrumentId(
+                    absl::get<Iban::InstrumentId>(backend_id).value())),
+          base::BindOnce(
+              [](base::WeakPtr<TouchToFillDelegateAndroidImpl> delegate,
+                 const std::u16string& value) {
+                if (delegate) {
+                  delegate->manager_->FillOrPreviewField(
+                      mojom::ActionPersistence::kFill,
+                      mojom::FieldActionType::kReplaceAll,
+                      delegate->query_form_, delegate->query_field_, value,
+                      SuggestionType::kIbanEntry, IBAN_VALUE);
+                }
+              },
+              GetWeakPtr()));
 }
 
 void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {

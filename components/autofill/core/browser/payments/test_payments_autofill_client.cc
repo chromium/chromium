@@ -166,6 +166,15 @@ MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {
   return mock_iban_manager_.get();
 }
 
+MockIbanAccessManager* TestPaymentsAutofillClient::GetIbanAccessManager() {
+  if (!mock_iban_access_manager_) {
+    mock_iban_access_manager_ =
+        std::make_unique<testing::NiceMock<MockIbanAccessManager>>(
+            &client_.get());
+  }
+  return mock_iban_access_manager_.get();
+}
+
 void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
     std::unique_ptr<VirtualCardEnrollmentManager> vcem) {
   virtual_card_enrollment_manager_ = std::move(vcem);

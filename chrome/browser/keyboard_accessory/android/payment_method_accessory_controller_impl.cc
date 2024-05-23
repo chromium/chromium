@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -533,10 +534,14 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfIban(
 
   Suggestion::BackendId backend_id = Suggestion::BackendId(
       Suggestion::InstrumentId((*iban_iter).instrument_id()));
-  GetAutofillManager()->client().GetIbanAccessManager()->FetchValue(
-      backend_id,
-      base::BindOnce(&PaymentMethodAccessoryControllerImpl::ApplyToField,
-                     weak_ptr_factory_.GetWeakPtr()));
+  GetAutofillManager()
+      ->client()
+      .GetPaymentsAutofillClient()
+      ->GetIbanAccessManager()
+      ->FetchValue(
+          backend_id,
+          base::BindOnce(&PaymentMethodAccessoryControllerImpl::ApplyToField,
+                         weak_ptr_factory_.GetWeakPtr()));
   return true;
 }
 

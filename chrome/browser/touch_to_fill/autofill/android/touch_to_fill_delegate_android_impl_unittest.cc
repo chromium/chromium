@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -982,7 +983,9 @@ TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
   std::string guid = ConfigureForIbans();
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(*(autofill_client_.GetMockIbanAccessManager()), FetchValue);
+  EXPECT_CALL(
+      *autofill_client_.GetPaymentsAutofillClient()->GetIbanAccessManager(),
+      FetchValue);
   touch_to_fill_delegate_->IbanSuggestionSelected(Iban::Guid(guid));
 }
 
@@ -1003,7 +1006,9 @@ TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(*(autofill_client_.GetMockIbanAccessManager()), FetchValue);
+  EXPECT_CALL(
+      *autofill_client_.GetPaymentsAutofillClient()->GetIbanAccessManager(),
+      FetchValue);
   touch_to_fill_delegate_->IbanSuggestionSelected(
       Iban::InstrumentId(instrument_id));
 }

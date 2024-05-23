@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -1159,7 +1160,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
               OnSingleFieldSuggestionSelected(
                   iban.GetIdentifierStringForAutofillDisplay(),
                   SuggestionType::kIbanEntry));
-  ON_CALL(*client().GetMockIbanAccessManager(), FetchValue)
+  ON_CALL(*client().GetPaymentsAutofillClient()->GetIbanAccessManager(),
+          FetchValue)
       .WillByDefault([iban](const Suggestion::BackendId& backend_id,
                             IbanAccessManager::OnIbanFetchedCallback callback) {
         std::move(callback).Run(iban.value());
@@ -2588,7 +2590,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
               OnSingleFieldSuggestionSelected(
                   iban.GetIdentifierStringForAutofillDisplay(),
                   SuggestionType::kIbanEntry));
-  ON_CALL(*client().GetMockIbanAccessManager(), FetchValue)
+  ON_CALL(*client().GetPaymentsAutofillClient()->GetIbanAccessManager(),
+          FetchValue)
       .WillByDefault([iban](const Suggestion::BackendId& backend_id,
                             IbanAccessManager::OnIbanFetchedCallback callback) {
         std::move(callback).Run(iban.value());
