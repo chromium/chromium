@@ -4551,6 +4551,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="FaceML" label="Face ML (Deprecated)"/>
   <suffix name="FirmwareUpdate" label="FirmwareUpdate"/>
   <suffix name="Help" label="Help"/>
+  <suffix name="Mall" label="App Mall"/>
   <suffix name="Media" label="Media"/>
   <suffix name="OSFeedback" label="OSFeedback"/>
   <suffix name="OsFlags" label="OsFlags"/>

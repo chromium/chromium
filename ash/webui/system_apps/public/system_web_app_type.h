@@ -126,10 +126,15 @@ enum class SystemWebAppType {
   // Contact: cros-edu-eng@google.com
   BOCA = 27,
 
+  // Mall is an app for finding and installing other apps.
+  // Source: //ash/webui/mall/
+  // Contact: crosdev-commerce-eng@google.com
+  MALL = 28,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
-  //    (histograms.xml). The suffix name should match the App's
+  //    (histogram_suffixes_list.xml). The suffix name should match the App's
   //    |internal_name|. This is for reporting per-app install results.
   //
   // 2. Add a corresponding proto enum entry (with the same numerical value) to
@@ -159,13 +164,13 @@ enum class SystemWebAppType {
   //
   // 6. Update kMaxValue.
   //
-  // 7. (optional) Add your System Web App to |kSystemWebAppsMapping| in
+  // 7. Add your System Web App to |kSystemWebAppsMapping| in
   //    chrome/browser/apps/app_service/policy_util.cc to make it discoverable
   //    in policies.
   //
   // 8. Have one of System Web App Platform owners review the CL.
   //    See: //ash/webui/PLATFORM_OWNERS
-  kMaxValue = BOCA,
+  kMaxValue = MALL,
 };
 
 }  // namespace ash

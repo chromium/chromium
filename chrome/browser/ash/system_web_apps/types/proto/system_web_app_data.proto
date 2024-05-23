@@ -38,6 +38,7 @@ message SystemWebAppDataProto {
     VC_BACKGROUND = 25;
     PRINT_PREVIEW_CROS = 26;
     BOCA = 27;
+    MALL = 28;
   };
 
   optional SystemWebAppType system_app_type = 1;

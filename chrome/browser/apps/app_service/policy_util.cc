@@ -21,6 +21,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/containers/map_util.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
@@ -65,7 +66,8 @@ constexpr auto kSystemWebAppsMapping =
          {"os_flags", ash::SystemWebAppType::OS_FLAGS},
          {"vc_background", ash::SystemWebAppType::VC_BACKGROUND},
          {"print_preview_cros", ash::SystemWebAppType::PRINT_PREVIEW_CROS},
-         {"boca", ash::SystemWebAppType::BOCA}});
+         {"boca", ash::SystemWebAppType::BOCA},
+         {"app_mall", ash::SystemWebAppType::MALL}});
 
 constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {
   return base::ranges::max(kSystemWebAppsMapping, base::ranges::less{},

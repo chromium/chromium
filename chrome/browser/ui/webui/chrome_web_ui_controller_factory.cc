@@ -171,6 +171,7 @@
 #include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/files_internals/url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
+#include "ash/webui/mall/url_constants.h"
 #include "ash/webui/multidevice_debug/url_constants.h"
 #include "ash/webui/print_preview_cros/url_constants.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
@@ -1022,6 +1023,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(ash::kChromeUICameraAppURL),
     GURL(ash::kChromeUIFilesInternalsURL),
     GURL(ash::kChromeUIHelpAppURL),
+    GURL(ash::kChromeUIMallUrl),
     GURL(ash::kChromeUIPrintPreviewCrosURL),
     GURL(ash::multidevice::kChromeUIProximityAuthURL),
     GURL(ash::vc_background_ui::kChromeUIVcBackgroundURL),

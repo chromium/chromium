@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/chrome_web_ui_configs_chromeos.h"
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/webui_config_map.h"
@@ -14,8 +16,10 @@
 // Depending on //chrome/browser would cause a circular dependency because it
 // depends on //chrome/browser/ui which depends on this file's target. So we
 // suppress gn warnings.
-#include "chrome/browser/app_mode/app_mode_utils.h"         // nogncheck
+// clang-format off
+#include "chrome/browser/app_mode/app_mode_utils.h"  // nogncheck
 #include "chrome/browser/feedback/feedback_dialog_utils.h"  // nogncheck
+// clang-format on
 
 #include "ash/webui/boca_ui/boca_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
@@ -28,6 +32,7 @@
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/focus_mode/focus_mode_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
+#include "ash/webui/mall/mall_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
@@ -269,6 +274,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<LauncherInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<LockScreenNetworkUIConfig>());
   map.AddWebUIConfig(std::make_unique<LockScreenStartReauthUIConfig>());
+  map.AddWebUIConfig(std::make_unique<MallUIConfig>());
   map.AddWebUIConfig(std::make_unique<ManageMirrorSyncUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<MediaAppUIConfig, MediaAppUI,

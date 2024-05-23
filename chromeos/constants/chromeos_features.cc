@@ -114,6 +114,10 @@ BASE_FEATURE(kCrosComponents,
 // with Finch.
 BASE_FEATURE(kCrosMall, "CrosMall", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the Mall app will be installed as an SWA. Only takes effect
+// when CrosMall is enabled. This flag will be enabled with Finch.
+BASE_FEATURE(kCrosMallSwa, "CrosMallSwa", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the behaviour difference between web apps and browser created
 // shortcut backed by the web app system on Chrome OS.
 BASE_FEATURE(kCrosShortstand,
@@ -386,6 +390,11 @@ bool IsCrosMallEnabled() {
 #else
   return base::FeatureList::IsEnabled(kCrosMall);
 #endif
+}
+
+bool IsCrosMallSwaEnabled() {
+  return chromeos::features::IsCrosMallEnabled() &&
+         base::FeatureList::IsEnabled(chromeos::features::kCrosMallSwa);
 }
 
 bool IsCrosShortstandEnabled() {
