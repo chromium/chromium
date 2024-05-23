@@ -73,10 +73,8 @@ class PhoneNumber : public FormGroup {
     PhoneCombineHelper();
     ~PhoneCombineHelper();
 
-    // If |type| is a phone field type, processes the |value| accordingly and
-    // returns true. This function always returns true for all phone number
-    // field types. For all other field types false is returned.
-    bool SetInfo(const AutofillType& type, const std::u16string& value);
+    // Processes the `value` accordingly given a phone number `field_type`.
+    void SetInfo(FieldType field_type, const std::u16string& value);
 
     // Parses the number built up from pieces stored via SetInfo() according to
     // the specified |profile|'s country code, falling back to the given

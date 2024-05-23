@@ -331,50 +331,38 @@ PhoneNumber::PhoneCombineHelper::PhoneCombineHelper() = default;
 
 PhoneNumber::PhoneCombineHelper::~PhoneCombineHelper() = default;
 
-bool PhoneNumber::PhoneCombineHelper::SetInfo(const AutofillType& type,
+void PhoneNumber::PhoneCombineHelper::SetInfo(FieldType field_type,
                                               const std::u16string& value) {
-  FieldType storable_type = type.GetStorableType();
-  if (storable_type == PHONE_HOME_COUNTRY_CODE) {
-    country_ = value;
-    return true;
+  CHECK_EQ(GroupTypeOfFieldType(field_type), FieldTypeGroup::kPhone);
+  switch (field_type) {
+    case PHONE_HOME_COUNTRY_CODE:
+      country_ = value;
+      return;
+    case PHONE_HOME_CITY_CODE:
+    case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+      city_ = value;
+      return;
+    case PHONE_HOME_CITY_AND_NUMBER:
+    case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+      phone_ = value;
+      return;
+    case PHONE_HOME_WHOLE_NUMBER:
+      whole_number_ = value;
+      return;
+    case PHONE_HOME_NUMBER:
+    case PHONE_HOME_NUMBER_PREFIX:
+      phone_ = value;
+      return;
+    case PHONE_HOME_NUMBER_SUFFIX:
+      phone_.append(value);
+      return;
+    case PHONE_HOME_EXTENSION:
+      // PHONE_HOME_EXTENSION is not stored or filled, but it's still classified
+      // to prevent misclassifying such fields as something else.
+      return;
+    default:
+      NOTREACHED_NORETURN();
   }
-
-  if (storable_type == PHONE_HOME_CITY_CODE ||
-      storable_type == PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX) {
-    city_ = value;
-    return true;
-  }
-
-  if (storable_type == PHONE_HOME_CITY_AND_NUMBER ||
-      storable_type == PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX) {
-    phone_ = value;
-    return true;
-  }
-
-  if (storable_type == PHONE_HOME_WHOLE_NUMBER) {
-    whole_number_ = value;
-    return true;
-  }
-
-  if (storable_type == PHONE_HOME_NUMBER ||
-      storable_type == PHONE_HOME_NUMBER_PREFIX) {
-    phone_ = value;
-    return true;
-  }
-
-  if (storable_type == PHONE_HOME_NUMBER_SUFFIX) {
-    phone_.append(value);
-    return true;
-  }
-
-  // PHONE_HOME_EXTENSION is not stored or filled, but it's still classified to
-  // prevent misclassifying such fields as something else.
-  if (storable_type == PHONE_HOME_EXTENSION) {
-    return true;
-  }
-
-  CHECK_NE(type.group(), FieldTypeGroup::kPhone);
-  return false;
 }
 
 bool PhoneNumber::PhoneCombineHelper::ParseNumber(

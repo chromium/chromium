@@ -454,10 +454,11 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
     if (type == ADDRESS_HOME_COUNTRY) {
       continue;
     }
-    // We need to store phone data in the variables, before building the whole
-    // number at the end. If |value| is not from a phone field, phone.SetInfo()
-    // returns false and data is stored directly in `candidate_profile`.
-    if (!combined_phone.SetInfo(AutofillType(type), value)) {
+    if (GroupTypeOfFieldType(type) == FieldTypeGroup::kPhone) {
+      // We need to store phone data in the variables, before building the whole
+      // number at the end.
+      combined_phone.SetInfo(type, value);
+    } else {
       candidate_profile.SetInfoWithVerificationStatus(
           type, value, app_locale_, VerificationStatus::kObserved);
     }

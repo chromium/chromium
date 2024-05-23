@@ -387,15 +387,14 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   PhoneNumber::PhoneCombineHelper number1;
-  EXPECT_FALSE(number1.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"1"));
 
   // Ensure parsing is possible when falling back to detecting the country code
   // based on the app locale.
   std::u16string parsed_phone;
   PhoneNumber::PhoneCombineHelper number2;
-  EXPECT_TRUE(number2.SetInfo(AutofillType(PHONE_HOME_CITY_CODE), u"650"));
-  EXPECT_TRUE(number2.SetInfo(AutofillType(PHONE_HOME_NUMBER_PREFIX), u"234"));
-  EXPECT_TRUE(number2.SetInfo(AutofillType(PHONE_HOME_NUMBER_SUFFIX), u"5682"));
+  number2.SetInfo(PHONE_HOME_CITY_CODE, u"650");
+  number2.SetInfo(PHONE_HOME_NUMBER_PREFIX, u"234");
+  number2.SetInfo(PHONE_HOME_NUMBER_SUFFIX, u"5682");
   EXPECT_TRUE(number2.ParseNumber(
       // No country code is specified here:
       AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode),
@@ -416,7 +415,7 @@ TEST(PhoneNumberTest, HelperSetsAllPhoneFieldTypes) {
 
   base::ranges::for_each(fields, [](FieldType type) {
     PhoneNumber::PhoneCombineHelper helper;
-    EXPECT_TRUE(helper.SetInfo(AutofillType(type), u"123"));
+    helper.SetInfo(type, u"123");
   });
 }
 
@@ -624,7 +623,7 @@ TEST_P(PhoneImportAndGetTest, TestSettingAndParsing) {
   // Gather all data in the PhoneCombineHelper.
   PhoneNumber::PhoneCombineHelper number;
   for (const auto& [field_type, value] : test.observed_fields) {
-    EXPECT_TRUE(number.SetInfo(AutofillType(field_type), value));
+    number.SetInfo(field_type, value);
   }
 
   ASSERT_TRUE(PhoneNumber::ImportPhoneNumberToProfile(number, faked_app_locale,
