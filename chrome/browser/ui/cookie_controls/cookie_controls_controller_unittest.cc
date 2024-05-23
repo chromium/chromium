@@ -83,15 +83,15 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
-class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness,
-                                     public testing::WithParamInterface<bool> {
+class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
  public:
   CookieControlsUserBypassTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // NOTE: we make the exception short (hours rather than days) to prevent it
+    // from timing out
     feature_list_.InitWithFeaturesAndParameters(
-        {{content_settings::features::kUserBypassUI,
-          {{"expiration", GetParam() ? "90h" : "0h"}}}},
+        {{content_settings::features::kUserBypassUI, {{"expiration", "3h"}}}},
         {});
   }
 
@@ -200,7 +200,7 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness,
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };
 
-TEST_P(CookieControlsUserBypassTest, CookieBlockingChanged) {
+TEST_F(CookieControlsUserBypassTest, CookieBlockingChanged) {
   // Check that the controller correctly keeps track of whether the effective
   // cookie blocking setting for the page has been changed by
   // `SetUserChangedCookieBlockingForSite`.
@@ -231,7 +231,7 @@ TEST_P(CookieControlsUserBypassTest, CookieBlockingChanged) {
   EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 }
 
-TEST_P(CookieControlsUserBypassTest, SiteCounts) {
+TEST_F(CookieControlsUserBypassTest, SiteCounts) {
   base::HistogramTester t;
 
   // Visiting a website should enable the UI.
@@ -281,7 +281,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
       ThirdPartySiteDataAccessType::kAnyBlockedThirdPartySiteAccesses, 1);
 }
 
-TEST_P(CookieControlsUserBypassTest, NewTabPage) {
+TEST_F(CookieControlsUserBypassTest, NewTabPage) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(/*controls_visible=*/false, /*protections_on=*/false,
@@ -294,7 +294,7 @@ TEST_P(CookieControlsUserBypassTest, NewTabPage) {
   cookie_controls()->Update(web_contents());
 }
 
-TEST_P(CookieControlsUserBypassTest, PreferenceDisabled) {
+TEST_F(CookieControlsUserBypassTest, PreferenceDisabled) {
   NavigateAndCommit(GURL("https://example.com"));
   EXPECT_CALL(
       *mock(),
@@ -324,7 +324,7 @@ TEST_P(CookieControlsUserBypassTest, PreferenceDisabled) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, AllCookiesBlocked) {
+TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
   base::HistogramTester t;
   NavigateAndCommit(GURL("https://example.com"));
   EXPECT_CALL(
@@ -371,7 +371,7 @@ TEST_P(CookieControlsUserBypassTest, AllCookiesBlocked) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, DisableForSite) {
+TEST_F(CookieControlsUserBypassTest, DisableForSite) {
   NavigateAndCommit(GURL("https://example.com"));
   EXPECT_CALL(
       *mock(),
@@ -438,7 +438,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, Incognito) {
+TEST_F(CookieControlsUserBypassTest, Incognito) {
   NavigateAndCommit(GURL("https://example.com"));
   EXPECT_CALL(
       *mock(),
@@ -543,7 +543,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
   testing::Mock::VerifyAndClearExpectations(&incognito_mock_);
 }
 
-TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
+TEST_F(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
   // Create third party cookies exception.
   cookie_settings()->SetThirdPartyCookieSetting(
       GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
@@ -577,7 +577,7 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
+TEST_F(CookieControlsUserBypassTest, FrequentPageReloads) {
   // Update on the initial web contents to ensure the tab observer is setup.
   cookie_controls()->Update(web_contents());
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
@@ -640,7 +640,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
   EXPECT_TRUE(stored_value.GetDict().FindBool("entry_point_animated").value());
 }
 
-TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
+TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
   base::HistogramTester t;
   cookie_controls()->Update(web_contents());
 
@@ -718,7 +718,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
+TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
   base::HistogramTester t;
   NavigateAndCommit(GURL("https://example.com"));
   EXPECT_CALL(
@@ -797,7 +797,7 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
+TEST_F(CookieControlsUserBypassTest, HighSiteEngagement) {
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
   // An engagement score above HIGH.
@@ -884,7 +884,7 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
+TEST_F(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
   base::HistogramTester t;
   // An engagement score above HIGH.
   const int kHighEngagement = 60;
@@ -952,7 +952,7 @@ TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
+TEST_F(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
   NavigateAndCommit(GURL("https://cool.things.com"));
@@ -986,7 +986,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
+TEST_F(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
   NavigateAndCommit(GURL("https://cool.things.com"));
@@ -1020,7 +1020,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest,
+TEST_F(CookieControlsUserBypassTest,
        CustomExceptionsWildcardLessSpecificDomain) {
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
@@ -1056,7 +1056,7 @@ TEST_P(CookieControlsUserBypassTest,
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
+TEST_F(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
   NavigateAndCommit(GURL("https://cool.things.com"));
@@ -1091,7 +1091,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
+TEST_F(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
   // Check that when the page is reloaded after settings have changed, that
   // the appropriate observer method is fired. Reloading the page without a
   // change, should not fire the observer.
@@ -1141,7 +1141,7 @@ TEST_P(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
   NavigateAndCommit(GURL("https://example2.com"));
 }
 
-TEST_P(CookieControlsUserBypassTest,
+TEST_F(CookieControlsUserBypassTest,
        DoesNotHighlightLabelWhenSettingNotChangedInContext) {
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
   EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
@@ -1174,11 +1174,7 @@ TEST_P(CookieControlsUserBypassTest,
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
-  if (!GetParam()) {
-    return;
-  }
-
+TEST_F(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
   NavigateAndCommit(GURL("https://example.com"));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
@@ -1257,11 +1253,7 @@ TEST_P(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest, StatefulBounce) {
-  if (!GetParam()) {
-    return;
-  }
-
+TEST_F(CookieControlsUserBypassTest, StatefulBounce) {
   NavigateAndCommit(GURL("https://example.com"));
   page_specific_content_settings()->IncrementStatefulBounceCount();
 
@@ -1277,10 +1269,7 @@ TEST_P(CookieControlsUserBypassTest, StatefulBounce) {
   cookie_controls()->Update(web_contents());
 }
 
-TEST_P(CookieControlsUserBypassTest, SubresourceBlocked) {
-  if (!GetParam()) {
-    return;
-  }
+TEST_F(CookieControlsUserBypassTest, SubresourceBlocked) {
   base::test::ScopedFeatureList fingerprinting_protection_feature_list;
   fingerprinting_protection_feature_list.InitAndEnableFeature(
       fingerprinting_protection_filter::features::
@@ -1306,11 +1295,7 @@ TEST_P(CookieControlsUserBypassTest, SubresourceBlocked) {
   cookie_controls()->Update(web_contents());
 }
 
-TEST_P(CookieControlsUserBypassTest, SandboxedTopLevelFrame) {
-  if (!GetParam()) {
-    return;
-  }
-
+TEST_F(CookieControlsUserBypassTest, SandboxedTopLevelFrame) {
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader("Content-Security-Policy", "sandbox");
 
@@ -1328,7 +1313,7 @@ TEST_P(CookieControlsUserBypassTest, SandboxedTopLevelFrame) {
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
-TEST_P(CookieControlsUserBypassTest,
+TEST_F(CookieControlsUserBypassTest,
        FrequentPageReloadsWithoutUpdateBeingCalled) {
   NavigateAndCommit(GURL("https://example.com"));
   // Call the entry point animated function without setting up the observer.
@@ -1342,5 +1327,3 @@ TEST_P(CookieControlsUserBypassTest,
   EXPECT_TRUE(stored_value.is_none());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
-
-INSTANTIATE_TEST_SUITE_P(All, CookieControlsUserBypassTest, testing::Bool());
