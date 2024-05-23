@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -180,6 +181,13 @@ void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
 }
 
 void OnDeviceModelComponentStateManager::OnStartup() {
+  if (auto model_path_override_switch =
+          switches::GetOnDeviceModelExecutionOverride()) {
+    SetReady(base::Version("override"),
+             *StringToFilePath(*model_path_override_switch),
+             base::Value::Dict());
+    return;
+  }
   BeginUpdateRegistration();
 }
 

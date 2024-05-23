@@ -15,7 +15,6 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
-#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -68,13 +67,6 @@ OnDeviceModelMetadataLoader::OnDeviceModelMetadataLoader(
           : base::TaskPriority::BEST_EFFORT;
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), background_task_priority});
-
-  auto model_path_override_switch =
-      switches::GetOnDeviceModelExecutionOverride();
-  if (model_path_override_switch) {
-    Load(*StringToFilePath(*model_path_override_switch), "override");
-    return;
-  }
 
   if (on_device_component_state_manager) {
     on_device_component_state_manager_ =
