@@ -32,6 +32,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
+#include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -89,6 +90,8 @@ constexpr char kOverviewWindowDragHistogram[] =
     "Ash.Overview.WindowDrag.PresentationTime.TabletMode";
 constexpr char kOverviewWindowDragMaxLatencyHistogram[] =
     "Ash.Overview.WindowDrag.PresentationTime.MaxLatency.TabletMode";
+
+bool g_skip_new_desk_button_scale_up_for_test = false;
 
 bool GetVirtualDesksBarEnabled(OverviewItemBase* item) {
   return desks_util::ShouldDesksBarBeCreated() &&
@@ -168,6 +171,24 @@ void RecordDrag(OverviewDragAction action) {
 // overview.
 bool IsEligibleForDragToSnap(OverviewItemBase* item) {
   return (item->GetWindows().size() == 1u) && ShouldAllowSplitView();
+}
+
+// Restores the new desk button state back to the
+// `DeskIconButton::State::kExpanded` on drag ended on all `OverviewGrid`s.
+void MaybeRestoreNewDeskButtonState() {
+  OverviewSession* overview_session =
+      OverviewController::Get()->overview_session();
+  if (!overview_session || overview_session->is_shutting_down()) {
+    return;
+  }
+
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
+    OverviewGrid* overview_grid = overview_session->GetGridWithRootWindow(root);
+    if (auto* desks_bar_view = overview_grid->desks_bar_view()) {
+      desks_bar_view->UpdateDeskIconButtonState(
+          desks_bar_view->new_desk_button(), DeskIconButton::State::kExpanded);
+    }
+  }
 }
 
 // Helps with handling the workflow where you drag an overview item from one
@@ -252,6 +273,12 @@ OverviewWindowDragController::~OverviewWindowDragController() {
   if (Shell::HasInstance()) {
     Shell::Get()->mouse_cursor_filter()->HideSharedEdgeIndicator();
   }
+}
+
+// static
+base::AutoReset<bool>
+OverviewWindowDragController::SkipNewDeskButtonScaleUpDurationForTesting() {
+  return {&g_skip_new_desk_button_scale_up_for_test, true};
 }
 
 void OverviewWindowDragController::InitiateDrag(
@@ -725,9 +752,13 @@ void OverviewWindowDragController::ContinueNormalDrag(
       new_desk_button_scale_up_timer_.Stop();
     } else if (!new_desk_button_scale_up_timer_.IsRunning() &&
                new_desk_button->state() == DeskIconButton::State::kExpanded) {
-      new_desk_button_scale_up_timer_.Start(
-          FROM_HERE, kScaleUpNewDeskButtonGracePeriod, this,
-          &OverviewWindowDragController::MaybeScaleUpNewDeskButton);
+      if (g_skip_new_desk_button_scale_up_for_test) {
+        MaybeScaleUpNewDeskButton();
+      } else {
+        new_desk_button_scale_up_timer_.Start(
+            FROM_HERE, kScaleUpNewDeskButtonGracePeriod, this,
+            &OverviewWindowDragController::MaybeScaleUpNewDeskButton);
+      }
     }
   }
 
@@ -800,22 +831,12 @@ OverviewWindowDragController::CompleteNormalDrag(
     }
   }
 
-  auto* desks_bar_view = current_grid->desks_bar_view();
   // Snap a window if appropriate.
   if (is_eligible_for_drag_to_snap_ && snap_position_ != SnapPosition::kNone) {
     // Overview grid will be updated after window is snapped in splitview.
     SnapWindow(SplitViewController::Get(target_root), snap_position_);
     RecordNormalDrag(kToSnap, is_dragged_to_other_display);
-    // When there's only one window and it's snapped, overview mode will be
-    // ended. Thus we need to check whether `overview_session_` is being
-    // shutting down or not here before triggering `MaybeShrinkDesksBarView`.
-    if (!overview_session_->is_shutting_down()) {
-      if (desks_bar_view) {
-        desks_bar_view->UpdateDeskIconButtonState(
-            desks_bar_view->new_desk_button(),
-            DeskIconButton::State::kExpanded);
-      }
-    }
+    MaybeRestoreNewDeskButtonState();
     return DragResult::kSnap;
   }
 
@@ -855,10 +876,7 @@ OverviewWindowDragController::CompleteNormalDrag(
   } else {
     item_->set_should_restack_on_animation_end(true);
     overview_session_->PositionWindows(/*animate=*/true);
-    if (desks_bar_view) {
-      desks_bar_view->UpdateDeskIconButtonState(
-          desks_bar_view->new_desk_button(), DeskIconButton::State::kExpanded);
-    }
+    MaybeRestoreNewDeskButtonState();
   }
   RecordNormalDrag(kToGrid, is_dragged_to_other_display);
   return DragResult::kDropIntoOverview;
@@ -1013,7 +1031,16 @@ void OverviewWindowDragController::MaybeScaleUpNewDeskButton() {
     return;
   }
 
-  auto* desks_bar_view = item_->overview_grid()->desks_bar_view();
+  // When there's only one window and it's snapped, overview mode will be
+  // ended. Thus we need to check whether `overview_session_` is being
+  // shutting down or not here before triggering `UpdateDeskIconButtonState`.
+  if (!overview_session_) {
+    return;
+  }
+
+  auto* overview_grid =
+      overview_session_->GetGridWithRootWindow(GetRootWindowBeingDraggedIn());
+  auto* desks_bar_view = overview_grid->desks_bar_view();
   auto* new_desk_button = desks_bar_view->new_desk_button();
 
   if (!new_desk_button->GetEnabled()) {

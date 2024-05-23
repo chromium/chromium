@@ -111,6 +111,8 @@ class ASH_EXPORT OverviewWindowDragController {
 
   ~OverviewWindowDragController();
 
+  static base::AutoReset<bool> SkipNewDeskButtonScaleUpDurationForTesting();
+
   OverviewItemBase* item() { return item_; }
 
   bool is_touch_dragging() const { return is_touch_dragging_; }
@@ -133,10 +135,6 @@ class ASH_EXPORT OverviewWindowDragController {
   // we need to reset |overview_session_| to nullptr to avoid null pointer
   // dereference.
   void ResetOverviewSession();
-
-  // Called by `float_drag_helper_` to destroy itself as it may need to live
-  // after a gesture is completed if there is an animation.
-  void DestroyFloatDragHelper();
 
   DragBehavior current_drag_behavior_for_testing() const {
     return current_drag_behavior_;
