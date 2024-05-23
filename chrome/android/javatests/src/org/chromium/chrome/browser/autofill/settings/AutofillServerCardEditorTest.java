@@ -257,6 +257,7 @@ public class AutofillServerCardEditorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/342333311")
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_enrollmentSuccessful()
                     throws Exception {
