@@ -1357,7 +1357,20 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return;
   }
 
-  // Check if other suggestion sources should be queried. Manual fallbacks can't
+  // Try to show Touch to Fill.
+  if (touch_to_fill_delegate_ &&
+      (touch_to_fill_delegate_->IsShowingTouchToFill() ||
+       (form_element_was_clicked &&
+        touch_to_fill_delegate_->TryToShowTouchToFill(form, field)))) {
+    // Touch To Fill surface is shown, so abort showing regular Autofill UI.
+    // Now the flow is controlled by the `touch_to_fill_delegate_` instead
+    // of `external_delegate_`.
+    std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions));
+    return;
+  }
+
+  // Check if other suggestion sources should be queried. Other suggestions may
+  // include Compose or single field form suggestions. Manual fallbacks can't
   // trigger different suggestion types.
   const bool should_offer_other_suggestions =
       suggestions.empty() && !IsAutofillManuallyTriggered(trigger_source) &&
@@ -1377,6 +1390,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     }
   }
 
+  // TODO(b/340494671): Move ShouldOfferSingleFieldFormFill out of
+  // OnAskForValuesToFillImpl.
   auto ShouldOfferSingleFieldFormFill = [&] {
     if (!suggestions.empty() || !should_offer_other_suggestions) {
       return false;
@@ -1445,44 +1460,33 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return true;
   };
 
-  auto ShouldShowSuggestions = [&] {
-    if (ShouldOfferSingleFieldFormFill()) {
+  if (ShouldOfferSingleFieldFormFill()) {
+    bool handled_by_single_field_form_filler =
+        single_field_form_fill_router_->OnGetSingleFieldSuggestions(
+            field, client(),
+            base::BindRepeating(
+                &BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback,
+                weak_ptr_factory_.GetWeakPtr(), form_element_was_clicked, form,
+                base::TimeTicks::Now(),
+                context.focused_field ? context.focused_field->Type().group()
+                                      : FieldTypeGroup::kNoGroup),
+            context);
+    if (handled_by_single_field_form_filler) {
       // Suggestions come back asynchronously, so the SingleFieldFormFillRouter
       // will handle sending the results back to the renderer.
       // TODO(crbug.com/40100455): The callback will only be called once.
-      bool handled_by_single_field_form_filler =
-          single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-              field, client(),
-              base::BindRepeating(
-                  &BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback,
-                  weak_ptr_factory_.GetWeakPtr(), form_element_was_clicked,
-                  form, base::TimeTicks::Now(),
-                  context.focused_field ? context.focused_field->Type().group()
-                                        : FieldTypeGroup::kNoGroup),
-              context);
-      if (handled_by_single_field_form_filler) {
-        return false;
-      }
+      std::move(callback).Run(/*show_suggestions=*/false,
+                              std::move(suggestions));
+      return;
     }
+  }
 
-    single_field_form_fill_router_->CancelPendingQueries();
-    if (touch_to_fill_delegate_ &&
-        (touch_to_fill_delegate_->IsShowingTouchToFill() ||
-         (form_element_was_clicked &&
-          touch_to_fill_delegate_->TryToShowTouchToFill(form, field)))) {
-      // Touch To Fill surface is shown, so abort showing regular Autofill UI.
-      // Now the flow is controlled by the |touch_to_fill_delegate_| instead
-      // of |external_delegate_|.
-      return false;
-    }
-    return true;
-  };
+  single_field_form_fill_router_->CancelPendingQueries();
 
-  // Calling `ShouldShowSuggestions` must be done before moving `suggestions`.
-  // Given that the order of evaluating parameters in C++ is unspecified, this
-  // call can not be inlined below.
-  bool show_suggestions = ShouldShowSuggestions();
-  std::move(callback).Run(show_suggestions, std::move(suggestions));
+  // Show the list of `suggestions`. These may include address, credit card or
+  // plus address suggestions. Additionally, suggestions related to Compose or
+  // warnings about mixed content might be present.
+  std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
 }
 
 void BrowserAutofillManager::OnGenerateSuggestionsComplete(
