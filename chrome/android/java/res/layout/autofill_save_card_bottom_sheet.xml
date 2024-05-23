@@ -64,7 +64,7 @@ found in the LICENSE file.
           android:id="@+id/autofill_credit_card_chip"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/autofill_bottom_sheet_card_chip_top_margin"
+          android:layout_marginTop="@dimen/autofill_bottom_sheet_chip_top_margin"
           android:padding="@dimen/autofill_bottom_sheet_credit_card_spacing"
           android:background="@drawable/autofill_save_card_credit_card_surface"
           android:descendantFocusability="blocksDescendants"
