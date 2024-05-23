@@ -404,10 +404,8 @@ const CGFloat kIpadTabSwipeDistance = 100;
 // Animate page navigation.
 - (void)animatePageNavigationInDirection:
     (UISwipeGestureRecognizerDirection)direction {
-  if (![self canNavigate:IsSwipingBack(direction)]) {
-    // Back/forward state has changed when the user begins to swipe.
-    return;
-  }
+  BOOL canNavigate = [self canNavigate:IsSwipingBack(direction)];
+  CHECK(canNavigate);
 
   _inSwipe = YES;
   [_swipeDelegate updateAccessoryViewsForSideSwipeWithVisibility:NO];

@@ -51,10 +51,6 @@
 // `backForwardSwipeGestureIPH` to `nil` and no gestural tip is shown.
 - (void)presentBackForwardSwipeGestureInProductHelp;
 
-// Should be invoked when the visible web state's back/forward state has
-// changed.
-- (void)handleBackForwardStateChangeForActiveWebState;
-
 // Optionally presents a full screen IPH associated with the swipe to navigate
 // back/forward feature. If the feature engagement tracker determines this tip
 // should be shown, then it initializes `toolbarSwipeGestureIPH` and
