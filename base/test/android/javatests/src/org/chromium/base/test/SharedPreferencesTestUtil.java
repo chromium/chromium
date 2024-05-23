@@ -4,21 +4,15 @@
 
 package org.chromium.base.test;
 
-import android.app.job.JobScheduler;
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import androidx.core.content.ContextCompat;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.InMemorySharedPreferences;
-import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 
 import java.io.File;
 import java.util.Collection;
@@ -26,8 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** Holds setUp / tearDown logic common to all instrumentation tests. */
-class BaseJUnit4TestRule implements TestRule {
+class SharedPreferencesTestUtil {
     // These are SharedPreferences that we do not fail tests for using real (instead of in-memory)
     // implementations. This is generally because it is impractical to use a test-only Context
     // for them (e.g. multi-process, or third-party code).
@@ -40,42 +33,14 @@ class BaseJUnit4TestRule implements TestRule {
                     "org.chromium.android_webview.devui.MainActivity",
                     "org.chromium.webengine.test.instrumentation_test_apk_preferences");
 
-    @Override
-    public Statement apply(Statement base, Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                InMemorySharedPreferencesContext context =
-                        BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext;
-                if (context == null) {
-                    throw new IllegalStateException(
-                            "BaseJUnit4TestRule requires that you use "
-                                    + "BaseChromiumAndroidJUnitRunner (or a subclass)");
-                }
-                deleteOnDiskSharedPreferences();
-                UmaRecorderHolder.resetForTesting();
-                try {
-                    base.evaluate();
-                    assertNoOnDiskSharedPreferences();
-                } finally {
-                    clearJobSchedulerJobs();
-                }
-            }
-        };
-    }
-
-    static void clearJobSchedulerJobs() {
-        BaseJUnit4ClassRunner.getApplication().getSystemService(JobScheduler.class).cancelAll();
-    }
-
-    private static void deleteOnDiskSharedPreferences() {
+    static void deleteOnDiskSharedPreferences(Application app) {
         for (String name : findSharedPreferences()) {
             // Using Application ensure we are not using InMemorySharedPreferencesContext.
-            BaseJUnit4ClassRunner.getApplication().deleteSharedPreferences(name);
+            app.deleteSharedPreferences(name);
         }
     }
 
-    private static void assertNoOnDiskSharedPreferences() {
+    static void assertNoOnDiskSharedPreferences() {
         Collection<String> unwantedPrefs = findSharedPreferences();
         unwantedPrefs.removeAll(SHARED_PREFS_ALLOWLIST);
         if (unwantedPrefs.isEmpty()) {
