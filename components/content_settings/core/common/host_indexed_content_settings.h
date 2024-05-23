@@ -145,12 +145,6 @@ class HostIndexedContentSettings {
   mutable int iterating_ = 0;
 };
 
-// Finds the first (in precedence order) content setting in `settings`.
-const ContentSettingPatternSource* FindContentSetting(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    std::reference_wrapper<const ContentSettingsForOneType> settings);
-
 }  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_HOST_INDEXED_CONTENT_SETTINGS_H_

@@ -120,21 +120,6 @@ const RuleEntry* FindInHostToContentSettings(
 
 }  // namespace
 
-const ContentSettingPatternSource* FindContentSetting(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    std::reference_wrapper<const ContentSettingsForOneType> settings) {
-  const auto& entry = base::ranges::find_if(
-      settings.get(), [&](const ContentSettingPatternSource& entry) {
-        return entry.primary_pattern.Matches(primary_url) &&
-               entry.secondary_pattern.Matches(secondary_url) &&
-               (base::FeatureList::IsEnabled(
-                    content_settings::features::kActiveContentSettingExpiry) ||
-                !entry.IsExpired());
-      });
-  return entry == settings.get().end() ? nullptr : &*entry;
-}
-
 HostIndexedContentSettings::Iterator::Iterator(
     const HostIndexedContentSettings& index,
     bool begin)

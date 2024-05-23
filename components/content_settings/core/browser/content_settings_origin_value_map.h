@@ -21,7 +21,6 @@
 #include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 class ContentSettingsPattern;
@@ -117,20 +116,11 @@ class OriginValueMap {
   void SetClockForTesting(base::Clock* clock);
 
  private:
-  typedef std::map<ContentSettingsType, Rules> EntryMap;
   typedef std::map<ContentSettingsType, HostIndexedContentSettings> EntryIndex;
 
-  EntryIndex& entry_index() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return absl::get<EntryIndex>(entries_);
-  }
+  EntryIndex& entry_index() EXCLUSIVE_LOCKS_REQUIRED(lock_) { return entries_; }
   const EntryIndex& entry_index() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return absl::get<EntryIndex>(entries_);
-  }
-  EntryMap& entry_map() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return absl::get<EntryMap>(entries_);
-  }
-  const EntryMap& entry_map() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return absl::get<EntryMap>(entries_);
+    return entries_;
   }
 
   HostIndexedContentSettings& get_index(ContentSettingsType type)
@@ -141,9 +131,7 @@ class OriginValueMap {
 
   mutable bool iterating_ = false;
   mutable base::Lock lock_;
-  // This member is an EntryIndex when kIndexedHostContentSettingsMap is enabled
-  // and an EntryMap otherwise.
-  absl::variant<EntryMap, EntryIndex> entries_ GUARDED_BY(lock_);
+  EntryIndex entries_ GUARDED_BY(lock_);
 
   raw_ptr<base::Clock> clock_;
 };

@@ -13,6 +13,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -67,20 +68,8 @@ ContentSetting GetContentSettingFromStore(
   auto rule =
       store->GetRule(primary_url, secondary_url, content_type, incognito);
 
-  std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      store->GetRuleIterator(content_type, incognito));
-  const base::Value setting =
-      content_settings::TestUtils::GetContentSettingValueAndPatterns(
-          rule_iterator.get(), primary_url, secondary_url, nullptr, nullptr);
-
-  // Compare iterator lookup with direct lookup.
-  if (rule) {
-    EXPECT_EQ(setting, rule->value);
-  } else {
-    EXPECT_TRUE(setting.is_none());
-  }
-
-  return content_settings::ValueToContentSetting(setting);
+  return rule ? content_settings::ValueToContentSetting(rule->value)
+              : CONTENT_SETTING_DEFAULT;
 }
 
 std::vector<std::unique_ptr<content_settings::Rule>>
