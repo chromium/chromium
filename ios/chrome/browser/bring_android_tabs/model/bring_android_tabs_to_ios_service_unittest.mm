@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 
+#import <numeric>
+
 #import "base/i18n/number_formatting.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"

@@ -43,7 +43,7 @@ specific_include_rules = {
     "+third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pbzero.h",
   ],
   # To evaluate the performance effects of using absl's flat_hash_map.
-  "supports_user_data\.h": [
+  "supports_user_data\.cc": [
     "+third_party/abseil-cpp/absl/container/flat_hash_map.h",
   ]
 }

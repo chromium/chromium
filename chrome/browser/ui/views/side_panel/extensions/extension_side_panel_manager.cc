@@ -24,6 +24,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
+#include "third_party/abseil-cpp/absl/memory/memory.h"
 
 namespace extensions {
 

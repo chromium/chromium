@@ -5,6 +5,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 
 #include <array>
+#include <numeric>
 #include <vector>
 
 #include "base/barrier_callback.h"

@@ -6,6 +6,7 @@
 #define COMPONENTS_VISITEDLINK_BROWSER_PARTITIONED_VISITEDLINK_WRITER_H_
 
 #include <map>
+#include <set>
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/visitedlink/common/visitedlink_common.h"

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 
+#import <numeric>
 #import <string>
 
 #import "base/containers/contains.h"

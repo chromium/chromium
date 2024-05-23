@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

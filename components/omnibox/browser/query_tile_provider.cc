@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/omnibox/browser/query_tile_provider.h"
+
 #include <algorithm>
+#include <numeric>
 
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
