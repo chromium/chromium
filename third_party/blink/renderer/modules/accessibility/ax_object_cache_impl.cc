@@ -4975,6 +4975,10 @@ void AXObjectCacheImpl::RestoreParentOrPrune(Node* child_node) {
   AXObject* child = Get(child_node);
   if (child) {
     ChildrenChangedOnAncestorOf(child);
+    // The previous call can cause child to become detached.
+    if (child->IsDetached()) {
+      child = nullptr;
+    }
   }
 
   AXObject* parent = child ? child->ComputeParentOrNull()
