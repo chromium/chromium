@@ -179,6 +179,8 @@ component("fido") {
         "enclave/transact.h",
         "enclave/types.cc",
         "enclave/types.h",
+        "enclave/verify/amd.cc",
+        "enclave/verify/amd.h",
         "enclave/verify/claim.cc",
         "enclave/verify/claim.h",
         "enclave/verify/endorsement.cc",

@@ -12,6 +12,18 @@
 
 namespace device::enclave {
 
+namespace {
+
+std::string ReadContentsOfFile(
+    base::FilePath::StringPieceType file_path_string) {
+  base::FilePath file_path;
+  base::PathService::Get(base::BasePathKey::DIR_SRC_TEST_DATA_ROOT, &file_path);
+  file_path = file_path.Append(file_path_string);
+  std::string result;
+  EXPECT_TRUE(base::ReadFileToString(file_path, &result));
+  return result;
+}
+
 const base::FilePath::StringPieceType kTestDigestPath =
     FILE_PATH_LITERAL("device/fido/enclave/verify/testdata/test_digest.txt");
 const base::FilePath::StringPieceType kTestSignaturePath =
@@ -25,16 +37,6 @@ const base::FilePath::StringPieceType kTestRekorPath =
 const base::FilePath::StringPieceType kTestAlternateRawPath = FILE_PATH_LITERAL(
     "device/fido/enclave/verify/testdata/test_alternate_pub_key.der");
 const uint8_t kInvalidSignature[] = {1, 2, 3, 4};
-
-std::string ReadContentsOfFile(
-    base::FilePath::StringPieceType file_path_string) {
-  base::FilePath file_path;
-  base::PathService::Get(base::BasePathKey::DIR_SRC_TEST_DATA_ROOT, &file_path);
-  file_path = file_path.Append(file_path_string);
-  std::string result;
-  EXPECT_TRUE(base::ReadFileToString(file_path, &result));
-  return result;
-}
 
 TEST(UtilsTest, LooksLikePem_WithValidPem_ReturnsTrue) {
   auto test_pem = ReadContentsOfFile(kTestPemPath);
@@ -136,5 +138,7 @@ TEST(UtilsTest, EqualKeys_WithUnequalKeys_ReturnsFalse) {
       device::enclave::EqualKeys(test_raw_span, test_alternate_raw_span)
           .value());
 }
+
+} // namespace
 
 }  // namespace device::enclave
