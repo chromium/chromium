@@ -81,8 +81,8 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/41489544): Add a fake library that is built with Chrome for
-// sanitizer tests.
+// Fake ScreenAI library returns empty results for all queries, so testing with
+// it is not helpful.
 #if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
 #define PDF_OCR_INTEGRATION_TEST_ENABLED
 #endif
