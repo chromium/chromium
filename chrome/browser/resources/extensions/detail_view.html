@@ -253,7 +253,9 @@ this text can be found by Ctrl + F because it isn't hidden. -->
           $i18nRaw{mv2DeprecationMessageWarningSubtitle}
         </div>
       </div>
-      <cr-button class="find-alternative-button">
+      <cr-button class="find-alternative-button"
+          on-click="onFindAlternativeButtonClick_"
+          hidden="[[!data.recommendationsUrl]]">
         $i18n{mv2DeprecationPanelFindAlternativeButton}
       </cr-button>
     </div>
