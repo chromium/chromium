@@ -170,46 +170,44 @@
     <network-metrics-ui></network-metrics-ui>
   </div>
 
-  <template is="dom-if" if="[[isHotspotEnabled_]]">
-    <div class="tabpanel" id="hotspot">
-      <h2>$i18n{tetheringCapabilitiesLabel}</h2>
-      <div id="tethering-capabilities-div"></div>
-      <cr-button class="action-button" on-click="getTetheringCapabilities_">
-        $i18n{refreshTetheringCapabilitiesButtonText}
-      </cr-button>
+  <div class="tabpanel" id="hotspot">
+    <h2>$i18n{tetheringCapabilitiesLabel}</h2>
+    <div id="tethering-capabilities-div"></div>
+    <cr-button class="action-button" on-click="getTetheringCapabilities_">
+      $i18n{refreshTetheringCapabilitiesButtonText}
+    </cr-button>
 
-      <h2>$i18n{tetheringStatusLabel}</h2>
-      <div id="tethering-status-div"></div>
-      <cr-button class="action-button" on-click="getTetheringStatus_">
-        $i18n{refreshTetheringStatusButtonText}
-      </cr-button>
+    <h2>$i18n{tetheringStatusLabel}</h2>
+    <div id="tethering-status-div"></div>
+    <cr-button class="action-button" on-click="getTetheringStatus_">
+      $i18n{refreshTetheringStatusButtonText}
+    </cr-button>
 
-      <h2>$i18n{tetheringConfigLabel}</h2>
-      <div id="tethering-config-div"></div>
-      <cr-button class="action-button" on-click="getTetheringConfig_">
-        $i18n{refreshTetheringConfigButtonText}
-      </cr-button>
-      <cr-input id="tethering-config-input" value="{{tetheringConfigToSet_}}"
-          placeholder='Example: {"ssid": "test_ssid",
- "passphrase": "test_password", "auto_disable": true, "security": "wpa2",
- "band": "5GHz"}'
-          type="text" on-input="validateJson_"
-          error-message="Please enter valid JSON object"
-          invalid="[[invalidJSON_]]">
-      </cr-input>
-      <cr-button class="action-button" on-click="setTetheringConfig_"
-          disabled="[[invalidJSON_]]">
-        $i18n{setTetheringConfigButtonText}
-      </cr-button>
-      <div id="set-tethering-config-result"></div>
+    <h2>$i18n{tetheringConfigLabel}</h2>
+    <div id="tethering-config-div"></div>
+    <cr-button class="action-button" on-click="getTetheringConfig_">
+      $i18n{refreshTetheringConfigButtonText}
+    </cr-button>
+    <cr-input id="tethering-config-input" value="{{tetheringConfigToSet_}}"
+        placeholder='Example: {"ssid": "test_ssid",
+"passphrase": "test_password", "auto_disable": true, "security": "wpa2",
+"band": "5GHz"}'
+        type="text" on-input="validateJson_"
+        error-message="Please enter valid JSON object"
+        invalid="[[invalidJSON_]]">
+    </cr-input>
+    <cr-button class="action-button" on-click="setTetheringConfig_"
+        disabled="[[invalidJSON_]]">
+      $i18n{setTetheringConfigButtonText}
+    </cr-button>
+    <div id="set-tethering-config-result"></div>
 
-      <h2>$i18n{tetheringReadinessLabel}</h2>
-      <div id="check-tethering-readiness-result">Unknown</div>
-      <cr-button class="action-button" on-click="checkTetheringReadiness_">
-        $i18n{checkTetheringReadinessButtonText}
-      </cr-button>
-    </div>
-  </template>
+    <h2>$i18n{tetheringReadinessLabel}</h2>
+    <div id="check-tethering-readiness-result">Unknown</div>
+    <cr-button class="action-button" on-click="checkTetheringReadiness_">
+      $i18n{checkTetheringReadinessButtonText}
+    </cr-button>
+  </div>
 
   <template is="dom-if" if="[[isWifiDirectEnabled_]]">
     <div class="tabpanel" id="wifi-direct">

@@ -30,7 +30,6 @@ mojo::ReceiverSet<mojom::CrosHotspotConfig>& GetOverrideReceivers() {
 void BindToInProcessInstance(
     mojo::PendingReceiver<mojom::CrosHotspotConfig> pending_receiver) {
   NET_LOG(DEBUG) << "Binding to CrosHotspotConfig";
-  CHECK(features::IsHotspotEnabled());
   if (g_hotspot_config_override) {
     GetOverrideReceivers().Add(g_hotspot_config_override,
                                std::move(pending_receiver));

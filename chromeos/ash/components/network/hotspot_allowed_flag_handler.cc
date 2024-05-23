@@ -23,8 +23,7 @@ void HotspotAllowedFlagHandler::Init() {
 
 void HotspotAllowedFlagHandler::UpdateFlags() {
   ShillManagerClient::Get()->SetProperty(
-      shill::kTetheringAllowedProperty,
-      base::Value(ash::features::IsHotspotEnabled()), base::DoNothing(),
+      shill::kTetheringAllowedProperty, base::Value(true), base::DoNothing(),
       base::BindOnce(&HotspotAllowedFlagHandler::OnSetManagerPropertyFailure,
                      weak_ptr_factory_.GetWeakPtr(),
                      shill::kTetheringAllowedProperty));

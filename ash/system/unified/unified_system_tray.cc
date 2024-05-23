@@ -115,11 +115,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   ime_mode_view_ = AddTrayItemToContainer(std::make_unique<ImeModeView>(shelf));
   managed_device_view_ = AddTrayItemToContainer(
       std::make_unique<ManagedDeviceTrayItemView>(shelf));
-
-  if (features::IsHotspotEnabled()) {
-    hotspot_tray_view_ =
-        AddTrayItemToContainer(std::make_unique<HotspotTrayView>(shelf));
-  }
+  hotspot_tray_view_ =
+      AddTrayItemToContainer(std::make_unique<HotspotTrayView>(shelf));
 
   if (features::IsSeparateNetworkIconsEnabled()) {
     AddTrayItemToContainer(std::make_unique<NetworkTrayView>(

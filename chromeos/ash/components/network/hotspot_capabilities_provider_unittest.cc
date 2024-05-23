@@ -4,10 +4,8 @@
 
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
@@ -50,8 +48,6 @@ class TestObserver : public HotspotCapabilitiesProvider::Observer {
 class HotspotCapabilitiesProviderTest : public ::testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kHotspot);
-
     if (hotspot_capabilities_provider_ &&
         hotspot_capabilities_provider_->HasObserver(&observer_)) {
       hotspot_capabilities_provider_->RemoveObserver(&observer_);
@@ -93,7 +89,6 @@ class HotspotCapabilitiesProviderTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotAllowedFlagHandler> hotspot_allowed_flag_handler_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;

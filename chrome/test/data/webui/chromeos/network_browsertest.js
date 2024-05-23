@@ -23,7 +23,8 @@ var NetworkDebugUIBrowserTest = class extends testing.Test {
   }
   /** @override */
   get featureList() {
-    return {enabled: ['ash::features::kHotspot']};
+    return {enabled: ['ash::features::kWifiDirect']};
+    ;
   }
 
   get extraLibraries() {
@@ -47,6 +48,8 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_TabNames', function() {
     assertEquals('Network Select', tabs[4].textContent.trim());
     assertEquals('Traffic Counters', tabs[5].textContent.trim());
     assertEquals('Network Metrics', tabs[6].textContent.trim());
+    assertEquals('Hotspot', tabs[7].textContent.trim());
+    assertEquals('WiFi Direct', tabs[8].textContent.trim());
   });
 
   mocha.run();

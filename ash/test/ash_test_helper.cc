@@ -341,11 +341,9 @@ void AshTestHelper::SetUp(InitParams init_params) {
     test_views_delegate_ = MakeTestViewsDelegate();
   }
 
-  if (features::IsHotspotEnabled()) {
-    cros_hotspot_config_test_helper_ =
-        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
-            /*use_fake_implementation=*/true);
-  }
+  cros_hotspot_config_test_helper_ =
+      std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
+          /*use_fake_implementation=*/true);
 
   LoginState::Initialize();
 

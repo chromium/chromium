@@ -301,10 +301,9 @@ export function createRoutes(): OsSettingsRoutes {
   r.KNOWN_NETWORKS = createSubpage(
       r.INTERNET, routesMojom.KNOWN_NETWORKS_SUBPAGE_PATH,
       Subpage.kKnownNetworks);
-  if (loadTimeData.getBoolean('isHotspotEnabled')) {
-    r.HOTSPOT_DETAIL = createSubpage(
-        r.INTERNET, routesMojom.HOTSPOT_SUBPAGE_PATH, Subpage.kHotspotDetails);
-  }
+  r.HOTSPOT_DETAIL = createSubpage(
+      r.INTERNET, routesMojom.HOTSPOT_SUBPAGE_PATH, Subpage.kHotspotDetails);
+
   if (loadTimeData.getBoolean('isApnRevampEnabled')) {
     r.APN =
         createSubpage(r.INTERNET, routesMojom.APN_SUBPAGE_PATH, Subpage.kApn);

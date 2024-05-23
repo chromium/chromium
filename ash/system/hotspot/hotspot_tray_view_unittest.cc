@@ -52,10 +52,7 @@ class HotspotTrayViewTest : public AshTestBase,
 
   void SetUp() override {
     if (IsJellyEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kHotspot, chromeos::features::kJelly}, {});
-    } else {
-      scoped_feature_list_.InitAndEnableFeature(features::kHotspot);
+      scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
     }
 
     AshTestBase::SetUp();

@@ -1562,10 +1562,6 @@ BASE_FEATURE(kHomeButtonWithText,
              "HomeButtonWithText",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Control whether the hotspot tethering is enabled. When enabled, it will allow
-// the Chromebook to share its cellular internet connection to other devices.
-BASE_FEATURE(kHotspot, "Hotspot", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, allows the user to cycle between windows of an app using Alt + `.
 BASE_FEATURE(kSameAppWindowCycle,
              "SameAppWindowCycle",
@@ -3823,10 +3819,6 @@ bool IsHomeButtonWithTextEnabled() {
 
 bool IsHostnameSettingEnabled() {
   return base::FeatureList::IsEnabled(kEnableHostnameSetting);
-}
-
-bool IsHotspotEnabled() {
-  return base::FeatureList::IsEnabled(kHotspot);
 }
 
 bool IsInstantHotspotRebrandEnabled() {

@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/system/hotspot/hotspot_notifier.h"
-#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/hotspot_enabled_state_notifier.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -43,9 +41,7 @@ hotspot_config::mojom::HotspotConfigPtr GenerateTestConfig() {
 
 class HotspotNotifierTest : public NoSessionAshTestBase {
  public:
-  HotspotNotifierTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kHotspot);
-  }
+  HotspotNotifierTest() = default;
   HotspotNotifierTest(const HotspotNotifierTest&) = delete;
   HotspotNotifierTest& operator=(const HotspotNotifierTest&) = delete;
   ~HotspotNotifierTest() override = default;
@@ -119,7 +115,6 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       cros_network_config_test_helper_;

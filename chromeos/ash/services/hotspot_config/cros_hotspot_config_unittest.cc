@@ -4,10 +4,8 @@
 
 #include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -50,7 +48,6 @@ class CrosHotspotConfigTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kHotspot);
     LoginState::Initialize();
     LoginState::Get()->set_always_logged_in(false);
 
@@ -206,7 +203,6 @@ class CrosHotspotConfigTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<CrosHotspotConfig> cros_hotspot_config_;
   std::unique_ptr<CrosHotspotConfigTestObserver> observer_;

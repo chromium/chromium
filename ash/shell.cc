@@ -1702,10 +1702,8 @@ void Shell::Init(
     wm_mode_controller_ = std::make_unique<WmModeController>();
   }
 
-  if (features::IsHotspotEnabled()) {
-    hotspot_icon_animation_ = std::make_unique<HotspotIconAnimation>();
-    hotspot_info_cache_ = std::make_unique<HotspotInfoCache>();
-  }
+  hotspot_icon_animation_ = std::make_unique<HotspotIconAnimation>();
+  hotspot_info_cache_ = std::make_unique<HotspotInfoCache>();
 
   window_tree_host_manager_->InitHosts();
 

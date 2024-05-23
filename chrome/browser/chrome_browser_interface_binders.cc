@@ -1696,11 +1696,9 @@ void PopulateChromeWebUIFrameBinders(
       ash::audio_config::mojom::CrosAudioConfig, ash::settings::OSSettingsUI>(
       map);
 
-  if (ash::features::IsHotspotEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::hotspot_config::mojom::CrosHotspotConfig,
-        ash::settings::OSSettingsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::hotspot_config::mojom::CrosHotspotConfig,
+      ash::settings::OSSettingsUI>(map);
 
   if (base::FeatureList::IsEnabled(
           ash::features::kSystemJapanesePhysicalTyping)) {

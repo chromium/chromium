@@ -55,7 +55,7 @@ class NetworkUiElement extends NetworkUiElementBase {
        */
       tabNames_: {
         type: Array,
-        computed: 'computeTabNames_(isHotspotEnabled_)',
+        computed: 'computeTabNames_(isWifiDirectEnabled_)',
       },
 
       /**
@@ -84,14 +84,6 @@ class NetworkUiElement extends NetworkUiElementBase {
         },
       },
 
-      isHotspotEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isHotspotEnabled') &&
-              loadTimeData.getBoolean('isHotspotEnabled');
-        },
-      },
-
       isWifiDirectEnabled_: {
         type: Boolean,
         value() {
@@ -117,7 +109,6 @@ class NetworkUiElement extends NetworkUiElementBase {
   private hostname_: string;
   private tetheringConfigToSet_: string;
   private isGuestModeActive_: boolean;
-  private isHotspotEnabled_: boolean;
   private isWifiDirectEnabled_: boolean;
   private invalidJSON_: boolean;
   private showNetworkSelect_: boolean;
@@ -137,11 +128,10 @@ class NetworkUiElement extends NetworkUiElementBase {
     this.shadowRoot!.querySelector<HTMLInputElement>('#import-onc')!.value = '';
 
     this.requestGlobalPolicy_();
-    if (this.isHotspotEnabled_) {
-      this.getTetheringCapabilities_();
-      this.getTetheringConfig_();
-      this.getTetheringStatus_();
-    }
+    this.getTetheringCapabilities_();
+    this.getTetheringConfig_();
+    this.getTetheringStatus_();
+
     if (this.isWifiDirectEnabled_) {
       this.getWifiDirectCapabilities_();
       this.getWifiDirectClientInfo_();
@@ -166,10 +156,8 @@ class NetworkUiElement extends NetworkUiElementBase {
       this.i18n('networkSelectTab'),
       this.i18n('TrafficCountersTrafficCounters'),
       this.i18n('networkMetricsTab'),
+      this.i18n('networkHotspotTab'),
     ];
-    if (this.isHotspotEnabled_) {
-      values.push(this.i18n('networkHotspotTab'));
-    }
     if (this.isWifiDirectEnabled_) {
       values.push(this.i18n('networkWifiDirectTab'));
     }

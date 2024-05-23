@@ -28,7 +28,6 @@ HotspotFeaturePodController::HotspotFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : hotspot_info_(Shell::Get()->hotspot_info_cache()->GetHotspotInfo()),
       tray_controller_(tray_controller) {
-  DCHECK(features::IsHotspotEnabled());
   GetHotspotConfigService(
       remote_cros_hotspot_config_.BindNewPipeAndPassReceiver());
   remote_cros_hotspot_config_->AddObserver(

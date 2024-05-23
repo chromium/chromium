@@ -1026,7 +1026,6 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
 
   html->AddLocalizedStrings(localized_strings);
   html->AddBoolean("isGuestModeActive", IsGuestModeActive());
-  html->AddBoolean("isHotspotEnabled", features::IsHotspotEnabled());
   html->AddBoolean("isWifiDirectEnabled", features::IsWifiDirectEnabled());
   html->AddString("tetheringStateStarting", shill::kTetheringStateStarting);
   html->AddString("tetheringStateActive", shill::kTetheringStateActive);

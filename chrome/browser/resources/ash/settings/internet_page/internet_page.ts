@@ -339,17 +339,6 @@ export class SettingsInternetPageElement extends
         value: '',
       },
 
-      /**
-       * Return true if hotspot feature flag is enabled.
-       */
-      isHotspotFeatureEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isHotspotEnabled') &&
-              loadTimeData.getBoolean('isHotspotEnabled');
-        },
-      },
-
       isApnRevampAndPoliciesEnabled_: {
         type: Boolean,
         value() {
@@ -401,7 +390,6 @@ export class SettingsInternetPageElement extends
   private isConnectedToNonCellularNetwork_: boolean;
   private isNumCustomApnsLimitReached_: boolean;
   private isInstantHotspotRebrandEnabled_: boolean;
-  private isHotspotFeatureEnabled_: boolean;
   private isApnRevampAndPoliciesEnabled_: boolean;
   private isAddingBuiltInVpnProhibited_: boolean;
   private knownNetworksType_: NetworkType;

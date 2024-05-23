@@ -4956,11 +4956,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "hotspot",
-    "owners": [ "jiajunz@google.com", "cros-connectivity@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "http-cache-partitioning",
     "owners": [ "shivanisha@chromium.org" ],
     "expiry_milestone": 95

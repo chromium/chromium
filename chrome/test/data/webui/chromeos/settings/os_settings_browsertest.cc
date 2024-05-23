@@ -403,15 +403,14 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampDeviceTestAltAndSplitAndBacklightEnabled::DescribeParams);
 
-class OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled
+class OSSettingsRevampMochaTestApnAndPasspointEnabled
     : public OSSettingsRevampMochaTest {
  protected:
-  OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled() {
+  OSSettingsRevampMochaTestApnAndPasspointEnabled() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled=*/
         {
             ash::features::kApnRevamp,
-            ash::features::kHotspot,
             ash::features::kPasspointSettings,
         },
         /*disabled=*/{});
@@ -423,21 +422,9 @@ class OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled
 
 INSTANTIATE_TEST_SUITE_P(
     RevampParameterized,
-    OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled,
+    OSSettingsRevampMochaTestApnAndPasspointEnabled,
     testing::Bool(),
-    OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled::DescribeParams);
-
-class OSSettingsRevampInternetTestHotspotEnabled
-    : public OSSettingsRevampMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{ash::features::kHotspot};
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    RevampParameterized,
-    OSSettingsRevampInternetTestHotspotEnabled,
-    testing::Bool(),
-    OSSettingsRevampInternetTestHotspotEnabled::DescribeParams);
+    OSSettingsRevampMochaTestApnAndPasspointEnabled::DescribeParams);
 
 class OSSettingsRevampInternetTestApnAndPasspointEnabled
     : public OSSettingsRevampMochaTest {
@@ -981,9 +968,8 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, InternetPageApnDetailDialog) {
   RunSettingsTest("internet_page/apn_detail_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(
-    OSSettingsRevampMochaTestApnAndHotspotAndPasspointEnabled,
-    InternetPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestApnAndPasspointEnabled,
+                       InternetPage) {
   RunSettingsTest("internet_page/internet_page_test.js");
 }
 
@@ -1017,17 +1003,16 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("internet_page/esim_rename_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestHotspotEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        InternetPageHotspotConfigDialog) {
   RunSettingsTest("internet_page/hotspot_config_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestHotspotEnabled,
-                       InternetPageHotspotSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, InternetPageHotspotSubpage) {
   RunSettingsTest("internet_page/hotspot_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampInternetTestHotspotEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        InternetPageHotspotSummaryItem) {
   RunSettingsTest("internet_page/hotspot_summary_item_test.js");
 }

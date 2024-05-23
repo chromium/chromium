@@ -4,10 +4,8 @@
 
 #include "chromeos/ash/components/network/technology_state_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
@@ -38,8 +36,6 @@ const char kEnableWifiResultCodeHistogram[] =
 class TechnologyStateControllerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kHotspot);
-
     enterprise_managed_metadata_store_ =
         std::make_unique<EnterpriseManagedMetadataStore>();
     hotspot_capabilities_provider_ =
@@ -97,7 +93,6 @@ class TechnologyStateControllerTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<EnterpriseManagedMetadataStore>

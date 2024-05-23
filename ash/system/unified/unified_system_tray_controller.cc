@@ -406,10 +406,8 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
               cast_and_rotation_tiles_are_compact);
   create_tile(std::make_unique<AccessibilityFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  if (features::IsHotspotEnabled()) {
-    create_tile(std::make_unique<HotspotFeaturePodController>(this),
-                feature_pod_controllers_, tiles);
-  }
+  create_tile(std::make_unique<HotspotFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
   if (base::FeatureList::IsEnabled(features::kFocusMode)) {
     create_tile(std::make_unique<FocusModeFeaturePodController>(this),
                 feature_pod_controllers_, tiles);

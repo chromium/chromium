@@ -4,12 +4,10 @@
 
 #include "ash/system/hotspot/hotspot_info_cache.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 
@@ -24,7 +22,6 @@ class HotspotInfoCacheTest : public AshTestBase {
   ~HotspotInfoCacheTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kHotspot);
     AshTestBase::SetUp();
 
     // Spin the runloop to have HotspotInfoCache finish querying the hotspot
@@ -35,9 +32,6 @@ class HotspotInfoCacheTest : public AshTestBase {
   void LogIn() { SimulateUserLogin("user1@test.com"); }
 
   void LogOut() { ClearLogin(); }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(HotspotInfoCacheTest, HotspotInfo) {

@@ -4,7 +4,6 @@
 
 #include "ash/system/hotspot/hotspot_detailed_view_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/style/switch.h"
 #include "ash/system/hotspot/hotspot_detailed_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -14,7 +13,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "ui/views/view.h"
@@ -33,7 +31,6 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
   ~HotspotDetailedViewControllerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kHotspot}, {});
     AshTestBase::SetUp();
 
     GetPrimaryUnifiedSystemTray()->ShowBubble();
@@ -94,7 +91,6 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<HotspotDetailedViewController, DanglingUntriaged>
       hotspot_detailed_view_controller_;
 };

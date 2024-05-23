@@ -56,56 +56,44 @@ suite('NetworkSummary', () => {
     assertEquals('WiFi', summaryItems[0]!.id);
   });
 
-  [false, true].forEach(isHotspotFeatureEnabled => {
-    test(
-        `Hotspot summary item when feature enabled is: ${
-            isHotspotFeatureEnabled}`,
-        async () => {
-          loadTimeData.overrideValues(
-              {'isHotspotEnabled': isHotspotFeatureEnabled});
-          if (isHotspotFeatureEnabled) {
-            const hotspotInfo = {
-              state: HotspotState.kDisabled,
-              allowStatus: HotspotAllowStatus.kDisallowedNoCellularUpstream,
-              clientCount: 0,
-              config: {
-                ssid: 'test_ssid',
-                passphrase: 'test_passphrase',
-              },
-            } as HotspotInfo;
-            hotspotConfig.setFakeHotspotInfo(hotspotInfo);
-          }
-          netSummary = document.createElement('network-summary');
-          document.body.appendChild(netSummary);
-          await flushTasks();
 
-          let hotspotSummaryItem =
-              netSummary.shadowRoot!.querySelector('hotspot-summary-item');
-          if (isHotspotFeatureEnabled) {
-            // kDisallowedNoCellularUpstream or kDisallowedNoWiFiDownstream
-            // allow status should hide the hotspot summary.
-            assertEquals(null, hotspotSummaryItem);
+  test('Hotspot summary item', async () => {
+    const hotspotInfo = {
+      state: HotspotState.kDisabled,
+      allowStatus: HotspotAllowStatus.kDisallowedNoCellularUpstream,
+      clientCount: 0,
+      config: {
+        ssid: 'test_ssid',
+        passphrase: 'test_passphrase',
+      },
+    } as HotspotInfo;
+    hotspotConfig.setFakeHotspotInfo(hotspotInfo);
 
-            hotspotConfig.setFakeHotspotAllowStatus(
-                HotspotAllowStatus.kDisallowedNoWiFiDownstream);
-            await flushTasks();
-            hotspotSummaryItem =
-                netSummary.shadowRoot!.querySelector('hotspot-summary-item');
-            assertEquals(null, hotspotSummaryItem);
+    netSummary = document.createElement('network-summary');
+    document.body.appendChild(netSummary);
+    await flushTasks();
 
-            // Simulate allow status to kAllowed and should show hotspot summary
-            hotspotConfig.setFakeHotspotAllowStatus(
-                HotspotAllowStatus.kAllowed);
-            await flushTasks();
+    let hotspotSummaryItem =
+        netSummary.shadowRoot!.querySelector('hotspot-summary-item');
 
-            hotspotSummaryItem =
-                netSummary.shadowRoot!.querySelector('hotspot-summary-item');
-            assert(hotspotSummaryItem);
+    // kDisallowedNoCellularUpstream or kDisallowedNoWiFiDownstream
+    // allow status should hide the hotspot summary.
+    assertEquals(null, hotspotSummaryItem);
 
-          } else {
-            assertEquals(null, hotspotSummaryItem);
-          }
-        });
+    hotspotConfig.setFakeHotspotAllowStatus(
+        HotspotAllowStatus.kDisallowedNoWiFiDownstream);
+    await flushTasks();
+    hotspotSummaryItem =
+        netSummary.shadowRoot!.querySelector('hotspot-summary-item');
+    assertEquals(null, hotspotSummaryItem);
+
+    // Simulate allow status to kAllowed and should show hotspot summary
+    hotspotConfig.setFakeHotspotAllowStatus(HotspotAllowStatus.kAllowed);
+    await flushTasks();
+
+    hotspotSummaryItem =
+        netSummary.shadowRoot!.querySelector('hotspot-summary-item');
+    assert(hotspotSummaryItem);
   });
 
   [false, true].forEach(isInstantHotspotRebrandEnabled => {

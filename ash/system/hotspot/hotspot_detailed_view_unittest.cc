@@ -4,7 +4,6 @@
 
 #include "ash/system/hotspot/hotspot_detailed_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -14,7 +13,6 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -58,7 +56,6 @@ class HotspotDetailedViewTest : public AshTestBase {
   ~HotspotDetailedViewTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kHotspot}, {});
     AshTestBase::SetUp();
 
     auto hotspot_detailed_view = std::make_unique<HotspotDetailedView>(
@@ -150,7 +147,6 @@ class HotspotDetailedViewTest : public AshTestBase {
         hotspot_detailed_view_->GetViewByID(static_cast<int>(id)));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::Widget> widget_;
   FakeHotspotDetailedViewDelegate hotspot_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;

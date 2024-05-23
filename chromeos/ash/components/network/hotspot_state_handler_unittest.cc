@@ -4,10 +4,8 @@
 
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
@@ -45,9 +43,6 @@ class HotspotStateHandlerTest : public ::testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     power_client_ = chromeos::FakePowerManagerClient::Get();
     chromeos::PowerPolicyController::Initialize(power_client_);
-
-    feature_list_.InitAndEnableFeature(features::kHotspot);
-
     if (hotspot_state_handler_ &&
         hotspot_state_handler_->HasObserver(&observer_)) {
       hotspot_state_handler_->RemoveObserver(&observer_);
@@ -70,7 +65,6 @@ class HotspotStateHandlerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<chromeos::FakePowerManagerClient> power_client_;
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   TestObserver observer_;

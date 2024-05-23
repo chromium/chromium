@@ -90,17 +90,15 @@ NetworkHandler::NetworkHandler()
   hotspot_allowed_flag_handler_.reset(new HotspotAllowedFlagHandler());
   vpn_network_metrics_helper_.reset(new VpnNetworkMetricsHelper());
   hidden_network_handler_.reset(new HiddenNetworkHandler());
-  if (ash::features::IsHotspotEnabled()) {
-    enterprise_managed_metadata_store_.reset(
-        new EnterpriseManagedMetadataStore());
-    hotspot_capabilities_provider_.reset(new HotspotCapabilitiesProvider());
-    hotspot_feature_usage_metrics_.reset(new HotspotFeatureUsageMetrics());
-    hotspot_state_handler_.reset(new HotspotStateHandler());
-    hotspot_controller_.reset(new HotspotController());
-    hotspot_configuration_handler_.reset(new HotspotConfigurationHandler());
-    hotspot_enabled_state_notifier_.reset(new HotspotEnabledStateNotifier());
-    hotspot_metrics_helper_.reset(new HotspotMetricsHelper());
-  }
+  enterprise_managed_metadata_store_.reset(
+      new EnterpriseManagedMetadataStore());
+  hotspot_capabilities_provider_.reset(new HotspotCapabilitiesProvider());
+  hotspot_feature_usage_metrics_.reset(new HotspotFeatureUsageMetrics());
+  hotspot_state_handler_.reset(new HotspotStateHandler());
+  hotspot_controller_.reset(new HotspotController());
+  hotspot_configuration_handler_.reset(new HotspotConfigurationHandler());
+  hotspot_enabled_state_notifier_.reset(new HotspotEnabledStateNotifier());
+  hotspot_metrics_helper_.reset(new HotspotMetricsHelper());
   if (NetworkCertLoader::IsInitialized()) {
     client_cert_resolver_.reset(new ClientCertResolver());
     auto_connect_handler_.reset(new AutoConnectHandler());
@@ -177,26 +175,23 @@ void NetworkHandler::Init() {
   hidden_network_handler_->Init(managed_network_configuration_handler_.get(),
                                 network_state_handler_.get());
   hotspot_allowed_flag_handler_->Init();
-  if (ash::features::IsHotspotEnabled()) {
-    hotspot_capabilities_provider_->Init(network_state_handler_.get(),
-                                         hotspot_allowed_flag_handler_.get());
-    hotspot_feature_usage_metrics_->Init(
-        enterprise_managed_metadata_store_.get(),
-        hotspot_capabilities_provider_.get());
-    hotspot_state_handler_->Init();
-    hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
-                              hotspot_feature_usage_metrics_.get(),
-                              hotspot_state_handler_.get(),
-                              technology_state_controller_.get());
-    hotspot_configuration_handler_->Init();
-    hotspot_enabled_state_notifier_->Init(hotspot_state_handler_.get(),
-                                          hotspot_controller_.get());
-    hotspot_metrics_helper_->Init(
-        enterprise_managed_metadata_store_.get(),
-        hotspot_capabilities_provider_.get(), hotspot_state_handler_.get(),
-        hotspot_controller_.get(), hotspot_configuration_handler_.get(),
-        hotspot_enabled_state_notifier_.get(), network_state_handler_.get());
-  }
+  hotspot_capabilities_provider_->Init(network_state_handler_.get(),
+                                       hotspot_allowed_flag_handler_.get());
+  hotspot_feature_usage_metrics_->Init(enterprise_managed_metadata_store_.get(),
+                                       hotspot_capabilities_provider_.get());
+  hotspot_state_handler_->Init();
+  hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
+                            hotspot_feature_usage_metrics_.get(),
+                            hotspot_state_handler_.get(),
+                            technology_state_controller_.get());
+  hotspot_configuration_handler_->Init();
+  hotspot_enabled_state_notifier_->Init(hotspot_state_handler_.get(),
+                                        hotspot_controller_.get());
+  hotspot_metrics_helper_->Init(
+      enterprise_managed_metadata_store_.get(),
+      hotspot_capabilities_provider_.get(), hotspot_state_handler_.get(),
+      hotspot_controller_.get(), hotspot_configuration_handler_.get(),
+      hotspot_enabled_state_notifier_.get(), network_state_handler_.get());
   managed_cellular_pref_handler_->Init(network_state_handler_.get());
   esim_policy_login_metrics_logger_->Init(
       network_state_handler_.get(),
@@ -441,10 +436,8 @@ void NetworkHandler::SetIsEnterpriseManaged(bool is_enterprise_managed) {
     esim_policy_login_metrics_logger_->SetIsEnterpriseManaged(
         is_enterprise_managed);
   }
-  if (ash::features::IsHotspotEnabled()) {
-    enterprise_managed_metadata_store_->set_is_enterprise_managed(
-        is_enterprise_managed);
-  }
+  enterprise_managed_metadata_store_->set_is_enterprise_managed(
+      is_enterprise_managed);
 }
 
 void NetworkHandler::OnEphemeralNetworkPoliciesEnabled() {
