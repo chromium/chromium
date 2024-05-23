@@ -1413,9 +1413,9 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   SetSearchboxInputText(query);
   SetSearchboxThumbnail(std::string());
 
-  // TODO(b/332787629): Append the 'mactx' param.
   lens_overlay_query_controller_->SendTextOnlyQuery(
-      query, initialization_data_->additional_search_query_params_);
+      query, lens::TextOnlyQueryType::kLensTextSelection,
+      initialization_data_->additional_search_query_params_);
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
 }
@@ -1439,7 +1439,8 @@ void LensOverlayController::IssueSearchBoxRequest(
 
   if (initialization_data_->selected_region_.is_null()) {
     lens_overlay_query_controller_->SendTextOnlyQuery(
-        search_box_text, initialization_data_->additional_search_query_params_);
+        search_box_text, lens::TextOnlyQueryType::kSearchBoxQuery,
+        initialization_data_->additional_search_query_params_);
   } else {
     lens::LensOverlaySelectionType multimodal_selection_type;
     if (is_zero_prefix_suggestion) {

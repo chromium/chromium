@@ -14,6 +14,15 @@
 #include "url/gurl.h"
 
 namespace lens {
+
+// The possible text only query types.
+enum class TextOnlyQueryType {
+  // Text was selected from the Lens overlay.
+  kLensTextSelection = 0,
+  // Text was from the search box.
+  kSearchBoxQuery = 1,
+};
+
 void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
                                 const std::string& query,
                                 const std::string& content_language);
@@ -36,6 +45,7 @@ GURL BuildTextOnlySearchURL(
     std::optional<std::string> page_title,
     std::map<std::string, std::string> additional_search_query_params,
     lens::LensOverlayInvocationSource invocation_source,
+    TextOnlyQueryType text_only_query_type,
     bool use_dark_mode);
 
 GURL BuildLensSearchURL(

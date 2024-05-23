@@ -364,6 +364,7 @@ void LensOverlayQueryController::SendMultimodalRequest(
 
 void LensOverlayQueryController::SendTextOnlyQuery(
     const std::string& query_text,
+    TextOnlyQueryType text_only_query_type,
     std::map<std::string, std::string> additional_search_query_params) {
   // Increment the request counter to cancel previously issued fetches.
   request_counter_++;
@@ -375,9 +376,9 @@ void LensOverlayQueryController::SendTextOnlyQuery(
 
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
   lens_overlay_url_response.set_url(
-      lens::BuildTextOnlySearchURL(query_text, page_url_, page_title_,
-                                   additional_search_query_params,
-                                   invocation_source_, use_dark_mode_)
+      lens::BuildTextOnlySearchURL(
+          query_text, page_url_, page_title_, additional_search_query_params,
+          invocation_source_, text_only_query_type, use_dark_mode_)
           .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));

@@ -483,7 +483,8 @@ TEST_F(LensOverlayQueryControllerTest,
       std::make_optional<std::string>(kTestPageTitle));
   task_environment_.RunUntilIdle();
 
-  query_controller.SendTextOnlyQuery("", additional_search_query_params);
+  query_controller.SendTextOnlyQuery("", TextOnlyQueryType::kSearchBoxQuery,
+                                     additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 

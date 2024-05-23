@@ -79,6 +79,24 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURL) {
                 /*page_url=*/std::nullopt,
                 /*page_title=*/std::nullopt, additional_params,
                 lens::LensOverlayInvocationSource::kAppMenu,
+                lens::TextOnlyQueryType::kSearchBoxQuery,
+                /*use_dark_mode=*/false),
+            expected_url);
+}
+
+TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLForLensTextSelection) {
+  std::string text_query = "Apples";
+  std::map<std::string, std::string> additional_params;
+  std::string expected_url = base::StringPrintf(
+      "%s?cs=0&source=chrome.cr.menu&q=%s&lns_fp=1&lns_mode=text&gsc=1&hl=%s",
+      kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
+
+  EXPECT_EQ(lens::BuildTextOnlySearchURL(
+                text_query,
+                /*page_url=*/std::nullopt,
+                /*page_title=*/std::nullopt, additional_params,
+                lens::LensOverlayInvocationSource::kAppMenu,
+                lens::TextOnlyQueryType::kLensTextSelection,
                 /*use_dark_mode=*/false),
             expected_url);
 }
@@ -107,6 +125,7 @@ TEST_F(LensOverlayUrlBuilderTest,
                 text_query, std::make_optional<GURL>(kPageUrl),
                 std::make_optional<std::string>(kPageTitle), additional_params,
                 lens::LensOverlayInvocationSource::kAppMenu,
+                lens::TextOnlyQueryType::kSearchBoxQuery,
                 /*use_dark_mode=*/false),
             expected_url);
 }
@@ -128,6 +147,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrlAndTitle) {
                 text_query, std::make_optional<GURL>(kPageUrl),
                 std::make_optional<std::string>(kPageTitle), additional_params,
                 lens::LensOverlayInvocationSource::kAppMenu,
+                lens::TextOnlyQueryType::kSearchBoxQuery,
                 /*use_dark_mode=*/false),
             expected_url);
 }
@@ -148,6 +168,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrl) {
                 text_query, std::make_optional<GURL>(kPageUrl),
                 /*page_title=*/std::nullopt, additional_params,
                 lens::LensOverlayInvocationSource::kAppMenu,
+                lens::TextOnlyQueryType::kSearchBoxQuery,
                 /*use_dark_mode=*/false),
             expected_url);
 }
@@ -169,6 +190,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageTitle) {
                 /*page_url=*/std::nullopt,
                 std::make_optional<std::string>(kPageTitle), additional_params,
                 lens::LensOverlayInvocationSource::kAppMenu,
+                lens::TextOnlyQueryType::kSearchBoxQuery,
                 /*use_dark_mode=*/false),
             expected_url);
 }
@@ -185,6 +207,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLEmpty) {
                 /*page_url=*/std::nullopt,
                 /*page_title=*/std::nullopt, additional_params,
                 lens::LensOverlayInvocationSource::kAppMenu,
+                lens::TextOnlyQueryType::kSearchBoxQuery,
                 /*use_dark_mode=*/false),
             expected_url);
 }
@@ -203,6 +226,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLPunctuation) {
                 /*page_url=*/std::nullopt,
                 /*page_title=*/std::nullopt, additional_params,
                 lens::LensOverlayInvocationSource::kAppMenu,
+                lens::TextOnlyQueryType::kSearchBoxQuery,
                 /*use_dark_mode=*/false),
             expected_url);
 }
@@ -221,6 +245,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWhitespace) {
                 /*page_url=*/std::nullopt,
                 /*page_title=*/std::nullopt, additional_params,
                 lens::LensOverlayInvocationSource::kAppMenu,
+                lens::TextOnlyQueryType::kSearchBoxQuery,
                 /*use_dark_mode=*/false),
             expected_url);
 }
