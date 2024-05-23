@@ -289,6 +289,9 @@ vars = {
   # download libaom test data
   'download_libaom_testdata': False,
 
+  # download libvpx test data
+  'download_libvpx_testdata': False,
+
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
   'boringssl_git': 'https://boringssl.googlesource.com',
