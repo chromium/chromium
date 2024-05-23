@@ -280,9 +280,6 @@ class EnrollmentScreen
   // Timer for install attribute to resolve.
   base::OneShotTimer wait_state_timer_;
 
-  // Whether the ongoing flow belongs to an enterprise rollback.
-  bool is_rollback_flow_ = false;
-
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 

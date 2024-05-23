@@ -168,13 +168,14 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollAfterRollbackSuccess) {
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
   enrollment_helper_.ExpectAttestationEnrollmentSuccess();
   enrollment_helper_.DisableAttributePromptUpdate();
+  enrollment_helper_.SetupClearAuth();
 
   enrollment_screen()->SetEnrollmentConfig(enrollment_config);
 
   WizardContext context;
   enrollment_screen()->Show(&context);
 
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+  enrollment_ui_.WaitForScreenExit();
 
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
@@ -221,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
       "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
       test::EnrollmentHelperMixin::kTestAuthCode);
 
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+  enrollment_ui_.WaitForScreenExit();
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
@@ -264,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
 
   enrollment_screen()->OnRetry();
 
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+  enrollment_ui_.WaitForScreenExit();
 
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }

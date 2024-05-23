@@ -333,7 +333,6 @@ void EnrollmentScreen::ShowImpl() {
   if (!scoped_network_observation_.IsObserving()) {
     scoped_network_observation_.Observe(network_state_informer_.get());
   }
-  is_rollback_flow_ = IsRollbackFlow(*context());
   if (view_) {
     // Reset the view when the screen is shown for the first time or after a
     // retry. Notably, the ShowImpl is not invoked after network error overlay
@@ -865,7 +864,8 @@ bool EnrollmentScreen::ShouldAutoRetryOnError() const {
 }
 
 bool EnrollmentScreen::AutoCloseEnrollmentConfirmationOnSuccess() const {
-  return is_rollback_flow_;
+  return prescribed_config_.mode ==
+         policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
 }
 
 bool EnrollmentScreen::IsEnrollmentScreenHiddenByError() {
