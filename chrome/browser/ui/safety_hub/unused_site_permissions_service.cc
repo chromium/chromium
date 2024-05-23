@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -55,8 +56,6 @@
 constexpr base::TimeDelta kRevocationThresholdNoDelayForTesting = base::Days(0);
 constexpr base::TimeDelta kRevocationThresholdWithDelayForTesting =
     base::Minutes(5);
-constexpr base::TimeDelta kRevocationCleanUpThresholdWithDelayForTesting =
-    base::Minutes(30);
 
 namespace {
 // Reflects the maximum number of days between a permissions being revoked and
@@ -81,17 +80,6 @@ base::TimeDelta GetRevocationThreshold() {
   }
   return content_settings::features::
       kSafetyCheckUnusedSitePermissionsRevocationThreshold.Get();
-}
-
-base::TimeDelta GetCleanUpThreshold() {
-  // TODO(crbug.com/40250875): Clean up delayed clean up logic after the feature
-  // is ready. Today, this is necessary to enable manual testing.
-  if (content_settings::features::kSafetyCheckUnusedSitePermissionsWithDelay
-          .Get()) {
-    return kRevocationCleanUpThresholdWithDelayForTesting;
-  }
-  return content_settings::features::
-      kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
 }
 
 bool IsContentSetting(ContentSettingsType type) {
@@ -754,7 +742,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
   }
 
   content_settings::ContentSettingConstraints default_constraint(clock_->Now());
-  default_constraint.set_lifetime(GetCleanUpThreshold());
+  default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
 
   // Set website setting for the list of recently revoked permissions and
   // previously revoked permissions, if exists.

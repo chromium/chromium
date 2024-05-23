@@ -42,32 +42,35 @@ class AbusiveNotificationPermissionsManager {
 
   ~AbusiveNotificationPermissionsManager();
 
-  // Returns the list of all permissions that have been revoked.
-  ContentSettingsForOneType GetRevokedPermissions() const;
-
   // Calls `PerformSafeBrowsingChecks` on URLs which have notifications
   // enabled and haven't been marked as a URL to be ignored.
   void CheckNotificationPermissionOrigins();
 
-  // The user regrants permission for an origin, so we should allow notification
-  // permissions again and add a constraint so that this permission is not
-  // auto-revoked during future Safety Hub checks.
-  void RegrantPermissionForOrigin(const GURL& url);
+  // If the url has a revoked abusive notification permission, this method
+  // allows notification permissions again and adds a constraint so that this
+  // permission is not auto-revoked during future Safety Hub checks.
+  void RegrantPermissionForOriginIfNecessary(const GURL& url);
 
-  // Undo the actions from `RegrantPermissionForOrigin` by changing the
-  // `NOTIFICATIONS` setting back to `CONTENT_SETTING_BLOCK` and the
+  // If `permission_types` includes notifications, undo the actions from
+  // `RegrantPermissionForOrigin` by changing the `NOTIFICATIONS` setting back
+  // to `CONTENT_SETTING_ASK` and the
   // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting back to a dictionary
   // with `safety_hub::kRevokedStatusDictKeyStr` set to
   // `safety_hub::kRevokeStr`.
-  void UndoRegrantPermissionForOrigin(const GURL url);
+  void UndoRegrantPermissionForOriginIfNecessary(
+      const GURL& url,
+      std::set<ContentSettingsType> permission_types,
+      content_settings::ContentSettingConstraints constraints);
 
   // Clear the list of abusive notification permissions so they will no longer
   // be shown to the user. Does not change permissions themselves.
   void ClearRevokedPermissionsList();
 
-  // Add `origin` back into the list of abusive notification permissions we show
-  // to the user in Safety Hub. Does not change permissions themselves.
-  void UndoRemoveOriginFromRevokedPermissionsList(const GURL url);
+  // Remove the `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting for the given
+  // pattern pairs.
+  void DeletePatternFromRevokedAbusiveNotificationList(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern);
 
  private:
   friend class AbusiveNotificationPermissionsManagerTest;
@@ -88,9 +91,9 @@ class AbusiveNotificationPermissionsManager {
   FRIEND_TEST_ALL_PREFIXES(AbusiveNotificationPermissionsManagerTest,
                            ClearRevokedPermissionsList);
   FRIEND_TEST_ALL_PREFIXES(AbusiveNotificationPermissionsManagerTest,
-                           UndoRemoveOriginFromRevokedPermissionsList);
+                           SetRevokedAbusiveNotificationPermission);
   FRIEND_TEST_ALL_PREFIXES(AbusiveNotificationPermissionsManagerTest,
-                           UndoRegrantPermissionForOrigin);
+                           UndoRegrantPermissionForOriginIfNecessary);
 
   // On object creation, checks the Safe Browsing blocklist for `url_`
   // and revokes notification permissions if blocklisted.
@@ -159,20 +162,6 @@ class AbusiveNotificationPermissionsManager {
   // Create a `SafeBrowsingCheckClient` object, triggering a blocklist check,
   // and add it to `safe_browsing_request_clients_`.
   void PerformSafeBrowsingChecks(GURL url);
-
-  // Get the dictionary setting value of the
-  // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting. Returns `Type::NONE` if
-  // there is no `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting value.
-  base::Value GetRevokedAbusiveNotificationPermissionsSettingValue(
-      ContentSettingPatternSource content_setting) const;
-
-  // Returns true if there is a `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`
-  // setting value for the setting URL with the
-  // `safety_hub::kRevokedStatusDictKeyStr` key set to `safety_hub::kIgnoreStr`.
-  // Note that the method expects a non-empty
-  // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting as input.
-  bool IsAbusiveNotificationRevocationIgnored(
-      ContentSettingPatternSource content_setting) const;
 
   // Returns true if the notification permission is allowed and the setting
   // does not indicate "ignore".

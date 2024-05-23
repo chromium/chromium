@@ -92,6 +92,10 @@ enum class SafetyHubSurfaces {
   kMaxValue = kSafetyHubPage,
 };
 
+// Duration to wait for cleaning up the revoked permissions after showing them
+// to the user.
+extern const base::TimeDelta kRevocationCleanUpThresholdWithDelayForTesting;
+
 // This string is used for the key of the base::Value dictionary we assign to
 // the REVOKED_ABUSIVE_NOTIFICATION_PERMISSION value.
 extern const char kRevokedStatusDictKeyStr[];
