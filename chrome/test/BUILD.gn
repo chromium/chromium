@@ -11272,7 +11272,6 @@ if (!is_android && !is_chromeos_device) {
       "//ui/base:test_support",
       "//ui/base/clipboard:clipboard_test_support",
       "//ui/compositor:test_support",
-      "//ui/display:display_interactive_ui_tests",
       "//ui/display:test_support",
       "//ui/events:events_interactive_ui_tests",
       "//ui/events:gesture_detection",
@@ -11698,6 +11697,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/accessibility/uia_accessibility_event_waiter.cc",
         "../browser/ui/views/accessibility/uia_accessibility_event_waiter.h",
         "../browser/ui/views/touch_events_interactive_uitest_win.cc",
+        "//ui/display/win/test/virtual_display_util_win_interactive_uitest.cc",
       ]
 
       if (use_aura) {
@@ -11740,6 +11740,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/find_bar/find_bar_platform_helper_mac_interactive_uitest.mm",
         "../browser/ui/views/frame/immersive_mode_controller_mac_interactive_uitest.mm",
         "../browser/webauthn/chrome_webauthn_autofill_mac_interactive_uitest.mm",
+        "//ui/display/mac/test/virtual_display_util_mac_interactive_uitest.mm",
       ]
 
       sources -= [
@@ -11794,6 +11795,9 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (is_linux) {
+      if (ozone_platform_x11) {
+        sources += [ "//ui/display/linux/test/virtual_display_util_linux_interactive_uitest.cc" ]
+      }
       deps += [ "//ui/linux:linux_ui" ]
     }
 

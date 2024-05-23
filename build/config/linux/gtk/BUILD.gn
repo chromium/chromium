@@ -32,6 +32,7 @@ group("gtk") {
     "//examples:peerconnection_client",
     "//remoting/host:common",
     "//remoting/host:remoting_me2me_host_static",
+    "//remoting/host:x11_display_utils",
     "//remoting/host/file_transfer",
     "//remoting/host/it2me:common",
     "//remoting/host/it2me:main",

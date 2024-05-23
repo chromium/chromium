@@ -297,10 +297,6 @@ static_library("common") {
     "desktop_display_info_loader.h",
     "desktop_display_info_monitor.cc",
     "desktop_display_info_monitor.h",
-    "desktop_display_layout_util.cc",
-    "desktop_display_layout_util.h",
-    "desktop_geometry.cc",
-    "desktop_geometry.h",
     "desktop_process.cc",
     "desktop_process.h",
     "desktop_resizer.h",
@@ -437,6 +433,7 @@ static_library("common") {
   deps = [
     ":client_session_control",
     ":clipboard",
+    ":display_layout",
     ":host_main_headers",
     ":ipc_constants",
     ":resources",
@@ -570,18 +567,12 @@ static_library("common") {
       "linux/desktop_resizer_wayland.h",
       "linux/ei_event_watcher_glib.cc",
       "linux/ei_event_watcher_glib.h",
-      "linux/gnome_display_config.cc",
-      "linux/gnome_display_config.h",
-      "linux/gnome_display_config_dbus_client.cc",
-      "linux/gnome_display_config_dbus_client.h",
       "linux/input_injector_wayland.cc",
       "linux/input_injector_wayland.h",
       "linux/remote_desktop_portal.cc",
       "linux/remote_desktop_portal.h",
       "linux/remote_desktop_portal_injector.cc",
       "linux/remote_desktop_portal_injector.h",
-      "linux/scoped_glib.cc",
-      "linux/scoped_glib.h",
       "linux/wayland_connection.cc",
       "linux/wayland_connection.h",
       "linux/wayland_desktop_capturer.cc",
@@ -596,12 +587,6 @@ static_library("common") {
       "linux/wayland_manager.h",
       "linux/wayland_seat.cc",
       "linux/wayland_seat.h",
-      "x11_crtc_resizer.cc",
-      "x11_crtc_resizer.h",
-      "x11_desktop_resizer.cc",
-      "x11_desktop_resizer.h",
-      "x11_display_util.cc",
-      "x11_display_util.h",
     ]
     libs += [ "//third_party/libei/lib64/libei.a" ]
     public_deps += [
@@ -609,9 +594,8 @@ static_library("common") {
       "//third_party/wayland-protocols:xdg_output_protocol",
     ]
     deps += [
-      "//build/config/linux/gtk",
+      ":x11_display_utils",
       "//remoting/host/linux:wayland",
-      "//remoting/host/linux:x11",
       "//ui/base/x",
       "//ui/events/platform/x11",
       "//ui/gfx/x",
@@ -743,6 +727,45 @@ static_library("common") {
   }
 }
 
+source_set("display_layout") {
+  sources = [
+    "desktop_display_layout_util.cc",
+    "desktop_display_layout_util.h",
+    "desktop_geometry.cc",
+    "desktop_geometry.h",
+  ]
+  deps = [ "//ui/gfx" ]
+}
+
+if (is_linux && (ozone_platform_x11 || remoting_use_x11)) {
+  source_set("x11_display_utils") {
+    sources = [
+      "linux/gnome_display_config.cc",
+      "linux/gnome_display_config.h",
+      "linux/gnome_display_config_dbus_client.cc",
+      "linux/gnome_display_config_dbus_client.h",
+      "linux/scoped_glib.cc",
+      "linux/scoped_glib.h",
+      "x11_crtc_resizer.cc",
+      "x11_crtc_resizer.h",
+      "x11_desktop_resizer.cc",
+      "x11_desktop_resizer.h",
+      "x11_display_util.cc",
+      "x11_display_util.h",
+    ]
+    deps = [
+      ":display_layout",
+      "//build/config/linux/gtk",
+      "//remoting/base:logging",
+      "//remoting/host/linux:x11",
+      "//third_party/webrtc_overrides:webrtc_component",
+      "//ui/base",
+      "//ui/base/x",
+      "//ui/gfx/geometry",
+    ]
+  }
+}
+
 static_library("test_support") {
   testonly = true
 
@@ -857,6 +880,7 @@ source_set("unit_tests") {
     ":chromoting_host_services_client",
     ":client_session_control",
     ":common",
+    ":display_layout",
     ":resources",
     ":test_support",
     "//build:branding_buildflags",
@@ -891,8 +915,8 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base:base",
-    "//ui/events:events",
+    "//ui/base",
+    "//ui/events",
   ]
 
   # ChromotingHostServices currently only works on Linux and Windows.
@@ -927,7 +951,10 @@ source_set("unit_tests") {
       "x11_crtc_resizer_unittest.cc",
       "x11_display_util_unittest.cc",
     ]
-    deps += [ "//ui/gfx/x" ]
+    deps += [
+      ":x11_display_utils",
+      "//ui/gfx/x",
+    ]
   }
 
   if (is_chromeos_ash) {

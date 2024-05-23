@@ -253,6 +253,17 @@ static_library("test_support") {
     ]
   }
 
+  if (is_linux && ozone_platform_x11) {
+    sources += [
+      "linux/test/virtual_display_util_linux.cc",
+      "linux/test/virtual_display_util_linux.h",
+    ]
+    deps += [
+      "//remoting/host:display_layout",
+      "//remoting/host:x11_display_utils",
+    ]
+  }
+
   if (is_chromeos) {
     sources += [ "test/display_test_util.cc" ]
   }
@@ -284,7 +295,7 @@ static_library("test_support") {
     public_deps += [ "//ui/display:managed_display_info" ]
   }
 
-  if (!is_mac && !is_win) {
+  if (!is_mac && !is_win && !(is_linux && ozone_platform_x11)) {
     sources += [
       # Virtual display util stub for unimplemented platforms.
       "test/virtual_display_util_stub.cc",
@@ -374,27 +385,5 @@ test("display_unittests") {
     ]
   } else {
     deps += [ "//mojo/core/test:run_all_unittests" ]
-  }
-}
-
-# This target is added as a dependency of browser interactive_ui_tests. It must
-# be source_set, otherwise the linker will drop the tests as dead code.
-source_set("display_interactive_ui_tests") {
-  testonly = true
-  if (is_mac) {
-    sources = [ "mac/test/virtual_display_util_mac_interactive_uitest.mm" ]
-  }
-
-  if (is_win) {
-    sources = [ "win/test/virtual_display_util_win_interactive_uitest.cc" ]
-  }
-
-  if (is_win || is_mac) {
-    deps = [
-      ":display",
-      ":test_support",
-      "//base/test:test_support",
-      "//testing/gtest",
-    ]
   }
 }
