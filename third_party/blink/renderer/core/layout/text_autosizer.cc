@@ -520,8 +520,12 @@ float TextAutosizer::Inflate(LayoutObject* parent,
     }
   }
 
-  if (page_info_.has_autosized_)
+  if (page_info_.has_autosized_) {
     document_->CountUse(WebFeature::kTextAutosizing);
+    if (page_info_.shared_info_.device_scale_adjustment != 1.0f) {
+      document_->CountUse(WebFeature::kUsedDeviceScaleAdjustment);
+    }
+  }
 
   return multiplier;
 }

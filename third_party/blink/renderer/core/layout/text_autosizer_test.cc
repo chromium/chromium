@@ -38,7 +38,9 @@ class TextAutosizerTest : public RenderingTest,
                           public testing::WithParamInterface<bool>,
                           private ScopedNewTextSizeAdjustForTest {
  public:
-  TextAutosizerTest() : ScopedNewTextSizeAdjustForTest(GetParam()) {}
+  TextAutosizerTest()
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
+        ScopedNewTextSizeAdjustForTest(GetParam()) {}
 
   RenderingTestChromeClient& GetChromeClient() const override {
     return GetTextAutosizerClient();
@@ -1135,6 +1137,83 @@ TEST_P(TextAutosizerTest, FingerprintWidth) {
     </body>
   )HTML");
   // The test pass if it doesn't crash nor hit DCHECK.
+}
+
+// Test that `kUsedDeviceScaleAdjustment` is not recorded when a user-specified
+// meta viewport is present on the outermost main frame.
+TEST_P(TextAutosizerTest, UsedDeviceScaleAdjustmentUseCounterWithViewport) {
+  SetBodyInnerHTML(R"HTML(
+    <meta name="viewport" content="width=device-width">
+    <div style="font-size: 20px">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+      commodo consequat.
+    </div>
+    <iframe></iframe>
+  )HTML");
+  GetDocument().GetSettings()->SetViewportMetaEnabled(true);
+  GetDocument().GetSettings()->SetDeviceScaleAdjustment(1.5f);
+  // Do not specify a meta viewport in the subframe. If the subframe's lack of a
+  // meta viewport were used, it would incorrectly cause the device scale
+  // adjustment to be used.
+  SetChildFrameHTML(R"HTML(
+    <div style="font-size: 20px">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+      commodo consequat.
+    </div>
+  )HTML");
+  ASSERT_TRUE(ChildDocument().GetSettings()->GetViewportMetaEnabled());
+  ASSERT_EQ(1.5f, ChildDocument().GetSettings()->GetDeviceScaleAdjustment());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kUsedDeviceScaleAdjustment));
+  EXPECT_FALSE(
+      ChildDocument().IsUseCounted(WebFeature::kUsedDeviceScaleAdjustment));
+}
+
+// Test that `kUsedDeviceScaleAdjustment` is recorded when a user-specified meta
+// viewport is not specified on the outermost main frame.
+TEST_P(TextAutosizerTest, UsedDeviceScaleAdjustmentUseCounterWithoutViewport) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="font-size: 20px">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+      commodo consequat.
+    </div>
+    <iframe></iframe>
+  )HTML");
+  // We should not record the metric before setting the viewport settings.
+  ASSERT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kUsedDeviceScaleAdjustment));
+  GetDocument().GetSettings()->SetViewportMetaEnabled(true);
+  GetDocument().GetSettings()->SetDeviceScaleAdjustment(1.5f);
+  // Specify a meta viewport in the subframe. If the subframe's meta viewport
+  // were used, it would incorrectly prevent the device scale adjustment from
+  // being used.
+  SetChildFrameHTML(R"HTML(
+    <meta name="viewport" content="width=device-width">
+    <div style="font-size: 20px">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+      commodo consequat.
+    </div>
+  )HTML");
+  ASSERT_TRUE(ChildDocument().GetSettings()->GetViewportMetaEnabled());
+  ASSERT_EQ(1.5f, ChildDocument().GetSettings()->GetDeviceScaleAdjustment());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kUsedDeviceScaleAdjustment));
+  EXPECT_TRUE(
+      ChildDocument().IsUseCounted(WebFeature::kUsedDeviceScaleAdjustment));
 }
 
 class TextAutosizerSimTest : public SimTest,
