@@ -27,14 +27,19 @@ std::unique_ptr<ScopedLock> CreateScopedLock(const std::string& name,
                                              UpdaterScope scope,
                                              base::TimeDelta timeout) {
 #if BUILDFLAG(IS_LINUX)
+  static constexpr char kSharedMemNamePrefix[] = "/" PRODUCT_FULLNAME_STRING;
+  static constexpr char kSharedMemNameSuffix[] = ".lock";
   return named_system_lock::ScopedLock::Create(
-      base::StrCat({"/" PRODUCT_FULLNAME_STRING, name,
-                    UpdaterScopeToString(scope), ".lock"}),
+      base::StrCat({kSharedMemNamePrefix, name, UpdaterScopeToString(scope),
+                    kSharedMemNameSuffix}),
       timeout);
 #elif BUILDFLAG(IS_MAC)
+  static constexpr char kLockMachServiceNamePrefix[] =
+      MAC_BUNDLE_IDENTIFIER_STRING;
+  static constexpr char kLockMachServiceNameSuffix[] = ".lock";
   return named_system_lock::ScopedLock::Create(
-      base::StrCat({MAC_BUNDLE_IDENTIFIER_STRING, name,
-                    UpdaterScopeToString(scope), ".lock"}),
+      base::StrCat({kLockMachServiceNamePrefix, name,
+                    UpdaterScopeToString(scope), kLockMachServiceNameSuffix}),
       timeout);
 #elif BUILDFLAG(IS_WIN)
   NamedObjectAttributes lock_attr =
