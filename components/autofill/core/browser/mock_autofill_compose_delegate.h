@@ -37,6 +37,7 @@ class MockAutofillComposeDelegate : public AutofillComposeDelegate {
               (override));
   MOCK_METHOD(void, DisableCompose, (), (override));
   MOCK_METHOD(void, GoToSettings, (), (override));
+  MOCK_METHOD(bool, ShouldAnchorNudgeOnCaret, (), (override));
 };
 
 }  // namespace autofill

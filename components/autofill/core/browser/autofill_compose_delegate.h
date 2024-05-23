@@ -60,6 +60,10 @@ class AutofillComposeDelegate {
   virtual std::optional<autofill::Suggestion> GetSuggestion(
       const autofill::FormFieldData& field,
       autofill::AutofillSuggestionTriggerSource trigger_source) = 0;
+
+  // Whether the Autofill nudge should be anchored on the caret or on the
+  // triggering field.
+  virtual bool ShouldAnchorNudgeOnCaret() = 0;
 };
 
 }  // namespace autofill

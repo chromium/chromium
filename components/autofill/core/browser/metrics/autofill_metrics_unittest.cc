@@ -1280,6 +1280,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     base::UserActionTester user_action_tester;
     external_delegate().OnQuery(
         form, form.fields.front(),
+        /*caret_bounds=*/gfx::Rect(),
+
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     external_delegate().DidAcceptSuggestion(
@@ -1308,6 +1310,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     base::UserActionTester user_action_tester;
     external_delegate().OnQuery(
         form, form.fields.front(),
+        /*caret_bounds=*/gfx::Rect(),
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     external_delegate().DidAcceptSuggestion(
@@ -1334,6 +1337,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     base::UserActionTester user_action_tester;
     external_delegate().OnQuery(
         form, form.fields.front(),
+        /*caret_bounds=*/gfx::Rect(),
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     external_delegate().DidAcceptSuggestion(
@@ -1463,6 +1467,7 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
     base::UserActionTester user_action_tester;
     external_delegate().OnQuery(
         form, form.fields.front(),
+        /*caret_bounds=*/gfx::Rect(),
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     external_delegate().DidAcceptSuggestion(

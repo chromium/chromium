@@ -24,7 +24,10 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "ui/gfx/geometry/rect_f.h"
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace autofill {
 
@@ -74,11 +77,15 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // not want to display the warning if a website has disabled Autocomplete
   // because they have their own popup, and showing our popup on to of theirs
   // would be a poor user experience.
+  // `caret_bounds` represents the position of the focused field caret. This is
+  // used as bounds to anchor the Autofill popup on. Today this is only used by
+  // compose suggestions.
   //
   // TODO(crbug.com/40144964): Storing `form` and `field` in member variables
   // breaks the cache.
   virtual void OnQuery(const FormData& form,
                        const FormFieldData& field,
+                       const gfx::Rect& caret_bounds,
                        AutofillSuggestionTriggerSource trigger_source);
 
   // Records query results and correctly formats them before sending them off
@@ -106,10 +113,10 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   virtual void OnAutofillAvailabilityEvent(
       mojom::AutofillSuggestionAvailability suggestion_availability);
 
-  // Set the data list value associated with the current field.
+  // Sets the data list value associated with the current field.
   void SetCurrentDataListValues(std::vector<SelectOption> datalist);
 
-  // Inform the delegate that the text field editing has ended. This is
+  // Informs the delegate that the text field editing has ended. This is
   // used to help record the metrics of when a new popup is shown.
   void DidEndTextFieldEditing();
 
@@ -266,6 +273,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
 
   // The current data list values.
   std::vector<SelectOption> datalist_;
+
+  // The caret position of the focused field.
+  gfx::Rect caret_bounds_;
 
   // Autofill profile update and deletion are async operations. ADM observer is
   // used to detect when these operations finish. These operations can happen at

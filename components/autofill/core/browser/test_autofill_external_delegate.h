@@ -10,6 +10,10 @@
 #include "base/run_loop.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace autofill {
 
 class TestAutofillExternalDelegate : public AutofillExternalDelegate {
@@ -29,6 +33,7 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
   void OnSuggestionsHidden() override;
   void OnQuery(const FormData& form,
                const FormFieldData& field,
+               const gfx::Rect& caret_bounds,
                AutofillSuggestionTriggerSource trigger_source) override;
   void OnSuggestionsReturned(
       FieldGlobalId field_id,

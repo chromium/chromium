@@ -57,6 +57,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace autofill {
 
@@ -222,9 +223,11 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
 void AutofillExternalDelegate::OnQuery(
     const FormData& form,
     const FormFieldData& field,
+    const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
   query_form_ = form;
   query_field_ = field;
+  caret_bounds_ = caret_bounds;
   trigger_source_ = trigger_source;
 }
 
@@ -293,9 +296,23 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
       DidAcceptSuggestion(*test_suggestion, {});
       return;
     }
+
+    AutofillComposeDelegate* delegate = manager_->client().GetComposeDelegate();
+    const bool show_proactive_nudge_at_caret =
+        shown_suggestion_types_.size() == 1 &&
+        shown_suggestion_types_[0] == SuggestionType::kComposeProactiveNudge &&
+        (delegate && delegate->ShouldAnchorNudgeOnCaret());
+    const bool are_caret_bounds_valid =
+        caret_bounds_ != gfx::Rect() &&
+        query_field_.bounds().Contains(caret_bounds_.x(), caret_bounds_.y());
+    const bool should_use_caret_bounds =
+        show_proactive_nudge_at_caret && are_caret_bounds_valid;
+
     AutofillClient::PopupOpenArgs open_args(
-        query_field_.bounds(), query_field_.text_direction(), suggestions,
-        trigger_source_, query_field_.form_control_ax_id());
+        should_use_caret_bounds ? gfx::RectF(caret_bounds_)
+                                : query_field_.bounds(),
+        query_field_.text_direction(), suggestions, trigger_source_,
+        query_field_.form_control_ax_id());
     manager_->client().ShowAutofillSuggestions(open_args, GetWeakPtr());
   }
 }
