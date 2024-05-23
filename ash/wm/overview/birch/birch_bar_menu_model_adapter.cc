@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/style/checkbox.h"
 #include "ash/style/switch.h"
+#include "ash/style/typography.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "base/notreached.h"
@@ -15,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -144,6 +146,8 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
           CommandIdToSuggestionType(command_id)));
       checkbox->set_delegate(this);
       checkbox->SetAccessibleName(label);
+      checkbox->SetLabelStyle(TypographyToken::kCrosButton2);
+      checkbox->SetLabelColorId(cros_tokens::kCrosSysOnSurface);
       return item_view;
     }
     default:
