@@ -40,6 +40,12 @@ std::unique_ptr<PdfInkBrush> CreateDefaultBrush() {
                                        kDefaultBrushParams);
 }
 
+// Check if `color` is a valid color value within range.
+void CheckColorIsWithinRange(int color) {
+  CHECK_GE(color, 0);
+  CHECK_LE(color, 255);
+}
+
 }  // namespace
 
 InkModule::InkModule(Client& client)
@@ -113,6 +119,10 @@ bool InkModule::OnMessage(const base::Value::Dict& message) {
   return true;
 }
 
+const PdfInkBrush* InkModule::GetPdfInkBrushForTesting() const {
+  return pdf_ink_brush_.get();
+}
+
 bool InkModule::OnMouseDown(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
@@ -182,7 +192,41 @@ bool InkModule::OnMouseMove(const blink::WebMouseEvent& event) {
 
 void InkModule::HandleSetAnnotationBrushMessage(
     const base::Value::Dict& message) {
-  // TODO(crbug.com/335524382): Implement setting the brush for Ink2.
+  CHECK(enabled_);
+
+  const std::string& brush_type_string = *message.FindString("brushType");
+  if (brush_type_string == "eraser") {
+    pdf_ink_brush_.reset();
+    return;
+  }
+
+  // All brush types except the eraser should have a color and size.
+  int color_r = message.FindInt("colorR").value();
+  int color_g = message.FindInt("colorG").value();
+  int color_b = message.FindInt("colorB").value();
+  double size = message.FindDouble("size").value();
+
+  CheckColorIsWithinRange(color_r);
+  CheckColorIsWithinRange(color_g);
+  CheckColorIsWithinRange(color_b);
+
+  PdfInkBrush::Params params;
+  params.color = SkColorSetRGB(color_r, color_g, color_b);
+
+  // TODO(crbug.com/341282609): Properly scale the brush size here. The
+  // extension uses values from range [0, 1], which will be translated to range
+  // [1, 8] for now.
+  CHECK_GE(size, 0);
+  CHECK_LE(size, 1);
+
+  constexpr float kSizeScaleFactor = 7.0f;
+  constexpr float kMinSize = 1.0f;
+  params.size = (static_cast<float>(size) * kSizeScaleFactor) + kMinSize;
+
+  std::optional<PdfInkBrush::Type> brush_type =
+      PdfInkBrush::StringToType(brush_type_string);
+  CHECK(brush_type.has_value());
+  pdf_ink_brush_ = std::make_unique<PdfInkBrush>(brush_type.value(), params);
 }
 
 void InkModule::HandleSetAnnotationModeMessage(

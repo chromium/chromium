@@ -60,6 +60,9 @@ class InkModule {
   // Returns whether the message was handled or not.
   bool OnMessage(const base::Value::Dict& message);
 
+  // For testing only. Returns the current PDF ink brush used to draw strokes.
+  const PdfInkBrush* GetPdfInkBrushForTesting() const;
+
  private:
   bool OnMouseDown(const blink::WebMouseEvent& event);
   bool OnMouseUp(const blink::WebMouseEvent& event);
@@ -75,7 +78,8 @@ class InkModule {
 
   bool enabled_ = false;
 
-  // The current brush to use for drawing strokes.
+  // The current brush to use for drawing strokes. Nullptr if the current brush
+  // is an eraser.
   std::unique_ptr<PdfInkBrush> pdf_ink_brush_;
 
   // Set when InkModule is in the middle of drawing a stroke.
