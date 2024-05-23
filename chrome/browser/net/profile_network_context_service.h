@@ -82,6 +82,22 @@ class ProfileNetworkContextService
   // Update all of the profile_'s CertVerifierServices with certificates from
   // enterprise policies.
   void UpdateAdditionalCertificates();
+
+  struct CertificatePoliciesForView {
+    CertificatePoliciesForView();
+    ~CertificatePoliciesForView();
+    CertificatePoliciesForView(CertificatePoliciesForView&&);
+    CertificatePoliciesForView& operator=(CertificatePoliciesForView&& other);
+
+    cert_verifier::mojom::AdditionalCertificatesPtr certificate_policies;
+
+    bool is_include_system_trust_store_managed;
+
+    std::vector<std::vector<uint8_t>> full_distrusted_certs;
+  };
+
+  // Get enterprise certificate policies for viewing by end users.
+  CertificatePoliciesForView GetCertificatePolicyForView();
 #endif
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

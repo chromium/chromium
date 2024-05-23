@@ -715,6 +715,41 @@ void ProfileNetworkContextService::ScheduleUpdateCertificatePolicy() {
       FROM_HERE, base::Seconds(0), this,
       &ProfileNetworkContextService::UpdateAdditionalCertificates);
 }
+
+ProfileNetworkContextService::CertificatePoliciesForView::
+    CertificatePoliciesForView() = default;
+ProfileNetworkContextService::CertificatePoliciesForView::
+    ~CertificatePoliciesForView() = default;
+
+ProfileNetworkContextService::CertificatePoliciesForView::
+    CertificatePoliciesForView(CertificatePoliciesForView&&) = default;
+ProfileNetworkContextService::CertificatePoliciesForView&
+ProfileNetworkContextService::CertificatePoliciesForView::operator=(
+    CertificatePoliciesForView&& other) = default;
+
+ProfileNetworkContextService::CertificatePoliciesForView
+ProfileNetworkContextService::GetCertificatePolicyForView() {
+  CertificatePoliciesForView policies;
+  policies.certificate_policies =
+      GetCertificatePolicy(profile_->GetDefaultStoragePartition()->GetPath());
+
+  auto* prefs = profile_->GetPrefs();
+  for (const base::Value& cert_b64 :
+       prefs->GetList(prefs::kCADistrustedCertificates)) {
+    std::optional<std::vector<uint8_t>> decoded_opt =
+        base::Base64Decode(cert_b64.GetString());
+
+    if (decoded_opt.has_value()) {
+      policies.full_distrusted_certs.push_back(std::move(*decoded_opt));
+    }
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  policies.is_include_system_trust_store_managed =
+      prefs->FindPreference(prefs::kCAPlatformIntegrationEnabled)->IsManaged();
+#endif
+  return policies;
+}
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
 bool ProfileNetworkContextService::ShouldSplitAuthCacheByNetworkIsolationKey()

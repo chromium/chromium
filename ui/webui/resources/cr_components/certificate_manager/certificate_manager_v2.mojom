@@ -41,10 +41,23 @@ enum CertificateSource {
   kProvisionedClientCert,
 };
 
+struct CertPolicyInfo {
+  // If true, user-added certs are imported from the system
+  bool include_system_trust_store;
+
+  // If true, an enterprise policy controls whether user-added certs are
+  // imported from the system.
+  bool is_include_system_trust_store_managed;
+};
+
 // Calls from TS -> C++  (Renderer -> Browser).
 interface CertificateManagerPageHandler {
   // Get the list of certificates from a given source.
   GetCertificates(CertificateSource source) => (array<SummaryCertInfo> certs);
+
+  // Get information about enterprise policies impacting certificate
+  // verification.
+  GetPolicyInformation() => (CertPolicyInfo policy_info);
 
   // Open the view certificate dialog for a specific certificate.
   ViewCertificate(CertificateSource source, string sha256_hash_hex);

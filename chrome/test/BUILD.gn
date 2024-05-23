@@ -6619,6 +6619,11 @@ test("unit_tests") {
     "../test/base/menu_model_test.cc",
     "../test/base/menu_model_test.h",
   ]
+
+  if (chrome_certificate_policies_supported) {
+    sources += [ "../browser/net/cert_verifier_policy_unittest.cc" ]
+  }
+
   if (build_with_tflite_lib) {
     sources += [
       "../browser/navigation_predictor/preloading_model_executor_unittest.cc",

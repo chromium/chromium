@@ -9,6 +9,7 @@
  */
 
 import './certificate_list_v2.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
@@ -19,13 +20,16 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CertificateListV2Element} from './certificate_list_v2.js';
 import {getTemplate} from './certificate_manager_v2.html.js';
+import type {CertPolicyInfo} from './certificate_manager_v2.mojom-webui.js';
 import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
+import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
 
 const CertificateManagerV2ElementBase = I18nMixin(PolymerElement);
 
@@ -37,6 +41,10 @@ export interface CertificateManagerV2Element {
     provisionedClientCerts: CertificateListV2Element,
     // </if>
     toast: CrToastElement,
+    importOsCerts: CrToggleElement,
+    importOsCertsManagedIcon: HTMLElement,
+    viewOsImportedCerts: HTMLElement,
+    manageOsImportedCerts: HTMLElement,
   };
 }
 
@@ -57,6 +65,16 @@ export class CertificateManagerV2Element extends
 
       toastMessage_: String,
 
+      importOsCertsEnabled_: {
+        type: Boolean,
+        computed: 'computeImportOsCertsEnabled_(certPolicy_)',
+      },
+
+      importOsCertsEnabledManaged_: {
+        type: Boolean,
+        computed: 'computeImportOsCertsManaged_(certPolicy_)',
+      },
+
       certificateSourceEnum_: {
         type: Object,
         value: CertificateSource,
@@ -71,11 +89,31 @@ export class CertificateManagerV2Element extends
     loadTimeData.getString('certificateManagerV2CRSCerts'),
   ];
   private toastMessage_: string;
+  private certPolicy_: CertPolicyInfo;
+  private importOsCertsEnabled_: boolean;
+  private importOsCertsEnabledManaged_: boolean;
+
+  override ready() {
+    super.ready();
+    const proxy = CertificatesV2BrowserProxy.getInstance();
+    proxy.handler.getPolicyInformation().then(
+        (results: {policyInfo: CertPolicyInfo}) => {
+          this.certPolicy_ = results.policyInfo;
+        });
+  }
 
   private onHashCopied_() {
     this.toastMessage_ =
         loadTimeData.getString('certificateManagerV2HashCopiedToast');
     this.$.toast.show();
+  }
+
+  private computeImportOsCertsEnabled_(): boolean {
+    return this.certPolicy_.includeSystemTrustStore;
+  }
+
+  private computeImportOsCertsManaged_(): boolean {
+    return this.certPolicy_.isIncludeSystemTrustStoreManaged;
   }
 }
 

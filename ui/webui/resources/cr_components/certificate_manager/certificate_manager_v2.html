@@ -6,7 +6,11 @@
   }
 
   .push-left {
-    margin-left: auto;
+    margin-inline-start: auto;
+  }
+
+  .enterprise-icon {
+    padding-inline-start: 5px;
   }
 </style>
 
@@ -43,11 +47,12 @@
     <!-- TODO(crbug.com/40928765): wire up all of the dynamic content
       in the local certificates section (
       * # of imported OS certs
-      * toggle for enabling/disabling import of OS certs
       * viewing/managing imported certs from OS
       * # of admin policy certs
       * viewing admin policy certs
       * Dynamically figuring out OS name
+      * Allow user modifications of trust settings here when allowed
+        by enterprise.
       -->
     <h3> Windows </h3>
     <div class="cr-row">
@@ -55,19 +60,27 @@
         <div>
           Use imported local certificates from your operating system
         </div>
-        <div class="cr-secondary-text">
+        <div class="cr-secondary-text" hidden="[[!importOsCertsEnabled_]]">
           56 leaf certs
         </div>
       </div>
-      <cr-toggle class="push-left"
+      <cr-toggle id="importOsCerts" class="push-left"
           aria-label="Toggle operating system certificate imports"
-          checked=true>
+          checked="[[importOsCertsEnabled_]]" disabled>
       </cr-toggle>
+
+      <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
+          class="enterprise-icon" hidden="[[!importOsCertsEnabledManaged_]]">
+      </cr-icon>
     </div>
 
-    <cr-link-row label="View imported certificates from Windows">
+    <cr-link-row id="viewOsImportedCerts"
+        label="View imported certificates from Windows"
+        hidden="[[!importOsCertsEnabled_]]">
     </cr-link-row>
-    <cr-link-row external label="Manage imported certificates from Windows">
+    <cr-link-row external id="manageOsImportedCerts"
+        label="Manage imported certificates from Windows"
+        hidden="[[!importOsCertsEnabled_]]">
     </cr-link-row>
 
     <h3> Custom </h3>
@@ -80,6 +93,7 @@
     </cr-link-row>
   </div>
 
+  <!-- Chrome Root Store section -->
   <div>
     <certificate-list-v2
         id="crsCerts"

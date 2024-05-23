@@ -56,6 +56,8 @@ class CertificateManagerPageHandler
   void ExportCertificates(
       certificate_manager_v2::mojom::CertificateSource source_id) override;
 
+  void GetPolicyInformation(GetPolicyInformationCallback callback) override;
+
  private:
   // Returns a reference to the CertSource object corresponding to `source`.
   // Will always return a valid object, or will fail with a CHECK if `source`

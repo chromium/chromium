@@ -12,6 +12,9 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/certificate_dialogs.h"
 #include "chrome/browser/ui/webui/certificate_viewer_webui.h"
 #include "chrome/common/net/x509_certificate_model.h"
@@ -359,4 +362,27 @@ CertificateManagerPageHandler::GetCertSource(
     }
   }
   return *source_ptr;
+}
+
+void CertificateManagerPageHandler::GetPolicyInformation(
+    GetPolicyInformationCallback callback) {
+  ProfileNetworkContextService* service =
+      ProfileNetworkContextServiceFactory::GetForContext(profile_.get());
+  ProfileNetworkContextService::CertificatePoliciesForView policies =
+      service->GetCertificatePolicyForView();
+
+  certificate_manager_v2::mojom::CertPolicyInfoPtr cert_policy_info =
+      certificate_manager_v2::mojom::CertPolicyInfo::New();
+#if !BUILDFLAG(IS_CHROMEOS)
+  cert_policy_info->include_system_trust_store =
+      policies.certificate_policies->include_system_trust_store;
+  cert_policy_info->is_include_system_trust_store_managed =
+      policies.is_include_system_trust_store_managed;
+#else
+  // TODO(crbug.com/40928765): figure out how this should be displayed for
+  // ChromeOS
+  cert_policy_info->include_system_trust_store = true;
+  cert_policy_info->system_import_policy_managed = false;
+#endif
+  std::move(callback).Run(std::move(cert_policy_info));
 }
