@@ -96,6 +96,8 @@ public abstract class CronetEngine {
      */
     // NOTE(kapishnikov): In order to avoid breaking the existing API clients, all future methods
     // added to this class and other API classes must have default implementation.
+
+    // LINT.IfChange(builder)
     public static class Builder {
         private static final String TAG = "CronetEngine.Builder";
 
@@ -248,8 +250,7 @@ public abstract class CronetEngine {
 
         /**
          * Setting to disable HTTP cache. Some data may still be temporarily stored in memory.
-         * Passed to
-         * {@link #enableHttpCache}.
+         * Passed to {@link #enableHttpCache}.
          */
         public static final int HTTP_CACHE_DISABLED = 0;
 
@@ -481,6 +482,8 @@ public abstract class CronetEngine {
         public CronetEngine build() {
             return buildExperimental();
         }
+
+        // LINT.ThenChange(//components/cronet/android/api/src/org/chromium/net/ExperimentalOptionsTranslatingCronetEngineBuilder.java)
 
         /**
          * Creates an implementation of {@link ICronetEngineBuilder} that can be used to delegate

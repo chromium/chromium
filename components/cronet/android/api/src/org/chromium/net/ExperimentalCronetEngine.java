@@ -88,6 +88,7 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
      * this class are not meant for general use, but instead only to access experimental features.
      * Experimental features may be deprecated in the future. Use at your own risk.
      */
+    // LINT.IfChange(builder)
     public static class Builder extends CronetEngine.Builder {
         /**
          * Constructs a {@link Builder} object that facilitates creating a {@link CronetEngine}. The
@@ -95,7 +96,7 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
          *
          * @param context Android {@link Context}, which is used by the Builder to retrieve the
          *     application context. A reference to only the application context will be kept, so as
-         * to avoid extending the lifetime of {@code context} unnecessarily.
+         *     to avoid extending the lifetime of {@code context} unnecessarily.
          */
         public Builder(Context context) {
             super(context);
@@ -238,6 +239,8 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
             return buildExperimental();
         }
     }
+
+    // LINT.ThenChange(//components/cronet/android/api/src/org/chromium/net/ExperimentalOptionsTranslatingCronetEngineBuilder.java)
 
     @Override
     public abstract ExperimentalBidirectionalStream.Builder newBidirectionalStreamBuilder(

@@ -22,6 +22,17 @@ import java.util.Set;
  * An implementation of ICronetEngineBuilder which handles translation of configuration options to
  * json-based experimental options, if necessary.
  *
+ * <p>Every instance of (Experimental)CronetEngine.Builder delegates to this builder which then
+ * delegates to the actual ICronetEngineBuilder subclass. So we have:
+ *
+ * <p><code>
+ * (Experimental)CronetEngine -> ExperimentalOptionsTranslatingCronetEngineBuilder -> subclass(ICronetEngineBuilder)
+ * </code>
+ *
+ * <p>When set*Options is called, we check if the ICronetEngineBuilder directly implements
+ * set*Options (this is often no). If not, then translate to JSONExperimentalOptions. On build, if
+ * both setExperimentalOptions and set*Options have been called, prefer the values from set*Options.
+ *
  * <p>{@hide internal class}
  */
 final class ExperimentalOptionsTranslatingCronetEngineBuilder extends ICronetEngineBuilder {
