@@ -1123,6 +1123,19 @@ chromium-metrics-reviews@google.com.
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Chrome OS File Browser: HTTP response code of select Microsoft GraphAPI
+    calls. These histograms are deprecated in favour of the
+    &quot;ResponseCodeSparse&quot; variant.
+  </summary>
+  <token key="GraphAPIMethod" variants="GraphAPIMethod"/>
+</histogram>
+
+<histogram
+    name="FileBrowser.OfficeFiles.ODFS.GraphAPI.ResponseCodeSparse.{GraphAPIMethod}"
+    enum="OfficeGraphAPIResult" expires_after="2025-05-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: HTTP response code of select Microsoft GraphAPI
     calls.
   </summary>
   <token key="GraphAPIMethod" variants="GraphAPIMethod"/>
