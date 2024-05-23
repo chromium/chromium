@@ -1736,6 +1736,13 @@ BASE_FEATURE(kPlzDedicatedWorker,
              "PlzDedicatedWorker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDedicatedWorkerAblationStudyEnabled,
+             "DedicatedWorkerAblationStudyEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kDedicatedWorkerStartDelayInMs = {
+    &kDedicatedWorkerAblationStudyEnabled, "DedicatedWorkerStartDelayInMs", 0};
+
 BASE_FEATURE(
     kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked,
     "PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked",

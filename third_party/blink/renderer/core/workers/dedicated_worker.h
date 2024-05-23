@@ -130,6 +130,7 @@ class CORE_EXPORT DedicatedWorker final
 
   // Starts the worker.
   void Start();
+  void StartInternal();
   void ContinueStart(
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>

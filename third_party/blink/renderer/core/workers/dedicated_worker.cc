@@ -195,9 +195,25 @@ void DedicatedWorker::postMessage(ScriptState* script_state,
       perfetto::Flow::Global(trace_id));  // SchedulePostMessage
 }
 
-// https://html.spec.whatwg.org/C/#worker-processing-model
 void DedicatedWorker::Start() {
   TRACE_EVENT("blink.worker", "DedicatedWorker::Start");
+  if (base::FeatureList::IsEnabled(
+          features::kDedicatedWorkerAblationStudyEnabled)) {
+    GetExecutionContext()
+        ->GetTaskRunner(TaskType::kInternalDefault)
+        ->PostDelayedTask(
+            FROM_HERE,
+            WTF::BindOnce(&DedicatedWorker::StartInternal,
+                          WrapPersistent(this)),
+            base::Milliseconds(features::kDedicatedWorkerStartDelayInMs.Get()));
+    return;
+  }
+  StartInternal();
+}
+
+// https://html.spec.whatwg.org/C/#worker-processing-model
+void DedicatedWorker::StartInternal() {
+  TRACE_EVENT("blink.worker", "DedicatedWorker::StartInternal");
   DCHECK(GetExecutionContext()->IsContextThread());
   start_time_ = base::TimeTicks::Now();
 
