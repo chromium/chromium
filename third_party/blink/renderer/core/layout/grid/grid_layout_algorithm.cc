@@ -1744,7 +1744,7 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
     } else {
       // If this grid has a standalone axis, invalidate its min/max sizes cache,
       // since they're only valid for the current step of the sizing algorithm.
-      Node().InvalidateMinMaxSizesCache();
+      Node().InvalidateSubgridMinMaxSizesCache();
 
       auto& track_collection = layout_data.SizingCollection(track_direction);
       CacheGridItemsProperties(track_collection, &grid_items);

@@ -203,6 +203,7 @@ blink_core_sources_layout = [
   "grid/grid_track_collection.h",
   "grid/layout_grid.cc",
   "grid/layout_grid.h",
+  "grid/subgrid_min_max_sizes_cache.h",
   "hit_test_cache.cc",
   "hit_test_cache.h",
   "hit_test_canvas_result.cc",
