@@ -259,7 +259,7 @@ crbug.com/402379 [ Mac12 ] storage/indexeddb/mozilla/indexes.html [ Slow ]
 crbug.com/402379 [ Release Win ] storage/indexeddb/mozilla/indexes.html [ Slow ]
 
 crbug.com/504703 inspector-protocol/debugger/debugger-step-into-dedicated-worker.js [ Slow ]
-
+crbug.com/330365759 inspector-protocol/heap-profiler/heap-objects-tracking.js [ Slow ]
 
 crbug.com/372424 [ Linux ] fast/dom/DOMImplementation/createDocument-with-used-doctype.html [ Slow ]
 crbug.com/372424 [ Mac11 Release ] fast/dom/DOMImplementation/createDocument-with-used-doctype.html [ Slow ]
