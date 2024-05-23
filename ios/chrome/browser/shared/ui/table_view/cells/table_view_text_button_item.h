@@ -51,6 +51,10 @@
 // NO.
 @property(nonatomic, assign) BOOL showsActivityIndicator;
 
+// Activity Indicator color. If nil, the activity indicator will be of a solid
+// white color.
+@property(nonatomic, strong) UIColor* activityIndicatorColor;
+
 @end
 
 // TableViewTextButtonCell contains a textLabel and a UIbutton

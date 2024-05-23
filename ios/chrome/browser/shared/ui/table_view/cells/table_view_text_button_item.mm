@@ -106,7 +106,15 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
   }
 
   buttonConfiguration.showsActivityIndicator = self.showsActivityIndicator;
-
+  if (self.showsActivityIndicator) {
+    __weak __typeof(self) weakSelf = self;
+    buttonConfiguration.activityIndicatorColorTransformer =
+        ^UIColor*(UIColor* color) {
+          return weakSelf.activityIndicatorColor
+                     ? weakSelf.activityIndicatorColor
+                     : [UIColor colorNamed:kSolidWhiteColor];
+        };
+  }
   cell.button.configuration = buttonConfiguration;
 
   [cell disableButtonIntrinsicWidth:self.disableButtonIntrinsicWidth];
