@@ -175,9 +175,7 @@ class Job : public base::RefCountedThreadSafe<Job> {
   }
 
   // Mark the job as having been cancelled.
-  void Cancel() {
-    was_cancelled_ = true;
-  }
+  virtual void Cancel() { was_cancelled_ = true; }
 
   // Returns true if Cancel() has been called.
   bool was_cancelled() const { return was_cancelled_; }
@@ -249,6 +247,15 @@ class CreateResolverJob : public Job {
  protected:
   ~CreateResolverJob() override = default;
 
+  void Cancel() override {
+    // Needed to prevent warnings danging warnings about `factory_`. The
+    // executor ensures that the thread has joined, but there may still be a
+    // pending RequestComplete() that still owns a reference to `this` after the
+    // factory and executor have been destroyed.
+    factory_ = nullptr;
+    Job::Cancel();
+  }
+
  private:
   // Runs the completion callback on the origin thread.
   void RequestComplete(int result_code) {
@@ -261,7 +268,7 @@ class CreateResolverJob : public Job {
   }
 
   const scoped_refptr<PacFileData> script_data_;
-  raw_ptr<ProxyResolverFactory, AcrossTasksDanglingUntriaged> factory_;
+  raw_ptr<ProxyResolverFactory> factory_;
   std::unique_ptr<ProxyResolver> resolver_;
 };
 
@@ -314,6 +321,15 @@ class MultiThreadedProxyResolver::GetProxyForURLJob : public Job {
 
     origin_runner->PostTask(
         FROM_HERE, base::BindOnce(&GetProxyForURLJob::QueryComplete, this, rv));
+  }
+
+  void Cancel() override {
+    // Needed to prevent warnings danging warnings about `results_`. The
+    // executor ensures that the thread has joined, but there may still be a
+    // pending QueryComplete() that still owns a reference to `this` after the
+    // factory and executor have been destroyed.
+    results_ = nullptr;
+    Job::Cancel();
   }
 
  protected:
