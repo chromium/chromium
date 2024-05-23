@@ -66,10 +66,10 @@ std::unique_ptr<InkBrush> PdfInkBrush::CreateInkBrush() {
   auto family = InkBrushFamily::Create(tip, paint, "");
   CHECK(family);
 
-  // TODO(crbug.com/335524382): Use the color and size fields in `PdfInkBrush`.
   return InkBrush::Create(std::move(family),
-                          /*color=*/SkColorSetRGB(0x18, 0x80, 0x38),
-                          /*size=*/1.0f, /*epsilon=*/0.1f);
+                          /*color=*/params_.color,
+                          /*size=*/params_.size,
+                          /*epsilon=*/0.1f);
 }
 
 }  // namespace chrome_pdf
