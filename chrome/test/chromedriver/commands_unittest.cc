@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/commands.h"
 
+#include <base/json/json_writer.h>
 #include <stddef.h>
 
 #include <memory>
@@ -43,6 +44,19 @@ using testing::Optional;
 using testing::Pointee;
 
 namespace {
+
+template <int Code>
+testing::AssertionResult StatusCodeIs(const Status& status) {
+  if (status.code() == Code) {
+    return testing::AssertionSuccess();
+  } else {
+    return testing::AssertionFailure() << status.message();
+  }
+}
+
+testing::AssertionResult StatusOk(const Status& status) {
+  return StatusCodeIs<kOk>(status);
+}
 
 void AssertGetStatusExtendedData(base::Value::Dict* dict) {
   ASSERT_TRUE(dict->FindByDottedPath("os.name"));
@@ -655,6 +669,132 @@ TEST(CommandsTest, TimeoutInFindElement) {
   ASSERT_EQ(kNoSuchElement,
             ExecuteFindElement(1, &session, &web_view, params, &result, nullptr)
                 .code());
+}
+
+namespace {
+
+class NavigatingWebView : public StubWebView {
+ public:
+  explicit NavigatingWebView(const std::string& id) : StubWebView(id) {}
+
+  void SetUpToRespondWithSingleElement() {
+    base::Value::Dict element;
+    element.Set("ELEMENT", "1");
+    mocked_result = base::Value(std::move(element));
+  }
+
+  void SetUpToRespondWithMultipleElements() {
+    base::Value::Dict element1;
+    element1.Set("ELEMENT", "1");
+    base::Value::Dict element2;
+    element2.Set("ELEMENT", "2");
+    base::Value::List list;
+    list.Append(std::move(element1));
+    list.Append(std::move(element2));
+    mocked_result = base::Value(std::move(list));
+  }
+
+  Status CallFunction(const std::string& frame,
+                      const std::string& function,
+                      const base::Value::List& args,
+                      std::unique_ptr<base::Value>* result) override {
+    if (!initial_error_codes.empty()) {
+      Status status{initial_error_codes.front()};
+      initial_error_codes.pop_front();
+      return status;
+    }
+
+    *result = std::make_unique<base::Value>(mocked_result.Clone());
+    return Status{kOk};
+  }
+
+  std::list<StatusCode> initial_error_codes;
+  base::Value mocked_result;
+
+};  // NavigatingWebView
+
+}  // namespace
+
+TEST(CommandsTest, FindElementWhileNavigating) {
+  NavigatingWebView web_view("some_frame");
+  web_view.initial_error_codes = {
+      kNoSuchExecutionContext,
+      kNavigationDetectedByRemoteEnd,
+  };
+  web_view.SetUpToRespondWithSingleElement();
+
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#some");
+  Session session("id");
+
+  session.implicit_wait = base::Seconds(1);
+  std::unique_ptr<base::Value> result;
+  EXPECT_TRUE(StatusOk(
+      ExecuteFindElement(0, &session, &web_view, params, &result, nullptr)));
+  EXPECT_EQ(0U, web_view.initial_error_codes.size());
+}
+
+TEST(CommandsTest, FindElementWhileNavigatingTooLong) {
+  NavigatingWebView web_view("some_frame");
+  web_view.initial_error_codes = {
+      kNavigationDetectedByRemoteEnd,
+      kNoSuchExecutionContext,
+  };
+  web_view.SetUpToRespondWithSingleElement();
+
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#some");
+  Session session("id");
+
+  session.implicit_wait = base::Seconds(0);
+  std::unique_ptr<base::Value> result;
+  EXPECT_TRUE(StatusCodeIs<kNoSuchElement>(
+      ExecuteFindElement(10, &session, &web_view, params, &result, nullptr)));
+  EXPECT_LT(web_view.initial_error_codes.size(), 2U);
+}
+
+TEST(CommandsTest, FindElementsWhileNavigating) {
+  NavigatingWebView web_view("some_frame");
+  web_view.initial_error_codes = {
+      kNoSuchExecutionContext,
+      kNavigationDetectedByRemoteEnd,
+  };
+  web_view.SetUpToRespondWithMultipleElements();
+
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#some");
+  Session session("id");
+
+  session.implicit_wait = base::Seconds(1);
+  std::unique_ptr<base::Value> result;
+  EXPECT_TRUE(StatusOk(
+      ExecuteFindElements(0, &session, &web_view, params, &result, nullptr)));
+  EXPECT_EQ(0U, web_view.initial_error_codes.size());
+}
+
+TEST(CommandsTest, FindElementsWhileNavigatingTooLong) {
+  NavigatingWebView web_view("some_frame");
+  web_view.initial_error_codes = {
+      kNavigationDetectedByRemoteEnd,
+      kNoSuchExecutionContext,
+  };
+  web_view.SetUpToRespondWithMultipleElements();
+
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#some");
+  Session session("id");
+
+  session.implicit_wait = base::Seconds(0);
+  std::unique_ptr<base::Value> result;
+  EXPECT_TRUE(StatusOk(
+      ExecuteFindElements(10, &session, &web_view, params, &result, nullptr)));
+  EXPECT_LT(web_view.initial_error_codes.size(), 2U);
+  EXPECT_TRUE(result->is_list());
+  EXPECT_EQ(0U, result->GetList().size());
 }
 
 namespace {
