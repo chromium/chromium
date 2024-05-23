@@ -292,7 +292,7 @@ public class AutocompleteResultUnitTest {
     public void autocompleteResult_nullAndEmptyListsAreEqual() {
         final List<AutocompleteMatch> list1 = new ArrayList<>();
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
-        AutocompleteResult res2 = AutocompleteResult.EMPTY_RESULT;
+        AutocompleteResult res2 = AutocompleteResult.fromCache(null, null);
         Assert.assertEquals(res1, res2);
         Assert.assertEquals(res1.hashCode(), res2.hashCode());
     }

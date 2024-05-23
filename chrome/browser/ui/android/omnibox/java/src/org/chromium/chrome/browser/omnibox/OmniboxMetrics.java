@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -18,6 +17,7 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Optional;
 
 /** This class collects a variety of different Omnibox related metrics. */
 public class OmniboxMetrics {
@@ -371,16 +371,18 @@ public class OmniboxMetrics {
      */
     public static void recordTouchDownPrefetchResult(
             @NonNull AutocompleteMatch navSuggestion,
-            @Nullable AutocompleteMatch prefetchSuggestion) {
-        @PrefetchResult int result = PrefetchResult.NO_PREFETCH;
-        if (prefetchSuggestion != null) {
-            result =
-                    navSuggestion.getNativeObjectRef() != 0
-                                    && navSuggestion.getNativeObjectRef()
-                                            == prefetchSuggestion.getNativeObjectRef()
-                            ? PrefetchResult.HIT
-                            : PrefetchResult.MISS;
-        }
+            @NonNull Optional<AutocompleteMatch> prefetchSuggestion) {
+        @PrefetchResult
+        int result =
+                prefetchSuggestion
+                        .map(
+                                match ->
+                                        navSuggestion.getNativeObjectRef() != 0
+                                                        && navSuggestion.getNativeObjectRef()
+                                                                == match.getNativeObjectRef()
+                                                ? PrefetchResult.HIT
+                                                : PrefetchResult.MISS)
+                        .orElse(PrefetchResult.NO_PREFETCH);
 
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT, result, PrefetchResult.COUNT);

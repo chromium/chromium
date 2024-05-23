@@ -49,10 +49,6 @@ public class AutocompleteResult {
         int GET_MATCHING_TAB = 7;
     }
 
-    /** An empty, initialized AutocompleteResult object. */
-    public static final @NonNull AutocompleteResult EMPTY_RESULT =
-            new AutocompleteResult(0, Collections.emptyList(), null);
-
     /** A special value indicating that action has no particular index associated. */
     public static final int NO_SUGGESTION_INDEX = -1;
 
