@@ -25,7 +25,7 @@ class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegat
         mNativeDeviceAuthenticator = nativeDeviceAuthenticator;
         mController =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_AUTHENTICATOR_ANDROIDX)
-                        ? new AndroidxDeviceAuthenticatorControllerImpl()
+                        ? new AndroidxDeviceAuthenticatorControllerImpl(mContext, this)
                         : new DeviceAuthenticatorControllerImpl(mContext, this);
     }
 

@@ -11,6 +11,8 @@
   <dist:module dist:onDemand="false">  # DIFF-ANCHOR: 2805007f
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 2805007f
+  <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+  <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
   <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
   <application>
     <activity  # DIFF-ANCHOR: 28dc9019
