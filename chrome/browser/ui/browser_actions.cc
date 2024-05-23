@@ -42,6 +42,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
@@ -51,10 +52,13 @@ actions::ActionItem::ActionItemBuilder ChromeMenuAction(
     int title_id,
     int tooltip_id,
     const gfx::VectorIcon& icon) {
+  auto clean_text = [](int str_id) {
+    return gfx::RemoveAccelerator(l10n_util::GetStringUTF16(str_id));
+  };
   return actions::ActionItem::Builder(callback)
       .SetActionId(action_id)
-      .SetText(l10n_util::GetStringUTF16(title_id))
-      .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
+      .SetText(clean_text(title_id))
+      .SetTooltipText(clean_text(tooltip_id))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
       .SetProperty(actions::kActionItemPinnableKey, true);
 }
