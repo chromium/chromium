@@ -6,11 +6,8 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <string>
 #include <tuple>
-#include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"

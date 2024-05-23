@@ -5,8 +5,8 @@
 #ifndef SQL_TRANSACTION_H_
 #define SQL_TRANSACTION_H_
 
-#include "base/check.h"
 #include "base/component_export.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"

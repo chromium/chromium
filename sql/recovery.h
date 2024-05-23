@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include <memory>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"

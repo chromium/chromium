@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 #include <string_view>
-#include <utility>
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"

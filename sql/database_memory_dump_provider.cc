@@ -7,7 +7,6 @@
 #include <inttypes.h>
 
 #include <cstdint>
-#include <ostream>  // Needed to compile NOTREACHED() with operator <<.
 #include <string>
 
 #include "base/check_op.h"

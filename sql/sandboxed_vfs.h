@@ -5,8 +5,6 @@
 #ifndef SQL_SANDBOXED_VFS_H_
 #define SQL_SANDBOXED_VFS_H_
 
-#include <stdint.h>
-
 #include <memory>
 #include <optional>
 

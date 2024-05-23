@@ -12,7 +12,7 @@
 // other SQLite libraries loaded by the system libraries. This only matters when
 // using the component build, where our SQLite's symbols are visible to the
 // dynamic library loader.
-#include "third_party/sqlite/src/amalgamation/rename_exports.h"
+#include "third_party/sqlite/src/amalgamation/rename_exports.h"  // IWYU pragma: export
 
 #if defined(SQLITE_OMIT_COMPILEOPTION_DIAGS)
 // When SQLITE_OMIT_COMPILEOPTION_DIAGS is defined, sqlite3.h emits macros
@@ -32,6 +32,6 @@
 #endif  // !defined(sqlite3_compileoption_used)
 #endif  // defined(SQLITE_OMIT_COMPILEOPTION_DIAGS)
 
-#include "third_party/sqlite/src/amalgamation/sqlite3.h"
+#include "third_party/sqlite/src/amalgamation/sqlite3.h"  // IWYU pragma: export
 
 #endif  // THIRD_PARTY_SQLITE_SQLITE3_H_

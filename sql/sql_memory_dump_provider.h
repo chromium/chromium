@@ -5,9 +5,15 @@
 #ifndef SQL_SQL_MEMORY_DUMP_PROVIDER_H_
 #define SQL_SQL_MEMORY_DUMP_PROVIDER_H_
 
+#include <cstdint>
+
 #include "base/component_export.h"
 #include "base/memory/singleton.h"
 #include "base/trace_event/memory_dump_provider.h"
+
+namespace base::trace_event {
+struct MemoryDumpArgs;
+}
 
 namespace sql {
 

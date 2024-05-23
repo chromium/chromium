@@ -5,6 +5,7 @@
 #ifndef SQL_SANDBOXED_VFS_FILE_H_
 #define SQL_SANDBOXED_VFS_FILE_H_
 
+#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
