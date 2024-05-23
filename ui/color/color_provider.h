@@ -65,8 +65,7 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   // bind to it.
   class ColorProviderInternal;
 
-  std::unique_ptr<ColorProviderInternal> internal_ =
-      std::make_unique<ColorProviderInternal>();
+  std::unique_ptr<ColorProviderInternal> internal_;
 };
 
 }  // namespace ui

@@ -118,7 +118,8 @@ class ColorProvider::ColorProviderInternal {
 ////////////////////////////////////////////////////////////////////////////////
 // ColorProvider:
 
-ColorProvider::ColorProvider() = default;
+ColorProvider::ColorProvider()
+    : internal_(std::make_unique<ColorProviderInternal>()) {}
 
 ColorProvider::ColorProvider(ColorProvider&&) = default;
 
