@@ -5,6 +5,7 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {playFromSelectionTimeout} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 export function emitEvent(
     app: ReadAnythingElement, name: string, options?: any): void {
@@ -38,6 +39,10 @@ export function stubAnimationFrame() {
     callback(0);
     return 0;
   };
+}
+
+export async function waitForPlayFromSelection(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, playFromSelectionTimeout));
 }
 
 // Returns the list of items in the given dropdown menu

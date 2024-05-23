@@ -187,6 +187,7 @@ class ReadAnythingAppController
                          ui::AXNodeID focus_node_id,
                          int focus_offset) const;
   void OnCollapseSelection() const;
+  void OnRestartReadAloud();
   bool IsGoogleDocs() const;
   bool IsWebUIToolbarEnabled() const;
   bool IsReadAloudEnabled() const;

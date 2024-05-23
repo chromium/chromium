@@ -7,7 +7,7 @@ import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-pa
 import {NEXT_GRANULARITY_EVENT, PREVIOUS_GRANULARITY_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {emitEvent, suppressInnocuousErrors} from './common.js';
+import {emitEvent, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
 
 suite('ReadAloudHighlight', () => {
   let app: ReadAnythingElement;
@@ -248,6 +248,70 @@ suite('ReadAloudHighlight', () => {
       assertEquals(previousHighlights.length, 2);
       assertEquals(previousHighlights[0]!.textContent, sentence1);
       assertEquals(previousHighlights[1]!.textContent, sentence2);
+    });
+  });
+
+  suite('on speaking from selection', () => {
+    let currentHighlight: HTMLElement|null;
+    let previousHighlights: NodeListOf<Element>;
+
+    async function selectAndPlay(
+        anchorId: number, anchorOffset: number, focusId: number,
+        focusOffset: number): Promise<void> {
+      const selectedTree = Object.assign(
+          {
+            selection: {
+              anchor_object_id: anchorId,
+              focus_object_id: focusId,
+              anchor_offset: anchorOffset,
+              focus_offset: focusOffset,
+              is_backward: false,
+            },
+          },
+          axTree);
+      chrome.readingMode.setContentForTesting(selectedTree, leafIds);
+      app.updateSelection();
+      app.playSpeech();
+      return waitForPlayFromSelection();
+    }
+
+    setup(async () => {
+      await selectAndPlay(3, 1, 3, 5);
+    });
+
+    test('shows correct highlights', () => {
+      currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      previousHighlights =
+          app.$.container.querySelectorAll('.previous-read-highlight');
+
+      assertEquals(currentHighlight!.textContent, sentence2);
+      assertEquals(previousHighlights!.length, 1);
+      assertEquals(previousHighlights![0]!.textContent, sentence1);
+    });
+
+    test('next granularity shows correct highlights', () => {
+      emitNextGranularity();
+
+      currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      previousHighlights =
+          app.$.container.querySelectorAll('.previous-read-highlight');
+      assertEquals(currentHighlight!.textContent, sentenceSegment1);
+      assertEquals(previousHighlights!.length, 2);
+      assertEquals(previousHighlights![0]!.textContent, sentence1);
+      assertEquals(previousHighlights![1]!.textContent, sentence2);
+    });
+
+    test('previous granularity shows correct highlights', () => {
+      emitPreviousGranularity();
+
+      currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      previousHighlights =
+          app.$.container.querySelectorAll('.previous-read-highlight');
+      assertEquals(currentHighlight!.textContent, sentence1);
+      assertEquals(previousHighlights!.length, 0);
     });
   });
 });

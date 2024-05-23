@@ -400,6 +400,8 @@ class ReadAnythingAppModel {
   // node isn't in the current segment.
   int GetCurrentTextEndIndex(const ui::AXNodeID& node_id);
 
+  void ResetReadAloudState();
+
   void IncrementMetric(const std::string& metric_name);
 
   // Log speech count events.
@@ -440,8 +442,6 @@ class ReadAnythingAppModel {
   // Uses the current AXNodePosition to return the next node that should be
   // spoken by Read Aloud.
   ui::AXNode* GetNodeFromCurrentPosition() const;
-
-  void ResetReadAloudState();
 
   bool IsTextForReadAnything(const ui::AXNodeID& ax_node_id) const;
 

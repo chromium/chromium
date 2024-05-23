@@ -545,6 +545,10 @@ void ReadAnythingAppController::RecordNumSelections() {
   model_.set_num_selections(0);
 }
 
+void ReadAnythingAppController::OnRestartReadAloud() {
+  model_.ResetReadAloudState();
+}
+
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   // Cancel any running draw timers.
   post_user_entry_draw_timer_.Stop();
@@ -900,6 +904,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
                  &ReadAnythingAppController::SendInstallVoicePackRequest)
+      .SetMethod("onRestartReadAloud",
+                 &ReadAnythingAppController::OnRestartReadAloud)
       .SetMethod("getNodeIdForCurrentSegmentIndex",
                  &ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex)
       .SetMethod("getNextWordHighlightLength",

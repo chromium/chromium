@@ -23,7 +23,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {minOverflowLengthToScroll, openMenu, validatedFontName} from './common.js';
+import {minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, validatedFontName} from './common.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
@@ -970,8 +970,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // scheduled.
     // TODO (b/339860819) improve debouncer logic so that the spinner disappears
     // immediately when speech starts playing, or when the paused button is hit.
-    this.debouncer_ =
-        Debouncer.debounce(this.debouncer_, timeOut.after(150), () => {
+    this.debouncer_ = Debouncer.debounce(
+        this.debouncer_, timeOut.after(spinnerDebounceTimeout), () => {
           if (paused) {
             this.hideSpinner = true;
           } else {

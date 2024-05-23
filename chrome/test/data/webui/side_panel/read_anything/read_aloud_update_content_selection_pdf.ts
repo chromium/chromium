@@ -8,7 +8,7 @@ import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-pa
 import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('ReadAloud_UpdateContentSelectionPDF', () => {
@@ -129,9 +129,11 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
   });
 
   suite('While Read Aloud playing', () => {
-    setup(() => {
+    setup(async () => {
       app.playSpeech();
+      await waitForPlayFromSelection();
     });
+
     test('inner html of container matches expected html', () => {
       assertFalse(app.speechPlayingState.paused);
       assertTrue(app.speechPlayingState.speechStarted);
@@ -147,11 +149,10 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
       assertEquals(innerHTML, expected);
     });
 
-    test('selection in reading model panel cleared', () => {
+    test('selection in reading mode panel cleared', () => {
       const selection = document.getSelection()!;
       assertEquals(selection.toString(), '');
     });
-
 
     test('container class correct', () => {
       assertEquals(
@@ -181,20 +182,9 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
       assertEquals(innerHTML, expected);
     });
 
-    test('selection in reading mode container correct', () => {
-      // Calling shadowRoot.getSelection directly is not supported in TS tests,
-      // so use a helper to get the selection from the app instead.
+    test('selection in reading mode panel cleared', () => {
       const selection = document.getSelection()!;
-      assertTrue(selection != null);
-
-      // TODO(b/327519645): Playing Read Aloud slightly adjusts what's
-      // selected. This happened before disabling selection when Read Aloud
-      // was playing, but adding tests for disabled selection makes this bug
-      // more apparent.
-      assertEquals(selection.anchorNode!.textContent, 'World');
-      assertEquals(selection.focusNode!.textContent, 'Friend!');
-      assertEquals(selection.anchorOffset, 0);
-      assertEquals(selection.focusOffset, 0);
+      assertEquals(selection.toString(), '');
     });
 
     test('container class correct', () => {

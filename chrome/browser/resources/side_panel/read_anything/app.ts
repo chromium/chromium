@@ -21,7 +21,7 @@ import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-web
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {minOverflowLengthToScroll, validatedFontName} from './common.js';
+import {minOverflowLengthToScroll, playFromSelectionTimeout, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, errorCodeToVoicePackStatusEnum, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
 
@@ -442,39 +442,28 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (!this.hasContent_ || !this.speechPlayingState.paused) {
         return;
       }
-      const selection = this.getSelection();
+      const selection: Selection = this.getSelection();
       assert(selection, 'no selection');
-      const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
-      if (!anchorNode || !focusNode) {
+      if (!selection.anchorNode || !selection.focusNode) {
         // The selection was collapsed by clicking inside the selection.
         chrome.readingMode.onCollapseSelection();
         return;
       }
-      let anchorNodeId = this.domNodeToAxNodeIdMap_.get(anchorNode);
-      let focusNodeId = this.domNodeToAxNodeIdMap_.get(focusNode);
-      let adjustedAnchorOffset = anchorOffset;
-      let adjustedFocusOffset = focusOffset;
-      // If the node was highlighted, then we need to find the parent node which
-      // we stored in the map, rather than the node itself
-      if (!anchorNodeId) {
-        anchorNodeId = this.getHighlightedAncestorId_(anchorNode);
-        adjustedAnchorOffset += this.getOffsetInAncestor(anchorNode);
-      }
-      if (!focusNodeId) {
-        focusNodeId = this.getHighlightedAncestorId_(focusNode);
-        adjustedFocusOffset += this.getOffsetInAncestor(focusNode);
-      }
+
+      const {anchorNodeId, anchorOffset, focusNodeId, focusOffset} =
+          this.getSelectedIds();
       if (!anchorNodeId || !focusNodeId) {
         return;
       }
 
       chrome.readingMode.onSelectionChange(
-          anchorNodeId, adjustedAnchorOffset, focusNodeId, adjustedFocusOffset);
+          anchorNodeId, anchorOffset, focusNodeId, focusOffset);
       // If there's been a selection, clear the current
       // Read Aloud highlight.
-      const element = document.querySelector('.' + currentReadHighlightClass);
-      if (element && anchorNodeId && focusNodeId) {
-        element.classList.remove(currentReadHighlightClass);
+      const elements =
+          document.querySelectorAll('.' + currentReadHighlightClass);
+      if (elements.length > 0 && anchorNodeId && focusNodeId) {
+        elements.forEach(el => el.classList.remove(currentReadHighlightClass));
       }
 
       // Clear the previously read highlight if there's been a selection.
@@ -1320,22 +1309,37 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   playSpeech() {
     const container = this.$.container;
+    const {anchorNode, anchorOffset, focusNode, focusOffset} =
+        this.getSelection();
+    const hasSelection =
+        anchorNode !== focusNode || anchorOffset !== focusOffset;
     if (this.speechPlayingState.speechStarted &&
         this.speechPlayingState.paused) {
       const pausedFromButton = this.speechPlayingState.pauseSource ===
           PauseActionSource.BUTTON_CLICK;
 
-      // If word boundaries aren't supported for the given voice, we should
-      // still continue to use synth.resume, as this is preferable to
-      // restarting the current message.
-      if (pausedFromButton &&
-          this.wordBoundaryState.mode !== WordBoundaryMode.BOUNDARY_DETECTED) {
-        this.synth.resume();
-      } else {
+      let playedFromSelection = false;
+      if (hasSelection) {
         this.synth.cancel();
-        if (!this.highlightAndPlayInterruptedMessage()) {
-          // Ensure we're updating Read Aloud state if there's no text to speak.
-          this.onSpeechFinished();
+        chrome.readingMode.onRestartReadAloud();
+        playedFromSelection = this.playFromSelection();
+      }
+
+      if (!playedFromSelection) {
+        if (pausedFromButton &&
+            this.wordBoundaryState.mode !==
+                WordBoundaryMode.BOUNDARY_DETECTED) {
+          // If word boundaries aren't supported for the given voice, we should
+          // still continue to use synth.resume, as this is preferable to
+          // restarting the current message.
+          this.synth.resume();
+        } else {
+          this.synth.cancel();
+          if (!this.highlightAndPlayInterruptedMessage()) {
+            // Ensure we're updating Read Aloud state if there's no text to
+            // speak.
+            this.onSpeechFinished();
+          }
         }
       }
 
@@ -1351,14 +1355,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.updateLinks();
         // Now that links are toggled, ensure that the new nodes are also
         // highlighted.
-        this.highlightNodes(chrome.readingMode.getCurrentText());
+        if (!playedFromSelection) {
+          this.highlightNodes(chrome.readingMode.getCurrentText());
+        }
       }
 
       // If the current read highlight has been cleared from a call to
       // updateContent, such as for links being toggled on or off via a Read
       // Aloud play / pause or via a preference change, rehighlight the nodes
       // after a pause.
-      if (!container.querySelector('.' + currentReadHighlightClass)) {
+      if (!playedFromSelection &&
+          !container.querySelector('.' + currentReadHighlightClass)) {
         this.highlightNodes(chrome.readingMode.getCurrentText());
       }
 
@@ -1375,9 +1382,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.updateLinks();
       }
 
-      // TODO(crbug.com/40927698): There should be a way to use AXPosition so
-      // that this step can be skipped.
-      if (this.firstTextNodeSetForReadAloud) {
+      const playedFromSelection = hasSelection && this.playFromSelection();
+      if (!playedFromSelection && this.firstTextNodeSetForReadAloud) {
+        // TODO(crbug.com/40927698): There should be a way to use AXPosition so
+        // that this step can be skipped.
         chrome.readingMode.initAxPositionWithNode(
             this.firstTextNodeSetForReadAloud);
         if (!this.highlightAndPlayMessage()) {
@@ -1385,6 +1393,101 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           this.onSpeechFinished();
         }
       }
+    }
+  }
+
+  private getSelectedIds(): {
+    anchorNodeId: number|undefined,
+    anchorOffset: number,
+    focusNodeId: number|undefined,
+    focusOffset: number,
+  } {
+    const {anchorNode, anchorOffset, focusNode, focusOffset} =
+        this.getSelection();
+    let anchorNodeId = this.domNodeToAxNodeIdMap_.get(anchorNode);
+    let focusNodeId = this.domNodeToAxNodeIdMap_.get(focusNode);
+    let adjustedAnchorOffset = anchorOffset;
+    let adjustedFocusOffset = focusOffset;
+    if (!anchorNodeId) {
+      anchorNodeId = this.getHighlightedAncestorId_(anchorNode);
+      adjustedAnchorOffset += this.getOffsetInAncestor(anchorNode);
+    }
+    if (!focusNodeId) {
+      focusNodeId = this.getHighlightedAncestorId_(focusNode);
+      adjustedFocusOffset += this.getOffsetInAncestor(focusNode);
+    }
+    return {
+      anchorNodeId: anchorNodeId,
+      anchorOffset: adjustedAnchorOffset,
+      focusNodeId: focusNodeId,
+      focusOffset: adjustedFocusOffset,
+    };
+  }
+
+  playFromSelection(): boolean {
+    const selection = this.getSelection();
+    if (!this.firstTextNodeSetForReadAloud || !selection) {
+      return false;
+    }
+
+    const {anchorNodeId, anchorOffset, focusNodeId, focusOffset} =
+        this.getSelectedIds();
+    // If only one of the ids is present, use that one.
+    let startingNodeId: number|undefined =
+        anchorNodeId ? anchorNodeId : focusNodeId;
+    let startingOffset = anchorNodeId ? anchorOffset : focusOffset;
+    // If both are present, start with the node that is sooner in the page.
+    if (anchorNodeId && focusNodeId) {
+      const pos =
+          selection.anchorNode.compareDocumentPosition(selection.focusNode);
+      const focusIsFirst = pos === Node.DOCUMENT_POSITION_PRECEDING;
+      startingNodeId = focusIsFirst ? focusNodeId : anchorNodeId;
+      startingOffset = focusIsFirst ? focusOffset : anchorOffset;
+    }
+
+    if (!startingNodeId) {
+      return false;
+    }
+
+    // Clear the selection so we don't keep trying to play from the same
+    // selection every time they press play.
+    selection.removeAllRanges();
+    // Iterate through the page from the beginning until we get to the
+    // selection. This is so clicking previous works before the selection and
+    // so the previous highlights are properly set.
+    chrome.readingMode.initAxPositionWithNode(
+        this.firstTextNodeSetForReadAloud);
+
+    // Iterate through the nodes asynchronously so that we can show the spinner
+    // in the toolbar while we move up to the selection.
+    setTimeout(() => {
+      this.movePlaybackToNode_(startingNodeId, startingOffset);
+      // Set everything to previous and then play the next granularity, which
+      // includes the selection.
+      this.resetPreviousHighlight();
+      if (!this.highlightAndPlayMessage()) {
+        this.onSpeechFinished();
+      }
+    }, playFromSelectionTimeout);
+
+    return true;
+  }
+
+  private movePlaybackToNode_(nodeId: number, offset: number): void {
+    let currentTextIds = chrome.readingMode.getCurrentText();
+    let hasCurrentText = currentTextIds.length > 0;
+    // Since a node could spread across multiple granularities, we use the
+    // offset to determine if the selected text is in this granularity or if
+    // we have to move to the next one.
+    let startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
+        chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
+    while (hasCurrentText && !startOfSelectionIsInCurrentText) {
+      this.highlightNodes(currentTextIds, /*scrollIntoView=*/ false);
+      chrome.readingMode.movePositionToNextGranularity();
+      currentTextIds = chrome.readingMode.getCurrentText();
+      hasCurrentText = currentTextIds.length > 0;
+      startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
+          chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
     }
   }
 
@@ -1703,7 +1806,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.highlightCurrentText_(startIndex, endIndex, element as HTMLElement);
   }
 
-  highlightNodes(nextTextIds: number[]) {
+  highlightNodes(nextTextIds: number[], scrollIntoView: boolean = true) {
     if (nextTextIds.length === 0) {
       return;
     }
@@ -1720,7 +1823,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // If the start or end index is invalid, don't use this node.
         continue;
       }
-      this.highlightCurrentText_(start, end, element as HTMLElement);
+      this.highlightCurrentText_(
+          start, end, element as HTMLElement, scrollIntoView);
     }
   }
 
@@ -1745,8 +1849,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   //   suffix text
   // </span>
   private highlightCurrentText_(
-      highlightStart: number, highlightEnd: number,
-      currentNode: HTMLElement): void {
+      highlightStart: number, highlightEnd: number, currentNode: HTMLElement,
+      scrollIntoView: boolean = true): void {
     const parentOfHighlight = document.createElement('span');
     parentOfHighlight.classList.add(parentOfHighlightClass);
 
@@ -1787,7 +1891,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.replaceElement(currentNode, parentOfHighlight);
 
     // Automatically scroll the text so the highlight stays roughly centered.
-    readingHighlight.scrollIntoViewIfNeeded();
+    if (scrollIntoView) {
+      readingHighlight.scrollIntoViewIfNeeded();
+    }
   }
 
   private onSpeechFinished() {

@@ -8,6 +8,9 @@ import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_
 // Determined by experimentation - can be adjusted to fine tune for different
 // platforms.
 export const minOverflowLengthToScroll = 75;
+export const spinnerDebounceTimeout = 150;
+export const playFromSelectionTimeout = spinnerDebounceTimeout + 25;
+
 export const defaultFontName: string = 'sans-serif';
 
 // Defines the valid font names that can be passed to front-end and maps
