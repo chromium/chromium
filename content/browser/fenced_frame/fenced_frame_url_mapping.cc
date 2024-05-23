@@ -149,6 +149,8 @@ std::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
 
   config.fenced_frame_reporter_ = std::move(fenced_frame_reporter);
   config.mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+  // Give this frame the more restrictive option.
+  config.allows_information_inflow_ = false;
   config.deprecated_should_freeze_initial_size_.emplace(
       true, VisibilityToEmbedder::kTransparent, VisibilityToContent::kOpaque);
   // We don't know at this point if the test being run needs the FLEDGE or
@@ -286,6 +288,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
 
   config.fenced_frame_reporter_ = std::move(fenced_frame_reporter);
   config.mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+  config.allows_information_inflow_ = false;
 
   return config.RedactFor(FencedFrameEntity::kEmbedder);
 }
@@ -369,6 +372,7 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     config->effective_enabled_permissions_ = {
         std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
         std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures)};
+    config->allows_information_inflow_ = true;
 
     urn_uuid_to_url_map_.emplace(urn_uuid, *config);
   }

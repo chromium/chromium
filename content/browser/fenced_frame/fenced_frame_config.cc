@@ -207,7 +207,8 @@ FencedFrameProperties::FencedFrameProperties(const GURL& mapped_url)
       partition_nonce_(std::in_place,
                        base::UnguessableToken::Create(),
                        VisibilityToEmbedder::kOpaque,
-                       VisibilityToContent::kOpaque) {}
+                       VisibilityToContent::kOpaque),
+      allows_information_inflow_(true) {}
 
 FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
     : mapped_url_(config.mapped_url_),
@@ -226,6 +227,7 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
                        VisibilityToEmbedder::kOpaque,
                        VisibilityToContent::kOpaque),
       mode_(config.mode_),
+      allows_information_inflow_(config.allows_information_inflow_),
       is_ad_component_(config.is_ad_component_),
       effective_enabled_permissions_(config.effective_enabled_permissions_),
       parent_permissions_info_(config.parent_permissions_info_) {
