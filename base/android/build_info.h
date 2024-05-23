@@ -168,8 +168,6 @@ class BASE_EXPORT BuildInfo {
   // Available only on android S+. For S-, this method returns empty string.
   const char* soc_manufacturer() const { return soc_manufacturer_; }
 
-  bool is_debug_app() const { return is_debug_app_; }
-
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -213,7 +211,6 @@ class BASE_EXPORT BuildInfo {
   const int32_t vulkan_deqp_level_;
   const bool is_foldable_;
   const char* const soc_manufacturer_;
-  const bool is_debug_app_;
 };
 
 }  // namespace base::android

@@ -32,8 +32,6 @@ const char kTetheringSocketName[] = "webview_devtools_tethering_%d_%d";
 
 const int kBackLog = 10;
 
-bool g_is_debugging_started_ = false;
-
 // Factory for UnixDomainServerSocket.
 class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
  public:
@@ -129,33 +127,55 @@ std::unique_ptr<content::DevToolsSocketFactory> CreateSocketFactory() {
 
 namespace android_webview {
 
-void StartAwDevToolsServer() {
-  if (g_is_debugging_started_) {
+AwDevToolsServer::AwDevToolsServer() : is_started_(false) {}
+
+AwDevToolsServer::~AwDevToolsServer() {
+  Stop();
+}
+
+void AwDevToolsServer::Start() {
+  if (is_started_)
     return;
-  }
-  g_is_debugging_started_ = true;
+  is_started_ = true;
 
   DevToolsAgentHost::StartRemoteDebuggingServer(
       CreateSocketFactory(), base::FilePath(), base::FilePath());
 }
 
-void StopAwDevToolsServer() {
+void AwDevToolsServer::Stop() {
   DevToolsAgentHost::StopRemoteDebuggingServer();
-  g_is_debugging_started_ = false;
+  is_started_ = false;
 }
 
-bool IsAwDevToolsServerStarted() {
-  return g_is_debugging_started_;
+bool AwDevToolsServer::IsStarted() const {
+  return is_started_;
+}
+
+static jlong JNI_AwDevToolsServer_InitRemoteDebugging(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  AwDevToolsServer* server = new AwDevToolsServer();
+  return reinterpret_cast<intptr_t>(server);
+}
+
+static void JNI_AwDevToolsServer_DestroyRemoteDebugging(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jlong server) {
+  delete reinterpret_cast<AwDevToolsServer*>(server);
 }
 
 static void JNI_AwDevToolsServer_SetRemoteDebuggingEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
+    jlong server,
     jboolean enabled) {
+  AwDevToolsServer* devtools_server =
+      reinterpret_cast<AwDevToolsServer*>(server);
   if (enabled) {
-    StartAwDevToolsServer();
+    devtools_server->Start();
   } else {
-    StopAwDevToolsServer();
+    devtools_server->Stop();
   }
 }
 

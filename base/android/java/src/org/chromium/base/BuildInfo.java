@@ -148,7 +148,6 @@ public class BuildInfo {
             String.valueOf(vulkanDeqpLevel),
             isFoldable ? "1" : "0",
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? Build.SOC_MANUFACTURER : "",
-            isDebugApp() ? "1" : "0",
         };
     }
 

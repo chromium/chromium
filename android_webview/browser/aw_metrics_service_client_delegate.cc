@@ -5,7 +5,6 @@
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 
 #include "android_webview/browser/aw_browser_process.h"
-#include "android_webview/browser/debugging_metrics_provider.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 #include "android_webview/browser/metrics/android_metrics_provider.h"
 #include "android_webview/browser/metrics/aw_component_metrics_provider_delegate.h"
@@ -36,8 +35,6 @@ void AwMetricsServiceClientDelegate::RegisterAdditionalMetricsProviders(
       AwBrowserProcess::GetInstance()->visibility_metrics_logger()));
   service->RegisterMetricsProvider(
       std::make_unique<RendererProcessMetricsProvider>());
-  service->RegisterMetricsProvider(
-      std::make_unique<DebuggingMetricsProvider>());
   service->RegisterMetricsProvider(
       std::make_unique<metrics::ComponentMetricsProvider>(
           std::make_unique<AwComponentMetricsProviderDelegate>(
