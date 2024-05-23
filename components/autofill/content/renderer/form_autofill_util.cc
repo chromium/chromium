@@ -2338,8 +2338,7 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFieldsAction(
 
 void ClearPreviewedElements(
     base::span<std::pair<WebFormControlElement, WebAutofillState>>
-        previewed_elements,
-    const WebFormControlElement& initiating_element) {
+        previewed_elements) {
   for (auto& [control_element, prior_autofill_state] : previewed_elements) {
     // We do not add null elements to `previewed_elements_` in AutofillAgent.
     DCHECK(control_element);
@@ -2351,7 +2350,7 @@ void ClearPreviewedElements(
     // Clearing the suggested value in the focused node can cause the selection
     // to be lost. We force-set selection range in order to restore the text
     // cursor.
-    if (initiating_element == control_element) {
+    if (control_element.Focused()) {
       auto length =
           base::checked_cast<unsigned>(control_element.Value().length());
       control_element.SetSelectionRange(length, length);

@@ -355,8 +355,7 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFieldsAction(
 // preview.
 void ClearPreviewedElements(
     base::span<std::pair<blink::WebFormControlElement, blink::WebAutofillState>>
-        previewed_elements,
-    const blink::WebFormControlElement& initiating_element);
+        previewed_elements);
 
 // Indicates if |node| is owned by |frame| in the sense of
 // https://dom.spec.whatwg.org/#concept-node-document. Note that being owned by

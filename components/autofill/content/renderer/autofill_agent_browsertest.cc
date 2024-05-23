@@ -638,36 +638,6 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestionsForContenteditable) {
       AutofillSuggestionTriggerSource::kComposeDialogLostFocus);
 }
 
-TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
-  LoadHTML(R"(
-    <form id="form_id">
-        <input id="text_id_1">
-        <select id="select_id_1">
-          <option value="undo_select_option_1">Foo</option>
-          <option value="autofill_select_option_1">Bar</option>
-        </select>
-        <selectlist id="selectlist_id_1">
-          <option value="undo_selectlist_option_1">Foo</option>
-          <option value="autofill_selectlist_option_1">Bar</option>
-        </selectlist>
-      </form>
-  )");
-
-  blink::WebVector<blink::WebFormElement> forms =
-      GetMainFrame()->GetDocument().GetTopLevelForms();
-  EXPECT_EQ(1U, forms.size());
-  FormData form =
-      *form_util::ExtractFormData(forms[0].GetDocument(), forms[0],
-                                  *base::MakeRefCounted<FieldDataManager>(),
-                                  {form_util::ExtractOption::kValue});
-
-  ASSERT_TRUE(autofill_agent().focused_element().IsNull());
-  autofill_agent().ApplyFieldsAction(mojom::FormActionType::kUndo,
-                                     mojom::ActionPersistence::kFill,
-                                     GetFieldsForFilling({form}));
-  EXPECT_FALSE(autofill_agent().focused_element().IsNull());
-}
-
 // Tests that AutofillAgent::ApplyFormAction(kFill, kPreview) and
 // AutofillAgent::ClearPreviewedForm correctly set/reset the autofill state of a
 // field.

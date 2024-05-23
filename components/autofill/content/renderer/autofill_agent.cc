@@ -824,11 +824,15 @@ void AutofillAgent::ApplyFieldsAction(
   // In these cases, we set `last_queried_element_` to some form field as if
   // Autofill had been triggered from that field. This is necessary because
   // currently AutofillAgent relies on `last_queried_element_` in many places.
-  if (!last_queried_element || !last_queried_element.Focused() ||
+  const bool last_queried_element_needs_update =
+      !last_queried_element || !last_queried_element.Focused() ||
       !base::Contains(fields,
                       form_util::GetFormRendererId(
                           form_util::GetOwningForm(last_queried_element)),
-                      &FormFieldData::FillData::host_form_id)) {
+                      &FormFieldData::FillData::host_form_id);
+  if (last_queried_element_needs_update &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillDontUpdateLastQueriedElementOnFill)) {
     for (const FormFieldData::FillData& field : fields) {
       last_queried_element =
           form_util::GetFormControlByRendererId(field.renderer_id);
@@ -838,7 +842,9 @@ void AutofillAgent::ApplyFieldsAction(
       }
     }
   }
-  if (!last_queried_element) {
+  if (!last_queried_element &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillDontUpdateLastQueriedElementOnFill)) {
     return;
   }
   if (!unsafe_render_frame()) {
@@ -932,7 +938,9 @@ void AutofillAgent::ClearPreviewedForm() {
   // TODO(crbug.com/40564702): It is very rare, but it looks like the |element_|
   // can be null if a provisional load was committed immediately prior to
   // clearing the previewed form.
-  if (!last_queried_element) {
+  if (!last_queried_element &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillDontUpdateLastQueriedElementOnFill)) {
     return;
   }
   // `password_generation_agent_` can be null in WebView.
@@ -953,7 +961,7 @@ void AutofillAgent::ClearPreviewedForm() {
       previewed_elements.emplace_back(field, prior_autofill_state);
     }
   }
-  form_util::ClearPreviewedElements(previewed_elements, last_queried_element);
+  form_util::ClearPreviewedElements(previewed_elements);
   previewed_elements_ = {};
 }
 

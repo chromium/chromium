@@ -337,6 +337,12 @@ BASE_FEATURE(kAutofillNewFocusEvents,
              "AutofillNewFocusEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Killswitch for not running logic in `AutofillAgent::ApplyFieldsAction` that
+// is responsible for updating `AutofillAgent::last_queried_element_`.
+BASE_FEATURE(kAutofillDontUpdateLastQueriedElementOnFill,
+             "AutofillDontUpdateLastQueriedElementOnFill",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Implements a model that suppresses suggestions after N times the user ignores
 // the popup (i.e. doesn't select a suggestion from the popup).
 // N depends on the parametrization of the feature.
