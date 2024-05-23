@@ -75,6 +75,7 @@ LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
     std::string_view policy_value) {
   // Users can set this switch in chrome://flags to disable the effect of the
   // lacros-availability policy. This should only be allowed for Googlers.
+  // Note: Flag actively used by CfM to bypass LaCrOS Availability Policy.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(ash::switches::kLacrosAvailabilityIgnore) &&
       IsGoogleInternal(user)) {
