@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
 
+#include "base/test/test_future.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
@@ -92,11 +93,11 @@ TEST_F(LoginStateAshTest, GetSessionState) {
     mojom::GetSessionStateResultPtr expected_result_ptr =
         mojom::GetSessionStateResult::NewSessionState(test.expected);
 
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> future;
     login_state_remote_->GetSessionState(
-        base::BindOnce(&EvaluateGetSessionStateResult, run_loop.QuitClosure(),
+        base::BindOnce(&EvaluateGetSessionStateResult, future.GetCallback(),
                        std::move(expected_result_ptr)));
-    run_loop.Run();
+    EXPECT_TRUE(future.Wait());
   }
 }
 

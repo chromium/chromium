@@ -7,16 +7,19 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/crosapi/mojom/document_scan.mojom-forward.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -73,6 +76,83 @@ class DocumentScanAshTest : public testing::Test {
 
   DocumentScanAsh& document_scan_ash() { return document_scan_ash_; }
 
+  std::vector<std::string> GetScannerNames() {
+    base::test::TestFuture<const std::vector<std::string>&> future;
+    document_scan_ash().GetScannerNames(future.GetCallback());
+    return future.Take();
+  }
+
+  std::tuple<mojom::ScanFailureMode, const std::optional<std::string>>
+  ScanFirstPage(const std::string& scanner_name) {
+    base::test::TestFuture<mojom::ScanFailureMode,
+                           const std::optional<std::string>&>
+        future;
+    document_scan_ash().ScanFirstPage(scanner_name, future.GetCallback());
+
+    return future.Take();
+  }
+
+  mojom::GetScannerListResponsePtr GetScannerList(
+      const std::string& client_id,
+      mojom::ScannerEnumFilterPtr filter) {
+    base::test::TestFuture<mojom::GetScannerListResponsePtr> future;
+    document_scan_ash().GetScannerList(client_id, std::move(filter),
+                                       future.GetCallback());
+    return future.Take();
+  }
+
+  mojom::OpenScannerResponsePtr OpenScanner(const std::string& client_id,
+                                            const std::string& scanner_id) {
+    base::test::TestFuture<mojom::OpenScannerResponsePtr> future;
+    document_scan_ash().OpenScanner(client_id, scanner_id,
+                                    future.GetCallback());
+    return future.Take();
+  }
+
+  mojom::CloseScannerResponsePtr CloseScanner(
+      const std::string& scanner_handle) {
+    base::test::TestFuture<mojom::CloseScannerResponsePtr> future;
+    document_scan_ash().CloseScanner(scanner_handle, future.GetCallback());
+    return future.Take();
+  }
+
+  mojom::StartPreparedScanResponsePtr StartPreparedScan(
+      const std::string& scanner_handle,
+      mojom::StartScanOptionsPtr options) {
+    base::test::TestFuture<mojom::StartPreparedScanResponsePtr> future;
+    document_scan_ash().StartPreparedScan("scanner-handle", std::move(options),
+                                          future.GetCallback());
+    return future.Take();
+  }
+
+  mojom::ReadScanDataResponsePtr ReadScanData(const std::string& job_handle) {
+    base::test::TestFuture<mojom::ReadScanDataResponsePtr> future;
+    document_scan_ash().ReadScanData(job_handle, future.GetCallback());
+    return future.Take();
+  }
+
+  mojom::SetOptionsResponsePtr SetOptions(
+      const std::string& scanner_handle,
+      std::vector<mojom::OptionSettingPtr> options) {
+    base::test::TestFuture<mojom::SetOptionsResponsePtr> future;
+    document_scan_ash().SetOptions(scanner_handle, std::move(options),
+                                   future.GetCallback());
+    return future.Take();
+  }
+
+  mojom::GetOptionGroupsResponsePtr GetOptionGroups(
+      const std::string& scanner_handle) {
+    base::test::TestFuture<mojom::GetOptionGroupsResponsePtr> future;
+    document_scan_ash().GetOptionGroups(scanner_handle, future.GetCallback());
+    return future.Take();
+  }
+
+  mojom::CancelScanResponsePtr CancelScan(const std::string& job_handle) {
+    base::test::TestFuture<mojom::CancelScanResponsePtr> future;
+    document_scan_ash().CancelScan(job_handle, future.GetCallback());
+    return future.Take();
+  }
+
  private:
   // Must outlive `profile_`.
   content::BrowserTaskEnvironment task_environment_;
@@ -89,85 +169,53 @@ class DocumentScanAshTest : public testing::Test {
 };
 
 TEST_F(DocumentScanAshTest, ScanFirstPage_NoScanners) {
-  base::RunLoop run_loop;
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({});
-  document_scan_ash().GetScannerNames(base::BindLambdaForTesting(
-      [&](const std::vector<std::string>& scanner_names) {
-        EXPECT_TRUE(scanner_names.empty());
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  const std::vector<std::string> scanner_names = GetScannerNames();
+
+  EXPECT_TRUE(scanner_names.empty());
 }
 
 TEST_F(DocumentScanAshTest, ScanFirstPage_SingleScanner) {
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
-  base::RunLoop run_loop;
-  document_scan_ash().GetScannerNames(base::BindLambdaForTesting(
-      [&](const std::vector<std::string>& scanner_names) {
-        EXPECT_THAT(scanner_names, ElementsAre(kTestScannerName));
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  const std::vector<std::string> scanner_names = GetScannerNames();
+
+  EXPECT_THAT(scanner_names, ElementsAre(kTestScannerName));
 }
 
 TEST_F(DocumentScanAshTest, ScanFirstPage_MultipleScanner) {
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse(
       {kTestScannerName, kVirtualUSBPrinterName});
-  base::RunLoop run_loop;
-  document_scan_ash().GetScannerNames(base::BindLambdaForTesting(
-      [&](const std::vector<std::string>& scanner_names) {
-        EXPECT_THAT(scanner_names,
-                    ElementsAre(kTestScannerName, kVirtualUSBPrinterName));
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  const std::vector<std::string> scanner_names = GetScannerNames();
+
+  EXPECT_THAT(scanner_names,
+              ElementsAre(kTestScannerName, kVirtualUSBPrinterName));
 }
 
 TEST_F(DocumentScanAshTest, ScanFirstPage_InvalidScannerName) {
-  base::RunLoop run_loop;
-  document_scan_ash().ScanFirstPage(
-      "bad_scanner", base::BindLambdaForTesting(
-                         [&](mojom::ScanFailureMode failure_mode,
-                             const std::optional<std::string>& scan_data) {
-                           EXPECT_EQ(failure_mode,
-                                     mojom::ScanFailureMode::kDeviceBusy);
-                           EXPECT_FALSE(scan_data.has_value());
-                           run_loop.Quit();
-                         }));
-  run_loop.Run();
+  const auto [failure_mode, scan_data] = ScanFirstPage("bad_scanner");
+
+  EXPECT_EQ(failure_mode, mojom::ScanFailureMode::kDeviceBusy);
+  EXPECT_FALSE(scan_data.has_value());
 }
 
 TEST_F(DocumentScanAshTest, ScanFirstPage_ScannerNoData) {
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
-  base::RunLoop run_loop;
-  document_scan_ash().ScanFirstPage(
-      kTestScannerName, base::BindLambdaForTesting(
-                            [&](mojom::ScanFailureMode failure_mode,
-                                const std::optional<std::string>& scan_data) {
-                              EXPECT_EQ(failure_mode,
-                                        mojom::ScanFailureMode::kDeviceBusy);
-                              EXPECT_FALSE(scan_data.has_value());
-                              run_loop.Quit();
-                            }));
-  run_loop.Run();
+  const auto [failure_mode, scan_data] = ScanFirstPage(kTestScannerName);
+
+  EXPECT_EQ(failure_mode, mojom::ScanFailureMode::kDeviceBusy);
+  EXPECT_FALSE(scan_data.has_value());
 }
 
 TEST_F(DocumentScanAshTest, ScanFirstPage_ScannerData) {
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
   const std::vector<std::string> scan_data = {"PrettyPicture"};
   GetLorgnetteScannerManager()->SetScanResponse(scan_data);
-  base::RunLoop run_loop;
-  document_scan_ash().ScanFirstPage(
-      kTestScannerName, base::BindLambdaForTesting(
-                            [&](mojom::ScanFailureMode failure_mode,
-                                const std::optional<std::string>& scan_data) {
-                              EXPECT_EQ(failure_mode,
-                                        mojom::ScanFailureMode::kNoFailure);
-                              ASSERT_TRUE(scan_data.has_value());
-                              EXPECT_EQ(scan_data.value(), "PrettyPicture");
-                              run_loop.Quit();
-                            }));
-  run_loop.Run();
+  const auto [failure_mode, scan_data_response] =
+      ScanFirstPage(kTestScannerName);
+
+  EXPECT_EQ(failure_mode, mojom::ScanFailureMode::kNoFailure);
+  ASSERT_TRUE(scan_data_response.has_value());
+  EXPECT_EQ(scan_data_response.value(), "PrettyPicture");
 }
 
 TEST_F(DocumentScanAshTest, GetScannerList_FeatureDisabled) {
@@ -175,38 +223,26 @@ TEST_F(DocumentScanAshTest, GetScannerList_FeatureDisabled) {
   feature.InitAndDisableFeature(ash::features::kAdvancedDocumentScanAPI);
 
   GetLorgnetteScannerManager()->SetGetScannerInfoListResponse(std::nullopt);
-  base::RunLoop run_loop;
   auto request = mojom::ScannerEnumFilter::New();
   request->local = true;
   request->secure = true;
-  document_scan_ash().GetScannerList(
-      "client-id", std::move(request),
-      base::BindLambdaForTesting(
-          [&](mojom::GetScannerListResponsePtr response) {
-            run_loop.Quit();
-            EXPECT_EQ(response->result,
-                      mojom::ScannerOperationResult::kUnsupported);
-            EXPECT_EQ(response->scanners.size(), 0U);
-          }));
-  run_loop.Run();
+  const mojom::GetScannerListResponsePtr response =
+      GetScannerList("client-id", std::move(request));
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kUnsupported);
+  EXPECT_EQ(response->scanners.size(), 0U);
 }
 
 TEST_F(DocumentScanAshTest, GetScannerList_BadResponse) {
   GetLorgnetteScannerManager()->SetGetScannerInfoListResponse(std::nullopt);
-  base::RunLoop run_loop;
   auto request = mojom::ScannerEnumFilter::New();
   request->local = true;
   request->secure = true;
-  document_scan_ash().GetScannerList(
-      "client-id", std::move(request),
-      base::BindLambdaForTesting(
-          [&](mojom::GetScannerListResponsePtr response) {
-            run_loop.Quit();
-            EXPECT_EQ(response->result,
-                      mojom::ScannerOperationResult::kInternalError);
-            EXPECT_EQ(response->scanners.size(), 0U);
-          }));
-  run_loop.Run();
+  const mojom::GetScannerListResponsePtr response =
+      GetScannerList("client-id", std::move(request));
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
+  EXPECT_EQ(response->scanners.size(), 0U);
 }
 
 TEST_F(DocumentScanAshTest, GetScannerList_GoodResponse) {
@@ -216,56 +252,40 @@ TEST_F(DocumentScanAshTest, GetScannerList_GoodResponse) {
   scanner->set_name("test:scanner");
   GetLorgnetteScannerManager()->SetGetScannerInfoListResponse(
       std::move(fake_response));
-  base::RunLoop run_loop;
   auto request = mojom::ScannerEnumFilter::New();
   request->local = true;
   request->secure = true;
-  document_scan_ash().GetScannerList(
-      "client-id", std::move(request),
-      base::BindLambdaForTesting(
-          [&](mojom::GetScannerListResponsePtr response) {
-            run_loop.Quit();
-            EXPECT_EQ(response->result,
-                      mojom::ScannerOperationResult::kSuccess);
-            ASSERT_EQ(response->scanners.size(), 1U);
-            EXPECT_EQ(response->scanners[0]->id, "test:scanner");
-          }));
-  run_loop.Run();
+  const mojom::GetScannerListResponsePtr response =
+      GetScannerList("client-id", std::move(request));
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
+  ASSERT_EQ(response->scanners.size(), 1U);
+  EXPECT_EQ(response->scanners[0]->id, "test:scanner");
 }
 
 TEST_F(DocumentScanAshTest, OpenScanner_FeatureDisabled) {
   base::test::ScopedFeatureList feature;
   feature.InitAndDisableFeature(ash::features::kAdvancedDocumentScanAPI);
 
-  base::RunLoop run_loop;
   GetLorgnetteScannerManager()->SetOpenScannerResponse(std::nullopt);
-  document_scan_ash().OpenScanner(
-      "client-id", "scanner-id",
-      base::BindLambdaForTesting([&](mojom::OpenScannerResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->scanner_id, "scanner-id");
-        EXPECT_EQ(response->result,
-                  mojom::ScannerOperationResult::kUnsupported);
-        EXPECT_FALSE(response->scanner_handle.has_value());
-        EXPECT_FALSE(response->options.has_value());
-      }));
-  run_loop.Run();
+  const mojom::OpenScannerResponsePtr response =
+      OpenScanner("client-id", "scanner-id");
+
+  EXPECT_EQ(response->scanner_id, "scanner-id");
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kUnsupported);
+  EXPECT_FALSE(response->scanner_handle.has_value());
+  EXPECT_FALSE(response->options.has_value());
 }
 
 TEST_F(DocumentScanAshTest, OpenScanner_BadResponse) {
-  base::RunLoop run_loop;
   GetLorgnetteScannerManager()->SetOpenScannerResponse(std::nullopt);
-  document_scan_ash().OpenScanner(
-      "client-id", "scanner-id",
-      base::BindLambdaForTesting([&](mojom::OpenScannerResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->scanner_id, "scanner-id");
-        EXPECT_EQ(response->result,
-                  mojom::ScannerOperationResult::kInternalError);
-        EXPECT_FALSE(response->scanner_handle.has_value());
-        EXPECT_FALSE(response->options.has_value());
-      }));
-  run_loop.Run();
+  const mojom::OpenScannerResponsePtr response =
+      OpenScanner("client-id", "scanner-id");
+
+  EXPECT_EQ(response->scanner_id, "scanner-id");
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
+  EXPECT_FALSE(response->scanner_handle.has_value());
+  EXPECT_FALSE(response->options.has_value());
 }
 
 TEST_F(DocumentScanAshTest, OpenScanner_GoodResponse) {
@@ -276,71 +296,52 @@ TEST_F(DocumentScanAshTest, OpenScanner_GoodResponse) {
   fake_config->mutable_scanner()->set_token("12345");
   (*fake_config->mutable_options())["option1-name"] = {};
   (*fake_config->mutable_options())["option2-name"] = {};
-  base::RunLoop run_loop;
   GetLorgnetteScannerManager()->SetOpenScannerResponse(
       std::move(fake_response));
-  document_scan_ash().OpenScanner(
-      "client-id", "scanner-id",
-      base::BindLambdaForTesting([&](mojom::OpenScannerResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->scanner_id, "scanner-id");
-        EXPECT_EQ(response->result, mojom::ScannerOperationResult::kDeviceBusy);
-        ASSERT_TRUE(response->scanner_handle.has_value());
-        EXPECT_EQ(response->scanner_handle.value(), "12345");
-        ASSERT_TRUE(response->options.has_value());
-        EXPECT_TRUE(base::Contains(response->options.value(), "option1-name"));
-        EXPECT_TRUE(base::Contains(response->options.value(), "option2-name"));
-      }));
-  run_loop.Run();
+  const mojom::OpenScannerResponsePtr response =
+      OpenScanner("client-id", "scanner-id");
+
+  EXPECT_EQ(response->scanner_id, "scanner-id");
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kDeviceBusy);
+  ASSERT_TRUE(response->scanner_handle.has_value());
+  EXPECT_EQ(response->scanner_handle.value(), "12345");
+  ASSERT_TRUE(response->options.has_value());
+  EXPECT_TRUE(base::Contains(response->options.value(), "option1-name"));
+  EXPECT_TRUE(base::Contains(response->options.value(), "option2-name"));
 }
 
 TEST_F(DocumentScanAshTest, CloseScanner_FeatureDisabled) {
   base::test::ScopedFeatureList feature;
   feature.InitAndDisableFeature(ash::features::kAdvancedDocumentScanAPI);
 
-  base::RunLoop run_loop;
   GetLorgnetteScannerManager()->SetCloseScannerResponse(std::nullopt);
-  document_scan_ash().CloseScanner(
-      "scanner-handle",
-      base::BindLambdaForTesting([&](mojom::CloseScannerResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->scanner_handle, "scanner-handle");
-        EXPECT_EQ(response->result,
-                  mojom::ScannerOperationResult::kUnsupported);
-      }));
-  run_loop.Run();
+  const mojom::CloseScannerResponsePtr response =
+      CloseScanner("scanner-handle");
+
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kUnsupported);
 }
 
 TEST_F(DocumentScanAshTest, CloseScanner_BadResponse) {
-  base::RunLoop run_loop;
   GetLorgnetteScannerManager()->SetCloseScannerResponse(std::nullopt);
-  document_scan_ash().CloseScanner(
-      "scanner-handle",
-      base::BindLambdaForTesting([&](mojom::CloseScannerResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->scanner_handle, "scanner-handle");
-        EXPECT_EQ(response->result,
-                  mojom::ScannerOperationResult::kInternalError);
-      }));
-  run_loop.Run();
+  const mojom::CloseScannerResponsePtr response =
+      CloseScanner("scanner-handle");
+
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
 }
 
 TEST_F(DocumentScanAshTest, CloseScanner_GoodResponse) {
   lorgnette::CloseScannerResponse fake_response;
   fake_response.mutable_scanner()->set_token("scanner-handle");
   fake_response.set_result(lorgnette::OPERATION_RESULT_MISSING);
-  base::RunLoop run_loop;
   GetLorgnetteScannerManager()->SetCloseScannerResponse(
       std::move(fake_response));
-  document_scan_ash().CloseScanner(
-      "scanner-handle",
-      base::BindLambdaForTesting([&](mojom::CloseScannerResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->scanner_handle, "scanner-handle");
-        EXPECT_EQ(response->result,
-                  mojom::ScannerOperationResult::kDeviceMissing);
-      }));
-  run_loop.Run();
+  const mojom::CloseScannerResponsePtr response =
+      CloseScanner("scanner-handle");
+
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kDeviceMissing);
 }
 
 TEST_F(DocumentScanAshTest, StartPreparedScan_FeatureDisabled) {
@@ -348,34 +349,22 @@ TEST_F(DocumentScanAshTest, StartPreparedScan_FeatureDisabled) {
   feature.InitAndDisableFeature(ash::features::kAdvancedDocumentScanAPI);
 
   GetLorgnetteScannerManager()->SetStartPreparedScanResponse(std::nullopt);
-  base::RunLoop run_loop;
-  document_scan_ash().StartPreparedScan(
-      "scanner-handle", mojom::StartScanOptions::New(),
-      base::BindLambdaForTesting(
-          [&](mojom::StartPreparedScanResponsePtr response) {
-            run_loop.Quit();
-            EXPECT_EQ(response->result,
-                      mojom::ScannerOperationResult::kUnsupported);
-            EXPECT_EQ(response->scanner_handle, "scanner-handle");
-            EXPECT_FALSE(response->job_handle.has_value());
-          }));
-  run_loop.Run();
+  const mojom::StartPreparedScanResponsePtr response =
+      StartPreparedScan("scanner-handle", mojom::StartScanOptions::New());
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kUnsupported);
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  EXPECT_FALSE(response->job_handle.has_value());
 }
 
 TEST_F(DocumentScanAshTest, StartPreparedScan_BadResponse) {
   GetLorgnetteScannerManager()->SetStartPreparedScanResponse(std::nullopt);
-  base::RunLoop run_loop;
-  document_scan_ash().StartPreparedScan(
-      "scanner-handle", mojom::StartScanOptions::New(),
-      base::BindLambdaForTesting(
-          [&](mojom::StartPreparedScanResponsePtr response) {
-            run_loop.Quit();
-            EXPECT_EQ(response->result,
-                      mojom::ScannerOperationResult::kInternalError);
-            EXPECT_EQ(response->scanner_handle, "scanner-handle");
-            EXPECT_FALSE(response->job_handle.has_value());
-          }));
-  run_loop.Run();
+  const mojom::StartPreparedScanResponsePtr response =
+      StartPreparedScan("scanner-handle", mojom::StartScanOptions::New());
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  EXPECT_FALSE(response->job_handle.has_value());
 }
 
 TEST_F(DocumentScanAshTest, StartPreparedScan_GoodResponse) {
@@ -385,22 +374,16 @@ TEST_F(DocumentScanAshTest, StartPreparedScan_GoodResponse) {
   fake_response.mutable_job_handle()->set_token("job-handle");
   GetLorgnetteScannerManager()->SetStartPreparedScanResponse(
       std::move(fake_response));
-  base::RunLoop run_loop;
   auto options = mojom::StartScanOptions::New();
   options->format = "image/png";
   options->max_read_size = 32768;
-  document_scan_ash().StartPreparedScan(
-      "scanner-handle", std::move(options),
-      base::BindLambdaForTesting(
-          [&](mojom::StartPreparedScanResponsePtr response) {
-            run_loop.Quit();
-            EXPECT_EQ(response->result,
-                      mojom::ScannerOperationResult::kSuccess);
-            EXPECT_EQ(response->scanner_handle, "scanner-handle");
-            ASSERT_TRUE(response->job_handle.has_value());
-            EXPECT_EQ(response->job_handle.value(), "job-handle");
-          }));
-  run_loop.Run();
+  const mojom::StartPreparedScanResponsePtr response =
+      StartPreparedScan("scanner-handle", std::move(options));
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  ASSERT_TRUE(response->job_handle.has_value());
+  EXPECT_EQ(response->job_handle.value(), "job-handle");
 }
 
 TEST_F(DocumentScanAshTest, ReadScanData_FeatureDisabled) {
@@ -408,32 +391,20 @@ TEST_F(DocumentScanAshTest, ReadScanData_FeatureDisabled) {
   feature.InitAndDisableFeature(ash::features::kAdvancedDocumentScanAPI);
 
   GetLorgnetteScannerManager()->SetReadScanDataResponse(std::nullopt);
-  base::RunLoop run_loop;
-  document_scan_ash().ReadScanData(
-      "job-handle",
-      base::BindLambdaForTesting([&](mojom::ReadScanDataResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->result,
-                  mojom::ScannerOperationResult::kUnsupported);
-        EXPECT_EQ(response->job_handle, "job-handle");
-        EXPECT_FALSE(response->data.has_value());
-      }));
-  run_loop.Run();
+  const mojom::ReadScanDataResponsePtr response = ReadScanData("job-handle");
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kUnsupported);
+  EXPECT_EQ(response->job_handle, "job-handle");
+  EXPECT_FALSE(response->data.has_value());
 }
 
 TEST_F(DocumentScanAshTest, ReadScanData_BadResponse) {
   GetLorgnetteScannerManager()->SetReadScanDataResponse(std::nullopt);
-  base::RunLoop run_loop;
-  document_scan_ash().ReadScanData(
-      "job-handle",
-      base::BindLambdaForTesting([&](mojom::ReadScanDataResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->result,
-                  mojom::ScannerOperationResult::kInternalError);
-        EXPECT_EQ(response->job_handle, "job-handle");
-        EXPECT_FALSE(response->data.has_value());
-      }));
-  run_loop.Run();
+  const mojom::ReadScanDataResponsePtr response = ReadScanData("job-handle");
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
+  EXPECT_EQ(response->job_handle, "job-handle");
+  EXPECT_FALSE(response->data.has_value());
 }
 
 TEST_F(DocumentScanAshTest, ReadScanData_GoodResponse) {
@@ -444,19 +415,14 @@ TEST_F(DocumentScanAshTest, ReadScanData_GoodResponse) {
   fake_response.set_estimated_completion(24);
   GetLorgnetteScannerManager()->SetReadScanDataResponse(
       std::move(fake_response));
-  base::RunLoop run_loop;
-  document_scan_ash().ReadScanData(
-      "job-handle",
-      base::BindLambdaForTesting([&](mojom::ReadScanDataResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
-        EXPECT_EQ(response->job_handle, "job-handle");
-        ASSERT_TRUE(response->data.has_value());
-        EXPECT_THAT(response->data.value(), ElementsAre('d', 'a', 't', 'a'));
-        ASSERT_TRUE(response->estimated_completion.has_value());
-        EXPECT_EQ(response->estimated_completion.value(), 24U);
-      }));
-  run_loop.Run();
+  const mojom::ReadScanDataResponsePtr response = ReadScanData("job-handle");
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
+  EXPECT_EQ(response->job_handle, "job-handle");
+  ASSERT_TRUE(response->data.has_value());
+  EXPECT_THAT(response->data.value(), ElementsAre('d', 'a', 't', 'a'));
+  ASSERT_TRUE(response->estimated_completion.has_value());
+  EXPECT_EQ(response->estimated_completion.value(), 24U);
 }
 
 TEST_F(DocumentScanAshTest, SetOptions_FeatureDisabled) {
@@ -469,19 +435,15 @@ TEST_F(DocumentScanAshTest, SetOptions_FeatureDisabled) {
   options.emplace_back(std::move(option));
 
   GetLorgnetteScannerManager()->SetSetOptionsResponse(std::nullopt);
-  base::RunLoop run_loop;
-  document_scan_ash().SetOptions(
-      "scanner-handle", std::move(options),
-      base::BindLambdaForTesting([&](mojom::SetOptionsResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->scanner_handle, "scanner-handle");
-        EXPECT_FALSE(response->options.has_value());
-        ASSERT_EQ(response->results.size(), 1U);
-        EXPECT_EQ(response->results[0]->name, "option-name");
-        EXPECT_EQ(response->results[0]->result,
-                  mojom::ScannerOperationResult::kUnsupported);
-      }));
-  run_loop.Run();
+  const mojom::SetOptionsResponsePtr response =
+      SetOptions("scanner-handle", std::move(options));
+
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  EXPECT_FALSE(response->options.has_value());
+  ASSERT_EQ(response->results.size(), 1U);
+  EXPECT_EQ(response->results[0]->name, "option-name");
+  EXPECT_EQ(response->results[0]->result,
+            mojom::ScannerOperationResult::kUnsupported);
 }
 
 TEST_F(DocumentScanAshTest, SetOptions_BadResponse) {
@@ -491,19 +453,15 @@ TEST_F(DocumentScanAshTest, SetOptions_BadResponse) {
   options.emplace_back(std::move(option));
 
   GetLorgnetteScannerManager()->SetSetOptionsResponse(std::nullopt);
-  base::RunLoop run_loop;
-  document_scan_ash().SetOptions(
-      "scanner-handle", std::move(options),
-      base::BindLambdaForTesting([&](mojom::SetOptionsResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->scanner_handle, "scanner-handle");
-        EXPECT_FALSE(response->options.has_value());
-        ASSERT_EQ(response->results.size(), 1U);
-        EXPECT_EQ(response->results[0]->name, "option-name");
-        EXPECT_EQ(response->results[0]->result,
-                  mojom::ScannerOperationResult::kInternalError);
-      }));
-  run_loop.Run();
+  const mojom::SetOptionsResponsePtr response =
+      SetOptions("scanner-handle", std::move(options));
+
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  EXPECT_FALSE(response->options.has_value());
+  ASSERT_EQ(response->results.size(), 1U);
+  EXPECT_EQ(response->results[0]->name, "option-name");
+  EXPECT_EQ(response->results[0]->result,
+            mojom::ScannerOperationResult::kInternalError);
 }
 
 TEST_F(DocumentScanAshTest, SetOptions_GoodResponse) {
@@ -524,22 +482,18 @@ TEST_F(DocumentScanAshTest, SetOptions_GoodResponse) {
   *fake_response.mutable_config() = std::move(config);
 
   GetLorgnetteScannerManager()->SetSetOptionsResponse(std::move(fake_response));
-  base::RunLoop run_loop;
-  document_scan_ash().SetOptions(
-      "scanner-handle", std::move(options),
-      base::BindLambdaForTesting([&](mojom::SetOptionsResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->scanner_handle, "scanner-handle");
-        ASSERT_EQ(response->results.size(), 1U);
-        EXPECT_EQ(response->results[0]->name, "option-name");
-        EXPECT_EQ(response->results[0]->result,
-                  mojom::ScannerOperationResult::kSuccess);
-        ASSERT_TRUE(response->options.has_value());
-        const auto& it = response->options.value().find("config-option");
-        ASSERT_TRUE(it != response->options.value().end());
-        EXPECT_EQ(it->second->name, "scanner-option");
-      }));
-  run_loop.Run();
+  const mojom::SetOptionsResponsePtr response =
+      SetOptions("scanner-handle", std::move(options));
+
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  ASSERT_EQ(response->results.size(), 1U);
+  EXPECT_EQ(response->results[0]->name, "option-name");
+  EXPECT_EQ(response->results[0]->result,
+            mojom::ScannerOperationResult::kSuccess);
+  ASSERT_TRUE(response->options.has_value());
+  const auto& it = response->options.value().find("config-option");
+  ASSERT_TRUE(it != response->options.value().end());
+  EXPECT_EQ(it->second->name, "scanner-option");
 }
 
 TEST_F(DocumentScanAshTest, GetOptionGroups_FeatureDisabled) {
@@ -547,34 +501,22 @@ TEST_F(DocumentScanAshTest, GetOptionGroups_FeatureDisabled) {
   feature.InitAndDisableFeature(ash::features::kAdvancedDocumentScanAPI);
 
   GetLorgnetteScannerManager()->SetGetCurrentConfigResponse(std::nullopt);
-  base::RunLoop run_loop;
-  document_scan_ash().GetOptionGroups(
-      "scanner-handle",
-      base::BindLambdaForTesting(
-          [&](mojom::GetOptionGroupsResponsePtr response) {
-            run_loop.Quit();
-            EXPECT_EQ(response->scanner_handle, "scanner-handle");
-            EXPECT_EQ(response->result,
-                      mojom::ScannerOperationResult::kUnsupported);
-            EXPECT_FALSE(response->groups.has_value());
-          }));
-  run_loop.Run();
+  const mojom::GetOptionGroupsResponsePtr response =
+      GetOptionGroups("scanner-handle");
+
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kUnsupported);
+  EXPECT_FALSE(response->groups.has_value());
 }
 
 TEST_F(DocumentScanAshTest, GetOptionGroups_BadResponse) {
   GetLorgnetteScannerManager()->SetGetCurrentConfigResponse(std::nullopt);
-  base::RunLoop run_loop;
-  document_scan_ash().GetOptionGroups(
-      "scanner-handle",
-      base::BindLambdaForTesting(
-          [&](mojom::GetOptionGroupsResponsePtr response) {
-            run_loop.Quit();
-            EXPECT_EQ(response->scanner_handle, "scanner-handle");
-            EXPECT_EQ(response->result,
-                      mojom::ScannerOperationResult::kInternalError);
-            EXPECT_FALSE(response->groups.has_value());
-          }));
-  run_loop.Run();
+  const mojom::GetOptionGroupsResponsePtr response =
+      GetOptionGroups("scanner-handle");
+
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
+  EXPECT_FALSE(response->groups.has_value());
 }
 
 TEST_F(DocumentScanAshTest, GetOptionGroups_GoodResponse) {
@@ -592,22 +534,16 @@ TEST_F(DocumentScanAshTest, GetOptionGroups_GoodResponse) {
 
   GetLorgnetteScannerManager()->SetGetCurrentConfigResponse(
       std::move(fake_response));
-  base::RunLoop run_loop;
-  document_scan_ash().GetOptionGroups(
-      "scanner-handle",
-      base::BindLambdaForTesting(
-          [&](mojom::GetOptionGroupsResponsePtr response) {
-            run_loop.Quit();
-            EXPECT_EQ(response->scanner_handle, "scanner-handle");
-            EXPECT_EQ(response->result,
-                      mojom::ScannerOperationResult::kSuccess);
-            EXPECT_TRUE(response->groups.has_value());
-            ASSERT_EQ(response->groups.value().size(), 1U);
-            EXPECT_EQ(response->groups.value()[0]->title, "group-title");
-            EXPECT_THAT(response->groups.value()[0]->members,
-                        ElementsAre("group-member"));
-          }));
-  run_loop.Run();
+  const mojom::GetOptionGroupsResponsePtr response =
+      GetOptionGroups("scanner-handle");
+
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
+  EXPECT_TRUE(response->groups.has_value());
+  ASSERT_EQ(response->groups.value().size(), 1U);
+  EXPECT_EQ(response->groups.value()[0]->title, "group-title");
+  EXPECT_THAT(response->groups.value()[0]->members,
+              ElementsAre("group-member"));
 }
 
 TEST_F(DocumentScanAshTest, CancelScan_FeatureDisabled) {
@@ -615,30 +551,18 @@ TEST_F(DocumentScanAshTest, CancelScan_FeatureDisabled) {
   feature.InitAndDisableFeature(ash::features::kAdvancedDocumentScanAPI);
 
   GetLorgnetteScannerManager()->SetCancelScanResponse(std::nullopt);
-  base::RunLoop run_loop;
-  document_scan_ash().CancelScan(
-      "job-handle",
-      base::BindLambdaForTesting([&](mojom::CancelScanResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->result,
-                  mojom::ScannerOperationResult::kUnsupported);
-        EXPECT_EQ(response->job_handle, "job-handle");
-      }));
-  run_loop.Run();
+  const mojom::CancelScanResponsePtr response = CancelScan("job-handle");
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kUnsupported);
+  EXPECT_EQ(response->job_handle, "job-handle");
 }
 
 TEST_F(DocumentScanAshTest, CancelScan_BadResponse) {
   GetLorgnetteScannerManager()->SetCancelScanResponse(std::nullopt);
-  base::RunLoop run_loop;
-  document_scan_ash().CancelScan(
-      "job-handle",
-      base::BindLambdaForTesting([&](mojom::CancelScanResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->result,
-                  mojom::ScannerOperationResult::kInternalError);
-        EXPECT_EQ(response->job_handle, "job-handle");
-      }));
-  run_loop.Run();
+  const mojom::CancelScanResponsePtr response = CancelScan("job-handle");
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
+  EXPECT_EQ(response->job_handle, "job-handle");
 }
 
 TEST_F(DocumentScanAshTest, CancelScan_GoodResponse) {
@@ -646,15 +570,10 @@ TEST_F(DocumentScanAshTest, CancelScan_GoodResponse) {
   fake_response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
   fake_response.mutable_job_handle()->set_token("job-handle");
   GetLorgnetteScannerManager()->SetCancelScanResponse(std::move(fake_response));
-  base::RunLoop run_loop;
-  document_scan_ash().CancelScan(
-      "job-handle",
-      base::BindLambdaForTesting([&](mojom::CancelScanResponsePtr response) {
-        run_loop.Quit();
-        EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
-        EXPECT_EQ(response->job_handle, "job-handle");
-      }));
-  run_loop.Run();
+  const mojom::CancelScanResponsePtr response = CancelScan("job-handle");
+
+  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
+  EXPECT_EQ(response->job_handle, "job-handle");
 }
 
 }  // namespace crosapi
