@@ -12,7 +12,10 @@
             "default_value": [
               "GoogleCalendar",
               "GoogleClassroom",
-              "GoogleTasks"
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
             ]
           }
         }
@@ -27,7 +30,10 @@
             "default_value": [
               "GoogleCalendar",
               "GoogleClassroom",
-              "GoogleTasks"
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
             ]
           }
         }
@@ -50,7 +56,10 @@
           "ContextualGoogleIntegrationsConfiguration": [
             "GoogleCalendar",
             "GoogleClassroom",
-            "GoogleTasks"
+            "GoogleTasks",
+            "ChromeSync",
+            "GoogleDrive",
+            "Weather"
           ]
         },
         "prefs": {
@@ -58,7 +67,10 @@
             "value": [
               "GoogleCalendar",
               "GoogleClassroom",
-              "GoogleTasks"
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
             ]
           }
         }

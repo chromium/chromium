@@ -35,6 +35,9 @@ inline constexpr char kContextualGoogleIntegrationsConfiguration[] =
 inline constexpr char kGoogleCalendarIntegrationName[] = "GoogleCalendar";
 inline constexpr char kGoogleClassroomIntegrationName[] = "GoogleClassroom";
 inline constexpr char kGoogleTasksIntegrationName[] = "GoogleTasks";
+inline constexpr char kChromeSyncIntegrationName[] = "ChromeSync";
+inline constexpr char kGoogleDriveIntegrationName[] = "GoogleDrive";
+inline constexpr char kWeatherIntegrationName[] = "Weather";
 
 // A boolean pref of whether emoji suggestion is enabled.
 inline constexpr char kEmojiSuggestionEnabled[] =

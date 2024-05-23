@@ -30,6 +30,15 @@ items:
 - caption: <ph name="GOOGLE_TASKS_NAME">Google Tasks</ph>
   name: GoogleTasks
   value: GoogleTasks
+- caption: <ph name="CHROME_SYNC_NAME">Chrome Sync</ph>
+  name: ChromeSync
+  value: ChromeSync
+- caption: <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>
+  name: GoogleDrive
+  value: GoogleDrive
+- caption: Weather
+  name: Weather
+  value: Weather
 owners:
 - amitrokhin@google.com
 - file://ash/glanceables/OWNERS
@@ -39,6 +48,9 @@ schema:
     - GoogleCalendar
     - GoogleClassroom
     - GoogleTasks
+    - ChromeSync
+    - GoogleDrive
+    - Weather
     type: string
   type: array
 supported_on:

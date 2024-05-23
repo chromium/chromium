@@ -12,7 +12,10 @@
             "default_value": [
               "GoogleCalendar",
               "GoogleClassroom",
-              "GoogleTasks"
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
             ]
           }
         }
@@ -27,7 +30,10 @@
             "default_value": [
               "GoogleCalendar",
               "GoogleClassroom",
-              "GoogleTasks"
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
             ]
           }
         }
@@ -43,7 +49,10 @@
             "default_value": [
               "GoogleCalendar",
               "GoogleClassroom",
-              "GoogleTasks"
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
             ]
           }
         }
@@ -59,7 +68,10 @@
             "default_value": [
               "GoogleCalendar",
               "GoogleClassroom",
-              "GoogleTasks"
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
             ]
           }
         }
@@ -194,6 +206,51 @@
           "ash.contextual_google_integrations_configuration": {
             "value": [
               "GoogleTasks"
+            ]
+          }
+        }
+      },
+      {
+        "note": "ChromeSync only",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            "ChromeSync"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "ChromeSync"
+            ]
+          }
+        }
+      },
+      {
+        "note": "GoogleDrive only",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            "GoogleDrive"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "GoogleDrive"
+            ]
+          }
+        }
+      },
+      {
+        "note": "Weather only",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            "Weather"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "Weather"
             ]
           }
         }

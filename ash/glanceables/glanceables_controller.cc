@@ -39,6 +39,9 @@ void GlanceablesController::RegisterUserProfilePrefs(
   default_integrations.Append(prefs::kGoogleCalendarIntegrationName);
   default_integrations.Append(prefs::kGoogleClassroomIntegrationName);
   default_integrations.Append(prefs::kGoogleTasksIntegrationName);
+  default_integrations.Append(prefs::kChromeSyncIntegrationName);
+  default_integrations.Append(prefs::kGoogleDriveIntegrationName);
+  default_integrations.Append(prefs::kWeatherIntegrationName);
   registry->RegisterListPref(prefs::kContextualGoogleIntegrationsConfiguration,
                              std::move(default_integrations));
 

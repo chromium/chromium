@@ -26,7 +26,10 @@ constexpr auto kKnownGoogleIntegrations =
     base::MakeFixedFlatSet<std::string_view>(
         {ash::prefs::kGoogleCalendarIntegrationName,
          ash::prefs::kGoogleClassroomIntegrationName,
-         ash::prefs::kGoogleTasksIntegrationName});
+         ash::prefs::kGoogleTasksIntegrationName,
+         ash::prefs::kChromeSyncIntegrationName,
+         ash::prefs::kGoogleDriveIntegrationName,
+         ash::prefs::kWeatherIntegrationName});
 
 }  // namespace
 
