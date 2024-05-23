@@ -37,13 +37,13 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
   MOCK_METHOD(ActionMap, GetCampaignsActions, (), (override));
   MOCK_METHOD(void,
               RegisterSyntheticFieldTrial,
-              (const std::optional<int> study_id, const int campaign_id),
+              (const std::string& trial_name, const std::string& group_name),
               (const, override));
   MOCK_METHOD(void,
               ClearConfig,
               ((const std::map<std::string, std::string>& params)),
               (override));
-  MOCK_METHOD(void, NotifyEvent, (const std::string& event), (override));
+  MOCK_METHOD(void, RecordEvent, (const std::string& event), (override));
   MOCK_METHOD(bool,
               WouldTriggerHelpUI,
               ((const std::map<std::string, std::string>& params)),

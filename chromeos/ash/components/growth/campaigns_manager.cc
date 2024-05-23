@@ -34,10 +34,18 @@ inline constexpr char kCampaignFileName[] = "campaigns.json";
 
 inline constexpr char kEventKey[] = "event_to_be_cleared";
 inline constexpr char kEventTemplate[] =
-    "name:%s;comparator:any;window:365;storage:365";
+    "name:%s;comparator:any;window:3650;storage:3650";
 
 inline constexpr char kOobeCompleteFlagFilePath[] =
     "/home/chronos/.oobe_completed";
+
+// The synthetic trial name prefix for growth experiment. Formatted as
+// `CrOSGrowthStudy{studyId}`, where `studyId` is an integer. For non
+// experimental campaigns, `studyId` will be empty.
+inline constexpr char kGrowthStudyName[] = "CrOSGrowthStudy";
+// The synthetical trial group name for growth experiment. The campaign id
+// will be unique for different groups.
+inline constexpr char kGrowthGroupName[] = "CampaignId";
 
 std::optional<base::Value::Dict> ParseCampaignsFile(
     const std::string& campaigns_data) {
@@ -88,24 +96,6 @@ void LogCampaignInSystemLog(const Campaign* campaign, Slot slot) {
 
   SYSLOG(INFO) << "Growth Campaign " << *id
                << " is selected for slot: " << base::NumberToString(int(slot));
-}
-
-std::string GetEventName(growth::CampaignEvent event, const std::string& id) {
-  const char* event_name = nullptr;
-  switch (event) {
-    case growth::CampaignEvent::kImpression:
-      event_name = growth::kCampaignEventNameImpression;
-      break;
-    case growth::CampaignEvent::kDismissed:
-      event_name = growth::kCampaignEventNameDismissed;
-      break;
-    case growth::CampaignEvent::kAppOpened:
-      event_name = growth::kCampaignEventNameAppOpened;
-      break;
-  }
-
-  std::string event_name_with_id = base::StringPrintf(event_name, id.c_str());
-  return growth::kGrowthCampaignsEventNamePrefix + event_name_with_id;
 }
 
 // Gets the Oobe timestamp on a sequence that allows file-access.
@@ -193,6 +183,14 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
   return match_result;
 }
 
+const GURL& CampaignsManager::GetActiveUrl() const {
+  return matcher_.active_url();
+}
+
+void CampaignsManager::SetActiveUrl(const GURL& url) {
+  matcher_.SetActiveUrl(url);
+}
+
 const std::string& CampaignsManager::GetOpenedAppId() const {
   return matcher_.opened_app_id();
 }
@@ -201,16 +199,16 @@ void CampaignsManager::SetOpenedApp(const std::string& app_id) {
   matcher_.SetOpenedApp(app_id);
 
   if (!app_id.empty()) {
-    NotifyEventForTargeting(CampaignEvent::kAppOpened, app_id);
+    RecordEventForTargeting(CampaignEvent::kAppOpened, app_id);
   }
+}
+
+const Trigger& CampaignsManager::GetTrigger() const {
+  return matcher_.trigger();
 }
 
 void CampaignsManager::SetTrigger(const Trigger&& trigger_type) {
   matcher_.SetTrigger(std::move(trigger_type));
-}
-
-void CampaignsManager::SetActiveUrl(const GURL& url) {
-  matcher_.SetActiveUrl(url);
 }
 
 void CampaignsManager::SetIsUserOwner(bool is_user_owner) {
@@ -260,17 +258,21 @@ void CampaignsManager::PerformAction(int campaign_id,
 }
 
 void CampaignsManager::ClearEvent(CampaignEvent event, const std::string& id) {
+  ClearEvent(GetEventName(event, id));
+}
+
+void CampaignsManager::ClearEvent(const std::string& event) {
   std::map<std::string, std::string> conditions_params;
   // Event can be put in any key starting with `event_`.
   // Please see `components/feature_engagement/README.md#featureconfig`.
   conditions_params[kEventKey] =
-      base::StringPrintf(kEventTemplate, GetEventName(event, id).c_str());
+      base::StringPrintf(kEventTemplate, event.c_str());
   client_->ClearConfig(conditions_params);
 }
 
-void CampaignsManager::NotifyEventForTargeting(CampaignEvent event,
+void CampaignsManager::RecordEventForTargeting(CampaignEvent event,
                                                const std::string& id) {
-  NotifyEvent(GetEventName(event, id));
+  RecordEvent(GetEventName(event, id));
 }
 
 void CampaignsManager::OnCampaignsComponentLoaded(
@@ -355,20 +357,45 @@ void CampaignsManager::RegisterTrialForCampaign(
     return;
   }
 
-  std::optional<int> id = growth::GetCampaignId(campaign);
-  if (!id) {
+  std::optional<int> campaign_id = growth::GetCampaignId(campaign);
+  if (!campaign_id) {
     // TODO(b/308684443): Add error metrics in a second CL.
     LOG(ERROR) << "Growth campaign id not found";
     return;
   }
 
-  client_->RegisterSyntheticFieldTrial(
-      /*study_id=*/growth::GetStudyId(campaign),
-      /*campaign_id=*/*id);
+  std::optional<int> study_id = GetStudyId(campaign);
+
+  // If `study_id` is not null, appends it to the end of `trial_name`.
+  std::string trial_name(kGrowthStudyName);
+  if (study_id) {
+    base::StringAppendF(&trial_name, "%d", *study_id);
+  }
+  std::string group_name(kGrowthGroupName);
+  base::StringAppendF(&group_name, "%d", *campaign_id);
+
+  client_->RegisterSyntheticFieldTrial(trial_name, group_name);
+
+  std::optional<bool> register_with_app_id =
+      ShouldRegisterTrialWithTriggerEventName(campaign);
+  if (!register_with_app_id.value_or(false)) {
+    return;
+  }
+
+  // Register synthetic field trail with `event` name if this campaign is
+  // triggered by `kEvent`. This is used for shared counterfactual control group
+  // to be able to slice by different triggerings, e.g. `DocsOpened`,
+  // `GmailOpened`, etc.
+  if (GetTrigger().type != TriggerType::kEvent) {
+    return;
+  }
+
+  group_name += GetTrigger().event;
+  client_->RegisterSyntheticFieldTrial(trial_name, group_name);
 }
 
-void CampaignsManager::NotifyEvent(const std::string& event) {
-  client_->NotifyEvent(event);
+void CampaignsManager::RecordEvent(const std::string& event) {
+  client_->RecordEvent(event);
 }
 
 }  // namespace growth

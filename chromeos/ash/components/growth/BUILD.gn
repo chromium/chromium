@@ -9,6 +9,7 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 component("growth") {
   sources = [
     "action_performer.h",
+    "campaigns_constants.cc",
     "campaigns_constants.h",
     "campaigns_manager.cc",
     "campaigns_manager.h",

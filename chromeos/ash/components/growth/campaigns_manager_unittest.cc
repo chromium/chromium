@@ -98,6 +98,36 @@ inline constexpr char kValidCampaignsFileMultiTargetingsTemplate[] = R"(
     }
 )";
 
+inline constexpr char
+    kValidCampaignsFileRegisterTrialWithTriggerEventNameTemplate[] = R"(
+    {
+      "0": [
+        {
+          "id": 3,
+          "studyId":1,
+          // Configuration for `registerTrialWithTriggerEventName` with boolean
+          // value.
+          %s,
+          "targetings": [
+            {
+              "runtime": {
+                "triggerList": %s
+              }
+            }
+          ],
+          "payload": {
+            "demoModeApp": {
+              "attractionLoop": {
+                "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+                "videoSrcLang2": "/asset/peripherals_lang2.mp4"
+              }
+            }
+          }
+        }
+      ]
+    }
+)";
+
 inline constexpr char kValidDemoModeTargeting[] = R"(
     "demoMode": {
       "retailers": ["bby", "bestbuy", "bbt"],
@@ -464,7 +494,7 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
   histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 0);
 
   EXPECT_CALL(mock_client_,
-              RegisterSyntheticFieldTrial(std::optional<int>(1), 3));
+              RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"));
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 
@@ -513,7 +543,7 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargeting) {
       base::StringPrintf(kValidCampaignsFileTemplate, ""));
 
   EXPECT_CALL(mock_client_,
-              RegisterSyntheticFieldTrial(std::optional<int>(1), 3));
+              RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"));
   // Verify that the campaign is selected if there is no demo mode targeting.
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -532,7 +562,7 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargetingNotInDemoMode) {
       base::StringPrintf(kValidCampaignsFileTemplate, ""));
 
   EXPECT_CALL(mock_client_,
-              RegisterSyntheticFieldTrial(std::optional<int>(1), 3));
+              RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"));
   // Verify that the campaign is selected if there is not in demo mode.
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1662,7 +1692,7 @@ TEST_F(CampaignsManagerTest, GetCampaignActiveUrlNoActiveUrl) {
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-TEST_F(CampaignsManagerTest, GetCampaignTriggers) {
+TEST_F(CampaignsManagerTest, GetCampaignTriggersWithAppOpened) {
   growth::Trigger trigger(growth::TriggerType::kAppOpened);
   campaigns_manager_->SetTrigger(std::move(trigger));
 
@@ -1680,6 +1710,19 @@ TEST_F(CampaignsManagerTest, GetCampaignTriggersOrRelationship) {
   LoadComponentWithTriggerTargeting(R"([
   {"triggerType": 0, "triggerEvents": []},
   {"triggerType": 1, "triggerEvents": []}
+  ])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTriggersWithEvent) {
+  growth::Trigger trigger(growth::TriggerType::kEvent);
+  trigger.event = "event_1";
+  campaigns_manager_->SetTrigger(std::move(trigger));
+
+  LoadComponentWithTriggerTargeting(R"([
+    {"triggerType": 2, "triggerEvents": ["event_0", "event_1"]}
   ])");
 
   VerifyDemoModePayload(
@@ -1886,6 +1929,103 @@ TEST_F(CampaignsManagerTest, CampaignsFilteringTest) {
   ASSERT_EQ(
       2u, campaigns_manager_->GetCampaignsBySlotForTesting(Slot::kNotification)
               ->size());
+}
+
+TEST_F(CampaignsManagerTest, RegisterSyntheticFieldTrialWithTriggerEventName) {
+  constexpr char kGmailAppIdWeb[] = "fmgjjmmmlfnkbppncabfkddbjimcfncm";
+  constexpr char kCampaignEventName[] = "GmailOpened";
+
+  growth::Trigger trigger(growth::TriggerType::kEvent);
+  trigger.event = kCampaignEventName;
+  campaigns_manager_->SetTrigger(std::move(trigger));
+  campaigns_manager_->SetOpenedApp(kGmailAppIdWeb);
+
+  LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+      kValidCampaignsFileRegisterTrialWithTriggerEventNameTemplate,
+      R"("registerTrialWithTriggerEventName":true)",
+      R"([
+            {
+              "triggerType": 2,
+              "triggerEvents": [
+                "event_0",
+                "GmailOpened"
+              ]
+            }
+          ])"));
+
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"))
+      .Times(1);
+  EXPECT_CALL(
+      mock_client_,
+      RegisterSyntheticFieldTrial(
+          "CrOSGrowthStudy1", "CampaignId3" + std::string(kCampaignEventName)))
+      .Times(1);
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       NotRegisterSyntheticFieldTrialWithTriggerEventNameIfNotToRegister) {
+  constexpr char kGmailAppIdWeb[] = "fmgjjmmmlfnkbppncabfkddbjimcfncm";
+  constexpr char kCampaignEventName[] = "GmailOpened";
+
+  growth::Trigger trigger(growth::TriggerType::kEvent);
+  trigger.event = kCampaignEventName;
+  campaigns_manager_->SetTrigger(std::move(trigger));
+  campaigns_manager_->SetOpenedApp(kGmailAppIdWeb);
+
+  LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+      kValidCampaignsFileRegisterTrialWithTriggerEventNameTemplate,
+      R"("registerTrialWithTriggerEventName":false)",
+      R"([
+            {
+              "triggerType": 2,
+              "triggerEvents": [
+                "event_0",
+                "GmailOpened"
+              ]
+            }
+          ])"));
+
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"))
+      .Times(1);
+  EXPECT_CALL(
+      mock_client_,
+      RegisterSyntheticFieldTrial(
+          "CrOSGrowthStudy1", "CampaignId3" + std::string(kCampaignEventName)))
+      .Times(0);
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       NotRegisterSyntheticFieldTrialIfNotTriggeredByEvent) {
+  growth::Trigger trigger(growth::TriggerType::kAppOpened);
+  campaigns_manager_->SetTrigger(std::move(trigger));
+
+  // `app_id_1` does not have grouped app id.
+  campaigns_manager_->SetOpenedApp("app_id_1");
+
+  LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+      kValidCampaignsFileRegisterTrialWithTriggerEventNameTemplate,
+      R"("registerTrialWithTriggerEventName":true)",
+      R"([
+            {"triggerType": 0, "triggerEvents": []}
+          ])"));
+
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"))
+      .Times(1);
+  EXPECT_CALL(mock_client_, RegisterSyntheticFieldTrial("CrOSGrowthStudy1",
+                                                        "CampaignId3app_id_1"))
+      .Times(0);
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 }  // namespace growth

@@ -124,6 +124,10 @@ std::optional<int> GetCampaignId(const Campaign* campaign);
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 std::optional<int> GetStudyId(const Campaign* campaign);
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
+std::optional<bool> ShouldRegisterTrialWithTriggerEventName(
+    const Campaign* campaign);
+
 // Lists of campaigns keyed by the targeted slot. The key is the slot ID in
 // string. For example:
 // {

@@ -44,10 +44,11 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   const std::string& GetUserLocale() const override;
   const base::Version& GetDemoModeAppVersion() const override;
   growth::ActionMap GetCampaignsActions() override;
-  void RegisterSyntheticFieldTrial(const std::optional<int> study_id,
-                                   const int campaign_id) const override;
+  void RegisterSyntheticFieldTrial(
+      const std::string& trial_name,
+      const std::string& group_name) const override;
   void ClearConfig(const std::map<std::string, std::string>& params) override;
-  void NotifyEvent(const std::string& event_name) override;
+  void RecordEvent(const std::string& event_name) override;
   bool WouldTriggerHelpUI(
       const std::map<std::string, std::string>& params) override;
   signin::IdentityManager* GetIdentityManager() const override;

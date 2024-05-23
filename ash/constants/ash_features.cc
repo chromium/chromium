@@ -1399,6 +1399,13 @@ BASE_FEATURE(kGrowthCampaignsTriggerByAppOpen,
              "GrowthCampaignsTriggerByAppOpen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether growth campaigns triggering by any event is enabled.
+// This flag is used as a kill switch to disable the feature in the case that
+// the feature introduces any unexpected behaviours.
+BASE_FEATURE(kGrowthCampaignsTriggerByEvent,
+             "GrowthCampaignsTriggerByEvent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether growth campaigns triggering by url navigation is enabled.
 // This flag is used as a kill switch to disable the feature in the case that
 // the feature introduces any unexpected behaviours.
@@ -3684,6 +3691,10 @@ bool IsGrowthCampaignsTriggerAtLoadComplete() {
 
 bool IsGrowthCampaignsTriggerByAppOpenEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByAppOpen);
+}
+
+bool IsGrowthCampaignsTriggerByEventEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByEvent);
 }
 
 bool IsGrowthCampaignsTriggerByBrowserEnabled() {

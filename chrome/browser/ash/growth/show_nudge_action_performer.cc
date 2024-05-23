@@ -37,7 +37,7 @@ constexpr char kNudgeTitlePath[] = "title";
 constexpr char kNudgeBodyPath[] = "body";
 constexpr char kImagePath[] = "image";
 constexpr char kDurationPath[] = "duration";
-constexpr char kClearAppOpenedEventPath[] = "clearAppOpenedEvent";
+constexpr char kClearEventsPath[] = "clearEvents";
 constexpr char kPrimaryButtonPath[] = "primaryButton";
 constexpr char kSecondaryButtonPath[] = "secondaryButton";
 constexpr char kLabelPath[] = "label";
@@ -210,10 +210,9 @@ ShowNudgeActionPerformer::~ShowNudgeActionPerformer() {
   triggering_widget_ = nullptr;
 }
 
-void ShowNudgeActionPerformer::Run(
-  int campaign_id,
-  const base::Value::Dict* action_params,
-  growth::ActionPerformer::Callback callback) {
+void ShowNudgeActionPerformer::Run(int campaign_id,
+                                   const base::Value::Dict* action_params,
+                                   growth::ActionPerformer::Callback callback) {
   if (!ShowNudge(campaign_id, action_params)) {
     // TODO: b/331953307 - callback with concrete failure result reason.
     std::move(callback).Run(growth::ActionResult::kFailure,
@@ -377,13 +376,17 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   // TODO: b/331045558 - Add close button callback.
   NotifyReadyToLogImpression(campaign_id);
 
-  const std::string* clear_app_opened_event =
-      nudge_payload->FindString(kClearAppOpenedEventPath);
-  if (clear_app_opened_event) {
+  const base::Value::List* clear_events =
+      nudge_payload->FindList(kClearEventsPath);
+  if (clear_events) {
     auto* campaigns_manager = growth::CampaignsManager::Get();
     CHECK(campaigns_manager);
-    campaigns_manager->ClearEvent(growth::CampaignEvent::kAppOpened,
-                                  *clear_app_opened_event);
+
+    for (const auto& clear_event : *clear_events) {
+      if (clear_event.is_string()) {
+        campaigns_manager->ClearEvent(clear_event.GetString());
+      }
+    }
   }
 
   return true;

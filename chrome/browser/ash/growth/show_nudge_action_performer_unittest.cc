@@ -11,8 +11,11 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/mock_ui_performer_observer.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,6 +23,7 @@ namespace {
 
 constexpr char kNudgePayloadTemplate[] = R"(
     {
+      "clearEvents": ["event"],
       "title": "title",
       "%s": "text"
     }
@@ -29,18 +33,24 @@ constexpr char kNudgePayloadTemplate[] = R"(
 
 class ShowNudgeActionPerformerTest : public testing::Test {
  public:
-  ShowNudgeActionPerformerTest() = default;
+  ShowNudgeActionPerformerTest()
+      : profile_manager_(std::make_unique<TestingProfileManager>(
+            TestingBrowserProcess::GetGlobal())) {}
   ShowNudgeActionPerformerTest(const ShowNudgeActionPerformerTest&) = delete;
   ShowNudgeActionPerformerTest& operator=(const ShowNudgeActionPerformerTest&) =
       delete;
   ~ShowNudgeActionPerformerTest() override = default;
 
   void SetUp() override {
+    ASSERT_TRUE(profile_manager_->SetUp());
     action_ = std::make_unique<ShowNudgeActionPerformer>();
     scoped_observation_.Observe(action_.get());
   }
 
-  void TearDown() override { scoped_observation_.Reset(); }
+  void TearDown() override {
+    scoped_observation_.Reset();
+    profile_manager_->DeleteAllTestingProfiles();
+  }
 
   ShowNudgeActionPerformer& action() { return *action_; }
 
@@ -81,6 +91,8 @@ class ShowNudgeActionPerformerTest : public testing::Test {
 
   base::ScopedObservation<UiActionPerformer, UiActionPerformer::Observer>
       scoped_observation_{&mock_observer_};
+  CampaignsManagerClientImpl client_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 
 TEST_F(ShowNudgeActionPerformerTest, TestValidPayloadParams) {

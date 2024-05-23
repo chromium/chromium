@@ -33,6 +33,8 @@ inline constexpr char kTargetings[] = "targetings";
 
 inline constexpr char kId[] = "id";
 inline constexpr char kStudyId[] = "studyId";
+inline constexpr char kShouldRegisterTrialWithTriggerEventName[] =
+    "registerTrialWithTriggerEventName";
 
 // Targetings.
 // Demo Mode targeting paths.
@@ -236,6 +238,11 @@ std::optional<int> GetCampaignId(const Campaign* campaign) {
 
 std::optional<int> GetStudyId(const Campaign* campaign) {
   return campaign->FindInt(kStudyId);
+}
+
+std::optional<bool> ShouldRegisterTrialWithTriggerEventName(
+    const Campaign* campaign) {
+  return campaign->FindBool(kShouldRegisterTrialWithTriggerEventName);
 }
 
 // Targeting Base.

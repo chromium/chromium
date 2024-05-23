@@ -59,6 +59,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // TODO(b/308684443): Rename this to `GetCampaignBySlotAndRegisterTrial`.
   const Campaign* GetCampaignBySlot(Slot slot) const;
 
+  // Get latest opened URL.
+  const GURL& GetActiveUrl() const;
+
+  // Set the current active URL. Used in `CampaignsMatcher` for matching
+  // URL targeting
+  void SetActiveUrl(const GURL& url);
+
   // Get latest opened app id.
   const std::string& GetOpenedAppId() const;
 
@@ -66,13 +73,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // opened app targeting.
   void SetOpenedApp(const std::string& app_id);
 
+  // Get latest trigger.
+  const Trigger& GetTrigger() const;
+
   // Set the current trigger type and event. Used in `CampaignsMatcher` for
   // matching trigger targeting.
   void SetTrigger(const Trigger&& trigger_type);
-
-  // Set the current active URL. Used in `CampaignsMatcher` for matching
-  // URL targeting
-  void SetActiveUrl(const GURL& url);
 
   // Set whether the current user is device owner.
   void SetIsUserOwner(bool is_user_owner);
@@ -89,10 +95,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Clear event stored in the Feature Engagement framework.
   void ClearEvent(CampaignEvent event, const std::string& id);
+  void ClearEvent(const std::string& event);
 
-  // Notify event to the Feature Engagement framework. Event will be stored and
+  // Record event to the Feature Engagement framework. Event will be stored and
   // could be used for targeting.
-  void NotifyEventForTargeting(growth::CampaignEvent event,
+  // TODO: b/342283711 - Refactor this into two functions with
+  // `RecordSurfaceUiEvent` and `RecordEventAppOpened`.
+  void RecordEventForTargeting(growth::CampaignEvent event,
                                const std::string& id);
 
   void SetOobeCompleteTimeForTesting(base::Time time);
@@ -123,7 +132,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // incomplete, i.e. missing id.
   void RegisterTrialForCampaign(const Campaign* campaign) const;
 
-  void NotifyEvent(const std::string& event);
+  void RecordEvent(const std::string& event);
 
   raw_ptr<CampaignsManagerClient> client_ = nullptr;
 

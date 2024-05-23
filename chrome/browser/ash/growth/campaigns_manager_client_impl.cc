@@ -44,14 +44,6 @@ namespace {
 
 inline constexpr char kCampaignComponentName[] = "growth-campaigns";
 
-// The synthetic trial name prefix for growth experiment. Formatted as
-// `CrOSGrowthStudy{studyId}`, where `studyId` is an integer. For non
-// experimental campaigns, `studyId` will be empty.
-inline constexpr char kGrowthStudyName[] = "CrOSGrowthStudy";
-// The synthetical trial group name for growth experiment. The campaign id
-// will be unique for different groups.
-inline constexpr char kGrowthGroupName[] = "CampaignId";
-
 Profile* GetProfile() {
   return ProfileManager::GetActiveUserProfile();
 }
@@ -154,20 +146,13 @@ growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() {
 }
 
 void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
-    const std::optional<int> study_id,
-    const int campaign_id) const {
-  // If `study_id` is not null, appends it to the end of `trial_name`.
-  std::string trial_name(kGrowthStudyName);
-  if (study_id) {
-    base::StringAppendF(&trial_name, "%d", *study_id);
-  }
-  std::string group_name(kGrowthGroupName);
-  base::StringAppendF(&group_name, "%d", campaign_id);
+    const std::string& trial_name,
+    const std::string& group_name) const {
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
                                                             group_name);
 }
 
-void CampaignsManagerClientImpl::NotifyEvent(const std::string& event_name) {
+void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name) {
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
@@ -211,7 +196,7 @@ signin::IdentityManager* CampaignsManagerClientImpl::GetIdentityManager()
 
 void CampaignsManagerClientImpl::OnReadyToLogImpression(int campaign_id) {
   RecordImpression(campaign_id);
-  campaigns_manager_->NotifyEventForTargeting(
+  campaigns_manager_->RecordEventForTargeting(
       growth::CampaignEvent::kImpression, base::NumberToString(campaign_id));
 }
 
@@ -233,7 +218,7 @@ void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
     case CampaignButtonId::kPrimary:
     case CampaignButtonId::kSecondary:
       // Primary and Secondary button press will treated as user dismissal.
-      campaigns_manager_->NotifyEventForTargeting(
+      campaigns_manager_->RecordEventForTargeting(
           growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id));
       break;
     case CampaignButtonId::kOthers:

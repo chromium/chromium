@@ -47,10 +47,10 @@ inline constexpr char kEventTriggerParam[] =
 
 inline constexpr char kEventImpressionParam[] =
     "name:ChromeOSAshGrowthCampaigns_Campaign%d_Impression;comparator:<%d;"
-    "window:365;storage:365";
+    "window:3650;storage:3650";
 inline constexpr char kEventDismissalParam[] =
     "name:ChromeOSAshGrowthCampaigns_Campaign%d_Dismissed;comparator:<%d;"
-    "window:365;storage:365";
+    "window:3650;storage:3650";
 
 bool MatchPref(const base::Value::List* criterias,
                std::string_view pref_path,

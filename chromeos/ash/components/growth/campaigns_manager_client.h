@@ -66,13 +66,14 @@ class CampaignsManagerClient {
   virtual ActionMap GetCampaignsActions() = 0;
 
   // Register sythetical trial for current session.
-  virtual void RegisterSyntheticFieldTrial(std::optional<int> study_id,
-                                           int campaign_id) const = 0;
+  virtual void RegisterSyntheticFieldTrial(
+      const std::string& trial_name,
+      const std::string& group_name) const = 0;
 
   // Proxy to Feature Engagement methods.
   virtual void ClearConfig(
       const std::map<std::string, std::string>& params) = 0;
-  virtual void NotifyEvent(const std::string& event) = 0;
+  virtual void RecordEvent(const std::string& event) = 0;
   virtual bool WouldTriggerHelpUI(
       const std::map<std::string, std::string>& params) = 0;
   // Returns the IdentityManager for the active user profile.

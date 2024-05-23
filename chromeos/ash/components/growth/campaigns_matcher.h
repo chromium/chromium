@@ -33,6 +33,7 @@ class CampaignsMatcher {
   void SetOpenedApp(const std::string& app_id);
   void SetOobeCompleteTime(base::Time time);
 
+  const Trigger& trigger() const { return trigger_; }
   void SetTrigger(const Trigger&& trigger);
 
   const GURL& active_url() const { return active_url_; }

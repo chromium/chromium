@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
       "ChromeOSAshGrowthCampaigns_Campaign100_Impression";
   EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
 
-  growth::CampaignsManager::Get()->NotifyEventForTargeting(
+  growth::CampaignsManager::Get()->RecordEventForTargeting(
       growth::CampaignEvent::kImpression, "100");
 }
 
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
       "ChromeOSAshGrowthCampaigns_Campaign100_Dismissed";
   EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
 
-  growth::CampaignsManager::Get()->NotifyEventForTargeting(
+  growth::CampaignsManager::Get()->RecordEventForTargeting(
       growth::CampaignEvent::kDismissed, "100");
 }
 
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
       "ChromeOSAshGrowthCampaigns_AppOpened_AppId_abcd";
   EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
 
-  growth::CampaignsManager::Get()->NotifyEventForTargeting(
+  growth::CampaignsManager::Get()->RecordEventForTargeting(
       growth::CampaignEvent::kAppOpened, "abcd");
 }
 

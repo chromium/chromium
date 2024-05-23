@@ -20,9 +20,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/components/growth/action_performer.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "components/app_constants/constants.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 
 namespace {
@@ -74,13 +76,39 @@ void MaybeTriggerSlot(growth::Slot slot) {
                                    payload);
 }
 
-void MaybeTriggerCampaignsWhenAppOpened() {
-  if (!ash::features::IsGrowthCampaignsTriggerByAppOpenEnabled()) {
+void MaybeTriggerCampaignsOnEvent(const std::string& event) {
+  if (!ash::features::IsGrowthCampaignsTriggerByEventEnabled()) {
     return;
   }
 
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
+
+  growth::Trigger trigger(growth::TriggerType::kEvent);
+  trigger.event = event;
+  campaigns_manager->SetTrigger(std::move(trigger));
+
+  MaybeTriggerSlot(growth::Slot::kNudge);
+  MaybeTriggerSlot(growth::Slot::kNotification);
+}
+
+void MaybeTriggerCampaignsWhenAppOpened(
+    const std::optional<std::string>& app_group_id) {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  // If `app_group_id` is defined, record the `event` and trigger campaigns
+  // based on the trigger `event`. An `app_group_id` is used to configurate how
+  // often, i.e. the interval, to show the nudges.
+  if (app_group_id) {
+    campaigns_manager->RecordEventForTargeting(growth::CampaignEvent::kEvent,
+                                               app_group_id.value());
+    MaybeTriggerCampaignsOnEvent(app_group_id.value());
+  }
+
+  if (!ash::features::IsGrowthCampaignsTriggerByAppOpenEnabled()) {
+    return;
+  }
 
   growth::Trigger trigger(growth::TriggerType::kAppOpened);
   campaigns_manager->SetTrigger(std::move(trigger));
@@ -277,7 +305,8 @@ void CampaignsManagerSession::PrimaryPageChanged(const GURL& url) {
   }
 
   campaigns_manager->SetActiveUrl(url);
-  MaybeTriggerCampaignsWhenAppOpened();
+  auto app_group_id = growth::GetAppGroupId(url);
+  MaybeTriggerCampaignsWhenAppOpened(app_group_id);
 }
 
 void CampaignsManagerSession::SetProfileForTesting(Profile* profile) {
@@ -356,8 +385,8 @@ void CampaignsManagerSession::HandleAppInstanceCreation(
   campaigns_manager->SetOpenedApp(app_id);
   campaigns_manager->SetActiveUrl(FindActiveWebAppUrl(GetProfile(), app_id));
   opened_window_ = update.Window();
-
-  MaybeTriggerCampaignsWhenAppOpened();
+  auto app_group_id = growth::GetAppGroupId(app_id);
+  MaybeTriggerCampaignsWhenAppOpened(app_group_id);
 }
 
 void CampaignsManagerSession::HandleAppInstanceDestruction(
@@ -373,5 +402,4 @@ void CampaignsManagerSession::HandleAppInstanceDestruction(
 
   campaigns_manager->SetOpenedApp(std::string());
   opened_window_ = nullptr;
-  active_url_ = GURL::EmptyGURL();
 }
