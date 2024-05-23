@@ -45,12 +45,15 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
                                   IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE);
   html_source->AddLocalizedString("dismiss",
                                   IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE);
-  html_source->AddLocalizedString("info", IDS_LENS_OVERLAY_INFO_BUTTON_LABEL);
+  html_source->AddLocalizedString("learnMore", IDS_LENS_OVERLAY_LEARN_MORE);
   html_source->AddLocalizedString("initialToastLabel",
                                   IDS_LENS_OVERLAY_INITIAL_TOAST_LABEL);
   html_source->AddLocalizedString("initialToastMessage",
                                   IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
-  html_source->AddLocalizedString("sendFeedback", IDS_LENS_SEND_FEEDBACK_LABEL);
+  html_source->AddLocalizedString("moreOptions",
+                                  IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL);
+  html_source->AddLocalizedString("myActivity", IDS_LENS_OVERLAY_MY_ACTIVITY);
+  html_source->AddLocalizedString("sendFeedback", IDS_LENS_SEND_FEEDBACK);
   html_source->AddLocalizedString("cursorTooltipDragMessage",
                                   IDS_LENS_OVERLAY_CURSOR_TOOLTIP_DRAG_MESSAGE);
   html_source->AddLocalizedString(

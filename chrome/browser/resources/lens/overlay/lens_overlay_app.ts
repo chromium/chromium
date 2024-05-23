@@ -6,6 +6,7 @@ import './cursor_tooltip.js';
 import './initial_toast.js';
 import './selection_overlay.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from '//resources/js/assert.js';
@@ -32,8 +33,7 @@ export interface LensOverlayAppElement {
   $: {
     backgroundScrim: HTMLElement,
     closeButton: CrIconButtonElement,
-    feedbackButton: CrIconButtonElement,
-    infoButton: CrIconButtonElement,
+    moreOptionsButton: CrIconButtonElement,
     initialToast: InitialToastElement,
     cursorTooltip: CursorTooltipElement,
   };
@@ -60,6 +60,10 @@ export class LensOverlayAppElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
+      moreOptionsMenuVisible: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -71,6 +75,8 @@ export class LensOverlayAppElement extends PolymerElement {
   private closeButtonHidden: boolean = false;
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
+  // Whether more options menu should be shown.
+  private moreOptionsMenuVisible: boolean = false;
 
 
   private eventTracker_: EventTracker = new EventTracker();
@@ -136,11 +142,12 @@ export class LensOverlayAppElement extends PolymerElement {
     this.browserProxy.handler.closeRequestedByOverlayCloseButton();
   }
 
-  private onFeedbackButtonClick() {
+  private onFeedbackClick() {
     this.browserProxy.handler.feedbackRequestedByOverlay();
+    this.moreOptionsMenuVisible = false;
   }
 
-  private onInfoButtonClick(event: MouseEvent|KeyboardEvent) {
+  private onLearnMoreClick(event: MouseEvent|KeyboardEvent) {
     this.browserProxy.handler.infoRequestedByOverlay({
       middleButton: (event as MouseEvent).button === 1,
       altKey: event.altKey,
@@ -148,6 +155,22 @@ export class LensOverlayAppElement extends PolymerElement {
       metaKey: event.metaKey,
       shiftKey: event.shiftKey,
     });
+    this.moreOptionsMenuVisible = false;
+  }
+
+  private onMoreOptionsButtonClick() {
+    this.moreOptionsMenuVisible = !this.moreOptionsMenuVisible;
+  }
+
+  private onMyActivityClick(event: MouseEvent|KeyboardEvent) {
+    this.browserProxy.handler.activityRequestedByOverlay({
+      middleButton: (event as MouseEvent).button === 1,
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey,
+    });
+    this.moreOptionsMenuVisible = false;
   }
 
   private onNotifyResultsPanelOpened() {

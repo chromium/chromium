@@ -1277,6 +1277,21 @@ void LensOverlayController::RemoveBackgroundBlur() {
   ui_layer->SetLayerBlur(0);
 }
 
+void LensOverlayController::ActivityRequestedByOverlay(
+    ui::mojom::ClickModifiersPtr click_modifiers) {
+  // The tab is expected to be in the foreground.
+  if (!tab_->IsInForeground()) {
+    return;
+  }
+  tab_->GetBrowserWindowInterface()->OpenURL(
+      GURL(lens::features::GetLensOverlayActivityURL()),
+      ui::DispositionFromClick(
+          click_modifiers->middle_button, click_modifiers->alt_key,
+          click_modifiers->ctrl_key, click_modifiers->meta_key,
+          click_modifiers->shift_key,
+          WindowOpenDisposition::NEW_FOREGROUND_TAB));
+}
+
 void LensOverlayController::AddBackgroundBlur() {
   // We do not blur unless the overlay is currently active.
   if (state_ != State::kOverlay && state_ != State::kOverlayAndResults) {
@@ -1337,14 +1352,16 @@ void LensOverlayController::FeedbackRequestedByOverlay() {
 void LensOverlayController::InfoRequestedByOverlay(
     ui::mojom::ClickModifiersPtr click_modifiers) {
   // The tab is expected to be in the foreground.
-  CHECK(tab_->IsInForeground());
+  if (!tab_->IsInForeground()) {
+    return;
+  }
   tab_->GetBrowserWindowInterface()->OpenURL(
       GURL(lens::features::GetLensOverlayHelpCenterURL()),
       ui::DispositionFromClick(
           click_modifiers->middle_button, click_modifiers->alt_key,
           click_modifiers->ctrl_key, click_modifiers->meta_key,
           click_modifiers->shift_key,
-          WindowOpenDisposition::NEW_BACKGROUND_TAB));
+          WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
 void LensOverlayController::IssueLensRequest(

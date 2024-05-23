@@ -26,6 +26,10 @@ interface LensPageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page. (TypeScript -> C++)
 interface LensPageHandler {
+  // When this method is called, the C++ coordinator will open the link to the
+  // My Activity page in a new tab.
+  ActivityRequestedByOverlay(ui.mojom.ClickModifiers click_modifiers);
+
   // WebUI calls this when the user wants to dismiss the lens overlay using
   // the close button.
   CloseRequestedByOverlayCloseButton();

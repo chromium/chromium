@@ -532,6 +532,8 @@ class LensOverlayController : public LensSearchboxClient,
   void RemoveBackgroundBlur();
 
   // lens::mojom::LensPageHandler overrides.
+  void ActivityRequestedByOverlay(
+      ui::mojom::ClickModifiersPtr click_modifiers) override;
   void AddBackgroundBlur() override;
   void CloseRequestedByOverlayCloseButton() override;
   void CloseRequestedByOverlayBackgroundClick() override;

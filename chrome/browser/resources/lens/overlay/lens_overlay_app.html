@@ -38,12 +38,45 @@
     display: none;
   }
 
-  #feedbackButton {
-    --cr-icon-image: url("feedback.svg");
+  #moreOptions {
+    width: 130px;
   }
 
-  #infoButton {
-    --cr-icon-image: url("info.svg");
+  #moreOptionsButton {
+    margin-inline-start: 94px;
+  }
+
+  #moreOptionsMenu {
+    background-color: #181C2299;
+    border-radius: 8px;
+    display: none;
+    gap: 8px;
+    margin-top: 11px;
+    padding: 16px 0px;
+    /* Needed to prevent mouse flicker on option hover. */
+    cursor: default;
+  }
+
+  :host([more-options-menu-visible]) #moreOptionsMenu {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu-item {
+    margin-inline-start: 20px;
+    height: 20px;
+  }
+
+  .menu-item-label {
+    color: #E3E3E3;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  .menu-item-label:hover {
+    cursor: pointer;
   }
 
   .app-container :not(lens-selection-overlay) {
@@ -80,17 +113,29 @@
   </lens-selection-overlay>
   <initial-toast id="initialToast"></initial-toast>
   <div id="buttonContainer">
-    <cr-icon-button id="feedbackButton" class="action-button"
-        on-click="onFeedbackButtonClick" aria-label="$i18n{sendFeedback}"
-        on-pointerenter="handlePointerEnterActionButton"
-        on-pointerleave="handlePointerLeaveActionButton"
-        title="$i18n{sendFeedback}"></cr-icon-button>
-    <cr-icon-button id="infoButton" class="action-button"
-        on-click="onInfoButtonClick" aria-label="$i18n{info}"
-        on-pointerenter="handlePointerEnterActionButton"
-        on-pointerleave="handlePointerLeaveActionButton"
-        title="$i18n{info}">
-    </cr-icon-button>
+    <div id="moreOptions">
+      <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"
+          class="action-button" on-click="onMoreOptionsButtonClick"
+          aria-label="$i18n{moreOptions}"
+          on-pointerenter="handlePointerEnterActionButton"
+          on-pointerleave="handlePointerLeaveActionButton"
+          title="$i18n{moreOptions}">
+      </cr-icon-button>
+      <div id="moreOptionsMenu">
+        <div class="menu-item">
+          <span id="myActivity" on-click="onMyActivityClick"
+              class="menu-item-label">$i18n{myActivity}</span>
+        </div>
+        <div class="menu-item">
+          <span id="learnMore" on-click="onLearnMoreClick"
+              class="menu-item-label">$i18n{learnMore}</span>
+        </div>
+        <div class="menu-item">
+          <span id="sendFeedback" on-click="onFeedbackClick"
+              class="menu-item-label">$i18n{sendFeedback}</span>
+        </div>
+      </div>
+    </div>
     <cr-icon-button id="closeButton" class="action-button"
         on-click="onCloseButtonClick" aria-label="$i18n{close}"
         on-pointerenter="handlePointerEnterActionButton"
