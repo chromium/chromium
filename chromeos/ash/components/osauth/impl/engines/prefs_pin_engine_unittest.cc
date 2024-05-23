@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/osauth/impl/cryptohome_core_impl.h"
+#include "chromeos/ash/components/osauth/impl/prefs.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/osauth/test_support/mock_auth_factor_engine.h"
@@ -40,12 +41,7 @@ class PrefsPinEngineTest : public ::testing::Test {
         engine_(&engine_impl_) {
     user_manager::FakeUserManager::RegisterPrefs(prefs_.registry());
     user_manager_.Initialize();
-
-    // TODO(b/271263584): move these to a common location.
-    PrefRegistrySimple* registry = prefs_.registry();
-    registry->RegisterStringPref(prefs::kQuickUnlockPinSalt, "");
-    registry->RegisterStringPref(prefs::kQuickUnlockPinSecret, "");
-    registry->RegisterIntegerPref(prefs::kQuickUnlockPinFailedAttempts, 0);
+    RegisterPinStoragePrefs(prefs_.registry());
   }
 
   ~PrefsPinEngineTest() override {

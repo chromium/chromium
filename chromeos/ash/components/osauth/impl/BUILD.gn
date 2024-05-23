@@ -59,6 +59,8 @@ component("impl") {
     "engines/prefs_pin_engine.h",
     "login_screen_auth_policy_connector.cc",
     "login_screen_auth_policy_connector.h",
+    "prefs.cc",
+    "prefs.h",
   ]
 }
 
