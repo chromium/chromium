@@ -81,6 +81,7 @@ constexpr auto kMainTextStyleLight = views::style::TextStyle::STYLE_BODY_3;
 constexpr auto kMainTextStyleHighlighted =
     views::style::TextStyle::STYLE_BODY_3_BOLD;
 constexpr auto kMinorTextStyle = views::style::TextStyle::STYLE_BODY_4;
+constexpr auto kDisabledTextStyle = views::style::TextStyle::STYLE_DISABLED;
 
 // Returns a wrapper around `closure` that posts it to the default message
 // queue instead of executing it directly. This is to avoid that the callback's
@@ -136,16 +137,21 @@ int GetMaxPopupAddressProfileWidth() {
 std::unique_ptr<views::Label> CreateMainTextLabel(
     const Suggestion& suggestion,
     views::style::TextStyle primary_text_style = kMainTextStyle) {
+  views::style::TextStyle main_text_label_style;
+  if (suggestion.apply_deactivated_style) {
+    main_text_label_style = kDisabledTextStyle;
+  } else {
+    main_text_label_style = suggestion.main_text.is_primary
+                                ? primary_text_style
+                                : kMainTextStyleLight;
+  }
+
   auto label = std::make_unique<views::Label>(
       suggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      suggestion.main_text.is_primary ? primary_text_style
-                                      : kMainTextStyleLight);
+      main_text_label_style);
 
   if (!suggestion.main_text.is_primary) {
     label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-  }
-  if (suggestion.apply_deactivated_style) {
-    popup_cell_utils::ApplyDeactivatedStyle(*label);
   }
   return label;
 }
@@ -156,14 +162,11 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
   if (suggestion.minor_text.value.empty()) {
     return nullptr;
   }
-
   auto label = std::make_unique<views::Label>(
       suggestion.minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      kMinorTextStyle);
+      suggestion.apply_deactivated_style ? kDisabledTextStyle
+                                         : kMinorTextStyle);
   label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-  if (suggestion.apply_deactivated_style) {
-    popup_cell_utils::ApplyDeactivatedStyle(*label);
-  }
   return label;
 }
 
