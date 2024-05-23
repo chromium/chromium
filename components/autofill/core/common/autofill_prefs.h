@@ -45,6 +45,12 @@ inline constexpr char kAutofillIbanEnabled[] = "autofill.iban_enabled";
 // was run. This routine will be run once per version.
 inline constexpr char kAutofillLastVersionDeduped[] =
     "autofill.last_version_deduped";
+// To simplify the rollout of AutofillSilentlyRemoveQuasiDuplicates,
+// deduplication can be run a second time per milestone for users enrolled in
+// the experiment. This pref tracks whether deduplication was run a second time.
+// TODO(b/325450676): Remove after the rollout finished.
+inline constexpr char kAutofillRanQuasiDuplicateExtraDeduplication[] =
+    "autofill.ran_quasi_duplicate_extra_deduplication";
 // Integer that is set to the last version where disused addresses were
 // deleted. This deletion will be run once per version.
 inline constexpr char kAutofillLastVersionDisusedAddressesDeleted[] =

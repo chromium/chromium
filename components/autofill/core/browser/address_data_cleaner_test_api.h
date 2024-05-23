@@ -25,6 +25,10 @@ class AddressDataCleanerTestApi {
     return data_cleaner_->are_cleanups_pending_;
   }
 
+  void ResetAreCleanupsPending() {
+    data_cleaner_->are_cleanups_pending_ = true;
+  }
+
  private:
   const raw_ref<AddressDataCleaner> data_cleaner_;
 };

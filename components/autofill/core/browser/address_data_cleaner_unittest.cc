@@ -20,6 +20,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -268,6 +269,47 @@ TEST_F(AddressDataCleanerTest, Deduplicate_QuasiDuplicate_LowQuality) {
 
   test_api(data_cleaner_).ApplyDeduplicationRoutine();
   EXPECT_THAT(test_adm_.GetProfiles(), UnorderedElementsAre(Pointee(profile)));
+}
+
+// Tests that when AutofillSilentlyRemoveQuasiDuplicates is enabled, the
+// deduplication routine is run a second time per milestone for enrolled users.
+TEST_F(AddressDataCleanerTest, Deduplicate_SecondTime) {
+  class MockAddressDataCleaner : public AddressDataCleaner {
+   public:
+    using AddressDataCleaner::AddressDataCleaner;
+    MOCK_METHOD(void, ApplyDeduplicationRoutine, (), (override));
+  };
+  MockAddressDataCleaner data_cleaner(
+      test_adm_, /*sync_service=*/nullptr, *prefs_,
+      /*alternative_state_name_map_updater=*/nullptr);
+  testing::MockFunction<void()> check;
+  {
+    testing::InSequence s;
+    EXPECT_CALL(data_cleaner, ApplyDeduplicationRoutine);
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(data_cleaner, ApplyDeduplicationRoutine);
+    EXPECT_CALL(check, Call);
+  }
+
+  // Duplication should run once per milestone by default without the feature.
+  {
+    data_cleaner.MaybeCleanupAddressData();
+    check.Call();
+    // Simulate a browser restart. Deduplication is not called again.
+    test_api(data_cleaner).ResetAreCleanupsPending();
+    data_cleaner.MaybeCleanupAddressData();
+  }
+  // Enroll the user in the feature. This enables a second deduplication run,
+  // but not a third one.
+  {
+    base::test::ScopedFeatureList feature(
+        features::kAutofillSilentlyRemoveQuasiDuplicates);
+    test_api(data_cleaner).ResetAreCleanupsPending();
+    data_cleaner.MaybeCleanupAddressData();
+    check.Call();
+    test_api(data_cleaner).ResetAreCleanupsPending();
+    data_cleaner.MaybeCleanupAddressData();
+  }
 }
 
 TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {

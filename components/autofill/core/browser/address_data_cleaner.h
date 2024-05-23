@@ -81,7 +81,8 @@ class AddressDataCleaner : public AddressDataManager::Observer,
 
   // Deduplicates the PDMs profiles, by merging profile pairs where one is a
   // subset of the other. Account profiles are never deduplication.
-  void ApplyDeduplicationRoutine();
+  // Virtual for testing.
+  virtual void ApplyDeduplicationRoutine();
 
   // Delete profiles unused for at least `kDisusedDataModelDeletionTimeDelta`.
   void DeleteDisusedAddresses();

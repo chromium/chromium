@@ -172,10 +172,21 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   are_cleanups_pending_ = false;
 
   // Ensure that deduplication is only run one per milestone.
+  // To simplify the rollout of AutofillSilentlyRemoveQuasiDuplicates, this
+  // condition is relaxed to twice per milestone (but still limited to at most
+  // once per startup).
+  // TODO(b/325450676): Revert to once per milestone after the rollout.
   if (pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
       CHROME_VERSION_MAJOR) {
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
                               CHROME_VERSION_MAJOR);
+    ApplyDeduplicationRoutine();
+  } else if (base::FeatureList::IsEnabled(
+                 features::kAutofillSilentlyRemoveQuasiDuplicates) &&
+             !pref_service_->GetBoolean(
+                 prefs::kAutofillRanQuasiDuplicateExtraDeduplication)) {
+    pref_service_->SetBoolean(
+        prefs::kAutofillRanQuasiDuplicateExtraDeduplication, true);
     ApplyDeduplicationRoutine();
   }
 
