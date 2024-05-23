@@ -1677,6 +1677,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.HPRT.OhttpKeyService.FirstLookupResponseCodeFromCurrentKey"
+    enum="HttpResponseCode" expires_after="2024-11-23">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    HTTP response code from the first SafeBrowsing hash-prefix real-time lookup
+    using the current ohttp key. Logged only for the first response after a new
+    ohttp key is fetched. This histogram helps us understand how often a new key
+    fails to work. Not logged if this is the first request using the key that is
+    retrieved from disk.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.OhttpKeyService.HasCachedKey"
     enum="BooleanHasKey" expires_after="2024-11-03">
   <owner>xinghuilu@chromium.org</owner>

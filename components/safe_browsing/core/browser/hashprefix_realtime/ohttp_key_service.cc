@@ -234,6 +234,14 @@ void OhttpKeyService::NotifyLookupResponse(
     return;
   }
 
+  if (!has_received_lookup_response_from_current_key_) {
+    base::UmaHistogramSparse(
+        "SafeBrowsing.HPRT.OhttpKeyService."
+        "FirstLookupResponseCodeFromCurrentKey",
+        response_code);
+    has_received_lookup_response_from_current_key_ = true;
+  }
+
   if (response_code == kKeyRelatedHttpErrorCode) {
     // The failure is caused by unrecognized key. This is a hard failure, so
     // clear the key immediately.
@@ -318,6 +326,7 @@ void OhttpKeyService::OnURLLoaderComplete(
   if (is_key_fetch_successful) {
     ohttp_key_ = {*response_body, base::Time::Now() + kKeyExpirationDuration};
     StoreKeyToPref();
+    has_received_lookup_response_from_current_key_ = false;
     backoff_operator_->ReportSuccess();
   } else {
     backoff_operator_->ReportError();

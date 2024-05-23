@@ -609,6 +609,35 @@ TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_Backoff) {
   FastForwardAndVerifyKeyValue(kTestOldOhttpKey);
 }
 
+TEST_F(OhttpKeyServiceTest,
+       NotifyLookupResponse_LogFirstLookupResponseHistogram) {
+  constexpr char kFirstLookupHistogramName[] =
+      "SafeBrowsing.HPRT.OhttpKeyService.FirstLookupResponseCodeFromCurrentKey";
+  SetupOldKeyAndPendingNewKey();
+  task_environment_.RunUntilIdle();
+
+  ohttp_key_service_->NotifyLookupResponse(
+      kTestOldOhttpKey, net::HTTP_UNPROCESSABLE_CONTENT, /*headers=*/nullptr);
+  // Histogram is not logged because it is not a new key.
+  histogram_tester_.ExpectTotalCount(kFirstLookupHistogramName,
+                                     /*expected_count=*/0);
+
+  FastForwardAndVerifyKeyValue(kTestNewOhttpKey);
+
+  ohttp_key_service_->NotifyLookupResponse(kTestNewOhttpKey, net::HTTP_OK,
+                                           CreateSuccessHeaders());
+  histogram_tester_.ExpectUniqueSample(kFirstLookupHistogramName,
+                                       /*sample=*/net::HTTP_OK,
+                                       /*expected_bucket_count=*/1);
+
+  ohttp_key_service_->NotifyLookupResponse(kTestNewOhttpKey, net::HTTP_OK,
+                                           CreateSuccessHeaders());
+  // Histogram is not logged again because it is not the first lookup response
+  // with this key.
+  histogram_tester_.ExpectTotalCount(kFirstLookupHistogramName,
+                                     /*expected_count=*/1);
+}
+
 TEST_F(OhttpKeyServiceTest, Shutdown) {
   base::MockCallback<OhttpKeyService::Callback> response_callback;
   // Pending callbacks should be run during shutdown.

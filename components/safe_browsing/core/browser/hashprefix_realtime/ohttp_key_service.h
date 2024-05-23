@@ -184,6 +184,12 @@ class OhttpKeyService : public KeyedService {
   // Callback used to help determine if the service should be enabled.
   base::RepeatingCallback<std::optional<std::string>()> country_getter_;
 
+  // Indicates whether a lookup response has been received using the current
+  // |ohttp_key_|. Set to false when a new key is obtained. Set back to true
+  // when the first response is received using this key. Used for logging
+  // metrics.
+  bool has_received_lookup_response_from_current_key_ = true;
+
   base::WeakPtrFactory<OhttpKeyService> weak_factory_{this};
 };
 
