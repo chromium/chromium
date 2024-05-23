@@ -30,7 +30,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
-#include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -138,8 +137,6 @@ class TestAutofillClientTemplate : public T {
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
     return &mock_autocomplete_history_manager_;
   }
-
-  IbanManager* GetIbanManager() override { return GetMockIbanManager(); }
 
   IbanAccessManager* GetIbanAccessManager() override {
     return GetMockIbanAccessManager();
@@ -586,14 +583,6 @@ class TestAutofillClientTemplate : public T {
     return &mock_autocomplete_history_manager_;
   }
 
-  MockIbanManager* GetMockIbanManager() {
-    if (!mock_iban_manager_) {
-      mock_iban_manager_ = std::make_unique<testing::NiceMock<MockIbanManager>>(
-          test_personal_data_manager_.get());
-    }
-    return mock_iban_manager_.get();
-  }
-
   MockIbanAccessManager* GetMockIbanAccessManager() {
     if (!mock_iban_access_manager_) {
       mock_iban_access_manager_ =
@@ -678,7 +667,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   std::unique_ptr<payments::TestPaymentsAutofillClient>
       payments_autofill_client_;
-  std::unique_ptr<testing::NiceMock<MockIbanManager>> mock_iban_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
   GURL form_origin_{"https://example.test"};

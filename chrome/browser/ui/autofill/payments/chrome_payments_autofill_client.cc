@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/check_deref.h"
+#include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
@@ -441,6 +442,12 @@ void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
       ->ShowBubble(std::move(accept_mandatory_reauth_callback),
                    std::move(cancel_mandatory_reauth_callback),
                    std::move(close_mandatory_reauth_callback));
+}
+
+IbanManager* ChromePaymentsAutofillClient::GetIbanManager() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return IbanManagerFactory::GetForProfile(profile);
 }
 
 #if BUILDFLAG(IS_ANDROID)

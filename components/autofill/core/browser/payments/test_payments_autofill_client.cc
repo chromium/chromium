@@ -158,6 +158,14 @@ bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
   return mandatory_reauth_opt_in_prompt_was_shown_;
 }
 
+MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {
+  if (!mock_iban_manager_) {
+    mock_iban_manager_ = std::make_unique<testing::NiceMock<MockIbanManager>>(
+        client_->GetPersonalDataManager());
+  }
+  return mock_iban_manager_.get();
+}
+
 void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
     std::unique_ptr<VirtualCardEnrollmentManager> vcem) {
   virtual_card_enrollment_manager_ = std::move(vcem);

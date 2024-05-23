@@ -87,7 +87,6 @@ enum class CreditCardFetchResult;
 class FormDataImporter;
 class Iban;
 class IbanAccessManager;
-class IbanManager;
 class LogManager;
 class MerchantPromoCodeManager;
 struct OfferNotificationOptions;
@@ -387,9 +386,6 @@ class AutofillClient {
 
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;
-
-  // Gets the IbanManager instance associated with the client.
-  virtual IbanManager* GetIbanManager();
 
   // Gets the IbanAccessManager instance associated with the client.
   virtual IbanAccessManager* GetIbanAccessManager();

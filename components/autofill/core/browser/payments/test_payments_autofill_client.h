@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -78,6 +79,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceClosure accept_mandatory_reauth_callback,
       base::OnceClosure cancel_mandatory_reauth_callback,
       base::RepeatingClosure close_mandatory_reauth_callback) override;
+  MockIbanManager* GetIbanManager() override;
 
   bool GetMandatoryReauthOptInPromptWasShown();
 
@@ -184,6 +186,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   // Populated if mandatory re-auth opt-in was offered, or re-offered,
   // respectively.
   bool mandatory_reauth_opt_in_prompt_was_shown_ = false;
+
+  std::unique_ptr<MockIbanManager> mock_iban_manager_;
 };
 
 }  // namespace payments

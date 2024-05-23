@@ -132,4 +132,8 @@ void PaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::OnceClosure cancel_mandatory_reauth_callback,
     base::RepeatingClosure close_mandatory_reauth_callback) {}
 
+IbanManager* PaymentsAutofillClient::GetIbanManager() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

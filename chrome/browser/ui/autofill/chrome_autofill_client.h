@@ -106,7 +106,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
-  IbanManager* GetIbanManager() override;
   IbanAccessManager* GetIbanAccessManager() override;
   AutofillComposeDelegate* GetComposeDelegate() override;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;

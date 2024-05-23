@@ -1155,7 +1155,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
                                  HasQueriedFormId(), HasQueriedFieldId(),
                                  iban.value(), SuggestionType::kIbanEntry,
                                  std::optional(IBAN_VALUE)));
-  EXPECT_CALL(*client().GetMockIbanManager(),
+  EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetIbanManager(),
               OnSingleFieldSuggestionSelected(
                   iban.GetIdentifierStringForAutofillDisplay(),
                   SuggestionType::kIbanEntry));
@@ -2584,7 +2584,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                  HasQueriedFormId(), HasQueriedFieldId(),
                                  iban.value(), SuggestionType::kIbanEntry,
                                  std::optional(IBAN_VALUE)));
-  EXPECT_CALL(*client().GetMockIbanManager(),
+  EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetIbanManager(),
               OnSingleFieldSuggestionSelected(
                   iban.GetIdentifierStringForAutofillDisplay(),
                   SuggestionType::kIbanEntry));

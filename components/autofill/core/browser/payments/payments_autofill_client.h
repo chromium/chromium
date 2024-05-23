@@ -17,18 +17,19 @@
 namespace autofill {
 
 struct AutofillErrorDialogContext;
-class AutofillSaveCardBottomSheetBridge;
 enum class AutofillProgressDialogType;
+class AutofillSaveCardBottomSheetBridge;
+struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 struct CardUnmaskPromptOptions;
 class CreditCard;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
-class Iban;
 class CreditCardRiskBasedAuthenticator;
+class Iban;
+class IbanManager;
 class MigratableCreditCard;
 class OtpUnmaskDelegate;
-struct CardUnmaskChallengeOption;
 enum class OtpUnmaskResult;
 class VirtualCardEnrollmentManager;
 enum class WebauthnDialogCallbackType;
@@ -256,6 +257,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::OnceClosure accept_mandatory_reauth_callback,
       base::OnceClosure cancel_mandatory_reauth_callback,
       base::RepeatingClosure close_mandatory_reauth_callback);
+
+  // Gets the IbanManager instance associated with the client.
+  virtual IbanManager* GetIbanManager();
 };
 
 }  // namespace payments

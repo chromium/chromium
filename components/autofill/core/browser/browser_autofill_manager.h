@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/ui/fast_checkout_delegate.h"
@@ -630,7 +631,7 @@ class BrowserAutofillManager : public AutofillManager {
   std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_ =
       std::make_unique<SingleFieldFormFillRouter>(
           client().GetAutocompleteHistoryManager(),
-          client().GetIbanManager(),
+          client().GetPaymentsAutofillClient()->GetIbanManager(),
           client().GetMerchantPromoCodeManager());
 
   // Utilities for logging form events. The loggers emit metrics during their

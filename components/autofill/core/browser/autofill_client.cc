@@ -67,10 +67,6 @@ AutofillClient::GetAutofillMlPredictionModelHandler() {
   return nullptr;
 }
 
-IbanManager* AutofillClient::GetIbanManager() {
-  return nullptr;
-}
-
 IbanAccessManager* AutofillClient::GetIbanAccessManager() {
   return nullptr;
 }
