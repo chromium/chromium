@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -92,23 +93,41 @@ class TestGpuService : public mojom::GpuService {
     return req.id == id && req.client_id == client_id;
   }
 
-  void SatisfyAllocationRequestAt(size_t index) {
+  // NOTE: By default, tests assume that shared-memory GMBs are created.
+  // However, some tests verify production flows that operate on native GMBs. To
+  // ensure that these tests are faithful, the GMB must have a type that signals
+  // that it's a native buffer. Tests can request that type via
+  // `emulate_native_handle`.
+  void SatisfyAllocationRequestAt(size_t index,
+                                  bool emulate_native_handle = false) {
     DCHECK_LT(index, allocation_requests_.size());
     auto& req = allocation_requests_[index];
 
     gfx::GpuMemoryBufferHandle handle;
     handle.id = req.id;
 
-    // These tests are testing production flows that operate on native GMBs. To
-    // ensure that these tests are faithful, give the GMB a type that signals
-    // that it's a native buffer. The concrete type doesn't matter, as these
-    // tests don't actually cause the GMB to be used in any way.
-    handle.type = gfx::NATIVE_PIXMAP;
-    constexpr size_t kBufferSizeBytes = 100;
+    handle.type =
+        emulate_native_handle ? gfx::NATIVE_PIXMAP : gfx::SHARED_MEMORY_BUFFER;
+
+    // In the context of these tests, HostGpuMemoryBufferManager will create
+    // shared-memory GMBs from these handles, and creation of those GMBs will
+    // fail if the buffer size and stride are determined to be invalid. In
+    // production this is not an issue as the handle itself will be created via
+    // GpuMemoryBufferImplSharedMemory, which takes care of setting the buffer
+    // size and stride appropriately based on the requested format and size.
+    // However, as we don't have the requested format or size here, simply set
+    // hardcoded parameter values that ensure that this creation will succeed
+    // for the formats and sizes used in these tests.
+    constexpr size_t kBufferSizeBytes = 6144;
     handle.region = base::UnsafeSharedMemoryRegion::Create(kBufferSizeBytes);
+    handle.stride = 64;
 
     DCHECK(req.callback);
     std::move(req.callback).Run(std::move(handle));
+  }
+
+  void perform_next_allocation_synchronously() {
+    perform_next_allocation_synchronously_ = true;
   }
 
   // mojom::GpuService:
@@ -182,6 +201,10 @@ class TestGpuService : public mojom::GpuService {
                              gpu::SurfaceHandle surface_handle,
                              CreateGpuMemoryBufferCallback callback) override {
     allocation_requests_.push_back({id, client_id, std::move(callback)});
+    if (perform_next_allocation_synchronously_) {
+      SatisfyAllocationRequestAt(allocation_requests_.size() - 1);
+      perform_next_allocation_synchronously_ = false;
+    }
   }
 
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
@@ -260,6 +283,7 @@ class TestGpuService : public mojom::GpuService {
 
  private:
   base::OnceClosure connection_error_handler_;
+  bool perform_next_allocation_synchronously_ = false;
 
   struct AllocationRequest {
     gfx::GpuMemoryBufferId id;
@@ -277,9 +301,20 @@ class TestGpuService : public mojom::GpuService {
 
 }  // namespace
 
-class HostGpuMemoryBufferManagerTest : public ::testing::Test {
+class HostGpuMemoryBufferManagerTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<
+          /*create_shm_gmbs_via_gpu_service=*/bool> {
  public:
-  HostGpuMemoryBufferManagerTest() = default;
+  HostGpuMemoryBufferManagerTest() {
+    if (create_shm_gmbs_via_gpu_service()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          kCreateSharedMemoryGMBsViaGpuService);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          kCreateSharedMemoryGMBsViaGpuService);
+    }
+  }
 
   HostGpuMemoryBufferManagerTest(const HostGpuMemoryBufferManagerTest&) =
       delete;
@@ -290,6 +325,8 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
     if (gpu_memory_buffer_manager_)
       gpu_memory_buffer_manager_->Shutdown();
   }
+
+  bool create_shm_gmbs_via_gpu_service() { return GetParam(); }
 
   void SetUp() override {
     gpu_service_ = std::make_unique<TestGpuService>();
@@ -328,11 +365,23 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
     return false;
   }
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> AllocateGpuMemoryBufferSync() {
+  std::unique_ptr<gfx::GpuMemoryBuffer> AllocateShMemGpuMemoryBufferSync() {
     base::Thread diff_thread("TestThread");
     diff_thread.Start();
     std::unique_ptr<gfx::GpuMemoryBuffer> buffer;
     base::RunLoop run_loop;
+
+    if (create_shm_gmbs_via_gpu_service()) {
+      // Ensure that when the TestGpuService receives the allocation request on
+      // the UI thread it acts on that request synchronously to unblock
+      // HostGpuMemoryBuffer, which will be blocked on `diff_thread` waiting for
+      // the response. Note that we cannot simply post a task on `diff_thread`
+      // to satisfy the request, as HostGpuMemoryBuffer does a busy-wait
+      // on the assumption that the work of allocating the GMB happens on a
+      // different thread.
+      gpu_service()->perform_next_allocation_synchronously();
+    }
+
     diff_thread.task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -358,11 +407,14 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
  protected:
   std::unique_ptr<TestGpuService> gpu_service_;
   std::unique_ptr<HostGpuMemoryBufferManager> gpu_memory_buffer_manager_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that allocation requests from a client that goes away before allocation
 // completes are cleaned up correctly.
-TEST_F(HostGpuMemoryBufferManagerTest, AllocationRequestsForDestroyedClient) {
+TEST_P(HostGpuMemoryBufferManagerTest, AllocationRequestsForDestroyedClient) {
   if (!IsNativePixmapConfigSupported())
     return;
 
@@ -391,13 +443,30 @@ TEST_F(HostGpuMemoryBufferManagerTest, AllocationRequestsForDestroyedClient) {
 
   // When the host receives the allocated memory for the destroyed client, it
   // should request the allocated memory to be freed.
-  gpu_service()->SatisfyAllocationRequestAt(0);
+
+  // NOTE: This test is testing production flows that operate on native GMBs. To
+  // ensure that these tests are faithful, give the GMB a type that signals that
+  // it's a native buffer.
+  gpu_service()->SatisfyAllocationRequestAt(0, /*emulate_native_handle=*/true);
+
   EXPECT_EQ(1, gpu_service()->GetAllocationRequestsCount());
   EXPECT_EQ(1, gpu_service()->GetDestructionRequestsCount());
   EXPECT_TRUE(gpu_service()->IsDestructionRequestAt(0, buffer_id, client_id));
 }
 
-TEST_F(HostGpuMemoryBufferManagerTest, RequestsFromUntrustedClientsValidated) {
+// Verifies that requests for GMB creations with non-native-supported formats
+// are handled in the browser, and that either (a) no GMB is created if the
+// usages require a native GMB or (b) a shared-memory GMB is created otherwise.
+TEST_P(HostGpuMemoryBufferManagerTest,
+       RequestsForNonNativeGMBsHandledInBrowser) {
+  if (create_shm_gmbs_via_gpu_service()) {
+    // This test is not relevant when all GMB creation is done via the GPU
+    // service, as in that case HostGpuMemoryBufferManager neither does any
+    // checking of whether the passed-in usages require a native GMB nor does it
+    // create shared-memory GMBs of its own volition.
+    GTEST_SKIP();
+  }
+
   const auto buffer_id = static_cast<gfx::GpuMemoryBufferId>(1);
   const int client_id = 2;
   // SCANOUT cannot be used if native gpu memory buffer is not supported.
@@ -437,15 +506,15 @@ TEST_F(HostGpuMemoryBufferManagerTest, RequestsFromUntrustedClientsValidated) {
   }
 }
 
-TEST_F(HostGpuMemoryBufferManagerTest, GpuMemoryBufferDestroyed) {
-  auto buffer = AllocateGpuMemoryBufferSync();
+TEST_P(HostGpuMemoryBufferManagerTest, GpuMemoryBufferDestroyed) {
+  auto buffer = AllocateShMemGpuMemoryBufferSync();
   EXPECT_TRUE(buffer);
   buffer.reset();
 }
 
-TEST_F(HostGpuMemoryBufferManagerTest,
+TEST_P(HostGpuMemoryBufferManagerTest,
        GpuMemoryBufferDestroyedOnDifferentThread) {
-  auto buffer = AllocateGpuMemoryBufferSync();
+  auto buffer = AllocateShMemGpuMemoryBufferSync();
   EXPECT_TRUE(buffer);
   // Destroy the buffer in a different thread.
   base::Thread diff_thread("DestroyThread");
@@ -456,7 +525,7 @@ TEST_F(HostGpuMemoryBufferManagerTest,
 
 // Tests that if an allocated buffer is received after the gpu service issuing
 // it has died, HGMBManager retries the allocation request properly.
-TEST_F(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
+TEST_P(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
   if (!IsNativePixmapConfigSupported())
     return;
 
@@ -488,20 +557,24 @@ TEST_F(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
 
   // Send an allocated buffer corresponding to the first request on the old gpu.
   // This should not result in a buffer handle.
-  gpu_service()->SatisfyAllocationRequestAt(0);
+
+  // NOTE: This test is testing production flows that operate on native GMBs. To
+  // ensure that these tests are faithful, give the GMB a type that signals that
+  // it's a native buffer.
+  gpu_service()->SatisfyAllocationRequestAt(0, /*emulate_native_handle=*/true);
   EXPECT_EQ(2, gpu_service()->GetAllocationRequestsCount());
   EXPECT_TRUE(allocated_handle.is_null());
 
   // Send an allocated buffer corresponding to the retried request on the new
   // gpu. This should result in a buffer handle.
-  gpu_service()->SatisfyAllocationRequestAt(1);
+  gpu_service()->SatisfyAllocationRequestAt(1, /*emulate_native_handle=*/true);
   EXPECT_EQ(2, gpu_service()->GetAllocationRequestsCount());
   EXPECT_FALSE(allocated_handle.is_null());
 }
 
 // Test that any pending CreateGpuMemoryBuffer() requests are cancelled, so
 // blocked threads stop waiting, on shutdown.
-TEST_F(HostGpuMemoryBufferManagerTest, CancelRequestsForShutdown) {
+TEST_P(HostGpuMemoryBufferManagerTest, CancelRequestsForShutdown) {
   base::Thread threads[2] = {base::Thread("Thread1"), base::Thread("Thread2")};
 
   for (auto& thread : threads) {
@@ -541,5 +614,13 @@ TEST_F(HostGpuMemoryBufferManagerTest, CancelRequestsForShutdown) {
                                                            loop.QuitClosure());
   loop.Run();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HostGpuMemoryBufferManagerTest,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "CreateShmGMBsViaService"
+                                             : "CreateShmGMBsInBrowser";
+                         });
 
 }  // namespace viz
