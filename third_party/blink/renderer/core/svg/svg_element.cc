@@ -33,9 +33,11 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_types_map.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
@@ -1056,6 +1058,17 @@ void SVGElement::CollectExtraStyleForPresentationAttribute(
 
 const ComputedStyle* SVGElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
+  // If ResolveStyle() needs to create presentation attribute style for the
+  // SVG object, those values need to be parsed, and we want that to happen in
+  // SVG mode using the element sheet (which is a fake stylesheet used for
+  // things like inline style). We don't need to switch the parser mode here
+  // for correctness, but if we don't, CSSParser::ParseValue() will create a
+  // new parser context due to mismatch. So override it temporarily here
+  // to gain a tiny bit of performance.
+  CSSParserContext::ParserModeOverridingScope scope(
+      *GetDocument().ElementSheet().Contents()->ParserContext(),
+      kSVGAttributeMode);
+
   SVGElement* corresponding_element = CorrespondingElement();
   if (!corresponding_element) {
     return GetDocument().GetStyleResolver().ResolveStyle(this,
