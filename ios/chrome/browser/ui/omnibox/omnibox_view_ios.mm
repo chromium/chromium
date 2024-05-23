@@ -548,6 +548,8 @@ void OmniboxViewIOS::OnAccept() {
                      NTPTabHelper->ShouldShowStartSurface());
   }
 
+  base::RecordAction(UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
+
   if (model()) {
     model()->OpenSelection();
   }
