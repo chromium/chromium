@@ -1991,7 +1991,7 @@ BASE_FEATURE(kNotificationLimit,
 // overlap when showing on a display.
 BASE_FEATURE(kNotifierCollision,
              "NotifierCollision",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether new Lockscreen reauth layout is shown or not.
 BASE_FEATURE(kNewLockScreenReauthLayout,
