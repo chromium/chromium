@@ -259,8 +259,8 @@ class EnrollmentScreen
   // Evaluates device policy TPMFirmwareUpdateSettings and updates the TPM if
   // the policy is set to "auto-update vulnerable TPM firmware at enrollment".
   base::RepeatingClosure tpm_updater_;
-  policy::EnrollmentConfig config_;
-  policy::EnrollmentConfig enrollment_config_;
+  policy::EnrollmentConfig prescribed_config_;
+  policy::EnrollmentConfig effective_config_;
   policy::LicenseType license_type_to_use_ = policy::LicenseType::kEnterprise;
   ErrorScreensHistogramHelper histogram_helper_;
 
