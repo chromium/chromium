@@ -1958,6 +1958,83 @@ deps = {
   'src/third_party/perfetto':
     Var('android_git') + '/platform/external/perfetto.git' + '@' + '03fe17e0be05dd6c60cf6351a696c1864468b982',
 
+  'src/base/tracing/test/data': {
+    'bucket': 'perfetto',
+    'objects': [
+      {
+        'object_name': 'test_data/chrome_fcp_lcp_navigations.pftrace-ae01d849fbd75a98be1b7ddd5a8873217c377b393a1d5bbd788ed3364f7fefc3',
+        'sha256sum': 'ae01d849fbd75a98be1b7ddd5a8873217c377b393a1d5bbd788ed3364f7fefc3',
+        'size_bytes': 2398645,
+        'generation': 1697714434866488,
+        'output_file': 'chrome_fcp_lcp_navigations.pftrace'
+      },
+      {
+        'object_name': 'test_data/chrome_input_with_frame_view.pftrace-a93548822e481508c728ccc5da3ad34afcd0aec02ca7a7a4dad84ff340ee5975',
+        'sha256sum': 'a93548822e481508c728ccc5da3ad34afcd0aec02ca7a7a4dad84ff340ee5975',
+        'size_bytes': 6392331,
+        'generation': 1711402389089075,
+        'output_file': 'chrome_input_with_frame_view.pftrace'
+      },
+      {
+        'object_name': 'test_data/scroll_offsets_trace_2.pftrace-2ddd9f78d91d51e39c72c520bb54fdc9dbf1333ae722e87633fc345159296289',
+        'sha256sum': '2ddd9f78d91d51e39c72c520bb54fdc9dbf1333ae722e87633fc345159296289',
+        'size_bytes': 1496388,
+        'generation': 1712592637141461,
+        'output_file': 'scroll_offsets_trace_2.pftrace'
+      },
+      {
+        'object_name': 'test_data/top_level_java_choreographer_slices-8001e73b2458e94f65a606bb558a645ba5bca553b57fe416001f6c2175675a8a',
+        'sha256sum': '8001e73b2458e94f65a606bb558a645ba5bca553b57fe416001f6c2175675a8a',
+        'size_bytes': 5323017,
+        'generation': 1671708979893186,
+        'output_file': 'top_level_java_choreographer_slices'
+      },
+      {
+        'object_name': 'test_data/chrome_page_load_all_categories_not_extended.pftrace.gz-6586e9e2bbc0c996caddb321a0374328654983733e6ffd7f4635ac07db32a493',
+        'sha256sum': '6586e9e2bbc0c996caddb321a0374328654983733e6ffd7f4635ac07db32a493',
+        'size_bytes': 1277750,
+        'generation': 1652442088902445,
+        'output_file': 'chrome_page_load_all_categories_not_extended.pftrace.gz'
+      },
+      {
+        'object_name': 'test_data/speedometer.perfetto_trace.gz-8a159b354d74a3ca0d38ce9cd071ef47de322db4261ee266bfafe04d70310529',
+        'sha256sum': '8a159b354d74a3ca0d38ce9cd071ef47de322db4261ee266bfafe04d70310529',
+        'size_bytes': 891088,
+        'generation': 1684336047660953,
+        'output_file': 'speedometer.perfetto_trace.gz'
+      },
+      {
+        'object_name': 'test_data/cpu_powerups_1.pb-70f5511ba0cd6ce1359e3cadb4d1d9301fb6e26be85158e3384b06f41418d386',
+        'sha256sum': '70f5511ba0cd6ce1359e3cadb4d1d9301fb6e26be85158e3384b06f41418d386',
+        'size_bytes': 2033064,
+        'generation': 1669652389509708,
+        'output_file': 'cpu_powerups_1.pb'
+      },
+      {
+        'object_name': 'test_data/chrome_5672_histograms.pftrace.gz-a09bd44078ac71bcfbc901b0544750e8344d0d0f6f96e220f700a5a53fa932ee',
+        'sha256sum': 'a09bd44078ac71bcfbc901b0544750e8344d0d0f6f96e220f700a5a53fa932ee',
+        'size_bytes': 1127472,
+        'generation': 1684946598804577,
+        'output_file': 'chrome_5672_histograms.pftrace.gz'
+      },
+      {
+        'object_name': 'test_data/chrome_custom_navigation_trace.gz-ff68279e3cec94076b69259d756eed181a63eaf834d8b956a7f4ba665fabf939',
+        'sha256sum': 'ff68279e3cec94076b69259d756eed181a63eaf834d8b956a7f4ba665fabf939',
+        'size_bytes': 7572484,
+        'generation': 1666713705258900,
+        'output_file': 'chrome_custom_navigation_trace.gz'
+      },
+      {
+        'object_name': 'test_data/scroll_offsets.pftrace-62101edb5204fec8bea30124f65d4e49bda0808d7b036e95f89445aaad6d8d98',
+        'sha256sum': '62101edb5204fec8bea30124f65d4e49bda0808d7b036e95f89445aaad6d8d98',
+        'size_bytes': 769741,
+        'generation': 1693402148909129,
+        'output_file': 'scroll_offsets.pftrace'
+      }
+    ],
+    'dep_type': 'gcs'
+  },
+
   'src/third_party/perl': {
       'url': Var('chromium_git') + '/chromium/deps/perl.git' + '@' + '8ef97ff3b7332e38e61b347a2fbed425a4617151',
       'condition': 'checkout_win',
@@ -5199,16 +5276,6 @@ hooks = [
     ],
   },
 
-  # Download test data for Perfetto diff tests
-  {
-    'name': 'perfetto_testdata',
-    'condition': 'host_os == "linux"',
-    'pattern': '\\.sha256',
-    'action': [ 'vpython3',
-                'src/base/tracing/test/test_data.py',
-                'download',
-    ],
-  },
   # Pull down WPR Archive files
   {
     'name': 'Fetch WPR archive files',
