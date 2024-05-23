@@ -48,10 +48,12 @@
         <a role="menuitem"
             id="people" href="/people" hidden="[[!pageVisibility.people]]"
             class="cr-nav-menu-item">
-<if expr="_google_chrome">
-          <!-- TODO: b/326287027 - Add G icon for branded chrome. -->
-</if>
+<if expr="not _google_chrome">
           <iron-icon icon="settings:person"></iron-icon>
+</if>
+<if expr="_google_chrome">
+          <iron-icon icon="settings-internal:google-g"></iron-icon>
+</if>
           $i18n{peoplePageTitle}
           <cr-ripple></cr-ripple>
         </a>
