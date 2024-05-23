@@ -92,7 +92,10 @@ TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorRelu) {
 
 // Test building a DML graph with single operator conv2d which has multiple
 // inputs.
-TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorConv2d) {
+//
+// TODO(crbug.com/331250158): Migrate to a WPT. This test was disabled due to
+// crashing/failling on Qualcomm GPU bots (see crbug.com/325123735).
+TEST_F(WebNNGraphBuilderDmlTest, DISABLED_BuildSingleOperatorConv2d) {
   GraphBuilderDml graph_builder(dml_device_);
 
   TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 3, 3});
@@ -200,7 +203,10 @@ TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorSplit) {
 //      relu   /
 //        \   /
 //       conv2d
-TEST_F(WebNNGraphBuilderDmlTest, BuildGraphWithReluAndConv2d) {
+//
+// TODO(crbug.com/331250158): Migrate to a WPT. This test was disabled due to
+// crashing/failling on Qualcomm GPU bots (see crbug.com/325123735).
+TEST_F(WebNNGraphBuilderDmlTest, DISABLED_BuildGraphWithReluAndConv2d) {
   GraphBuilderDml graph_builder(dml_device_);
 
   TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 3, 3});
