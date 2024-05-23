@@ -56,29 +56,14 @@ InkModule::InkModule(Client& client)
 InkModule::~InkModule() = default;
 
 void InkModule::Draw(SkCanvas& canvas) {
-  // TODO(crbug.com/335524381): Strokes should still be drawn, even when the
-  // brush type is eraser.
-  if (!pdf_ink_brush_) {
-    return;
+  // TODO(crbug.com/335524380): Draw `ink_strokes_` with InkSkiaRenderer.
+  // Add more parameters as needed.
+
+  auto in_progress_stroke = CreateInProgressStrokeFromInputs();
+  if (in_progress_stroke) {
+    // TODO(crbug.com/335524380): Draw `in_progress_stroke` with
+    // InkSkiaRenderer.
   }
-
-  auto stroke = InkInProgressStroke::Create();
-  // TODO(crbug.com/339682315): This should not fail with the wrapper.
-  if (!stroke) {
-    return;
-  }
-
-  stroke->Start(pdf_ink_brush_->GetInkBrush());
-  auto input_batch = InkStrokeInputBatch::Create(ink_inputs_);
-  CHECK(input_batch);
-  bool enqueue_results = stroke->EnqueueInputs(input_batch.get(), nullptr);
-  CHECK(enqueue_results);
-  stroke->FinishInputs();
-  bool update_results = stroke->UpdateShape(0);
-  CHECK(update_results);
-
-  // TODO(crbug.com/335524380): Draw with InkSkiaRenderer. Add more parameters
-  // as needed.
 }
 
 bool InkModule::HandleInputEvent(const blink::WebInputEvent& event) {
@@ -193,7 +178,12 @@ bool InkModule::FinishInkStroke() {
     return false;
   }
 
-  ConvertInkInputsIntoStroke();
+  // TODO(crbug.com/335524380): Add this method's caller's `event` to
+  // `ink_inputs_` before creating `in_progress_stroke`?
+  auto in_progress_stroke = CreateInProgressStrokeFromInputs();
+  if (in_progress_stroke) {
+    ink_strokes_.push_back(in_progress_stroke->CopyToStroke());
+  }
 
   // Reset input fields.
   ink_inputs_.clear();
@@ -260,15 +250,19 @@ void InkModule::HandleSetAnnotationModeMessage(
   enabled_ = message.FindBool("enable").value();
 }
 
-void InkModule::ConvertInkInputsIntoStroke() {
+std::unique_ptr<InkInProgressStroke>
+InkModule::CreateInProgressStrokeFromInputs() const {
   if (!pdf_ink_brush_) {
-    return;
+    return nullptr;
   }
 
   auto stroke = InkInProgressStroke::Create();
-  CHECK(stroke);
+  // TODO(crbug.com/339682315): This should not fail with the wrapper.
+  if (!stroke) {
+    return nullptr;
+  }
+
   stroke->Start(pdf_ink_brush_->GetInkBrush());
-  // TODO(crbug.com/335524380): Add `event` to `ink_inputs_`?
   auto input_batch = InkStrokeInputBatch::Create(ink_inputs_);
   CHECK(input_batch);
   bool enqueue_results = stroke->EnqueueInputs(input_batch.get(), nullptr);
@@ -276,7 +270,7 @@ void InkModule::ConvertInkInputsIntoStroke() {
   stroke->FinishInputs();
   bool update_results = stroke->UpdateShape(0);
   CHECK(update_results);
-  ink_strokes_.push_back(stroke->CopyToStroke());
+  return stroke;
 }
 
 }  // namespace chrome_pdf
