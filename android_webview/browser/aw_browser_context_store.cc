@@ -12,6 +12,7 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser_jni_headers/AwBrowserContextStore_jni.h"
+#include "android_webview/common/aw_features.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -38,12 +39,8 @@ constexpr char kProfilePathKey[] = "path";
 
 bool g_initialized = false;
 
-BASE_FEATURE(kCreateSpareRendererOnBrowserContextCreation,
-             "CreateSpareRendererOnBrowserContextCreation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kCreateSpareRendereForDefaultIfMultiProfile{
-    &kCreateSpareRendererOnBrowserContextCreation,
+const base::FeatureParam<bool> kCreateSpareRendererForDefaultIfMultiProfile{
+    &features::kCreateSpareRendererOnBrowserContextCreation,
     "create_spare_renderer_for_default_if_multi_profile", true};
 
 }  // namespace
@@ -114,10 +111,10 @@ AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
     // Ensure this code path is only taken if the IO thread is already running,
     // as it's needed for launching processes.
     if (base::FeatureList::IsEnabled(
-            kCreateSpareRendererOnBrowserContextCreation) &&
+            features::kCreateSpareRendererOnBrowserContextCreation) &&
         content::BrowserThread::IsThreadInitialized(
             content::BrowserThread::IO) &&
-        (!is_default || kCreateSpareRendereForDefaultIfMultiProfile.Get())) {
+        (!is_default || kCreateSpareRendererForDefaultIfMultiProfile.Get())) {
       content::RenderProcessHost::WarmupSpareRenderProcessHost(
           entry->instance.get());
     }

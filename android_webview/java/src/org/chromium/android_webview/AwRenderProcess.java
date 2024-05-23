@@ -35,6 +35,10 @@ public final class AwRenderProcess extends AwSupportLibIsomorphic {
                 .isProcessLockedToSiteForTesting(mNativeRenderProcess, AwRenderProcess.this);
     }
 
+    public boolean isReadyForTesting() {
+        return mNativeRenderProcess != 0;
+    }
+
     @CalledByNative
     private static AwRenderProcess create() {
         return new AwRenderProcess();
