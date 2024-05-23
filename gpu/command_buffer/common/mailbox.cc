@@ -64,10 +64,6 @@ void Mailbox::SetName(const int8_t* n) {
   memcpy(name, n, sizeof(name));
 }
 
-Mailbox Mailbox::GenerateForSharedImage() {
-  return Generate();
-}
-
 Mailbox Mailbox::Generate() {
   return GenerateMailbox();
 }

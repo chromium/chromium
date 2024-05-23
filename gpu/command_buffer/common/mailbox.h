@@ -50,11 +50,6 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   // Generate a unique unguessable mailbox name.
   static Mailbox Generate();
 
-  // Generate a unique unguessable mailbox name.
-  // TODO(crbug.com/337538024): Remove this method once all callers have been
-  // ported.
-  static Mailbox GenerateForSharedImage();
-
   // Verify that the mailbox was created through Mailbox::Generate. This only
   // works in Debug (always returns true in Release). This is not a secure
   // check, only to catch bugs where clients forgot to call Mailbox::Generate.
