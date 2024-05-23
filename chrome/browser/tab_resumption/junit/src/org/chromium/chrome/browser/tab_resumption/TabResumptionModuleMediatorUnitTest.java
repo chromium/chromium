@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -53,7 +52,6 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
-    @Mock private ThumbnailProvider mThumbnailProvider;
     @Mock private SuggestionClickCallbacks mClickCallbacks;
 
     @Captor private ArgumentCaptor<Callback<SuggestionsResult>> mFetchSuggestionCallbackCaptor;
@@ -77,7 +75,6 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* moduleDelegate= */ mModuleDelegate,
                         /* model= */ mModel,
                         /* urlImageProvider= */ mUrlImageProvider,
-                        /* thumbnailProvider= */ mThumbnailProvider,
                         /* statusChangedCallback= */ () -> {},
                         /* seeMoreLinkClickCallback= */ () -> {},
                         /* suggestionClickCallbacks= */ mClickCallbacks);
@@ -86,8 +83,6 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
         Assert.assertEquals(
                 mUrlImageProvider, mModel.get(TabResumptionModuleProperties.URL_IMAGE_PROVIDER));
-        Assert.assertEquals(
-                mThumbnailProvider, mModel.get(TabResumptionModuleProperties.THUMBNAIL_PROVIDER));
         // `mClickCallback` may get wrapped, so just check for non-null.
         Assert.assertNotNull(mModel.get(TabResumptionModuleProperties.CLICK_CALLBACK));
     }

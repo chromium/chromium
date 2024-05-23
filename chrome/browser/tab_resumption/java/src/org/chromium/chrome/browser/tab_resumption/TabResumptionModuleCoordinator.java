@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -35,8 +34,7 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
             @NonNull Context context,
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull TabResumptionDataProviderFactory dataProviderFactory,
-            @NonNull UrlImageProvider urlImageProvider,
-            @NonNull ThumbnailProvider thumbnailProvider) {
+            @NonNull UrlImageProvider urlImageProvider) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
         mDataProviderFactory = dataProviderFactory;
@@ -60,7 +58,6 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
                         /* moduleDelegate= */ mModuleDelegate,
                         /* model= */ mModel,
                         /* urlImageProvider= */ mUrlImageProvider,
-                        /* thumbnailProvider= */ thumbnailProvider,
                         /* statusChangedCallback= */ this::showModule,
                         /* seeMoreLinkClickCallback= */ this::onSeeMoreClicked,
                         /* suggestionClickCallbacks= */ wrappedClickCallbacks);

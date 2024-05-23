@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -75,17 +74,15 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
 
         maybeInitImageServiceBridge(profile);
 
-        UrlImageProvider urlImageProvider =
-                new UrlImageProvider(profile, mContext, mImageServiceBridge);
-
         assert mTabContentManagerSupplier.hasValue();
+        UrlImageSourceImpl urlImageSource =
+                new UrlImageSourceImpl(mContext, profile, mTabContentManagerSupplier.get());
+        UrlImageProvider urlImageProvider =
+                new UrlImageProvider(mContext, urlImageSource, mImageServiceBridge);
+
         TabResumptionModuleCoordinator coordinator =
                 new TabResumptionModuleCoordinator(
-                        mContext,
-                        moduleDelegate,
-                        dataProviderFactory,
-                        urlImageProvider,
-                        getThumbnailProvider(mTabContentManagerSupplier.get()));
+                        mContext, moduleDelegate, dataProviderFactory, urlImageProvider);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }
@@ -188,13 +185,6 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                             mSuggestionEntrySource, this::removeRefToSuggestionEntrySource);
         }
         return new MixedTabResumptionDataProvider(localTabProvider, foreignSessionProvider);
-    }
-
-    static ThumbnailProvider getThumbnailProvider(TabContentManager tabContentManager) {
-        return (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {
-            tabContentManager.getTabThumbnailWithCallback(
-                    tabId, thumbnailSize, callback, forceUpdate, writeBack);
-        };
     }
 
     private void maybeInitImageServiceBridge(Profile profile) {

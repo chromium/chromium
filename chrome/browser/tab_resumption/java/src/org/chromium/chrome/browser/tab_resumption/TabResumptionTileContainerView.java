@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 
 /** The view containing suggestion tiles on the tab resumption module. */
 public class TabResumptionTileContainerView extends LinearLayout {
@@ -64,7 +63,6 @@ public class TabResumptionTileContainerView extends LinearLayout {
     public String renderAllTiles(
             SuggestionBundle bundle,
             UrlImageProvider urlImageProvider,
-            ThumbnailProvider thumbnailProvider,
             SuggestionClickCallbacks suggestionClickCallbacks,
             boolean useSalientImage) {
         removeAllViews();
@@ -102,7 +100,6 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                         (LocalTabSuggestionEntry) entry,
                                         bundle.referenceTimeMs,
                                         urlImageProvider,
-                                        thumbnailProvider,
                                         suggestionClickCallbacks,
                                         clickInfo)
                                 + ". ";
@@ -191,7 +188,6 @@ public class TabResumptionTileContainerView extends LinearLayout {
             LocalTabSuggestionEntry localTabEntry,
             long referenceTimeMs,
             UrlImageProvider urlImageProvider,
-            ThumbnailProvider thumbnailProvider,
             SuggestionClickCallbacks suggestionClickCallback,
             @ClickInfo int clickInfo) {
         Tab tab = localTabEntry.tab;
@@ -219,15 +215,12 @@ public class TabResumptionTileContainerView extends LinearLayout {
                     Drawable urlDrawable = new BitmapDrawable(res, bitmap);
                     tileView.setFavicon(urlDrawable);
                 });
-        thumbnailProvider.getTabThumbnailWithCallback(
+        urlImageProvider.getTabThumbnail(
                 tab.getId(),
                 mThumbnailSize,
                 (Bitmap tabThumbnail) -> {
                     tileView.setTabThumbnail(tabThumbnail);
-                },
-                /* forceUpdate= */ true,
-                /* writeToCache= */ true,
-                /* isSelected= */ false);
+                });
 
         bindSuggestionClickCallback(tileView, suggestionClickCallback, localTabEntry, clickInfo);
 

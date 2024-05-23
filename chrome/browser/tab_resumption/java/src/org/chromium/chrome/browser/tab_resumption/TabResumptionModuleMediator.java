@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.Sugg
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -285,7 +284,6 @@ public class TabResumptionModuleMediator {
     private final PropertyModel mModel;
 
     protected final UrlImageProvider mUrlImageProvider;
-    protected final ThumbnailProvider mThumbnailProvider;
     protected final Runnable mStatusChangedCallback;
     protected final SuggestionClickCallbacks mSuggestionClickCallbacks;
     private final ShowHideHelper mShowHideHelper;
@@ -297,7 +295,6 @@ public class TabResumptionModuleMediator {
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull PropertyModel model,
             @NonNull UrlImageProvider urlImageProvider,
-            @NonNull ThumbnailProvider thumbnailProvider,
             @NonNull Runnable statusChangedCallback,
             @NonNull Runnable seeMoreLinkClickCallback,
             @NonNull SuggestionClickCallbacks suggestionClickCallbacks) {
@@ -305,13 +302,11 @@ public class TabResumptionModuleMediator {
         mModuleDelegate = moduleDelegate;
         mModel = model;
         mUrlImageProvider = urlImageProvider;
-        mThumbnailProvider = thumbnailProvider;
         mStatusChangedCallback = statusChangedCallback;
         mSuggestionClickCallbacks = suggestionClickCallbacks;
         mShowHideHelper = new ShowHideHelper();
 
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
-        mModel.set(TabResumptionModuleProperties.THUMBNAIL_PROVIDER, mThumbnailProvider);
         mModel.set(
                 TabResumptionModuleProperties.SEE_MORE_LINK_CLICK_CALLBACK,
                 seeMoreLinkClickCallback);

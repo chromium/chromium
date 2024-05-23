@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageCallback;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
-import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.url.GURL;
@@ -66,11 +65,10 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     private static final int TAB_ID = 11;
 
     @Mock private UrlImageProvider mUrlImageProvider;
-    @Mock private ThumbnailProvider mThumbnailProvider;
     @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<GURL> mFetchImagePageUrlCaptor;
-    @Captor private ArgumentCaptor<Callback<Bitmap>> mThumbnailProviderCaptor;
+    @Captor private ArgumentCaptor<Callback<Bitmap>> mThumbnailCallbackCaptor;
     @Captor private ArgumentCaptor<UrlImageCallback> mFetchImageCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mFetchSalientImageCallbackCaptor;
 
@@ -125,7 +123,6 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         mSuggestionBundle = new SuggestionBundle(CURRENT_TIME_MS);
         mModuleView.setUrlImageProvider(mUrlImageProvider);
         mModuleView.setClickCallbacks(mClickCallbacks);
-        mModuleView.setThumbnailProvider(mThumbnailProvider);
         mTileContainerView = mModuleView.getTileContainerViewForTesting();
     }
 
@@ -343,14 +340,9 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         mFetchImagePageUrlCaptor.capture(), mFetchImageCallbackCaptor.capture());
 
         // Capture call to fetch tab thumbnail.
-        verify(mThumbnailProvider, atLeastOnce())
-                .getTabThumbnailWithCallback(
-                        eq(TAB_ID),
-                        eq(mThumbnailSize),
-                        mThumbnailProviderCaptor.capture(),
-                        /* forceUpdate= */ eq(true),
-                        /* writeToCache= */ eq(true),
-                        /* isSelected= */ eq(false));
+        verify(mUrlImageProvider, atLeastOnce())
+                .getTabThumbnail(
+                        eq(TAB_ID), eq(mThumbnailSize), mThumbnailCallbackCaptor.capture());
 
         // Check tile texts.
         LocalTileView localTileView = (LocalTileView) mTileContainerView.getChildAt(0);
@@ -375,7 +367,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertNotNull(drawable);
         Assert.assertEquals(expectedBitmap, drawable.getBitmap());
 
-        mThumbnailProviderCaptor.getAllValues().get(0).onResult(makeBitmap(64, 64));
+        mThumbnailCallbackCaptor.getAllValues().get(0).onResult(makeBitmap(64, 64));
         // Verifies that the placeholder icon drawable is removed after setting a foreground bitmap.
         Assert.assertNull(
                 ((TabThumbnailView) localTileView.findViewById(R.id.tab_thumbnail))

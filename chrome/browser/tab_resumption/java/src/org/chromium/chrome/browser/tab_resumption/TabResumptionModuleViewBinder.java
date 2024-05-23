@@ -22,9 +22,6 @@ class TabResumptionModuleViewBinder {
         } else if (TabResumptionModuleProperties.URL_IMAGE_PROVIDER == propertyKey) {
             moduleView.setUrlImageProvider(
                     model.get(TabResumptionModuleProperties.URL_IMAGE_PROVIDER));
-        } else if (TabResumptionModuleProperties.THUMBNAIL_PROVIDER == propertyKey) {
-            moduleView.setThumbnailProvider(
-                    model.get(TabResumptionModuleProperties.THUMBNAIL_PROVIDER));
         } else if (TabResumptionModuleProperties.SEE_MORE_LINK_CLICK_CALLBACK == propertyKey) {
             moduleView.setSeeMoreLinkClickCallback(
                     model.get(TabResumptionModuleProperties.SEE_MORE_LINK_CLICK_CALLBACK));
