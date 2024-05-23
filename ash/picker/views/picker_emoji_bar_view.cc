@@ -53,8 +53,9 @@ void PickerEmojiBarView::SetSearchResults(PickerSearchResultsSection section) {
     // `base::Unretained` is safe here because `this` will own the item view
     // which takes this callback.
     item_row_->AddResult(
-        result, base::BindRepeating(&PickerEmojiBarView::SelectSearchResult,
-                                    base::Unretained(this), result));
+        result, /*preview_controller=*/nullptr,
+        base::BindRepeating(&PickerEmojiBarView::SelectSearchResult,
+                            base::Unretained(this), result));
   }
 }
 

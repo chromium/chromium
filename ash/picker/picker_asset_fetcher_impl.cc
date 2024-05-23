@@ -132,4 +132,11 @@ void PickerAssetFetcherImpl::FetchGifPreviewImageFromUrl(
                      data_decoder::mojom::ImageCodec::kDefault));
 }
 
+void PickerAssetFetcherImpl::FetchFileThumbnail(
+    const base::FilePath& path,
+    const gfx::Size& size,
+    FetchFileThumbnailCallback callback) {
+  delegate_->FetchFileThumbnail(path, size, std::move(callback));
+}
+
 }  // namespace ash

@@ -168,8 +168,10 @@ PickerImageItemView* PickerSectionView::AddImageItem(
   return image_item_ptr;
 }
 
-void PickerSectionView::AddResult(const PickerSearchResult& result,
-                                  SelectResultCallback select_result_callback) {
+void PickerSectionView::AddResult(
+    const PickerSearchResult& result,
+    PickerPreviewBubbleController* preview_controller,
+    SelectResultCallback select_result_callback) {
   std::visit(
       base::Overloaded{
           [&](const PickerSearchResult::TextData& data) {
@@ -262,18 +264,18 @@ void PickerSectionView::AddResult(const PickerSearchResult& result,
           [&](const PickerSearchResult::LocalFileData& data) {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            // TODO: b/330794217 - Add preview once it's available.
             item_view->SetPrimaryText(data.title);
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
                 chromeos::kFiletypeImageIcon, cros_tokens::kCrosSysOnSurface));
+            item_view->SetPreview(preview_controller, data.file_path);
             AddListItem(std::move(item_view));
           },
           [&](const PickerSearchResult::DriveFileData& data) {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            // TODO: b/330794217 - Add preview once it's available.
             item_view->SetPrimaryText(data.title);
             item_view->SetLeadingIcon(data.icon);
+            item_view->SetPreview(preview_controller, data.file_path);
             AddListItem(std::move(item_view));
           },
           [&](const PickerSearchResult::CategoryData& data) {

@@ -56,6 +56,12 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
               (SuggestedLinksCallback),
               (override));
   MOCK_METHOD(bool, IsFeatureAllowedForDogfood, (), (override));
+  MOCK_METHOD(void,
+              FetchFileThumbnail,
+              (const base::FilePath& path,
+               const gfx::Size& size,
+               FetchFileThumbnailCallback callback),
+              (override));
 };
 
 }  // namespace ash

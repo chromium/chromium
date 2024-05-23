@@ -6,8 +6,15 @@
 #define ASH_PICKER_VIEWS_PICKER_PREVIEW_BUBBLE_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
+
+namespace views {
+class ImageView;
+}
 
 namespace ash {
 
@@ -20,10 +27,19 @@ class ASH_EXPORT PickerPreviewBubbleView
   PickerPreviewBubbleView(const PickerPreviewBubbleView&) = delete;
   PickerPreviewBubbleView& operator=(const PickerPreviewBubbleView&) = delete;
 
+  // Returns the preferred size of the preview image.
+  gfx::Size GetPreferredImageSize() const;
+
+  ui::ImageModel GetPreviewImage() const;
+  void SetPreviewImage(ui::ImageModel image);
+
   // BubbleDialogDelegateView overrides
   void OnThemeChanged() override;
 
   void Close();
+
+ private:
+  raw_ptr<views::ImageView> image_view_;
 };
 }  // namespace ash
 

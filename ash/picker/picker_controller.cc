@@ -559,4 +559,10 @@ PickerController::GetSharedURLLoaderFactory() {
   return client_->GetSharedURLLoaderFactory();
 }
 
+void PickerController::FetchFileThumbnail(const base::FilePath& path,
+                                          const gfx::Size& size,
+                                          FetchFileThumbnailCallback callback) {
+  client_->FetchFileThumbnail(path, size, std::move(callback));
+}
+
 }  // namespace ash

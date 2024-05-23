@@ -8,12 +8,15 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 
 class GURL;
+class SkBitmap;
 
 namespace gfx {
 class ImageSkia;
+class Size;
 }
 
 namespace ash {
@@ -28,9 +31,10 @@ class ASH_EXPORT PickerAssetFetcher {
   // TODO: b/316936723 - Pass the frames by reference to avoid a copy.
   using PickerGifFetchedCallback =
       base::OnceCallback<void(std::vector<image_util::AnimationFrame>)>;
-
   using PickerImageFetchedCallback =
       base::OnceCallback<void(const gfx::ImageSkia&)>;
+  using FetchFileThumbnailCallback =
+      base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
   virtual ~PickerAssetFetcher() = default;
 
@@ -46,6 +50,11 @@ class ASH_EXPORT PickerAssetFetcher {
   virtual void FetchGifPreviewImageFromUrl(
       const GURL& url,
       PickerImageFetchedCallback callback) = 0;
+
+  // Fetches the thumbnail for a file and calls `callback` with the result.
+  virtual void FetchFileThumbnail(const base::FilePath& path,
+                                  const gfx::Size& size,
+                                  FetchFileThumbnailCallback callback) = 0;
 };
 
 }  // namespace ash

@@ -5,19 +5,24 @@
 #include "ash/picker/views/picker_preview_bubble_controller.h"
 
 #include "ash/picker/views/picker_preview_bubble.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "base/check.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
-PickerPreviewBubbleController::PickerPreviewBubbleController() = default;
+PickerPreviewBubbleController::PickerPreviewBubbleController(
+    AsyncBitmapResolver async_bitmap_resolver)
+    : async_bitmap_resolver_(std::move(async_bitmap_resolver)) {}
 
 PickerPreviewBubbleController::~PickerPreviewBubbleController() {
   CloseBubble();
 }
 
-void PickerPreviewBubbleController::ShowBubble(views::View* anchor_view) {
+void PickerPreviewBubbleController::ShowBubbleForFile(
+    views::View* anchor_view,
+    const base::FilePath& file_path) {
   if (bubble_view_ != nullptr) {
     return;
   }
@@ -26,6 +31,16 @@ void PickerPreviewBubbleController::ShowBubble(views::View* anchor_view) {
   // dangling.
   CHECK(anchor_view);
   bubble_view_ = new PickerPreviewBubbleView(anchor_view);
+  preview_image_ = std::make_unique<ash::HoldingSpaceImage>(
+      bubble_view_->GetPreferredImageSize(), file_path, async_bitmap_resolver_);
+  bubble_view_->SetPreviewImage(
+      ui::ImageModel::FromImageSkia(preview_image_->GetImageSkia()));
+  // base::Unretained is safe here since `image_subscription_` is a member.
+  // During destruction, `image_subscription_` will be destroyed before the
+  // other members, so the callback is guaranteed to be safe.
+  image_subscription_ = preview_image_->AddImageSkiaChangedCallback(
+      base::BindRepeating(&PickerPreviewBubbleController::UpdateBubbleImage,
+                          base::Unretained(this)));
   widget_observation_.Observe(bubble_view_->GetWidget());
 }
 
@@ -40,10 +55,19 @@ void PickerPreviewBubbleController::CloseBubble() {
 void PickerPreviewBubbleController::OnWidgetDestroying(views::Widget* widget) {
   widget_observation_.Reset();
   bubble_view_ = nullptr;
+  preview_image_ = nullptr;
 }
 
-views::View* PickerPreviewBubbleController::bubble_view_for_testing() const {
+PickerPreviewBubbleView*
+PickerPreviewBubbleController::bubble_view_for_testing() const {
   return bubble_view_;
+}
+
+void PickerPreviewBubbleController::UpdateBubbleImage() {
+  if (bubble_view_ != nullptr) {
+    bubble_view_->SetPreviewImage(
+        ui::ImageModel::FromImageSkia(preview_image_->GetImageSkia()));
+  }
 }
 
 }  // namespace ash

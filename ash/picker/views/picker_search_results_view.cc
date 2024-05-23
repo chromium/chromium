@@ -54,7 +54,10 @@ PickerSearchResultsView::PickerSearchResultsView(
     PickerSearchResultsViewDelegate* delegate,
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher)
-    : delegate_(delegate) {
+    : delegate_(delegate),
+      preview_controller_(
+          base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
+                              base::Unretained(asset_fetcher))) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   SetProperty(views::kElementIdentifierKey, kPickerSearchResultsPageElementId);
@@ -237,8 +240,9 @@ void PickerSearchResultsView::AddResultToSection(
   // `base::Unretained` is safe here because `this` will own the item view which
   // takes this callback.
   section_view->AddResult(
-      result, base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,
-                                  base::Unretained(this), result));
+      result, &preview_controller_,
+      base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,
+                          base::Unretained(this), result));
 }
 
 void PickerSearchResultsView::SetPseudoFocusedView(views::View* view) {

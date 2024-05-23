@@ -93,12 +93,14 @@ PickerItemView::~PickerItemView() {
 }
 
 void PickerItemView::SetPreview(
-    PickerPreviewBubbleController* preview_bubble_controller) {
+    PickerPreviewBubbleController* preview_bubble_controller,
+    base::FilePath file_path) {
   if (preview_bubble_controller_ != nullptr) {
     preview_bubble_controller_->CloseBubble();
   }
 
   preview_bubble_controller_ = preview_bubble_controller;
+  preview_file_path_ = file_path;
 }
 
 void PickerItemView::PaintButtonContents(gfx::Canvas* canvas) {
@@ -119,7 +121,7 @@ void PickerItemView::SelectItem() {
 
 void PickerItemView::OnMouseEntered(const ui::MouseEvent&) {
   if (preview_bubble_controller_ != nullptr) {
-    preview_bubble_controller_->ShowBubble(this);
+    preview_bubble_controller_->ShowBubbleForFile(this, preview_file_path_);
   }
 }
 

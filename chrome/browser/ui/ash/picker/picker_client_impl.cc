@@ -429,6 +429,13 @@ bool PickerClientImpl::IsFeatureAllowedForDogfood() {
   return gaia::IsGoogleInternalAccountEmail(profile_->GetProfileUserName());
 }
 
+void PickerClientImpl::FetchFileThumbnail(const base::FilePath& path,
+                                          const gfx::Size& size,
+                                          FetchFileThumbnailCallback callback) {
+  CHECK(thumbnail_loader_);
+  thumbnail_loader_->Load({path, size}, std::move(callback));
+}
+
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
   if (!active_user) {
     SetProfile(nullptr);
@@ -462,6 +469,7 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   zero_state_links_search_engine_.reset();
 
   file_suggester_ = std::make_unique<PickerFileSuggester>(profile_);
+  thumbnail_loader_ = std::make_unique<ash::ThumbnailLoader>(profile_);
 }
 
 std::unique_ptr<app_list::SearchProvider>

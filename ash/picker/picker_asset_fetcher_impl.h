@@ -30,6 +30,9 @@ class ASH_EXPORT PickerAssetFetcherImpl : public PickerAssetFetcher {
   void FetchGifPreviewImageFromUrl(
       const GURL& url,
       PickerImageFetchedCallback callback) override;
+  void FetchFileThumbnail(const base::FilePath& path,
+                          const gfx::Size& size,
+                          FetchFileThumbnailCallback callback) override;
 
  private:
   raw_ptr<PickerAssetFetcherImplDelegate> delegate_;

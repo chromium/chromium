@@ -23,6 +23,9 @@ class ASH_EXPORT MockPickerAssetFetcher : public PickerAssetFetcher {
   void FetchGifPreviewImageFromUrl(
       const GURL& url,
       PickerImageFetchedCallback callback) override;
+  void FetchFileThumbnail(const base::FilePath& path,
+                          const gfx::Size& size,
+                          FetchFileThumbnailCallback callback) override;
 };
 
 }  // namespace ash

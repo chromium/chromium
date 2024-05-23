@@ -15,6 +15,7 @@
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
@@ -157,11 +158,13 @@ TEST_F(PickerSectionViewTest, EmojiItemsAndGifItems) {
 TEST_F(PickerSectionViewTest, AddsResults) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
+  PickerPreviewBubbleController preview_controller(base::DoNothing());
 
   section_view.AddResult(PickerSearchResult::Text(u"Result"),
-                         base::DoNothing());
+                         &preview_controller, base::DoNothing());
 
-  section_view.AddResult(PickerSearchResult::Emoji(u"😊"), base::DoNothing());
+  section_view.AddResult(PickerSearchResult::Emoji(u"😊"), &preview_controller,
+                         base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();

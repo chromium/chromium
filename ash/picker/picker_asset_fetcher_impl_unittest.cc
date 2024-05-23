@@ -84,6 +84,12 @@ class MockPickerAssetFetcherDelegate : public PickerAssetFetcherImplDelegate {
               GetSharedURLLoaderFactory,
               (),
               (override));
+  MOCK_METHOD(void,
+              FetchFileThumbnail,
+              (const base::FilePath& path,
+               const gfx::Size& size,
+               FetchFileThumbnailCallback callback),
+              (override));
 };
 
 class PickerAssetFetcherImplTest : public testing::Test {

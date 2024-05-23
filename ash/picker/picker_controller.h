@@ -101,6 +101,9 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // PickerAssetFetcherImplDelegate:
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
+  void FetchFileThumbnail(const base::FilePath& path,
+                          const gfx::Size& size,
+                          FetchFileThumbnailCallback callback) override;
 
   // Disables the feature key checking. Only works in tests.
   static void DisableFeatureKeyCheckForTesting();

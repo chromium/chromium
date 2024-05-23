@@ -30,6 +30,7 @@ class PickerImageItemView;
 class PickerItemView;
 class PickerListItemContainerView;
 class PickerListItemView;
+class PickerPreviewBubbleController;
 class PickerSearchResult;
 class PickerSmallItemGridView;
 class PickerSymbolItemView;
@@ -72,7 +73,10 @@ class ASH_EXPORT PickerSectionView : public views::View {
       std::unique_ptr<PickerImageItemView> image_item);
 
   // Creates an item based on `result` and adds it to the section view.
+  // `preview_controller` can be null if previews are not needed. If it's not
+  // null, it must outlive this class.
   void AddResult(const PickerSearchResult& result,
+                 PickerPreviewBubbleController* preview_controller,
                  SelectResultCallback select_result_callback);
 
   void ClearItems();

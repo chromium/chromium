@@ -14,9 +14,16 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "url/gurl.h"
+
+class SkBitmap;
+
+namespace gfx {
+class Size;
+}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -41,6 +48,8 @@ class ASH_PUBLIC_EXPORT PickerClient {
       base::OnceCallback<void(std::vector<PickerSearchResult>)>;
   using SuggestedLinksCallback =
       base::RepeatingCallback<void(std::vector<PickerSearchResult>)>;
+  using FetchFileThumbnailCallback =
+      base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
   // Gets the SharedURLLoaderFactory to use for Picker network requests, e.g. to
   // fetch assets.
@@ -78,6 +87,10 @@ class ASH_PUBLIC_EXPORT PickerClient {
   virtual void GetSuggestedLinkResults(SuggestedLinksCallback callback) = 0;
 
   virtual bool IsFeatureAllowedForDogfood() = 0;
+
+  virtual void FetchFileThumbnail(const base::FilePath& path,
+                                  const gfx::Size& size,
+                                  FetchFileThumbnailCallback callback) = 0;
 
  protected:
   PickerClient();

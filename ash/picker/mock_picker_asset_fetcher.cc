@@ -22,4 +22,9 @@ void MockPickerAssetFetcher::FetchGifPreviewImageFromUrl(
     const GURL& url,
     PickerImageFetchedCallback callback) {}
 
+void MockPickerAssetFetcher::FetchFileThumbnail(
+    const base::FilePath& path,
+    const gfx::Size& size,
+    FetchFileThumbnailCallback callback) {}
+
 }  // namespace ash

@@ -104,7 +104,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // A view for when there are no results.
   raw_ptr<views::View> no_results_view_ = nullptr;
 
-  PickerPreviewBubbleController preview_bubble_controller_;
+  PickerPreviewBubbleController preview_controller_;
 };
 
 }  // namespace ash

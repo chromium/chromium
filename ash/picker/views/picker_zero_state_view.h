@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_page_view.h"
+#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -80,6 +81,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
                                      std::vector<PickerSearchResult> result);
 
   raw_ptr<PickerZeroStateViewDelegate> delegate_;
+  PickerPreviewBubbleController preview_controller_;
 
   // The section list view, contains the section views.
   raw_ptr<PickerSectionListView> section_list_view_ = nullptr;

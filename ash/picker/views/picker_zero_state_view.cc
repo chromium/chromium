@@ -55,7 +55,10 @@ PickerZeroStateView::PickerZeroStateView(
     base::span<const PickerCategory> recent_results_categories,
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher)
-    : delegate_(delegate) {
+    : delegate_(delegate),
+      preview_controller_(
+          base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
+                              base::Unretained(asset_fetcher))) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -281,8 +284,9 @@ void PickerZeroStateView::OnFetchRecentResults(
   }
   for (const auto& result : results) {
     recent_section_view_->AddResult(
-        result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
-                                    weak_ptr_factory_.GetWeakPtr(), result));
+        result, &preview_controller_,
+        base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                            weak_ptr_factory_.GetWeakPtr(), result));
   }
   SetPseudoFocusedView(section_list_view_->GetTopItem());
 }

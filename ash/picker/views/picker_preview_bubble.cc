@@ -59,6 +59,7 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
           .SetImageSize(kPreviewImageSize)
           .SetBackground(views::CreateThemedRoundedRectBackground(
               cros_tokens::kCrosSysSeparator, kPreviewBackgroundBorderRadius))
+          .CopyAddressTo(&image_view_)
           .Build());
   auto* label = AddChildView(ash::bubble_utils::CreateLabel(
       TypographyToken::kCrosAnnotation2, kLinkLabelText.data(),
@@ -78,6 +79,18 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
   rect.Inset(kBubbleOverlapOverPicker);
   SetAnchorView(nullptr);
   SetAnchorRect(rect);
+}
+
+gfx::Size PickerPreviewBubbleView::GetPreferredImageSize() const {
+  return kPreviewImageSize;
+}
+
+ui::ImageModel PickerPreviewBubbleView::GetPreviewImage() const {
+  return image_view_->GetImageModel();
+}
+
+void PickerPreviewBubbleView::SetPreviewImage(ui::ImageModel image) {
+  image_view_->SetImage(std::move(image));
 }
 
 void PickerPreviewBubbleView::OnThemeChanged() {
