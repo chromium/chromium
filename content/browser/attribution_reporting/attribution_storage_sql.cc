@@ -77,6 +77,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "sql/database.h"
+#include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -2190,21 +2191,34 @@ void AttributionStorageSql::HandleInitializationFailure(
     const InitStatus status) {
   RecordInitializationStatus(status);
   db_.Close();
-  db_init_status_ = DbStatus::kClosed;
+
+  // It's possible that `db_status_` was set by `DatabaseErrorCallback()` during
+  // a call to `sql::Database::Open()`. Some databases attempt recovery at this
+  // point, but we opt to delete the database from disk. Recovery can always
+  // result in partial data loss, even when it appears to succeed. SQLite's
+  // documentation discusses how some use cases can tolerate partial data loss,
+  // while others cannot: <https://www.sqlite.org/recovery.html>.
+  if (db_status_ == DbStatus::kClosedDueToCatastrophicError) {
+    const bool delete_ok = sql::Database::Delete(path_to_database_);
+    LOG_IF(WARNING, !delete_ok)
+        << "Failed to delete database after catastrophic SQLite error";
+  }
+
+  db_status_ = DbStatus::kClosed;
 }
 
 bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
-  if (!db_init_status_) {
+  if (!db_status_) {
     if (path_to_database_.empty()) {
-      db_init_status_ = DbStatus::kDeferringCreation;
+      db_status_ = DbStatus::kDeferringCreation;
     } else {
-      db_init_status_ = base::PathExists(path_to_database_)
-                            ? DbStatus::kDeferringOpen
-                            : DbStatus::kDeferringCreation;
+      db_status_ = base::PathExists(path_to_database_)
+                       ? DbStatus::kDeferringOpen
+                       : DbStatus::kDeferringCreation;
     }
   }
 
-  switch (*db_init_status_) {
+  switch (*db_status_) {
     // If the database file has not been created, we defer creation until
     // storage needs to be used for an operation which needs to operate even on
     // an empty database.
@@ -2215,10 +2229,11 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
       break;
     case DbStatus::kDeferringOpen:
       break;
-    case DbStatus::kClosed:
-      return false;
     case DbStatus::kOpen:
       return true;
+    case DbStatus::kClosed:
+    case DbStatus::kClosedDueToCatastrophicError:
+      return false;
   }
 
   if (!db_.has_error_callback()) {
@@ -2251,13 +2266,13 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
     }
   }
 
-  if (!InitializeSchema(db_init_status_ == DbStatus::kDeferringCreation)) {
+  if (!InitializeSchema(db_status_ == DbStatus::kDeferringCreation)) {
     DLOG(ERROR) << "Failed to initialize schema for Conversion database";
     HandleInitializationFailure(InitStatus::kFailedToInitializeSchema);
     return false;
   }
 
-  db_init_status_ = DbStatus::kOpen;
+  db_status_ = DbStatus::kOpen;
   RecordInitializationStatus(InitStatus::kSuccess);
 
   if (int64_t file_size = StorageFileSizeKB(path_to_database_);
@@ -2684,34 +2699,47 @@ bool AttributionStorageSql::CreateSchema() {
   return true;
 }
 
+// The interaction between this error callback and `sql::Database` is complex.
+// Here are just a few of the sharp edges:
+//
+// 1. This callback would become reentrant if it called a `sql::Database` method
+//    that could encounter an error.
+//
+// 2. This callback may be invoked multiple times by a single call to a
+//    `sql::Database` method.
+//
+// 3. This callback may see phantom errors that do not otherwise bubble up via
+//    return values. This can happen because `sql::Database` runs the error
+//    callback eagerly despite the fact that some of its methods ignore certain
+//    errors.
+//
+//    A concrete example: opening the database may run the error callback *and*
+//    return true if `sql::Database::Open()` encounters a transient error, but
+//    opens the database successfully on the second try.
+//
+// Reducing this complexity will likely require a redesign of `sql::Database`'s
+// error handling interface. See <https://crbug.com/40199997>.
 void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
                                                   sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Attempt to recover a corrupt database, if it is eligible to be recovered.
-  if (sql::Recovery::RecoverIfPossible(
-          &db_, extended_error,
-          sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
-    // Recovery was attempted. The database handle has been poisoned and the
-    // error callback has been reset.
 
-    // The DLOG(FATAL) below is intended to draw immediate attention to errors
-    // in newly-written code.  Database corruption is generally a result of OS
-    // or hardware issues, not coding errors at the client level, so displaying
-    // the error would probably lead to confusion.  The ignored call signals the
-    // test-expectation framework that the error was handled.
-    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
-    return;
+  // Inform the test framework that we encountered this error.
+  std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
+
+  // Consider the database closed to avoid further errors. Note that the value
+  // we write to `db_status_` may be subsequently overwritten elsewhere if
+  // `sql::Database` ignores the error (see sharp edge #3 above).
+  if (sql::IsErrorCatastrophic(extended_error)) {
+    db_status_ = DbStatus::kClosedDueToCatastrophicError;
+  } else {
+    db_status_ = DbStatus::kClosed;
   }
 
-  // The default handling is to assert on debug and to ignore on release.
-  if (!sql::Database::IsExpectedSqliteError(extended_error) &&
-      !ignore_errors_for_testing_) {
-    DLOG(FATAL) << db_.GetErrorMessage();
+  // Prevent future uses of `db_` from having any effect until we unpoison it
+  // with `db_.Close()`.
+  if (db_.is_open()) {
+    db_.Poison();
   }
-
-  // Consider the database closed if we did not attempt to recover so we did
-  // not produce further errors.
-  db_init_status_ = DbStatus::kClosed;
 }
 
 bool AttributionStorageSql::DeleteSources(

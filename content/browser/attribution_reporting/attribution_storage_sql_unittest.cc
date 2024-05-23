@@ -33,6 +33,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
@@ -439,7 +440,7 @@ TEST_F(AttributionStorageSqlTest, DatabaseReopened_DataPersisted) {
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
 }
 
-TEST_F(AttributionStorageSqlTest, CorruptDatabase_RecoveredOnOpen) {
+TEST_F(AttributionStorageSqlTest, CorruptDatabase_DeletedOnOpen) {
   OpenDatabase();
   AddReportToStorage();
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
@@ -454,10 +455,12 @@ TEST_F(AttributionStorageSqlTest, CorruptDatabase_RecoveredOnOpen) {
   // Open that database and ensure that it does not fail.
   EXPECT_NO_FATAL_FAILURE(OpenDatabase());
 
-  // The database should have been recovered.
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 
   EXPECT_TRUE(expecter.SawExpectedErrors());
+
+  // The database should have been deleted.
+  EXPECT_FALSE(base::PathExists(db_path()));
 }
 
 TEST_F(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
@@ -1081,21 +1084,28 @@ TEST_F(AttributionStorageSqlTest, MaxReportsPerDestination) {
   EXPECT_EQ(3u, rate_limit_rows);
 }
 
-TEST_F(AttributionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
-  base::CreateDirectoryAndGetError(db_path(), nullptr);
+TEST_F(AttributionStorageSqlTest, CantOpenDb_NoCrash) {
+  // Force db creation to fail by creating a directory where the file would go.
+  ASSERT_TRUE(base::CreateDirectoryAndGetError(db_path(), nullptr));
 
-  auto sql_storage = std::make_unique<AttributionResolverImpl>(
-      temp_directory_.GetPath(),
-      std::make_unique<ConfigurableStorageDelegate>());
-  sql_storage->set_ignore_errors_for_testing(true);
+  std::unique_ptr<AttributionResolver> storage =
+      std::make_unique<AttributionResolverImpl>(
+          temp_directory_.GetPath(),
+          std::make_unique<ConfigurableStorageDelegate>());
 
-  std::unique_ptr<AttributionResolver> storage = std::move(sql_storage);
-
-  // These calls should be no-ops.
-  storage->StoreSource(SourceBuilder().Build());
+  StoreSourceResult result = storage->StoreSource(SourceBuilder().Build());
+  ASSERT_TRUE(absl::holds_alternative<StoreSourceResult::InternalError>(
+      result.result()));
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kInternalError,
             storage->MaybeCreateAndStoreReport(DefaultTrigger())
                 .event_level_status());
+
+#if BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(base::DirectoryExists(db_path()));
+#else
+  EXPECT_TRUE(base::DirectoryExists(db_path()));
+  EXPECT_TRUE(base::IsDirectoryEmpty(db_path()));
+#endif
 }
 
 TEST_F(AttributionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {

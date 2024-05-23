@@ -25,6 +25,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -192,17 +193,17 @@ class AttributionResolverTest : public testing::Test {
   raw_ptr<ConfigurableStorageDelegate> delegate_;
 };
 
-TEST_F(AttributionResolverTest,
-       StorageUsedAfterFailedInitilization_FailsSilently) {
+TEST_F(AttributionResolverTest, StorageUsedAfterFailedInitialization_NoCrash) {
+  const base::FilePath db_path =
+      dir_.GetPath().Append(FILE_PATH_LITERAL("Conversions"));
+
   // We create a failed initialization by writing a dir to the database file
   // path.
-  base::CreateDirectoryAndGetError(
-      dir_.GetPath().Append(FILE_PATH_LITERAL("Conversions")), nullptr);
+  ASSERT_TRUE(base::CreateDirectoryAndGetError(db_path, nullptr));
+
   std::unique_ptr<AttributionResolver> storage =
       std::make_unique<AttributionResolverImpl>(
           dir_.GetPath(), std::make_unique<ConfigurableStorageDelegate>());
-  static_cast<AttributionResolverImpl*>(storage.get())
-      ->set_ignore_errors_for_testing(true);
 
   // Test all public methods on AttributionResolver.
   EXPECT_NO_FATAL_FAILURE(storage->StoreSource(SourceBuilder().Build()));
@@ -215,6 +216,12 @@ TEST_F(AttributionResolverTest,
   EXPECT_NO_FATAL_FAILURE(storage->ClearData(
       base::Time::Min(), base::Time::Max(), base::NullCallback()));
   EXPECT_EQ(storage->AdjustOfflineReportTimes(), std::nullopt);
+
+#if BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(base::PathExists(db_path));
+#else
+  EXPECT_TRUE(base::PathExists(db_path));
+#endif
 }
 
 TEST_F(AttributionResolverTest, ImpressionStoredAndRetrieved_ValuesIdentical) {

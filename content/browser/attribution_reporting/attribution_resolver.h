@@ -37,7 +37,7 @@ class AttributionResolver {
   virtual ~AttributionResolver() = default;
 
   // When adding a new method, also add it to
-  // AttributionResolverTest.StorageUsedAfterFailedInitilization_FailsSilently.
+  // AttributionResolverTest.StorageUsedAfterFailedInitialization_NoCrash.
 
   // Add |source| to storage. Two sources are considered
   // matching when they share a <reporting origin, attribution destination>

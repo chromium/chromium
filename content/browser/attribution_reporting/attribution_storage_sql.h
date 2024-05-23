@@ -71,10 +71,6 @@ class CONTENT_EXPORT AttributionStorageSql {
   AttributionStorageSql& operator=(AttributionStorageSql&&) = delete;
   ~AttributionStorageSql();
 
-  void set_ignore_errors_for_testing(bool ignore_for_testing) {
-    ignore_errors_for_testing_ = ignore_for_testing;
-  }
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class InitStatus {
@@ -158,15 +154,18 @@ class CONTENT_EXPORT AttributionStorageSql {
   struct StoredSourceData;
 
   enum class DbStatus {
+    kOpen,
     // The database has never been created, i.e. there is no database file at
     // all.
     kDeferringCreation,
     // The database exists but is not open yet.
     kDeferringOpen,
     // The database initialization failed, or the db suffered from an
-    // unrecoverable error.
+    // unrecoverable, but potentially transient, error.
     kClosed,
-    kOpen,
+    // The database initialization failed, or the db suffered from a
+    // catastrophic failure.
+    kClosedDueToCatastrophicError,
   };
 
   enum class DbCreationPolicy {
@@ -412,16 +411,13 @@ class CONTENT_EXPORT AttributionStorageSql {
                                        base::Time trigger_time) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // If set, database errors will not crash the client when run in debug mode.
-  bool ignore_errors_for_testing_ = false;
-
   const base::FilePath path_to_database_;
 
   // Current status of the database initialization. Tracks what stage |this| is
   // at for lazy initialization, and used as a signal for if the database is
   // closed. This is initialized in the first call to LazyInit() to avoid doing
   // additional work in the constructor, see https://crbug.com/1121307.
-  std::optional<DbStatus> db_init_status_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<DbStatus> db_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 

@@ -47,11 +47,6 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
   AttributionResolverImpl& operator=(AttributionResolverImpl&&) = delete;
   ~AttributionResolverImpl() override;
 
-  void set_ignore_errors_for_testing(bool ignore_for_testing) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    storage_.set_ignore_errors_for_testing(ignore_for_testing);
-  }
-
  private:
   // AttributionResolver:
   StoreSourceResult StoreSource(StorableSource source) override;
