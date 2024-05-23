@@ -2,5 +2,6 @@ android.webkit.WebView focusable focused
 ++android.widget.ProgressBar role_description='progress indicator' range name='3' item_index=5 item_count=100 range_min=1 range_max=37 range_current_value=3
 ++android.widget.ProgressBar role_description='progress indicator' range name='three' range_min=1 range_max=96 range_current_value=3
 ++android.widget.ProgressBar role_description='progress indicator' range name='indeterminate' range_max=10
+++android.widget.ProgressBar role_description='progress indicator' range name='5 chickens' range_max=10
 ++android.widget.ProgressBar role_description='progress indicator' range name='indeterminate' range_max=100
 ++android.widget.ProgressBar role_description='progress indicator' range name='indeterminate, Test label' range_max=100

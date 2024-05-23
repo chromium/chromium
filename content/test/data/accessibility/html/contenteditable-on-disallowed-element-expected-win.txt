@@ -19,4 +19,4 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++ROLE_SYSTEM_BUTTONMENU name='show more media controls' UNAVAILABLE HASPOPUP description-from:tooltip description='more options'
 ++++++++IA2_ROLE_SECTION
 ++++ROLE_SYSTEM_SLIDER name='video time scrubber' value='elapsed time: 0:00' UNAVAILABLE IA2_STATE_HORIZONTAL description:total time\: 0\:00 description-from:aria-description description='total time: 0:00'
-++ROLE_SYSTEM_PROGRESSBAR value='0' MIXED READONLY FOCUSABLE IA2_STATE_MULTI_LINE
+++ROLE_SYSTEM_PROGRESSBAR READONLY FOCUSABLE IA2_STATE_MULTI_LINE

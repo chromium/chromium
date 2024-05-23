@@ -1283,6 +1283,7 @@ data/accessibility/aria/aria-progressbar-expected-android.txt
 data/accessibility/aria/aria-progressbar-expected-auralinux.txt
 data/accessibility/aria/aria-progressbar-expected-blink.txt
 data/accessibility/aria/aria-progressbar-expected-mac.txt
+data/accessibility/aria/aria-progressbar-expected-uia-win.txt
 data/accessibility/aria/aria-progressbar-expected-win.txt
 data/accessibility/aria/aria-progressbar.html
 data/accessibility/aria/aria-radio-expected-android-assist-data.txt

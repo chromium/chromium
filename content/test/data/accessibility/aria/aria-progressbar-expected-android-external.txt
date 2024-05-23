@@ -2,5 +2,6 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++ProgressBar text:"3" RangeInfo:[current=3.0, min=1.0, max=37.0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="progressIndicator", roleDescription="progress indicator"]
 ++ProgressBar text:"three" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="progressIndicator", roleDescription="progress indicator"]
 ++ProgressBar text:"indeterminate" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="progressIndicator", roleDescription="progress indicator"]
+++ProgressBar text:"5 chickens" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="progressIndicator", roleDescription="progress indicator"]
 ++ProgressBar text:"indeterminate" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="progressIndicator", roleDescription="progress indicator"]
 ++ProgressBar text:"indeterminate, Test label" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="progressIndicator", roleDescription="progress indicator"]

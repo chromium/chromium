@@ -1858,6 +1858,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accValue(VARIANT var_id, BSTR* value) {
 
   // Special case for indeterminate progressbar.
   if (GetRole() == ax::mojom::Role::kProgressIndicator &&
+      !HasStringAttribute(ax::mojom::StringAttribute::kValue) &&
       !HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange)) {
     // The MIXED state is also exposed for an indeterminate value.
     // However, without some value here, NVDA/JAWS 2022 will ignore the
@@ -7870,8 +7871,10 @@ int AXPlatformNodeWin::MSAAState() const {
 
   // Special case for indeterminate progressbar.
   if (GetRole() == ax::mojom::Role::kProgressIndicator &&
-      !HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange))
+      !HasStringAttribute(ax::mojom::StringAttribute::kValue) &&
+      !HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange)) {
     msaa_state |= STATE_SYSTEM_MIXED;
+  }
 
   return msaa_state;
 }
