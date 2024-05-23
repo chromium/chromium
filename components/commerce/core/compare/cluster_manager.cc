@@ -345,30 +345,36 @@ std::set<GURL> ClusterManager::FindSimilarCandidateProducts(
   return similar_candidate_products;
 }
 
-std::optional<EntryPointInfo> ClusterManager::GetEntryPointInfoForNavigation(
-    GURL url) {
+void ClusterManager::GetEntryPointInfoForNavigation(
+    const GURL& url,
+    GetEntryPointInfoCallback callback) {
   std::set<GURL> similar_urls = FindSimilarCandidateProducts(url);
   if (similar_urls.size() == 0) {
-    return std::nullopt;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
   similar_urls.insert(url);
   std::optional<std::string> title =
       GetShortestLabelAtBottom(candidate_product_map_[url]->category_data);
-  return std::make_optional<EntryPointInfo>(title ? title.value() : "",
-                                            std::move(similar_urls));
+  // TODO(qinmin): Call server to check if the products can be clustered.
+  std::move(callback).Run(std::make_optional<EntryPointInfo>(
+      title ? title.value() : "", std::move(similar_urls)));
 }
 
-std::optional<EntryPointInfo> ClusterManager::GetEntryPointInfoForSelection(
-    GURL old_url,
-    GURL new_url) {
+void ClusterManager::GetEntryPointInfoForSelection(
+    const GURL& old_url,
+    const GURL& new_url,
+    GetEntryPointInfoCallback callback) {
   std::set<GURL> similar_urls = FindSimilarCandidateProducts(old_url);
   if (similar_urls.find(new_url) == similar_urls.end()) {
-    return std::nullopt;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
   std::set<GURL> similar_urls_new = FindSimilarCandidateProducts(new_url);
   if (similar_urls_new.find(old_url) == similar_urls_new.end()) {
-    return std::nullopt;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
   similar_urls.merge(similar_urls_new);
   std::optional<std::string> title_old =
@@ -384,8 +390,9 @@ std::optional<EntryPointInfo> ClusterManager::GetEntryPointInfoForSelection(
   } else {
     title = std::move(title_old);
   }
-  return std::make_optional<EntryPointInfo>(title ? title.value() : "",
-                                            std::move(similar_urls));
+  // TODO(qinmin): Call server to check if the products can be clustered.
+  std::move(callback).Run(std::make_optional<EntryPointInfo>(
+      title ? title.value() : "", std::move(similar_urls)));
 }
 
 }  // namespace commerce

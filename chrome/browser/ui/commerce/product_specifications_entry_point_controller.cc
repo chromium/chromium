@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -97,15 +98,12 @@ void ProductSpecificationsEntryPointController::OnTabStripModelChanged(
     return;
   }
 
-  auto entry_point_info = cluster_manager_->GetEntryPointInfoForSelection(
+  cluster_manager_->GetEntryPointInfoForSelection(
       selection.old_contents->GetLastCommittedURL(),
-      selection.new_contents->GetLastCommittedURL());
-  if (entry_point_info.has_value()) {
-    current_entry_point_info_ = entry_point_info;
-    for (auto& observer : observers_) {
-      observer.ShowEntryPointWithTitle(entry_point_info->title);
-    }
-  }
+      selection.new_contents->GetLastCommittedURL(),
+      base::BindOnce(&ProductSpecificationsEntryPointController::
+                         ShowEntryPointWithTitleForSelection,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ProductSpecificationsEntryPointController::TabChangedAt(
@@ -163,12 +161,42 @@ void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
     return;
   }
 
-  auto entry_point_info = cluster_manager_->GetEntryPointInfoForNavigation(url);
-  if (!entry_point_info.has_value() ||
-      !IsNavigationEligibleForEntryPoint(browser_->tab_strip_model(),
+  cluster_manager_->GetEntryPointInfoForNavigation(
+      url, base::BindOnce(&ProductSpecificationsEntryPointController::
+                              ShowEntryPointWithTitleForNavigation,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProductSpecificationsEntryPointController::
+    ShowEntryPointWithTitleForSelection(
+        std::optional<EntryPointInfo> entry_point_info) {
+  if (!entry_point_info.has_value()) {
+    return;
+  }
+
+  // TODO(qinmin): we should check whether tabstrips have changed while
+  // waiting for the callback.
+  ShowEntryPointWithTitle(std::move(entry_point_info));
+}
+
+void ProductSpecificationsEntryPointController::
+    ShowEntryPointWithTitleForNavigation(
+        std::optional<EntryPointInfo> entry_point_info) {
+  if (!entry_point_info.has_value()) {
+    return;
+  }
+
+  // TODO(qinmin): we should check whether tabstrips have changed while
+  // waiting for the callback.
+  if (!IsNavigationEligibleForEntryPoint(browser_->tab_strip_model(),
                                          entry_point_info.value())) {
     return;
   }
+  ShowEntryPointWithTitle(std::move(entry_point_info));
+}
+
+void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
+    std::optional<EntryPointInfo> entry_point_info) {
   current_entry_point_info_ = entry_point_info;
   for (auto& observer : observers_) {
     observer.ShowEntryPointWithTitle(entry_point_info->title);

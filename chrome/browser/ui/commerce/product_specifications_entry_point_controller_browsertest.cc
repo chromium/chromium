@@ -161,6 +161,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                                        ui::PAGE_TRANSITION_LINK, true));
     base::RunLoop().RunUntilIdle();
     controller_->OnClusterFinishedForNavigation(GURL(url));
+    base::RunLoop().RunUntilIdle();
     ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
   }
 
@@ -168,6 +169,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                                      ui::PAGE_TRANSITION_LINK, true));
   base::RunLoop().RunUntilIdle();
   controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
+  base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
 }
 
@@ -250,6 +252,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                                        ui::PAGE_TRANSITION_LINK, true));
     base::RunLoop().RunUntilIdle();
     controller_->OnClusterFinishedForNavigation(GURL(url));
+    base::RunLoop().RunUntilIdle();
   }
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
 
@@ -286,6 +289,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                                        ui::PAGE_TRANSITION_LINK, true));
     base::RunLoop().RunUntilIdle();
     controller_->OnClusterFinishedForNavigation(GURL(url));
+    base::RunLoop().RunUntilIdle();
   }
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
 

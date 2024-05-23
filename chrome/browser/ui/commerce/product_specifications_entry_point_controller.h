@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_COMMERCE_PRODUCT_SPECIFICATIONS_ENTRY_POINT_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/commerce/core/commerce_types.h"
@@ -73,6 +74,17 @@ class ProductSpecificationsEntryPointController
  private:
   void MaybeHideEntryPoint();
 
+  // Show the tab strip entry point for tab selection.
+  void ShowEntryPointWithTitleForSelection(
+      std::optional<EntryPointInfo> entry_point_info);
+
+  // Show the tab strip entry point for navigation.
+  void ShowEntryPointWithTitleForNavigation(
+      std::optional<EntryPointInfo> entry_point_info);
+
+  // Helper method to show the entry point with title.
+  void ShowEntryPointWithTitle(std::optional<EntryPointInfo> entry_point_info);
+
   // Info of the entry point that is currently showing, when available.
   std::optional<EntryPointInfo> current_entry_point_info_;
   raw_ptr<Browser, DanglingUntriaged> browser_;
@@ -80,6 +92,8 @@ class ProductSpecificationsEntryPointController
   raw_ptr<ProductSpecificationsService> product_specifications_service_;
   base::ObserverList<Observer> observers_;
   GURL last_committed_url_;
+  base::WeakPtrFactory<ProductSpecificationsEntryPointController>
+      weak_ptr_factory_{this};
 };
 }  // namespace commerce
 

@@ -4,6 +4,8 @@
 
 #include "components/commerce/core/mock_cluster_manager.h"
 
+#include "base/task/sequenced_task_runner.h"
+
 namespace commerce {
 
 MockClusterManager::MockClusterManager(
@@ -18,13 +20,25 @@ MockClusterManager::~MockClusterManager() = default;
 void MockClusterManager::SetResponseForGetEntryPointInfoForSelection(
     std::optional<EntryPointInfo> entry_point_info) {
   ON_CALL(*this, GetEntryPointInfoForSelection)
-      .WillByDefault(testing::Return(entry_point_info));
+      .WillByDefault([entry_point_info = std::move(entry_point_info)](
+                         const GURL& old_url, const GURL& new_url,
+                         ClusterManager::GetEntryPointInfoCallback callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), std::move(entry_point_info)));
+      });
 }
 
 void MockClusterManager::SetResponseForGetEntryPointInfoForNavigation(
     std::optional<EntryPointInfo> entry_point_info) {
   ON_CALL(*this, GetEntryPointInfoForNavigation)
-      .WillByDefault(testing::Return(entry_point_info));
+      .WillByDefault([entry_point_info = std::move(entry_point_info)](
+                         const GURL& url,
+                         ClusterManager::GetEntryPointInfoCallback callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), std::move(entry_point_info)));
+      });
 }
 
 void MockClusterManager::SetResponseForGetProductGroupForCandidateProduct(

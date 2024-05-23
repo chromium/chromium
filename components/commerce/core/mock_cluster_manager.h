@@ -21,13 +21,16 @@ class MockClusterManager : public ClusterManager {
       ProductSpecificationsService* product_specifications_service);
   ~MockClusterManager() override;
 
-  MOCK_METHOD(std::optional<EntryPointInfo>,
+  MOCK_METHOD(void,
               GetEntryPointInfoForNavigation,
-              (GURL url),
+              (const GURL& url,
+               ClusterManager::GetEntryPointInfoCallback callback),
               (override));
-  MOCK_METHOD(std::optional<EntryPointInfo>,
+  MOCK_METHOD(void,
               GetEntryPointInfoForSelection,
-              (GURL old_url, GURL new_url),
+              (const GURL& old_url,
+               const GURL& new_url,
+               ClusterManager::GetEntryPointInfoCallback callback),
               (override));
   MOCK_METHOD(std::optional<ProductGroup>,
               GetProductGroupForCandidateProduct,
