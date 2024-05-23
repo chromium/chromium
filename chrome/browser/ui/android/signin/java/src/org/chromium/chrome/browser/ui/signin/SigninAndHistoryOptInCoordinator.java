@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.signin;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.ComponentActivity;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchM
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -436,7 +438,9 @@ public class SigninAndHistoryOptInCoordinator
                         mDidShowSigninStep && mIsHistorySyncDedicatedFlow,
                         null);
         assert mDialogModel != null;
-        mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, mHistorySyncCoordinator.getView());
+        View view = mHistorySyncCoordinator.getView();
+        view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
+        mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, view);
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
         assert manager != null;
         manager.showDialog(
