@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/test_payments_data_manager.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
@@ -316,6 +317,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   std::unique_ptr<MockFacilitatedPaymentsDriver> driver_;
   std::unique_ptr<MockFacilitatedPaymentsClient> client_;
   std::unique_ptr<FacilitatedPaymentsManager> manager_;
+  std::unique_ptr<PrefService> pref_service_;
   std::unique_ptr<autofill::TestPaymentsDataManager> payments_data_manager_;
   MockFacilitatedPaymentsNetworkInterface payments_network_interface_;
 
@@ -327,7 +329,6 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   int check_allowlist_attempt_count_;
   base::OneShotTimer allowlist_decision_timer_;
   base::OneShotTimer page_load_timer_;
-  std::unique_ptr<PrefService> pref_service_;
   syncer::TestSyncService sync_service_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
@@ -1181,6 +1182,20 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       "FacilitatedPayments.Pix.PaymentNotOfferedReason",
       /*sample=*/PaymentNotOfferedReason::kCodeValidatorFailed,
       /*expected_bucket_count=*/1);
+}
+
+// If the PIX payment user pref is turned off, the manager does not check
+// whether the facilitated payment API is available.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       PixPrefTurnedOff_NoApiClientTriggered) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  // Turn off PIX pref.
+  autofill::prefs::SetFacilitatedPaymentsPix(pref_service_.get(), false);
+
+  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               /*is_pix_code_valid=*/true);
 }
 
 // If the user doesn't have any linked PIX accounts, the manager does not check

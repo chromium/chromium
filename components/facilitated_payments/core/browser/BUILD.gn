@@ -49,6 +49,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
     "//components/optimization_guide/core",
     "//components/signin/public/identity_manager",
     "//components/sync:test_support",

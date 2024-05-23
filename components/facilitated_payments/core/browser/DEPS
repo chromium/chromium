@@ -9,6 +9,7 @@ include_rules = [
 
 specific_include_rules = {
   "facilitated_payments_manager_unittest\.cc": [
+    "+components/autofill/core/common",
     "+components/ukm",
     "+components/sync/test/test_sync_service.h",
   ],

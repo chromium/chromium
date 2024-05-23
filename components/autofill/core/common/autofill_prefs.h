@@ -156,10 +156,6 @@ bool HasSeenIban(const PrefService* prefs);
 
 void SetAutofillHasSeenIban(PrefService* prefs);
 
-bool IsAutofillIbanEnabled(const PrefService* prefs);
-
-void SetAutofillIbanEnabled(PrefService* prefs, bool enabled);
-
 bool IsAutofillManaged(const PrefService* prefs);
 
 bool IsAutofillProfileManaged(const PrefService* prefs);
