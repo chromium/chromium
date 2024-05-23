@@ -6008,15 +6008,16 @@ void Document::EnqueueScrollSnapChangeEvent(Node* target,
   scripted_animation_controller_->EnqueuePerFrameEvent(scrollsnapchange_event);
 }
 
-void Document::EnqueueSnapChangingEvent(Node* target,
-                                        Member<Node>& block_target,
-                                        Member<Node>& inline_target) {
-  Event* snapchanging_event = SnapEvent::Create(
-      event_type_names::kSnapchanging,
+void Document::EnqueueScrollSnapChangingEvent(Node* target,
+                                              Member<Node>& block_target,
+                                              Member<Node>& inline_target) {
+  Event* scrollsnapchanging_event = SnapEvent::Create(
+      event_type_names::kScrollsnapchanging,
       (target->IsDocumentNode() ? Event::Bubbles::kYes : Event::Bubbles::kNo),
       block_target, inline_target);
-  snapchanging_event->SetTarget(target);
-  scripted_animation_controller_->EnqueuePerFrameEvent(snapchanging_event);
+  scrollsnapchanging_event->SetTarget(target);
+  scripted_animation_controller_->EnqueuePerFrameEvent(
+      scrollsnapchanging_event);
 }
 
 void Document::EnqueueMoveEvent() {

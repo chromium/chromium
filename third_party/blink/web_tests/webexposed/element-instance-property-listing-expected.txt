@@ -261,6 +261,7 @@ namespace http://www.w3.org/1999/xhtml
     property onscroll
     property onscrollend
     property onscrollsnapchange
+    property onscrollsnapchanging
     property onsearch
     property onsecuritypolicyviolation
     property onseeked
@@ -269,7 +270,6 @@ namespace http://www.w3.org/1999/xhtml
     property onselectionchange
     property onselectstart
     property onslotchange
-    property onsnapchanging
     property onstalled
     property onsubmit
     property onsuspend
@@ -1535,6 +1535,7 @@ namespace http://www.w3.org/2000/svg
     property onscroll
     property onscrollend
     property onscrollsnapchange
+    property onscrollsnapchanging
     property onsearch
     property onsecuritypolicyviolation
     property onseeked
@@ -1543,7 +1544,6 @@ namespace http://www.w3.org/2000/svg
     property onselectionchange
     property onselectstart
     property onslotchange
-    property onsnapchanging
     property onstalled
     property onsubmit
     property onsuspend

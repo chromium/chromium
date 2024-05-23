@@ -152,6 +152,7 @@ PASS childWindow.onresize is null
 PASS childWindow.onscroll is null
 PASS childWindow.onscrollend is null
 PASS childWindow.onscrollsnapchange is null
+PASS childWindow.onscrollsnapchanging is null
 PASS childWindow.onsearch is null
 PASS childWindow.onsecuritypolicyviolation is null
 PASS childWindow.onseeked is null
@@ -160,7 +161,6 @@ PASS childWindow.onselect is null
 PASS childWindow.onselectionchange is null
 PASS childWindow.onselectstart is null
 PASS childWindow.onslotchange is null
-PASS childWindow.onsnapchanging is null
 PASS childWindow.onstalled is null
 PASS childWindow.onstorage is null
 PASS childWindow.onsubmit is null

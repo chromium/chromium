@@ -1045,7 +1045,7 @@ class CORE_EXPORT LocalFrameView final
 
   void UpdateCanCompositeBackgroundAttachmentFixed();
 
-  void EnqueueSnapChangingFromImplIfNecessary();
+  void EnqueueScrollSnapChangingFromImplIfNecessary();
 
   typedef HeapHashSet<Member<LayoutEmbeddedObject>> EmbeddedObjectSet;
   EmbeddedObjectSet part_update_set_;

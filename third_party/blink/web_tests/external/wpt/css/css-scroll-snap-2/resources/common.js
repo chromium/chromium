@@ -1,8 +1,8 @@
 function checkSnapEventSupport(event_type) {
   if (event_type == "scrollsnapchange") {
     assert_true(window.onscrollsnapchange !== undefined, "scrollsnapchange not supported");
-  } else if (event_type == "snapchanging") {
-    assert_true(window.onsnapchanging !== undefined, "snapchanging not supported");
+  } else if (event_type == "scrollsnapchanging") {
+    assert_true(window.onscrollsnapchanging !== undefined, "scrollsnapchanging not supported");
   } else {
     assert_unreached(`Unknown snap event type selected: ${event_type}`);
   }
@@ -60,8 +60,8 @@ function waitForEventUntil(event_target, event_type, wait_until,
       result = evt;
     };
     if (use_onsnap_member) {
-      if (event_type === "snapchanging") {
-        event_target.onsnapchanging = listener;
+      if (event_type === "scrollsnapchanging") {
+        event_target.onscrollsnapchanging = listener;
       } else {
         event_target.onscrollsnapchange = listener;
       }
@@ -70,8 +70,8 @@ function waitForEventUntil(event_target, event_type, wait_until,
     }
     wait_until.then(() => {
       if (use_onsnap_member) {
-        if (event_type === "snapchanging") {
-          event_target.onsnapchanging = null;
+        if (event_type === "scrollsnapchanging") {
+          event_target.onscrollsnapchanging = null;
         } else {
           event_target.onscrollsnapchange = null;
         }

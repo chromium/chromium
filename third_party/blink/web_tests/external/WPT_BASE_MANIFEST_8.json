@@ -464260,8 +464260,8 @@
        ]
       ]
      },
-     "snapchanging": {
-      "snapchanging-after-layout-change.tentative.html": [
+     "scrollsnapchanging": {
+      "scrollsnapchanging-after-layout-change.tentative.html": [
        "0c0bfb623e106800597c0f0caafcd4afb2f27b75",
        [
         null,
@@ -464270,7 +464270,7 @@
         }
        ]
       ],
-      "snapchanging-on-programmatic-root-scroll.tentative.html": [
+      "scrollsnapchanging-on-programmatic-root-scroll.tentative.html": [
        "54c2c95c5019aa661f518c4842a325f6dedd3f9f",
        [
         null,
@@ -464279,7 +464279,7 @@
         }
        ]
       ],
-      "snapchanging-on-programmatic-scroll.tentative.html": [
+      "scrollsnapchanging-on-programmatic-scroll.tentative.html": [
        "0bd65f8e428cfd2117434180d2df94bdd1023329",
        [
         null,
@@ -464288,7 +464288,7 @@
         }
        ]
       ],
-      "snapchanging-on-user-root-scroll.tentative.html": [
+      "scrollsnapchanging-on-user-root-scroll.tentative.html": [
        "8054db548db65f07eb8200729d4223e29338d610",
        [
         null,
@@ -464297,7 +464297,7 @@
         }
        ]
       ],
-      "snapchanging-on-user-scroll.tentative.html": [
+      "scrollsnapchanging-on-user-scroll.tentative.html": [
        "3755369a2fc981a6dc47b7510b07c61df1802ae5",
        [
         null,

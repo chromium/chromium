@@ -263,7 +263,7 @@
     "onshow",
     "onslotchange",
     "onscrollsnapchange",
-    "onsnapchanging",
+    "onscrollsnapchanging",
     "onstalled",
     "onstorage",
     "onsuspend",

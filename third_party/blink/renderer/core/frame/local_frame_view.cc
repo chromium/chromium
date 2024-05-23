@@ -2459,14 +2459,14 @@ bool LocalFrameView::ShouldDeferLayoutSnap() const {
   return false;
 }
 
-void LocalFrameView::EnqueueSnapChangingFromImplIfNecessary() {
+void LocalFrameView::EnqueueScrollSnapChangingFromImplIfNecessary() {
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     const auto* scrollable_areas = frame_view.UserScrollableAreas();
     if (!scrollable_areas) {
       return;
     }
     for (const auto& area : *scrollable_areas) {
-      area->EnqueueSnapChangingEventFromImplIfNeeded();
+      area->EnqueueScrollSnapChangingEventFromImplIfNeeded();
     }
   });
 }
@@ -2500,8 +2500,8 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
 
   ExecutePendingSnapUpdates();
 
-  // Fire snapchanging events based on the new layout if necessary.
-  EnqueueSnapChangingFromImplIfNecessary();
+  // Fire scrollsnapchanging events based on the new layout if necessary.
+  EnqueueScrollSnapChangingFromImplIfNecessary();
 
   EnqueueScrollEvents();
 

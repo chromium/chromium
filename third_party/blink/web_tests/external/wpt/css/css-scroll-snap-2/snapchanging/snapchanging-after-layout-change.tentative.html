@@ -60,10 +60,10 @@
   <script>
     const scroller = document.getElementById("scroller");
     promise_test(async (t) => {
-      // This tests snapchanging firing after a layout change in the middle of a
-      // touch scroll. We start a touch scroll far enough that snapchanging
+      // This tests scrollsnapchanging firing after a layout change in the middle of a
+      // touch scroll. We start a touch scroll far enough that scrollsnapchanging
       // fires and then, with the pointer still down, we change the layout so
-      // that snapchanging should fire with a different target.
+      // that scrollsnapchanging should fire with a different target.
       await waitForScrollReset(t, scroller);
       await waitForCompositorCommit();
 
@@ -75,11 +75,11 @@
       let evt_promise;
       let snap_evt;
 
-      const save_snapchanging_evt = (evt) => { snap_evt = evt; }
-      evt_promise = scroller.addEventListener("snapchanging",
-                                              save_snapchanging_evt);
+      const save_scrollsnapchanging_evt = (evt) => { snap_evt = evt; }
+      evt_promise = scroller.addEventListener("scrollsnapchanging",
+                                              save_scrollsnapchanging_evt);
       // We wait to reach the expected scroll position rather than waiting for a
-      // snapchanging event to avoid timing out if the snapchanging event does
+      // scrollsnapchanging event to avoid timing out if the scrollsnapchanging event does
       // not fire.
       const scroll_promise = new Promise((resolve) => {
         scroller.addEventListener("scroll", async () => {
@@ -96,15 +96,15 @@
         .pointerDown()
         .addTick()
         .pause(200)
-        // Drag closer to box2, which should trigger a snapchanging event.
+        // Drag closer to box2, which should trigger a scrollsnapchanging event.
         .pointerMove(start_pos_x - drag_amt, pos_y)
         .send();
 
-      // assert snapchanging that should have already happened.
+      // assert scrollsnapchanging that should have already happened.
       await scroll_promise;
       assertSnapEvent(snap_evt, { block: null, inline: box2 });
 
-      evt_promise = waitForSnapEvent(scroller, "snapchanging", false);
+      evt_promise = waitForSnapEvent(scroller, "scrollsnapchanging", false);
       // Change layout while pointer is still down.
       let box2_prev_left = getComputedStyle(box2).getPropertyValue("left");
       let box3_prev_left = getComputedStyle(box3).getPropertyValue("left");
@@ -112,7 +112,7 @@
       box3.style.left = box2_prev_left;
       snap_evt = await evt_promise;
       assertSnapEvent(snap_evt, { block: null, inline: box3 });
-    }, "snapchanging fires after layout change");
+    }, "scrollsnapchanging fires after layout change");
   </script>
 </body>
 </html>

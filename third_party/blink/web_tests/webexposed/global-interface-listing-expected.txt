@@ -2096,6 +2096,7 @@ interface Document : Node
     getter onscroll
     getter onscrollend
     getter onscrollsnapchange
+    getter onscrollsnapchanging
     getter onsearch
     getter onsecuritypolicyviolation
     getter onseeked
@@ -2104,7 +2105,6 @@ interface Document : Node
     getter onselectionchange
     getter onselectstart
     getter onslotchange
-    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -2320,6 +2320,7 @@ interface Document : Node
     setter onscroll
     setter onscrollend
     setter onscrollsnapchange
+    setter onscrollsnapchanging
     setter onsearch
     setter onsecuritypolicyviolation
     setter onseeked
@@ -2328,7 +2329,6 @@ interface Document : Node
     setter onselectionchange
     setter onselectstart
     setter onslotchange
-    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -3916,6 +3916,7 @@ interface HTMLElement : Element
     getter onscroll
     getter onscrollend
     getter onscrollsnapchange
+    getter onscrollsnapchanging
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -3923,7 +3924,6 @@ interface HTMLElement : Element
     getter onselectionchange
     getter onselectstart
     getter onslotchange
-    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -4053,6 +4053,7 @@ interface HTMLElement : Element
     setter onscroll
     setter onscrollend
     setter onscrollsnapchange
+    setter onscrollsnapchanging
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -4060,7 +4061,6 @@ interface HTMLElement : Element
     setter onselectionchange
     setter onselectstart
     setter onslotchange
-    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -6040,6 +6040,7 @@ interface MathMLElement : Element
     getter onscroll
     getter onscrollend
     getter onscrollsnapchange
+    getter onscrollsnapchanging
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -6047,7 +6048,6 @@ interface MathMLElement : Element
     getter onselectionchange
     getter onselectstart
     getter onslotchange
-    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -6153,6 +6153,7 @@ interface MathMLElement : Element
     setter onscroll
     setter onscrollend
     setter onscrollsnapchange
+    setter onscrollsnapchanging
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -6160,7 +6161,6 @@ interface MathMLElement : Element
     setter onselectionchange
     setter onselectstart
     setter onslotchange
-    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -8444,6 +8444,7 @@ interface SVGElement : Element
     getter onscroll
     getter onscrollend
     getter onscrollsnapchange
+    getter onscrollsnapchanging
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -8451,7 +8452,6 @@ interface SVGElement : Element
     getter onselectionchange
     getter onselectstart
     getter onslotchange
-    getter onsnapchanging
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -8559,6 +8559,7 @@ interface SVGElement : Element
     setter onscroll
     setter onscrollend
     setter onscrollsnapchange
+    setter onscrollsnapchanging
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -8566,7 +8567,6 @@ interface SVGElement : Element
     setter onselectionchange
     setter onselectstart
     setter onslotchange
-    setter onsnapchanging
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -12990,6 +12990,7 @@ namespace console
     getter onscroll
     getter onscrollend
     getter onscrollsnapchange
+    getter onscrollsnapchanging
     getter onsearch
     getter onsecuritypolicyviolation
     getter onseeked
@@ -12998,7 +12999,6 @@ namespace console
     getter onselectionchange
     getter onselectstart
     getter onslotchange
-    getter onsnapchanging
     getter onstalled
     getter onstorage
     getter onsubmit
@@ -13224,6 +13224,7 @@ namespace console
     setter onscroll
     setter onscrollend
     setter onscrollsnapchange
+    setter onscrollsnapchanging
     setter onsearch
     setter onsecuritypolicyviolation
     setter onseeked
@@ -13232,7 +13233,6 @@ namespace console
     setter onselectionchange
     setter onselectstart
     setter onslotchange
-    setter onsnapchanging
     setter onstalled
     setter onstorage
     setter onsubmit

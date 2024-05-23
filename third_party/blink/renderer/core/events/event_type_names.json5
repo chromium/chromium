@@ -296,7 +296,7 @@
     "sinkchange",
     "slotchange",
     "scrollsnapchange",
-    "snapchanging",
+    "scrollsnapchanging",
     "soundend",
     "soundstart",
     "sourceclose",

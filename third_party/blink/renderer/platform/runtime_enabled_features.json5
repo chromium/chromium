@@ -989,10 +989,15 @@
       status: "experimental",
     },
     {
+      // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchanging
+      name: "CSSScrollSnapChangingEvent",
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
       name: "CSSScrollSnapEvents",
       status: "experimental",
-      implied_by: ["CSSScrollSnapChangeEvent", "CSSSnapChangingEvent"],
+      implied_by: ["CSSScrollSnapChangeEvent", "CSSScrollSnapChangingEvent"],
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2#scroll-start
@@ -1023,11 +1028,6 @@
       // A separate feature for testing compatibility, related to the work on
       // https://chromestatus.com/feature/5196713071738880
       name: "CSSSizingKeywordAnimation",
-    },
-    {
-      // https://drafts.csswg.org/css-scroll-snap-2/#snapchanging
-      name: "CSSSnapChangingEvent",
-      status: "experimental",
     },
     {
       name: "CSSSnapContainerQueries",

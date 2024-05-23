@@ -1526,9 +1526,9 @@ class CORE_EXPORT Document : public ContainerNode,
   void EnqueueScrollSnapChangeEvent(Node* target,
                                     Member<Node>& block_target,
                                     Member<Node>& inline_target);
-  void EnqueueSnapChangingEvent(Node* target,
-                                Member<Node>& block_target,
-                                Member<Node>& inline_target);
+  void EnqueueScrollSnapChangingEvent(Node* target,
+                                      Member<Node>& block_target,
+                                      Member<Node>& inline_target);
 
   void DispatchEventsForPrinting();
 

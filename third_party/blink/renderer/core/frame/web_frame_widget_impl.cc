@@ -1325,7 +1325,7 @@ void WebFrameWidgetImpl::SendEndOfScrollEvents(
   }
 }
 
-void WebFrameWidgetImpl::SendSnapChangingEventIfNeeded(
+void WebFrameWidgetImpl::SendScrollSnapChangingEventIfNeeded(
     const cc::CompositorCommitData& commit_data) {
   Node* target_node = View()->FindNodeFromScrollableCompositorElementId(
       commit_data.scroll_latched_element_id);
@@ -1335,7 +1335,7 @@ void WebFrameWidgetImpl::SendSnapChangingEventIfNeeded(
   if (ScrollableArea* scrollable_area =
           ScrollableArea::GetForScrolling(target_node->GetLayoutBox())) {
     scrollable_area->SetImplSnapStrategy(commit_data.snap_strategy->Clone());
-    scrollable_area->EnqueueSnapChangingEventFromImplIfNeeded();
+    scrollable_area->EnqueueScrollSnapChangingEventFromImplIfNeeded();
   }
 }
 
@@ -1351,7 +1351,7 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
     return;
 
   if (commit_data.snap_strategy) {
-    SendSnapChangingEventIfNeeded(commit_data);
+    SendScrollSnapChangingEventIfNeeded(commit_data);
   }
 
   if (!commit_data.overscroll_delta.IsZero()) {

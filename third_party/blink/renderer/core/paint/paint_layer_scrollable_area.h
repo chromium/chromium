@@ -84,8 +84,8 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
 
   std::optional<cc::SnapContainerData> snap_container_data_;
   // The ids of the elements that were reported as the selected snap targets
-  // along each axis during the last snapchanging event that fired.
-  std::optional<cc::TargetSnapAreaElementIds> snapchanging_target_ids_;
+  // along each axis during the last scrollsnapchanging event that fired.
+  std::optional<cc::TargetSnapAreaElementIds> scrollsnapchanging_target_ids_;
   std::unique_ptr<cc::SnapSelectionStrategy> impl_snap_strategy_;
   // The ids of the elements that were reported as the selected snap targets
   // along each axis during the last scrollsnapchange event that fired.
@@ -560,17 +560,17 @@ class CORE_EXPORT PaintLayerScrollableArea final
       std::optional<cc::TargetSnapAreaElementIds>) override;
   void UpdateSnappedTargetsAndEnqueueScrollSnapChange() override;
 
-  // Functions related to firing snapchanging events.
-  std::optional<cc::TargetSnapAreaElementIds> GetSnapchangingTargetIds()
+  // Functions related to firing scrollsnapchanging events.
+  std::optional<cc::TargetSnapAreaElementIds> GetScrollsnapchangingTargetIds()
       const override;
-  void SetSnapchangingTargetIds(
+  void SetScrollsnapchangingTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) override;
-  void UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+  void UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(
       const cc::TargetSnapAreaElementIds& new_target_ids) override;
   const cc::SnapSelectionStrategy* GetImplSnapStrategy() const override;
   void SetImplSnapStrategy(
       std::unique_ptr<cc::SnapSelectionStrategy> strategy) override;
-  void EnqueueSnapChangingEventFromImplIfNeeded() override;
+  void EnqueueScrollSnapChangingEventFromImplIfNeeded() override;
 
   void DisposeImpl() override;
 
@@ -721,7 +721,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool IsGlobalRootNonOverlayScroller() const;
 
   // Get the current target for a snap event of |type| (either
-  // "scrollsnapchange" or snapchanging) along axis |axis|.
+  // "scrollsnapchange" or scrollsnapchanging) along axis |axis|.
   Node* GetSnapEventTargetAlongAxis(const AtomicString& type,
                                     cc::SnapAxis) const override;
 

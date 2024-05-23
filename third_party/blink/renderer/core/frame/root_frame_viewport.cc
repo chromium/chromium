@@ -753,18 +753,19 @@ void RootFrameViewport::UpdateSnappedTargetsAndEnqueueScrollSnapChange() {
 }
 
 std::optional<cc::TargetSnapAreaElementIds>
-RootFrameViewport::GetSnapchangingTargetIds() const {
-  return LayoutViewport().GetSnapchangingTargetIds();
+RootFrameViewport::GetScrollsnapchangingTargetIds() const {
+  return LayoutViewport().GetScrollsnapchangingTargetIds();
 }
 
-void RootFrameViewport::SetSnapchangingTargetIds(
+void RootFrameViewport::SetScrollsnapchangingTargetIds(
     std::optional<cc::TargetSnapAreaElementIds> new_target_ids) {
-  LayoutViewport().SetSnapchangingTargetIds(new_target_ids);
+  LayoutViewport().SetScrollsnapchangingTargetIds(new_target_ids);
 }
 
-void RootFrameViewport::UpdateSnapChangingTargetsAndEnqueueSnapChanging(
-    const cc::TargetSnapAreaElementIds& new_target_ids) {
-  LayoutViewport().UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+void RootFrameViewport::
+    UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(
+        const cc::TargetSnapAreaElementIds& new_target_ids) {
+  LayoutViewport().UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(
       new_target_ids);
 }
 
@@ -778,8 +779,8 @@ void RootFrameViewport::SetImplSnapStrategy(
   LayoutViewport().SetImplSnapStrategy(std::move(strategy));
 }
 
-void RootFrameViewport::EnqueueSnapChangingEventFromImplIfNeeded() {
-  LayoutViewport().EnqueueSnapChangingEventFromImplIfNeeded();
+void RootFrameViewport::EnqueueScrollSnapChangingEventFromImplIfNeeded() {
+  LayoutViewport().EnqueueScrollSnapChangingEventFromImplIfNeeded();
 }
 
 std::optional<cc::ElementId> RootFrameViewport::GetTargetedSnapAreaId() {

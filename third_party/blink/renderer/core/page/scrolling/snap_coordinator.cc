@@ -76,7 +76,7 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
     // Clear the old data if needed.
     if (old_snap_container_data) {
       snap_container.SetNeedsPaintPropertyUpdate();
-      scrollable_area->SetSnapchangingTargetIds(std::nullopt);
+      scrollable_area->SetScrollsnapchangingTargetIds(std::nullopt);
       scrollable_area->SetScrollsnapchangeTargetIds(std::nullopt);
       if (RuntimeEnabledFeatures::CSSScrollSnapChangeEventEnabled()) {
         scrollable_area->EnqueueScrollSnapChangeEvent();

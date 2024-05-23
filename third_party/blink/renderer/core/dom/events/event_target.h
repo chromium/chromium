@@ -308,7 +308,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(selectstart, kSelectstart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(slotchange, kSlotchange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(scrollsnapchange, kScrollsnapchange)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(snapchanging, kSnapchanging)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(scrollsnapchanging, kScrollsnapchanging)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(stalled, kStalled)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(submit, kSubmit)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(suspend, kSuspend)

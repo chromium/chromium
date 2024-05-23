@@ -94,8 +94,8 @@
           y: snap_area_2.offsetTop
         }
       };
-      await test_snap_event(t, test_data, "snapchanging");
-    }, "touch scrolling fires snapchanging.");
+      await test_snap_event(t, test_data, "scrollsnapchanging");
+    }, "touch scrolling fires scrollsnapchanging.");
 
     // Wheel scroll test.
     promise_test(async (t) => {
@@ -112,8 +112,8 @@
           y: snap_area_2.offsetTop
         }
       };
-      await test_snap_event(t, test_data, "snapchanging");
-    }, "mouse wheel scroll triggers snapchanging.");
+      await test_snap_event(t, test_data, "scrollsnapchanging");
+    }, "mouse wheel scroll triggers scrollsnapchanging.");
 
     // Scrollbar drag test.
     promise_test(async (t) => {
@@ -138,8 +138,8 @@
           y: snap_area_2.offsetTop
         }
       };
-      await test_snap_event(t, test_data, "snapchanging");
-    }, "scrollbar dragging fires snapchanging.");
+      await test_snap_event(t, test_data, "scrollsnapchanging");
+    }, "scrollbar dragging fires scrollsnapchanging.");
 
     // Keyboard test.
     promise_test(async (t) => {
@@ -156,10 +156,10 @@
            y: snap_area_2.offsetTop
         }
        };
-      await test_snap_event(t, test_data, "snapchanging");
-    }, "keyboard scroll triggers snapchanging.");
+      await test_snap_event(t, test_data, "scrollsnapchanging");
+    }, "keyboard scroll triggers scrollsnapchanging.");
 
-    // Touch scroll test (onsnapchanging variant).
+    // Touch scroll test (onscrollsnapchanging variant).
     promise_test(async (t) => {
       await waitForCompositorCommit();
       const scroller_middle = Math.round(scroller.clientWidth / 2);
@@ -176,9 +176,9 @@
           y: snap_area_2.offsetTop
         }
       };
-      await test_snap_event(t, test_data, "snapchanging",
+      await test_snap_event(t, test_data, "scrollsnapchanging",
         /*use_onsnap_memeber*/true);
-    }, "touch scrolling fires Document.onsnapchanging.");
+    }, "touch scrolling fires Document.onscrollsnapchanging.");
 
     // Touch scroll test: peek at snap_area_2 and then drag back to
     // snap_area_1.
@@ -187,7 +187,7 @@
       await waitForCompositorCommit();
       const pos_x = Math.round(scroller.clientWidth / 2);
       const start_pos_y = Math.round(snap_area_2.offsetTop);
-      let evts_promise = waitForEventsUntil(document, "snapchanging",
+      let evts_promise = waitForEventsUntil(document, "scrollsnapchanging",
         waitForScrollendEventNoTimeout(document));
       await new test_driver.Actions()
         .addPointer("TestPointer", "touch")
@@ -195,25 +195,25 @@
         .pointerDown()
         .addTick()
         .pause(200)
-        // Drag up to y=0, which should trigger a snapchanging event.
+        // Drag up to y=0, which should trigger a scrollsnapchanging event.
         .pointerMove(pos_x, 0)
         .addTick()
         .pause(200)
         // Drag down again to start position, which should trigger a
-        // snapchanging event.
+        // scrollsnapchanging event.
         .pointerMove(pos_x, start_pos_y)
         .pointerUp()
         .send();
       let evts = await evts_promise;
-      assert_equals(evts.length, 2, "2 snapchanging events are seens");
+      assert_equals(evts.length, 2, "2 scrollsnapchanging events are seens");
       assertSnapEvent(evts[0], { block: snap_area_2, inline: null });
       assertSnapEvent(evts[1], { block: snap_area_1, inline: null });
-    }, "snapchanging fires as scroll moves through different snap targets.");
+    }, "scrollsnapchanging fires as scroll moves through different snap targets.");
 
-    // snapchanging doesn't fire test.
+    // scrollsnapchanging doesn't fire test.
     promise_test(async (t) => {
-      test_no_snapchanging(t, scroller, 10);
-    }, "snapchanging doesn't fire if scroll doesn't reach different snap " +
+      test_no_scrollsnapchanging(t, scroller, 10);
+    }, "scrollsnapchanging doesn't fire if scroll doesn't reach different snap " +
     "targets.");
   </script>
 </body>

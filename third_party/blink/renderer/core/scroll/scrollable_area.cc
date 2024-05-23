@@ -622,9 +622,9 @@ bool ScrollableArea::ProgrammaticScrollHelper(
       },
       std::move(callback), WrapWeakPersistent(this)));
 
-  // Enqueue snapchanging if necessary.
+  // Enqueue scrollsnapchanging if necessary.
   if (auto* snap_container = GetSnapContainerData()) {
-    UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+    UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(
         snap_container->GetTargetSnapAreaElementIds());
   }
 
@@ -1319,11 +1319,11 @@ bool ScrollableArea::PerformSnapping(
     return false;
   }
 
-  // We should set the snapchanging targets of a snap container the first
-  // time it is laid out to avoid a spurious snapchanging event firing the first
-  // time the scroller is scrolled.
-  if (!GetSnapchangingTargetIds()) {
-    SetSnapchangingTargetIds(
+  // We should set the scrollsnapchanging targets of a snap container the first
+  // time it is laid out to avoid a spurious scrollsnapchanging event firing the
+  // first time the scroller is scrolled.
+  if (!GetScrollsnapchangingTargetIds()) {
+    SetScrollsnapchangingTargetIds(
         GetSnapContainerData()->GetTargetSnapAreaElementIds());
   }
 
@@ -1425,18 +1425,18 @@ void ScrollableArea::EnqueueScrollSnapChangeEvent() const {
       target_node, block_target, inline_target);
 }
 
-void ScrollableArea::EnqueueSnapChangingEvent() const {
-  DCHECK(RuntimeEnabledFeatures::CSSSnapChangingEventEnabled());
+void ScrollableArea::EnqueueScrollSnapChangingEvent() const {
+  DCHECK(RuntimeEnabledFeatures::CSSScrollSnapChangingEventEnabled());
   Node* target_node = EventTargetNode();
   if (!target_node) {
     return;
   }
   Member<Node> block_target = GetSnapEventTargetAlongAxis(
-      event_type_names::kSnapchanging, cc::SnapAxis::kBlock);
+      event_type_names::kScrollsnapchanging, cc::SnapAxis::kBlock);
   Member<Node> inline_target = GetSnapEventTargetAlongAxis(
-      event_type_names::kSnapchanging, cc::SnapAxis::kInline);
-  target_node->GetDocument().EnqueueSnapChangingEvent(target_node, block_target,
-                                                      inline_target);
+      event_type_names::kScrollsnapchanging, cc::SnapAxis::kInline);
+  target_node->GetDocument().EnqueueScrollSnapChangingEvent(
+      target_node, block_target, inline_target);
 }
 
 ScrollOffset ScrollableArea::GetWebExposedScrollOffset() const {

@@ -922,7 +922,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SendEndOfScrollEvents(bool affects_outer_viewport,
                              bool affects_inner_viewport,
                              cc::ElementId scroll_latched_element_id);
-  void SendSnapChangingEventIfNeeded(
+  void SendScrollSnapChangingEventIfNeeded(
       const cc::CompositorCommitData& commit_data);
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
 

@@ -122,7 +122,7 @@ struct CC_EXPORT CompositorCommitData {
 
   // This tracks the strategy cc will use to snap at the end of the current
   // scroll based on the scroll updates so far. The main thread will use this to
-  // determine whether to fire snapchanging or not.
+  // determine whether to fire scrollsnapchanging or not.
   std::unique_ptr<SnapSelectionStrategy> snap_strategy;
 };
 

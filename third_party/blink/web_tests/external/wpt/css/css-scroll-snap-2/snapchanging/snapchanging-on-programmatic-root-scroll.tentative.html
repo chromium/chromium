@@ -82,8 +82,8 @@
           y: snap_area_2.offsetTop
         }
       };
-      await test_snap_event(t, test_data, "snapchanging");
-    }, "snapchanging fires on programmatic scrolls that changes a scroller's" +
+      await test_snap_event(t, test_data, "scrollsnapchanging");
+    }, "scrollsnapchanging fires on programmatic scrolls that changes a scroller's" +
     " snap targets.");
 
     promise_test(async (t) => {
@@ -99,16 +99,16 @@
           y: snap_area_2.offsetTop
         }
       };
-      await test_snap_event(t, test_data, "snapchanging",
+      await test_snap_event(t, test_data, "scrollsnapchanging",
                             /*use_onsnap_member*/true);
-    }, "Document.snapchanging fires on programmatic scrolls that changes a" +
+    }, "Document.scrollsnapchanging fires on programmatic scrolls that changes a" +
        "scroller's snap targets.");
 
     promise_test(async (t) => {
-      checkSnapEventSupport("snapchanging");
+      checkSnapEventSupport("scrollsnapchanging");
       await waitForScrollReset(t, scroller);
       await waitForCompositorCommit();
-      let snap_event_promise = waitForSnapEvent(document, "snapchanging", false);
+      let snap_event_promise = waitForSnapEvent(document, "scrollsnapchanging", false);
       // The snap areas are far apart enough that 10px is not enough to trigger
       // a change in snap targets.
       const small_scroll_offset = 10;
@@ -117,7 +117,7 @@
       assert_equals(evt, null, "no snap event since scroller is back to top");
       assert_equals(scroller.scrollTop, 0, "scroller snaps back to the top");
       assert_equals(scroller.scrollLeft, 0, "scroller snaps back to the left");
-    }, "snapchanging does not fire on programmatic scrolls that don't " +
+    }, "scrollsnapchanging does not fire on programmatic scrolls that don't " +
     "trigger a change in snap targets.");
   </script>
 </body>

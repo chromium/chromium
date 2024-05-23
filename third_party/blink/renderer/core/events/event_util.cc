@@ -78,7 +78,7 @@ MutationEventInfo IsDOMMutationEventType(const AtomicString& event_type) {
 }
 
 bool IsSnapEventType(const AtomicString& event_type) {
-  return event_type == event_type_names::kSnapchanging ||
+  return event_type == event_type_names::kScrollsnapchanging ||
          event_type == event_type_names::kScrollsnapchange;
 }
 
