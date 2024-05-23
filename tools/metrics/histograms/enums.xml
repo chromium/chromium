@@ -35546,6 +35546,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1087461470" label="chrome://management/"/>
   <int value="-1082746738" label="chrome://credits/"/>
   <int value="-1078583150" label="chrome://view-cert-dialog/"/>
+  <int value="-1051629910" label="chrome://mall/"/>
   <int value="-1043041749" label="chrome://offline-internals/"/>
   <int value="-1033927589" label="chrome://files-internals/"/>
   <int value="-1013183905" label="chrome://media-app/"/>
