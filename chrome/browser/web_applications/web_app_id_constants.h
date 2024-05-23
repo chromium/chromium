@@ -150,6 +150,10 @@ inline constexpr char kPrintManagementAppId[] =
     "fglkccnmnaankjodgccmiodmlkpaiodc";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt,
+// GURL("chrome://sanitize/"))
+inline constexpr char kSanitizeAppId[] = "kochjemhjheifpfhkppkameonoheenjk";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt,
 // GURL("chrome://scanning/"))
 inline constexpr char kScanningAppId[] = "cdkahakpgkdaoffdmfgnhgomkelkocfo";
 

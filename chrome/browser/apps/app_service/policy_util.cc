@@ -60,6 +60,7 @@ constexpr auto kSystemWebAppsMapping =
          {"shimless_rma", ash::SystemWebAppType::SHIMLESS_RMA},
          {"demo_mode", ash::SystemWebAppType::DEMO_MODE},
          {"os_feedback", ash::SystemWebAppType::OS_FEEDBACK},
+         {"os_sanitize", ash::SystemWebAppType::OS_SANITIZE},
          {"projector", ash::SystemWebAppType::PROJECTOR},
          {"os_url_handler", ash::SystemWebAppType::OS_URL_HANDLER},
          {"firmware_update", ash::SystemWebAppType::FIRMWARE_UPDATE},

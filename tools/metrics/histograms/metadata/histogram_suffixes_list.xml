@@ -4563,6 +4563,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="PrintPreviewCrOS" label="Print Preview CrOS"/>
   <suffix name="Projector" label="Projector"/>
   <suffix name="Sample" label="Sample"/>
+  <suffix name="Sanitize" label="Sanitize"/>
   <suffix name="Scanning" label="Scanning"/>
   <suffix name="ShimlessRMA" label="Shimless RMA"/>
   <suffix name="ShortcutCustomization" label="ShortcutCustomization"/>

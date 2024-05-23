@@ -7,6 +7,6 @@
 namespace ash {
 
 const char kChromeUISanitizeAppHost[] = "sanitize";
-const char kChromeUISanitizeAppUrl[] = "chrome://sanitize";
+const char kChromeUISanitizeAppURL[] = "chrome://sanitize";
 
 }  // namespace ash

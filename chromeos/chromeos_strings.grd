@@ -3103,6 +3103,11 @@
           Choose a wallpaper
         </message>
 
+        <!-- Sanitize UI -->
+        <message name="IDS_OS_SANITIZE_APP_NAME" desc="Name of the Sanitize web app" translateable="false">
+          Sanitize
+        </message>
+
         <!-- Sea Pen UI -->
         <message name="IDS_SEA_PEN_LABEL" desc="Label for the Create with AI feature.">
           Create with AI

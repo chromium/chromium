@@ -18,6 +18,7 @@ static_library("sanitize_ui") {
   public_deps = [ ":url_constants" ]
 
   deps = [
+    "//ash/constants",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/sanitize_ui/resources:resources",

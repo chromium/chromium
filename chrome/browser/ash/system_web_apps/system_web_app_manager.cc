@@ -58,6 +58,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/print_management_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/print_preview_cros_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/projector_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/sanitize_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/scanning_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/shimless_rma_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/shortcut_customization_system_web_app_info.h"
@@ -77,6 +78,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
@@ -146,6 +148,9 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
     info_vec.push_back(std::make_unique<BocaSystemAppDelegate>(profile));
   }
   info_vec.push_back(std::make_unique<MallSystemAppDelegate>(profile));
+  if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
+    info_vec.push_back(std::make_unique<SanitizeSystemAppDelegate>(profile));
+  }
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));

@@ -5,6 +5,6 @@
 #define ASH_WEBUI_SANITIZE_UI_URL_CONSTANTS_H_
 namespace ash {
 extern const char kChromeUISanitizeAppHost[];
-extern const char kChromeUISanitizeAppUrl[];
+extern const char kChromeUISanitizeAppURL[];
 }  // namespace ash
 #endif  // ASH_WEBUI_SANITIZE_UI_URL_CONSTANTS_H_

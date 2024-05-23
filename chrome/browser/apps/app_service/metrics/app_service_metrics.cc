@@ -375,6 +375,8 @@ const std::optional<apps::DefaultAppName> SystemWebAppIdToName(
     return apps::DefaultAppName::kPrintManagementApp;
   } else if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId) {
     return apps::DefaultAppName::kProjector;
+  } else if (app_id == web_app::kSanitizeAppId) {
+    return apps::DefaultAppName::kSanitizeApp;
   } else if (app_id == web_app::kScanningAppId) {
     return apps::DefaultAppName::kScanningApp;
   } else if (app_id == web_app::kShimlessRMAAppId) {

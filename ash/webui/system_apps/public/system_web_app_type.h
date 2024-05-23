@@ -130,6 +130,11 @@ enum class SystemWebAppType {
   // Source: //ash/webui/mall/
   // Contact: crosdev-commerce-eng@google.com
   MALL = 28,
+  // CrOS SWA that performs a soft reset for the users.
+  // Source: //ash/webui/sanitize_ui/
+  // Contact: behnoodm@google.com
+  // Contact: cryptohome-core@google.com
+  OS_SANITIZE = 29,
 
   // When adding a new System App, remember to:
   //
@@ -170,7 +175,7 @@ enum class SystemWebAppType {
   //
   // 8. Have one of System Web App Platform owners review the CL.
   //    See: //ash/webui/PLATFORM_OWNERS
-  kMaxValue = MALL,
+  kMaxValue = OS_SANITIZE,
 };
 
 }  // namespace ash
