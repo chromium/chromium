@@ -678,6 +678,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
                                  'os-settings:accessibility';
       case SearchResultIcon.kAndroid:
         return 'os-settings:android';
+      case SearchResultIcon.kAppsParentalControls:
+        return 'os-settings:apps-parental-controls';
       case SearchResultIcon.kAppsGrid:
         return 'os-settings:apps';
       case SearchResultIcon.kAssistant:

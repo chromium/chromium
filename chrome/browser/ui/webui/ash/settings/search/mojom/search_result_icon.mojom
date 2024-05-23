@@ -9,6 +9,7 @@ enum SearchResultIcon {
   kA11y,
   kAndroid,
   kAppsGrid,
+  kAppsParentalControls,
   kAssistant,
   kAudio,
   kAuthKey,

@@ -958,6 +958,9 @@
   <message name="IDS_OS_SETTINGS_TAG_TURN_ON_ISOLATED_WEB_APPS_ALT1" desc="Text for search result item which, when clicked, navigates the user to manage isolated web apps settings with turn on isolated web apps toggle. Alternate phrase for: 'Turn on isolated web apps'">
     Enable isolated web apps
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_APPS_PARENTAL_CONTROLS" desc="Text for search result item which when clicked, navigates the user to the app parental controls settings subpage.">
+    App parental controls
+  </message>
 
   <!-- Crostini section. -->
   <message name="IDS_OS_SETTINGS_TAG_CROSTINI" desc="Text for search result item which, when clicked, navigates the user to Linux (a.k.a. Crostini) settings. Alternate phrase for: 'Crostini, Developers'">

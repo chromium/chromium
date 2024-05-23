@@ -221,6 +221,17 @@ const std::vector<SearchConcept>& GetManageIsolatedWebAppsSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetParentalControlsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_APPS_PARENTAL_CONTROLS,
+        mojom::kAppParentalControlsSubpagePath,
+        mojom::SearchResultIcon::kAppsParentalControls,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.subpage = mojom::Subpage::kAppParentalControls}}});
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetTurnOnIsolatedWebAppsSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_TURN_ON_ISOLATED_WEB_APPS,
@@ -484,6 +495,11 @@ AppsSection::AppsSection(Profile* profile,
   if (web_app::IsIwaUnmanagedInstallEnabled(profile)) {
     updater.AddSearchTags(GetManageIsolatedWebAppsSearchConcepts());
     updater.AddSearchTags(GetTurnOnIsolatedWebAppsSearchConcepts());
+  }
+
+  if (on_device_controls::AppControlsServiceFactory::
+          IsOnDeviceAppControlsAvailable(profile)) {
+    updater.AddSearchTags(GetParentalControlsSearchConcepts());
   }
 }
 
@@ -751,7 +767,8 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // On-device parental controls for apps
   generator->RegisterTopLevelSubpage(
       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_LABEL,
-      mojom::Subpage::kAppParentalControls, mojom::SearchResultIcon::kAppsGrid,
+      mojom::Subpage::kAppParentalControls,
+      mojom::SearchResultIcon::kAppsParentalControls,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kAppParentalControlsSubpagePath);
 
