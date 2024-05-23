@@ -3330,10 +3330,10 @@ bool LineBreaker::HandleRuby(const RubyBreakTokenData* ruby_token,
       MakeGarbageCollected<RubyBreakTokenData>(open_column_item_index,
                                                base_end_index, breaks);
 
-  // We can't handle following InlineItems if we break inside a ruby column.
-  if (ruby_size <= available) {
-    state_ = LineBreakState::kDone;
-  }
+  // We can't continue to handle following InlineItems if we break inside a
+  // ruby column. So we try to rewind if necessary, then finish this line.
+  HandleOverflowIfNeeded(line_info);
+  state_ = LineBreakState::kDone;
   return true;
 }
 
