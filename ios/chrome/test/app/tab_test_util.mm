@@ -34,12 +34,6 @@ namespace chrome_test_util {
 
 namespace {
 
-// Returns the browser for the current mode.
-Browser* GetCurrentBrowser() {
-  return GetForegroundActiveScene()
-      .browserProviderInterface.currentBrowserProvider.browser;
-}
-
 // Returns the WebStateList for the current mode. Or nullptr of there is no
 // browser.
 WebStateList* GetCurrentWebStateList() {

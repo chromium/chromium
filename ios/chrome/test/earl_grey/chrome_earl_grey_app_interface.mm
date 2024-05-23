@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -1218,6 +1219,10 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (BOOL)isTabGroupSyncEnabled {
   return IsTabGroupSyncEnabled();
+}
+
++ (BOOL)isCurrentLayoutBottomOmnibox {
+  return IsCurrentLayoutBottomOmnibox(chrome_test_util::GetCurrentBrowser());
 }
 
 #pragma mark - ContentSettings

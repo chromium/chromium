@@ -553,6 +553,9 @@
 // Returns whether Tab Group Sync is enabled.
 + (BOOL)isTabGroupSyncEnabled;
 
+// Returns whether the current layout is showing the bottom omnibox.
++ (BOOL)isCurrentLayoutBottomOmnibox;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

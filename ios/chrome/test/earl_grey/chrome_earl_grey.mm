@@ -182,6 +182,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return self.isIPhoneIdiom;
 }
 
+- (BOOL)isCurrentLayoutBottomOmnibox {
+  return [ChromeEarlGreyAppInterface isCurrentLayoutBottomOmnibox];
+}
+
 #pragma mark - History Utilities (EG2)
 
 - (void)clearBrowsingHistory {

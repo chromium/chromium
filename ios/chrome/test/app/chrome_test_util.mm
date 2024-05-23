@@ -110,6 +110,11 @@ Browser* GetMainBrowser() {
       .browserProviderInterface.mainBrowserProvider.browser;
 }
 
+Browser* GetCurrentBrowser() {
+  return GetForegroundActiveScene()
+      .browserProviderInterface.currentBrowserProvider.browser;
+}
+
 UIViewController* GetActiveViewController() {
   UIWindow* main_window = GetAnyKeyWindow();
   DCHECK([main_window isKindOfClass:[ChromeOverlayWindow class]]);

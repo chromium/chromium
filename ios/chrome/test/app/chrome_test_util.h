@@ -42,6 +42,9 @@ ChromeBrowserState* GetCurrentIncognitoBrowserState();
 // Returns the browser for the main interface.
 Browser* GetMainBrowser();
 
+// Returns the current browser from the foreground active scene.
+Browser* GetCurrentBrowser();
+
 // Returns the active view controller.
 // NOTE: It is preferred to not directly access the active view controller if
 // possible.
