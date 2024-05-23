@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 
@@ -65,6 +66,7 @@ public class SettingsLauncherImpl implements SettingsLauncher {
             case SettingsFragment.ACCESSIBILITY:
             case SettingsFragment.PASSWORDS:
             case SettingsFragment.GOOGLE_SERVICES:
+            case SettingsFragment.MANAGE_SYNC:
                 break;
         }
         launchSettingsActivity(context, getFragmentClassFromEnum(settingsFragment), fragmentArgs);
@@ -139,6 +141,8 @@ public class SettingsLauncherImpl implements SettingsLauncher {
                 return PasswordSettings.class;
             case SettingsFragment.GOOGLE_SERVICES:
                 return GoogleServicesSettings.class;
+            case SettingsFragment.MANAGE_SYNC:
+                return ManageSyncSettings.class;
         }
         assert false;
         return null;

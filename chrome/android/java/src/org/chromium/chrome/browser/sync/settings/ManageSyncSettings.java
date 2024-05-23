@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -258,9 +259,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE));
             mSyncTypeSwitchPreferencesMap.put(
                     UserSelectableType.TABS, findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE));
-            mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.PASSWORDS,
-                    findPreference(PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE));
+            ChromeSwitchPreference passwordsToggle =
+                    (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
+            mSyncTypeSwitchPreferencesMap.put(UserSelectableType.PASSWORDS, passwordsToggle);
+            if (getArguments() != null
+                    && getArguments().getBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT)) {
+                passwordsToggle.setBackgroundColor(R.color.iph_highlight_blue);
+            }
             mSyncTypeSwitchPreferencesMap.put(
                     UserSelectableType.PAYMENTS,
                     findPreference(PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE));

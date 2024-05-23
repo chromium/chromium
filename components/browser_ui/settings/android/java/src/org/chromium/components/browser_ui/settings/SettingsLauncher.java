@@ -26,7 +26,8 @@ public interface SettingsLauncher {
         SettingsFragment.SITE,
         SettingsFragment.ACCESSIBILITY,
         SettingsFragment.PASSWORDS,
-        SettingsFragment.GOOGLE_SERVICES
+        SettingsFragment.GOOGLE_SERVICES,
+        SettingsFragment.MANAGE_SYNC
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SettingsFragment {
@@ -48,6 +49,8 @@ public interface SettingsLauncher {
         int PASSWORDS = 7;
         /// Google services.
         int GOOGLE_SERVICES = 8;
+        /// Manage sync.
+        int MANAGE_SYNC = 9;
     }
 
     /**

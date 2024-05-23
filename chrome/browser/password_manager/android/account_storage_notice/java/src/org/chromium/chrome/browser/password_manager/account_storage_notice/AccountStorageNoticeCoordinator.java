@@ -113,13 +113,16 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     private void onSettingsLinkClicked() {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT, true);
-        // TODO(crbug.com/338576301): Launch the unified settings panel instead if
-        // ReplaceSyncPromosWithSignInPromos is enabled.
+        // The toggle to disable account storage lives on different fragments depending on the flag.
+        @SettingsFragment
+        int fragment =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? SettingsFragment.MANAGE_SYNC
+                        : SettingsFragment.GOOGLE_SERVICES;
         Intent intent =
                 mSettingsLauncher.createSettingsActivityIntent(
-                        mWindowAndroid.getContext().get(),
-                        SettingsFragment.GOOGLE_SERVICES,
-                        fragmentArgs);
+                        mWindowAndroid.getContext().get(), fragment, fragmentArgs);
         mWindowAndroid.showIntent(intent, this::onSettingsClosed, /* errorId= */ null);
     }
 
