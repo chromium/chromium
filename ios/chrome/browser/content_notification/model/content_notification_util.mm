@@ -91,7 +91,7 @@ bool IsPromoEligible(bool user_signed_in,
     return false;
   }
 
-  if (IsClientEligible(user_signed_in, default_search_engine)) {
+  if (!IsClientEligible(user_signed_in, default_search_engine)) {
     return false;
   }
 
@@ -116,7 +116,7 @@ bool IsProvisionalEligible(bool user_signed_in,
     return false;
   }
 
-  if (IsClientEligible(user_signed_in, default_search_engine)) {
+  if (!IsClientEligible(user_signed_in, default_search_engine)) {
     return false;
   }
 
@@ -141,7 +141,7 @@ bool IsSetUpListEligible(bool user_signed_in,
     return false;
   }
 
-  if (IsClientEligible(user_signed_in, default_search_engine)) {
+  if (!IsClientEligible(user_signed_in, default_search_engine)) {
     return false;
   }
 
