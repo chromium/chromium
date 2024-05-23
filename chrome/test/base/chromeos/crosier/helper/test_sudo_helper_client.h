@@ -12,6 +12,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "base/values.h"
 
 namespace base {
@@ -36,6 +37,10 @@ class TestSudoHelperClient {
   TestSudoHelperClient& operator=(const TestSudoHelperClient&) = delete;
   ~TestSudoHelperClient();
 
+  // Waits for server socket to be ready. Returns true if a connection is made
+  // successfully within the time out. Otherwise, returns false.
+  bool WaitForServer(base::TimeDelta max_wait);
+
   // Runs the given command line via `test_sudo_helper`. Returns true if the
   // command exit with 0. Otherwise, returns false.
   Result RunCommand(const std::string_view command);
@@ -58,7 +63,8 @@ class TestSudoHelperClient {
   base::ScopedFD ConnectToServer(const base::FilePath& client_path);
 
   Result SendDictAndGetResult(const base::Value::Dict& dict,
-                              base::ScopedFD* out_sock = nullptr);
+                              base::ScopedFD* out_sock = nullptr,
+                              bool fatal_on_connection_error = true);
 
   void ReadSessionManagerEventOnWatcherThread(base::ScopedFD sock);
 

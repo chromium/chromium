@@ -23,7 +23,9 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "chrome/test/base/chromeos/crosier/helper/switches.h"
 #include "chrome/test/base/chromeos/crosier/helper/utils.h"
@@ -64,6 +66,31 @@ TestSudoHelperClient::~TestSudoHelperClient() {
     session_manager_watcher_thread_->FlushForTesting();
     session_manager_watcher_thread_->Stop();
   }
+}
+
+bool TestSudoHelperClient::WaitForServer(base::TimeDelta max_wait) {
+  base::ElapsedTimer elapsed;
+
+  base::Value::Dict dict;
+  dict.Set(kKeyMethod, kMethodRunCommand);
+  dict.Set(kKeyCommand, "true");
+
+  while (true) {
+    Result result = SendDictAndGetResult(dict, /*out_sock=*/nullptr,
+                                         /*fatal_on_connection_error=*/false);
+    if (result.return_code == 0) {
+      break;
+    }
+
+    if (elapsed.Elapsed() >= max_wait) {
+      LOG(ERROR) << "Failed to wait for server.";
+      return false;
+    }
+
+    constexpr base::TimeDelta kInterval = base::Seconds(5);
+    base::PlatformThread::Sleep(kInterval);
+  }
+  return true;
 }
 
 TestSudoHelperClient::Result TestSudoHelperClient::RunCommand(
@@ -144,17 +171,19 @@ base::ScopedFD TestSudoHelperClient::ConnectToServer(
 
   socklen_t addr_len =
       offsetof(struct sockaddr_un, sun_path) + server_path_.size();
-  PCHECK(connect(client_sock.get(), reinterpret_cast<sockaddr*>(&addr),
-                 addr_len) == 0)
-      << "Unable to connect to test_sudo_helper.py's socket. This probably "
-      << "means that the script didn't get started before the test or it "
-      << "exited or crashed in the meantime.";
-  return client_sock;
+  if (connect(client_sock.get(), reinterpret_cast<sockaddr*>(&addr),
+              addr_len) == 0) {
+    return client_sock;
+  }
+  return base::ScopedFD();
 }
 
 TestSudoHelperClient::Result TestSudoHelperClient::SendDictAndGetResult(
     const base::Value::Dict& dict,
-    base::ScopedFD* out_sock) {
+    base::ScopedFD* out_sock,
+    bool fatal_on_connection_error) {
+  Result result;
+
   std::string json_string;
   CHECK(base::JSONWriter::Write(dict, &json_string));
 
@@ -162,11 +191,21 @@ TestSudoHelperClient::Result TestSudoHelperClient::SendDictAndGetResult(
   CHECK(base::CreateTemporaryFile(&client_path));
 
   base::ScopedFD sock = ConnectToServer(client_path);
+  if (!sock.is_valid()) {
+    LOG_IF(FATAL, fatal_on_connection_error)
+        << "Unable to connect to test_sudo_helper.py's socket. This probably "
+        << "means that the script didn't get started before the test or it "
+        << "exited or crashed in the meantime.";
+
+    unlink(client_path.value().c_str());
+
+    // Mark `result` as failure.
+    result.return_code = -1;
+    return result;
+  }
 
   // Sends the json string.
   crosier::SendString(sock, json_string);
-
-  Result result;
 
   // Reads the 1 byte return code.
   signed char byte_buffer = 0;
