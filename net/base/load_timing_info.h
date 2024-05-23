@@ -140,6 +140,8 @@ struct NET_EXPORT LoadTimingInfo {
 
   // Corresponds to |fetchStart| in ResourceTiming
   // (http://www.w3.org/TR/resource-timing/) for Web-surfacing requests.
+  // Note that this field is not used in ResourceTiming as |requestStart|, which
+  // has the same name but exposes a different field.
   base::TimeTicks request_start;
 
   // The time immediately before ServiceWorker static routing API starts
