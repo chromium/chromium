@@ -86,6 +86,11 @@ TEST_F(ContainerQueryParserTest, ParseQuery) {
     EXPECT_EQ(String(test), ParseQuery(test));
   }
 
+  // Escaped (unnecessarily but validly) characters in the identifier.
+  EXPECT_EQ("(width)", ParseQuery("(\\77 idth)"));
+  // Repro case for b/341640868
+  EXPECT_EQ("(min-width: 100px)", ParseQuery("(min\\2d width: 100px)"));
+
   // Invalid:
   EXPECT_EQ("<unknown>", ParseQuery("(min-width)"));
   EXPECT_EQ("<unknown>", ParseQuery("((width) or (width) and (width))"));

@@ -95,6 +95,8 @@ class CORE_EXPORT CSSParserToken {
         value_is_8bit_(false),  // Don't care.
         padding_(0)             // Don't care.
   {}
+
+  // The resulting CSSParserToken may hold a reference to the data in value.
   CSSParserToken(CSSParserTokenType type,
                  StringView value,
                  BlockType block_type = kNotBlock)

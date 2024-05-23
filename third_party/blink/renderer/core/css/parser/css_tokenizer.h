@@ -31,6 +31,9 @@ class CORE_EXPORT CSSTokenizer {
   CSSTokenizer(const CSSTokenizer&) = delete;
   CSSTokenizer& operator=(const CSSTokenizer&) = delete;
 
+  // The CSSParserTokens in the result may hold references to the CSSTokenizer
+  // object, or the string data referenced by the CSSTokenizer. Do not use the
+  // tokens after the CSSTokenizer or its underlying String goes out of scope.
   Vector<CSSParserToken, 32> TokenizeToEOF();
   wtf_size_t TokenCount();
 
@@ -38,6 +41,8 @@ class CORE_EXPORT CSSTokenizer {
   // There's an extra offset at the very end that returns the end byte
   // of the last token, i.e., the length of the input string.
   // This matches the convention CSSParserTokenOffsets expects.
+  //
+  // See the warning about holding a reference in TokenizeToEOF().
   std::pair<Vector<CSSParserToken, 32>, Vector<wtf_size_t, 32>>
   TokenizeToEOFWithOffsets();
 
@@ -45,6 +50,8 @@ class CORE_EXPORT CSSTokenizer {
   // to solve a design mistake in CSS.
   //
   // https://drafts.csswg.org/css-syntax/#consume-unicode-range-value
+  //
+  // See the warning about holding a reference in TokenizeToEOF().
   Vector<CSSParserToken, 32> TokenizeToEOFWithUnicodeRanges();
 
   wtf_size_t Offset() const { return input_.Offset(); }

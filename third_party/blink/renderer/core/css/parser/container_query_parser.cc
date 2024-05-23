@@ -132,7 +132,8 @@ ContainerQueryParser::ContainerQueryParser(const CSSParserContext& context)
                           MediaQueryParser::SyntaxLevel::kLevel4) {}
 
 const MediaQueryExpNode* ContainerQueryParser::ParseCondition(String value) {
-  auto [tokens, raw_offsets] = CSSTokenizer(value).TokenizeToEOFWithOffsets();
+  CSSTokenizer tokenizer(value);
+  auto [tokens, raw_offsets] = tokenizer.TokenizeToEOFWithOffsets();
   CSSParserTokenRange range(tokens);
   CSSParserTokenOffsets offsets(tokens, std::move(raw_offsets), value);
   return ParseCondition(range, offsets);
