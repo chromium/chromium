@@ -25,34 +25,15 @@ def _CheckExterns(input_api, output_api):
   return Generate(input_api, output_api, dryrun=True)
 
 
-def _GetFilesToSkip(input_api):
-  """Returns the list of test files to skip.
-
-  The clang-format hook is being migrated for cog and until that is complete,
-  tests that rely on clang-format are unsupported on cog.
-
-  TODO(b/333744051): Remove this method when clang-format is fully migrated.
-  """
-  files_to_skip = []
-  if input_api.change.scm != 'git':
-      files_to_skip.append('.*ts_definition_generator_test\.py')
-  return files_to_skip
-
-
 def CheckChangeOnUpload(input_api, output_api):
   ret = input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api,
-      output_api,
-      '.',
-      files_to_check=FILE_PATTERN,
-      files_to_skip=_GetFilesToSkip(input_api))
+      input_api, output_api, '.', files_to_check=FILE_PATTERN)
   ret += _CheckExterns(input_api, output_api)
   return ret
 
 
 def CheckChangeOnCommit(input_api, output_api):
   ret = input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', files_to_check=FILE_PATTERN,
-      files_to_skip=_GetFilesToSkip(input_api))
+      input_api, output_api, '.', files_to_check=FILE_PATTERN)
   ret += _CheckExterns(input_api, output_api)
   return ret
