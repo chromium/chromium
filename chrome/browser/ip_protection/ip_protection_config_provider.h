@@ -58,9 +58,9 @@ class IpProtectionConfigProvider
   ~IpProtectionConfigProvider() override;
 
   // IpProtectionConfigGetter:
-  //
+
   // Get a batch of blind-signed auth tokens. It is forbidden for two calls to
-  // this method to be outstanding at the same time.
+  // this method for the same proxy layer to be outstanding at the same time.
   void TryGetAuthTokens(uint32_t batch_size,
                         network::mojom::IpProtectionProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
@@ -115,10 +115,6 @@ class IpProtectionConfigProvider
   // This accomplishes lazy loading of these components to break dependency
   // loops in browser startup.
   void SetUp();
-
-  // TODO(crbug.com/40216037): Once `google_apis::GetAPIKey()` handles this
-  // logic we can remove this helper.
-  std::string GetAPIKey();
 
   // Wrapping `ip_protection_config_http_->GetProxyConfig()` method
   // to enable OAuth Token inclusion in the GetProxyConfig API call to Phosphor.

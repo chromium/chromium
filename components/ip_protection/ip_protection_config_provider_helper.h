@@ -8,14 +8,15 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
+#include "net/base/proxy_chain.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace quiche {
-class BlindSignAuth;
 struct BlindSignToken;
 }  // namespace quiche
 
@@ -76,7 +77,7 @@ class IpProtectionConfigProviderHelper {
   // `quiche::BlindSignAuth` library to a
   // `network::mojom::BlindSignedAuthToken`.
   static network::mojom::BlindSignedAuthTokenPtr CreateBlindSignedAuthToken(
-      quiche::BlindSignToken bsa_token);
+      const quiche::BlindSignToken& bsa_token);
 
   // Service types used for GetProxyConfigRequest.
   static constexpr char kChromeIpBlinding[] = "chromeipblinding";

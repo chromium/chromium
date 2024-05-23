@@ -4,11 +4,21 @@
 
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
 
+#include <string>
+#include <vector>
+
+#include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/time/time.h"
 
 // static
 std::vector<net::ProxyChain>
@@ -74,7 +84,7 @@ IpProtectionConfigProviderHelper::GetProxyListFromProxyConfigResponse(
 // static
 network::mojom::BlindSignedAuthTokenPtr
 IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
-    quiche::BlindSignToken bsa_token) {
+    const quiche::BlindSignToken& bsa_token) {
   base::Time expiration =
       base::Time::FromTimeT(absl::ToTimeT(bsa_token.expiration));
 
