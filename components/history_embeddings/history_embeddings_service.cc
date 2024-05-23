@@ -442,9 +442,17 @@ void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
 void HistoryEmbeddingsService::OnSearchCompleted(
     SearchResultCallback callback,
     std::vector<ScoredUrl> scored_urls) {
-  // TODO(b/330925683): Handle search interruption. This may not still need to
-  //  happen by now.
-  DeterminePassageVisibility(std::move(callback), std::move(scored_urls));
+  std::vector<ScoredUrl> filtered;
+  filtered.reserve(scored_urls.size());
+  float threshold = kSearchScoreThreshold.Get();
+  std::copy_if(std::make_move_iterator(scored_urls.begin()),
+               std::make_move_iterator(scored_urls.end()),
+               std::back_inserter(filtered), [=](const ScoredUrl& scored_url) {
+                 return scored_url.score > threshold;
+               });
+  VLOG(3) << "Search found " << scored_urls.size() << " results and kept "
+          << filtered.size() << " after score filtering";
+  DeterminePassageVisibility(std::move(callback), std::move(filtered));
 }
 
 void HistoryEmbeddingsService::DeterminePassageVisibility(

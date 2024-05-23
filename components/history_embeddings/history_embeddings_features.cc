@@ -36,6 +36,10 @@ const base::FeatureParam<double> kContentVisibilityThreshold(
     "ContentVisibilityThreshold",
     0.5);
 
+const base::FeatureParam<double> kSearchScoreThreshold(&kHistoryEmbeddings,
+                                                       "SearchScoreThreshold",
+                                                       0.9);
+
 const base::FeatureParam<bool> kUseMlEmbedder(&kHistoryEmbeddings,
                                               "UseMlEmbedder",
                                               true);

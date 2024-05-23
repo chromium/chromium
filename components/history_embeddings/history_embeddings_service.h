@@ -112,6 +112,8 @@ class HistoryEmbeddingsService : public KeyedService,
   friend class HistoryEmbeddingsBrowserTest;
   friend class HistoryEmbeddingsServiceTest;
   FRIEND_TEST_ALL_PREFIXES(HistoryEmbeddingsServiceTest, OnHistoryDeletions);
+  FRIEND_TEST_ALL_PREFIXES(HistoryEmbeddingsServiceTest,
+                           SearchFiltersLowScoringResults);
 
   // A utility container to wrap anything that should be accessed on
   // the separate storage worker sequence.

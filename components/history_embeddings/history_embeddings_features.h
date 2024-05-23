@@ -30,7 +30,13 @@ extern const base::FeatureParam<int> kSearchResultItemCount;
 extern const base::FeatureParam<bool> kAtKeywordAcceleration;
 
 // Specifies the content visibility threshold that can be shown to the user.
+// This is for safety filtering.
 extern const base::FeatureParam<double> kContentVisibilityThreshold;
+
+// Specifies the similarity score threshold that embeddings must pass in order
+// for their results to be shown to the user. This is for general search scoring
+// and result inclusion.
+extern const base::FeatureParam<double> kSearchScoreThreshold;
 
 // Specifies whether to use the ML Embedder to embed passages and queries.
 extern const base::FeatureParam<bool> kUseMlEmbedder;

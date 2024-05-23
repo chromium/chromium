@@ -92,6 +92,13 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   }
 
  protected:
+  void AddTestHistoryPage(const std::string& url) {
+    history_service_->AddPage(GURL(url), base::Time::Now() - base::Days(4), 0,
+                              0, GURL(), history::RedirectList(),
+                              ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
+                              false);
+  }
+
   base::test::ScopedFeatureList feature_list_;
 
   base::test::TaskEnvironment task_environment_{
@@ -117,15 +124,9 @@ TEST_F(HistoryEmbeddingsServiceTest, ConstructsAndInvalidatesWeakPtr) {
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
-  auto add_page = [&](const std::string& url) {
-    history_service_->AddPage(GURL(url), base::Time::Now() - base::Days(4), 0,
-                              0, GURL(), history::RedirectList(),
-                              ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
-                              false);
-  };
-  add_page("http://test1.com");
-  add_page("http://test2.com");
-  add_page("http://test3.com");
+  AddTestHistoryPage("http://test1.com");
+  AddTestHistoryPage("http://test2.com");
+  AddTestHistoryPage("http://test3.com");
 
   auto service = std::make_unique<HistoryEmbeddingsService>(
       history_service_.get(), page_content_annotations_service_.get(),
@@ -186,6 +187,53 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.Search.EmbeddingCount", 0, 1);
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
+  auto service = std::make_unique<HistoryEmbeddingsService>(
+      history_service_.get(), page_content_annotations_service_.get(),
+      /*model_provider=*/nullptr, /*service_controller=*/nullptr);
+
+  // Put results in to be found.
+  AddTestHistoryPage("http://test1.com");
+  AddTestHistoryPage("http://test2.com");
+  AddTestHistoryPage("http://test3.com");
+  service->OnPassagesEmbeddingsComputed(
+      UrlPassages(1, 1, base::Time::Now()),
+      {"test passage 1", "test passage 2"},
+      {Embedding(std::vector<float>(768, 1.0f)),
+       Embedding(std::vector<float>(768, 1.0f))},
+      ComputeEmbeddingsStatus::SUCCESS);
+  service->OnPassagesEmbeddingsComputed(
+      UrlPassages(2, 2, base::Time::Now()),
+      {"test passage 3", "test passage 4"},
+      {Embedding(std::vector<float>(768, -1.0f)),
+       Embedding(std::vector<float>(768, -1.0f))},
+      ComputeEmbeddingsStatus::SUCCESS);
+  service->OnPassagesEmbeddingsComputed(
+      UrlPassages(3, 3, base::Time::Now()),
+      {"test passage 5", "test passage 6"},
+      {Embedding(std::vector<float>(768, 1.0f)),
+       Embedding(std::vector<float>(768, 1.0f))},
+      ComputeEmbeddingsStatus::SUCCESS);
+
+  // Search
+  base::test::TestFuture<SearchResult> future;
+  OverrideVisibilityScoresForTesting({
+      {"test query", 0.99},
+      {"test passage 1", 0.99},
+      {"test passage 2", 0.99},
+      {"test passage 3", 0.99},
+      {"test passage 4", 0.99},
+      {"test passage 5", 0.99},
+      {"test passage 6", 0.99},
+  });
+  service->Search("test query", {}, 3, future.GetCallback());
+  SearchResult result = future.Take();
+
+  EXPECT_EQ(result.size(), 2u);
+  EXPECT_EQ(result[0].scored_url.url_id, 1);
+  EXPECT_EQ(result[1].scored_url.url_id, 3);
 }
 
 }  // namespace history_embeddings
