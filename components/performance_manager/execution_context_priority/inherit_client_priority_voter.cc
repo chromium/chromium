@@ -36,7 +36,7 @@ const execution_context::ExecutionContext* GetExecutionContext(
 
 // static
 const char InheritClientPriorityVoter::kPriorityInheritedReason[] =
-    "Priority inherited from client(s).";
+    "Priority inherited.";
 
 InheritClientPriorityVoter::InheritClientPriorityVoter(
     VotingChannel voting_channel) {
