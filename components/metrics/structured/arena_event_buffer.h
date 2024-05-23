@@ -28,7 +28,11 @@ namespace metrics::structured {
 // ArenaPersistentProto.
 //
 // Since getting the in-memory size of the proto is not available in Chromium,
-// an estimation is used.
+// an estimation is used. Events are serialized by copying the events into a
+// RepeatedPtrField. This is necessary because the events are stored in an arena
+// and the returned RepeatedPtrField isn't allocated from the same arena.
+// Events are flushed by serializing the proto and writing it into the path
+// provided.
 class ArenaEventBuffer : public EventBuffer<StructuredEventProto> {
  public:
   ArenaEventBuffer(const base::FilePath& path,
@@ -41,10 +45,14 @@ class ArenaEventBuffer : public EventBuffer<StructuredEventProto> {
   Result AddEvent(StructuredEventProto event) override;
   void Purge() override;
   uint64_t Size() override;
+  google::protobuf::RepeatedPtrField<StructuredEventProto> Serialize() override;
+  void Flush(const base::FilePath& path, FlushedCallback callback) override;
 
   // Updates the path of the persistent proto and merges the content of |path|
   // into |events_|.
   void UpdatePath(const base::FilePath& path);
+
+  const google::protobuf::Arena* arena() const { return events_->arena(); }
 
   ArenaPersistentProto<EventsProto>& proto() { return *events_; }
   const ArenaPersistentProto<EventsProto>& proto() const { return *events_; }

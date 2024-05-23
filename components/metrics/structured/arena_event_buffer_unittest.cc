@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -21,6 +22,8 @@
 
 namespace metrics::structured {
 namespace {
+
+using ::google::protobuf::RepeatedPtrField;
 
 // Creates an event for testing. The serialized size of this event is about 9
 // bytes.
@@ -117,17 +120,14 @@ TEST_F(ArenaEventBufferTest, UpdatePath) {
 
   std::string content;
   ASSERT_TRUE(events.SerializeToString(&content));
-
   ASSERT_TRUE(base::WriteFile(GetAltPath(), content));
 
   std::unique_ptr<ArenaEventBuffer> buffer = CreateTestBuffer(/*max_size=*/512);
   Wait();
-
   EXPECT_EQ(buffer->AddEvent(TestEvent(1)), Result::kOk);
+  EXPECT_EQ(buffer->proto()->events_size(), 1);
 
-  base::FilePath new_path = GetAltPath();
-
-  buffer->UpdatePath(new_path);
+  buffer->UpdatePath(GetAltPath());
   Wait();
   EXPECT_EQ(buffer->proto()->events_size(), 2);
 
@@ -158,6 +158,64 @@ TEST_F(ArenaEventBufferTest, PeriodicEventBackup) {
   ASSERT_EQ(events.events_size(), 1);
   const auto& event = events.events(0);
   EXPECT_EQ(event.device_project_id(), 1ul);
+}
+
+TEST_F(ArenaEventBufferTest, Serialize) {
+  std::unique_ptr<ArenaEventBuffer> buffer = CreateTestBuffer(/*max_size=*/512);
+  Wait();
+
+  EXPECT_EQ(buffer->AddEvent(TestEvent(1)), Result::kOk);
+  EXPECT_EQ(buffer->AddEvent(TestEvent(2)), Result::kOk);
+  EXPECT_EQ(buffer->AddEvent(TestEvent(3)), Result::kOk);
+
+  RepeatedPtrField<StructuredEventProto> events = buffer->Serialize();
+
+  // Expect |events| to not be associated with an arena.
+  EXPECT_EQ(events.GetArena(), nullptr);
+
+  ASSERT_EQ(events.size(), 3);
+  for (size_t i = 0; i < static_cast<size_t>(events.size()); ++i) {
+    EXPECT_EQ(events[i].device_project_id(), i + 1);
+  }
+
+  // Serialize is a copy.
+  EXPECT_EQ(buffer->proto()->events_size(), 3);
+}
+
+TEST_F(ArenaEventBufferTest, Flush) {
+  std::unique_ptr<ArenaEventBuffer> buffer = CreateTestBuffer(/*max_size=*/512);
+  Wait();
+
+  EXPECT_EQ(buffer->AddEvent(TestEvent(1)), Result::kOk);
+  EXPECT_EQ(buffer->AddEvent(TestEvent(2)), Result::kOk);
+  EXPECT_EQ(buffer->AddEvent(TestEvent(3)), Result::kOk);
+
+  buffer->proto().QueueWrite();
+  Wait();
+
+  const base::FilePath& path = GetPath();
+  base::File::Info info;
+  CHECK(base::GetFileInfo(path, &info));
+
+  const base::FilePath new_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("new_proto_file"));
+
+  bool flushed = false;
+  buffer->Flush(new_path, base::BindLambdaForTesting(
+                              [&](base::expected<FlushedKey, FlushError> key) {
+                                flushed = true;
+                                EXPECT_TRUE(key.has_value());
+                                EXPECT_EQ(key->size, info.size);
+                                EXPECT_EQ(key->path, new_path);
+                                // A new file is created, the creation time must
+                                // be different.
+                                EXPECT_GE(key->creation_time,
+                                          info.creation_time);
+                                EXPECT_EQ(buffer->proto()->events_size(), 0);
+                                EXPECT_EQ(buffer->resource_info().used_size_bytes, 0);
+                              }));
+  Wait();
+  EXPECT_TRUE(flushed);
 }
 
 }  // namespace metrics::structured

@@ -21,6 +21,37 @@
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace metrics::structured {
+namespace {
+using google::protobuf::RepeatedPtrField;
+
+uint64_t GetFreeDiskSpace(const base::FilePath& path) {
+  if (int64_t size = base::SysInfo::AmountOfFreeDiskSpace(path); size != -1) {
+    return static_cast<uint64_t>(size);
+  }
+  return 0;
+}
+
+base::expected<FlushedKey, FlushError> WriteEvents(const base::FilePath& path,
+                                                   std::string content) {
+  if (!base::WriteFile(path, content)) {
+    if (GetFreeDiskSpace(path) < content.size()) {
+      return base::unexpected(kDiskFull);
+    }
+    // Leaving proto content intact to let the caller handle cleanup.
+    return base::unexpected(kWriteError);
+  }
+
+  base::File::Info info;
+  CHECK(base::GetFileInfo(path, &info));
+
+  return FlushedKey{
+      .size = static_cast<int64_t>(content.size()),
+      .path = path,
+      .creation_time = info.creation_time,
+  };
+}
+}  // namespace
+
 ArenaEventBuffer::ArenaEventBuffer(const base::FilePath& path,
                                    base::TimeDelta write_delay,
                                    int32_t max_size_bytes)
@@ -63,6 +94,34 @@ void ArenaEventBuffer::Purge() {
 
 uint64_t ArenaEventBuffer::Size() {
   return proto() ? proto()->events_size() : 0;
+}
+
+RepeatedPtrField<StructuredEventProto> ArenaEventBuffer::Serialize() {
+  // Performance: performs a deep copy. Investigate an alternative to improve
+  // performance.
+  // TODO(b/339905988): Implement an optimization where two Persistent Protos
+  // are used for staged and active that are swapped when a flush occurs.
+  return proto()->events();
+}
+
+// This flushing for an ArenaEventBuffer will write the content
+void ArenaEventBuffer::Flush(const base::FilePath& path,
+                             FlushedCallback callback) {
+  const base::FilePath proto_path = events_->path();
+
+  std::string content;
+  if (!proto()->SerializeToString(&content)) {
+    std::move(callback).Run(base::unexpected(kSerializationFailed));
+    return;
+  }
+
+  // Cleanup the in-memory events.
+  Purge();
+
+  // Write the events to disk. |callback| is expected to handle the key.
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&WriteEvents, path, std::move(content)),
+      std::move(callback));
 }
 
 void ArenaEventBuffer::UpdatePath(const base::FilePath& path) {

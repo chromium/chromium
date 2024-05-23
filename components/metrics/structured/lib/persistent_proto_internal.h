@@ -73,6 +73,8 @@ class PersistentProtoInternal
 
   constexpr explicit operator bool() const { return has_value(); }
 
+  const base::FilePath& path() { return proto_file_->path(); }
+
   // base::ImportantFileWriter::DataSerializer:
   std::optional<std::string> SerializeData() override;
 

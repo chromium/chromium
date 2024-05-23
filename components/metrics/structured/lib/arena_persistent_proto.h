@@ -47,6 +47,8 @@ class ArenaPersistentProto : public internal::PersistentProtoInternal {
   T& operator*() { return *get(); }
   const T& operator*() const { return *get(); }
 
+  const google::protobuf::Arena* arena() const { return &arena_; }
+
  private:
   google::protobuf::MessageLite* GetProto() override {
     return google::protobuf::Arena::Create<T>(&arena_);
