@@ -185,6 +185,31 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    // Enabling SEED_ACCOUNTS_REVAMP prevents the account from being removed before
+    // {@link AccountCapabilitiesFetcher.onCapabilitiesFetchComplete} has completed.
+    @Features.EnableFeatures({
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        SigninFeatures.SEED_ACCOUNTS_REVAMP
+    })
+    public void destroyHistorySyncActivityWhenAccountIsRemoved() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        launchFirstRunActivityAndWaitForNativeInitialization();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+
+        clickButton(R.id.signin_fre_continue_button);
+
+        // History sync opt-in screen should be displayed.
+        waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
+
+        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_1.getId());
+
+        // History sync opt-in screen should be dismissed when the primary account is cleared
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
     // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
     // adding at least one policy via AppRestrictions prevents that.
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
