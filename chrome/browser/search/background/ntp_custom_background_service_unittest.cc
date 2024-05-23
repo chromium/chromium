@@ -9,6 +9,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,6 +20,7 @@
 #include "base/token.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -146,9 +148,11 @@ class NtpCustomBackgroundServiceTest : public testing::Test {
 
   void SetUp() override {
     custom_background_service_ =
-        std::make_unique<NtpCustomBackgroundService>(profile_.get());
-    custom_background_service_->AddObserver(&observer_);
+        NtpCustomBackgroundServiceFactory::GetForProfile(profile_.get());
+    scoped_observation_.Observe(custom_background_service_);
   }
+
+  void TearDown() override { scoped_observation_.Reset(); }
 
   void SetUpResponseWithNetworkError(const GURL& load_url) {
     test_url_loader_factory_.AddResponse(load_url.spec(), std::string(),
@@ -183,7 +187,10 @@ class NtpCustomBackgroundServiceTest : public testing::Test {
   raw_ptr<MockThemeService> mock_theme_service_;
   raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<NtpCustomBackgroundService> custom_background_service_;
+  raw_ptr<NtpCustomBackgroundService> custom_background_service_;
+  base::ScopedObservation<NtpCustomBackgroundService,
+                          NtpCustomBackgroundServiceObserver>
+      scoped_observation_{&observer_};
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 

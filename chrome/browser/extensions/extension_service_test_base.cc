@@ -194,6 +194,9 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   profile_builder.AddTestingFactory(
       ExtensionGarbageCollectorFactory::GetInstance(),
       base::BindRepeating(&ExtensionGarbageCollectorFactory::BuildInstanceFor));
+
+  profile_builder.AddTestingFactories(params.testing_factories);
+
   profile_builder.SetPath(profile_dir);
   return profile_builder.Build();
 }

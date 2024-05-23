@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -580,6 +581,7 @@ TEST_F(ThemeServiceTest, UseDefaultTheme_DisableExtensionTest) {
 
 // Test that setting theme to default resets the NTP theme as well.
 TEST_F(ThemeServiceTest, UseDefaultTheme_DisableNtpThemeTest) {
+  NtpCustomBackgroundServiceFactory::GetForProfile(profile_.get());
   base::Value::Dict test_background_info;
   test_background_info.Set("test_data", "foo");
   pref_service_->SetDict(prefs::kNtpCustomBackgroundDict,

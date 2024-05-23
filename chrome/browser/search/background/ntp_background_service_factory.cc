@@ -47,7 +47,6 @@ NtpBackgroundServiceFactory::BuildServiceInstanceForBrowserContext(
   // TODO(crbug.com/41431683): Background service URLs should be
   // configurable server-side, so they can be changed mid-release.
 
-  auto url_loader_factory = context->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
-  return std::make_unique<NtpBackgroundService>(url_loader_factory);
+  return std::make_unique<NtpBackgroundService>(
+      Profile::FromBrowserContext(context)->GetURLLoaderFactory());
 }

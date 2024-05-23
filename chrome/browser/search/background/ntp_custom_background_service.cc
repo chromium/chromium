@@ -205,6 +205,7 @@ NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
   theme_service_ = ThemeServiceFactory::GetForProfile(profile_);
   if (background_service_)
     background_service_observation_.Observe(background_service_.get());
+  theme_service_observation_.Observe(theme_service_);
 
   // Update theme info when the pref is changed via Sync.
   pref_change_registrar_.Init(pref_service_);
@@ -214,9 +215,7 @@ NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
                           weak_ptr_factory_.GetWeakPtr()));
 
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
-      std::make_unique<ImageDecoderImpl>(),
-      profile_->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
+      std::make_unique<ImageDecoderImpl>(), profile_->GetURLLoaderFactory());
 }
 
 NtpCustomBackgroundService::~NtpCustomBackgroundService() = default;
@@ -261,6 +260,12 @@ void NtpCustomBackgroundService::OnNtpBackgroundServiceShuttingDown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   background_service_observation_.Reset();
   background_service_ = nullptr;
+}
+
+void NtpCustomBackgroundService::OnThemeChanged() {}
+
+void NtpCustomBackgroundService::OnCustomNtpBackgroundObsolete() {
+  ResetNtpTheme(profile_);
 }
 
 void NtpCustomBackgroundService::UpdateBackgroundFromSync() {

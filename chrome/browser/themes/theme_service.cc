@@ -34,7 +34,6 @@
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -704,7 +703,10 @@ void ThemeService::ClearThemeData(bool clear_ntp_background) {
   SwapThemeSupplier(nullptr);
   ClearThemePrefs();
   if (clear_ntp_background) {
-    NtpCustomBackgroundService::ResetNtpTheme(profile_);
+    // Redraw and notify sync that theme has changed.
+    for (auto& observer : observers_) {
+      observer.OnCustomNtpBackgroundObsolete();
+    }
   }
 
   // Disable extension after modifying the prefs so that unloading the extension
@@ -954,7 +956,10 @@ void ThemeService::ClearThemePrefs() {
 void ThemeService::SetThemePrefsForExtension(
     const extensions::Extension* extension) {
   ClearThemePrefs();
-  NtpCustomBackgroundService::ResetNtpTheme(profile_);
+  // Redraw and notify sync that theme has changed.
+  for (auto& observer : observers_) {
+    observer.OnCustomNtpBackgroundObsolete();
+  }
   // Extensions are incompatible with device themes so turn them off.
   // TODO(crbug.com/40280173): Remove this if we can otherwise separate
   // extension and device themes from attempting to apply at the same time.

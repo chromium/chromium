@@ -478,6 +478,8 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "NavigationPredictorKeyedService",
     "NetworkingPrivateEventRouter",
     "NotificationDisplayService",
+    "NtpBackgroundService",
+    "NtpCustomBackgroundService",
 #if BUILDFLAG(IS_CHROMEOS)
     "NssServiceFactory",
 #endif // BUILDFLAG(IS_CHROMEOS)

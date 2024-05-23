@@ -176,11 +176,6 @@ class FakeThemeService : public ThemeService {
   SkColor color_;
 };
 
-std::unique_ptr<KeyedService> BuildMockThemeService(
-    content::BrowserContext* profile) {
-  return std::make_unique<FakeThemeService>();
-}
-
 scoped_refptr<extensions::Extension> MakeThemeExtension(
     const base::FilePath& extension_path,
     const string& name,
@@ -217,8 +212,16 @@ class ThemeSyncableServiceTest : public testing::Test,
     // considered syncable.
     extension_test_util::SetGalleryUpdateURL(GURL(kCustomThemeUrl));
 
-    profile_ = std::make_unique<TestingProfile>();
-    fake_theme_service_ = BuildForProfile(profile_.get());
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(
+        ThemeServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<FakeThemeService>();
+        }));
+    profile_ = builder.Build();
+    fake_theme_service_ = static_cast<FakeThemeService*>(
+        ThemeServiceFactory::GetForProfile(profile_.get()));
     theme_sync_service_ = std::make_unique<ThemeSyncableService>(
         profile_.get(), fake_theme_service_);
     theme_sync_service_->AddObserver(this);
@@ -263,12 +266,6 @@ class ThemeSyncableServiceTest : public testing::Test,
   // Overridden in PolicyInstalledThemeTest below.
   virtual extensions::mojom::ManifestLocation GetThemeLocation() {
     return extensions::mojom::ManifestLocation::kInternal;
-  }
-
-  FakeThemeService* BuildForProfile(Profile* profile) {
-    return static_cast<FakeThemeService*>(
-        ThemeServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile, base::BindRepeating(&BuildMockThemeService)));
   }
 
   syncer::SyncDataList MakeThemeDataList(

@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -81,6 +82,8 @@ class ExtensionServiceTestBase : public testing::Test {
     bool profile_is_guest = false;
     bool enable_bookmark_model = false;
     bool enable_install_limiter = false;
+
+    TestingProfile::TestingFactories testing_factories;
 
     ExtensionServiceInitParams();
     ExtensionServiceInitParams(const ExtensionServiceInitParams& other);
