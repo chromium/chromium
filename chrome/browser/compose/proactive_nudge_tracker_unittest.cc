@@ -530,13 +530,13 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContext) {
   EXPECT_THAT(
       input_context->metadata_args,
       testing::UnorderedElementsAre(
-          Pair("field_max_length", Val(524)),
+          Pair("field_max_length", Val(524.0f)),
           Pair("field_width_pixels", Val(300.0f)),
           Pair("field_height_pixels", Val(100.0f)),
           Pair("field_form_control_type",
-               Val(static_cast<int>(autofill::FormControlType::kTextArea))),
-          Pair("total_field_count", Val(2)),
-          Pair("multiline_field_count", Val(1)),
+               Val(static_cast<float>(autofill::FormControlType::kTextArea))),
+          Pair("total_field_count", Val(2.0f)),
+          Pair("multiline_field_count", Val(1.0f)),
           Pair("time_spent_on_page", Val(63.0f)),
           Pair("page_url", Val(GURL("https://example.com/test"))),
           Pair("origin", Val(GURL("https://example.com"))),

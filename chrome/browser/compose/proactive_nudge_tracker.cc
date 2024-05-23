@@ -30,17 +30,19 @@ scoped_refptr<segmentation_platform::InputContext> PopulateInputContextForField(
 
   input_context->metadata_args.emplace(
       "field_max_length",
-      ProcessedValue(base::saturated_cast<int>(signals.field.max_length())));
+      ProcessedValue::FromFloat(signals.field.max_length()));
   input_context->metadata_args.emplace(
-      "field_width_pixels", ProcessedValue(signals.field.bounds().width()));
+      "field_width_pixels",
+      ProcessedValue::FromFloat(signals.field.bounds().width()));
   input_context->metadata_args.emplace(
-      "field_height_pixels", ProcessedValue(signals.field.bounds().height()));
+      "field_height_pixels",
+      ProcessedValue::FromFloat(signals.field.bounds().height()));
   input_context->metadata_args.emplace(
-      "field_form_control_type",
-      ProcessedValue(base::to_underlying(signals.field.form_control_type())));
+      "field_form_control_type", ProcessedValue::FromFloat(base::to_underlying(
+                                     signals.field.form_control_type())));
   input_context->metadata_args.emplace(
       "total_field_count",
-      ProcessedValue(static_cast<int>(signals.form.fields.size())));
+      ProcessedValue::FromFloat(signals.form.fields.size()));
 
   int multiline_field_count = 0;
   for (const auto& f : signals.form.fields) {
@@ -49,12 +51,14 @@ scoped_refptr<segmentation_platform::InputContext> PopulateInputContextForField(
       ++multiline_field_count;
     }
   }
-  input_context->metadata_args.emplace("multiline_field_count",
-                                       ProcessedValue(multiline_field_count));
+  input_context->metadata_args.emplace(
+      "multiline_field_count",
+      ProcessedValue::FromFloat(multiline_field_count));
   input_context->metadata_args.emplace(
       "time_spent_on_page",
-      ProcessedValue(static_cast<float>(
-          (base::TimeTicks::Now() - signals.page_change_time).InSecondsF())));
+      ProcessedValue::FromFloat(
+          (base::TimeTicks::Now() - signals.page_change_time).InSecondsF()));
+
   input_context->metadata_args.emplace("page_url",
                                        ProcessedValue(signals.page_url));
   input_context->metadata_args.emplace(
