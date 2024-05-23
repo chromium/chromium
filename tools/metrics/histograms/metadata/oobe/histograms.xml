@@ -528,6 +528,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.ConsumerUpdateScreen.EstimatorErrorExceed" units="ms"
+    expires_after="2024-12-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Displays the difference between estimated update time and actual update
+    time, specifically highlighting instances where the estimated time was
+    exceeding than the real time.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.ConsumerUpdateScreen.EstimatorErrorShort" units="ms"
+    expires_after="2024-12-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Displays the difference between estimated update time and actual update
+    time, specifically highlighting instances where the estimated time was
+    shorter than the real time.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.ConsumerUpdateScreen.EstimatorTimeLeft" units="ms"
+    expires_after="2024-12-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Time estimated for consumer update completion, calculated by the update
+    estimator during the process.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.ConsumerUpdateScreen.IsMandatory" enum="Boolean"
     expires_after="2024-11-17">
   <owner>osamafathy@google.com</owner>

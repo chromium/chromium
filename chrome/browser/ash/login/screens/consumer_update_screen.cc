@@ -71,6 +71,23 @@ void RecordUpdateTime(base::TimeDelta update_time, bool is_mandatory) {
         kUmaMinUpdateTime, kUmaMaxUpdateTime, kUmaUpdateTimeBuckets);
   }
 }
+void RecordUpdateEstimatorTime(base::TimeDelta update_time,
+                               base::TimeDelta estimate_update_time) {
+  base::UmaHistogramCustomTimes("OOBE.ConsumerUpdateScreen.EstimatorTimeLeft",
+                                estimate_update_time, kUmaMinUpdateTime,
+                                kUmaMaxUpdateTime, kUmaUpdateTimeBuckets);
+  if (update_time > estimate_update_time) {
+    base::UmaHistogramCustomTimes(
+        "OOBE.ConsumerUpdateScreen.EstimatorErrorShort",
+        update_time - estimate_update_time, kUmaMinUpdateTime,
+        kUmaMaxUpdateTime, kUmaUpdateTimeBuckets);
+  } else {
+    base::UmaHistogramCustomTimes(
+        "OOBE.ConsumerUpdateScreen.EstimatorErrorExceed",
+        estimate_update_time - update_time, kUmaMinUpdateTime,
+        kUmaMaxUpdateTime, kUmaUpdateTimeBuckets);
+  }
+}
 
 void RecordIsOptionalUpdateSkipped(bool skipped) {
   base::UmaHistogramBoolean("OOBE.ConsumerUpdateScreen.IsOptionalUpdateSkipped",
@@ -201,8 +218,10 @@ void ConsumerUpdateScreen::DelaySkipButton() {
 
 void ConsumerUpdateScreen::SetSkipButton() {
   if (!is_mandatory_update_.has_value()) {
-    base::TimeDelta time_left = version_updater_->update_info().total_time_left;
-    is_mandatory_update_ = time_left < maximum_time_force_update_;
+    estimate_update_time_left_ =
+        version_updater_->update_info().total_time_left;
+    is_mandatory_update_ =
+        estimate_update_time_left_ < maximum_time_force_update_;
     base::UmaHistogramBoolean("OOBE.ConsumerUpdateScreen.IsMandatory",
                               is_mandatory_update_.value());
     if (GetRemote()->is_bound()) {
@@ -497,6 +516,7 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
           prefs::kOobeConsumerUpdateCompleted, true);
 
       base::TimeDelta update_time = base::TimeTicks::Now() - screen_shown_time_;
+      RecordUpdateEstimatorTime(update_time, estimate_update_time_left_);
       RecordUpdateTime(update_time, is_mandatory_update_.value_or(true));
       if (!is_mandatory_update_.value_or(true)) {
         RecordIsOptionalUpdateSkipped(/*skipped=*/false);
