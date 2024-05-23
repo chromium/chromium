@@ -7362,6 +7362,51 @@
             ]
         }
     ],
+    "EnableCustomInputStreamBufferSize": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "With64KiBBuffer",
+                    "params": {
+                        "BufferSize": "65536"
+                    },
+                    "enable_features": [
+                        "EnableCustomInputStreamBufferSize"
+                    ]
+                },
+                {
+                    "name": "With8KiBBuffer",
+                    "params": {
+                        "BufferSize": "8192"
+                    },
+                    "enable_features": [
+                        "EnableCustomInputStreamBufferSize"
+                    ]
+                },
+                {
+                    "name": "With16KiBBuffer",
+                    "params": {
+                        "BufferSize": "16384"
+                    },
+                    "enable_features": [
+                        "EnableCustomInputStreamBufferSize"
+                    ]
+                },
+                {
+                    "name": "With32KiBBuffer",
+                    "params": {
+                        "BufferSize": "32768"
+                    },
+                    "enable_features": [
+                        "EnableCustomInputStreamBufferSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableDevToolsJsErrorReporting": [
         {
             "platforms": [
