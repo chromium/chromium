@@ -611,42 +611,62 @@ std::unique_ptr<Network::ResourceTiming> GetTiming(
     return nullptr;
 
   const base::TimeTicks kNullTicks;
-  return Network::ResourceTiming::Create()
-      .SetRequestTime((load_timing.request_start - kNullTicks).InSecondsF())
-      .SetProxyStart(
-          timeDelta(load_timing.proxy_resolve_start, load_timing.request_start))
-      .SetProxyEnd(
-          timeDelta(load_timing.proxy_resolve_end, load_timing.request_start))
-      .SetDnsStart(timeDelta(load_timing.connect_timing.domain_lookup_start,
-                             load_timing.request_start))
-      .SetDnsEnd(timeDelta(load_timing.connect_timing.domain_lookup_end,
-                           load_timing.request_start))
-      .SetConnectStart(timeDelta(load_timing.connect_timing.connect_start,
+  auto timing =
+      Network::ResourceTiming::Create()
+          .SetRequestTime((load_timing.request_start - kNullTicks).InSecondsF())
+          .SetProxyStart(timeDelta(load_timing.proxy_resolve_start,
+                                   load_timing.request_start))
+          .SetProxyEnd(timeDelta(load_timing.proxy_resolve_end,
                                  load_timing.request_start))
-      .SetConnectEnd(timeDelta(load_timing.connect_timing.connect_end,
+          .SetDnsStart(timeDelta(load_timing.connect_timing.domain_lookup_start,
+                                 load_timing.request_start))
+          .SetDnsEnd(timeDelta(load_timing.connect_timing.domain_lookup_end,
                                load_timing.request_start))
-      .SetSslStart(timeDelta(load_timing.connect_timing.ssl_start,
-                             load_timing.request_start))
-      .SetSslEnd(timeDelta(load_timing.connect_timing.ssl_end,
-                           load_timing.request_start))
-      .SetWorkerStart(-1)
-      .SetWorkerReady(-1)
-      .SetWorkerFetchStart(timeDelta(load_timing.service_worker_fetch_start,
+          .SetConnectStart(timeDelta(load_timing.connect_timing.connect_start,
                                      load_timing.request_start))
-      .SetWorkerRespondWithSettled(
-          timeDelta(load_timing.service_worker_respond_with_settled,
-                    load_timing.request_start))
-      .SetSendStart(
-          timeDelta(load_timing.send_start, load_timing.request_start))
-      .SetSendEnd(timeDelta(load_timing.send_end, load_timing.request_start))
-      .SetPushStart(
-          timeDelta(load_timing.push_start, load_timing.request_start, 0))
-      .SetPushEnd(timeDelta(load_timing.push_end, load_timing.request_start, 0))
-      .SetReceiveHeadersStart(timeDelta(load_timing.receive_headers_start,
-                                        load_timing.request_start))
-      .SetReceiveHeadersEnd(
-          timeDelta(load_timing.receive_headers_end, load_timing.request_start))
-      .Build();
+          .SetConnectEnd(timeDelta(load_timing.connect_timing.connect_end,
+                                   load_timing.request_start))
+          .SetSslStart(timeDelta(load_timing.connect_timing.ssl_start,
+                                 load_timing.request_start))
+          .SetSslEnd(timeDelta(load_timing.connect_timing.ssl_end,
+                               load_timing.request_start))
+          .SetWorkerStart(-1)
+          .SetWorkerReady(-1)
+          .SetWorkerFetchStart(timeDelta(load_timing.service_worker_fetch_start,
+                                         load_timing.request_start))
+          .SetWorkerRespondWithSettled(
+              timeDelta(load_timing.service_worker_respond_with_settled,
+                        load_timing.request_start))
+          .SetSendStart(
+              timeDelta(load_timing.send_start, load_timing.request_start))
+          .SetSendEnd(
+              timeDelta(load_timing.send_end, load_timing.request_start))
+          .SetPushStart(
+              timeDelta(load_timing.push_start, load_timing.request_start, 0))
+          .SetPushEnd(
+              timeDelta(load_timing.push_end, load_timing.request_start, 0))
+          .SetReceiveHeadersStart(timeDelta(load_timing.receive_headers_start,
+                                            load_timing.request_start))
+          .SetReceiveHeadersEnd(timeDelta(load_timing.receive_headers_end,
+                                          load_timing.request_start))
+          .Build();
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kServiceWorkerStaticRouterTimingInfo)) {
+    if (!load_timing.service_worker_router_evaluation_start.is_null()) {
+      timing->SetWorkerRouterEvaluationStart(
+          timeDelta(load_timing.service_worker_router_evaluation_start,
+                    load_timing.request_start));
+    }
+
+    if (!load_timing.service_worker_cache_lookup_start.is_null()) {
+      timing->SetWorkerCacheLookupStart(
+          timeDelta(load_timing.service_worker_cache_lookup_start,
+                    load_timing.request_start));
+    }
+  }
+
+  return timing;
 }
 
 std::unique_ptr<Network::ConnectTiming> GetConnectTiming(
@@ -2113,6 +2133,12 @@ std::unique_ptr<Network::Response> BuildResponse(
       service_worker_router_info->SetMatchedSourceType(
           BuildServiceWorkerRouterSourceType(
               *info.service_worker_router_info->matched_source_type));
+    }
+
+    if (info.service_worker_router_info->actual_source_type) {
+      service_worker_router_info->SetActualSourceType(
+          BuildServiceWorkerRouterSourceType(
+              *info.service_worker_router_info->actual_source_type));
     }
 
     response->SetServiceWorkerRouterInfo(std::move(service_worker_router_info));

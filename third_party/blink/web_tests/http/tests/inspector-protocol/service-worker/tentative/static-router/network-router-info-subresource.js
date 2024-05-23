@@ -22,5 +22,8 @@
   const responseReceived = await responseReceivedPromise;
   testRunner.log(responseReceived.params.response.serviceWorkerRouterInfo);
 
+  const router_evaluation_start = responseReceived.params.response.timing.workerRouterEvaluationStart !== undefined;
+  testRunner.log("workerRouterEvaluationStart exists: " + router_evaluation_start);
+
   testRunner.completeTest();
 });

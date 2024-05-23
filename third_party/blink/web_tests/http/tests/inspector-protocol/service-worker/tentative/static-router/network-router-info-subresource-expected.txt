@@ -1,6 +1,8 @@
 Verifies that the request head has static routing information on sub resources.
 {
+    actualSourceType : fetch-event
     matchedSourceType : fetch-event
     ruleIdMatched : 1
 }
+workerRouterEvaluationStart exists: true
 
