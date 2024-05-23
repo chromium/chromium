@@ -27,6 +27,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountEmailDomainDisplayability;
@@ -37,6 +38,7 @@ import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -111,19 +113,27 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
 
+    // TODO(crbug.com/342205162): Require native for ProfileDataCache creation.
     @VisibleForTesting
     ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig) {
         mContext = context;
         mImageSize = imageSize;
         mDefaultBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
-        AccountInfoServiceProvider.getPromise().then(this::populateCache);
+        // TODO(crbug.com/341948846): Remove AccountInfoService and simplify this.
+        Promise<AccountInfoService> accountInfoServicePromise =
+                AccountInfoServiceProvider.getPromise();
+        if (accountInfoServicePromise.isFulfilled()) {
+            populateCache(accountInfoServicePromise.getResult());
+        } else {
+            accountInfoServicePromise.then(this::populateCache);
+        }
     }
 
     /**
      * @param context Context of the application to extract resources from.
      * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
-     *         and no badge.
+     *     and no badge.
      */
     public static ProfileDataCache createWithDefaultImageSizeAndNoBadge(Context context) {
         return new ProfileDataCache(
@@ -288,21 +298,36 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     }
 
     private void populateCache(AccountInfoService accountInfoService) {
-        AccountManagerFacadeProvider.getInstance()
-                .getCoreAccountInfos()
-                .then(
-                        coreAccountInfos -> {
-                            for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
-                                populateCacheForAccount(
-                                        accountInfoService, coreAccountInfo.getEmail());
-                            }
-                        });
+        Promise<List<CoreAccountInfo>> accountsPromise =
+                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos();
+        if (accountsPromise.isFulfilled()) {
+            populateCacheForAllAccounts(accountInfoService, accountsPromise.getResult());
+        } else {
+            accountsPromise.then(
+                    accounts -> {
+                        populateCacheForAllAccounts(accountInfoService, accounts);
+                    });
+        }
+    }
+
+    private void populateCacheForAllAccounts(
+            AccountInfoService accountInfoService, List<CoreAccountInfo> accounts) {
+        for (CoreAccountInfo coreAccountInfo : accounts) {
+            populateCacheForAccount(accountInfoService, coreAccountInfo.getEmail());
+        }
     }
 
     // TODO(crbug.com/40274844): Replace accountEmail with CoreAccountId or CoreAccountInfo.
     private void populateCacheForAccount(
             AccountInfoService accountInfoService, String accountEmail) {
-        accountInfoService.getAccountInfoByEmail(accountEmail).then(this::onAccountInfoUpdated);
+        // TODO(crbug.com/341948846): Remove AccountInfoService and simplify this.
+        Promise<AccountInfo> accountInfoPromise =
+                accountInfoService.getAccountInfoByEmail(accountEmail);
+        if (accountInfoPromise.isFulfilled()) {
+            onAccountInfoUpdated(accountInfoPromise.getResult());
+        } else {
+            accountInfoPromise.then(this::onAccountInfoUpdated);
+        }
     }
 
     private void updateCacheAndNotifyObservers(

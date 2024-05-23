@@ -41,7 +41,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -142,7 +141,7 @@ public class SyncPromoControllerUITest {
     @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,
                 profileDataCache,
@@ -156,7 +155,7 @@ public class SyncPromoControllerUITest {
     @MediumTest
     public void testBookmarkSyncPromoViewSignedInAndNotSyncing() throws Throwable {
         mSigninTestRule.addTestAccountThenSignin();
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,
                 profileDataCache,
@@ -212,7 +211,7 @@ public class SyncPromoControllerUITest {
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoContinueButtonLaunchesSigninFlow() throws Throwable {
         mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,
                 profileDataCache,
@@ -239,7 +238,7 @@ public class SyncPromoControllerUITest {
     @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoContinueButtonLaunchesSyncFlow() throws Throwable {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,
                 profileDataCache,
@@ -270,7 +269,7 @@ public class SyncPromoControllerUITest {
                 });
 
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,
                 profileDataCache,
@@ -300,7 +299,7 @@ public class SyncPromoControllerUITest {
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSigninFlow() throws Throwable {
         mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,
                 profileDataCache,
@@ -328,7 +327,7 @@ public class SyncPromoControllerUITest {
     @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSyncFlow() throws Throwable {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,
                 profileDataCache,
@@ -366,7 +365,7 @@ public class SyncPromoControllerUITest {
     @MediumTest
     public void testSettingsSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         onView(withText(R.string.sync_promo_title_settings)).check(matches(isDisplayed()));
@@ -378,7 +377,7 @@ public class SyncPromoControllerUITest {
     @MediumTest
     public void testSettingsSyncPromoViewSignedInAndNotSyncing() throws Throwable {
         mSigninTestRule.addTestAccountThenSignin();
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         onView(withText(R.string.sync_promo_title_settings)).check(matches(isDisplayed()));
@@ -443,7 +442,7 @@ public class SyncPromoControllerUITest {
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testRecentTabsSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.RECENT_TABS,
                 profileDataCache,
@@ -459,7 +458,7 @@ public class SyncPromoControllerUITest {
     public void testRecentTabsSyncPromoViewSignedOutAndAccountAvailableLaunchesSigninFlow()
             throws Throwable {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.RECENT_TABS,
                 profileDataCache,
@@ -487,7 +486,7 @@ public class SyncPromoControllerUITest {
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testRecentTabsSyncPromoViewSignedInAndNotSyncing() throws Throwable {
         mSigninTestRule.addTestAccountThenSignin();
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.RECENT_TABS,
                 profileDataCache,
@@ -503,7 +502,7 @@ public class SyncPromoControllerUITest {
     public void testRecentTabsSyncPromoViewSignedInAndNotSyncingLaunchesSigninFlow()
             throws Throwable {
         mSigninTestRule.addTestAccountThenSignin();
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.RECENT_TABS,
                 profileDataCache,
@@ -531,7 +530,7 @@ public class SyncPromoControllerUITest {
     public void testSetUpSyncPromoView_onNonAutomotive_secondaryButtonShown() throws Throwable {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.RECENT_TABS,
                 profileDataCache,
@@ -545,7 +544,7 @@ public class SyncPromoControllerUITest {
     public void testSetUpSyncPromoView_onAutomotive_secondaryButtonHidden() throws Throwable {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.RECENT_TABS,
                 profileDataCache,
@@ -585,7 +584,7 @@ public class SyncPromoControllerUITest {
             throws Throwable {
         setUpNightMode(nightModeEnabled);
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         View view =
                 setUpSyncPromoView(
                         SigninAccessPoint.NTP_FEED_TOP_PROMO,
@@ -604,7 +603,7 @@ public class SyncPromoControllerUITest {
         setUpNightMode(nightModeEnabled);
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        ProfileDataCache profileDataCache = createProfileDataCache();
         View view =
                 setUpSyncPromoView(
                         SigninAccessPoint.NTP_FEED_TOP_PROMO,
@@ -618,24 +617,12 @@ public class SyncPromoControllerUITest {
     // update the view, but that's done outside of SyncPromoController, the logic is duplicated
     // for each entry point. In the long term, we should have a single observer internal to the UI
     // component. Then these tests can just wait for the right data to appear with espresso.
-    private ProfileDataCache createProfileDataCacheAndWaitForAccountData() throws Throwable {
-        CallbackHelper profileDataUpdatedWaiter = new CallbackHelper();
-        ProfileDataCache profileDataCache =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            ProfileDataCache profileData =
-                                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                                            mActivityTestRule.getActivity());
-                            // Observing the  onProfileDataUpdated() event.
-                            profileData.addObserver(
-                                    (String accountEmail) -> {
-                                        profileDataUpdatedWaiter.notifyCalled();
-                                    });
-                            return profileData;
-                        });
-        // Waiting for onProfileDataUpdated() to be called.
-        profileDataUpdatedWaiter.waitForFirst();
-        return profileDataCache;
+    private ProfileDataCache createProfileDataCache() throws Throwable {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                            mActivityTestRule.getActivity());
+                });
     }
 
     private View setUpSyncPromoView(
