@@ -132,6 +132,9 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
 );
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
+             "UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
              "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
              base::FEATURE_ENABLED_BY_DEFAULT);

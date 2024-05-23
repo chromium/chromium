@@ -7212,6 +7212,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "pwm-access-loss-warning",
+    "owners": [
+      "izuzic@google.com",
+      "ioanap@chromium.org"
+    ],
+    "expiry_milestone": 129
+  },
+  {
     "name": "pwm-shadow-dom-support",
     "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
     "expiry_milestone": 127

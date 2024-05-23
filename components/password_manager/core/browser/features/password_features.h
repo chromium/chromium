@@ -102,6 +102,12 @@ BASE_DECLARE_FEATURE(kSharedPasswordNotificationUI);
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 
 #if BUILDFLAG(IS_ANDROID)
+
+// Enables showing various warnings for password manager users not yet enrolled
+// into the new experience of storing passwords in GMSCore.
+BASE_DECLARE_FEATURE(
+    kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
+
 // Enables use of Google Mobile services for non-synced password storage that
 // contains no passwords, so no migration will be necessary.
 // UnifiedPasswordManagerLocalPasswordsAndroidWithMigration will replace this

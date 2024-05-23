@@ -4634,6 +4634,15 @@ const char kTranslateMessageUIDescription[] =
     "Controls whether the Translate Message UI will be shown instead of the "
     "Translate InfoBar.";
 
+const char kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningName[] =
+    "Access loss warning for unmigrated password manager users";
+const char
+    kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningDescription[] =
+        "Chrome password manager users who are not enrolled into the new "
+        "experience of storing local passwords in GMSCore will be warned via "
+        "various communication channels about data/feature access loss unless "
+        "they upgrade GMSCore.";
+
 const char kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationName[] =
     "Google Mobile Services for passwords for users with empty local password "
     "storage";

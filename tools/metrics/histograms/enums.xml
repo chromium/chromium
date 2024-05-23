@@ -16522,6 +16522,8 @@ from previous Chrome versions.
   <int value="-2072181147" label="WebContentsCaptureHiDPI:enabled"/>
   <int value="-2071515296" label="allow-sync-xhr-in-page-dismissal"/>
   <int value="-2071202821" label="CopyLinkToText:enabled"/>
+  <int value="-2069855464"
+      label="UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning:enabled"/>
   <int value="-2069193978"
       label="ExperimentalAccessibilityColorEnhancementSettings:enabled"/>
   <int value="-2068490665" label="PasswordChange:enabled"/>
@@ -23071,6 +23073,8 @@ from previous Chrome versions.
   <int value="773244977" label="FilesInlineSyncStatusProgressEvents:disabled"/>
   <int value="773563826" label="CrostiniUsbSupport:disabled"/>
   <int value="773743944" label="show-android-files-in-files-app"/>
+  <int value="773908750"
+      label="UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning:disabled"/>
   <int value="773919225" label="disable-office-editing-component-extension"/>
   <int value="773952982" label="ReduceIPAddressChangeNotification:disabled"/>
   <int value="775075949" label="ImeInputLogicHmm:enabled"/>
