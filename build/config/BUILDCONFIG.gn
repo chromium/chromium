@@ -814,16 +814,16 @@ foreach(_target_type, [ "action" ]) {
         re_outputs_file = "$target_gen_dir/${target_name}__remote_outputs.rsp"
         write_file(re_outputs_file, re_outputs)
 
-        rewrapper_cfg = "$rbe_py_cfg_file"
+        rewrapper_cfg = "$reclient_py_cfg_file"
         if (defined(invoker.remote_worker)) {
           remote_worker = invoker.remote_worker
           assert(remote_worker == "large",
                  "remote_worker = " + remote_worker + " is not supported")
-          rewrapper_cfg = "$rbe_py_large_cfg_file"
+          rewrapper_cfg = "$reclient_py_large_cfg_file"
         }
 
         args = []
-        args += [ "$rbe_bin_dir/rewrapper" ]
+        args += [ "$reclient_bin_dir/rewrapper" ]
         if (defined(invoker.custom_processor)) {
           args += [ "--custom_processor=" + invoker.custom_processor ]
         }

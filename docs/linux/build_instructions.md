@@ -218,7 +218,7 @@ Then, add the following GN args to your `args.gn`:
 
 ```
 use_remoteexec = true
-rbe_cfg_dir = "../../buildtools/reclient_cfgs/linux"
+reclient_cfg_dir = "../../buildtools/reclient_cfgs/linux"
 ```
 
 That's it. Remember to always use `autoninja` for building Chromium as described

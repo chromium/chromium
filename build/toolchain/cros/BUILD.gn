@@ -29,7 +29,7 @@ template("cros_toolchain") {
       # host wrapper (used in the ebuild) and Chrome's clang (used in Simple
       # Chrome), prepend rewrapper like normal.
       if (use_reclient && invoker.needs_rewrapper_path_arg) {
-        extra_cppflags += "--rewrapper-path $rbe_cros_cc_wrapper --rewrapper-cfg ${rbe_cc_cfg_file}"
+        extra_cppflags += "--rewrapper-path $reclient_cros_cc_wrapper --rewrapper-cfg ${reclient_cc_cfg_file}"
       }
 
       # Relativize path if compiler is specified such that not to lookup from

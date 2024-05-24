@@ -190,14 +190,14 @@ template("single_gcc_toolchain") {
     if (toolchain_uses_reclient &&
         (!defined(invoker.needs_rewrapper_path_arg) ||
          !invoker.needs_rewrapper_path_arg)) {
-      if (defined(toolchain_args.rbe_cc_cfg_file)) {
-        toolchain_rbe_cc_cfg_file = toolchain_args.rbe_cc_cfg_file
+      if (defined(toolchain_args.reclient_cc_cfg_file)) {
+        toolchain_reclient_cc_cfg_file = toolchain_args.reclient_cc_cfg_file
       } else {
-        toolchain_rbe_cc_cfg_file = rbe_cc_cfg_file
+        toolchain_reclient_cc_cfg_file = reclient_cc_cfg_file
       }
 
       # C/C++ (clang) rewrapper prefix to use when use_reclient is true.
-      compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file}${rbe_bug_326584510_missing_inputs} -exec_root=${rbe_exec_root} "
+      compiler_prefix = "${reclient_bin_dir}/rewrapper -cfg=${toolchain_reclient_cc_cfg_file}${rbe_bug_326584510_missing_inputs} -exec_root=${rbe_exec_root} "
     } else {
       compiler_prefix = "${toolchain_cc_wrapper} "
 
@@ -207,12 +207,12 @@ template("single_gcc_toolchain") {
     }
 
     if (toolchain_uses_reclient_links) {
-      if (defined(toolchain_args.rbe_link_cfg_file)) {
-        toolchain_rbe_link_cfg_file = toolchain_args.rbe_link_cfg_file
+      if (defined(toolchain_args.reclient_link_cfg_file)) {
+        toolchain_reclient_link_cfg_file = toolchain_args.reclient_link_cfg_file
       } else {
-        toolchain_rbe_link_cfg_file = rbe_link_cfg_file
+        toolchain_reclient_link_cfg_file = reclient_link_cfg_file
       }
-      link_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_link_cfg_file} -exec_root=${rbe_exec_root} "
+      link_prefix = "${reclient_bin_dir}/rewrapper -cfg=${toolchain_reclient_link_cfg_file} -exec_root=${rbe_exec_root} "
     } else {
       link_prefix = ""
     }
