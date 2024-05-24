@@ -81,7 +81,9 @@ class NamedWidgetShownWaiterTest : public views::test::WidgetTest {
 
   views::Widget* CreateNamedWidget(const std::string& name) {
     Widget* widget = new Widget;
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     params.native_widget = views::test::CreatePlatformNativeWidgetImpl(
         widget, views::test::kStubCapture, nullptr);
     params.name = name;

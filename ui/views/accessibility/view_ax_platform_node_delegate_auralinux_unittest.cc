@@ -28,7 +28,9 @@ class ViewAXPlatformNodeDelegateAuraLinuxTest : public ViewsTestBase {
 
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
@@ -104,7 +106,9 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest,
        ExpandedChangedNotFiredOnNonExpandableViews) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
@@ -116,7 +120,8 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, AuraChildWidgets) {
   // Create the parent widget->
   UniqueWidgetPtr widget = std::make_unique<Widget>();
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   init_params.bounds = gfx::Rect(0, 0, 400, 200);
   widget->Init(std::move(init_params));
   widget->Show();
@@ -129,7 +134,8 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, AuraChildWidgets) {
   // Create the child widget, one of two ways (see below).
   UniqueWidgetPtr child_widget = std::make_unique<Widget>();
   Widget::InitParams child_init_params =
-      CreateParams(Widget::InitParams::TYPE_BUBBLE);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_BUBBLE);
   child_init_params.parent = widget->GetNativeView();
   child_init_params.bounds = gfx::Rect(30, 40, 100, 50);
   child_init_params.child = false;
@@ -160,14 +166,16 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, IndexInParent) {
   // Create the Widget that will represent the application
   UniqueWidgetPtr parent_widget = std::make_unique<Widget>();
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   parent_widget->Init(std::move(init_params));
   parent_widget->Show();
 
   // |widget| will be destroyed later.
   UniqueWidgetPtr widget = std::make_unique<Widget>();
   Widget::InitParams child_init_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   child_init_params.parent = parent_widget->GetNativeView();
   widget->Init(std::move(child_init_params));
   widget->Show();

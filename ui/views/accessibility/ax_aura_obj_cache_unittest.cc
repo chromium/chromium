@@ -152,7 +152,9 @@ TEST_F(AXAuraObjCacheTest, CacheDestructionUAF) {
   AXAuraObjCache* cache = new AXAuraObjCache();
 
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   widget->Init(std::move(params));
   cache->OnRootWindowObjCreated(widget->GetNativeWindow());
@@ -167,7 +169,9 @@ TEST_F(AXAuraObjCacheTest, CacheDestructionUAF) {
 
   // Create a second top-level widget to ensure |root_windows_| isn't empty.
   UniqueWidgetPtr widget2 = std::make_unique<Widget>();
-  Widget::InitParams params2 = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params2 =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params2.bounds = gfx::Rect(0, 0, 200, 200);
   widget2->Init(std::move(params2));
   cache->OnRootWindowObjCreated(widget2->GetNativeWindow());
@@ -188,7 +192,9 @@ TEST_F(AXAuraObjCacheTest, CacheDestructionUAF) {
 TEST_F(AXAuraObjCacheTest, ValidTree) {
   // Create a parent window.
   UniqueWidgetPtr parent_widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   parent_widget->Init(std::move(params));
   parent_widget->GetNativeWindow()->SetTitle(u"ParentWindow");
@@ -196,11 +202,11 @@ TEST_F(AXAuraObjCacheTest, ValidTree) {
 
   // Create a child window.
   Widget* child_widget = new Widget();  // Owned by parent_widget.
-  params = CreateParams(Widget::InitParams::TYPE_BUBBLE);
+  params = CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                        Widget::InitParams::TYPE_BUBBLE);
   params.parent = parent_widget->GetNativeWindow();
   params.child = true;
   params.bounds = gfx::Rect(100, 100, 200, 200);
-  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   child_widget->Init(std::move(params));
   child_widget->GetNativeWindow()->SetTitle(u"ChildWindow");
   child_widget->Show();
@@ -236,7 +242,9 @@ TEST_F(AXAuraObjCacheTest, ValidTree) {
 TEST_F(AXAuraObjCacheTest, GetFocusIsUnignoredAncestor) {
   AXAuraObjCache cache;
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   widget->Init(std::move(params));
@@ -342,7 +350,9 @@ TEST_F(AXAuraObjCacheTest, DoNotCreateWidgetWrapperOnDestroyed) {
   TestingWidgetDelegateView* delegate =
       new TestingWidgetDelegateView(&run_loop);
 
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.delegate = delegate;
@@ -361,7 +371,9 @@ TEST_F(AXAuraObjCacheTest, DoNotCreateWidgetWrapperOnDestroyed) {
 TEST_F(AXAuraObjCacheTest, VirtualViews) {
   AXAuraObjCache cache;
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   widget->Init(std::move(params));

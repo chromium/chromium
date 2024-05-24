@@ -164,7 +164,9 @@ class BubbleDialogFrameView : public BubbleFrameView {
 Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
   DCHECK(bubble->owned_by_widget());
   Widget* bubble_widget = new BubbleWidget();
-  Widget::InitParams bubble_params(Widget::InitParams::TYPE_BUBBLE);
+  Widget::InitParams bubble_params(
+      Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      Widget::InitParams::TYPE_BUBBLE);
   bubble_params.delegate = bubble;
   bubble_params.opacity = Widget::InitParams::WindowOpacity::kTranslucent;
   bubble_params.accept_events = bubble->accept_events();

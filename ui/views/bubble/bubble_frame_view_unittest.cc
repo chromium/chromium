@@ -94,9 +94,9 @@ class TestBubbleFrameView : public BubbleFrameView {
     widget_ = std::make_unique<Widget>();
     widget_delegate_ = std::make_unique<TestBubbleFrameViewWidgetDelegate>();
     Widget::InitParams params =
-        test_base->CreateParams(Widget::InitParams::TYPE_BUBBLE);
+        test_base->CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                                Widget::InitParams::TYPE_BUBBLE);
     params.delegate = widget_delegate_.get();
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     widget_->Init(std::move(params));
   }
 

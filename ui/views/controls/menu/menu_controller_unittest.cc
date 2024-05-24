@@ -529,8 +529,9 @@ void MenuControllerTest::SetUp() {
   ASSERT_TRUE(base::CurrentUIThread::IsSet());
 
   owner_ = std::make_unique<GestureTestWidget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   owner_->Init(std::move(params));
   event_generator_ =
       std::make_unique<ui::test::EventGenerator>(GetRootWindow(owner()));

@@ -23,8 +23,8 @@ TEST_F(AccessibilityPaintChecksTest, VerifyAccessibilityCheckerFailAndPass) {
   // Create containing widget.
   Widget widget;
   Widget::InitParams params =
-      Widget::InitParams(Widget::InitParams::TYPE_WINDOW);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      Widget::InitParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                         Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 650, 650);
   params.context = GetContext();
   widget.Init(std::move(params));

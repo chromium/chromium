@@ -103,7 +103,9 @@ class ViewAXPlatformNodeDelegateWinTest : public ViewsTestBase {
 
 TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
@@ -149,7 +151,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
 
 TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
@@ -217,7 +221,8 @@ TEST_P(ViewAXPlatformNodeDelegateWinTestWithBoolChildFlag, AuraChildWidgets) {
   // Create the parent widget.
   UniqueWidgetPtr widget = std::make_unique<Widget>();
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   init_params.bounds = gfx::Rect(0, 0, 400, 200);
   widget->Init(std::move(init_params));
   widget->Show();
@@ -232,7 +237,8 @@ TEST_P(ViewAXPlatformNodeDelegateWinTestWithBoolChildFlag, AuraChildWidgets) {
   // Create the child widget, one of two ways (see below).
   UniqueWidgetPtr child_widget = std::make_unique<Widget>();
   Widget::InitParams child_init_params =
-      CreateParams(Widget::InitParams::TYPE_BUBBLE);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_BUBBLE);
   child_init_params.parent = widget->GetNativeView();
   child_init_params.bounds = gfx::Rect(30, 40, 100, 50);
 
@@ -292,7 +298,9 @@ TEST_P(ViewAXPlatformNodeDelegateWinTestWithBoolChildFlag, AuraChildWidgets) {
 // Flaky on Windows: https://crbug.com/461837.
 TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
@@ -357,8 +365,8 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
 TEST_F(ViewAXPlatformNodeDelegateWinTest, GetAllOwnedWidgetsCrash) {
   Widget widget;
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   widget.Init(std::move(init_params));
   widget.CloseNow();
 
@@ -374,8 +382,8 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, WindowHasRoleApplication) {
   // ROLE_SYSTEM_WINDOW, but ROLE_SYSTEM_PANE instead.
   UniqueWidgetPtr widget = std::make_unique<Widget>();
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(init_params));
 
   ComPtr<IAccessible> accessible(
@@ -391,7 +399,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, Overrides) {
   // We expect that our internal window object does not expose
   // ROLE_SYSTEM_WINDOW, but ROLE_SYSTEM_PANE instead.
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* contents_view = widget->SetContentsView(std::make_unique<View>());
@@ -449,7 +459,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, Overrides) {
 
 TEST_F(ViewAXPlatformNodeDelegateWinTest, GridRowColumnCount) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
@@ -532,7 +544,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, IsUIAControlIsTrueEvenWhenReadonly) {
   // UIA_IsControlElementPropertyId, which is computed using IsUIAControl.
 
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
@@ -548,7 +562,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, IsUIAControlIsTrueEvenWhenReadonly) {
 
 TEST_F(ViewAXPlatformNodeDelegateWinTest, UIAGetPropertyValue_Histograms) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
@@ -574,7 +590,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, UIAGetPropertyValue_Histograms) {
 
 TEST_F(ViewAXPlatformNodeDelegateWinTest, TextPositionAt) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
@@ -640,8 +658,8 @@ class ViewAXPlatformNodeDelegateWinTableTest
 
     widget_ = std::make_unique<Widget>();
     Widget::InitParams init_params =
-        CreateParams(Widget::InitParams::TYPE_POPUP);
-    init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     Widget::InitParams::TYPE_POPUP);
     init_params.bounds = gfx::Rect(0, 0, 400, 400);
     widget_->Init(std::move(init_params));
 
@@ -721,7 +739,9 @@ class ViewAXPlatformNodeDelegateWinInnerTextRangeTest
 
     widget_ = std::make_unique<Widget>();
 
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     widget_->Init(std::move(params));
 

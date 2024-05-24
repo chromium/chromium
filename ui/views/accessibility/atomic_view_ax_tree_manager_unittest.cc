@@ -26,7 +26,9 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
 
     widget_ = std::make_unique<Widget>();
 
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     params.bounds = gfx::Rect(50, 50, 200, 200);
     widget_->Init(std::move(params));
 

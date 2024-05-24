@@ -471,7 +471,8 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
   void SetUp() override {
     ui::CocoaTest::SetUp();
 
-    Widget::InitParams init_params;
+    Widget::InitParams init_params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
     init_params.native_widget = native_widget_mac_.get();
     init_params.type = type_;
     init_params.ownership = ownership_;
@@ -981,7 +982,8 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
   }
 
   void PerformInit() {
-    Widget::InitParams init_params;
+    Widget::InitParams init_params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
     init_params.native_widget = native_widget_mac_.get();
     init_params.type = type_;
     init_params.ownership = ownership_;

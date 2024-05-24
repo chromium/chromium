@@ -63,7 +63,9 @@ class AXVirtualViewTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
 
     widget_ = new Widget;
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     widget_->Init(std::move(params));
     auto button = std::make_unique<TestButton>();

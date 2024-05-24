@@ -510,8 +510,9 @@ TEST_F(NativeViewHostAuraTest, FocusManagerUpdatedDuringDestruction) {
       std::make_unique<NativeViewHost>();
   toplevel()->GetContentsView()->AddChildView(native_view_host.get());
 
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_CONTROL);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_CONTROL);
   params.delegate = new views::WidgetDelegateView();  // Owned by the widget.
   params.child = true;
   params.bounds = gfx::Rect(10, 10, 100, 100);

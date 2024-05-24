@@ -107,7 +107,8 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   void CreateTextfield() {
     textfield_widget_ = new Widget;
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     textfield_widget_->Init(std::move(params));
     // Focusable views must have an accessible name in order to pass the
@@ -126,7 +127,9 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
 
   void CreateWidget() {
     widget_ = new Widget;
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     widget_->Init(std::move(params));
     widget_->Show();

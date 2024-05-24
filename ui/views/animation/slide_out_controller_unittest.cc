@@ -71,8 +71,9 @@ class SlideOutControllerTest : public ViewsTestBase {
 
     widget_ = std::make_unique<Widget>();
 
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(50, 50, 650, 650);
     widget_->Init(std::move(params));
     View* root = widget_->GetRootView();

@@ -181,14 +181,18 @@ TEST_F(FocusManagerTest, WidgetFocusChangeListener) {
   TestWidgetFocusChangeListener widget_listener;
   AddWidgetFocusChangeListener(&widget_listener);
 
-  Widget::InitParams params1 = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params1 =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params1.bounds = gfx::Rect(10, 10, 100, 100);
   params1.parent = GetWidget()->GetNativeView();
   UniqueWidgetPtr widget1 = std::make_unique<Widget>();
   widget1->Init(std::move(params1));
   widget1->Show();
 
-  Widget::InitParams params2 = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params2 =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params2.bounds = gfx::Rect(10, 10, 100, 100);
   params2.parent = GetWidget()->GetNativeView();
   UniqueWidgetPtr widget2 = std::make_unique<Widget>();
@@ -926,7 +930,9 @@ TEST_F(FocusManagerTest, AdvanceFocusStaysInWidget) {
   GetContentsView()->AddChildView(widget_view);
 
   // Create a widget with two views, focus the second.
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.child = true;
   params.bounds = gfx::Rect(10, 10, 100, 100);
   params.parent = GetWidget()->GetNativeView();
@@ -1159,7 +1165,9 @@ class DesktopWidgetFocusManagerTest : public FocusManagerTest {
 
 TEST_F(DesktopWidgetFocusManagerTest, AnchoredDialogInDesktopNativeWidgetAura) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 1024, 768);
   widget->Init(std::move(params));
   widget->Show();

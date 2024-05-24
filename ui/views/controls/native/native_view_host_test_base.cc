@@ -45,9 +45,9 @@ void NativeViewHostTestBase::TearDown() {
 void NativeViewHostTestBase::CreateTopLevel(WidgetDelegate* widget_delegate) {
   toplevel_ = std::make_unique<Widget>();
   Widget::InitParams toplevel_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   toplevel_params.delegate = widget_delegate;
-  toplevel_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   toplevel_->Init(std::move(toplevel_params));
 }
 
@@ -61,8 +61,8 @@ Widget* NativeViewHostTestBase::CreateChildForHost(
     View* contents_view,
     NativeViewHost* host) {
   Widget* child = new Widget;
-  Widget::InitParams child_params(Widget::InitParams::TYPE_CONTROL);
-  child_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams child_params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                                  Widget::InitParams::TYPE_CONTROL);
   child_params.parent = native_parent_view;
   child->Init(std::move(child_params));
   child->SetContentsView(contents_view);

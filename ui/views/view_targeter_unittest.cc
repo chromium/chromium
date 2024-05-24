@@ -128,7 +128,8 @@ gfx::Rect ConvertRectFromWidgetToView(View* view, const gfx::Rect& r) {
 TEST_F(ViewTargeterTest, ViewTargeterForKeyEvents) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   widget->Init(std::move(init_params));
   widget->Show();
 
@@ -169,8 +170,9 @@ TEST_F(ViewTargeterTest, ViewTargeterForKeyEvents) {
 // for scroll events.
 TEST_F(ViewTargeterTest, ViewTargeterForScrollEvents) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   init_params.bounds = gfx::Rect(0, 0, 200, 200);
   widget->Init(std::move(init_params));
 
@@ -228,7 +230,9 @@ ui::GestureEvent CreateTestGestureEvent(
 // for gesture events.
 TEST_F(ViewTargeterTest, ViewTargeterForGestureEvents) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   init_params.bounds = gfx::Rect(0, 0, 200, 200);
   widget->Init(std::move(init_params));
 
@@ -333,7 +337,9 @@ TEST_F(ViewTargeterTest, ViewTargeterForGestureEvents) {
 // not be targeted to any other view in the views tree.
 TEST_F(ViewTargeterTest, TargetContentsAndRootView) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   init_params.bounds = gfx::Rect(0, 0, 200, 200);
   widget->Init(std::move(init_params));
 
@@ -414,7 +420,9 @@ TEST_F(ViewTargeterTest, TargetContentsAndRootView) {
 // the location of a gesture event to be in the correct coordinate space.
 TEST_F(ViewTargeterTest, GestureEventCoordinateConversion) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   init_params.bounds = gfx::Rect(0, 0, 200, 200);
   widget->Init(std::move(init_params));
 
@@ -503,7 +511,9 @@ TEST_F(ViewTargeterTest, GestureEventCoordinateConversion) {
 // be called from the ViewTargeter installed on RootView.
 TEST_F(ViewTargeterTest, DoesIntersectRect) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(0, 0, 650, 650);
   widget->Init(std::move(params));
 
@@ -556,7 +566,9 @@ TEST_F(ViewTargeterTest, DoesIntersectRect) {
 TEST_F(ViewTargeterTest, HitTestCallsOnView) {
   // The coordinates in this test are in the coordinate space of the root view.
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(params));
   View* root_view = widget->GetRootView();
   root_view->SetBoundsRect(gfx::Rect(0, 0, 500, 500));
@@ -626,7 +638,9 @@ TEST_F(ViewTargeterTest, HitTestCallsOnView) {
 
 TEST_F(ViewTargeterTest, FavorChildContainingHitBounds) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   init_params.bounds = gfx::Rect(0, 0, 200, 200);
   widget->Init(std::move(init_params));
 

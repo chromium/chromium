@@ -72,9 +72,10 @@ void SetDragImage(const GURL& url,
                   ui::OSExchangeData* data) {
   // Create a widget to render the drag image for us.
   ScopedWidget drag_widget(new views::Widget());
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_DRAG);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_DRAG);
   params.accept_events = false;
-  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   drag_widget->Init(std::move(params));
