@@ -44,6 +44,12 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     return {
       textValue_: String,
 
+      seaPenQuery_: {
+        type: Object,
+        value: null,
+        observer: 'onSeaPenQueryChanged_',
+      },
+
       thumbnails_: {
         type: Object,
         observer: 'updateSearchButton_',
@@ -73,6 +79,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   }
 
   private textValue_: string;
+  private seaPenQuery_: SeaPenQuery|null;
   private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
   private searchButtonText_: string|null;
@@ -85,9 +92,18 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         'thumbnails_', state => state.thumbnails);
     this.watch<SeaPenInputQueryElement['thumbnailsLoading_']>(
         'thumbnailsLoading_', state => state.loading.thumbnails);
+    this.watch<SeaPenInputQueryElement['seaPenQuery_']>(
+        'seaPenQuery_', state => state.currentSeaPenQuery);
     this.updateFromStore();
 
     this.$.queryInput.focusInput();
+  }
+
+  private onSeaPenQueryChanged_(seaPenQuery: SeaPenQuery|null) {
+    if (!seaPenQuery || !seaPenQuery.textQuery) {
+      return;
+    }
+    this.textValue_ = seaPenQuery.textQuery;
   }
 
   private onClickInputQuerySearchButton_(event: Event) {
