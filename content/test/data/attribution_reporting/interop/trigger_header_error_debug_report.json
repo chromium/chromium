@@ -5,7 +5,7 @@
       {
         "timestamp": "0",
         "registration_request": {
-          "context_origin": "https://trigger.test",
+          "context_origin": "https://trigger.test"
         },
         "responses": [
           {
@@ -20,7 +20,7 @@
       {
         "timestamp": "1",
         "registration_request": {
-          "context_origin": "https://trigger.test",
+          "context_origin": "https://trigger.test"
         },
         "responses": [
           {

@@ -16,12 +16,12 @@
 #include "base/check_op.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/parsing_utils.h"
@@ -71,6 +71,19 @@ std::vector<base::FilePath> GetInputs() {
   }
 
   return input_paths;
+}
+
+base::Value::Dict ParseDictFromFile(const base::FilePath& path) {
+  std::string json;
+  CHECK(base::ReadFileToString(path, &json)) << path;
+
+  base::JSONReader::Result result =
+      base::JSONReader::ReadAndReturnValueWithError(json,
+                                                    base::JSON_ALLOW_COMMENTS);
+  CHECK(result.has_value()) << path << ": " << result.error().ToString();
+
+  CHECK(result->is_dict()) << path;
+  return std::move(*result).TakeDict();
 }
 
 base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
@@ -208,9 +221,8 @@ class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
  public:
   static void SetUpTestSuite() {
     ASSERT_OK_AND_ASSIGN(
-        g_config_,
-        ParseAttributionInteropConfig(base::test::ParseJsonDictFromFile(
-            GetInputDir().AppendASCII(kDefaultConfigFileName))));
+        g_config_, ParseAttributionInteropConfig(ParseDictFromFile(
+                       GetInputDir().AppendASCII(kDefaultConfigFileName))));
   }
 
  protected:
@@ -226,7 +238,7 @@ AttributionInteropConfig AttributionInteropTest::g_config_;
 // See //content/test/data/attribution_reporting/interop/README.md for the
 // JSON schema.
 TEST_P(AttributionInteropTest, HasExpectedOutput) {
-  base::Value::Dict dict = base::test::ParseJsonDictFromFile(GetParam());
+  base::Value::Dict dict = ParseDictFromFile(GetParam());
 
   std::optional<base::Value> output = dict.Extract("output");
   ASSERT_TRUE(output && output->is_dict());
