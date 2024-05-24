@@ -245,10 +245,10 @@ TransformOperation* CreateTransformOperation(
       const auto& second_value = To<CSSPrimitiveValue>(transform_value.Item(1));
       const auto& third_value = To<CSSPrimitiveValue>(transform_value.Item(2));
       const auto& fourth_value = To<CSSPrimitiveValue>(transform_value.Item(3));
-      double x = first_value.GetDoubleValue();
-      double y = second_value.GetDoubleValue();
-      double z = third_value.GetDoubleValue();
-      double angle = fourth_value.ComputeDegrees();
+      double x = first_value.ComputeNumber(conversion_data);
+      double y = second_value.ComputeNumber(conversion_data);
+      double z = third_value.ComputeNumber(conversion_data);
+      double angle = fourth_value.ComputeDegrees(conversion_data);
       return MakeGarbageCollected<RotateTransformOperation>(x, y, z, angle,
                                                             transform_type);
     }
