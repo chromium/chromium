@@ -40,10 +40,20 @@ static_library("presence") {
   ]
 
   public_deps = [
+    ":enums",
     ":nearby_presence_connections_manager",
     "//third_party/nearby:connections_metadata_proto",
     "//third_party/nearby:presence_types",
   ]
+}
+
+static_library("enums") {
+  sources = [
+    "enums/nearby_presence_enums.cc",
+    "enums/nearby_presence_enums.h",
+  ]
+
+  deps = [ "//mojo/public/mojom/base" ]
 }
 
 source_set("nearby_presence_connections_manager") {

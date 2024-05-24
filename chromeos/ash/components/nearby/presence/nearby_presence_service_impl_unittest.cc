@@ -10,6 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "chromeos/ash/components/nearby/presence/credentials/fake_nearby_presence_credential_manager.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
+#include "chromeos/ash/components/nearby/presence/enums/nearby_presence_enums.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_connections_manager.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_nearby_presence.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
@@ -215,7 +216,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
       base::OnceClosure on_complete,
       std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
           scan_session,
-      ash::nearby::presence::NearbyPresenceService::StatusCode status) {
+      ash::nearby::presence::enums::StatusCode status) {
     scan_session_ = std::move(scan_session);
     std::move(on_complete).Run();
   }

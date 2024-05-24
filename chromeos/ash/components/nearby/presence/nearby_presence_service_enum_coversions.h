@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_NEARBY_PRESENCE_SERVICE_ENUM_COVERSIONS_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_NEARBY_PRESENCE_SERVICE_ENUM_COVERSIONS_H_
 
+#include "chromeos/ash/components/nearby/presence/enums/nearby_presence_enums.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 
 namespace ash::nearby::presence {
@@ -14,9 +15,6 @@ namespace ash::nearby::presence {
 
 NearbyPresenceService::PresenceIdentityType ConvertToMojomIdentityType(
     ::nearby::internal::IdentityType identity_type_);
-
-NearbyPresenceService::StatusCode ConvertToPresenceStatus(
-    mojo_base::mojom::AbslStatusCode status_code);
 
 }  // namespace ash::nearby::presence
 

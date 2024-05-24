@@ -36,43 +36,43 @@ NearbyPresenceService::ScanSession::~ScanSession() {
 }
 
 std::ostream& operator<<(std::ostream& stream,
-                         const NearbyPresenceService::StatusCode status_code) {
+                         const enums::StatusCode status_code) {
   switch (status_code) {
-    case NearbyPresenceService::StatusCode::kAbslOk:
+    case enums::StatusCode::kAbslOk:
       return stream << "OK";
-    case NearbyPresenceService::StatusCode::kAbslCancelled:
+    case enums::StatusCode::kAbslCancelled:
       return stream << "Cancelled";
-    case NearbyPresenceService::StatusCode::kAbslUnknown:
+    case enums::StatusCode::kAbslUnknown:
       return stream << "Unknown";
-    case NearbyPresenceService::StatusCode::kAbslInvalidArgument:
+    case enums::StatusCode::kAbslInvalidArgument:
       return stream << "Invalid Argument";
-    case NearbyPresenceService::StatusCode::kAbslDeadlineExceeded:
+    case enums::StatusCode::kAbslDeadlineExceeded:
       return stream << "Deadline Exceeded";
-    case NearbyPresenceService::StatusCode::kAbslNotFound:
+    case enums::StatusCode::kAbslNotFound:
       return stream << "Not Found";
-    case NearbyPresenceService::StatusCode::kAbslAlreadyExists:
+    case enums::StatusCode::kAbslAlreadyExists:
       return stream << "Already Exists";
-    case NearbyPresenceService::StatusCode::kAbslPermissionDenied:
+    case enums::StatusCode::kAbslPermissionDenied:
       return stream << "Permission Denied";
-    case NearbyPresenceService::StatusCode::kAbslResourceExhausted:
+    case enums::StatusCode::kAbslResourceExhausted:
       return stream << "Resource Exhausted";
-    case NearbyPresenceService::StatusCode::kAbslFailedPrecondition:
+    case enums::StatusCode::kAbslFailedPrecondition:
       return stream << "Failed Precondition";
-    case NearbyPresenceService::StatusCode::kAbslAborted:
+    case enums::StatusCode::kAbslAborted:
       return stream << "Aborted";
-    case NearbyPresenceService::StatusCode::kAbslOutOfRange:
+    case enums::StatusCode::kAbslOutOfRange:
       return stream << "Out of Range";
-    case NearbyPresenceService::StatusCode::kAbslUnimplemented:
+    case enums::StatusCode::kAbslUnimplemented:
       return stream << "Unimplemented";
-    case NearbyPresenceService::StatusCode::kAbslInternal:
+    case enums::StatusCode::kAbslInternal:
       return stream << "Internal";
-    case NearbyPresenceService::StatusCode::kAbslUnavailable:
+    case enums::StatusCode::kAbslUnavailable:
       return stream << "Unavailable";
-    case NearbyPresenceService::StatusCode::kAbslDataLoss:
+    case enums::StatusCode::kAbslDataLoss:
       return stream << "Data Loss";
-    case NearbyPresenceService::StatusCode::kAbslUnauthenticated:
+    case enums::StatusCode::kAbslUnauthenticated:
       return stream << "Unauthenticated";
-    case NearbyPresenceService::StatusCode::kFailedToStartProcess:
+    case enums::StatusCode::kFailedToStartProcess:
       return stream << "Failed to Start Process";
   }
 }

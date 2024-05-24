@@ -209,9 +209,8 @@ void NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow(
 void NearbyInternalsPresenceHandler::OnScanStarted(
     std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
         scan_session,
-    ash::nearby::presence::NearbyPresenceService::StatusCode status) {
-  if (status ==
-      ash::nearby::presence::NearbyPresenceService::StatusCode::kAbslOk) {
+    ash::nearby::presence::enums::StatusCode status) {
+  if (status == ash::nearby::presence::enums::StatusCode::kAbslOk) {
     scan_session_ = std::move(scan_session);
     CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__ << ": ScanSession remote successfully returned and bound.";

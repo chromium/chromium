@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection.h"
+#include "chromeos/ash/components/nearby/presence/enums/nearby_presence_enums.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_connections_manager.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -53,7 +54,7 @@ class NearbyInternalsPresenceHandler
   void OnScanStarted(
       std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
           scan_session,
-      ash::nearby::presence::NearbyPresenceService::StatusCode status);
+      ash::nearby::presence::enums::StatusCode status);
   void OnNearbyPresenceCredentialManagerInitialized();
 
   void HandleConnectToPresenceDevice(const base::Value::List& args);

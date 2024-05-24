@@ -13,8 +13,7 @@ FakeNearbyPresenceService::~FakeNearbyPresenceService() = default;
 void FakeNearbyPresenceService::StartScan(
     ScanFilter scan_filter,
     ScanDelegate* scan_delegate,
-    base::OnceCallback<void(std::unique_ptr<ScanSession>,
-                            NearbyPresenceService::StatusCode)>
+    base::OnceCallback<void(std::unique_ptr<ScanSession>, enums::StatusCode)>
         on_start_scan_callback) {
   scan_filter_ = scan_filter;
   scan_delegate_ = scan_delegate;
@@ -41,7 +40,7 @@ void FakeNearbyPresenceService::FinishInitialization() {
   std::move(pending_on_initialized_callback_).Run();
 }
 
-void FakeNearbyPresenceService::FinishStartScan(StatusCode status_code) {
+void FakeNearbyPresenceService::FinishStartScan(enums::StatusCode status_code) {
   CHECK(pending_on_start_scan_callback_);
   mojo::PendingRemote<ash::nearby::presence::mojom::ScanSession> remote;
   std::move(pending_on_start_scan_callback_)

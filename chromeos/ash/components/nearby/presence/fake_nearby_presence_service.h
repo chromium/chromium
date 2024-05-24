@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_FAKE_NEARBY_PRESENCE_SERVICE_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_FAKE_NEARBY_PRESENCE_SERVICE_H_
 
+#include "chromeos/ash/components/nearby/presence/enums/nearby_presence_enums.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 
 namespace ash::nearby::presence {
@@ -21,7 +22,7 @@ class FakeNearbyPresenceService : public NearbyPresenceService {
   void StartScan(
       ScanFilter scan_filter,
       ScanDelegate* scan_delegate,
-      base::OnceCallback<void(std::unique_ptr<ScanSession>, StatusCode)>
+      base::OnceCallback<void(std::unique_ptr<ScanSession>, enums::StatusCode)>
           on_start_scan_callback) override;
   void Initialize(base::OnceClosure on_initialized_callback) override;
   void UpdateCredentials() override;
@@ -29,7 +30,7 @@ class FakeNearbyPresenceService : public NearbyPresenceService {
   CreateNearbyPresenceConnectionsManager() override;
 
   void FinishInitialization();
-  void FinishStartScan(StatusCode status_code);
+  void FinishStartScan(enums::StatusCode status_code);
 
   ScanDelegate* scan_delegate() { return scan_delegate_; }
 
@@ -38,7 +39,7 @@ class FakeNearbyPresenceService : public NearbyPresenceService {
  private:
   raw_ptr<ScanDelegate> scan_delegate_;
   std::optional<ScanFilter> scan_filter_ = std::nullopt;
-  base::OnceCallback<void(std::unique_ptr<ScanSession>, StatusCode)>
+  base::OnceCallback<void(std::unique_ptr<ScanSession>, enums::StatusCode)>
       pending_on_start_scan_callback_;
   base::OnceClosure pending_on_initialized_callback_;
 };
