@@ -114,7 +114,9 @@ class InkModule {
   }
 
   // Converts `current_tool_state_` into an InkInProgressStroke. Requires
-  // `current_tool_state_` to hold a `DrawingStrokeState`.
+  // `current_tool_state_` to hold a `DrawingStrokeState`. If there is no
+  // `DrawingStrokeState`, or the state currently has no inputs, then return
+  // nullptr.
   std::unique_ptr<InkInProgressStroke> CreateInProgressStrokeFromInputs() const;
 
   const raw_ref<Client> client_;

@@ -268,14 +268,17 @@ InkModule::CreateInProgressStrokeFromInputs() const {
     return nullptr;
   }
 
+  const DrawingStrokeState& state = drawing_stroke_state();
+  if (state.ink_inputs.empty()) {
+    return nullptr;
+  }
+
   auto stroke = InkInProgressStroke::Create();
   // TODO(crbug.com/339682315): This should not fail with the wrapper.
   if (!stroke) {
     return nullptr;
   }
 
-  CHECK(is_drawing_stroke());
-  const DrawingStrokeState& state = drawing_stroke_state();
   auto input_batch = InkStrokeInputBatch::Create(state.ink_inputs);
   CHECK(input_batch);
 
