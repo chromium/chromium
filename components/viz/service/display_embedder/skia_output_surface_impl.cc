@@ -20,6 +20,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_local_storage_slot.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -1502,8 +1503,10 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
   gpu_task_sync_tokens_.clear();
   gpu_tasks_.clear();
 
-  if (event)
+  if (event) {
+    base::ScopedAllowBaseSyncPrimitives allow_wait;
     event->Wait();
+  }
 }
 
 GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(

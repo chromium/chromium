@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/command_buffer/service/shared_image_interface_in_process.h"
@@ -21,6 +22,7 @@ DisplayCompositorMemoryAndTaskController::
       gpu_task_scheduler_(std::make_unique<gpu::GpuTaskSchedulerHelper>(
           skia_dependency_->CreateSequence())) {
   DCHECK(gpu_task_scheduler_);
+  base::ScopedAllowBaseSyncPrimitives allow_wait;
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
   auto callback =
@@ -36,6 +38,7 @@ DisplayCompositorMemoryAndTaskController::
 
 DisplayCompositorMemoryAndTaskController::
     ~DisplayCompositorMemoryAndTaskController() {
+  base::ScopedAllowBaseSyncPrimitives allow_wait;
   gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
   // Make sure to destroy the SharedImageInterfaceInProcess before getting rid
   // of data structures on the gpu thread.

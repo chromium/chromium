@@ -15,6 +15,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/resolved_frame_data.h"
@@ -672,6 +673,7 @@ OverlayProcessorWebView::OverlayProcessorWebView(
                              NextCommandBufferId()),
       render_thread_sequence_(display_controller->gpu_task_scheduler()),
       frame_sink_manager_(frame_sink_manager) {
+  base::ScopedAllowBaseSyncPrimitives allow_wait;
   base::WaitableEvent event;
   render_thread_sequence_->ScheduleGpuTask(
       base::BindOnce(&OverlayProcessorWebView::CreateManagerOnRT,
