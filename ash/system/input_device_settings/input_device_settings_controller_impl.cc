@@ -1815,6 +1815,11 @@ InputDeviceSettingsControllerImpl::GetGraphicsTabletButtonConfig(
 void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     std::vector<ui::KeyboardDevice> keyboards_to_add,
     std::vector<DeviceId> keyboard_ids_to_remove) {
+  if (features::IsWelcomeExperienceEnabled()) {
+    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
+                            keyboard_ids_to_remove);
+  }
+
   for (const auto& keyboard : keyboards_to_add) {
     // Get initial settings from the pref manager and generate our local
     // storage of the device.
@@ -1833,11 +1838,6 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     DispatchKeyboardConnected(keyboard.id);
   }
 
-  if (features::IsWelcomeExperienceEnabled()) {
-    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
-                            keyboard_ids_to_remove);
-  }
-
   for (const auto id : keyboard_ids_to_remove) {
     DispatchKeyboardDisconnectedAndEraseFromList(id);
   }
@@ -1848,6 +1848,11 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
 void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
     std::vector<ui::TouchpadDevice> touchpads_to_add,
     std::vector<DeviceId> touchpad_ids_to_remove) {
+  if (features::IsWelcomeExperienceEnabled()) {
+    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
+                            touchpad_ids_to_remove);
+  }
+
   for (const auto& touchpad : touchpads_to_add) {
     auto mojom_touchpad =
         BuildMojomTouchpad(touchpad, bluetooth_devices_observer_.get());
@@ -1864,11 +1869,6 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
     DispatchTouchpadConnected(touchpad.id);
   }
 
-  if (features::IsWelcomeExperienceEnabled()) {
-    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
-                            touchpad_ids_to_remove);
-  }
-
   for (const auto id : touchpad_ids_to_remove) {
     DispatchTouchpadDisconnectedAndEraseFromList(id);
   }
@@ -1879,6 +1879,11 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
 void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     std::vector<ui::InputDevice> mice_to_add,
     std::vector<DeviceId> mouse_ids_to_remove) {
+  if (features::IsWelcomeExperienceEnabled()) {
+    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
+                            mouse_ids_to_remove);
+  }
+
   for (const auto& mouse : mice_to_add) {
     auto mojom_mouse = BuildMojomMouse(
         mouse, GetMouseCustomizationRestriction(mouse),
@@ -1894,11 +1899,6 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
 
     mice_.insert_or_assign(mouse.id, std::move(mojom_mouse));
     DispatchMouseConnected(mouse.id);
-  }
-
-  if (features::IsWelcomeExperienceEnabled()) {
-    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
-                            mouse_ids_to_remove);
   }
 
   for (const auto id : mouse_ids_to_remove) {
@@ -1929,6 +1929,11 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
 void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     std::vector<ui::InputDevice> graphics_tablets_to_add,
     std::vector<DeviceId> graphics_tablet_ids_to_remove) {
+  if (features::IsWelcomeExperienceEnabled()) {
+    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
+                            graphics_tablet_ids_to_remove);
+  }
+
   for (const auto& graphics_tablet : graphics_tablets_to_add) {
     auto mojom_graphics_tablet = BuildMojomGraphicsTablet(
         graphics_tablet,
@@ -1949,11 +1954,6 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     graphics_tablets_.insert_or_assign(graphics_tablet.id,
                                        std::move(mojom_graphics_tablet));
     DispatchGraphicsTabletConnected(graphics_tablet.id);
-  }
-
-  if (features::IsWelcomeExperienceEnabled()) {
-    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
-                            graphics_tablet_ids_to_remove);
   }
 
   for (const auto id : graphics_tablet_ids_to_remove) {
