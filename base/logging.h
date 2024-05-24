@@ -18,13 +18,14 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include <cstdio>
+
+#include "base/memory/raw_ptr.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

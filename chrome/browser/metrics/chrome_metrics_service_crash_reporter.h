@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"  // nogncheck
 
 // Stores a given system profile and registers it with the crash reporter. Must

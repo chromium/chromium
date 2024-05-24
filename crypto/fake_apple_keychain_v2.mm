@@ -4,16 +4,13 @@
 
 #include "crypto/fake_apple_keychain_v2.h"
 
-#include <vector>
-
-#if defined(LEAK_SANITIZER)
-#include <sanitizer/lsan_interface.h>
-#endif
-
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
+
+#include <algorithm>
+#include <vector>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -22,9 +19,12 @@
 #include "base/check_op.h"
 #include "base/memory/scoped_policy.h"
 #include "base/notimplemented.h"
-#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "crypto/apple_keychain_v2.h"
+
+#if defined(LEAK_SANITIZER)
+#include <sanitizer/lsan_interface.h>
+#endif
 
 namespace crypto {
 
