@@ -79,7 +79,7 @@ struct PasswordGenerationUIData;
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace device_reauth {
 class DeviceAuthenticator;
@@ -90,7 +90,7 @@ class FieldInfoManager;
 class WebAuthnCredentialsDelegate;
 class CredManController;
 class KeyboardReplacingSurfaceVisibilityController;
-}
+}  // namespace password_manager
 
 namespace webauthn {
 #if BUILDFLAG(IS_ANDROID)

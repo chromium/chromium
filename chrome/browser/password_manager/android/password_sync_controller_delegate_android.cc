@@ -59,8 +59,9 @@ void PasswordSyncControllerDelegateAndroid::OnStateChanged(
 void PasswordSyncControllerDelegateAndroid::OnSyncShutdown(
     syncer::SyncService* sync) {
   sync_observation_.Reset();
-  if (!on_sync_shutdown_)
+  if (!on_sync_shutdown_) {
     return;
+  }
   std::move(on_sync_shutdown_).Run();
 }
 

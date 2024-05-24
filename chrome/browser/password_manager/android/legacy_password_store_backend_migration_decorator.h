@@ -25,7 +25,8 @@ namespace password_manager {
 // to delegating all backend responsibilities, it is responsible for migrating
 // credentials between both backends as well as instantiating any proxy backends
 // that are used for shadowing the traffic.
-class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
+class LegacyPasswordStoreBackendMigrationDecorator
+    : public PasswordStoreBackend {
  public:
   LegacyPasswordStoreBackendMigrationDecorator(
       std::unique_ptr<PasswordStoreBackend> built_in_backend,
@@ -60,7 +61,6 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
     bool IsSyncFeatureEnabledIncludingPasswords();
 
    private:
-
     // Pref service.
     const raw_ptr<PrefService> prefs_ = nullptr;
 

@@ -41,9 +41,10 @@ bool IsCurrentUserEvicted(const PrefService* prefs) {
 
 void EvictCurrentUser(int api_error_code, PrefService* prefs) {
   if (prefs->GetBoolean(password_manager::prefs::
-                            kUnenrolledFromGoogleMobileServicesDueToErrors))
+                            kUnenrolledFromGoogleMobileServicesDueToErrors)) {
     // User is already evicted, keep the original eviction reason.
     return;
+  }
 
   prefs->SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,

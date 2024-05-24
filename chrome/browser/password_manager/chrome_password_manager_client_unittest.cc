@@ -427,11 +427,13 @@ ChromePasswordManagerClient* ChromePasswordManagerClientTest::GetClient() {
 bool ChromePasswordManagerClientTest::WasLoggingActivationMessageSent(
     bool* activation_flag) {
   base::RunLoop().RunUntilIdle();
-  if (!fake_agent_.called_set_logging_state())
+  if (!fake_agent_.called_set_logging_state()) {
     return false;
+  }
 
-  if (activation_flag)
+  if (activation_flag) {
     *activation_flag = fake_agent_.logging_state_active();
+  }
   fake_agent_.reset_data();
   return true;
 }
@@ -1072,22 +1074,22 @@ TEST_F(ChromePasswordManagerClientTest, CanShowBubbleOnURL) {
     const char* scheme;
     bool can_show_bubble;
   } kTestCases[] = {
-    {url::kHttpScheme, true},
-    {url::kHttpsScheme, true},
-    {url::kDataScheme, true},
-    {url::kBlobScheme, true},
-    {url::kFileSystemScheme, true},
+      {url::kHttpScheme, true},
+      {url::kHttpsScheme, true},
+      {url::kDataScheme, true},
+      {url::kBlobScheme, true},
+      {url::kFileSystemScheme, true},
 
-    {"invalid-scheme-i-just-made-up", false},
+      {"invalid-scheme-i-just-made-up", false},
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    {extensions::kExtensionScheme, false},
+      {extensions::kExtensionScheme, false},
 #endif
-    {url::kAboutScheme, false},
-    {content::kChromeDevToolsScheme, false},
-    {content::kChromeUIScheme, false},
-    {url::kJavaScriptScheme, false},
-    {url::kMailToScheme, false},
-    {content::kViewSourceScheme, false},
+      {url::kAboutScheme, false},
+      {content::kChromeDevToolsScheme, false},
+      {content::kChromeUIScheme, false},
+      {url::kJavaScriptScheme, false},
+      {url::kMailToScheme, false},
+      {content::kViewSourceScheme, false},
   };
 
   for (const TestCase& test_case : kTestCases) {

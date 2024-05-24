@@ -198,8 +198,9 @@ void AllPasswordsBottomSheetController::OnReauthCompleted(
 
 void AllPasswordsBottomSheetController::FillPassword(
     const std::u16string& password) {
-  if (!driver_)
+  if (!driver_) {
     return;
+  }
   driver_->FillIntoFocusedField(true, password);
   password_reuse_detection_manager_client_->OnPasswordSelected(password);
 }

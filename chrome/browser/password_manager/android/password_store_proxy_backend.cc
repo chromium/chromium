@@ -47,7 +47,6 @@ bool ShouldErrorResultInFallback(PasswordStoreBackendError error) {
   }
 }
 
-
 using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
 
 void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,

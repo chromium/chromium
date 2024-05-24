@@ -104,8 +104,9 @@ PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
           .get();
   // Incognito, guest, or system profiles doesn't have PasswordStore so
   // PasswordReuseManager shouldn't be created as well.
-  if (!store)
+  if (!store) {
     return nullptr;
+  }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);

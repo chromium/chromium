@@ -56,8 +56,9 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnSettingValueFetched(
     jboolean setting_value,
     jboolean is_part_of_migration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  if (!consumer_)
+  if (!consumer_) {
     return;
+  }
   consumer_->OnSettingValueFetched(static_cast<PasswordManagerSetting>(setting),
                                    setting_value);
 }
@@ -67,8 +68,9 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::OnSettingValueAbsent(
     jint setting,
     jboolean is_part_of_migration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  if (!consumer_)
+  if (!consumer_) {
     return;
+  }
   consumer_->OnSettingValueAbsent(static_cast<PasswordManagerSetting>(setting));
 }
 

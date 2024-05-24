@@ -15,7 +15,7 @@ class PrefService;
 namespace password_manager {
 class PasswordAffiliationSourceAdapter;
 class PasswordStoreBackend;
-}
+}  // namespace password_manager
 
 // Creates the password store backend for the profile store. Depending on
 // the platform, this can be backed by the login database, or by

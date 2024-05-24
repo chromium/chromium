@@ -459,19 +459,22 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
   // Fetch settings from the backend to align values stored in GMS Core and
   // Chrome.
   fetch_after_sync_status_change_in_progress_ = true;
-  for (PasswordManagerSetting setting : kAllPasswordSettings)
+  for (PasswordManagerSetting setting : kAllPasswordSettings) {
     awaited_settings_.insert(setting);
+  }
   FetchSettings();
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
     PasswordManagerSetting received_setting) {
-  if (!fetch_after_sync_status_change_in_progress_)
+  if (!fetch_after_sync_status_change_in_progress_) {
     return;
+  }
 
   awaited_settings_.erase(received_setting);
-  if (awaited_settings_.empty())
+  if (awaited_settings_.empty()) {
     fetch_after_sync_status_change_in_progress_ = false;
+  }
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {

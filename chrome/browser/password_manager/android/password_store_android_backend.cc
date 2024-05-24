@@ -97,8 +97,9 @@ bool MatchesRegexWithCache(std::u16string_view input,
 bool MatchesIncludedPSLAndFederation(const PasswordForm& retrieved_login,
                                      const PasswordFormDigest& form_to_match,
                                      bool include_psl) {
-  if (retrieved_login.signon_realm == form_to_match.signon_realm)
+  if (retrieved_login.signon_realm == form_to_match.signon_realm) {
     return true;
+  }
 
   if (form_to_match.scheme != retrieved_login.scheme) {
     return false;
@@ -121,8 +122,9 @@ bool MatchesIncludedPSLAndFederation(const PasswordForm& retrieved_login,
       const std::u16string psl_federated_regex = UTF8ToUTF16(
           GetRegexForPSLFederatedMatching(form_to_match.signon_realm));
       if (MatchesRegexWithCache(retrieved_login_signon_realm,
-                                psl_federated_regex))
+                                psl_federated_regex)) {
         return true;
+      }
     }
   } else if (include_federated) {
     const std::u16string federated_regex =
@@ -185,8 +187,9 @@ LoginsResultOrError JoinRetrievedLoginsOrError(
   LoginsResult joined_logins;
   for (auto& result : results) {
     // If one of retrievals ended with an error, pass on the error.
-    if (absl::holds_alternative<PasswordStoreBackendError>(result))
+    if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
       return std::move(absl::get<PasswordStoreBackendError>(result));
+    }
     LoginsResult logins = std::move(absl::get<LoginsResult>(result));
     std::move(logins.begin(), logins.end(), std::back_inserter(joined_logins));
   }
@@ -195,8 +198,9 @@ LoginsResultOrError JoinRetrievedLoginsOrError(
 
 SuccessStatus GetSuccessStatusFromError(
     const std::optional<AndroidBackendError>& error) {
-  if (!error.has_value())
+  if (!error.has_value()) {
     return SuccessStatus::kSuccess;
+  }
   switch (error.value().type) {
     case AndroidBackendErrorType::kCleanedUpWithoutResponse:
       return SuccessStatus::kCancelledTimeout;
@@ -781,8 +785,9 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
     std::vector<PasswordForm> passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   std::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
-  if (!reply.has_value())
+  if (!reply.has_value()) {
     return;  // Task cleaned up after returning from background.
+  }
 
   OnCallToGMSCoreSucceeded();
   reply->RecordMetrics(/*error=*/std::nullopt);
@@ -796,8 +801,9 @@ void PasswordStoreAndroidBackend::OnLoginsChanged(JobId job_id,
                                                   PasswordChanges changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   std::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
-  if (!reply.has_value())
+  if (!reply.has_value()) {
     return;  // Task cleaned up after returning from background.
+  }
   reply->RecordMetrics(/*error=*/std::nullopt);
   DCHECK(reply->Holds<PasswordChangesOrErrorReply>());
 
@@ -812,8 +818,9 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
                                           AndroidBackendError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   std::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
-  if (!reply.has_value())
+  if (!reply.has_value()) {
     return;  // Task cleaned up after returning from background.
+  }
   // Set pref to track users who received GMSCore error.
   prefs_->SetBoolean(prefs::kUserReceivedGMSCoreError, true);
 
@@ -894,8 +901,9 @@ std::optional<PasswordStoreAndroidBackend::JobReturnHandler>
 PasswordStoreAndroidBackend::GetAndEraseJob(JobId job_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   auto iter = request_for_job_.find(job_id);
-  if (iter == request_for_job_.end())
+  if (iter == request_for_job_.end()) {
     return std::nullopt;
+  }
   JobReturnHandler reply = std::move(iter->second);
   request_for_job_.erase(iter);
   return reply;

@@ -133,8 +133,10 @@ class CapturedSitesPasswordManagerBrowserTest
 
   bool WaitForSaveFallback() override {
     BubbleObserver bubble_observer(WebContents());
-    if (bubble_observer.WaitForFallbackForSaving(kWaitForSaveFallbackInterval))
+    if (bubble_observer.WaitForFallbackForSaving(
+            kWaitForSaveFallbackInterval)) {
       return true;
+    }
     ADD_FAILURE() << "Chrome did not show the save fallback icon!";
     return false;
   }
@@ -285,8 +287,9 @@ IN_PROC_BROWSER_TEST_P(CapturedSitesPasswordManagerBrowserTest, Recipe) {
   bool test_completed = recipe_replayer()->ReplayTest(
       GetParam().capture_file_path, GetParam().recipe_file_path,
       captured_sites_test_utils::GetCommandFilePath());
-  if (!test_completed)
+  if (!test_completed) {
     ADD_FAILURE() << "Full execution was unable to complete.";
+  }
 }
 
 // This test is called with a dynamic list and may be empty during the Autofill

@@ -148,8 +148,9 @@ CustomManagePasswordsUIController::CustomManagePasswordsUIController(
 
 void CustomManagePasswordsUIController::WaitForState(
     password_manager::ui::State target_state) {
-  if (IsTargetStateObserved(target_state, GetState()))
+  if (IsTargetStateObserved(target_state, GetState())) {
     return;
+  }
 
   base::RunLoop run_loop;
   target_state_ = target_state;
@@ -159,8 +160,9 @@ void CustomManagePasswordsUIController::WaitForState(
 
 void CustomManagePasswordsUIController::WaitForFallbackForSaving() {
   if (!was_prompt_automatically_shown_ &&
-      GetState() == password_manager::ui::PENDING_PASSWORD_STATE)
+      GetState() == password_manager::ui::PENDING_PASSWORD_STATE) {
     return;
+  }
 
   base::RunLoop run_loop;
   wait_for_fallback_ = true;
@@ -172,8 +174,9 @@ bool CustomManagePasswordsUIController::WaitForFallbackForSaving(
     const base::TimeDelta timeout = base::TimeDelta::Max()) {
   // If the browser is currently showing the save fallback, return true
   // without waiting.
-  if (BubbleIsManualFallbackForSaving())
+  if (BubbleIsManualFallbackForSaving()) {
     return true;
+  }
 
   base::RunLoop run_loop;
   wait_for_fallback_ = true;
@@ -206,8 +209,9 @@ void CustomManagePasswordsUIController::OnShowManualFallbackForSaving(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager,
     bool has_generated_password,
     bool is_update) {
-  if (wait_for_fallback_)
+  if (wait_for_fallback_) {
     QuitRunLoop();
+  }
 
   ManagePasswordsUIController::OnShowManualFallbackForSaving(
       std::move(form_manager), has_generated_password, is_update);
@@ -273,11 +277,13 @@ bool CustomManagePasswordsUIController::IsTargetStateObserved(
 
 void CustomManagePasswordsUIController::ProcessStateExpectations(
     const password_manager::ui::State current_state) {
-  if (!target_state_)
+  if (!target_state_) {
     return;
+  }
 
-  if (IsTargetStateObserved(*target_state_, current_state))
+  if (IsTargetStateObserved(*target_state_, current_state)) {
     QuitRunLoop();
+  }
 }
 
 void CustomManagePasswordsUIController::QuitRunLoop() {
@@ -302,12 +308,12 @@ BubbleObserver::BubbleObserver(content::WebContents* web_contents)
 
 bool BubbleObserver::IsSavePromptAvailable() const {
   return passwords_ui_controller_->GetState() ==
-      password_manager::ui::PENDING_PASSWORD_STATE;
+         password_manager::ui::PENDING_PASSWORD_STATE;
 }
 
 bool BubbleObserver::IsUpdatePromptAvailable() const {
   return passwords_ui_controller_->GetState() ==
-      password_manager::ui::PENDING_PASSWORD_UPDATE_STATE;
+         password_manager::ui::PENDING_PASSWORD_UPDATE_STATE;
 }
 
 bool BubbleObserver::IsDefaultStoreChangedPromptAvailable() const {
@@ -316,16 +322,18 @@ bool BubbleObserver::IsDefaultStoreChangedPromptAvailable() const {
 }
 
 bool BubbleObserver::IsSavePromptShownAutomatically() const {
-  if (!IsSavePromptAvailable())
+  if (!IsSavePromptAvailable()) {
     return false;
+  }
   return static_cast<CustomManagePasswordsUIController*>(
              passwords_ui_controller_)
       ->was_prompt_automatically_shown();
 }
 
 bool BubbleObserver::IsUpdatePromptShownAutomatically() const {
-  if (!IsUpdatePromptAvailable())
+  if (!IsUpdatePromptAvailable()) {
     return false;
+  }
   return static_cast<CustomManagePasswordsUIController*>(
              passwords_ui_controller_)
       ->was_prompt_automatically_shown();

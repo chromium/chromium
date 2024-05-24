@@ -91,8 +91,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 
   auto network_context_getter = base::BindRepeating(
       [](Profile* profile) -> network::mojom::NetworkContext* {
-        if (!g_browser_process->profile_manager()->IsValidProfile(profile))
+        if (!g_browser_process->profile_manager()->IsValidProfile(profile)) {
           return nullptr;
+        }
         return profile->GetDefaultStoragePartition()->GetNetworkContext();
       },
       profile);

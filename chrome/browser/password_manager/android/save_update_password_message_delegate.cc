@@ -253,17 +253,17 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
       GetPrimaryButtonTextId(update_password, use_followup_button)));
 
-    message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
-        IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
-    message_->DisableIconTint();
+  message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
+      IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
+  message_->DisableIconTint();
 
-    // The cog button is always shown for the save message and for the update
-    // message when there is just one password stored for the web site. When
-    // there are multiple credentials stored, the dialog will be called anyway
-    // from the followup button, so there are no options to put under the cog.
-    if (!update_password || !use_followup_button) {
-      SetupCogMenu(message_, update_password);
-    }
+  // The cog button is always shown for the save message and for the update
+  // message when there is just one password stored for the web site. When
+  // there are multiple credentials stored, the dialog will be called anyway
+  // from the followup button, so there are no options to put under the cog.
+  if (!update_password || !use_followup_button) {
+    SetupCogMenu(message_, update_password);
+  }
 }
 
 void SaveUpdatePasswordMessageDelegate::SetupCogMenu(
@@ -338,10 +338,12 @@ SaveUpdatePasswordMessageDelegate::GetAccountForMessageDescription(
 int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
     bool update_password,
     bool use_followup_button_text) {
-  if (!update_password)
+  if (!update_password) {
     return IDS_PASSWORD_MANAGER_SAVE_BUTTON;
-  if (!use_followup_button_text)
+  }
+  if (!use_followup_button_text) {
     return IDS_PASSWORD_MANAGER_UPDATE_BUTTON;
+  }
   return IDS_PASSWORD_MANAGER_CONTINUE_BUTTON;
 }
 
@@ -428,8 +430,9 @@ void SaveUpdatePasswordMessageDelegate::DisplayEditDialog(
 
   // Password edit dialog factory method can return nullptr when web_contents
   // is not attached to a window. See crbug.com/1049090 for details.
-  if (!password_edit_dialog_)
+  if (!password_edit_dialog_) {
     return;
+  }
 
   std::vector<std::u16string> usernames;
   GetDisplayUsernames(&usernames);

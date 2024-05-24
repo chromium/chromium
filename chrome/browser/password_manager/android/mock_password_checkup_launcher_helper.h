@@ -7,7 +7,6 @@
 
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/profiles/profile.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/android/window_android.h"
 

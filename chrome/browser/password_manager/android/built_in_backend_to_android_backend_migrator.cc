@@ -279,14 +279,16 @@ void BuiltInBackendToAndroidBackendMigrator::StartAccountMigrationIfNecessary(
       base::Time::Now() -
       base::Time::FromTimeT(prefs_->GetDouble(
           password_manager::prefs::kTimeOfLastMigrationAttempt));
-  if (time_passed_since_last_migration_attempt < kMigrationThreshold)
+  if (time_passed_since_last_migration_attempt < kMigrationThreshold) {
     return;
+  }
 
   // Do not migrate if a migration is already running. By the time it ends, the
   // two backends will be identical, therefore the second migration won't be
   // needed.
-  if (migration_in_progress_type_ != MigrationType::kNone)
+  if (migration_in_progress_type_ != MigrationType::kNone) {
     return;
+  }
 
   PrepareForMigration(type);
 }

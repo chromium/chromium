@@ -16,19 +16,22 @@ PasswordsNavigationObserver::~PasswordsNavigationObserver() = default;
 
 void PasswordsNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
+  if (!navigation_handle->HasCommitted()) {
     return;
+  }
 
-  if (quit_on_entry_committed_)
+  if (quit_on_entry_committed_) {
     waiter_helper_.OnEvent();
+  }
 }
 
 void PasswordsNavigationObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   if (!wait_for_path_.empty()) {
-    if (validated_url.path() == wait_for_path_)
+    if (validated_url.path() == wait_for_path_) {
       waiter_helper_.OnEvent();
+    }
   } else if (!render_frame_host->GetParent()) {
     waiter_helper_.OnEvent();
   }

@@ -85,16 +85,19 @@ UnsyncedCredentialsDeletionNotifierImpl::
 void UnsyncedCredentialsDeletionNotifierImpl::Notify(
     std::vector<password_manager::PasswordForm> credentials) {
   Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  if (!browser)
+  if (!browser) {
     return;
+  }
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   auto* ui_controller =
       ManagePasswordsUIController::FromWebContents(web_contents);
-  if (!ui_controller)
+  if (!ui_controller) {
     return;
+  }
   ui_controller->NotifyUnsyncedCredentialsWillBeDeleted(std::move(credentials));
 }
 
@@ -143,8 +146,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 
   auto network_context_getter = base::BindRepeating(
       [](Profile* profile) -> network::mojom::NetworkContext* {
-        if (!g_browser_process->profile_manager()->IsValidProfile(profile))
+        if (!g_browser_process->profile_manager()->IsValidProfile(profile)) {
           return nullptr;
+        }
         return profile->GetDefaultStoragePartition()->GetNetworkContext();
       },
       profile);

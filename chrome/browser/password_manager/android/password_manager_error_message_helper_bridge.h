@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_HELPER_BRIDGE_H_
 
 #include <jni.h>
+
 #include "content/public/browser/web_contents.h"
 
 class PasswordManagerErrorMessageHelperBridge {

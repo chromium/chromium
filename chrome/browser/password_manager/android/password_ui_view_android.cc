@@ -139,7 +139,7 @@ ScopedJavaLocalRef<jobject> PasswordUIViewAndroid::GetSavedPasswordEntry(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  if ((size_t)index >= passwords_.size()) {
+  if (static_cast<size_t>(index) >= passwords_.size()) {
     return Java_PasswordUIView_createSavedPasswordEntry(
         env, std::string(), std::u16string(), std::u16string());
   }
@@ -153,8 +153,9 @@ std::string PasswordUIViewAndroid::GetSavedPasswordException(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  if ((size_t)index >= blocked_sites_.size())
+  if (static_cast<size_t>(index) >= blocked_sites_.size()) {
     return "";
+  }
   return password_manager::GetShownOrigin(blocked_sites_[index]);
 }
 
@@ -163,8 +164,9 @@ void PasswordUIViewAndroid::HandleRemoveSavedPasswordEntry(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  if ((size_t)index >= passwords_.size())
+  if (static_cast<size_t>(index) >= passwords_.size()) {
     return;
+  }
   if (saved_passwords_presenter_.RemoveCredential(passwords_[index])) {
     base::RecordAction(
         base::UserMetricsAction("PasswordManager_RemoveSavedPassword"));
@@ -176,8 +178,9 @@ void PasswordUIViewAndroid::HandleRemoveSavedPasswordException(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  if ((size_t)index >= passwords_.size())
+  if (static_cast<size_t>(index) >= passwords_.size()) {
     return;
+  }
   if (saved_passwords_presenter_.RemoveCredential(passwords_[index])) {
     base::RecordAction(
         base::UserMetricsAction("PasswordManager_RemovePasswordException"));
@@ -235,7 +238,8 @@ void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
     const base::android::JavaRef<jobject>& settings_launcher,
     int index,
     const JavaParamRef<jobject>& obj) {
-  if ((size_t)index >= passwords_.size() || credential_edit_bridge_) {
+  if (static_cast<size_t>(index) >= passwords_.size() ||
+      credential_edit_bridge_) {
     return;
   }
   bool is_using_account_store = passwords_[index].stored_in.contains(
@@ -257,7 +261,8 @@ void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
     const base::android::JavaRef<jobject>& settings_launcher,
     int index,
     const JavaParamRef<jobject>& obj) {
-  if ((size_t)index >= blocked_sites_.size() || credential_edit_bridge_) {
+  if (static_cast<size_t>(index) >= blocked_sites_.size() ||
+      credential_edit_bridge_) {
     return;
   }
   credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(

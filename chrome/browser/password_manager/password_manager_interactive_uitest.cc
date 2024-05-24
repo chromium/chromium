@@ -499,10 +499,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
               ";";
     ASSERT_TRUE(content::ExecJs(WebContents(), submit));
 
-    if (all_fields_cleared)
+    if (all_fields_cleared) {
       EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
-    else
+    } else {
       EXPECT_FALSE(prompt_observer->IsUpdatePromptShownAutomatically());
+    }
 
     if (all_fields_cleared) {
       // We emulate that the user clicks "Update" button.

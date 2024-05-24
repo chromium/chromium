@@ -185,8 +185,9 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     // ContentCredentialManager should have closed the underlying interface
     // connection in response to DidCommitProvisionalLoad in Step 3, and the
     // method call should be ignored.
-    if (!client->was_store_ever_called())
+    if (!client->was_store_ever_called()) {
       return;
+    }
 
     BubbleObserver prompt_observer(WebContents());
     prompt_observer.WaitForAutomaticSavePrompt();
@@ -1135,8 +1136,9 @@ void CredentialManagerAvatarTest::AddPasswordForURL(const GURL& url) {
 }
 
 void CredentialManagerAvatarTest::WaitForAvatarCounter(size_t expected) {
-  if (avatar_request_counter_ == expected)
+  if (avatar_request_counter_ == expected) {
     return;
+  }
   // The logic doesn't support increments by more than one.
   EXPECT_EQ(expected, avatar_request_counter_ + 1);
   base::RunLoop loop;

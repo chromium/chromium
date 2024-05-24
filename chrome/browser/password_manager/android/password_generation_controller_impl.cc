@@ -105,8 +105,9 @@ void PasswordGenerationControllerImpl::ShowManualGenerationDialog(
     const password_manager::ContentPasswordManagerDriver* target_frame_driver,
     const autofill::password_generation::PasswordGenerationUIData& ui_data) {
   if (!IsActiveFrameDriver(target_frame_driver) ||
-      !manual_generation_requested_)
+      !manual_generation_requested_) {
     return;
+  }
   generation_element_data_ =
       std::make_unique<PasswordGenerationElementData>(ui_data);
   ShowBottomSheet(PasswordGenerationType::kManual);
@@ -123,8 +124,9 @@ void PasswordGenerationControllerImpl::FocusedInputChanged(
     return;
   }
   ResetFocusState();
-  if (focused_field_type == FocusedFieldType::kFillablePasswordField)
+  if (focused_field_type == FocusedFieldType::kFillablePasswordField) {
     active_frame_driver_ = std::move(driver);
+  }
 }
 
 void PasswordGenerationControllerImpl::OnGenerationRequested(
@@ -142,8 +144,9 @@ void PasswordGenerationControllerImpl::GeneratedPasswordAccepted(
     const std::u16string& password,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver,
     PasswordGenerationType type) {
-  if (!driver)
+  if (!driver) {
     return;
+  }
   password_manager::metrics_util::LogGenerationDialogChoice(
       GenerationDialogChoice::kAccepted, type);
   driver->GeneratedPasswordAccepted(
@@ -310,16 +313,18 @@ void PasswordGenerationControllerImpl::OnTouchToFillForGenerationDismissed() {
 
 bool PasswordGenerationControllerImpl::IsActiveFrameDriver(
     const password_manager::ContentPasswordManagerDriver* driver) const {
-  if (!active_frame_driver_)
+  if (!active_frame_driver_) {
     return false;
+  }
   return active_frame_driver_.get() == driver;
 }
 
 void PasswordGenerationControllerImpl::ResetFocusState() {
-  if (manual_filling_controller_)
+  if (manual_filling_controller_) {
     manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
         ShouldShowAction(false),
         autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
+  }
   active_frame_driver_.reset();
   generation_element_data_.reset();
   manual_generation_requested_ = false;

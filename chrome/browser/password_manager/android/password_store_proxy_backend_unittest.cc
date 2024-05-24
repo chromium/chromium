@@ -117,9 +117,7 @@ class PasswordStoreProxyBackendBaseTest : public testing::Test {
         prefs::kEmptyProfileStoreLoginDatabase, true);
   }
 
-  void SetUp() override {
-    proxy_backend_ = CreateProxyBackend();
-  }
+  void SetUp() override { proxy_backend_ = CreateProxyBackend(); }
 
   virtual std::unique_ptr<PasswordStoreProxyBackend> CreateProxyBackend() {
     auto built_in_backend =
@@ -1028,10 +1026,8 @@ INSTANTIATE_TEST_SUITE_P(
     PasswordStoreProxyBackendBaseTest,
     PasswordStoreProxyBackendTestWithErrorsForFallbacks,
     testing::Values(
-        FallbackParam{.error = kUnrecoverableError,
-                      .should_fallback = true},
-        FallbackParam{.error = kRecoverableError,
-                      .should_fallback = false}),
+        FallbackParam{.error = kUnrecoverableError, .should_fallback = true},
+        FallbackParam{.error = kRecoverableError, .should_fallback = false}),
     [](const ::testing::TestParamInfo<FallbackParam>& info) {
       if (info.param.error == kUnrecoverableError) {
         return "Unrecoverable";

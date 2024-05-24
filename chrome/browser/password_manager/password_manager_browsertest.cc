@@ -251,8 +251,9 @@ GURL GetFileURL(const char* filename) {
 std::unique_ptr<net::test_server::HttpResponse> HandleTestAuthRequest(
     const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(request.relative_url, "/basic_auth",
-                        base::CompareCase::SENSITIVE))
+                        base::CompareCase::SENSITIVE)) {
     return nullptr;
+  }
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   if (base::Contains(request.headers, "Authorization")) {
     http_response->set_code(net::HTTP_OK);
@@ -602,8 +603,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptForActionMutation) {
   ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
-    if (message == "\"XHR_FINISHED\"")
+    if (message == "\"XHR_FINISHED\"") {
       break;
+    }
   }
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
@@ -750,8 +752,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
-    if (message == "\"XHR_FINISHED\"")
+    if (message == "\"XHR_FINISHED\"") {
       break;
+    }
   }
 
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
@@ -780,8 +783,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
-    if (message == "\"XHR_FINISHED\"")
+    if (message == "\"XHR_FINISHED\"") {
       break;
+    }
   }
 
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
@@ -805,8 +809,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
-    if (message == "\"XHR_FINISHED\"")
+    if (message == "\"XHR_FINISHED\"") {
       break;
+    }
   }
 
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
@@ -831,8 +836,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
-    if (message == "\"XHR_FINISHED\"")
+    if (message == "\"XHR_FINISHED\"") {
       break;
+    }
   }
 
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
@@ -881,8 +887,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
-    if (message == "\"FETCH_FINISHED\"")
+    if (message == "\"FETCH_FINISHED\"") {
       break;
+    }
   }
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
@@ -913,8 +920,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   std::string message;
 
   while (message_queue.WaitForMessage(&message)) {
-    if (message == "\"FETCH_FINISHED\"")
+    if (message == "\"FETCH_FINISHED\"") {
       break;
+    }
   }
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
@@ -941,8 +949,9 @@ IN_PROC_BROWSER_TEST_F(
 
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
-    if (message == "\"FETCH_FINISHED\"")
+    if (message == "\"FETCH_FINISHED\"") {
       break;
+    }
   }
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
@@ -969,8 +978,9 @@ IN_PROC_BROWSER_TEST_F(
 
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
-    if (message == "\"FETCH_FINISHED\"")
+    if (message == "\"FETCH_FINISHED\"") {
       break;
+    }
   }
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
@@ -2214,8 +2224,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
-    if (message == "\"SUBMISSION_FINISHED\"")
+    if (message == "\"SUBMISSION_FINISHED\"") {
       break;
+    }
   }
 
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
@@ -4421,8 +4432,9 @@ class MockPrerenderPasswordManagerDriver
  private:
   void RemoveWaitType(uint32_t arrived) {
     wait_type_ &= ~arrived;
-    if (wait_type_ == WAIT_FOR_NOTHING && quit_closure_)
+    if (wait_type_ == WAIT_FOR_NOTHING && quit_closure_) {
       std::move(quit_closure_).Run();
+    }
   }
   base::OnceClosure quit_closure_;
   uint32_t wait_type_ = WAIT_FOR_NOTHING;

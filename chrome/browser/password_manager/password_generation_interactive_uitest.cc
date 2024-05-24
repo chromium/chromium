@@ -198,8 +198,9 @@ class PasswordGenerationInteractiveTest
   }
 
   void WaitForGenerationPopupShowing() {
-    if (GenerationPopupShowing())
+    if (GenerationPopupShowing()) {
       return;
+    }
     observer_.WaitForStatusChange();
     EXPECT_TRUE(GenerationPopupShowing());
   }

@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 
 #include <jni.h>
+
 #include <cstdint>
 #include <utility>
 

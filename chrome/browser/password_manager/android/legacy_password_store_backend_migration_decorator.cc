@@ -189,9 +189,9 @@ void LegacyPasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
                                            forms);
 }
 
-void LegacyPasswordStoreBackendMigrationDecorator::GetGroupedMatchingLoginsAsync(
-    const PasswordFormDigest& form_digest,
-    LoginsOrErrorReply callback) {
+void LegacyPasswordStoreBackendMigrationDecorator::
+    GetGroupedMatchingLoginsAsync(const PasswordFormDigest& form_digest,
+                                  LoginsOrErrorReply callback) {
   active_backend_->GetGroupedMatchingLoginsAsync(std::move(form_digest),
                                                  std::move(callback));
 }
@@ -238,9 +238,10 @@ void LegacyPasswordStoreBackendMigrationDecorator::
       std::move(callback));
 }
 
-void LegacyPasswordStoreBackendMigrationDecorator::DisableAutoSignInForOriginsAsync(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-    base::OnceClosure completion) {
+void LegacyPasswordStoreBackendMigrationDecorator::
+    DisableAutoSignInForOriginsAsync(
+        const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+        base::OnceClosure completion) {
   active_backend_->DisableAutoSignInForOriginsAsync(origin_filter,
                                                     std::move(completion));
 }
@@ -259,8 +260,9 @@ void LegacyPasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_settings_helper_.CachePasswordSyncSettingOnStartup(sync_service);
   active_backend_->OnSyncServiceInitialized(sync_service);
-  if (migrator_)
+  if (migrator_) {
     migrator_->OnSyncServiceInitialized(sync_service);
+  }
 }
 
 void LegacyPasswordStoreBackendMigrationDecorator::

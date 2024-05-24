@@ -16,8 +16,9 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
     StartUpdateAccountCredentialsFlow(content::WebContents* web_contents) {
   ui::WindowAndroid* window_android =
       web_contents->GetNativeView()->GetWindowAndroid();
-  if (window_android == nullptr)
+  if (window_android == nullptr) {
     return;
+  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 

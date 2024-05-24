@@ -36,12 +36,12 @@ void PasswordManagerInteractiveTestBase::FillElementWithValue(
                          element_id.c_str())));
   for (char16_t character : value) {
     ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
-    const ui::PrintableCodeEntry* code_entry = base::ranges::find_if(
-        ui::kPrintableCodeMap,
-        [character](const ui::PrintableCodeEntry& entry) {
-          return entry.character[0] == character ||
-                 entry.character[1] == character;
-        });
+    const ui::PrintableCodeEntry* code_entry =
+        base::ranges::find_if(ui::kPrintableCodeMap,
+                              [character](const ui::PrintableCodeEntry& entry) {
+                                return entry.character[0] == character ||
+                                       entry.character[1] == character;
+                              });
     ASSERT_TRUE(code_entry != std::end(ui::kPrintableCodeMap));
     bool shift = code_entry->character[1] == character;
     ui::DomCode dom_code = code_entry->dom_code;
@@ -110,8 +110,9 @@ void PasswordManagerInteractiveTestBase::VerifyPasswordIsSavedAndFilled(
   PasswordsNavigationObserver observer(WebContents());
   const char kUsername[] = "user";
   const char kPassword[] = "123";
-  if (!username_id.empty())
+  if (!username_id.empty()) {
     FillElementWithValue(username_id, kUsername);
+  }
   FillElementWithValue(password_id, kPassword);
   ASSERT_TRUE(content::ExecJs(RenderFrameHost(), submission_script));
   ASSERT_TRUE(observer.Wait());
@@ -132,8 +133,9 @@ void PasswordManagerInteractiveTestBase::VerifyPasswordIsSavedAndFilled(
       WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(1, 1));
 
   // Wait until that interaction causes the password value to be revealed.
-  if (!username_id.empty())
+  if (!username_id.empty()) {
     WaitForElementValue(username_id, kUsername);
+  }
   WaitForElementValue(password_id, kPassword);
 }
 

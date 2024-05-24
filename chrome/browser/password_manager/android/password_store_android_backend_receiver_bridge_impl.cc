@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge_impl.h"
 
 #include <jni.h>
+
 #include <cstdint>
 
 #include "base/android/jni_android.h"
