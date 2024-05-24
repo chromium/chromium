@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -19,7 +20,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -188,7 +188,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override;
 
   // SurfaceManagerDelegate implementation:
-  base::StringPiece GetFrameSinkDebugLabel(
+  std::string_view GetFrameSinkDebugLabel(
       const FrameSinkId& frame_sink_id) const override;
   void AggregatedFrameSinksChanged() override;
 

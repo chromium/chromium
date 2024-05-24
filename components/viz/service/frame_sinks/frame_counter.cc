@@ -6,12 +6,12 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 
@@ -33,7 +33,7 @@ FrameCounter::~FrameCounter() = default;
 void FrameCounter::AddFrameSink(const FrameSinkId& frame_sink_id,
                                 mojom::CompositorFrameSinkType type,
                                 bool is_root,
-                                base::StringPiece debug_label) {
+                                std::string_view debug_label) {
   DCHECK(!base::Contains(frame_sink_data_, frame_sink_id));
 
   auto per_sink_data = mojom::FrameCountingPerSinkData::New(
@@ -88,7 +88,7 @@ void FrameCounter::SetFrameSinkType(const FrameSinkId& frame_sink_id,
 }
 
 void FrameCounter::SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,
-                                          base::StringPiece debug_label) {
+                                          std::string_view debug_label) {
   // SetFrameSinkDebugLabel could happen before a frame sink is created. Ignore
   // the call and the debug label info will be added when AddFrameSink is
   // called.

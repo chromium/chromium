@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -1686,7 +1687,7 @@ gpu::Mailbox SkiaOutputSurfaceImpl::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     RenderPassAlphaType alpha_type,
     uint32_t usage,
-    base::StringPiece debug_label,
+    std::string_view debug_label,
     gpu::SurfaceHandle surface_handle) {
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
 

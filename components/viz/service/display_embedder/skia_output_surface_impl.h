@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -169,7 +170,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                                  const gfx::ColorSpace& color_space,
                                  RenderPassAlphaType alpha_type,
                                  uint32_t usage,
-                                 base::StringPiece debug_label,
+                                 std::string_view debug_label,
                                  gpu::SurfaceHandle surface_handle) override;
   gpu::Mailbox CreateSolidColorSharedImage(
       const SkColor4f& color,

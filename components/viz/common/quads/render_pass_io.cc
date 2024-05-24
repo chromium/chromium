@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -174,7 +175,7 @@ bool SkColor4fFromDict(const base::Value::Dict& dict, SkColor4f* color) {
 // Many quads now store color as an SkColor4f, but older logs will still store
 // SkColors (which are ints). For backward compatibility's sake, read either.
 bool ColorFromDict(const base::Value::Dict& dict,
-                   base::StringPiece key,
+                   std::string_view key,
                    SkColor4f* output_color) {
   const base::Value::Dict* color_key = dict.FindDict(key);
   SkColor4f color_4f;

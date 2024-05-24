@@ -5,6 +5,7 @@
 #include "components/viz/service/display/frame_rate_decider.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
@@ -64,9 +65,9 @@ class FrameRateDeciderTest : public testing::Test,
   }
 
   // SurfaceManagerDelegate implementation.
-  base::StringPiece GetFrameSinkDebugLabel(
+  std::string_view GetFrameSinkDebugLabel(
       const FrameSinkId& frame_sink_id) const override {
-    return base::StringPiece();
+    return std::string_view();
   }
   void AggregatedFrameSinksChanged() override {}
 

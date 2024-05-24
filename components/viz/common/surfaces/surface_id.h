@@ -10,6 +10,7 @@
 #include <compare>
 #include <iosfwd>
 #include <string>
+#include <string_view>
 
 #include "base/format_macros.h"
 #include "base/hash/hash.h"
@@ -61,7 +62,7 @@ class VIZ_COMMON_EXPORT SurfaceId {
 
   std::string ToString() const;
 
-  std::string ToString(base::StringPiece frame_sink_debug_label) const;
+  std::string ToString(std::string_view frame_sink_debug_label) const;
 
   // Returns whether this SurfaceId was generated after |other|.
   bool IsNewerThan(const SurfaceId& other) const;

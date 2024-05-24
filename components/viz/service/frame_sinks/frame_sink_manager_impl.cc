@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -445,12 +446,12 @@ void FrameSinkManagerImpl::OnAggregatedHitTestRegionListUpdated(
   }
 }
 
-base::StringPiece FrameSinkManagerImpl::GetFrameSinkDebugLabel(
+std::string_view FrameSinkManagerImpl::GetFrameSinkDebugLabel(
     const FrameSinkId& frame_sink_id) const {
   auto it = frame_sink_data_.find(frame_sink_id);
   if (it != frame_sink_data_.end())
     return it->second.debug_label;
-  return base::StringPiece();
+  return std::string_view();
 }
 
 void FrameSinkManagerImpl::AggregatedFrameSinksChanged() {

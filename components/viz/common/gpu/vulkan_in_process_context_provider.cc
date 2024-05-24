@@ -4,6 +4,7 @@
 
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 
+#include <string_view>
 #include <utility>
 
 #include "gpu/vulkan/buildflags.h"
@@ -92,7 +93,7 @@ bool VulkanInProcessContextProvider::Initialize(const gpu::GPUInfo* gpu_info,
                                         .enabled_instance_extensions;
 
   uint32_t flags = gpu::VulkanDeviceQueue::GRAPHICS_QUEUE_FLAG;
-  constexpr base::StringPiece surface_extension_name(
+  constexpr std::string_view surface_extension_name(
       VK_KHR_SURFACE_EXTENSION_NAME);
   for (const auto* extension : instance_extensions) {
     if (surface_extension_name == extension) {

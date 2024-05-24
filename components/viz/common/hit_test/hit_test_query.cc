@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/stack.h"
@@ -35,7 +36,7 @@ bool CheckChildCount(int32_t child_count, size_t child_count_max) {
 }
 
 const std::string GetFlagNames(uint32_t flag) {
-  std::vector<base::StringPiece> names;
+  std::vector<std::string_view> names;
 
   if (flag & kHitTestMine)
     names.emplace_back("Mine");
@@ -56,7 +57,7 @@ const std::string GetFlagNames(uint32_t flag) {
 }
 
 const std::string GetAsyncHitTestReasons(uint32_t async_hit_test_reasons) {
-  std::vector<base::StringPiece> reasons;
+  std::vector<std::string_view> reasons;
 
   if (async_hit_test_reasons & kOverlappedRegion)
     reasons.emplace_back("OverlappedRegion");

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -424,7 +425,7 @@ class SkiaOutputSurfaceImplOnGpu
   CreateSharedImageRepresentationSkia(SharedImageFormat format,
                                       const gfx::Size& size,
                                       const gfx::ColorSpace& color_space,
-                                      base::StringPiece debug_label);
+                                      std::string_view debug_label);
 
   // Helper for `CopyOutputNV12()` & `CopyOutputRGBA()` methods, renders
   // |surface| into |dest_surface|'s canvas, cropping and scaling the results

@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/test/bind.h"
@@ -149,7 +150,7 @@ class MockedSkiaOutputSurface : public FakeSkiaOutputSurface {
                             const gfx::ColorSpace& color_space,
                             RenderPassAlphaType alpha_type,
                             uint32_t usage,
-                            base::StringPiece debug_label,
+                            std::string_view debug_label,
                             gpu::SurfaceHandle surface_handle));
   MOCK_METHOD1(DestroySharedImage, void(const gpu::Mailbox& mailbox));
 };

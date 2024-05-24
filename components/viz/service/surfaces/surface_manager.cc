@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -465,7 +466,7 @@ void SurfaceManager::ExpireOldTemporaryReferences() {
       // The temporary reference has existed for more than 10 seconds, a surface
       // reference should have replaced it by now. To avoid permanently leaking
       // memory delete the temporary reference.
-      base::StringPiece frame_sink_debug_label;
+      std::string_view frame_sink_debug_label;
       if (delegate_) {
         frame_sink_debug_label =
             delegate_->GetFrameSinkDebugLabel(surface_id.frame_sink_id());

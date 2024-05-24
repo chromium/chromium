@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "build/build_config.h"
@@ -212,7 +213,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                          const gfx::ColorSpace& color_space,
                                          RenderPassAlphaType alpha_type,
                                          uint32_t usage,
-                                         base::StringPiece debug_label,
+                                         std::string_view debug_label,
                                          gpu::SurfaceHandle surface_handle) = 0;
 
   // Enqueue a GPU task to create a 1x1 shared image of the specified color.

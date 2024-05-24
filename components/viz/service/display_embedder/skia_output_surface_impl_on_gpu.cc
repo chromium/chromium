@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -157,7 +158,7 @@ base::RepeatingCallback<void(Args...)> CreateSafeRepeatingCallback(
                              callback);
 }
 
-void FailedSkiaFlush(base::StringPiece msg) {
+void FailedSkiaFlush(std::string_view msg) {
   static auto* kCrashKey = base::debug::AllocateCrashKeyString(
       "sk_flush_failed", base::debug::CrashKeySize::Size64);
   base::debug::SetCrashKeyString(kCrashKey, msg);
@@ -819,7 +820,7 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
     SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
-    base::StringPiece debug_label) {
+    std::string_view debug_label) {
   // The SharedImage created here will serve as the destination of a
   // CopyOutputRequest and will eventually make it back to the client
   // that issued that request. Thus, the usage here needs to capture the variety

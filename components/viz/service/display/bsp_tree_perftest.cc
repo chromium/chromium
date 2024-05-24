@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/service/display/bsp_tree.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -12,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
@@ -23,7 +24,6 @@
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/transform_node.h"
-#include "components/viz/service/display/bsp_tree.h"
 #include "components/viz/service/display/draw_polygon.h"
 #include "components/viz/test/paths.h"
 #include "testing/perf/perf_result_reporter.h"
