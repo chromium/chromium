@@ -203,7 +203,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rustc_version:0.4.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."rustversion:1.0.16"]
+[policy."rustversion:1.0.17"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."ryu:1.0.18"]

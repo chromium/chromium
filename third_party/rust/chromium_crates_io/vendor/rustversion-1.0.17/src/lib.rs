@@ -145,7 +145,7 @@
 //!
 //! <br>
 
-#![doc(html_root_url = "https://docs.rs/rustversion/1.0.16")]
+#![doc(html_root_url = "https://docs.rs/rustversion/1.0.17")]
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
@@ -183,7 +183,11 @@ use crate::error::Error;
 use crate::version::Version;
 use proc_macro::TokenStream;
 
+#[cfg(not(host_os = "windows"))]
 const RUSTVERSION: Version = include!(concat!(env!("OUT_DIR"), "/version.expr"));
+
+#[cfg(host_os = "windows")]
+const RUSTVERSION: Version = include!(concat!(env!("OUT_DIR"), "\\version.expr"));
 
 #[proc_macro_attribute]
 pub fn stable(args: TokenStream, input: TokenStream) -> TokenStream {

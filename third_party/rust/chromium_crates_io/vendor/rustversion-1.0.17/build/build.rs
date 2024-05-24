@@ -75,10 +75,16 @@ fn main() {
 
     if version.minor >= 80 {
         println!("cargo:rustc-check-cfg=cfg(cfg_macro_not_allowed)");
+        println!("cargo:rustc-check-cfg=cfg(host_os, values(\"windows\"))");
     }
 
     let version = format!("{:#?}\n", version);
     let out_dir = env::var_os("OUT_DIR").expect("OUT_DIR not set");
     let out_file = Path::new(&out_dir).join("version.expr");
     fs::write(out_file, version).expect("failed to write version.expr");
+
+    let host = env::var_os("HOST").expect("HOST not set");
+    if let Some("windows") = host.to_str().unwrap().split('-').nth(2) {
+        println!("cargo:rustc-cfg=host_os=\"windows\"");
+    }
 }
