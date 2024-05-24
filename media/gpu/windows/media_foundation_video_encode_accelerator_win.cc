@@ -1755,13 +1755,11 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(frame.storage_type(),
             VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
-  DCHECK(frame.HasGpuMemoryBuffer());
-  DCHECK_EQ(frame.GetGpuMemoryBuffer()->GetType(),
-            gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
   DCHECK(dxgi_device_manager_);
 
-  gfx::GpuMemoryBufferHandle buffer_handle =
-      frame.GetGpuMemoryBuffer()->CloneHandle();
+  gfx::GpuMemoryBufferHandle buffer_handle = frame.GetGpuMemoryBufferHandle();
+  CHECK(!buffer_handle.is_null());
+  CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
 
   auto d3d_device = dxgi_device_manager_->GetDevice();
   if (!d3d_device) {
@@ -1834,13 +1832,11 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(frame->storage_type(),
             VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
-  DCHECK(frame->HasGpuMemoryBuffer());
-  DCHECK_EQ(frame->GetGpuMemoryBuffer()->GetType(),
-            gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
   DCHECK(dxgi_device_manager_);
 
-  gfx::GpuMemoryBufferHandle buffer_handle =
-      frame->GetGpuMemoryBuffer()->CloneHandle();
+  gfx::GpuMemoryBufferHandle buffer_handle = frame->GetGpuMemoryBufferHandle();
+  CHECK(!buffer_handle.is_null());
+  CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
 
   auto d3d_device = dxgi_device_manager_->GetDevice();
   if (!d3d_device) {
