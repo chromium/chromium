@@ -18,4 +18,9 @@ found in the LICENSE file.
         android:key="update_check"
         android:title="@string/safety_check_updates_title" />
 
+    <!-- Unused permissions -->
+    <Preference
+        android:key="permissions"
+        android:title="@string/safety_hub_permissions_ok_title" />
+
 </PreferenceScreen>

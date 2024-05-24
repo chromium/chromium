@@ -19,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SafetyHubFragment extends ChromeBaseSettingsFragment {
     private static final String PREF_PASSWORDS = "passwords_account";
     private static final String PREF_UPDATE = "update_check";
+    private static final String PREF_UNUSED_PERMISSIONS = "permissions";
     private SafetyHubModuleDelegate mDelegate;
 
     @Override
@@ -34,7 +35,6 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment {
         PropertyModel passwordCheckPropertyModel =
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS)
-                        .with(SafetyHubModuleProperties.ICON, R.drawable.ic_vpn_key_grey)
                         .with(
                                 SafetyHubModuleProperties.IS_VISIBLE,
                                 mDelegate.shouldShowPasswordCheckModule())
@@ -57,7 +57,6 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment {
         PropertyModel updateCheckPropertyModel =
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
-                        .with(SafetyHubModuleProperties.ICON, R.drawable.ic_update_grey)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(SafetyHubModuleProperties.UPDATE_STATUS, mDelegate.getUpdateStatus())
                         .build();
@@ -66,6 +65,24 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment {
                 updateCheckPropertyModel,
                 updateCheckPreference,
                 SafetyHubModuleViewBinder::bindUpdateCheckProperties);
+
+        // Set up permissions preference.
+        Preference permissionsPreference = findPreference(PREF_UNUSED_PERMISSIONS);
+        int sitesWithUnusedPermissionsCount =
+                UnusedSitePermissionsBridge.getRevokedPermissions(getProfile()).length;
+
+        PropertyModel permissionsPropertyModel =
+                new PropertyModel.Builder(SafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
+                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
+                        .with(
+                                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                                sitesWithUnusedPermissionsCount)
+                        .build();
+
+        PropertyModelChangeProcessor.create(
+                permissionsPropertyModel,
+                permissionsPreference,
+                SafetyHubModuleViewBinder::bindPermissionsProperties);
     }
 
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {

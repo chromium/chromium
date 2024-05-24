@@ -28,13 +28,16 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class SafetyHubModuleViewBinderTest {
-    private static final @DrawableRes int DEFAULT_ICON = R.drawable.ic_globe_24dp;
+    private static final @DrawableRes int OK_ICON = R.drawable.ic_checkmark_24dp;
     private static final @DrawableRes int ERROR_ICON = R.drawable.ic_error;
+    private static final @DrawableRes int WARNING_ICON = R.drawable.btn_info;
     private Activity mActivity;
     private PropertyModel mPasswordCheckPropertyModel;
     private Preference mPasswordCheckPreference;
     private PropertyModel mUpdateCheckPropertyModel;
     private Preference mUpdateCheckPreference;
+    private PropertyModel mPermissionsPropertyModel;
+    private Preference mPermissionsPreference;
 
     @Before
     public void setUp() {
@@ -46,7 +49,6 @@ public class SafetyHubModuleViewBinderTest {
         mPasswordCheckPropertyModel =
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS)
-                        .with(SafetyHubModuleProperties.ICON, DEFAULT_ICON)
                         .build();
         PropertyModelChangeProcessor.create(
                 mPasswordCheckPropertyModel,
@@ -59,12 +61,21 @@ public class SafetyHubModuleViewBinderTest {
         mUpdateCheckPropertyModel =
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
-                        .with(SafetyHubModuleProperties.ICON, DEFAULT_ICON)
                         .build();
         PropertyModelChangeProcessor.create(
                 mUpdateCheckPropertyModel,
                 mUpdateCheckPreference,
                 SafetyHubModuleViewBinder::bindUpdateCheckProperties);
+
+        // Set up permissions preference.
+        mPermissionsPreference = new Preference(mActivity);
+        mPermissionsPropertyModel =
+                new PropertyModel.Builder(SafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                mPermissionsPropertyModel,
+                mPermissionsPreference,
+                SafetyHubModuleViewBinder::bindPermissionsProperties);
     }
 
     @Test
@@ -73,8 +84,7 @@ public class SafetyHubModuleViewBinderTest {
 
         String expectedTitle = mActivity.getString(R.string.safety_check_passwords_safe);
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
-        assertEquals(
-                DEFAULT_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(OK_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
     }
 
     @Test
@@ -108,8 +118,7 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertEquals(expectedSummary, mUpdateCheckPreference.getSummary().toString());
-        assertEquals(
-                DEFAULT_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(OK_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
     }
 
     @Test
@@ -150,7 +159,38 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertNull(mUpdateCheckPreference.getSummary());
+        assertEquals(OK_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+    }
+
+    @Test
+    public void testPermissionsModule_NoSitesWithUnusedPermissions() {
+        mPermissionsPropertyModel.set(
+                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT, 0);
+
+        String expectedTitle = mActivity.getString(R.string.safety_hub_permissions_ok_title);
+
+        assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
+        assertNull(mPermissionsPreference.getSummary());
+        assertEquals(OK_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
+    }
+
+    @Test
+    public void testPermissionsModule_WithSitesWithUnusedPermissions() {
+        int sitesWithUnusedPermissionsCount = 3;
+        mPermissionsPropertyModel.set(
+                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                sitesWithUnusedPermissionsCount);
+        String expectedTitle =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_permissions_warning_title,
+                                sitesWithUnusedPermissionsCount,
+                                sitesWithUnusedPermissionsCount);
+
+        assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
+        assertNull(mPermissionsPreference.getSummary());
         assertEquals(
-                DEFAULT_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+                WARNING_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
     }
 }

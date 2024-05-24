@@ -1659,6 +1659,14 @@ Your Google account may have other forms of browsing history like searches and a
         other {Checked # days ago}}
       </message>
 
+      <!-- Safety Hub -->
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_OK_TITLE" translateable="false">
+        Permissions look good
+      </message>
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_WARNING_TITLE" translateable="false">
+        {NUM_SITES, plural, =1 {Permissions removed from 1 site} other {Permissions removed from # sites}}
+      </message>
+
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">
         Safe Browsing

@@ -49,6 +49,14 @@ public class SafetyHubModuleViewBinder {
         }
     }
 
+    public static void bindPermissionsProperties(
+            PropertyModel model, Preference preference, PropertyKey propertyKey) {
+        bindCommonProperties(model, preference, propertyKey);
+        if (SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT == propertyKey) {
+            updatePermissionsModule(preference, model);
+        }
+    }
+
     private static void updatePasswordCheckModule(Preference preference, PropertyModel model) {
         int compromisedPasswordsCount =
                 model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
@@ -64,15 +72,10 @@ public class SafetyHubModuleViewBinder {
                                     compromisedPasswordsCount,
                                     compromisedPasswordsCount);
 
-            iconDrawable =
-                    SettingsUtils.getTintedIcon(
-                            preference.getContext(), R.drawable.ic_error, R.color.default_red_dark);
+            iconDrawable = getErrorIcon(preference);
         } else {
             title = preference.getContext().getString(R.string.safety_check_passwords_safe);
-
-            iconDrawable =
-                    SettingsUtils.getTintedIcon(
-                            preference.getContext(), model.get(SafetyHubModuleProperties.ICON));
+            iconDrawable = getCheckmarkIcon(preference);
         }
         preference.setTitle(title);
         preference.setIcon(iconDrawable);
@@ -83,38 +86,66 @@ public class SafetyHubModuleViewBinder {
                 model.get(SafetyHubModuleProperties.UPDATE_STATUS);
 
         if (updateStatus == null) {
-            preference.setIcon(
-                    SettingsUtils.getTintedIcon(
-                            preference.getContext(), model.get(SafetyHubModuleProperties.ICON)));
+            preference.setIcon(getCheckmarkIcon(preference));
             preference.setTitle(R.string.safety_check_updates_updated);
             return;
         }
 
         switch (updateStatus.updateState) {
             case UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION:
-                preference.setIcon(
-                        SettingsUtils.getTintedIcon(
-                                preference.getContext(),
-                                R.drawable.ic_error,
-                                R.color.default_red_dark));
+                preference.setIcon(getErrorIcon(preference));
                 preference.setTitle(R.string.menu_update_unsupported_summary_default);
                 preference.setSummary(updateStatus.latestUnsupportedVersion);
                 break;
             case UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE:
-                preference.setIcon(
-                        SettingsUtils.getTintedIcon(
-                                preference.getContext(),
-                                R.drawable.ic_error,
-                                R.color.default_red_dark));
+                preference.setIcon(getErrorIcon(preference));
                 preference.setTitle(R.string.safety_check_updates_outdated);
                 break;
             default:
-                preference.setIcon(
-                        SettingsUtils.getTintedIcon(
-                                preference.getContext(),
-                                model.get(SafetyHubModuleProperties.ICON)));
+                preference.setIcon(getCheckmarkIcon(preference));
                 preference.setTitle(R.string.safety_check_updates_updated);
                 preference.setSummary(updateStatus.latestVersion);
         }
+    }
+
+    private static void updatePermissionsModule(Preference preference, PropertyModel model) {
+        int sitesWithUnusedPermissionsCount =
+                model.get(SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT);
+        String title;
+        Drawable iconDrawable;
+        if (sitesWithUnusedPermissionsCount > 0) {
+            title =
+                    preference
+                            .getContext()
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.safety_hub_permissions_warning_title,
+                                    sitesWithUnusedPermissionsCount,
+                                    sitesWithUnusedPermissionsCount);
+
+            iconDrawable = getWarningIcon(preference);
+        } else {
+            title = preference.getContext().getString(R.string.safety_hub_permissions_ok_title);
+            iconDrawable = getCheckmarkIcon(preference);
+        }
+        preference.setTitle(title);
+        preference.setIcon(iconDrawable);
+    }
+
+    private static Drawable getErrorIcon(Preference preference) {
+        return SettingsUtils.getTintedIcon(
+                preference.getContext(), R.drawable.ic_error, R.color.default_red);
+    }
+
+    private static Drawable getWarningIcon(Preference preference) {
+        return SettingsUtils.getTintedIcon(
+                preference.getContext(),
+                R.drawable.btn_info,
+                R.color.default_icon_color_secondary_tint_list);
+    }
+
+    private static Drawable getCheckmarkIcon(Preference preference) {
+        return SettingsUtils.getTintedIcon(
+                preference.getContext(), R.drawable.ic_checkmark_24dp, R.color.default_green);
     }
 }
