@@ -52,10 +52,8 @@ const std::string kUrl3 = "google.com";
 const std::string kUrl4 = "youtube.com";
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 const std::string kAffiliationId1 = "abc";
 const std::string kAffiliationId2 = "def";
-#endif
 
 // Helper to compare the arguments to an EXPECT_CALL of OnPolicyUpdated() with
 // their expected values.
@@ -2572,5 +2570,94 @@ TEST_P(PolicyServiceInitTimeTest, HistogramsRecorded) {
                                            kInitTime, 1);
   }
 }
+
+class PolicyServiceUserAffiliationMetricsTest
+    : public PolicyServiceTest,
+      public testing::WithParamInterface<
+          testing::tuple<std::string, std::string>> {
+ public:
+  PolicyServiceUserAffiliationMetricsTest() = default;
+  PolicyServiceUserAffiliationMetricsTest(
+      const PolicyServiceUserAffiliationMetricsTest&) = delete;
+  PolicyServiceUserAffiliationMetricsTest& operator=(
+      const PolicyServiceUserAffiliationMetricsTest&) = delete;
+
+  const std::string& GetDeviceAffiliationId() const {
+    return std::get<0>(GetParam());
+  }
+
+  const std::string& GetUserAffiliationId() const {
+    return std::get<1>(GetParam());
+  }
+
+  int GetUserOnlyCount() {
+    return GetDeviceAffiliationId().empty() && !GetUserAffiliationId().empty();
+  }
+
+  int GetUnaffiliatedCount() {
+    return !GetDeviceAffiliationId().empty() &&
+           !GetUserAffiliationId().empty() &&
+           GetDeviceAffiliationId() != GetUserAffiliationId();
+  }
+
+  int GetAffiliatedCount() {
+    return !GetDeviceAffiliationId().empty() &&
+           !GetUserAffiliationId().empty() &&
+           GetDeviceAffiliationId() == GetUserAffiliationId();
+  }
+
+  const std::string& GetAffiliationStatusHistogramName() {
+    return kAffiliationStatusHistogramName;
+  }
+
+ private:
+  const std::string kAffiliationStatusHistogramName =
+      "Enterprise.CloudUserAffiliationStatus";
+};
+
+TEST_P(PolicyServiceUserAffiliationMetricsTest, Histograms) {
+  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
+
+  auto machine_bundle = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                                     {}, chrome_namespace);
+  if (!GetDeviceAffiliationId().empty()) {
+    machine_bundle.Get(chrome_namespace)
+        .SetDeviceAffiliationIds({GetDeviceAffiliationId()});
+  }
+
+  auto user_bundle = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, {},
+                                  chrome_namespace);
+  if (!GetUserAffiliationId().empty()) {
+    user_bundle.Get(chrome_namespace)
+        .SetUserAffiliationIds({GetUserAffiliationId()});
+  }
+
+  base::HistogramTester histogram_tester;
+  provider0_.UpdatePolicy(std::move(machine_bundle));
+  provider1_.UpdatePolicy(std::move(user_bundle));
+  RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      GetAffiliationStatusHistogramName(),
+      PolicyServiceImpl::CloudUserAffiliationStatus::kUserOnly,
+      GetUserOnlyCount());
+  histogram_tester.ExpectBucketCount(
+      GetAffiliationStatusHistogramName(),
+      PolicyServiceImpl::CloudUserAffiliationStatus::kDeviceAndUserUnaffiliated,
+      GetUnaffiliatedCount());
+  histogram_tester.ExpectBucketCount(
+      GetAffiliationStatusHistogramName(),
+      PolicyServiceImpl::CloudUserAffiliationStatus::kDeviceAndUserAffiliated,
+      GetAffiliatedCount());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PolicyServiceUserAffiliationMetricsTest,
+    testing::Values(testing::make_tuple(kAffiliationId1, kAffiliationId1),
+                    testing::make_tuple(kAffiliationId1, kAffiliationId2),
+                    testing::make_tuple(kAffiliationId1, std::string()),
+                    testing::make_tuple(std::string(), kAffiliationId1),
+                    testing::make_tuple(std::string(), std::string())));
 
 }  // namespace policy
