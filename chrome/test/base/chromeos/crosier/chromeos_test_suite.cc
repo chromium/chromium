@@ -4,17 +4,17 @@
 
 #include "chrome/test/base/chromeos/crosier/chromeos_test_suite.h"
 
-#include "base/check.h"
-#include "base/command_line.h"
-#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/test/base/chromeos/crosier/helper/switches.h"
-#include "chrome/test/base/chromeos/crosier/helper/test_sudo_helper_client.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/ozone/platform/drm/test/ui_controls_system_input_injector.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ui_controls_ash.h"
+#include "base/check.h"
+#include "base/command_line.h"
+#include "base/time/time.h"
+#include "chrome/test/base/chromeos/crosier/helper/switches.h"
+#include "chrome/test/base/chromeos/crosier/helper/test_sudo_helper_client.h"
 #include "content/public/common/content_switches.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/check.h"
@@ -33,16 +33,17 @@ void ChromeOSTestSuite::Initialize() {
   // chromeos_integration_tests must use functions in ui_controls.h.
   ui::test::EventGenerator::BanEventGenerator();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ui::test::EnableUIControlsSystemInputInjector();
+
+  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   // Wait for test_sudo_helper server socket if it is used.
   // See b/342392752.
-  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   if (cmdline->HasSwitch(crosier::kSwitchSocketPath)) {
     CHECK(TestSudoHelperClient().WaitForServer(base::Minutes(2)))
         << "Unable to connect to test_sudo_helper.py's socket";
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ui::test::EnableUIControlsSystemInputInjector();
   cmdline->AppendSwitch(switches::kDisableMojoBroker);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // The lacros binary receives certain paths from ash very early in startup.
