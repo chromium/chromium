@@ -91,6 +91,7 @@ IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, EmptyInput) {
   ASSERT_EQ(0u, main_content.size());
 }
 
-// TODO(crbug.com/41489544): Add tests with non-empty inputs and multiple calls.
+// TODO(crbug.com/339609090): Add tests with non-empty inputs and multiple
+// calls.
 
 }  // namespace screen_ai
