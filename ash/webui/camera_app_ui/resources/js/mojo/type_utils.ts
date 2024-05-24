@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from '../assert.js';
-import {SupportedWifiSecurityType} from '../barcode_chip.js';
 import {SessionBehavior} from '../memory_usage.js';
 import {
   BarcodeContentType,
@@ -17,6 +16,7 @@ import {
   RecordType,
   ShutterType,
 } from '../metrics.js';
+import {SupportedWifiSecurityType} from '../scanner_chip.js';
 import {State} from '../state.js';
 import {
   AspectRatioSet,

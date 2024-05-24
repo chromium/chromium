@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertExists, checkEnumVariant} from './assert.js';
+import {assertExists, checkEnumVariant} from './assert.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import {Flag} from './flag.js';
@@ -28,6 +28,28 @@ import {
   ErrorType,
 } from './type.js';
 
+// Supported source types.
+export enum Source {
+  BARCODE = 'BARCODE',
+  OCR = 'OCR',
+}
+
+interface CurrentChip {
+  // The detected string that is being shown currently.
+  content: string;
+  // The chip element for showing the detected content on the UI. Control the
+  // visibility of the chip by toggling the "invisible" class. The chip for
+  // showing text content can be expanded to show the full content by applying
+  // the "expanded" class, instead of showing a one-line preview.
+  element: HTMLElement;
+  // The type of scanner that detected the content.
+  source: Source;
+  // The countdown timer for dismissing the chip.
+  timer: OneShotTimer;
+}
+
+let currentChip: CurrentChip|null = null;
+
 export enum SupportedWifiSecurityType {
   EAP = 'WPA2-EAP',
   NONE = 'nopass',
@@ -39,56 +61,10 @@ const QR_CODE_ESCAPE_CHARS = ['\\', ';', ',', ':'];
 
 // TODO(b/172879638): Tune the duration according to the final motion spec.
 const CHIP_DURATION = 8000;
-
-/**
- * The detected string that is being shown currently.
- */
-let currentCode: string|null = null;
-
-/**
- * The detected string from OCR that is being shown currently.
- */
-let currentOcrText: string|null = null;
-
-/**
- * The barcode chip container that is being shown currently.
- */
-let currentChip: HTMLElement|null = null;
-
-/**
- * The countdown timer for dismissing the chip.
- */
-let currentTimer: OneShotTimer|null = null;
-
-/**
- * Resets the variables of the current state and dismisses the chip.
- */
-function deactivate() {
-  if (currentChip !== null) {
-    currentChip.classList.add('invisible');
-  }
-  currentCode = null;
-  currentOcrText = null;
-  currentChip = null;
-  currentTimer = null;
-}
-
-/**
- * Activates the chip on container and starts the timer.
- *
- * @param container The container of the chip.
- */
-function activate(container: HTMLElement) {
-  container.classList.remove('invisible');
-  currentChip = container;
-
-  currentTimer = new OneShotTimer(deactivate, CHIP_DURATION);
-  if (state.get(state.State.KEYBOARD_NAVIGATION)) {
-    // Do not auto dismiss the chip when using keyboard for a11y. Screen reader
-    // might need long time to read the detected content.
-    currentTimer.stop();
-  }
-}
+// Screen reader users may take longer to read content. We treat keyboard users
+// as screen reader users since we can't tell the difference. This is the
+// maximum possible delay for setTimeout, preventing the timeout from firing.
+const CHIP_DURATION_KEYBOARD = 2 ** 31 - 1;
 
 /**
  * Checks whether a string is a regular url link with http or https protocol.
@@ -286,6 +262,9 @@ function strToWifiEapPhase2Method(phase2method: string): WifiEapPhase2Method|
 /**
  * Creates the copy button.
  *
+ * TODO(b/311592341): Rename related strings and classes since they are used by
+ * both barcode and OCR.
+ *
  * @param container The container for the button.
  * @param content The content to be copied.
  * @param snackbarLabel The label to be displayed on snackbar when the content
@@ -308,7 +287,7 @@ function createCopyButton(
  */
 function showUrl(url: string) {
   const container = dom.get('#barcode-chip-url-container', HTMLDivElement);
-  activate(container);
+  container.classList.remove('invisible');
 
   const textEl = dom.get('#barcode-chip-url-content', HTMLSpanElement);
   textEl.textContent =
@@ -325,27 +304,32 @@ function showUrl(url: string) {
   const label =
       loadTimeData.getI18nMessage(I18nString.BARCODE_COPY_LINK_BUTTON, url);
   copyButton.setAttribute('aria-label', label);
+  return container;
 }
 
 /**
  * Shows an actionable text chip.
+ *
+ * TODO(b/311592341): Rename related strings and classes since they are used by
+ * both barcode and OCR.
  */
-function showText(text: string): void {
+function showText(text: string) {
   const container = dom.get('#barcode-chip-text-container', HTMLDivElement);
+  const expandEl = dom.get('#barcode-chip-text-expand', HTMLButtonElement);
   container.classList.remove('expanded');
-  container.setAttribute('aria-expanded', 'false');
-  activate(container);
+  expandEl.ariaExpanded = 'false';
+  container.classList.remove('invisible');
 
   const textEl = dom.get('#barcode-chip-text-content', HTMLSpanElement);
   textEl.textContent = text;
   const expandable = textEl.scrollWidth > textEl.clientWidth;
 
-  const expandEl = dom.get('#barcode-chip-text-expand', HTMLButtonElement);
   expandEl.classList.toggle('hidden', !expandable);
   expandEl.onclick = () => {
     container.classList.toggle('expanded');
     const expanded = container.classList.contains('expanded');
-    expandEl.setAttribute('aria-expanded', expanded.toString());
+    expandEl.ariaExpanded = expanded.toString();
+    assertExists(currentChip).timer.resetTimeout();
   };
 
   const copyButton =
@@ -357,6 +341,7 @@ function showText(text: string): void {
   // TODO(b/172879638): There is a race in ChromeVox which will speak the
   // focused element twice.
   copyButton.focus();
+  return container;
 }
 
 /**
@@ -364,7 +349,7 @@ function showText(text: string): void {
  */
 function showWifi(wifiConfig: WifiConfig) {
   const container = dom.get('#barcode-chip-wifi-container', HTMLDivElement);
-  activate(container);
+  container.classList.remove('invisible');
 
   const ssidString = assertExists(wifiConfig.ssid);
 
@@ -382,72 +367,66 @@ function showWifi(wifiConfig: WifiConfig) {
   };
 
   chip.focus();
+  return container;
 }
 
 /**
- * Shows an actionable chip for the string detected from a barcode.
+ * Shows an actionable chip for the string detected from various scanners.
  */
-export function show(code: string): void {
-  if (code === currentCode) {
-    if (currentTimer !== null) {
-      // Extend the duration by resetting the timeout.
-      currentTimer.resetTimeout();
+export function show(content: string, source: Source): void {
+  if (currentChip !== null) {
+    // Skip updating the chip if it's expanded.
+    if (currentChip.element.classList.contains('expanded')) {
+      return;
     }
-    return;
+    // Extend the duration by resetting the timeout.
+    if (currentChip.source === source && currentChip.content === content) {
+      currentChip.timer.resetTimeout();
+      return;
+    }
   }
 
-  if (currentTimer !== null) {
-    // Dismiss the previous chip.
-    currentTimer.fireNow();
-    assert(currentTimer === null, 'The timer should be cleared.');
-  }
+  dismiss();
 
-  currentCode = code;
-  currentOcrText = null;
-  const wifiConfig = parseWifi(code);
-  if (loadTimeData.getChromeFlag(Flag.AUTO_QR) && wifiConfig !== null) {
-    showWifi(wifiConfig);
-  } else if (isSafeUrl(code)) {
-    sendBarcodeDetectedEvent({contentType: BarcodeContentType.URL});
-    showUrl(code);
+  let element: HTMLElement;
+  if (source === Source.OCR) {
+    // TODO(b/311592341): Check if we can show Wifi and URL chip when the source
+    // is OCR.
+    element = showText(content);
   } else {
-    sendBarcodeDetectedEvent({contentType: BarcodeContentType.TEXT});
-    showText(code);
-  }
-}
-
-/**
- * Shows an actionable chip for the string detected from OCR.
- *
- * TODO(b/311592341): Rename related string, class, and function names since
- * they are used by both barcode and OCR.
- */
-export function showOcrText(text: string): void {
-  if (text === currentOcrText) {
-    if (currentTimer !== null) {
-      // Extend the duration by resetting the timeout.
-      currentTimer.resetTimeout();
+    const wifiConfig = parseWifi(content);
+    if (loadTimeData.getChromeFlag(Flag.AUTO_QR) && wifiConfig !== null) {
+      element = showWifi(wifiConfig);
+    } else if (isSafeUrl(content)) {
+      sendBarcodeDetectedEvent({contentType: BarcodeContentType.URL});
+      element = showUrl(content);
+    } else {
+      sendBarcodeDetectedEvent({contentType: BarcodeContentType.TEXT});
+      element = showText(content);
     }
-    return;
   }
 
-  if (currentTimer !== null) {
-    // Dismiss the previous chip.
-    currentTimer.fireNow();
-    assert(currentTimer === null, 'The timer should be cleared.');
-  }
-  currentCode = null;
-  currentOcrText = text;
-  // TODO(b/338535966): Send OCR events.
-  showText(text);
+  const chipDuration = state.get(state.State.KEYBOARD_NAVIGATION) ?
+      CHIP_DURATION_KEYBOARD :
+      CHIP_DURATION;
+  const timer = new OneShotTimer(dismiss, chipDuration);
+
+  currentChip = {
+    content,
+    element,
+    source,
+    timer,
+  };
 }
 
 /**
- * Dismisses the current barcode chip if it's being shown.
+ * Dismisses the current chip if it's being shown.
  */
 export function dismiss(): void {
-  if (currentTimer === null) {
+  if (currentChip === null) {
     return;
   }
-  currentTimer.fireNow();
+  currentChip.timer.stop();
+  currentChip.element.classList.add('invisible');
+  currentChip = null;
 }

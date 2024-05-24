@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import {assertExists} from './assert.js';
-import * as barcodeChip from './barcode_chip.js';
 import {Flag} from './flag.js';
 import {AsyncIntervalRunner} from './models/async_interval.js';
 import {BarcodeScanner} from './models/barcode.js';
 import {getChromeFlag} from './models/load_time_data.js';
 import {Ocr} from './ocr.js';
+import * as scannerChip from './scanner_chip.js';
 import {OneShotTimer} from './timer.js';
 
 // The delay interval between consecutive preview scans in milliseconds.
@@ -80,7 +80,7 @@ export class PhotoModeAutoScanner {
   }
 
   stop(): void {
-    barcodeChip.dismiss();
+    scannerChip.dismiss();
     this.slowdownTimer?.stop();
     this.slowdownTimer = null;
     this.barcodeRunner?.stop();
@@ -113,7 +113,7 @@ export class PhotoModeAutoScanner {
       if (stopped.isSignaled() || result === null) {
         return;
       }
-      barcodeChip.show(result);
+      scannerChip.show(result, scannerChip.Source.BARCODE);
     }, interval);
   }
 
@@ -131,7 +131,7 @@ export class PhotoModeAutoScanner {
         return;
       }
       const text = result.lines.map((line) => line.text).join('\n');
-      barcodeChip.showOcrText(text);
+      scannerChip.show(text, scannerChip.Source.OCR);
     }, interval);
   }
 }

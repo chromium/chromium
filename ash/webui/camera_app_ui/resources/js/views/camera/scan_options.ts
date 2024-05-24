@@ -4,12 +4,12 @@
 
 import {assert, assertEnumVariant} from '../../assert.js';
 import {queuedAsyncCallback} from '../../async_job_queue.js';
-import * as barcodeChip from '../../barcode_chip.js';
 import {CameraManager, CameraUI} from '../../device/index.js';
 import * as dom from '../../dom.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import {BarcodeScanner} from '../../models/barcode.js';
 import {ChromeHelper} from '../../mojo/chrome_helper.js';
+import * as scannerChip from '../../scanner_chip.js';
 import * as state from '../../state.js';
 import {Mode, PreviewVideo} from '../../type.js';
 
@@ -135,7 +135,7 @@ export class ScanOptions implements CameraUI {
     const video = this.cameraManager.getPreviewVideo();
     this.video = video;
     this.barcodeScanner = new BarcodeScanner(video.video, (value) => {
-      barcodeChip.show(value);
+      scannerChip.show(value, scannerChip.Source.BARCODE);
     });
     const {deviceId} = video.getVideoSettings();
     this.documentCornerOverlay.attach(deviceId);
@@ -197,7 +197,7 @@ export class ScanOptions implements CameraUI {
   private stopBarcodeScanner() {
     assert(this.barcodeScanner !== null);
     this.barcodeScanner.stop();
-    barcodeChip.dismiss();
+    scannerChip.dismiss();
     state.set(state.State.ENABLE_SCAN_BARCODE, false);
   }
 
