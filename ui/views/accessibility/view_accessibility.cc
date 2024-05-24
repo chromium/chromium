@@ -181,17 +181,12 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     return;
   }
 
-  // The role and the name needs to be set on the data member passed to
-  // View::GetAccessibleNodeData in case the view changes either or both.
-  //
-  // TODO(accessibility): This won't be necessary once all Views initialize
-  // their role and name in Views::GetAccessibleNodeData, and that function
-  // is only called once to initialize the cached data.
-  data->role = data_.role;
-  data->SetNameFrom(GetCachedNameFrom());
-  if (!GetCachedName().empty()) {
-    data->SetName(GetCachedName());
-  }
+  // Initialize the data with the attributes from the cache before updating it
+  // with the latest from the view. This is necessary to allow us to iteratively
+  // migrate the Views to use the new setters and reach the end goal of the
+  // ViewsAX project, which is to only return the cached data from here.
+  // TODO(ViewsAX): Remove this once the project is completed.
+  views::ViewAccessibilityUtils::Merge(/*source*/ data_, /*destination*/ *data);
 
   view_->GetAccessibleNodeData(data);
 
@@ -223,23 +218,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
                               scale_factor);
     }
   }
-
-  // ***IMPORTANT***
-  //
-  // This step absolutely needs to be at the very end of the function in order
-  // for us to catch all the attributes that have been set through a different
-  // way than the ViewsAX AXNodeData push system. See `data_` for more info.
-
-#if DCHECK_IS_ON()
-  // This will help keep track of the attributes that have already
-  // been migrated from the old system of computing AXNodeData for Views (pull),
-  // to the new system (push). This will help ensure that new Views don't use
-  // the old system for attributes that have already been migrated.
-  // TODO(accessibility): Remove once migration is complete.
-  views::ViewsAXCompletedAttributes::Validate(*data);
-#endif
-
-  views::ViewAccessibilityUtils::Merge(/*source*/ data_, /*destination*/ *data);
 
   // This was previously found earlier in the function. It has been moved here,
   // after the call to `ViewAccessibility::Merge`, so that we only check the
