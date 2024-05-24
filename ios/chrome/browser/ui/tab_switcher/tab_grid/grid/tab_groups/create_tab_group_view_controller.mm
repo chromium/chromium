@@ -676,14 +676,17 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
         constraintEqualToAnchor:container.bottomAnchor],
   ];
 
+  NSLayoutConstraint* dotAndFieldWidth = [dotAndFieldContainer.widthAnchor
+      constraintEqualToConstant:kContainersMaxWidth];
+  dotAndFieldWidth.priority = UILayoutPriorityDefaultHigh;
+
   [NSLayoutConstraint activateConstraints:@[
     [dotAndFieldContainer.topAnchor
         constraintEqualToAnchor:container.topAnchor
                        constant:kdotAndFieldContainerMargin],
     [dotAndFieldContainer.heightAnchor
         constraintGreaterThanOrEqualToConstant:kButtonsHeight],
-    [dotAndFieldContainer.widthAnchor
-        constraintLessThanOrEqualToConstant:kContainersMaxWidth],
+    dotAndFieldWidth,
     [dotAndFieldContainer.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
     [_colorsScrollView.leadingAnchor
