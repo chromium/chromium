@@ -257,6 +257,12 @@
     "channel": "stable",
     "extension_types": "all"
   },
+  "icon_variants": {
+    "channel": "canary",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3,
+    "feature_flag": "ExtensionIconVariants"
+  },
   "incognito": [
     {
       "channel": "stable",

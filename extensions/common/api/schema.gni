@@ -31,6 +31,7 @@ extensions_api_schema_files_ = [
   "management.json",
   "hid.idl",
   "i18n.json",
+  "icon_variants.idl",
   "idle.json",
   "metrics_private.json",
   "mime_handler_private.idl",

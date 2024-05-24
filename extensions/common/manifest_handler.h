@@ -34,7 +34,7 @@ class ManifestHandler {
   virtual ~ManifestHandler();
 
   // Attempts to parse the extension's manifest.
-  // Returns true on success or false on failure; if false, |error| will
+  // Returns true on success or false on failure; if false, `error` will
   // be set to a failure message.
   // This does not perform any IO operations.
   virtual bool Parse(Extension* extension, std::u16string* error) = 0;

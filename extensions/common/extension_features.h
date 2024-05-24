@@ -89,6 +89,9 @@ BASE_DECLARE_FEATURE(kEnableWebHidInWebView);
 // Determine if dynamic extension URLs are handled and redirected.
 BASE_DECLARE_FEATURE(kExtensionDynamicURLRedirection);
 
+// A replacement key for declaring icons, in addition to supporting dark mode.
+BASE_DECLARE_FEATURE(kExtensionIconVariants);
+
 // Controls displaying a warning that affected MV2 extensions may no longer be
 // supported.
 BASE_DECLARE_FEATURE(kExtensionManifestV2DeprecationWarning);

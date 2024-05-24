@@ -25,6 +25,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiReadingList,
     &extensions_features::kApiUserScriptsMultipleWorlds,
     &extensions_features::kApiOdfsConfigPrivate,
+    &extensions_features::kExtensionIconVariants,
     &extensions_features::kNewWebstoreDomain,
     &extensions_features::kTelemetryExtensionPendingApprovalApi,
 };

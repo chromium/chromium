@@ -130,8 +130,9 @@ ExtensionAction::IconParseResult ExtensionAction::ParseIconFromCanvasDictionary(
       bytes = item.second.GetBlob().data();
       num_bytes = item.second.GetBlob().size();
     } else if (item.second.is_string()) {
-      if (!base::Base64Decode(item.second.GetString(), &byte_string))
+      if (!base::Base64Decode(item.second.GetString(), &byte_string)) {
         return IconParseResult::kDecodeFailure;
+      }
       bytes = byte_string.c_str();
       num_bytes = byte_string.length();
     } else {
@@ -146,8 +147,9 @@ ExtensionAction::IconParseResult ExtensionAction::ParseIconFromCanvasDictionary(
 
     // Chrome helpfully scales the provided icon(s), but let's not go overboard.
     const int kActionIconMaxSize = 10 * ActionIconSize();
-    if (bitmap.drawsNothing() || bitmap.width() > kActionIconMaxSize)
+    if (bitmap.drawsNothing() || bitmap.width() > kActionIconMaxSize) {
       continue;
+    }
 
     float scale = static_cast<float>(bitmap.width()) / ActionIconSize();
     icon->AddRepresentation(gfx::ImageSkiaRep(bitmap, scale));
