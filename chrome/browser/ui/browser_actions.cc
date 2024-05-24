@@ -95,39 +95,38 @@ BrowserActions::~BrowserActions() {
 
 void BrowserActions::InitializeBrowserActions() {
   Profile* profile = browser_->profile();
+  Browser* browser = &(browser_.get());
 
   actions::ActionManager::Get().AddAction(
       actions::ActionItem::Builder()
           .CopyAddressTo(&root_action_item_)
           .AddChildren(
-              SidePanelAction(SidePanelEntryId::kBookmarks,
-                              IDS_BOOKMARK_MANAGER_TITLE,
-                              IDS_BOOKMARK_MANAGER_TITLE,
-                              kBookmarksSidePanelRefreshIcon,
-                              kActionSidePanelShowBookmarks,
-                              &(browser_.get()), true),
+              SidePanelAction(
+                  SidePanelEntryId::kBookmarks, IDS_BOOKMARK_MANAGER_TITLE,
+                  IDS_BOOKMARK_MANAGER_TITLE, kBookmarksSidePanelRefreshIcon,
+                  kActionSidePanelShowBookmarks, browser, true),
               SidePanelAction(SidePanelEntryId::kReadingList,
                               IDS_READ_LATER_TITLE, IDS_READ_LATER_TITLE,
                               kReadingListIcon, kActionSidePanelShowReadingList,
-                              &(browser_.get()), true),
+                              browser, true),
               SidePanelAction(SidePanelEntryId::kAboutThisSite,
                               IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
                               IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
                               PageInfoViewFactory::GetAboutThisSiteVectorIcon(),
-                              kActionSidePanelShowAboutThisSite,
-                              &(browser_.get()), false),
+                              kActionSidePanelShowAboutThisSite, browser,
+                              false),
               SidePanelAction(SidePanelEntryId::kCustomizeChrome,
                               IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
                               IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
                               vector_icons::kEditChromeRefreshIcon,
-                              kActionSidePanelShowCustomizeChrome,
-                              &(browser_.get()), false),
+                              kActionSidePanelShowCustomizeChrome, browser,
+                              false),
               SidePanelAction(SidePanelEntryId::kShoppingInsights,
                               IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
                               IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
                               vector_icons::kShoppingBagIcon,
-                              kActionSidePanelShowShoppingInsights,
-                              &(browser_.get()), false))
+                              kActionSidePanelShowShoppingInsights, browser,
+                              false))
           .Build());
 
   if (side_panel::history_clusters::
@@ -136,8 +135,7 @@ void BrowserActions::InitializeBrowserActions() {
         SidePanelAction(SidePanelEntryId::kHistoryClusters, IDS_HISTORY_TITLE,
                         IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL,
                         vector_icons::kHistoryChromeRefreshIcon,
-                        kActionSidePanelShowHistoryCluster, &(browser_.get()),
-                        true)
+                        kActionSidePanelShowHistoryCluster, browser, true)
             .Build());
   }
 
@@ -145,8 +143,7 @@ void BrowserActions::InitializeBrowserActions() {
     root_action_item_->AddChild(
         SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
                         IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
-                        kActionSidePanelShowReadAnything, &(browser_.get()),
-                        true)
+                        kActionSidePanelShowReadAnything, browser, true)
             .Build());
   }
 
@@ -154,7 +151,7 @@ void BrowserActions::InitializeBrowserActions() {
     root_action_item_->AddChild(
         SidePanelAction(SidePanelEntryId::kUserNote, IDS_USER_NOTE_TITLE,
                         IDS_USER_NOTE_TITLE, kNoteOutlineIcon,
-                        kActionSidePanelShowUserNote, &(browser_.get()), true)
+                        kActionSidePanelShowUserNote, browser, true)
             .Build());
   }
 
@@ -163,15 +160,14 @@ void BrowserActions::InitializeBrowserActions() {
     root_action_item_->AddChild(
         SidePanelAction(SidePanelEntryId::kPerformance, IDS_SHOW_PERFORMANCE,
                         IDS_SHOW_PERFORMANCE, kMemorySaverIcon,
-                        kActionSidePanelShowPerformance, &(browser_.get()),
-                        true)
+                        kActionSidePanelShowPerformance, browser, true)
             .Build());
   }
 
   if (LensOverlayController::IsEnabled(profile)) {
     actions::ActionItem::InvokeActionCallback callback =
         lens::LensOverlaySidePanelCoordinator::CreateSidePanelActionCallback(
-            &(browser_.get()));
+            browser);
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
@@ -203,7 +199,7 @@ void BrowserActions::InitializeBrowserActions() {
 #else
               vector_icons::kSearchIcon,
 #endif
-              kActionSidePanelShowSearchCompanion, &(browser_.get()), true)
+              kActionSidePanelShowSearchCompanion, browser, true)
               .Build());
 
       companion_action_item->SetVisible(
@@ -218,7 +214,7 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       SidePanelAction(SidePanelEntryId::kLens, IDS_LENS_DEFAULT_TITLE,
                       IDS_LENS_DEFAULT_TITLE, vector_icons::kImageSearchIcon,
-                      kActionSidePanelShowLens, &(browser_.get()), false)
+                      kActionSidePanelShowLens, browser, false)
           .Build());
 
   //------- Chrome Menu Actions --------//
@@ -228,7 +224,7 @@ void BrowserActions::InitializeBrowserActions() {
                               actions::ActionInvocationContext context) {
                              chrome::NewIncognitoWindow(browser->profile());
                            },
-                           base::Unretained(&(browser_.get()))),
+                           base::Unretained(browser)),
                        kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW,
                        IDS_NEW_INCOGNITO_WINDOW, kIncognitoRefreshMenuIcon)
           .Build());
@@ -239,9 +235,9 @@ void BrowserActions::InitializeBrowserActions() {
                               actions::ActionInvocationContext context) {
                              chrome::Print(browser);
                            },
-                           base::Unretained(&(browser_.get()))),
+                           base::Unretained(browser)),
                        kActionPrint, IDS_PRINT, IDS_PRINT, kPrintMenuIcon)
-          .SetEnabled(chrome::CanPrint(&(browser_.get())))
+          .SetEnabled(chrome::CanPrint(browser))
           .Build());
 
   root_action_item_->AddChild(
@@ -256,7 +252,7 @@ void BrowserActions::InitializeBrowserActions() {
                                    browser->GetBrowserForOpeningWebUi());
                              }
                            },
-                           base::Unretained(&(browser_.get()))),
+                           base::Unretained(browser)),
                        kActionClearBrowsingData, IDS_CLEAR_BROWSING_DATA,
                        IDS_CLEAR_BROWSING_DATA, kTrashCanRefreshIcon)
           .SetEnabled(
@@ -271,7 +267,7 @@ void BrowserActions::InitializeBrowserActions() {
                                 actions::ActionInvocationContext context) {
                                chrome::OpenTaskManager(browser);
                              },
-                             base::Unretained(&(browser_.get()))),
+                             base::Unretained(browser)),
                          kActionTaskManager, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
                          kTaskManagerIcon)
             .Build());
@@ -285,7 +281,7 @@ void BrowserActions::InitializeBrowserActions() {
                                  browser, DevToolsToggleAction::Show(),
                                  DevToolsOpenedByAction::kPinnedToolbarButton);
                            },
-                           base::Unretained(&(browser_.get()))),
+                           base::Unretained(browser)),
                        kActionDevTools, IDS_DEV_TOOLS, IDS_DEV_TOOLS,
                        kDeveloperToolsIcon)
           .Build());
@@ -298,9 +294,20 @@ void BrowserActions::InitializeBrowserActions() {
                 send_tab_to_self::ShowBubble(
                     browser->tab_strip_model()->GetActiveWebContents());
               },
-              base::Unretained(&(browser_.get()))),
+              base::Unretained(browser)),
           kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,
           kDevicesChromeRefreshIcon)
-          .SetEnabled(chrome::CanSendTabToSelf(&(browser_.get())))
+          .SetEnabled(chrome::CanSendTabToSelf(browser))
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(base::BindRepeating(
+                           [](Browser* browser, actions::ActionItem* item,
+                              actions::ActionInvocationContext context) {
+                             chrome::ShowTranslateBubble(browser);
+                           },
+                           base::Unretained(browser)),
+                       kActionShowTranslate, IDS_SHOW_TRANSLATE,
+                       IDS_TOOLTIP_TRANSLATE, kTranslateIcon)
           .Build());
 }
