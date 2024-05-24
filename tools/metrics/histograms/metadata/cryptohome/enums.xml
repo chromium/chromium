@@ -261,8 +261,10 @@ chromium-metrics-reviews@google.com.
   <int value="124" label="kLocChalCredDecryptCreateUnsealingSessionFailed"/>
   <int value="125" label="kLocChalCredDecryptSaltResponseNoSignature"/>
   <int value="126" label="kLocChalCredDecryptUnsealingResponseNoSignature"/>
+  <int value="127" label="kLocChalCredDecryptUnsealFailed"/>
   <int value="129" label="kUserDataAuthInvalidAuthBlockTypeInCreateKeyBlobs"/>
   <int value="130" label="kUserDataAuthInvalidAuthBlockTypeInDeriveKeyBlobs"/>
+  <int value="131" label="kUserDataAuthNoAuthBlockStateInDeriveKeyBlobs"/>
   <int value="136" label="kLocTpmNotBoundToPcrAuthBlockTpmNotReadyInDerive"/>
   <int value="138" label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDerive"/>
   <int value="139"
@@ -277,8 +279,13 @@ chromium-metrics-reviews@google.com.
   <int value="160" label="kLocAuthBlockUtilDeriveFailedInDeriveKeyBlobs"/>
   <int value="161" label="kLocAuthBlockUtilNoAuthBlockInDeriveKeyBlobsAsync"/>
   <int value="165" label="kLocAuthBlockUtilNoChalInGetAsyncAuthBlockWithType"/>
+  <int value="172"
+      label="kLocRecoveryAuthBlockGenerateHSMPayloadFailedInCreate"/>
   <int value="175" label="kLocRecoveryAuthBlockRevocationCreateFailedInCreate"/>
+  <int value="178" label="kLocRecoveryAuthBlockDecryptFailedInDerive"/>
+  <int value="179" label="kLocRecoveryAuthBlockRecoveryFailedInDerive"/>
   <int value="181" label="kLocRecoveryAuthBlockRevocationDeriveFailedInDerive"/>
+  <int value="186" label="kLocChalCredAuthBlockServiceGenerateFailedInCreate"/>
   <int value="193" label="kLocChalCredAuthBlockServiceDeriveFailedInDerive"/>
   <int value="196" label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash"/>
   <int value="197" label="kLocTpmAuthBlockUtilsHashIncorrectInPubkeyHash"/>
@@ -322,7 +329,12 @@ chromium-metrics-reviews@google.com.
   <int value="284" label="kLocLECredManConvertTpmError"/>
   <int value="286" label="kLocUserDataAuthSessionNotFoundInAuthAuthSession"/>
   <int value="288" label="kLocUserDataAuthSessionNotFoundInExtendAuthSession"/>
+  <int value="290"
+      label="kLocUserDataAuthSessionNotFoundInCreatePersistentUser"/>
+  <int value="291" label="kLocUserDataAuthUserExistsInCreatePersistentUser"/>
   <int value="293" label="kLocUserDataAuthCreateFailedInCreatePersistentUser"/>
+  <int value="294"
+      label="kLocUserDataAuthFinalizeFailedInCreatePersistentUser"/>
   <int value="295" label="kLocUserDataAuthSessionNotFoundInAuthAuthFactor"/>
   <int value="298" label="kLocAuthSessionGetCredFailedInAddCred"/>
   <int value="301" label="kLocAuthSessionInvalidBlockTypeInAddKeyset"/>
@@ -332,6 +344,7 @@ chromium-metrics-reviews@google.com.
   <int value="314" label="kLocAuthSessionInvalidBlockTypeInUpdate"/>
   <int value="317" label="kLocAuthSessionCreateFailedInUpdateKeyset"/>
   <int value="318" label="kLocAuthSessionUpdateWithBlobFailedInUpdateKeyset"/>
+  <int value="319" label="kLocAuthSessionGetCredFailedInAuth"/>
   <int value="322" label="kLocAuthSessionFactorNotFoundInAuthAuthFactor"/>
   <int value="325" label="kLocAuthSessionVKConverterFailedInAuthAuthFactor"/>
   <int value="326" label="kLocAuthSessionInvalidBlockTypeInAuthViaVaultKey"/>
@@ -343,9 +356,11 @@ chromium-metrics-reviews@google.com.
   <int value="335" label="kLocAuthSessionNoInputInAddAuthFactor"/>
   <int value="339" label="kLocAuthSessionAddMainKeyFailedInAddSecretToUSS"/>
   <int value="341" label="kLocAuthSessionPersistFactorFailedInPersistToUSS"/>
+  <int value="342" label="kLocAuthSessionPersistUSSFailedInPersistToUSS"/>
   <int value="346" label="kLocAuthSessionLoadUSSFailedInLoadUSS"/>
   <int value="347" label="kLocAuthSessionDecryptUSSFailedInLoadUSS"/>
   <int value="353" label="kLocAuthFactorManagerWriteFailedInSave"/>
+  <int value="355" label="kLocAuthFactorManagerReadFailedInLoad"/>
   <int value="364" label="kLocVaultKeysetWrapAESDFailedInEncryptEx"/>
   <int value="371" label="kLocVaultKeysetKeysetDecryptFailedInUnwrapVKK"/>
   <int value="373" label="kLocVaultKeysetChapsDecryptFailedInUnwrapVKK"/>
@@ -356,6 +371,7 @@ chromium-metrics-reviews@google.com.
   <int value="390" label="kLocVaultKeysetUnwrapVKKFailedInUnwrapVK"/>
   <int value="391" label="kLocVaultKeysetUnwrapScryptFailedInUnwrapVK"/>
   <int value="398" label="kLocChalCredOperationNoResponseInOnSigResponse"/>
+  <int value="402" label="kLocChalCredVerifyGetRandomFailed"/>
   <int value="404" label="kLocChalCredVerifyChallengeFailed"/>
   <int value="406" label="kLocChalCredHelperConcurrencyNotAllowed"/>
   <int value="407" label="kLocChalCredNewAborted"/>
@@ -381,6 +397,8 @@ chromium-metrics-reviews@google.com.
   <int value="455" label="kLocUserSessionMountFailedInMountVault"/>
   <int value="456" label="kLocUserSessionOwnerNotSupportedInMountEphemeral"/>
   <int value="457" label="kLocUserSessionMountFailedInMountEphemeral"/>
+  <int value="463" label="kLocFailedGenerateRecoveryRequest"/>
+  <int value="467" label="kLocCryptoFailedInGenerateRecoveryRequest"/>
   <int value="473" label="kLocUserDataAuthSessionNotFoundInGetAuthedAS"/>
   <int value="475" label="kLocUserDataAuthGuestAlreadyMountedInGetMountableUS"/>
   <int value="476"
@@ -388,6 +406,8 @@ chromium-metrics-reviews@google.com.
   <int value="478"
       label="kLocUserDataAuthOtherSessionActiveInPrepareGuestVault"/>
   <int value="479" label="kLocUserDataAuthMountFailedInPrepareGuestVault"/>
+  <int value="480"
+      label="kLocUserDataAuthNoAuthSessionInPrepareEphemeralVault"/>
   <int value="481"
       label="kLocUserDataAuthGetSessionFailedInPrepareEphemeralVault"/>
   <int value="482" label="kLocUserDataAuthMountFailedInPrepareEphemeralVault"/>
@@ -397,16 +417,21 @@ chromium-metrics-reviews@google.com.
   <int value="485"
       label="kLocUserDataAuthGetSessionFailedInPreparePersistentVault"/>
   <int value="486" label="kLocUserDataAuthMountFailedInPreparePersistentVault"/>
-  <int value="487" label="kLocUserDataAuthNoAuthSessionInAddAuthFactor"/>
+  <int value="487" label="kLocUserDataAuthAuthSessionNotFoundInAddAuthFactor"/>
+  <int value="489" label="kLocUSSStorageWriteFailedInPersist"/>
   <int value="490" label="kLocUSSStorageReadFailedInLoadPersisted"/>
   <int value="498" label="kLocUSSDeserializeFailedInGetContainerFromFB"/>
+  <int value="501" label="kLocUSSNoCiphertextInGetContainerFromFB"/>
+  <int value="508" label="kLocUSSWrappedBlockNotFoundInUnwrapMKFromBlocks"/>
   <int value="513" label="kLocUSSDecryptFailedInUnwrapMKFromBlocks"/>
+  <int value="517" label="kLocUSSAesGcmFailedInFromEncPayload"/>
   <int value="518" label="kLocUSSDeserializeFailedInFromEncPayload"/>
   <int value="520" label="kLocUSSGetFromFBFailedInFromEncContainerWithWK"/>
   <int value="521" label="kLocUSSUnwrapMKFailedInFromEncContainerWithWK"/>
   <int value="522" label="kLocUSSFromPayloadFailedInFromEncContainerWithWK"/>
-  <int value="527" label="kLocUSSDuplicateWrappingInAddWrappedMainKey"/>
+  <int value="527" label="kLocUSSDuplicateWrappingInInsertWrappedMainKey"/>
   <int value="532" label="kLocUserDataAuthNotConfiguredInStartAuthSession"/>
+  <int value="547" label="kLocScryptAuthBlockScryptFailedInDeriveFromSalt"/>
   <int value="548"
       label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt"/>
   <int value="553" label="kLocLECredManPinWeaverFailedInCheckSecret"/>
@@ -423,6 +448,7 @@ chromium-metrics-reviews@google.com.
   <int value="580" label="kLocUserDataAuthInitChalRespFailedInAddCredentials"/>
   <int value="581" label="kLocUserDataAuthRemoveAllMountsFailedInUnmount"/>
   <int value="584" label="kLocUserDataAuthUserNonexistentInListKeys"/>
+  <int value="585" label="kLocUserDataAuthListFailedInListKeys"/>
   <int value="586" label="kLocUserDataAuthNoIDInRemove"/>
   <int value="589" label="kLocUserDataAuthUserActiveInRemove"/>
   <int value="590" label="kLocUserDataAuthRemoveFailedInRemove"/>
@@ -439,14 +465,20 @@ chromium-metrics-reviews@google.com.
       label="kLocAuthSessionRemoveMainKeyFailedInRemoveSecretFromUss"/>
   <int value="614" label="kLocAuthSessionInvalidBlockTypeInAddAuthFactor"/>
   <int value="616" label="kLocAuthSessionCreateFailedInPersistToUSS"/>
+  <int value="618" label="kLocAuthFactorManagerLoadFailedInUpdate"/>
+  <int value="619" label="kLocAuthFactorManagerSaveFailedInUpdate"/>
   <int value="620"
       label="kLocAuthFactorManagerPrepareForRemovalFailedInUpdate"/>
+  <int value="622" label="kLocAuthSessionNullParamInLoadUSS"/>
   <int value="623" label="kLocAuthSessionDeriveFailedInLoadUSS"/>
+  <int value="624" label="kLocChalCredAuthBlockNoInputAuthInDerive"/>
+  <int value="625" label="kLocChalCredDecryptNoHwsecBackend"/>
   <int value="626" label="kLocChalCredDecryptUnsealingResponseNoChallenge"/>
   <int value="628" label="kLocUserDataAuthHwsecNotReadyInInitChalRespAuth"/>
   <int value="629" label="kLocUserDataAuthUserNonexistentInListAuthFactors"/>
-  <int value="630" label="kLocUserDataAuthNoAuthSessionInUpdateAuthFactor"/>
+  <int value="630" label="kLocUserDataAuthSessionNotFoundInUpdateAuthFactor"/>
   <int value="634" label="kLocAuthSessionFactorNotFoundInUpdateAuthFactor"/>
+  <int value="638" label="kLocAuthSessionNoInputInUpdateAuthFactor"/>
   <int value="639" label="kLocAuthSessionInvalidBlockTypeInUpdateAuthFactor"/>
   <int value="640" label="kLocAuthSessionAddVaultKeysetFailedinAddAuthFactor"/>
   <int value="642" label="kLocAuthSessionCreateFailedInUpdateViaUSS"/>
@@ -461,6 +493,7 @@ chromium-metrics-reviews@google.com.
   <int value="661" label="kLocCreateFailedInAuthInputForAuth"/>
   <int value="662" label="kLocCreateFailedInAuthInputForAdd"/>
   <int value="663" label="kLocNoVkInAuthInputForAdd"/>
+  <int value="664" label="kLocNoUserInputInAddFactorForEphemeral"/>
   <int value="665" label="kLocVerifierAlreadySetInAddFactorForEphemeral"/>
   <int value="666" label="kLocVerifierSettingErrorInAddFactorForEphemeral"/>
   <int value="668" label="kLocUserDataAuthUserInactiveInResetAppContainer"/>
@@ -473,12 +506,24 @@ chromium-metrics-reviews@google.com.
   <int value="711" label="kLocAuthSessionPrepareWebAuthnSecretNoUserSession"/>
   <int value="712" label="kLocFpServiceStartSessionFailure"/>
   <int value="717" label="kLocFpServiceStartConcurrentSession"/>
+  <int value="720" label="kLocUserDataAuthFactorExtendedInfoTypeFailure"/>
   <int value="723" label="kLocAuthBlockUtilNoTpmInGetAuthBlockWithType"/>
+  <int value="747"
+      label="kLocUserDataAuthAuthFactorNotFoundInAuthenticateAuthFactor"/>
   <int value="1502" label="kLocLECredManInvalidLESecretInConvertTpmError"/>
   <int value="1504" label="kLocLECredManTooManyAttemptsInConvertTpmError"/>
   <int value="1505" label="kLocLECredManPCRNotMatchInConvertTpmError"/>
   <int value="1506" label="kLocLECredManHashTreeInConvertTpmError"/>
+  <int value="1901" label="kLocRecoveryCryptoResponseErrInDecryptResponse"/>
+  <int value="1911" label="kLocRecoveryCryptoBadLedgerSignedProof"/>
+  <int value="2101" label="kLocScryptVerifierVerifyScryptFailed"/>
   <int value="2103" label="kLocScryptVerifierVerifySecretMismatch"/>
+  <int value="2121" label="kLocRecoveryAuthBlockNoUserGaiaIdInCreate"/>
+  <int value="2122" label="kLocAuthSessionFactorAlreadyExistsInAddAuthFactor"/>
+  <int value="2171"
+      label="kLocUserDataAuthSessionNotFoundInPreparePersistentVault"/>
+  <int value="2191" label="kLocUssManagerAddDecryptedWhenEncryptedExists"/>
+  <int value="2192" label="kLocUssManagerAddDecryptedWhenDecryptedExists"/>
   <int value="2307" label="kLocSmartCardVerifierCannotVerify"/>
   <int value="2310" label="kLocAuthSessionManagerAuthSessionNotFound"/>
   <int value="2311" label="kLocPinWeaverAuthBlockCheckCredTPMLockedInDerive"/>
@@ -503,24 +548,39 @@ chromium-metrics-reviews@google.com.
       label="kLocAuthBlockUtilNotSupportedInGetAuthBlockWithType"/>
   <int value="2720"
       label="kLocAuthBlockUtilNotSupportedInGetAsyncAuthBlockWithType"/>
+  <int value="2722" label="kLocPinWeaverAuthBlockHwsecReadyErrorInIsSupported"/>
   <int value="2723" label="kLocPinWeaverAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="2726" label="kLocPinWeaverAuthBlockNullLeManagerInIsSupported"/>
   <int value="3390" label="kLocLECredManUnSyncedTreeInRemoveCred"/>
+  <int value="3411" label="kLocUserDataAuthTerminateAuthFactorNoAuthSession"/>
+  <int value="3506"
+      label="kLocCryptohomeRecoveryAuthBlockNoRecoveryIdInCreate"/>
   <int value="3508" label="kLocAuthSessionUpdateKeysetFailedInUpdateWithUSS"/>
   <int value="3521"
       label="kLocAuthSessionAuthInputParseFailed3InAuthAuthFactor"/>
+  <int value="3540"
+      label="kLocAuthSessionFailedSaveInUpdateAuthFactorMetadata"/>
+  <int value="3542" label="kLocPinWeaverAuthBlockRemoveCredential"/>
   <int value="65537" label="TPM_E_AUTHFAIL"/>
+  <int value="65544" label="TPM_E_DISABLED_CMD"/>
   <int value="65545" label="TPM_E_FAIL"/>
   <int value="65559" label="TPM_E_SIZE"/>
+  <int value="65560" label="TPM_E_WRONGPCRVAL"/>
+  <int value="65564" label="TPM_E_FAILEDSELFTEST"/>
   <int value="65565" label="TPM_E_AUTH2FAIL"/>
+  <int value="65568" label="TPM_E_ENCRYPT_ERROR"/>
   <int value="65569" label="TPM_E_DECRYPT_ERROR"/>
   <int value="65570" label="TPM_E_INVALID_AUTHHANDLE"/>
   <int value="65574" label="TPM_E_INVALID_POSTINIT"/>
+  <int value="65664" label="Handle 0: Unknown Error 0x080"/>
+  <int value="65666" label="TPM_RC_ATTRIBUTES"/>
   <int value="65667" label="TPM_RC_HASH"/>
   <int value="65668" label="TPM_RC_VALUE"/>
   <int value="65674" label="TPM_RC_TYPE"/>
   <int value="65682" label="TPM_RC_SCHEME"/>
   <int value="65685" label="TPM_RC_SIZE"/>
   <int value="65686" label="TPM_RC_SYMMETRIC"/>
+  <int value="65688" label="TPM_RC_SELECTOR"/>
   <int value="65690" label="TPM_RC_INSUFFICIENT"/>
   <int value="65692" label="TPM_RC_KEY"/>
   <int value="65695" label="TPM_RC_INTEGRITY"/>
@@ -532,34 +592,558 @@ chromium-metrics-reviews@google.com.
   <int value="65859" label="TPM_RC_COMMAND_CODE"/>
   <int value="65876" label="TPM_RC_NO_RESULT"/>
   <int value="65877" label="TPM_RC_SENSITIVE"/>
+  <int value="65907" label="Unknown Error 0x173"/>
   <int value="65923" label="Handle 1: TPM_RC_HASH"/>
   <int value="65929" label="Handle 1: TPM_RC_MODE"/>
   <int value="65930" label="Handle 1: TPM_RC_TYPE"/>
   <int value="65931" label="Handle 1: TPM_RC_HANDLE"/>
+  <int value="65932" label="Handle 1: TPM_RC_KDF"/>
   <int value="65941" label="Handle 1: TPM_RC_SIZE"/>
   <int value="65942" label="Handle 1: TPM_RC_SYMMETRIC"/>
   <int value="66015" label="Parameter 1: TPM_RC_INTEGRITY"/>
+  <int value="66023" label="Parameter 1: TPM_RC_ECC_POINT"/>
+  <int value="66187" label="Handle 2: TPM_RC_HANDLE"/>
+  <int value="66244" label="Parameter 2: TPM_RC_VALUE"/>
+  <int value="66820" label="Unknown Error 0x504"/>
   <int value="67587" label="TPM_E_DEFEND_LOCK_RUNNING"/>
   <int value="67842" label="TPM_RC_OBJECT_MEMORY"/>
   <int value="67843" label="TPM_RC_SESSION_MEMORY"/>
   <int value="67856" label="TPM_RC_REFERENCE_H0"/>
   <int value="67864" label="TPM_RC_REFERENCE_S0"/>
   <int value="67874" label="TPM_RC_RETRY"/>
+  <int value="67972" label="Session 1: TPM_RC_VALUE"/>
+  <int value="67989" label="Session 1: TPM_RC_SIZE"/>
   <int value="67990" label="Session 1: TPM_RC_SYMMETRIC"/>
   <int value="67997" label="Session 1: TPM_RC_POLICY_FAIL"/>
   <int value="68002" label="Session 1: TPM_RC_BAD_AUTH"/>
   <int value="69767" label="TDDL: TDDL_E_IOERROR"/>
   <int value="73930" label="TCS: TCS_E_KM_LOADFAILED"/>
   <int value="94209" label="TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="94210" label="TRUNKS_RC_ENCRYPTION_FAILED"/>
   <int value="94212" label="TRUNKS_RC_WRITE_ERROR"/>
+  <int value="96257" label="TPM Manager Error 0x01"/>
+  <int value="96641" label="PinWeaver Error 0x01"/>
+  <int value="96643" label="PinWeaver Error 0x03"/>
+  <int value="96644" label="PinWeaver Error 0x04"/>
+  <int value="96645" label="PinWeaver Error 0x05"/>
+  <int value="96647" label="PinWeaver Error 0x07"/>
+  <int value="97280" label="Hashed Error 0x0000"/>
+  <int value="97282" label="Hashed Error 0x0002"/>
+  <int value="97283" label="Hashed Error 0x0003"/>
+  <int value="97285" label="Hashed Error 0x0005"/>
+  <int value="97286" label="Hashed Error 0x0006"/>
+  <int value="97287" label="Hashed Error 0x0007"/>
+  <int value="97288" label="Hashed Error 0x0008"/>
+  <int value="97289" label="Hashed Error 0x0009"/>
+  <int value="97291" label="Hashed Error 0x000b"/>
+  <int value="97293" label="Hashed Error 0x000d"/>
+  <int value="97295" label="Hashed Error 0x000f"/>
+  <int value="97297" label="Hashed Error 0x0011"/>
+  <int value="97299" label="Hashed Error 0x0013"/>
+  <int value="97300" label="Hashed Error 0x0014"/>
+  <int value="97303" label="Hashed Error 0x0017"/>
+  <int value="97305" label="Hashed Error 0x0019"/>
+  <int value="97306" label="Hashed Error 0x001a"/>
+  <int value="97309" label="Hashed Error 0x001d"/>
+  <int value="97310" label="Hashed Error 0x001e"/>
+  <int value="97312" label="Hashed Error 0x0020"/>
+  <int value="97313" label="Hashed Error 0x0021"/>
+  <int value="97315" label="Hashed Error 0x0023"/>
+  <int value="97319" label="Hashed Error 0x0027"/>
+  <int value="97320" label="Hashed Error 0x0028"/>
+  <int value="97322" label="Hashed Error 0x002a"/>
+  <int value="97325" label="Hashed Error 0x002d"/>
+  <int value="97326" label="Hashed Error 0x002e"/>
+  <int value="97328" label="Hashed Error 0x0030"/>
+  <int value="97330" label="Hashed Error 0x0032"/>
+  <int value="97331" label="Hashed Error 0x0033"/>
+  <int value="97332" label="Hashed Error 0x0034"/>
+  <int value="97333" label="Hashed Error 0x0035"/>
+  <int value="97334" label="Hashed Error 0x0036"/>
+  <int value="97335" label="Hashed Error 0x0037"/>
+  <int value="97336" label="Hashed Error 0x0038"/>
+  <int value="97338" label="Hashed Error 0x003a"/>
+  <int value="97339" label="Hashed Error 0x003b"/>
+  <int value="97340" label="Hashed Error 0x003c"/>
+  <int value="97342" label="Hashed Error 0x003e"/>
+  <int value="97346" label="Hashed Error 0x0042"/>
+  <int value="97348" label="Hashed Error 0x0044"/>
+  <int value="97349" label="Hashed Error 0x0045"/>
+  <int value="97351" label="Hashed Error 0x0047"/>
+  <int value="97354" label="Hashed Error 0x004a"/>
+  <int value="97357" label="Hashed Error 0x004d"/>
+  <int value="97359" label="Hashed Error 0x004f"/>
+  <int value="97363" label="Hashed Error 0x0053"/>
+  <int value="97364" label="Hashed Error 0x0054"/>
+  <int value="97365" label="Hashed Error 0x0055"/>
+  <int value="97369" label="Hashed Error 0x0059"/>
+  <int value="97370" label="Hashed Error 0x005a"/>
+  <int value="97371" label="Hashed Error 0x005b"/>
+  <int value="97372" label="Hashed Error 0x005c"/>
+  <int value="97374" label="Hashed Error 0x005e"/>
+  <int value="97375" label="Hashed Error 0x005f"/>
+  <int value="97376" label="Hashed Error 0x0060"/>
+  <int value="97385" label="Hashed Error 0x0069"/>
+  <int value="97389" label="Hashed Error 0x006d"/>
+  <int value="97390" label="Hashed Error 0x006e"/>
+  <int value="97392" label="Hashed Error 0x0070"/>
+  <int value="97396" label="Hashed Error 0x0074"/>
+  <int value="97397" label="Hashed Error 0x0075"/>
+  <int value="97398" label="Hashed Error 0x0076"/>
+  <int value="97399" label="Hashed Error 0x0077"/>
+  <int value="97400" label="Hashed Error 0x0078"/>
+  <int value="97402" label="Hashed Error 0x007a"/>
+  <int value="97403" label="Hashed Error 0x007b"/>
+  <int value="97404" label="Hashed Error 0x007c"/>
+  <int value="97408" label="Hashed Error 0x0080"/>
+  <int value="97409" label="Hashed Error 0x0081"/>
+  <int value="97413" label="Hashed Error 0x0085"/>
+  <int value="97414" label="Hashed Error 0x0086"/>
+  <int value="97416" label="Hashed Error 0x0088"/>
+  <int value="97418" label="Hashed Error 0x008a"/>
+  <int value="97420" label="Hashed Error 0x008c"/>
+  <int value="97422" label="Hashed Error 0x008e"/>
+  <int value="97423" label="Hashed Error 0x008f"/>
+  <int value="97424" label="Hashed Error 0x0090"/>
+  <int value="97425" label="Hashed Error 0x0091"/>
+  <int value="97426" label="Hashed Error 0x0092"/>
+  <int value="97427" label="Hashed Error 0x0093"/>
+  <int value="97428" label="Hashed Error 0x0094"/>
+  <int value="97429" label="Hashed Error 0x0095"/>
+  <int value="97433" label="Hashed Error 0x0099"/>
+  <int value="97438" label="Hashed Error 0x009e"/>
+  <int value="97440" label="Hashed Error 0x00a0"/>
+  <int value="97441" label="Hashed Error 0x00a1"/>
   <int value="97443" label="Hashed Error 0x00a3"/>
+  <int value="97444" label="Hashed Error 0x00a4"/>
+  <int value="97445" label="Hashed Error 0x00a5"/>
+  <int value="97446" label="Hashed Error 0x00a6"/>
+  <int value="97447" label="Hashed Error 0x00a7"/>
+  <int value="97448" label="Hashed Error 0x00a8"/>
+  <int value="97449" label="Hashed Error 0x00a9"/>
+  <int value="97450" label="Hashed Error 0x00aa"/>
+  <int value="97452" label="Hashed Error 0x00ac"/>
+  <int value="97453" label="Hashed Error 0x00ad"/>
+  <int value="97454" label="Hashed Error 0x00ae"/>
+  <int value="97457" label="Hashed Error 0x00b1"/>
+  <int value="97458" label="Hashed Error 0x00b2"/>
+  <int value="97460" label="Hashed Error 0x00b4"/>
+  <int value="97462" label="Hashed Error 0x00b6"/>
+  <int value="97463" label="Hashed Error 0x00b7"/>
   <int value="97466" label="Hashed Error 0x00ba"/>
+  <int value="97468" label="Hashed Error 0x00bc"/>
+  <int value="97470" label="Hashed Error 0x00be"/>
+  <int value="97472" label="Hashed Error 0x00c0"/>
+  <int value="97473" label="Hashed Error 0x00c1"/>
+  <int value="97475" label="Hashed Error 0x00c3"/>
+  <int value="97477" label="Hashed Error 0x00c5"/>
+  <int value="97481" label="Hashed Error 0x00c9"/>
+  <int value="97482" label="Hashed Error 0x00ca"/>
+  <int value="97483" label="Hashed Error 0x00cb"/>
+  <int value="97485" label="Hashed Error 0x00cd"/>
+  <int value="97487" label="Hashed Error 0x00cf"/>
+  <int value="97497" label="Hashed Error 0x00d9"/>
+  <int value="97499" label="Hashed Error 0x00db"/>
+  <int value="97501" label="Hashed Error 0x00dd"/>
+  <int value="97504" label="Hashed Error 0x00e0"/>
+  <int value="97507" label="Hashed Error 0x00e3"/>
+  <int value="97508" label="Hashed Error 0x00e4"/>
+  <int value="97509" label="Hashed Error 0x00e5"/>
+  <int value="97510" label="Hashed Error 0x00e6"/>
+  <int value="97511" label="Hashed Error 0x00e7"/>
+  <int value="97517" label="Hashed Error 0x00ed"/>
+  <int value="97519" label="Hashed Error 0x00ef"/>
+  <int value="97530" label="Hashed Error 0x00fa"/>
+  <int value="97531" label="Hashed Error 0x00fb"/>
+  <int value="97532" label="Hashed Error 0x00fc"/>
+  <int value="97534" label="Hashed Error 0x00fe"/>
+  <int value="97539" label="Hashed Error 0x0103"/>
+  <int value="97544" label="Hashed Error 0x0108"/>
+  <int value="97547" label="Hashed Error 0x010b"/>
+  <int value="97551" label="Hashed Error 0x010f"/>
+  <int value="97552" label="Hashed Error 0x0110"/>
+  <int value="97553" label="Hashed Error 0x0111"/>
+  <int value="97556" label="Hashed Error 0x0114"/>
+  <int value="97558" label="Hashed Error 0x0116"/>
+  <int value="97559" label="Hashed Error 0x0117"/>
+  <int value="97560" label="Hashed Error 0x0118"/>
+  <int value="97561" label="Hashed Error 0x0119"/>
+  <int value="97564" label="Hashed Error 0x011c"/>
+  <int value="97567" label="Hashed Error 0x011f"/>
+  <int value="97568" label="Hashed Error 0x0120"/>
+  <int value="97569" label="Hashed Error 0x0121"/>
   <int value="97573" label="Hashed Error 0x0125"/>
+  <int value="97574" label="Hashed Error 0x0126"/>
+  <int value="97576" label="Hashed Error 0x0128"/>
+  <int value="97577" label="Hashed Error 0x0129"/>
+  <int value="97580" label="Hashed Error 0x012c"/>
+  <int value="97582" label="Hashed Error 0x012e"/>
+  <int value="97584" label="Hashed Error 0x0130"/>
+  <int value="97586" label="Hashed Error 0x0132"/>
+  <int value="97589" label="Hashed Error 0x0135"/>
+  <int value="97590" label="Hashed Error 0x0136"/>
+  <int value="97592" label="Hashed Error 0x0138"/>
+  <int value="97593" label="Hashed Error 0x0139"/>
+  <int value="97597" label="Hashed Error 0x013d"/>
+  <int value="97598" label="Hashed Error 0x013e"/>
+  <int value="97600" label="Hashed Error 0x0140"/>
+  <int value="97601" label="Hashed Error 0x0141"/>
+  <int value="97602" label="Hashed Error 0x0142"/>
+  <int value="97603" label="Hashed Error 0x0143"/>
+  <int value="97604" label="Hashed Error 0x0144"/>
+  <int value="97607" label="Hashed Error 0x0147"/>
+  <int value="97610" label="Hashed Error 0x014a"/>
+  <int value="97612" label="Hashed Error 0x014c"/>
   <int value="97613" label="Hashed Error 0x014d"/>
+  <int value="97616" label="Hashed Error 0x0150"/>
+  <int value="97618" label="Hashed Error 0x0152"/>
+  <int value="97620" label="Hashed Error 0x0154"/>
   <int value="97622" label="Hashed Error 0x0156"/>
+  <int value="97624" label="Hashed Error 0x0158"/>
+  <int value="97627" label="Hashed Error 0x015b"/>
+  <int value="97628" label="Hashed Error 0x015c"/>
+  <int value="97630" label="Hashed Error 0x015e"/>
+  <int value="97632" label="Hashed Error 0x0160"/>
+  <int value="97634" label="Hashed Error 0x0162"/>
+  <int value="97635" label="Hashed Error 0x0163"/>
+  <int value="97636" label="Hashed Error 0x0164"/>
+  <int value="97637" label="Hashed Error 0x0165"/>
+  <int value="97638" label="Hashed Error 0x0166"/>
+  <int value="97641" label="Hashed Error 0x0169"/>
+  <int value="97645" label="Hashed Error 0x016d"/>
+  <int value="97646" label="Hashed Error 0x016e"/>
+  <int value="97647" label="Hashed Error 0x016f"/>
+  <int value="97649" label="Hashed Error 0x0171"/>
+  <int value="97654" label="Hashed Error 0x0176"/>
+  <int value="97655" label="Hashed Error 0x0177"/>
+  <int value="97657" label="Hashed Error 0x0179"/>
+  <int value="97660" label="Hashed Error 0x017c"/>
+  <int value="97662" label="Hashed Error 0x017e"/>
+  <int value="97663" label="Hashed Error 0x017f"/>
+  <int value="97664" label="Hashed Error 0x0180"/>
+  <int value="97666" label="Hashed Error 0x0182"/>
+  <int value="97668" label="Hashed Error 0x0184"/>
+  <int value="97671" label="Hashed Error 0x0187"/>
+  <int value="97672" label="Hashed Error 0x0188"/>
+  <int value="97673" label="Hashed Error 0x0189"/>
+  <int value="97674" label="Hashed Error 0x018a"/>
+  <int value="97675" label="Hashed Error 0x018b"/>
+  <int value="97677" label="Hashed Error 0x018d"/>
+  <int value="97680" label="Hashed Error 0x0190"/>
+  <int value="97682" label="Hashed Error 0x0192"/>
+  <int value="97685" label="Hashed Error 0x0195"/>
+  <int value="97686" label="Hashed Error 0x0196"/>
+  <int value="97687" label="Hashed Error 0x0197"/>
+  <int value="97688" label="Hashed Error 0x0198"/>
+  <int value="97690" label="Hashed Error 0x019a"/>
+  <int value="97691" label="Hashed Error 0x019b"/>
+  <int value="97692" label="Hashed Error 0x019c"/>
+  <int value="97693" label="Hashed Error 0x019d"/>
+  <int value="97694" label="Hashed Error 0x019e"/>
+  <int value="97695" label="Hashed Error 0x019f"/>
+  <int value="97697" label="Hashed Error 0x01a1"/>
+  <int value="97698" label="Hashed Error 0x01a2"/>
+  <int value="97700" label="Hashed Error 0x01a4"/>
+  <int value="97701" label="Hashed Error 0x01a5"/>
+  <int value="97702" label="Hashed Error 0x01a6"/>
+  <int value="97703" label="Hashed Error 0x01a7"/>
+  <int value="97705" label="Hashed Error 0x01a9"/>
+  <int value="97708" label="Hashed Error 0x01ac"/>
+  <int value="97709" label="Hashed Error 0x01ad"/>
+  <int value="97713" label="Hashed Error 0x01b1"/>
+  <int value="97715" label="Hashed Error 0x01b3"/>
+  <int value="97719" label="Hashed Error 0x01b7"/>
+  <int value="97720" label="Hashed Error 0x01b8"/>
+  <int value="97725" label="Hashed Error 0x01bd"/>
+  <int value="97727" label="Hashed Error 0x01bf"/>
+  <int value="97733" label="Hashed Error 0x01c5"/>
+  <int value="97737" label="Hashed Error 0x01c9"/>
+  <int value="97738" label="Hashed Error 0x01ca"/>
+  <int value="97742" label="Hashed Error 0x01ce"/>
+  <int value="97743" label="Hashed Error 0x01cf"/>
+  <int value="97744" label="Hashed Error 0x01d0"/>
+  <int value="97745" label="Hashed Error 0x01d1"/>
+  <int value="97746" label="Hashed Error 0x01d2"/>
+  <int value="97747" label="Hashed Error 0x01d3"/>
+  <int value="97750" label="Hashed Error 0x01d6"/>
+  <int value="97753" label="Hashed Error 0x01d9"/>
+  <int value="97754" label="Hashed Error 0x01da"/>
+  <int value="97756" label="Hashed Error 0x01dc"/>
+  <int value="97757" label="Hashed Error 0x01dd"/>
+  <int value="97762" label="Hashed Error 0x01e2"/>
+  <int value="97764" label="Hashed Error 0x01e4"/>
+  <int value="97765" label="Hashed Error 0x01e5"/>
+  <int value="97768" label="Hashed Error 0x01e8"/>
+  <int value="97769" label="Hashed Error 0x01e9"/>
+  <int value="97770" label="Hashed Error 0x01ea"/>
+  <int value="97773" label="Hashed Error 0x01ed"/>
+  <int value="97774" label="Hashed Error 0x01ee"/>
+  <int value="97776" label="Hashed Error 0x01f0"/>
+  <int value="97777" label="Hashed Error 0x01f1"/>
+  <int value="97778" label="Hashed Error 0x01f2"/>
+  <int value="97779" label="Hashed Error 0x01f3"/>
+  <int value="97780" label="Hashed Error 0x01f4"/>
+  <int value="97782" label="Hashed Error 0x01f6"/>
+  <int value="97785" label="Hashed Error 0x01f9"/>
+  <int value="97786" label="Hashed Error 0x01fa"/>
+  <int value="97792" label="Hashed Error 0x0200"/>
+  <int value="97793" label="Hashed Error 0x0201"/>
+  <int value="97796" label="Hashed Error 0x0204"/>
+  <int value="97800" label="Hashed Error 0x0208"/>
+  <int value="97804" label="Hashed Error 0x020c"/>
+  <int value="97805" label="Hashed Error 0x020d"/>
+  <int value="97806" label="Hashed Error 0x020e"/>
+  <int value="97808" label="Hashed Error 0x0210"/>
+  <int value="97810" label="Hashed Error 0x0212"/>
+  <int value="97811" label="Hashed Error 0x0213"/>
+  <int value="97817" label="Hashed Error 0x0219"/>
+  <int value="97818" label="Hashed Error 0x021a"/>
+  <int value="97819" label="Hashed Error 0x021b"/>
+  <int value="97824" label="Hashed Error 0x0220"/>
+  <int value="97825" label="Hashed Error 0x0221"/>
+  <int value="97829" label="Hashed Error 0x0225"/>
+  <int value="97830" label="Hashed Error 0x0226"/>
+  <int value="97833" label="Hashed Error 0x0229"/>
+  <int value="97834" label="Hashed Error 0x022a"/>
+  <int value="97835" label="Hashed Error 0x022b"/>
+  <int value="97836" label="Hashed Error 0x022c"/>
+  <int value="97837" label="Hashed Error 0x022d"/>
+  <int value="97841" label="Hashed Error 0x0231"/>
+  <int value="97843" label="Hashed Error 0x0233"/>
+  <int value="97845" label="Hashed Error 0x0235"/>
+  <int value="97848" label="Hashed Error 0x0238"/>
+  <int value="97852" label="Hashed Error 0x023c"/>
+  <int value="97854" label="Hashed Error 0x023e"/>
+  <int value="97857" label="Hashed Error 0x0241"/>
+  <int value="97858" label="Hashed Error 0x0242"/>
+  <int value="97860" label="Hashed Error 0x0244"/>
+  <int value="97861" label="Hashed Error 0x0245"/>
+  <int value="97865" label="Hashed Error 0x0249"/>
+  <int value="97866" label="Hashed Error 0x024a"/>
+  <int value="97867" label="Hashed Error 0x024b"/>
+  <int value="97871" label="Hashed Error 0x024f"/>
+  <int value="97877" label="Hashed Error 0x0255"/>
+  <int value="97878" label="Hashed Error 0x0256"/>
+  <int value="97882" label="Hashed Error 0x025a"/>
+  <int value="97888" label="Hashed Error 0x0260"/>
+  <int value="97889" label="Hashed Error 0x0261"/>
+  <int value="97890" label="Hashed Error 0x0262"/>
+  <int value="97891" label="Hashed Error 0x0263"/>
+  <int value="97896" label="Hashed Error 0x0268"/>
+  <int value="97898" label="Hashed Error 0x026a"/>
+  <int value="97902" label="Hashed Error 0x026e"/>
+  <int value="97904" label="Hashed Error 0x0270"/>
+  <int value="97906" label="Hashed Error 0x0272"/>
+  <int value="97908" label="Hashed Error 0x0274"/>
+  <int value="97911" label="Hashed Error 0x0277"/>
+  <int value="97914" label="Hashed Error 0x027a"/>
+  <int value="97916" label="Hashed Error 0x027c"/>
+  <int value="97917" label="Hashed Error 0x027d"/>
+  <int value="97919" label="Hashed Error 0x027f"/>
+  <int value="97920" label="Hashed Error 0x0280"/>
+  <int value="97921" label="Hashed Error 0x0281"/>
+  <int value="97924" label="Hashed Error 0x0284"/>
+  <int value="97926" label="Hashed Error 0x0286"/>
+  <int value="97928" label="Hashed Error 0x0288"/>
+  <int value="97930" label="Hashed Error 0x028a"/>
+  <int value="97931" label="Hashed Error 0x028b"/>
+  <int value="97932" label="Hashed Error 0x028c"/>
+  <int value="97933" label="Hashed Error 0x028d"/>
+  <int value="97934" label="Hashed Error 0x028e"/>
+  <int value="97935" label="Hashed Error 0x028f"/>
+  <int value="97936" label="Hashed Error 0x0290"/>
+  <int value="97937" label="Hashed Error 0x0291"/>
+  <int value="97938" label="Hashed Error 0x0292"/>
+  <int value="97939" label="Hashed Error 0x0293"/>
+  <int value="97941" label="Hashed Error 0x0295"/>
+  <int value="97942" label="Hashed Error 0x0296"/>
+  <int value="97943" label="Hashed Error 0x0297"/>
+  <int value="97944" label="Hashed Error 0x0298"/>
+  <int value="97945" label="Hashed Error 0x0299"/>
+  <int value="97947" label="Hashed Error 0x029b"/>
+  <int value="97948" label="Hashed Error 0x029c"/>
+  <int value="97952" label="Hashed Error 0x02a0"/>
+  <int value="97954" label="Hashed Error 0x02a2"/>
+  <int value="97956" label="Hashed Error 0x02a4"/>
+  <int value="97957" label="Hashed Error 0x02a5"/>
+  <int value="97958" label="Hashed Error 0x02a6"/>
+  <int value="97960" label="Hashed Error 0x02a8"/>
+  <int value="97964" label="Hashed Error 0x02ac"/>
+  <int value="97967" label="Hashed Error 0x02af"/>
+  <int value="97969" label="Hashed Error 0x02b1"/>
+  <int value="97973" label="Hashed Error 0x02b5"/>
+  <int value="97976" label="Hashed Error 0x02b8"/>
+  <int value="97978" label="Hashed Error 0x02ba"/>
+  <int value="97979" label="Hashed Error 0x02bb"/>
+  <int value="97980" label="Hashed Error 0x02bc"/>
+  <int value="97981" label="Hashed Error 0x02bd"/>
+  <int value="97986" label="Hashed Error 0x02c2"/>
+  <int value="97987" label="Hashed Error 0x02c3"/>
+  <int value="97988" label="Hashed Error 0x02c4"/>
+  <int value="97989" label="Hashed Error 0x02c5"/>
+  <int value="97990" label="Hashed Error 0x02c6"/>
+  <int value="97994" label="Hashed Error 0x02ca"/>
+  <int value="97996" label="Hashed Error 0x02cc"/>
+  <int value="97998" label="Hashed Error 0x02ce"/>
+  <int value="97999" label="Hashed Error 0x02cf"/>
+  <int value="98000" label="Hashed Error 0x02d0"/>
+  <int value="98004" label="Hashed Error 0x02d4"/>
+  <int value="98005" label="Hashed Error 0x02d5"/>
+  <int value="98009" label="Hashed Error 0x02d9"/>
+  <int value="98010" label="Hashed Error 0x02da"/>
+  <int value="98012" label="Hashed Error 0x02dc"/>
+  <int value="98014" label="Hashed Error 0x02de"/>
+  <int value="98016" label="Hashed Error 0x02e0"/>
+  <int value="98019" label="Hashed Error 0x02e3"/>
+  <int value="98020" label="Hashed Error 0x02e4"/>
+  <int value="98021" label="Hashed Error 0x02e5"/>
+  <int value="98024" label="Hashed Error 0x02e8"/>
+  <int value="98027" label="Hashed Error 0x02eb"/>
+  <int value="98028" label="Hashed Error 0x02ec"/>
+  <int value="98029" label="Hashed Error 0x02ed"/>
+  <int value="98031" label="Hashed Error 0x02ef"/>
+  <int value="98034" label="Hashed Error 0x02f2"/>
+  <int value="98035" label="Hashed Error 0x02f3"/>
+  <int value="98036" label="Hashed Error 0x02f4"/>
+  <int value="98037" label="Hashed Error 0x02f5"/>
+  <int value="98040" label="Hashed Error 0x02f8"/>
+  <int value="98042" label="Hashed Error 0x02fa"/>
+  <int value="98046" label="Hashed Error 0x02fe"/>
+  <int value="98048" label="Hashed Error 0x0300"/>
+  <int value="98049" label="Hashed Error 0x0301"/>
+  <int value="98051" label="Hashed Error 0x0303"/>
+  <int value="98052" label="Hashed Error 0x0304"/>
+  <int value="98053" label="Hashed Error 0x0305"/>
+  <int value="98054" label="Hashed Error 0x0306"/>
+  <int value="98055" label="Hashed Error 0x0307"/>
+  <int value="98056" label="Hashed Error 0x0308"/>
+  <int value="98057" label="Hashed Error 0x0309"/>
+  <int value="98059" label="Hashed Error 0x030b"/>
+  <int value="98061" label="Hashed Error 0x030d"/>
+  <int value="98062" label="Hashed Error 0x030e"/>
+  <int value="98064" label="Hashed Error 0x0310"/>
+  <int value="98066" label="Hashed Error 0x0312"/>
+  <int value="98067" label="Hashed Error 0x0313"/>
+  <int value="98070" label="Hashed Error 0x0316"/>
+  <int value="98071" label="Hashed Error 0x0317"/>
+  <int value="98075" label="Hashed Error 0x031b"/>
+  <int value="98076" label="Hashed Error 0x031c"/>
+  <int value="98078" label="Hashed Error 0x031e"/>
+  <int value="98080" label="Hashed Error 0x0320"/>
+  <int value="98083" label="Hashed Error 0x0323"/>
+  <int value="98084" label="Hashed Error 0x0324"/>
+  <int value="98085" label="Hashed Error 0x0325"/>
+  <int value="98088" label="Hashed Error 0x0328"/>
+  <int value="98097" label="Hashed Error 0x0331"/>
+  <int value="98102" label="Hashed Error 0x0336"/>
+  <int value="98103" label="Hashed Error 0x0337"/>
+  <int value="98104" label="Hashed Error 0x0338"/>
+  <int value="98106" label="Hashed Error 0x033a"/>
+  <int value="98108" label="Hashed Error 0x033c"/>
+  <int value="98109" label="Hashed Error 0x033d"/>
+  <int value="98111" label="Hashed Error 0x033f"/>
+  <int value="98113" label="Hashed Error 0x0341"/>
+  <int value="98114" label="Hashed Error 0x0342"/>
+  <int value="98122" label="Hashed Error 0x034a"/>
+  <int value="98125" label="Hashed Error 0x034d"/>
+  <int value="98126" label="Hashed Error 0x034e"/>
+  <int value="98127" label="Hashed Error 0x034f"/>
+  <int value="98131" label="Hashed Error 0x0353"/>
+  <int value="98132" label="Hashed Error 0x0354"/>
+  <int value="98133" label="Hashed Error 0x0355"/>
+  <int value="98135" label="Hashed Error 0x0357"/>
+  <int value="98137" label="Hashed Error 0x0359"/>
+  <int value="98138" label="Hashed Error 0x035a"/>
+  <int value="98139" label="Hashed Error 0x035b"/>
+  <int value="98140" label="Hashed Error 0x035c"/>
+  <int value="98142" label="Hashed Error 0x035e"/>
+  <int value="98145" label="Hashed Error 0x0361"/>
+  <int value="98146" label="Hashed Error 0x0362"/>
   <int value="98147" label="Hashed Error 0x0363"/>
+  <int value="98148" label="Hashed Error 0x0364"/>
+  <int value="98149" label="Hashed Error 0x0365"/>
+  <int value="98150" label="Hashed Error 0x0366"/>
+  <int value="98154" label="Hashed Error 0x036a"/>
+  <int value="98155" label="Hashed Error 0x036b"/>
+  <int value="98157" label="Hashed Error 0x036d"/>
+  <int value="98158" label="Hashed Error 0x036e"/>
+  <int value="98160" label="Hashed Error 0x0370"/>
+  <int value="98161" label="Hashed Error 0x0371"/>
+  <int value="98162" label="Hashed Error 0x0372"/>
+  <int value="98164" label="Hashed Error 0x0374"/>
+  <int value="98165" label="Hashed Error 0x0375"/>
+  <int value="98166" label="Hashed Error 0x0376"/>
+  <int value="98167" label="Hashed Error 0x0377"/>
+  <int value="98168" label="Hashed Error 0x0378"/>
+  <int value="98169" label="Hashed Error 0x0379"/>
+  <int value="98173" label="Hashed Error 0x037d"/>
+  <int value="98174" label="Hashed Error 0x037e"/>
+  <int value="98175" label="Hashed Error 0x037f"/>
+  <int value="98176" label="Hashed Error 0x0380"/>
+  <int value="98177" label="Hashed Error 0x0381"/>
+  <int value="98178" label="Hashed Error 0x0382"/>
+  <int value="98180" label="Hashed Error 0x0384"/>
+  <int value="98182" label="Hashed Error 0x0386"/>
+  <int value="98184" label="Hashed Error 0x0388"/>
+  <int value="98186" label="Hashed Error 0x038a"/>
+  <int value="98189" label="Hashed Error 0x038d"/>
+  <int value="98190" label="Hashed Error 0x038e"/>
+  <int value="98191" label="Hashed Error 0x038f"/>
+  <int value="98193" label="Hashed Error 0x0391"/>
+  <int value="98194" label="Hashed Error 0x0392"/>
+  <int value="98197" label="Hashed Error 0x0395"/>
+  <int value="98198" label="Hashed Error 0x0396"/>
+  <int value="98200" label="Hashed Error 0x0398"/>
+  <int value="98202" label="Hashed Error 0x039a"/>
+  <int value="98203" label="Hashed Error 0x039b"/>
+  <int value="98211" label="Hashed Error 0x03a3"/>
+  <int value="98214" label="Hashed Error 0x03a6"/>
+  <int value="98215" label="Hashed Error 0x03a7"/>
+  <int value="98216" label="Hashed Error 0x03a8"/>
+  <int value="98217" label="Hashed Error 0x03a9"/>
+  <int value="98218" label="Hashed Error 0x03aa"/>
+  <int value="98219" label="Hashed Error 0x03ab"/>
+  <int value="98223" label="Hashed Error 0x03af"/>
+  <int value="98224" label="Hashed Error 0x03b0"/>
+  <int value="98226" label="Hashed Error 0x03b2"/>
+  <int value="98227" label="Hashed Error 0x03b3"/>
+  <int value="98232" label="Hashed Error 0x03b8"/>
+  <int value="98234" label="Hashed Error 0x03ba"/>
+  <int value="98235" label="Hashed Error 0x03bb"/>
+  <int value="98236" label="Hashed Error 0x03bc"/>
+  <int value="98239" label="Hashed Error 0x03bf"/>
+  <int value="98241" label="Hashed Error 0x03c1"/>
+  <int value="98242" label="Hashed Error 0x03c2"/>
+  <int value="98243" label="Hashed Error 0x03c3"/>
+  <int value="98246" label="Hashed Error 0x03c6"/>
+  <int value="98248" label="Hashed Error 0x03c8"/>
+  <int value="98249" label="Hashed Error 0x03c9"/>
+  <int value="98253" label="Hashed Error 0x03cd"/>
+  <int value="98254" label="Hashed Error 0x03ce"/>
+  <int value="98255" label="Hashed Error 0x03cf"/>
+  <int value="98256" label="Hashed Error 0x03d0"/>
+  <int value="98259" label="Hashed Error 0x03d3"/>
+  <int value="98263" label="Hashed Error 0x03d7"/>
+  <int value="98264" label="Hashed Error 0x03d8"/>
+  <int value="98266" label="Hashed Error 0x03da"/>
+  <int value="98267" label="Hashed Error 0x03db"/>
+  <int value="98269" label="Hashed Error 0x03dd"/>
+  <int value="98270" label="Hashed Error 0x03de"/>
+  <int value="98272" label="Hashed Error 0x03e0"/>
   <int value="98273" label="Hashed Error 0x03e1"/>
+  <int value="98277" label="Hashed Error 0x03e5"/>
+  <int value="98278" label="Hashed Error 0x03e6"/>
+  <int value="98280" label="Hashed Error 0x03e8"/>
+  <int value="98281" label="Hashed Error 0x03e9"/>
+  <int value="98283" label="Hashed Error 0x03eb"/>
+  <int value="98286" label="Hashed Error 0x03ee"/>
+  <int value="98287" label="Hashed Error 0x03ef"/>
   <int value="98290" label="Hashed Error 0x03f2"/>
+  <int value="98293" label="Hashed Error 0x03f5"/>
+  <int value="98295" label="Hashed Error 0x03f7"/>
+  <int value="98301" label="Hashed Error 0x03fd"/>
+  <int value="98302" label="Hashed Error 0x03fe"/>
+  <int value="98303" label="Hashed Error 0x03ff"/>
   <int value="102401" label="SAPI_RC_INVALID_SESSIONS"/>
   <int value="102404" label="SAPI_RC_BAD_PARAMETER"/>
   <int value="102408" label="SAPI_RC_NO_RESPONSE_RECEIVED"/>
