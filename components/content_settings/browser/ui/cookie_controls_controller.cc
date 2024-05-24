@@ -341,6 +341,11 @@ int CookieControlsController::GetStatefulBounceCount() const {
 }
 
 bool CookieControlsController::GetIsSubresourceBlocked() const {
+  // Check WebContents are valid. A possible race condition on Android causes
+  // this to be called before WebContents are instantiated.
+  if (GetWebContents() == nullptr) {
+    return false;
+  }
   auto* fpf_web_contents_helper = fingerprinting_protection_filter::
       FingerprintingProtectionWebContentsHelper::FromWebContents(
           GetWebContents());
