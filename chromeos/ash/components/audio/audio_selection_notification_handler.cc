@@ -201,16 +201,15 @@ void AudioSelectionNotificationHandler::ShowNotification(
     case NotificationType::kMultipleSources:
       title_message_id = l10n_util::GetStringUTF16(
           IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_TITLE);
-      // TODO(zhangwenyu): Check with UX how to handle rare case where existing
-      // devices' name is not available.
-      body_message_id = l10n_util::GetStringFUTF16(
-          IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_BODY,
-          base::UTF8ToUTF16(active_input_device_name.has_value()
-                                ? active_input_device_name.value()
-                                : ""),
-          base::UTF8ToUTF16(active_output_device_name.has_value()
-                                ? active_output_device_name.value()
-                                : ""));
+      body_message_id =
+          active_input_device_name.has_value() &&
+                  active_output_device_name.has_value()
+              ? l10n_util::GetStringFUTF16(
+                    IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_BODY,
+                    base::UTF8ToUTF16(active_input_device_name.value()),
+                    base::UTF8ToUTF16(active_output_device_name.value()))
+              : l10n_util::GetStringUTF16(
+                    IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_BODY_WITH_NAME_UNAVAILABLE);
       buttons_info.emplace_back(
           l10n_util::GetStringUTF16(IDS_ASH_AUDIO_SELECTION_BUTTON_SETTINGS));
       notification_event =

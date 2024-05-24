@@ -465,6 +465,57 @@ TEST_F(AudioSelectionNotificationHandlerTest,
 }
 
 // Tests audio selection notification with multiple audio sources displays
+// correctly, when current active device name not available.
+TEST_F(AudioSelectionNotificationHandlerTest,
+       Notification_MultipleSources_NameUnavailable) {
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  // Plug a USB input and a USB output device from different sources.
+  const std::string input_device_name = "CS201 USB AUDIO: USB Audio:2,0: Mic";
+  AudioDeviceList hotplug_input_devices = {AudioDevice(NewNodeWithName(
+      /*is_input=*/true, "USB", input_device_name))};
+  const std::string output_device_name =
+      "Razer USB Sound Card: USB Audio:2,0: Speaker";
+  AudioDeviceList hotplug_output_devices = {AudioDevice(
+      NewNodeWithName(/*is_input=*/false, "USB", output_device_name))};
+
+  // No notification event metrics are fired before showing notification.
+  histogram_tester().ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionNotification, 0);
+
+  audio_selection_notification_handler().ShowAudioSelectionNotification(
+      hotplug_input_devices, hotplug_output_devices,
+      /*active_input_device_name=*/std::nullopt,
+      /*active_output_device_name=*/std::nullopt,
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice),
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::OpenSettingsAudioPage));
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
+  EXPECT_EQ(1u, GetNotificationCount());
+  std::optional<std::u16string> title = GetNotificationTitle();
+  EXPECT_TRUE(title.has_value());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_TITLE),
+      title.value());
+  std::optional<std::u16string> message = GetNotificationMessage();
+  EXPECT_TRUE(message.has_value());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_BODY_WITH_NAME_UNAVAILABLE),
+      message.value());
+
+  // Notification event metrics are fired after showing notification.
+  histogram_tester().ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionNotification, 1);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionNotification,
+      AudioDeviceMetricsHandler::AudioSelectionNotificationEvents::
+          kNotificationWithMultipleSourcesDevicesShowsUp,
+      1);
+}
+
+// Tests audio selection notification with multiple audio sources displays
 // correctly.
 TEST_F(AudioSelectionNotificationHandlerTest,
        Notification_MultipleSources_DifferentAudioTypes) {
