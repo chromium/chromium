@@ -716,7 +716,6 @@ void SplitViewDivider::RefreshStackingOrder() {
   wm::AddTransientChild(top_window, divider_window);
 
   top_window_parent->StackChildAbove(divider_window, top_window);
-  divider_window->Show();
 }
 
 void SplitViewDivider::StartObservingTransientChild(aura::Window* transient) {
