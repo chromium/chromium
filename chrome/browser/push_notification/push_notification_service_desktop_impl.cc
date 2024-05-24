@@ -146,15 +146,16 @@ void PushNotificationServiceDesktopImpl::OnTokenReceived(
     instance_id::InstanceID::Result result) {
   if (result != instance_id::InstanceID::Result::SUCCESS) {
     LOG(ERROR) << "Failed to retrieve GCM token: " << result;
-
+    metrics::RecordPushNotificationGcmTokenRetrievalResult(/*success=*/false);
     initialization_on_demand_scheduler_->HandleResult(/*success=*/false);
     return;
   }
 
-  VLOG(1) << "Successfully retrieved GCM token. ";
+  metrics::RecordPushNotificationGcmTokenRetrievalResult(/*success=*/true);
   metrics::RecordPushNotificationServiceTimeToRetrieveToken(
       /*total_retrieval_time=*/base::TimeTicks::Now() -
       token_request_start_time);
+  VLOG(1) << "Successfully retrieved GCM token. ";
   token_ = token;
 
   // Add `PushNotificationService` as a GCM app handler.

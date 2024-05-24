@@ -2189,6 +2189,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PushNotification.ChromeOS.GCM.Token.RetrievalResult"
+    enum="BooleanSuccess" expires_after="2025-05-05">
+  <owner>akingsb@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of a GCM token retrieval. Emitted in the
+    initialization flow after token has been retrieved.
+  </summary>
+</histogram>
+
 <histogram name="PushNotification.ChromeOS.GCM.Token.RetrievalTime" units="ms"
     expires_after="2025-05-05">
   <owner>akingsb@chromium.org</owner>
