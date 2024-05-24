@@ -4471,7 +4471,17 @@ bool RenderProcessHostImpl::IsSuitableHost(
     // where this case can happen is when the spare RenderProcessHost gets
     // used.
     CHECK(!host_has_web_ui_bindings);
-    CHECK(process_lock.is_invalid());
+    // TODO(crbug.com/40889283): This CHECK is failing in the wild, so set some
+    // crash keys to help figure out why.
+    if (!process_lock.is_invalid()) {
+      SCOPED_CRASH_KEY_STRING256("Bug40889283", "process_lock",
+                                 process_lock.ToString());
+      SCOPED_CRASH_KEY_STRING256("Bug40889283", "site_info",
+                                 site_info.GetDebugString());
+      CHECK(false) << "IsSuitableHost found a process that is marked as unused "
+                      "but has a valid process lock: "
+                   << process_lock;
+    }
   } else {
     // WebUI checks.
     bool url_is_for_web_ui =
