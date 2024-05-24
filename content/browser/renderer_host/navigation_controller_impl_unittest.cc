@@ -442,7 +442,7 @@ TEST_F(NavigationControllerTest, GoToOffset) {
     NUM_TESTS = 5,
   };
 
-  const int test_offsets[NUM_TESTS] = {
+  const std::array<int, NUM_TESTS> test_offsets = {
       GO_TO_MIDDLE_PAGE, GO_FORWARDS, GO_BACKWARDS, GO_TO_BEGINNING, GO_TO_END};
 
   if (IsBackForwardCacheEnabled()) {

@@ -80,13 +80,12 @@ const char* PointState(blink::WebTouchPoint::State state) {
 
 void PrintTouchList(TestRunner* test_runner,
                     WebFrameTestProxy& frame_proxy,
-                    const blink::WebTouchPoint* points,
-                    int length) {
-  for (int i = 0; i < length; ++i) {
+                    base::span<const blink::WebTouchPoint> points) {
+  for (const blink::WebTouchPoint& point : points) {
     test_runner->PrintMessage(
-        base::StringPrintf(
-            "* %.2f, %.2f: %s\n", points[i].PositionInWidget().x(),
-            points[i].PositionInWidget().y(), PointState(points[i].state)),
+        base::StringPrintf("* %.2f, %.2f: %s\n", point.PositionInWidget().x(),
+                           point.PositionInWidget().y(),
+                           PointState(point.state)),
         frame_proxy);
   }
 }
@@ -97,8 +96,8 @@ void PrintEventDetails(TestRunner* test_runner,
   if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
     const blink::WebTouchEvent& touch =
         static_cast<const blink::WebTouchEvent&>(event);
-    PrintTouchList(test_runner, frame_proxy, touch.touches,
-                   touch.touches_length);
+    PrintTouchList(test_runner, frame_proxy,
+                   base::span(touch.touches).first(touch.touches_length));
   } else if (blink::WebInputEvent::IsMouseEventType(event.GetType()) ||
              event.GetType() == blink::WebInputEvent::Type::kMouseWheel) {
     const blink::WebMouseEvent& mouse =

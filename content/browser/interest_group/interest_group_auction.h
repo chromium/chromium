@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/additional_bid_result.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
@@ -335,8 +336,9 @@ class CONTENT_EXPORT InterestGroupAuction
     // non-k-anonymous enforced bid when k-anonymity enforcement is active.
     PrivateAggregationRequests non_kanon_private_aggregation_requests;
 
-    PrivateAggregationTimings private_aggregation_timings[static_cast<int>(
-        PrivateAggregationPhase::kNumPhases)];
+    std::array<PrivateAggregationTimings,
+               base::checked_cast<size_t>(PrivateAggregationPhase::kNumPhases)>
+        private_aggregation_timings;
 
     PrivateAggregationTimings& pa_timings(PrivateAggregationPhase phase) {
       return private_aggregation_timings[static_cast<int>(phase)];

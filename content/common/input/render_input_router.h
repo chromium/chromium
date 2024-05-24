@@ -161,9 +161,9 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
   // TODO(wjmaclean) Remove the code for supporting resending gesture events
   // when WebView transitions to OOPIF and BrowserPlugin is removed.
   // http://crbug.com/533069
-  bool is_in_gesture_scroll_[static_cast<int>(
-                                 blink::WebGestureDevice::kMaxValue) +
-                             1] = {false};
+  std::array<bool,
+             base::checked_cast<size_t>(blink::WebGestureDevice::kMaxValue) + 1>
+      is_in_gesture_scroll_ = {{false}};
   bool is_in_touchpad_gesture_fling_ = false;
 
   raw_ptr<InputRouterImplClient> input_router_impl_client_;

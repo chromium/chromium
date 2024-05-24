@@ -267,12 +267,10 @@ enum IncludedTouchPointTypes {
   ACTIVE,  // Only pointers that are currently down.
   CHANGED  // Only pointers that have changed since the previous event.
 };
-void SetPPTouchPoints(const WebTouchPoint* touches,
-                      uint32_t touches_length,
+void SetPPTouchPoints(base::span<const WebTouchPoint> touches,
                       IncludedTouchPointTypes included_types,
                       std::vector<TouchPointWithTilt>* result) {
-  for (uint32_t i = 0; i < touches_length; i++) {
-    const WebTouchPoint& touch_point = touches[i];
+  for (const WebTouchPoint& touch_point : touches) {
     if (included_types == ACTIVE &&
         (touch_point.state == WebTouchPoint::State::kStateReleased ||
          touch_point.state == WebTouchPoint::State::kStateCancelled)) {
@@ -315,12 +313,15 @@ void AppendTouchEvent(const WebInputEvent& event,
     }
   }
 
-  SetPPTouchPoints(touch_event.touches, touch_event.touches_length, ACTIVE,
-                   &result.touches);
-  SetPPTouchPoints(touch_event.touches, touch_event.touches_length, CHANGED,
-                   &result.changed_touches);
-  SetPPTouchPoints(touch_event.touches, touch_event.touches_length, ALL,
-                   &result.target_touches);
+  SetPPTouchPoints(
+      base::make_span(touch_event.touches).first(touch_event.touches_length),
+      ACTIVE, &result.touches);
+  SetPPTouchPoints(
+      base::make_span(touch_event.touches).first(touch_event.touches_length),
+      CHANGED, &result.changed_touches);
+  SetPPTouchPoints(
+      base::make_span(touch_event.touches).first(touch_event.touches_length),
+      ALL, &result.target_touches);
 
   result_events->push_back(result);
 }
@@ -407,12 +408,12 @@ WebTouchEvent* BuildTouchEvent(const InputEventData& event) {
 
   // First add all changed touches, then add only the remaining unset
   // (stationary) touches.
-  SetWebTouchPointsIfNotYetSet(event.changed_touches, state, web_event->touches,
+  SetWebTouchPointsIfNotYetSet(event.changed_touches, state,
+                               web_event->touches.data(),
                                &web_event->touches_length);
-  SetWebTouchPointsIfNotYetSet(event.touches,
-                               WebTouchPoint::State::kStateStationary,
-                               web_event->touches, &web_event->touches_length);
-
+  SetWebTouchPointsIfNotYetSet(
+      event.touches, WebTouchPoint::State::kStateStationary,
+      web_event->touches.data(), &web_event->touches_length);
   return web_event;
 }
 

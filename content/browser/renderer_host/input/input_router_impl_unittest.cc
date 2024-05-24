@@ -1060,37 +1060,36 @@ TEST_F(InputRouterImplTest, TouchTypesIgnoringAck) {
 TEST_F(InputRouterImplTest, DISABLED_GestureTypesIgnoringAck) {
   // We test every gesture type, ensuring that the stream of gestures is valid.
 
-  const WebInputEvent::Type eventTypes[] = {
-      WebInputEvent::Type::kGestureTapDown,
-      WebInputEvent::Type::kGestureShowPress,
-      WebInputEvent::Type::kGestureTapCancel,
-      WebInputEvent::Type::kGestureScrollBegin,
-      WebInputEvent::Type::kGestureFlingStart,
-      WebInputEvent::Type::kGestureFlingCancel,
-      WebInputEvent::Type::kGestureTapDown,
-      WebInputEvent::Type::kGestureTap,
-      WebInputEvent::Type::kGestureTapDown,
-      WebInputEvent::Type::kGestureLongPress,
-      WebInputEvent::Type::kGestureTapCancel,
-      WebInputEvent::Type::kGestureLongTap,
-      WebInputEvent::Type::kGestureTapDown,
-      WebInputEvent::Type::kGestureTapUnconfirmed,
-      WebInputEvent::Type::kGestureTapCancel,
-      WebInputEvent::Type::kGestureTapDown,
-      WebInputEvent::Type::kGestureDoubleTap,
-      WebInputEvent::Type::kGestureTapDown,
-      WebInputEvent::Type::kGestureTapCancel,
-      WebInputEvent::Type::kGestureTwoFingerTap,
-      WebInputEvent::Type::kGestureTapDown,
-      WebInputEvent::Type::kGestureTapCancel,
-      WebInputEvent::Type::kGestureScrollBegin,
-      WebInputEvent::Type::kGestureScrollUpdate,
-      WebInputEvent::Type::kGesturePinchBegin,
-      WebInputEvent::Type::kGesturePinchUpdate,
-      WebInputEvent::Type::kGesturePinchEnd,
-      WebInputEvent::Type::kGestureScrollEnd};
-  for (size_t i = 0; i < std::size(eventTypes); ++i) {
-    WebInputEvent::Type type = eventTypes[i];
+  const auto eventTypes = std::to_array<WebInputEvent::Type>(
+      {WebInputEvent::Type::kGestureTapDown,
+       WebInputEvent::Type::kGestureShowPress,
+       WebInputEvent::Type::kGestureTapCancel,
+       WebInputEvent::Type::kGestureScrollBegin,
+       WebInputEvent::Type::kGestureFlingStart,
+       WebInputEvent::Type::kGestureFlingCancel,
+       WebInputEvent::Type::kGestureTapDown,
+       WebInputEvent::Type::kGestureTap,
+       WebInputEvent::Type::kGestureTapDown,
+       WebInputEvent::Type::kGestureLongPress,
+       WebInputEvent::Type::kGestureTapCancel,
+       WebInputEvent::Type::kGestureLongTap,
+       WebInputEvent::Type::kGestureTapDown,
+       WebInputEvent::Type::kGestureTapUnconfirmed,
+       WebInputEvent::Type::kGestureTapCancel,
+       WebInputEvent::Type::kGestureTapDown,
+       WebInputEvent::Type::kGestureDoubleTap,
+       WebInputEvent::Type::kGestureTapDown,
+       WebInputEvent::Type::kGestureTapCancel,
+       WebInputEvent::Type::kGestureTwoFingerTap,
+       WebInputEvent::Type::kGestureTapDown,
+       WebInputEvent::Type::kGestureTapCancel,
+       WebInputEvent::Type::kGestureScrollBegin,
+       WebInputEvent::Type::kGestureScrollUpdate,
+       WebInputEvent::Type::kGesturePinchBegin,
+       WebInputEvent::Type::kGesturePinchUpdate,
+       WebInputEvent::Type::kGesturePinchEnd,
+       WebInputEvent::Type::kGestureScrollEnd});
+  for (WebInputEvent::Type type : eventTypes) {
     if (type == WebInputEvent::Type::kGestureFlingStart ||
         type == WebInputEvent::Type::kGestureFlingCancel) {
       SimulateGestureEvent(type, blink::WebGestureDevice::kTouchscreen);
@@ -1176,19 +1175,14 @@ TEST_F(InputRouterImplTest, MouseTypesIgnoringAck) {
 // Guard against breaking changes to the list of ignored event ack types in
 // |WebInputEventTraits::ShouldBlockEventStream|.
 TEST_F(InputRouterImplTest, RequiredEventAckTypes) {
-  const WebInputEvent::Type kRequiredEventAckTypes[] = {
-      WebInputEvent::Type::kMouseMove,
-      WebInputEvent::Type::kMouseWheel,
-      WebInputEvent::Type::kRawKeyDown,
-      WebInputEvent::Type::kKeyDown,
-      WebInputEvent::Type::kKeyUp,
-      WebInputEvent::Type::kChar,
-      WebInputEvent::Type::kGestureScrollBegin,
-      WebInputEvent::Type::kGestureScrollUpdate,
-      WebInputEvent::Type::kTouchStart,
-      WebInputEvent::Type::kTouchMove};
-  for (size_t i = 0; i < std::size(kRequiredEventAckTypes); ++i) {
-    const WebInputEvent::Type required_ack_type = kRequiredEventAckTypes[i];
+  const auto kRequiredEventAckTypes = std::to_array<WebInputEvent::Type>(
+      {WebInputEvent::Type::kMouseMove, WebInputEvent::Type::kMouseWheel,
+       WebInputEvent::Type::kRawKeyDown, WebInputEvent::Type::kKeyDown,
+       WebInputEvent::Type::kKeyUp, WebInputEvent::Type::kChar,
+       WebInputEvent::Type::kGestureScrollBegin,
+       WebInputEvent::Type::kGestureScrollUpdate,
+       WebInputEvent::Type::kTouchStart, WebInputEvent::Type::kTouchMove});
+  for (WebInputEvent::Type required_ack_type : kRequiredEventAckTypes) {
     ASSERT_TRUE(ShouldBlockEventStream(GetEventWithType(required_ack_type)))
         << WebInputEvent::GetName(required_ack_type);
   }

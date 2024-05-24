@@ -4580,7 +4580,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Indicates the number of media streams (audio or video) that are tracked
   // via OnMediaStreamAdded/OnMediaStreamRemoved, split by the stream type.
-  int media_stream_counts_[MediaStreamType::kCount] = {};
+  std::array<int, MediaStreamType::kCount> media_stream_counts_ = {};
 
   // If true, then this RenderFrameHost is waiting to update its
   // LifecycleStateImpl. Happens when the old RenderFrameHost is waiting to

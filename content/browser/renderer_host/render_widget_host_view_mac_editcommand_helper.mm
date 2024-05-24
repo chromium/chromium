@@ -18,96 +18,95 @@ namespace {
 //
 // This needs to be kept in Sync with WEB_COMMAND list in the WebKit tree at:
 // WebKit/mac/WebView/WebHTMLView.mm .
-const char* const kEditCommands[] = {
-  "alignCenter",
-  "alignJustified",
-  "alignLeft",
-  "alignRight",
-  "copy",
-  "cut",
-  "delete",
-  "deleteBackward",
-  "deleteBackwardByDecomposingPreviousCharacter",
-  "deleteForward",
-  "deleteToBeginningOfLine",
-  "deleteToBeginningOfParagraph",
-  "deleteToEndOfLine",
-  "deleteToEndOfParagraph",
-  "deleteToMark",
-  "deleteWordBackward",
-  "deleteWordForward",
-  "ignoreSpelling",
-  "indent",
-  "insertBacktab",
-  "insertLineBreak",
-  "insertNewline",
-  "insertNewlineIgnoringFieldEditor",
-  "insertParagraphSeparator",
-  "insertTab",
-  "insertTabIgnoringFieldEditor",
-  "makeTextWritingDirectionLeftToRight",
-  "makeTextWritingDirectionNatural",
-  "makeTextWritingDirectionRightToLeft",
-  "moveBackward",
-  "moveBackwardAndModifySelection",
-  "moveDown",
-  "moveDownAndModifySelection",
-  "moveForward",
-  "moveForwardAndModifySelection",
-  "moveLeft",
-  "moveLeftAndModifySelection",
-  "moveParagraphBackwardAndModifySelection",
-  "moveParagraphForwardAndModifySelection",
-  "moveRight",
-  "moveRightAndModifySelection",
-  "moveToBeginningOfDocument",
-  "moveToBeginningOfDocumentAndModifySelection",
-  "moveToBeginningOfLine",
-  "moveToBeginningOfLineAndModifySelection",
-  "moveToBeginningOfParagraph",
-  "moveToBeginningOfParagraphAndModifySelection",
-  "moveToBeginningOfSentence",
-  "moveToBeginningOfSentenceAndModifySelection",
-  "moveToEndOfDocument",
-  "moveToEndOfDocumentAndModifySelection",
-  "moveToEndOfLine",
-  "moveToEndOfLineAndModifySelection",
-  "moveToEndOfParagraph",
-  "moveToEndOfParagraphAndModifySelection",
-  "moveToEndOfSentence",
-  "moveToEndOfSentenceAndModifySelection",
-  "moveUp",
-  "moveUpAndModifySelection",
-  "moveWordBackward",
-  "moveWordBackwardAndModifySelection",
-  "moveWordForward",
-  "moveWordForwardAndModifySelection",
-  "moveWordLeft",
-  "moveWordLeftAndModifySelection",
-  "moveWordRight",
-  "moveWordRightAndModifySelection",
-  "outdent",
-  "pageDown",
-  "pageDownAndModifySelection",
-  "pageUp",
-  "pageUpAndModifySelection",
-  "selectAll",
-  "selectLine",
-  "selectParagraph",
-  "selectSentence",
-  "selectToMark",
-  "selectWord",
-  "setMark",
-  "showGuessPanel",
-  "subscript",
-  "superscript",
-  "swapWithMark",
-  "transpose",
-  "underline",
-  "unscript",
-  "yank",
-  "yankAndSelect"
-};
+const auto kEditCommands =
+    std::to_array<const char*>({"alignCenter",
+                                "alignJustified",
+                                "alignLeft",
+                                "alignRight",
+                                "copy",
+                                "cut",
+                                "delete",
+                                "deleteBackward",
+                                "deleteBackwardByDecomposingPreviousCharacter",
+                                "deleteForward",
+                                "deleteToBeginningOfLine",
+                                "deleteToBeginningOfParagraph",
+                                "deleteToEndOfLine",
+                                "deleteToEndOfParagraph",
+                                "deleteToMark",
+                                "deleteWordBackward",
+                                "deleteWordForward",
+                                "ignoreSpelling",
+                                "indent",
+                                "insertBacktab",
+                                "insertLineBreak",
+                                "insertNewline",
+                                "insertNewlineIgnoringFieldEditor",
+                                "insertParagraphSeparator",
+                                "insertTab",
+                                "insertTabIgnoringFieldEditor",
+                                "makeTextWritingDirectionLeftToRight",
+                                "makeTextWritingDirectionNatural",
+                                "makeTextWritingDirectionRightToLeft",
+                                "moveBackward",
+                                "moveBackwardAndModifySelection",
+                                "moveDown",
+                                "moveDownAndModifySelection",
+                                "moveForward",
+                                "moveForwardAndModifySelection",
+                                "moveLeft",
+                                "moveLeftAndModifySelection",
+                                "moveParagraphBackwardAndModifySelection",
+                                "moveParagraphForwardAndModifySelection",
+                                "moveRight",
+                                "moveRightAndModifySelection",
+                                "moveToBeginningOfDocument",
+                                "moveToBeginningOfDocumentAndModifySelection",
+                                "moveToBeginningOfLine",
+                                "moveToBeginningOfLineAndModifySelection",
+                                "moveToBeginningOfParagraph",
+                                "moveToBeginningOfParagraphAndModifySelection",
+                                "moveToBeginningOfSentence",
+                                "moveToBeginningOfSentenceAndModifySelection",
+                                "moveToEndOfDocument",
+                                "moveToEndOfDocumentAndModifySelection",
+                                "moveToEndOfLine",
+                                "moveToEndOfLineAndModifySelection",
+                                "moveToEndOfParagraph",
+                                "moveToEndOfParagraphAndModifySelection",
+                                "moveToEndOfSentence",
+                                "moveToEndOfSentenceAndModifySelection",
+                                "moveUp",
+                                "moveUpAndModifySelection",
+                                "moveWordBackward",
+                                "moveWordBackwardAndModifySelection",
+                                "moveWordForward",
+                                "moveWordForwardAndModifySelection",
+                                "moveWordLeft",
+                                "moveWordLeftAndModifySelection",
+                                "moveWordRight",
+                                "moveWordRightAndModifySelection",
+                                "outdent",
+                                "pageDown",
+                                "pageDownAndModifySelection",
+                                "pageUp",
+                                "pageUpAndModifySelection",
+                                "selectAll",
+                                "selectLine",
+                                "selectParagraph",
+                                "selectSentence",
+                                "selectToMark",
+                                "selectWord",
+                                "setMark",
+                                "showGuessPanel",
+                                "subscript",
+                                "superscript",
+                                "swapWithMark",
+                                "transpose",
+                                "underline",
+                                "unscript",
+                                "yank",
+                                "yankAndSelect"});
 
 // This function is installed via the objc runtime as the implementation of all
 // the various editing selectors.
@@ -179,8 +178,8 @@ NSString* RenderWidgetHostViewMacEditCommandHelper::CommandNameForSelector(
 
 RenderWidgetHostViewMacEditCommandHelper::
     RenderWidgetHostViewMacEditCommandHelper() {
-  for (size_t i = 0; i < std::size(kEditCommands); ++i) {
-    edit_command_set_.insert(kEditCommands[i]);
+  for (const char* command : kEditCommands) {
+    edit_command_set_.insert(command);
   }
 }
 
@@ -212,9 +211,9 @@ bool RenderWidgetHostViewMacEditCommandHelper::IsMenuItemEnabled(
 // static
 void RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(
     Class klass) {
-  for (size_t i = 0; i < std::size(kEditCommands); ++i) {
+  for (const char* command : kEditCommands) {
     // Append trailing ':' to command name to get selector name.
-    NSString* sel_str = [NSString stringWithFormat:@"%s:", kEditCommands[i]];
+    NSString* sel_str = [NSString stringWithFormat:@"%s:", command];
 
     SEL edit_selector = NSSelectorFromString(sel_str);
     // May want to use @encode() for the last parameter to this method.
@@ -232,8 +231,8 @@ RenderWidgetHostViewMacEditCommandHelper::GetEditSelectorNamesForTesting() {
   size_t num_edit_commands = std::size(kEditCommands);
   NSMutableArray* ret = [NSMutableArray arrayWithCapacity:num_edit_commands];
 
-  for (size_t i = 0; i < num_edit_commands; ++i) {
-      [ret addObject:[NSString stringWithUTF8String:kEditCommands[i]]];
+  for (const char* command : kEditCommands) {
+    [ret addObject:[NSString stringWithUTF8String:command]];
   }
 
   return ret;

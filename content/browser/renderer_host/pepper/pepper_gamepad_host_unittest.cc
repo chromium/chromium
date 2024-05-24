@@ -110,10 +110,12 @@ TEST_F(PepperGamepadHostTest, WaitForReply) {
     // Gamepad data is packed, so `value` is misaligned. `EXPECT_EQ` internally
     // takes a reference to the value, so we must copy into a correctly-aligned
     // temporary first.
-    EXPECT_EQ(double{button_down_data.items[0].buttons[i].value},
-              double{buffer->data.items[0].buttons[i].value});
-    EXPECT_EQ(button_down_data.items[0].buttons[i].pressed,
-              buffer->data.items[0].buttons[i].pressed);
+    // TODO(crbug.com/342213636): Rewrite to remove the need for UNSAFE_BUFFERS
+    // annotation.
+    UNSAFE_BUFFERS(EXPECT_EQ(double{button_down_data.items[0].buttons[i].value},
+                             double{buffer->data.items[0].buttons[i].value});
+                   EXPECT_EQ(button_down_data.items[0].buttons[i].pressed,
+                             buffer->data.items[0].buttons[i].pressed););
   }
 
   // Duplicate requests should be denied.

@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/cstring_view.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -812,12 +813,12 @@ void PepperTCPSocketMessageFilter::TryWrite() {
 
     DCHECK(write_watcher_);
 
-    size_t num_bytes =
-        pending_write_data_.size() - pending_write_bytes_written_;
+    auto view = base::cstring_view(pending_write_data_);
+    view.remove_prefix(pending_write_bytes_written_);
+    size_t num_bytes = view.size();
     DCHECK_GT(num_bytes, 0u);
-    int mojo_result = send_stream_->WriteData(
-        pending_write_data_.data() + pending_write_bytes_written_, &num_bytes,
-        MOJO_WRITE_DATA_FLAG_NONE);
+    int mojo_result = send_stream_->WriteData(view.c_str(), &num_bytes,
+                                              MOJO_WRITE_DATA_FLAG_NONE);
     if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
       write_watcher_->ArmOrNotify();
       break;

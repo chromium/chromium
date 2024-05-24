@@ -644,7 +644,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
     }
     // Ensure the renderer didn't explode :).
     {
-      std::u16string title_when_done[] = {u"done 0", u"done 1"};
+      const auto title_when_done =
+          std::to_array<std::u16string>({u"done 0", u"done 1"});
       TitleWatcher title_watcher(shell()->web_contents(), title_when_done[i]);
       EXPECT_TRUE(
           ExecJs(root_frame_host, JsReplace("document.title='done $1'", i)));

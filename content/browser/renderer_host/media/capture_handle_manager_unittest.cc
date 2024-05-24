@@ -134,11 +134,11 @@ class CaptureHandleManagerTest : public RenderViewHostImplTestHarness {
 
  private:
   static constexpr size_t kMaxCallbackHelpers = 10;
-  CallbackHelper callback_helpers_[kMaxCallbackHelpers];
+  std::array<CallbackHelper, kMaxCallbackHelpers> callback_helpers_;
   size_t callback_helper_count_ = 0;
 
   static constexpr size_t kMaxDevices = 10;
-  MediaStreamDevice devices_[kMaxDevices];
+  std::array<MediaStreamDevice, kMaxDevices> devices_;
   size_t device_count_ = 0;
 };
 

@@ -3432,9 +3432,11 @@ void MediaStreamManager::DevicesEnumerated(
       label.c_str(), request->requester_id,
       RequestTypeToString(request->request_type())));
 
-  bool requested[] = {requested_audio_input, requested_video_input};
-  MediaStreamType stream_types[] = {MediaStreamType::DEVICE_AUDIO_CAPTURE,
-                                    MediaStreamType::DEVICE_VIDEO_CAPTURE};
+  const auto requested =
+      std::to_array<bool>({requested_audio_input, requested_video_input});
+  const auto stream_types =
+      std::to_array<MediaStreamType>({MediaStreamType::DEVICE_AUDIO_CAPTURE,
+                                      MediaStreamType::DEVICE_VIDEO_CAPTURE});
   for (size_t i = 0; i < std::size(requested); ++i) {
     if (!requested[i]) {
       continue;

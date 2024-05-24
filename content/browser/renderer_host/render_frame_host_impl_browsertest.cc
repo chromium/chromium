@@ -6150,10 +6150,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Each entry is of the frame "LABEL:ILR1ILR2..." where ILR stands for
   // immediate local root.
-  std::string immediate_local_roots[] = {
-      "A0:B1B2C2D2C5", "A1:B2D2", "B1:C3C4", "A2:C2C5", "B2:D1",
-      "A3:D2",         "B3:C3C4", "A4:C5",   "C2:",     "D1:",
-      "D2:",           "C3:",     "C4:",     "C5:"};
+  const auto immediate_local_roots = std::to_array<std::string>(
+      {"A0:B1B2C2D2C5", "A1:B2D2", "B1:C3C4", "A2:C2C5", "B2:D1", "A3:D2",
+       "B3:C3C4", "A4:C5", "C2:", "D1:", "D2:", "C3:", "C4:", "C5:"});
 
   std::map<RenderFrameHostImpl*, std::string>
       frame_to_immediate_local_roots_map;

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -457,9 +458,7 @@ int32_t PepperUDPSocketMessageFilter::OnMsgSendTo(
     return PP_ERROR_ADDRESS_INVALID;
   }
 
-  const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data.data());
-  std::vector<uint8_t> data_vector(data_ptr, data_ptr + num_bytes);
-
+  std::vector<uint8_t> data_vector = base::ToVector(base::as_byte_span(data));
   pending_sends_.push(PendingSend(net::IPAddress(address), port,
                                   std::move(data_vector),
                                   context->MakeReplyMessageContext()));

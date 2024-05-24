@@ -47,9 +47,9 @@ namespace {
 
 // These are the fonts that Blink tries to load in getLastResortFallbackFont,
 // and will crash if none can be loaded.
-const wchar_t* kLastResortFontNames[] = {
-    L"Sans",     L"Arial",   L"MS UI Gothic",    L"Microsoft Sans Serif",
-    L"Segoe UI", L"Calibri", L"Times New Roman", L"Courier New"};
+const auto kLastResortFontNames = std::to_array<const wchar_t*>(
+    {L"Sans", L"Arial", L"MS UI Gothic", L"Microsoft Sans Serif", L"Segoe UI",
+     L"Calibri", L"Times New Roman", L"Courier New"});
 
 struct RequiredFontStyle {
   const char16_t* family_name;
@@ -576,11 +576,10 @@ void DWriteFontProxyImpl::InitializeDirectWrite() {
   }
 
   // Temp code to help track down crbug.com/561873
-  for (size_t font = 0; font < std::size(kLastResortFontNames); font++) {
+  for (const wchar_t* font : kLastResortFontNames) {
     uint32_t font_index = 0;
     BOOL exists = FALSE;
-    if (SUCCEEDED(collection_->FindFamilyName(kLastResortFontNames[font],
-                                              &font_index, &exists)) &&
+    if (SUCCEEDED(collection_->FindFamilyName(font, &font_index, &exists)) &&
         exists && font_index != UINT32_MAX) {
       last_resort_fonts_.push_back(font_index);
     }

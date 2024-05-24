@@ -1105,6 +1105,7 @@ _CONFIG = [
             'gfx::PointF',
             'gfx::Rect',
             'gfx::RectF',
+            'std::array',
         ],
     },
     {

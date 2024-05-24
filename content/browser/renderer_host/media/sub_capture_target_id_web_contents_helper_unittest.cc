@@ -4,6 +4,7 @@
 
 #include "content/browser/media/capture/sub_capture_target_id_web_contents_helper.h"
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -151,19 +152,19 @@ TEST_P(SubCaptureTargetIdWebContentsHelperTest, IsAssociatedWithObservesType) {
 // Test that the limit of `kMaxIdsPerWebContents` is applied independently
 // for different WebContents.
 TEST_P(SubCaptureTargetIdWebContentsHelperTest, MaxIdsPerWebContentsObserved) {
-  const std::unique_ptr<TestWebContents> web_contents[2] = {
-      MakeTestWebContents(), MakeTestWebContents()};
+  auto web_contents = std::to_array<std::unique_ptr<TestWebContents>>(
+      {MakeTestWebContents(), MakeTestWebContents()});
   SubCaptureTargetIdWebContentsHelper::CreateForWebContents(
       web_contents[0].get());
   SubCaptureTargetIdWebContentsHelper::CreateForWebContents(
       web_contents[1].get());
-  SubCaptureTargetIdWebContentsHelper* helpers[2] = {
-      SubCaptureTargetIdWebContentsHelper::FromWebContents(
-          web_contents[0].get()),
-      SubCaptureTargetIdWebContentsHelper::FromWebContents(
-          web_contents[1].get())};
+  auto helpers = std::to_array<SubCaptureTargetIdWebContentsHelper*>(
+      {SubCaptureTargetIdWebContentsHelper::FromWebContents(
+           web_contents[0].get()),
+       SubCaptureTargetIdWebContentsHelper::FromWebContents(
+           web_contents[1].get())});
 
-  std::string ids_str[2][kMaxIdsPerWebContents];
+  std::array<std::array<std::string, kMaxIdsPerWebContents>, 2> ids_str;
 
   // Up to `kMaxIdsPerWebContents` allowed on each WebContents.
   for (size_t web_contents_idx = 0; web_contents_idx < 2; ++web_contents_idx) {
