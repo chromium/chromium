@@ -11,6 +11,11 @@
 -->
 
 <style include="oobe-dialog-host-styles cros-color-overrides">
+  :host-context(body.jelly-enabled) cr-checkbox {
+    --cr-checkbox-checked-box-color: var(--cros-sys-secondary);
+    --cr-checkbox-unchecked-box-color: var(--cros-sys-secondary);
+  }
+
   #appsList {
     column-gap: 16px;
     display: grid;
