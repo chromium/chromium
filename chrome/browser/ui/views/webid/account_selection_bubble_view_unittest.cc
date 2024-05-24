@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/color_parser.h"
 #include "content/public/common/content_features.h"
@@ -1324,4 +1325,20 @@ TEST_F(AccountSelectionBubbleViewTest, BoundsChangedAfterWebContentsDestroyed) {
   // Dialog is somehow still alive and receives OnAnchorBoundsChanged calls.
   // This should not crash.
   dialog()->OnAnchorBoundsChanged();
+}
+
+// Tests that the brand icon view is hidden if the brand icon URL is invalid.
+TEST_F(AccountSelectionBubbleViewTest, InvalidBrandIconUrlHidesBrandIcon) {
+  const std::string kAccountSuffix = "suffix";
+  content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
+      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
+  content::IdentityProviderMetadata idp_metadata;
+  idp_metadata.brand_icon_url = GURL("invalid url");
+  CreateAndShowSingleAccountPicker(
+      /*show_back_button=*/false, account, idp_metadata, kTermsOfServiceUrl);
+
+  views::Label* brand_icon_image_view = static_cast<views::Label*>(
+      GetViewWithClassName(dialog()->children()[0], "BrandIconImageView"));
+  ASSERT_TRUE(brand_icon_image_view);
+  EXPECT_FALSE(brand_icon_image_view->GetVisible());
 }

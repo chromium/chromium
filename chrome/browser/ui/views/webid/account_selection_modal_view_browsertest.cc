@@ -173,6 +173,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     views::View* icon_image =
         static_cast<views::View*>(icon_container_children[0]);
     ASSERT_TRUE(icon_image);
+    EXPECT_TRUE(icon_image->GetVisible());
 
     // Check icon image is of the correct size.
     EXPECT_EQ(icon_image->size(),
@@ -555,4 +556,20 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        RequestPermissionReturningUser) {
   TestRequestPermission(content::IdentityRequestAccount::LoginState::kSignIn);
+}
+
+// Tests that the brand icon view does not hide the brand icon like it does on
+// bubble. This is because we show a placeholder globe icon on modal.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       InvalidBrandIconUrlDoesNotHideBrandIcon) {
+  const std::string kAccountSuffix = "suffix";
+  content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
+      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
+  content::IdentityProviderMetadata idp_metadata;
+  idp_metadata.brand_icon_url = GURL("invalid url");
+  CreateAndShowSingleAccountPicker(
+      /*show_back_button=*/false, account, idp_metadata, kTermsOfServiceUrl);
+
+  // We check that the icon is visible in PerformHeaderChecks.
+  PerformHeaderChecks(dialog()->children()[0]);
 }
