@@ -319,11 +319,6 @@ BASE_FEATURE(kIOSurfaceCapturer,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables the TC39 Array grouping proposal.
-BASE_FEATURE(kJavaScriptArrayGrouping,
-             "JavaScriptArrayGrouping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature that controls whether WebContentsOcclusionChecker should handle
 // occlusion notifications.
 #if BUILDFLAG(IS_MAC)
