@@ -441,6 +441,8 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        nullptr},
       {html_names::kOncloseAttr, kNoWebFeature, event_type_names::kClose,
        nullptr},
+      {html_names::kOncontentvisibilityautostatechangeAttr, kNoWebFeature,
+       event_type_names::kContentvisibilityautostatechange, nullptr},
       {html_names::kOncontextlostAttr, kNoWebFeature,
        event_type_names::kContextlost, nullptr},
       {html_names::kOncontextmenuAttr, kNoWebFeature,
