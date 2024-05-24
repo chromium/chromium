@@ -158,7 +158,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateServerCardSuccess) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
                                    &personal_data_manager_);
 
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
@@ -178,7 +178,7 @@ TEST_F(CreditCardCvcAuthenticatorTest,
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
                                    &personal_data_manager_,
                                    "test_context_token");
 
@@ -205,7 +205,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateVirtualCardSuccess) {
           {CardUnmaskChallengeOptionType::kCvc})[0];
 
   cvc_authenticator_->Authenticate(
-      &card, requester_->GetWeakPtr(), &personal_data_manager_,
+      card, requester_->GetWeakPtr(), &personal_data_manager_,
       "test_vcn_context_token", cvc_challenge_option);
 
   payments::FullCardRequest* full_card_request = GetFullCardRequest();
@@ -243,7 +243,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateVirtualCard_InvalidURL) {
           {CardUnmaskChallengeOptionType::kCvc})[0];
 
   cvc_authenticator_->Authenticate(
-      &card, requester_->GetWeakPtr(), &personal_data_manager_,
+      card, requester_->GetWeakPtr(), &personal_data_manager_,
       "test_vcn_context_token", cvc_challenge_option);
 
   ASSERT_FALSE(GetFullCardRequest()->GetShouldUnmaskCardForTesting());
@@ -262,7 +262,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateNetworkError) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
                                    &personal_data_manager_);
 
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kNetworkError,
@@ -281,7 +281,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticatePermanentFailure) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
                                    &personal_data_manager_);
 
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kPermanentFailure,
@@ -300,7 +300,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateTryAgainFailure) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
                                    &personal_data_manager_);
 
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kTryAgainFailure,
@@ -327,7 +327,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticatePromptClosed) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
                                    &personal_data_manager_);
 
   cvc_authenticator_->OnFullCardRequestFailed(
@@ -350,7 +350,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, VirtualCardAuthenticatePromptClosed) {
       GURL("https://vcncvcretrievaltest.com/"));
 
   cvc_authenticator_->Authenticate(
-      &card, requester_->GetWeakPtr(), &personal_data_manager_,
+      card, requester_->GetWeakPtr(), &personal_data_manager_,
       "test_vcn_context_token",
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kCvc})[0]);

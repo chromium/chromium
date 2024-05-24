@@ -594,17 +594,17 @@ void CreditCardAccessManager::Authenticate(
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
         DCHECK(selected_challenge_option_);
         payments_autofill_client().GetCvcAuthenticator().Authenticate(
-            card_.get(), GetWeakPtr(), &personal_data_manager(),
+            *card_, GetWeakPtr(), &personal_data_manager(),
             virtual_card_unmask_response_details_.context_token,
             *selected_challenge_option_);
       } else if (IsMaskedServerCardRiskBasedAuthAvailable()) {
         CHECK(!risk_based_authentication_response_.context_token.empty());
         payments_autofill_client().GetCvcAuthenticator().Authenticate(
-            card_.get(), GetWeakPtr(), &personal_data_manager(),
+            *card_, GetWeakPtr(), &personal_data_manager(),
             risk_based_authentication_response_.context_token);
       } else {
         payments_autofill_client().GetCvcAuthenticator().Authenticate(
-            card_.get(), GetWeakPtr(), &personal_data_manager());
+            *card_, GetWeakPtr(), &personal_data_manager());
       }
       break;
     }

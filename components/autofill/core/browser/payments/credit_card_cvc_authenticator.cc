@@ -28,23 +28,19 @@ CreditCardCvcAuthenticator::CreditCardCvcAuthenticator(AutofillClient* client)
 CreditCardCvcAuthenticator::~CreditCardCvcAuthenticator() = default;
 
 void CreditCardCvcAuthenticator::Authenticate(
-    const CreditCard* card,
+    const CreditCard& card,
     base::WeakPtr<Requester> requester,
     PersonalDataManager* personal_data_manager,
     std::optional<std::string> context_token,
     std::optional<CardUnmaskChallengeOption> selected_challenge_option) {
   requester_ = requester;
-  if (!card) {
-    return OnFullCardRequestFailed(
-        card->record_type(),
-        payments::FullCardRequest::FailureType::GENERIC_FAILURE);
-  }
+
   full_card_request_ = std::make_unique<payments::FullCardRequest>(
       client_,
       client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface(),
       personal_data_manager);
 
-  CreditCard::RecordType card_record_type = card->record_type();
+  CreditCard::RecordType card_record_type = card.record_type();
   autofill_metrics::LogCvcAuthAttempt(card_record_type);
   if (card_record_type == CreditCard::RecordType::kVirtualCard) {
     // `context_token` and `challenge_option` are required for
@@ -65,12 +61,12 @@ void CreditCardCvcAuthenticator::Authenticate(
     // frame origin, end the card unmasking and treat it as a transient failure.
     if (!last_committed_primary_main_frame_origin.is_valid()) {
       return OnFullCardRequestFailed(
-          card->record_type(), payments::FullCardRequest::FailureType::
-                                   VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE);
+          card.record_type(), payments::FullCardRequest::FailureType::
+                                  VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE);
     }
 
     return full_card_request_->GetFullVirtualCardViaCVC(
-        *card, AutofillClient::UnmaskCardReason::kAutofill,
+        card, AutofillClient::UnmaskCardReason::kAutofill,
         weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
         last_committed_primary_main_frame_origin, *context_token,
         *selected_challenge_option,
@@ -78,7 +74,7 @@ void CreditCardCvcAuthenticator::Authenticate(
   }
 
   full_card_request_->GetFullCard(
-      *card, AutofillClient::UnmaskCardReason::kAutofill,
+      card, AutofillClient::UnmaskCardReason::kAutofill,
       weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
       client_->GetLastCommittedPrimaryMainFrameOrigin(), context_token);
 }

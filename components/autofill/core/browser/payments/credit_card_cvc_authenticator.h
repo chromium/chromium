@@ -90,7 +90,7 @@ class CreditCardCvcAuthenticator
   ~CreditCardCvcAuthenticator() override;
 
   // Authentication
-  void Authenticate(const CreditCard* card,
+  void Authenticate(const CreditCard& card,
                     base::WeakPtr<Requester> requester,
                     PersonalDataManager* personal_data_manager,
                     std::optional<std::string> vcn_context_token = std::nullopt,
