@@ -90,17 +90,11 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
       NSSet<UISceneSession*>* scene_sessions) final;
   void DismissDialogs() final;
   DismissViewCallback PresentAccountDetailsController(
-      id<SystemIdentity> identity,
-      UIViewController* view_controller,
-      bool animated) final;
+      PresentDialogConfiguration configuration) final;
   DismissViewCallback PresentWebAndAppSettingDetailsController(
-      id<SystemIdentity> identity,
-      UIViewController* view_controller,
-      bool animated) final;
+      PresentDialogConfiguration configuration) final;
   DismissViewCallback PresentLinkedServicesSettingsDetailsController(
-      id<SystemIdentity> identity,
-      UIViewController* view_controller,
-      bool animated) final;
+      PresentDialogConfiguration configuration) final;
   id<SystemIdentityInteractionManager> CreateInteractionManager() final;
   void IterateOverIdentities(IdentityIteratorCallback callback) final;
   void ForgetIdentity(id<SystemIdentity> identity,

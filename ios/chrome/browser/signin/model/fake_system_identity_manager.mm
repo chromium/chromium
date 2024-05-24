@@ -183,36 +183,36 @@ void FakeSystemIdentityManager::DismissDialogs() {
 
 FakeSystemIdentityManager::DismissViewCallback
 FakeSystemIdentityManager::PresentAccountDetailsController(
-    id<SystemIdentity> identity,
-    UIViewController* view_controller,
-    bool animated) {
+    PresentDialogConfiguration configuration) {
   UIViewController* account_details_view_controller =
-      [[FakeAccountDetailsViewController alloc] initWithIdentity:identity];
-  [view_controller presentViewController:account_details_view_controller
-                                animated:animated
-                              completion:nil];
-
+      [[FakeAccountDetailsViewController alloc]
+          initWithIdentity:configuration.identity];
+  [configuration.view_controller
+      presentViewController:account_details_view_controller
+                   animated:configuration.animated
+                 completion:nil];
+  ProceduralBlock dismissalCompletion = nil;
+  if (configuration.dismissal_completion) {
+    dismissalCompletion =
+        base::CallbackToBlock(std::move(configuration.dismissal_completion));
+  }
   return base::BindOnce(^(BOOL dismiss_animated) {
     [account_details_view_controller
         dismissViewControllerAnimated:dismiss_animated
-                           completion:nil];
+                           completion:dismissalCompletion];
   });
 }
 
 FakeSystemIdentityManager::DismissViewCallback
 FakeSystemIdentityManager::PresentWebAndAppSettingDetailsController(
-    id<SystemIdentity> identity,
-    UIViewController* view_controller,
-    bool animated) {
+    PresentDialogConfiguration configuration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::DoNothing();
 }
 
 FakeSystemIdentityManager::DismissViewCallback
 FakeSystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
-    id<SystemIdentity> identity,
-    UIViewController* view_controller,
-    bool animated) {
+    PresentDialogConfiguration configuration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::DoNothing();
 }

@@ -47,6 +47,27 @@ class SystemIdentityManager {
     base::Time expiration_time;
   };
 
+  // Struct to hold all the parameters needed to present a dialog like
+  // WebAndAppSettingDetails, AccountDetails or LinkedServicesSettingsDetails.
+  struct PresentDialogConfiguration {
+   public:
+    // Identity to use for the dialog to present.
+    id<SystemIdentity> identity;
+    // View controller who present the dialog.
+    UIViewController* view_controller;
+    // Whether the presentation should be animated or not.
+    bool animated;
+    // Completion block that will be called once the dialog is dismissed.
+    base::OnceClosure dismissal_completion;
+
+    PresentDialogConfiguration();
+    ~PresentDialogConfiguration();
+    PresentDialogConfiguration(PresentDialogConfiguration&&);
+    PresentDialogConfiguration(const PresentDialogConfiguration&) = delete;
+    PresentDialogConfiguration& operator=(const PresentDialogConfiguration&) =
+        delete;
+  };
+
   // Callback invoked for each id<SystemIdentity> when iterating over them
   // with `IterateOverIdentities()`. The returned value can be used to stop
   // the iteration prematurely.
@@ -110,6 +131,39 @@ class SystemIdentityManager {
   void AddObserver(SystemIdentityManagerObserver* observer);
   void RemoveObserver(SystemIdentityManagerObserver* observer);
 
+  // Presents a new Account Details view and returns a callback that can be
+  // used to dismiss the view (can be ignore if not needed). `identity` is the
+  // identity used to present the view, `view_controller` is the view used to
+  // present the details, `animated` controls whether the view is presented
+  // with an animation.
+  // TODO(crbug.com/40056250): Remove virtual for this method.
+  virtual DismissViewCallback PresentAccountDetailsController(
+      id<SystemIdentity> identity,
+      UIViewController* view_controller,
+      bool animated);
+
+  // Presents a new Web and App Setting Details view and returns a callback
+  // that can be used to dismiss the view (can be ignore if not needed).
+  // `identity` is the identity used to present the view, `view_controller`
+  // is the view used to present the details, `animated` controls whether the
+  // view is presented with an animation.
+  // TODO(crbug.com/40056250): Remove virtual for this method.
+  virtual DismissViewCallback PresentWebAndAppSettingDetailsController(
+      id<SystemIdentity> identity,
+      UIViewController* view_controller,
+      bool animated);
+
+  // Presents a new Linked Services Settings Details view and returns a callback
+  // that can be used to dismiss the view (can be ignore if not needed).
+  // `identity` is the identity used to present the view, `view_controller`
+  // is the view used to present the details, `animated` controls whether the
+  // view is presented with an animation.
+  // TODO(crbug.com/40056250): Remove virtual for this method.
+  virtual DismissViewCallback PresentLinkedServicesSettingsDetailsController(
+      id<SystemIdentity> identity,
+      UIViewController* view_controller,
+      bool animated);
+
   // Returns whether signin is supported by the provider.
   virtual bool IsSigninSupported() = 0;
 
@@ -127,36 +181,6 @@ class SystemIdentityManager {
 
   // Dismisses all the dialogs created by the abstracted flows.
   virtual void DismissDialogs() = 0;
-
-  // Presents a new Account Details view and returns a callback that can be
-  // used to dismiss the view (can be ignore if not needed). `identity` is the
-  // identity used to present the view, `view_controller` is the view used to
-  // present the details, `animated` controls whether the view is presented
-  // with an animation
-  virtual DismissViewCallback PresentAccountDetailsController(
-      id<SystemIdentity> identity,
-      UIViewController* view_controller,
-      bool animated) = 0;
-
-  // Presents a new Web and App Setting Details view and returns a callback
-  // that can be used to dismiss the view (can be ignore if not needed).
-  // `identity` is the identity used to present the view, `view_controller`
-  // is the view used to present the details, `animated` controls whether the
-  // view is presented with an animation.
-  virtual DismissViewCallback PresentWebAndAppSettingDetailsController(
-      id<SystemIdentity> identity,
-      UIViewController* view_controller,
-      bool animated) = 0;
-
-  // Presents a new Linked Services Settings Details view and returns a callback
-  // that can be used to dismiss the view (can be ignore if not needed).
-  // `identity` is the identity used to present the view, `view_controller`
-  // is the view used to present the details, `animated` controls whether the
-  // view is presented with an animation.
-  virtual DismissViewCallback PresentLinkedServicesSettingsDetailsController(
-      id<SystemIdentity> identity,
-      UIViewController* view_controller,
-      bool animated) = 0;
 
   // Creates a new SystemIdentityInteractionManager instance.
   virtual id<SystemIdentityInteractionManager> CreateInteractionManager() = 0;
@@ -245,6 +269,22 @@ class SystemIdentityManager {
   // Invokes OnIdentityAccessTokenRefreshFailed(...)` for all observers.
   void FireIdentityAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                             id<RefreshAccessTokenError> error);
+
+  // Presents a new Account Details view and returns a callback that can be
+  // used to dismiss the view (can be ignore if not needed).
+  // TODO(crbug.com/40056250): Make this method pure virtual.
+  virtual DismissViewCallback PresentAccountDetailsController(
+      PresentDialogConfiguration configuration);
+  // Presents a new Web and App Setting Details view and returns a callback
+  // that can be used to dismiss the view (can be ignore if not needed).
+  // TODO(crbug.com/40056250): Make this method pure virtual.
+  virtual DismissViewCallback PresentWebAndAppSettingDetailsController(
+      PresentDialogConfiguration configuration);
+  // Presents a new Linked Services Settings Details view and returns a callback
+  // that can be used to dismiss the view (can be ignore if not needed).
+  // TODO(crbug.com/40056250): Make this method pure virtual.
+  virtual DismissViewCallback PresentLinkedServicesSettingsDetailsController(
+      PresentDialogConfiguration configuration);
 
   // The SystemIdentityManager is sequence-affine. This is protected to
   // allow sub-classes access to the member field for use in DCHECK().

@@ -24,6 +24,20 @@ CapabilityResult FetchCapabilityCompleted(
 
 }  // anonymous namespace
 
+SystemIdentityManager::PresentDialogConfiguration::
+    PresentDialogConfiguration() {}
+
+SystemIdentityManager::PresentDialogConfiguration::
+    ~PresentDialogConfiguration() {}
+
+SystemIdentityManager::PresentDialogConfiguration::PresentDialogConfiguration(
+    SystemIdentityManager::PresentDialogConfiguration&& configuration) {
+  identity = configuration.identity;
+  view_controller = configuration.view_controller;
+  animated = configuration.animated;
+  dismissal_completion = std::move(configuration.dismissal_completion);
+}
+
 SystemIdentityManager::SystemIdentityManager() = default;
 
 SystemIdentityManager::~SystemIdentityManager() {
@@ -62,6 +76,42 @@ void SystemIdentityManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+DismissViewCallback SystemIdentityManager::PresentAccountDetailsController(
+    id<SystemIdentity> identity,
+    UIViewController* view_controller,
+    bool animated) {
+  SystemIdentityManager::PresentDialogConfiguration configuration;
+  configuration.identity = identity;
+  configuration.view_controller = view_controller;
+  configuration.animated = animated;
+  return PresentAccountDetailsController(std::move(configuration));
+}
+
+DismissViewCallback
+SystemIdentityManager::PresentWebAndAppSettingDetailsController(
+    id<SystemIdentity> identity,
+    UIViewController* view_controller,
+    bool animated) {
+  SystemIdentityManager::PresentDialogConfiguration configuration;
+  configuration.identity = identity;
+  configuration.view_controller = view_controller;
+  configuration.animated = animated;
+  return PresentWebAndAppSettingDetailsController(std::move(configuration));
+}
+
+DismissViewCallback
+SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
+    id<SystemIdentity> identity,
+    UIViewController* view_controller,
+    bool animated) {
+  SystemIdentityManager::PresentDialogConfiguration configuration;
+  configuration.identity = identity;
+  configuration.view_controller = view_controller;
+  configuration.animated = animated;
+  return PresentLinkedServicesSettingsDetailsController(
+      std::move(configuration));
+}
+
 void SystemIdentityManager::FireIdentityListChanged(bool notify_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {
@@ -97,5 +147,22 @@ bool SystemIdentityManager::HandleMDMNotification(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error,
     HandleMDMCallback callback) {
+  NOTREACHED_NORETURN();
+}
+
+DismissViewCallback SystemIdentityManager::PresentAccountDetailsController(
+    SystemIdentityManager::PresentDialogConfiguration configuration) {
+  NOTREACHED_NORETURN();
+}
+
+DismissViewCallback
+SystemIdentityManager::PresentWebAndAppSettingDetailsController(
+    SystemIdentityManager::PresentDialogConfiguration configuration) {
+  NOTREACHED_NORETURN();
+}
+
+DismissViewCallback
+SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
+    SystemIdentityManager::PresentDialogConfiguration configuration) {
   NOTREACHED_NORETURN();
 }
