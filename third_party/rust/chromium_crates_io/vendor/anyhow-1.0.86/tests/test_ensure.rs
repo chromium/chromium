@@ -1,6 +1,9 @@
 #![allow(
     clippy::bool_to_int_with_if,
+    clippy::char_lit_as_u8,
+    clippy::deref_addrof,
     clippy::diverging_sub_expression,
+    clippy::erasing_op,
     clippy::extra_unused_type_parameters,
     clippy::if_same_then_else,
     clippy::ifs_same_cond,
@@ -16,6 +19,7 @@
     clippy::redundant_pattern_matching,
     clippy::too_many_lines,
     clippy::unit_arg,
+    clippy::unnecessary_cast,
     clippy::while_immutable_condition,
     clippy::zero_ptr,
     irrefutable_let_patterns
@@ -128,6 +132,19 @@ fn test_low_precedence_binary_operator() {
         test,
         "Condition failed: `while false == true && false {} < ()` (() vs ())",
     );
+
+    let a = 15;
+    let b = 3;
+    let test = || Ok(ensure!(a <= b || a - b <= 10));
+    assert_err(test, "Condition failed: `a <= b || a - b <= 10`");
+}
+
+#[test]
+fn test_high_precedence_binary_operator() {
+    let a = 15;
+    let b = 3;
+    let test = || Ok(ensure!(a - b <= 10));
+    assert_err(test, "Condition failed: `a - b <= 10` (12 vs 10)");
 }
 
 #[test]

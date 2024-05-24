@@ -140,6 +140,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.82 -> 1.0.83"
 notes = "No change to UB-risk profile either."
 
+[[audits.anyhow]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.83 -> 1.0.86"
+notes = "Delta only updates the ensure macro implementation, still safe to run, no crypto"
+
 [[audits.autocfg]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]

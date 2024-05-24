@@ -3,6 +3,7 @@
     clippy::eq_op,
     clippy::incompatible_msrv, // https://github.com/rust-lang/rust-clippy/issues/12257
     clippy::items_after_statements,
+    clippy::match_single_binding,
     clippy::needless_pass_by_value,
     clippy::shadow_unrelated,
     clippy::wildcard_imports
@@ -11,7 +12,7 @@
 mod common;
 
 use self::common::*;
-use anyhow::{anyhow, ensure};
+use anyhow::{anyhow, ensure, Result};
 use std::cell::Cell;
 use std::future;
 
@@ -51,6 +52,20 @@ fn test_ensure() {
         f().unwrap_err().to_string(),
         "Condition failed: `v + v == 1` (2 vs 1)",
     );
+}
+
+#[test]
+fn test_ensure_nonbool() -> Result<()> {
+    struct Struct {
+        condition: bool,
+    }
+
+    let s = Struct { condition: true };
+    match &s {
+        Struct { condition } => ensure!(condition), // &bool
+    }
+
+    Ok(())
 }
 
 #[test]
