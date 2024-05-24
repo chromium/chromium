@@ -34,6 +34,18 @@ enum class WebFilterType {
   kMaxValue = kMixed,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ToggleState)
+enum class ToggleState {
+  kDisabled = 0,
+  kEnabled = 1,
+  kMixed = 2,
+  kMaxValue = kMixed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserToggleState)
+
 // These values corresponds to SupervisedUserSafetyFilterResult in
 // tools/metrics/histograms/enums.xml. If you change anything here, make
 // sure to also update enums.xml accordingly.
@@ -112,6 +124,9 @@ extern const char kFamilyLinkUserLogSegmentHistogramName[];
 // Histogram name to log Family Link user web filter type segmentation.
 // This filter only applies to supervised user accounts.
 extern const char kFamilyLinkUserLogSegmentWebFilterHistogramName[];
+
+// Histogram name to log Family Link extensions permissions toggle state.
+extern const char kSkipParentApprovalToInstallExtensionsHistogramName[];
 
 // Histogram name to log URL filtering results with reason for filter and page
 // transition.

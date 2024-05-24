@@ -7,7 +7,10 @@
 #include <optional>
 
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/features.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace supervised_user {
 namespace {
@@ -66,23 +69,43 @@ std::optional<WebFilterType> GetWebFilterType(
   return supervised_user_filter->GetWebFilterType();
 }
 
+std::optional<ToggleState> GetExtensionToggleState(
+    const PrefService& pref_service) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (!IsSubjectToParentalControls(pref_service) ||
+      !IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+    return std::nullopt;
+  }
+
+  return SupervisedUserCanSkipExtensionParentApprovals(pref_service)
+             ? ToggleState::kEnabled
+             : ToggleState::kDisabled;
+#else
+  return std::nullopt;
+#endif
+}
+
 }  // namespace
 
 FamilyLinkUserLogRecord FamilyLinkUserLogRecord::Create(
     signin::IdentityManager* identity_manager,
+    const PrefService& pref_service,
     SupervisedUserURLFilter* supervised_user_filter) {
   std::optional<FamilyLinkUserLogRecord::Segment> supervision_status =
       GetSupervisionStatus(identity_manager);
   return FamilyLinkUserLogRecord(
       supervision_status,
-      GetWebFilterType(supervision_status, supervised_user_filter));
+      GetWebFilterType(supervision_status, supervised_user_filter),
+      GetExtensionToggleState(pref_service));
 }
 
 FamilyLinkUserLogRecord::FamilyLinkUserLogRecord(
     std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
-    std::optional<WebFilterType> web_filter_type)
+    std::optional<WebFilterType> web_filter_type,
+    std::optional<ToggleState> extensions_toggle_state)
     : supervision_status_(supervision_status),
-      web_filter_type_(web_filter_type) {}
+      web_filter_type_(web_filter_type),
+      extensions_toggle_state_(extensions_toggle_state) {}
 
 std::optional<FamilyLinkUserLogRecord::Segment>
 FamilyLinkUserLogRecord::GetSupervisionStatusForPrimaryAccount() const {
@@ -92,6 +115,11 @@ FamilyLinkUserLogRecord::GetSupervisionStatusForPrimaryAccount() const {
 std::optional<WebFilterType>
 FamilyLinkUserLogRecord::GetWebFilterTypeForPrimaryAccount() const {
   return web_filter_type_;
+}
+
+std::optional<ToggleState>
+FamilyLinkUserLogRecord::GetExtensionsToggleStateForPrimaryAccount() const {
+  return extensions_toggle_state_;
 }
 
 }  // namespace supervised_user

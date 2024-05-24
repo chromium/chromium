@@ -110,6 +110,9 @@ const char kFamilyLinkUserLogSegmentHistogramName[] =
 const char kFamilyLinkUserLogSegmentWebFilterHistogramName[] =
     "FamilyUser.WebFilterType.PerRecord";
 
+const char kSkipParentApprovalToInstallExtensionsHistogramName[] =
+    "SupervisedUsers.SkipParentApprovalToInstallExtensions";
+
 const char kSupervisedUserURLFilteringResultHistogramName[] =
     "ManagedUsers.FilteringResult";
 

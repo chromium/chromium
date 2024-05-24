@@ -745,6 +745,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SupervisedUsers.SkipParentApprovalToInstallExtensions.PerRecord"
+    enum="SupervisedUserToggleState" expires_after="2024-12-31">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the state of the &quot;Extensions&quot; toggle. When
+    parents/custodians have the toggle enabled, supervised users may install
+    extensions without explicit parent/custodian approval. Any extensions
+    installed under this mode receive automatic parent approval. Otherwise,
+    supervised users may install extensions upon receiving explicit
+    parent/custodian approval on each installation. Unsupervised users are
+    ignored in the process of deciding what to record. The value is recorded
+    with every UMA record upload from the current session. It should therefore
+    be used as a filter, or looking at unique client counts (raw counts are not
+    meaningful).
+  </summary>
+</histogram>
+
 <histogram name="Supervision.ParentAccessCode.Action"
     enum="ParentAccessCodeAction" expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>

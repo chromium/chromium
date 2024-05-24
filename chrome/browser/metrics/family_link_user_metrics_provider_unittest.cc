@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -20,6 +21,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -237,6 +239,100 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       supervised_user::WebFilterType::kMixed,
       /*expected_bucket_count=*/1);
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled
+    : public FamilyLinkUserMetricsProviderTest {
+ protected:
+  FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled() {
+    feature_list_.InitWithFeatures(
+        {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+            supervised_user::
+                kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
+#endif
+            supervised_user::
+                kEnableSupervisedUserSkipParentApprovalToInstallExtensions},
+        {});
+  }
+
+  void SetExtensionToggleStateForSupervisedUser(Profile* profile,
+                                                bool toggle_state) {
+    profile->GetPrefs()->SetBoolean(
+        prefs::kSkipParentApprovalToInstallExtensions, toggle_state);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
+       ProfileWithExtensionToggleStateUnsetLoggedAsDisabled) {
+  CreateTestingProfile(kTestEmail1, kTestProfile1,
+                       /*is_subject_to_parental_controls=*/true,
+                       /*is_opted_in_to_parental_supervision=*/false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
+      supervised_user::ToggleState::kDisabled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
+       ProfileWithExtensionToggleStateOffLoggedAsDisabled) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetExtensionToggleStateForSupervisedUser(profile1, false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
+      supervised_user::ToggleState::kDisabled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
+       ProfileWithExtensionToggleStateOnLoggedAsEnabled) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetExtensionToggleStateForSupervisedUser(profile1, true);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
+      supervised_user::ToggleState::kEnabled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
+       ProfilesWithMixedExtensionToggleStateLoggedAsMixed) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetExtensionToggleStateForSupervisedUser(profile1, true);
+
+  Profile* profile2 =
+      CreateTestingProfile(kTestEmail2, kTestProfile2,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetExtensionToggleStateForSupervisedUser(profile2, false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
+      supervised_user::ToggleState::kMixed,
+      /*expected_bucket_count=*/1);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(FamilyLinkUserMetricsProviderTest,
        NoProfilesAddedShouldNotLogHistogram) {

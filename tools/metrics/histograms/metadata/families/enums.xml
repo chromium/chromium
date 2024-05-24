@@ -601,6 +601,25 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(SupervisedUserToggleState) -->
+
+<enum name="SupervisedUserToggleState">
+  <int value="0" label="Disabled">
+    There is at least one supervised profile, and all supervised profiles have
+    the toggle disabled.
+  </int>
+  <int value="1" label="Enabled">
+    There is at least one supervised profile, and all supervised profiles have
+    the toggle enabled.
+  </int>
+  <int value="2" label="Mixed">
+    There are multiple supervised profiles, some with the toggle disabled and
+    some with it enabled.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:ToggleState) -->
+
 <enum name="SupervisionStatusReportEvent">
   <summary>Events that trigger status report for supervised accounts</summary>
   <int value="0" label="APP_INSTALLED"/>

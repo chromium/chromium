@@ -36,6 +36,7 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
       user_log_segment =
           supervised_user::FamilyLinkUserLogRecord::Create(
               IdentityManagerFactory::GetForProfile(&profile_.get()),
+              *profile_->GetPrefs(),
               supervised_user_service ? supervised_user_service->GetURLFilter()
                                       : nullptr)
               .GetSupervisionStatusForPrimaryAccount();

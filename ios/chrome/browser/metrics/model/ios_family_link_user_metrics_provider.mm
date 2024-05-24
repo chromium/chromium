@@ -30,6 +30,7 @@ bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
         SupervisedUserServiceFactory::GetForBrowserState(browser_state);
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
         IdentityManagerFactory::GetForBrowserState(browser_state),
+        *browser_state->GetPrefs(),
         service ? service->GetURLFilter() : nullptr));
   }
   return supervised_user::EmitLogRecordHistograms(records);
