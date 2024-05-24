@@ -157,10 +157,15 @@ a[href] {
   width: var(--cr-icon-size);
 }
 
+/* Reformat panel when the panel is the width of one extension card */
 /* clean-css ignore:start */
 @container (max-width:450px) {
   .panel-header-icon {
-      margin-top: 40px;
+    display: none;
+  }
+
+  .panel-header-text {
+    padding-inline-start: 0;
   }
 }
 /* clean-css ignore:end */
