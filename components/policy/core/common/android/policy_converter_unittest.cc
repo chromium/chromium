@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/schema.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,10 +40,8 @@ class PolicyConverterTest : public testing::Test {
           "dict": { "type": "object" }
         }
       })";
-
-    std::string error;
-    schema_ = Schema::Parse(kSchemaTemplate, &error);
-    ASSERT_TRUE(schema_.valid()) << error;
+    ASSIGN_OR_RETURN(schema_, Schema::Parse(kSchemaTemplate),
+                     [](const auto& e) { ADD_FAILURE() << e; });
   }
 
  protected:

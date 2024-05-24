@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
@@ -142,14 +143,13 @@ void PolicyTestBase::TearDown() {
 
 bool PolicyTestBase::RegisterSchema(const PolicyNamespace& ns,
                                     const std::string& schema_string) {
-  std::string error;
-  Schema schema = Schema::Parse(schema_string, &error);
-  if (schema.valid()) {
-    schema_registry_.RegisterComponent(ns, schema);
-    return true;
-  }
-  ADD_FAILURE() << error;
-  return false;
+  ASSIGN_OR_RETURN(const auto schema, Schema::Parse(schema_string),
+                   [](const auto& e) {
+                     ADD_FAILURE() << e;
+                     return false;
+                   });
+  schema_registry_.RegisterComponent(ns, schema);
+  return true;
 }
 
 void PolicyTestBase::RegisterChromeSchema(const PolicyNamespace& ns) {

@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_policy_service.h"
@@ -79,9 +80,8 @@ class PolicyStatisticsCollectorTest : public testing::Test {
       : task_runner_(new base::TestSimpleTaskRunner()) {}
 
   void SetUp() override {
-    std::string error;
-    chrome_schema_ = Schema::Parse(kTestChromeSchema, &error);
-    ASSERT_TRUE(chrome_schema_.valid()) << error;
+    ASSIGN_OR_RETURN(chrome_schema_, Schema::Parse(kTestChromeSchema),
+                     [](const auto& e) { ADD_FAILURE() << e; });
 
     policy_details_.SetDetails(kTestPolicy1, &kTestPolicyDetails[0]);
     policy_details_.SetDetails(kTestPolicy2, &kTestPolicyDetails[1]);

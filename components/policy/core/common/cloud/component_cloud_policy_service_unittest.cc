@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -226,9 +227,11 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   }
 
   Schema CreateTestSchema() {
-    std::string error;
-    Schema schema = Schema::Parse(kTestSchema, &error);
-    EXPECT_TRUE(schema.valid()) << error;
+    ASSIGN_OR_RETURN(const auto schema, Schema::Parse(kTestSchema),
+                     [](const auto& e) {
+                       ADD_FAILURE() << e;
+                       return Schema();
+                     });
     return schema;
   }
 

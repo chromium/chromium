@@ -126,8 +126,13 @@ class StringListPolicyHandler : public ListPolicyHandler {
 
 std::unique_ptr<SimpleJsonStringSchemaValidatingPolicyHandler>
 JsonStringHandlerForTesting() {
-  std::string error;
-  Schema validation_schema = Schema::Parse(kValidationSchemaJson, &error);
+  ASSIGN_OR_RETURN(
+      const auto validation_schema, Schema::Parse(kValidationSchemaJson),
+      [](const auto& e)
+          -> std::unique_ptr<SimpleJsonStringSchemaValidatingPolicyHandler> {
+        ADD_FAILURE() << e;
+        return nullptr;
+      });
   return std::make_unique<SimpleJsonStringSchemaValidatingPolicyHandler>(
       kPolicyName, kTestPref, validation_schema,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
@@ -675,7 +680,6 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsDontClamp) {
 }
 
 TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueInvalid) {
-  std::string error;
   static const char kSchemaJson[] =
       "{"
       "  \"type\": \"object\","
@@ -691,8 +695,8 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueInvalid) {
       "    }"
       "  }"
       "}";
-  Schema schema = Schema::Parse(kSchemaJson, &error);
-  ASSERT_TRUE(schema.valid()) << error;
+  const auto schema = Schema::Parse(kSchemaJson);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
   static const char kPolicyMapJson[] =
       "{"
@@ -710,14 +714,13 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueInvalid) {
   policy_map.LoadFrom(parsed_json.GetDict(), POLICY_LEVEL_RECOMMENDED,
                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
-  TestSchemaValidatingPolicyHandler handler(schema, SCHEMA_ALLOW_UNKNOWN);
+  TestSchemaValidatingPolicyHandler handler(*schema, SCHEMA_ALLOW_UNKNOWN);
   std::unique_ptr<base::Value> output_value;
   EXPECT_FALSE(handler.CheckAndGetValueForTest(policy_map, /*errors=*/nullptr,
                                                &output_value));
 }
 
 TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
-  std::string error;
   static const char kSchemaJson[] =
       "{"
       "  \"type\": \"object\","
@@ -733,8 +736,8 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
       "    }"
       "  }"
       "}";
-  Schema schema = Schema::Parse(kSchemaJson, &error);
-  ASSERT_TRUE(schema.valid()) << error;
+  const auto schema = Schema::Parse(kSchemaJson);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
   static const char kPolicyMapJson[] =
       "{"
@@ -752,7 +755,7 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
   policy_map.LoadFrom(parsed_json.GetDict(), POLICY_LEVEL_RECOMMENDED,
                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
-  TestSchemaValidatingPolicyHandler handler(schema, SCHEMA_ALLOW_UNKNOWN);
+  TestSchemaValidatingPolicyHandler handler(*schema, SCHEMA_ALLOW_UNKNOWN);
 
   // Test that CheckPolicySettings() is true but outputs warnings about unknown
   // properties.
@@ -804,9 +807,8 @@ TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
       "    }"
       "  }"
       "}";
-  std::string error;
-  Schema schema = Schema::Parse(kSchemaJson, &error);
-  ASSERT_TRUE(schema.valid()) << error;
+  const auto schema = Schema::Parse(kSchemaJson);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
   static const char kPolicyMapJson[] =
       "{"
@@ -830,22 +832,22 @@ TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
                                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
   SimpleSchemaValidatingPolicyHandler handler_all(
-      kPolicyName, kTestPref, schema, SCHEMA_STRICT,
+      kPolicyName, kTestPref, *schema, SCHEMA_STRICT,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED);
 
   SimpleSchemaValidatingPolicyHandler handler_recommended(
-      kPolicyName, kTestPref, schema, SCHEMA_STRICT,
+      kPolicyName, kTestPref, *schema, SCHEMA_STRICT,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_PROHIBITED);
 
   SimpleSchemaValidatingPolicyHandler handler_mandatory(
-      kPolicyName, kTestPref, schema, SCHEMA_STRICT,
+      kPolicyName, kTestPref, *schema, SCHEMA_STRICT,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED);
 
   SimpleSchemaValidatingPolicyHandler handler_none(
-      kPolicyName, kTestPref, schema, SCHEMA_STRICT,
+      kPolicyName, kTestPref, *schema, SCHEMA_STRICT,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_PROHIBITED);
 

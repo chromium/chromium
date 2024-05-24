@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/external_data_manager.h"
@@ -49,10 +50,11 @@ const char kTestSchema[] =
 class SchemaMapTest : public testing::Test {
  protected:
   Schema CreateTestSchema() {
-    std::string error;
-    Schema schema = Schema::Parse(kTestSchema, &error);
-    if (!schema.valid())
-      ADD_FAILURE() << error;
+    ASSIGN_OR_RETURN(const auto schema, Schema::Parse(kTestSchema),
+                     [](const auto& e) {
+                       ADD_FAILURE() << e;
+                       return Schema();
+                     });
     return schema;
   }
 
@@ -128,12 +130,11 @@ TEST_F(SchemaMapTest, Lookups) {
 
 // Tests FilterBundle when |drop_invalid_component_policies| is set to true.
 TEST_F(SchemaMapTest, FilterBundle) {
-  std::string error;
-  Schema schema = Schema::Parse(kTestSchema, &error);
-  ASSERT_TRUE(schema.valid()) << error;
+  const auto schema = Schema::Parse(kTestSchema);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
   DomainMap domain_map;
-  domain_map[POLICY_DOMAIN_EXTENSIONS]["abc"] = schema;
+  domain_map[POLICY_DOMAIN_EXTENSIONS]["abc"] = *schema;
   scoped_refptr<SchemaMap> schema_map = new SchemaMap(std::move(domain_map));
 
   PolicyBundle bundle;
@@ -220,19 +221,17 @@ TEST_F(SchemaMapTest, FilterBundle) {
 
 // Tests FilterBundle when |drop_invalid_component_policies| is set to true.
 TEST_F(SchemaMapTest, LegacyComponents) {
-  std::string error;
-  Schema schema = Schema::Parse(
+  const auto schema = Schema::Parse(
       R"({
         "type": "object",
         "properties": {
           "String": { "type": "string" }
         }
-      })",
-      &error);
-  ASSERT_TRUE(schema.valid()) << error;
+      })");
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
   DomainMap domain_map;
-  domain_map[POLICY_DOMAIN_EXTENSIONS]["with-schema"] = schema;
+  domain_map[POLICY_DOMAIN_EXTENSIONS]["with-schema"] = *schema;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["without-schema"] = Schema();
   scoped_refptr<SchemaMap> schema_map = new SchemaMap(std::move(domain_map));
 
@@ -278,19 +277,17 @@ TEST_F(SchemaMapTest, LegacyComponents) {
 
 // Tests FilterBundle when |drop_invalid_component_policies| is set to false.
 TEST_F(SchemaMapTest, FilterBundleInvalidatesPolicies) {
-  std::string error;
-  Schema schema = Schema::Parse(
+  const auto schema = Schema::Parse(
       R"({
         "type": "object",
         "properties": {
           "String": { "type": "string" }
         }
-      })",
-      &error);
-  ASSERT_TRUE(schema.valid()) << error;
+      })");
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
   DomainMap domain_map;
-  domain_map[POLICY_DOMAIN_EXTENSIONS]["with-schema"] = schema;
+  domain_map[POLICY_DOMAIN_EXTENSIONS]["with-schema"] = *schema;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["without-schema"] = Schema();
   scoped_refptr<SchemaMap> schema_map = new SchemaMap(std::move(domain_map));
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -54,10 +55,11 @@ class SchemaRegistryTrackingPolicyProviderTest : public testing::Test {
   }
 
   Schema CreateTestSchema() {
-    std::string error;
-    Schema schema = Schema::Parse(kTestSchema, &error);
-    if (!schema.valid())
-      ADD_FAILURE() << error;
+    ASSIGN_OR_RETURN(const auto schema, Schema::Parse(kTestSchema),
+                     [](const auto& e) {
+                       ADD_FAILURE() << e;
+                       return Schema();
+                     });
     return schema;
   }
 
