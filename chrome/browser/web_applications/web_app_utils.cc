@@ -8,7 +8,6 @@
 #include <map>
 #include <optional>
 #include <set>
-#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -22,7 +21,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"

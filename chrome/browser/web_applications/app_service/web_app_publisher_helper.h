@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"

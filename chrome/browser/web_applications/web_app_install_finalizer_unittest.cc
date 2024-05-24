@@ -12,7 +12,6 @@
 
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/traits_bag.h"

@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"

@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
+
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/expected.h"
 #include "testing/gtest/include/gtest/gtest.h"

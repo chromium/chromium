@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
