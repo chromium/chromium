@@ -38,6 +38,7 @@
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -843,11 +844,15 @@ void AuthenticatorRequestDialogController::
             if (absl::get<Mechanism::Credential>(type)->source ==
                 device::AuthenticatorType::kEnclave) {
               CHECK(will_do_uv);
+              FIDO_LOG(EVENT) << "b/342399396: triggering enclave credential "
+                                 "due to allowlist match";
               mechanism.callback.Run();
               return;
             }
             if (absl::get<Mechanism::Credential>(type)->source ==
                 device::AuthenticatorType::kPhone) {
+              FIDO_LOG(EVENT) << "b/342399396: triggering phone credential due "
+                                 "to allowlist match";
               SetCurrentStep(Step::kPhoneConfirmationSheet);
               return;
             }
