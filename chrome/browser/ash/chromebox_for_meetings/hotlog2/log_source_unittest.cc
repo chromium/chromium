@@ -86,20 +86,14 @@ class HotlogLogSourceTest : public testing::Test {
   HotlogLogSourceTest()
       : test_file_("test_file.log"),
         rotated_file_("test_file.log.1"),
-        rotate_log_prefix_("ROTATE: "),
-        default_timestamp_("2000-01-01T00:00:00.000000Z ") {}
+        rotate_log_prefix_("ROTATE: ") {}
   HotlogLogSourceTest(const HotlogLogSourceTest&) = delete;
   HotlogLogSourceTest& operator=(const HotlogLogSourceTest&) = delete;
 
   void SetUp() override {
-    // Make sure we're starting fresh, even if previous tests crashed
-    // before TearDown() could run.
-    if (std::filesystem::exists(test_file_)) {
-      std::filesystem::remove(test_file_);
-    }
     test_db_ = std::make_unique<PersistentDbForTesting>();
     PersistentDb::InitializeForTesting(test_db_.get());
-    AppendNewLinesWithTimestamp(test_file_, kTestFileNumLines, "");
+    AppendNewLines(test_file_, kTestFileNumLines, "");
   }
 
   void TearDown() override {
@@ -113,8 +107,7 @@ class HotlogLogSourceTest : public testing::Test {
 
   void RotateFile() {
     std::filesystem::rename(test_file_, rotated_file_);
-    AppendNewLinesWithTimestamp(test_file_, kTestFileNumLines,
-                                rotate_log_prefix_);
+    AppendNewLines(test_file_, kTestFileNumLines, rotate_log_prefix_);
   }
 
   void AppendNewLines(const std::string& filename,
@@ -122,17 +115,10 @@ class HotlogLogSourceTest : public testing::Test {
                       const std::string& prefix) {
     std::ofstream test_file;
     test_file.open(filename, std::ios_base::app);
-
     for (unsigned int i = 0; i < count; i++) {
       test_file << prefix << i << std::endl;
     }
     test_file.close();
-  }
-
-  void AppendNewLinesWithTimestamp(const std::string& filename,
-                                   size_t count,
-                                   const std::string& prefix) {
-    AppendNewLines(filename, count, default_timestamp_ + prefix);
   }
 
   int GetFileSize() {
@@ -145,7 +131,6 @@ class HotlogLogSourceTest : public testing::Test {
   const std::string test_file_;
   const std::string rotated_file_;
   const std::string rotate_log_prefix_;
-  const std::string default_timestamp_;
 
  private:
   std::unique_ptr<PersistentDb> test_db_;
@@ -237,7 +222,7 @@ TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
 
   // Consume all the lines in the file, then add more
   logfile.RetrieveNextLogs(kTestFileNumLines);
-  AppendNewLinesWithTimestamp(test_file_, kTestFileNumLines, "NEW: ");
+  AppendNewLines(test_file_, kTestFileNumLines, "NEW: ");
 
   // Verify no new lines are reported before Refresh()
   auto new_lines = logfile.RetrieveNextLogs(kTestFileNumLines);
@@ -252,7 +237,7 @@ TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
 
   // Verify that the lines are the new lines
   for (auto& line : new_lines) {
-    EXPECT_TRUE(line.starts_with(default_timestamp_ + "NEW: "));
+    EXPECT_TRUE(line.starts_with("NEW: "));
   }
 }
 
@@ -284,7 +269,7 @@ TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRotation) {
   EXPECT_EQ(data.size(), 0u);
 
   // Add more lines to original file
-  AppendNewLinesWithTimestamp(test_file_, kTestFileNumLines, "NEW: ");
+  AppendNewLines(test_file_, kTestFileNumLines, "NEW: ");
 
   // Rotate file and verify that next fetch returns lines from new file
   RotateFile();
@@ -294,53 +279,8 @@ TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRotation) {
     // TODO(b/320996557): we are expecting the new lines (NEW: ...) from
     // the old file to be dropped here. This will be the case until we
     // add full rotation support.
-    EXPECT_TRUE(line.starts_with(default_timestamp_ + rotate_log_prefix_));
+    EXPECT_TRUE(line.starts_with(rotate_log_prefix_));
   }
-}
-
-TEST_F(HotlogLogSourceTest, TestLogsWithNewlinesAreCombined) {
-  size_t num_new_lines = 2;
-
-  auto log_source = LogSource(test_file_, kDefaultPollFrequency,
-                              kDefaultBatchSize + num_new_lines);
-
-  // Add a couple of lines that don't have a timestamp
-  AppendNewLines(test_file_, num_new_lines, "NOSTAMP: ");
-
-  // Verify that we still only get back kTestFileNumLines lines
-  auto data = log_source.GetNextData();
-  EXPECT_EQ(data.size(), kTestFileNumLines);
-
-  // Verify last lines were all concatenated
-  size_t num_concat_lines = 0;
-  size_t curr_pos = 0;
-  auto last_line = data.back();
-  std::string target = "\nNOSTAMP: ";
-
-  while ((curr_pos = last_line.find(target, curr_pos)) != std::string::npos) {
-    ++num_concat_lines;
-    curr_pos += target.length();
-  }
-
-  EXPECT_EQ(num_concat_lines, num_new_lines);
-}
-
-TEST_F(HotlogLogSourceTest, TestLogsDroppedWithoutTimestamp) {
-  auto log_source =
-      LogSource(test_file_, kDefaultPollFrequency, kDefaultBatchSize);
-
-  // Initial setup. Read everything from original file
-  auto data = log_source.GetNextData();
-  EXPECT_EQ(data.size(), kTestFileNumLines);
-  data = log_source.GetNextData();
-  EXPECT_EQ(data.size(), 0u);
-
-  // Add more lines to original file with no timestamp
-  AppendNewLines(test_file_, kTestFileNumLines, "");
-
-  // Verify they are all dropped
-  data = log_source.GetNextData();
-  EXPECT_EQ(data.size(), 0u);
 }
 
 TEST_F(HotlogLogSourceTest, TestCrashRecovery) {
@@ -374,13 +314,11 @@ TEST_F(HotlogLogSourceTest, TestCrashRecovery) {
   // point. Note that the file we're examining is just filled with integers,
   // 0 to kTestFileNumLines, so we expect to start at integer <batch_size>.
   log_source->Fetch(base::BindOnce(
-      [](size_t start, const std::string& prefix,
-         const std::vector<std::string>& results) {
-        ASSERT_EQ(results.size(), 2u);
-        EXPECT_EQ(results[0], prefix + base::NumberToString(start));
-        EXPECT_EQ(results[1], prefix + base::NumberToString(start + 1));
+      [](size_t start, const std::vector<std::string>& results) {
+        EXPECT_EQ(results[0], base::NumberToString(start));
+        EXPECT_EQ(results[1], base::NumberToString(start + 1));
       },
-      batch_size, default_timestamp_));
+      batch_size));
   run_loop.RunUntilIdle();
 
   // Explicitly do not Flush()! Tear down and reset again. Add more data.
@@ -392,13 +330,12 @@ TEST_F(HotlogLogSourceTest, TestCrashRecovery) {
   // Because Flush() was not called, we assume that the last attempt failed,
   // so make sure we start from the same recovery location.
   log_source->Fetch(base::BindOnce(
-      [](size_t start, const std::string& prefix,
-         const std::vector<std::string>& results) {
+      [](size_t start, const std::vector<std::string>& results) {
         ASSERT_EQ(results.size(), 2u);
-        EXPECT_EQ(results[0], prefix + base::NumberToString(start));
-        EXPECT_EQ(results[1], prefix + base::NumberToString(start + 1));
+        EXPECT_EQ(results[0], base::NumberToString(start));
+        EXPECT_EQ(results[1], base::NumberToString(start + 1));
       },
-      batch_size, default_timestamp_));
+      batch_size));
   run_loop.RunUntilIdle();
 
   // Tear down and reset again.
@@ -418,7 +355,7 @@ TEST_F(HotlogLogSourceTest, TestCrashRecovery) {
         EXPECT_EQ(results[0], prefix + base::NumberToString(start));
         EXPECT_EQ(results[1], prefix + base::NumberToString(start + 1));
       },
-      0u, default_timestamp_ + rotate_log_prefix_));
+      0u, rotate_log_prefix_));
   log_source->Flush();
   run_loop.RunUntilIdle();
 
