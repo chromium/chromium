@@ -9,7 +9,6 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {AmbientModeAlbum, BacklightColor, BLUE_COLOR, GooglePhotosAlbum, GREEN_COLOR, INDIGO_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, YELLOW_COLOR} from './../personalization_app.mojom-webui.js';
-import {isPersonalizationJellyEnabled} from './load_time_booleans.js';
 
 export interface ColorInfo {
   hexVal: string;
@@ -134,15 +133,6 @@ export function getPresetColors(): Record<string, ColorInfo> {
 export function isRecentHighlightsAlbum(album: AmbientModeAlbum|
                                         GooglePhotosAlbum): boolean {
   return album.id === 'RecentHighlights';
-}
-
-/**
- * Returns the icon string for the checkmark.
- */
-export function getCheckmarkIcon(): string {
-  return isPersonalizationJellyEnabled() ?
-      'personalization-shared:circle-checkmark' :
-      'personalization:checkmark';
 }
 
 /**

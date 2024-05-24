@@ -35,26 +35,14 @@ suite('PersonalizationMainElementTest', function() {
     assertTrue(!!preview, 'ambient preview exists');
   });
 
-  test('has preview when ambient disallowed but jelly enabled', async () => {
-    loadTimeData.overrideValues(
-        {isAmbientModeAllowed: false, isPersonalizationJellyEnabled: true});
+  test('has preview when ambient disallowed', async () => {
+    loadTimeData.overrideValues({isAmbientModeAllowed: false});
     personalizationMainElement = initElement(PersonalizationMainElement);
     await waitAfterNextRender(personalizationMainElement);
 
     const preview = personalizationMainElement!.shadowRoot!.querySelector(
         'ambient-preview-large')!;
     assertTrue(!!preview, 'ambient preview exists');
-  });
-
-  test('has no ambient preview when ambient and jelly disallowed', async () => {
-    loadTimeData.overrideValues(
-        {isAmbientModeAllowed: false, isPersonalizationJellyEnabled: false});
-    personalizationMainElement = initElement(PersonalizationMainElement);
-    await waitAfterNextRender(personalizationMainElement);
-
-    const preview = personalizationMainElement!.shadowRoot!.querySelector(
-        'ambient-preview-large')!;
-    assertFalse(!!preview, 'ambient preview does not exist');
   });
 
   test('time of day banner', async () => {

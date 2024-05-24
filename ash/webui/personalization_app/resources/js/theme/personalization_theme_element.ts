@@ -21,7 +21,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {isCrosPrivacyHubLocationEnabled, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
+import {isCrosPrivacyHubLocationEnabled} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isSelectionEvent} from '../utils.js';
 
@@ -53,27 +53,25 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         type: Boolean,
         value: null,
       },
+
       colorModeAutoScheduleEnabled_: {
         type: Boolean,
         value: null,
       },
+
       geolocationPermissionEnabled_: {
         type: Boolean,
         value: null,
       },
+
       sunriseTime_: {
         type: String,
         value: null,
       },
+
       sunsetTime_: {
         type: String,
         value: null,
-      },
-      isPersonalizationJellyEnabled_: {
-        type: Boolean,
-        value() {
-          return isPersonalizationJellyEnabled();
-        },
       },
 
       /** The button currently highlighted by keyboard navigation. */

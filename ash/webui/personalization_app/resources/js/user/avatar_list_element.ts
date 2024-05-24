@@ -18,7 +18,7 @@ import {DefaultUserImage, UserImage} from '../../personalization_app.mojom-webui
 import {isUserAvatarCustomizationSelectorsEnabled} from '../load_time_booleans.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getCheckmarkIcon, isSelectionEvent} from '../utils.js';
+import {isSelectionEvent} from '../utils.js';
 
 import {AvatarCameraElement, AvatarCameraMode} from './avatar_camera_element.js';
 import {getTemplate} from './avatar_list_element.html.js';
@@ -193,7 +193,7 @@ export class AvatarListElement extends WithPersonalizationStore {
           id: OptionId.PROFILE_IMAGE,
           class: 'image-container',
           imgSrc: profileImage.url,
-          icon: getCheckmarkIcon(),
+          icon: 'personalization-shared:circle-checkmark',
           title: this.i18n('googleProfilePhoto'),
         });
       }
@@ -202,7 +202,7 @@ export class AvatarListElement extends WithPersonalizationStore {
           id: OptionId.LAST_EXTERNAL_IMAGE,
           class: 'image-container',
           imgSrc: lastExternalUserImageUrl.url,
-          icon: getCheckmarkIcon(),
+          icon: 'personalization-shared:circle-checkmark',
           title: this.i18n('lastExternalImageTitle'),
         });
       }
@@ -213,7 +213,7 @@ export class AvatarListElement extends WithPersonalizationStore {
           id: `defaultUserImage-${defaultImage.index}`,
           class: 'image-container',
           imgSrc: defaultImage.url.url,
-          icon: getCheckmarkIcon(),
+          icon: 'personalization-shared:circle-checkmark',
           title: mojoString16ToString(defaultImage.title),
           defaultImageIndex: defaultImage.index,
         });

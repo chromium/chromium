@@ -25,7 +25,6 @@ import {CurrentAttribution, CurrentWallpaper, GooglePhotosPhoto, WallpaperCollec
 import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getCheckmarkIcon} from '../utils.js';
 
 import {getLocalStorageAttribution, getWallpaperAriaLabel, getWallpaperLayoutEnum, getWallpaperSrc} from './utils.js';
 import {getDailyRefreshState, selectGooglePhotosAlbum, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
@@ -359,14 +358,14 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
 
   private computeFillIcon_(image: CurrentWallpaper): string {
     if (!!image && image.layout === WallpaperLayout.kCenterCropped) {
-      return getCheckmarkIcon();
+      return 'personalization-shared:circle-checkmark';
     }
     return 'personalization:layout_fill';
   }
 
   private computeCenterIcon_(image: CurrentWallpaper): string {
     if (!!image && image.layout === WallpaperLayout.kCenter) {
-      return getCheckmarkIcon();
+      return 'personalization-shared:circle-checkmark';
     }
     return 'personalization:layout_center';
   }
@@ -382,7 +381,7 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
       dailyRefreshState: DailyRefreshState|null): string {
     if (this.isDailyRefreshId_(
             collectionId || googlePhotosAlbumId, dailyRefreshState)) {
-      return getCheckmarkIcon();
+      return 'personalization-shared:circle-checkmark';
     }
     return 'personalization:change-daily';
   }

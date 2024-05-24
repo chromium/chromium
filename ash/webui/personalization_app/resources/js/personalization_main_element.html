@@ -7,8 +7,8 @@
       '. . middle             . .'
       '. . rbg-keyboard       . .'
       '. . .                  . .';
-    grid-template-columns: 1fr 24px minmax(480px, 960px) 24px 1fr;
-    grid-template-rows: 108px auto 1fr auto 32px;
+    grid-template-columns: 1fr 24px minmax(500px, 1020px) 24px 1fr;
+    grid-template-rows: 132px auto 1fr auto 24px;
     height: 100%;
     position: relative;
     width: 100%;
@@ -26,39 +26,24 @@
 
   #middle {
     display: grid;
-    gap: 16px;
+    gap: 20px;
     grid-area: middle;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(318px, 1fr));
   }
 
   keyboard-backlight {
     grid-area: rbg-keyboard;
-    margin-top: 16px;
-  }
-
-  :host-context(body.jelly-enabled) #container {
-    grid-template-columns: 1fr 24px minmax(500px, 1020px) 24px 1fr;
-    grid-template-rows: 132px auto 1fr auto 24px;
-  }
-
-  :host-context(body.jelly-enabled) #middle {
-    gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(318px, 1fr));
-  }
-
-  :host-context(body.jelly-enabled) keyboard-backlight {
     margin-top: 20px;
   }
 
   @media (max-width: 700px) {
-    :host-context(body.jelly-enabled) #container {
+    #container {
       grid-template-columns: 1fr 24px 500px 24px 1fr;
     }
-    :host-context(body.jelly-enabled) #middle {
+    #middle {
       grid-template-columns: repeat(1, 500px);
     }
   }
-
 </style>
 <div id="container">
   <user-preview path="[[path]]">
@@ -70,10 +55,8 @@
     <wallpaper-preview>
       <personalization-theme></personalization-theme>
     </wallpaper-preview>
-    <template is="dom-if" if="[[shouldShowAmbientPreview_]]">
-      <ambient-preview-large>
-      </ambient-preview-large>
-    </template>
+    <ambient-preview-large>
+    </ambient-preview-large>
   </div>
   <template is="dom-if" if="[[isRgbKeyboardSupported_]]">
     <keyboard-backlight></keyboard-backlight>
