@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_APP_PRELOAD_SERVICE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
@@ -16,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 
 class Profile;
 
@@ -45,6 +47,9 @@ BASE_DECLARE_FEATURE(kAppPreloadServiceEnableTestApps);
 // Feature to allow installing arc apps returned by the server.
 BASE_DECLARE_FEATURE(kAppPreloadServiceEnableArcApps);
 
+// Feature to allow apps to be pinned to the shelf.
+BASE_DECLARE_FEATURE(kAppPreloadServiceEnableShelfPin);
+
 class AppPreloadService : public KeyedService {
  public:
   explicit AppPreloadService(Profile* profile);
@@ -56,6 +61,18 @@ class AppPreloadService : public KeyedService {
 
   // Registers prefs used for state management of the App Preload Service.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  using GetPinAppsCallback =
+      base::OnceCallback<void(const std::vector<PackageId>& pin_apps,
+                              const std::vector<PackageId>& pin_order)>;
+
+  // Returns list of apps to pin and desired pin order.  Callback is invoked
+  // immediately if data is ready, or when data is received. `pin_apps` is the
+  // list of apps to be installed by AppPreloadService and requested to be
+  // pinned.  `pin_order` is the desired pin order, it should include apps from
+  // `pin_apps` and other default-installed apps such as chrome to show were the
+  // new apps are to be pinned.
+  void GetPinApps(GetPinAppsCallback callback);
 
   using PreloadStatusCallback = base::OnceCallback<void(bool)>;
 
@@ -99,6 +116,11 @@ class AppPreloadService : public KeyedService {
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<DeviceInfoManager> device_info_manager_;
+  // Set true when response is received, or if APS is complete and not running.
+  bool data_ready_ = false;
+  std::vector<PackageId> pin_apps_;
+  std::vector<PackageId> pin_order_;
+  std::vector<GetPinAppsCallback> get_pin_apps_callbacks_;
 
   // For testing
   PreloadStatusCallback installation_complete_callback_;

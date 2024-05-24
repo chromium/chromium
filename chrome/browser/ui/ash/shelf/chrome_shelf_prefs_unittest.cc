@@ -6,24 +6,34 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -159,6 +169,26 @@ class ChromeShelfPrefsTest : public testing::Test {
                                     /*is_child=*/false);
   }
 
+  void InstallApp(const apps::PackageId& package_id) {
+    auto app_type = apps::AppType::kChromeApp;
+    auto app_id = package_id.identifier();
+    if (package_id.package_type() == apps::PackageType::kWeb) {
+      app_type = apps::AppType::kWeb;
+      app_id =
+          web_app::GenerateAppId(std::nullopt, GURL(package_id.identifier()));
+    }
+    apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
+    app->readiness = apps::Readiness::kReady;
+    app->name = package_id.identifier();
+    app->installer_package_id = package_id;
+
+    std::vector<apps::AppPtr> deltas;
+    deltas.push_back(std::move(app));
+    apps::AppServiceProxyFactory::GetForProfile(profile_.get())
+        ->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                 /*should_notify_initialized=*/false);
+  }
+
   AppListSyncableServiceFake& syncable_service() {
     return *static_cast<AppListSyncableServiceFake*>(
         app_list::AppListSyncableServiceFactory::GetForProfile(profile_.get()));
@@ -167,6 +197,27 @@ class ChromeShelfPrefsTest : public testing::Test {
   std::vector<std::string> GetPinnedAppIds() const {
     return base::ToVector(shelf_prefs_->GetPinnedAppsFromSync(helper_.get()),
                           &ash::ShelfID::app_id);
+  }
+
+  std::string GetPinned() {
+    static const base::NoDestructor<std::map<std::string, std::string>> kAppMap(
+        {
+            {app_constants::kChromeAppId, "chrome"},
+            {web_app::kGmailAppId, "gmail"},
+            {web_app::kGoogleCalendarAppId, "cal"},
+            {file_manager::kFileManagerSwaAppId, "files"},
+            {web_app::kMessagesAppId, "messages"},
+            {web_app::kGoogleMeetAppId, "meet"},
+            {arc::kPlayStoreAppId, "play"},
+            {web_app::kYoutubeAppId, "youtube"},
+            {arc::kGooglePhotosAppId, "photos"},
+        });
+    std::vector<std::string> apps;
+    for (const auto& app_id : GetPinnedAppIds()) {
+      auto it = kAppMap->find(app_id);
+      apps.push_back(it != kAppMap->end() ? it->second : app_id);
+    }
+    return base::JoinString(apps, ", ");
   }
 
  protected:
@@ -301,4 +352,108 @@ TEST_F(ChromeShelfPrefsTest, PinMallBeforeDefaultApps) {
     // Mall should have pushed back any default apps.
     EXPECT_EQ(pinned_apps_strs[2], second_pin_app_id);
   }
+}
+
+TEST_F(ChromeShelfPrefsTest, PinPreloadApps) {
+  apps::PackageId chrome = *apps::PackageId::FromString(
+      "chromeapp:" + std::string(app_constants::kChromeAppId));
+  apps::PackageId gmail = *apps::PackageId::FromString(
+      "web:https://mail.google.com/mail/?usp=installed_webapp");
+  apps::PackageId youtube =
+      *apps::PackageId::FromString("web:https://www.youtube.com/?feature=ytca");
+  apps::PackageId app1 = *apps::PackageId::FromString("chromeapp:app1");
+  apps::PackageId app2 = *apps::PackageId::FromString("chromeapp:app2");
+  apps::PackageId app3 = *apps::PackageId::FromString("chromeapp:app3");
+  // App4 is not listed in ShelfConfig and should be added to the end.
+  apps::PackageId app4 = *apps::PackageId::FromString("chromeapp:app4");
+  // App5 should not get pinned.
+  apps::PackageId app5 = *apps::PackageId::FromString("chromeapp:app5");
+
+  std::vector<apps::PackageId> apps_to_pin({app1, app2, app3, app4});
+  // Intentionally switch order of gmail and youtube.
+  std::vector<apps::PackageId> pin_order(
+      {app4, chrome, app1, app2, youtube, gmail, app3});
+
+  // Register chrome app and some other default pins as installed
+  InstallApp(chrome);
+  InstallApp(gmail);
+  InstallApp(youtube);
+
+  EXPECT_EQ(GetPinned(),
+            "chrome, gmail, cal, files, messages, meet, play, youtube, photos");
+
+  // Simulate installation finishing in unpredictable order.
+  // Install app2, comes after chrome since app1 is not installed yet.
+  InstallApp(app2);
+
+  // Install app4 which will go before chrome.
+  InstallApp(app4);
+
+  // Installed apps (app2 and app4) should pin immediately.
+  shelf_prefs_->OnGetPinPreloadApps(apps_to_pin, pin_order);
+  EXPECT_EQ(GetPinned(),
+            "app4, chrome, app2, gmail, cal, files, messages, meet, play, "
+            "youtube, photos");
+
+  // Install app3, comes after gmail.
+  InstallApp(app3);
+  EXPECT_EQ(GetPinned(),
+            "app4, chrome, app2, gmail, app3, cal, files, messages, meet, "
+            "play, youtube, photos");
+
+  // Install app5, which should not get pinned since it is not in first list.
+  InstallApp(app5);
+  EXPECT_EQ(GetPinned(),
+            "app4, chrome, app2, gmail, app3, cal, files, messages, meet, "
+            "play, youtube, photos");
+
+  // Install app1, comes after chrome.
+  InstallApp(app1);
+  EXPECT_EQ(GetPinned(),
+            "app4, chrome, app1, app2, gmail, app3, cal, files, messages, "
+            "meet, play, youtube, photos");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinPreloadRepeats) {
+  apps::PackageId chrome = *apps::PackageId::FromString(
+      "chromeapp:" + std::string(app_constants::kChromeAppId));
+  apps::PackageId app1 = *apps::PackageId::FromString("chromeapp:app1");
+  apps::PackageId app2 = *apps::PackageId::FromString("chromeapp:app2");
+  apps::PackageId app3 = *apps::PackageId::FromString("chromeapp:app3");
+  InstallApp(chrome);
+
+  std::vector<apps::PackageId> pin_order({app1, app2, app3, chrome});
+  std::string default_apps =
+      "chrome, gmail, cal, files, messages, meet, play, youtube, photos";
+
+  // Request to pin app1, and app2, but only install app1.
+  shelf_prefs_->OnGetPinPreloadApps({app1, app2}, pin_order);
+  InstallApp(app1);
+  EXPECT_EQ(GetPinned(), "app1, " + default_apps);
+
+  // Pin should continue if it is called again before it is complete.
+  shelf_prefs_->OnGetPinPreloadApps({app2}, pin_order);
+  InstallApp(app2);
+  EXPECT_EQ(GetPinned(), "app1, app2, " + default_apps);
+
+  // Pin should only run once per user once it completes, app3 should not pin.
+  shelf_prefs_->OnGetPinPreloadApps({app3}, pin_order);
+  InstallApp(app3);
+  EXPECT_EQ(GetPinned(), "app1, app2, " + default_apps);
+}
+
+TEST_F(ChromeShelfPrefsTest, PinPreloadEmpty) {
+  apps::PackageId chrome = *apps::PackageId::FromString(
+      "chromeapp:" + std::string(app_constants::kChromeAppId));
+  apps::PackageId app1 = *apps::PackageId::FromString("chromeapp:app1");
+  InstallApp(chrome);
+
+  std::vector<apps::PackageId> pin_order({app1, chrome});
+
+  // Pin should be considered complete if it is requested to pin no apps.
+  shelf_prefs_->OnGetPinPreloadApps({}, pin_order);
+  shelf_prefs_->OnGetPinPreloadApps({app1}, pin_order);
+  InstallApp(app1);
+  EXPECT_EQ(GetPinned(),
+            "chrome, gmail, cal, files, messages, meet, play, youtube, photos");
 }

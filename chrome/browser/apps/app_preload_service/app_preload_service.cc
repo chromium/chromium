@@ -82,6 +82,10 @@ BASE_FEATURE(kAppPreloadServiceEnableArcApps,
              "AppPreloadServiceEnableArcApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAppPreloadServiceEnableShelfPin,
+             "AppPreloadServiceEnableShelfPin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 AppPreloadService::AppPreloadService(Profile* profile)
     : profile_(profile),
       device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
@@ -117,6 +121,14 @@ base::AutoReset<bool> AppPreloadService::DisablePreloadsOnStartupForTesting() {
                                true);
 }
 
+void AppPreloadService::GetPinApps(GetPinAppsCallback callback) {
+  if (data_ready_) {
+    std::move(callback).Run(pin_apps_, pin_order_);
+  } else {
+    get_pin_apps_callbacks_.push_back(std::move(callback));
+  }
+}
+
 void AppPreloadService::StartFirstLoginFlow() {
   auto start_time = base::TimeTicks::Now();
 
@@ -138,6 +150,8 @@ void AppPreloadService::StartFirstLoginFlow() {
     device_info_manager_->GetDeviceInfo(
         base::BindOnce(&AppPreloadService::StartAppInstallationForFirstLogin,
                        weak_ptr_factory_.GetWeakPtr(), start_time));
+  } else {
+    data_ready_ = true;
   }
 }
 
@@ -165,18 +179,44 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     std::optional<std::vector<PreloadAppDefinition>> apps,
     LauncherOrdering launcher_ordering,
     ShelfPinOrdering shelf_pin_ordering) {
+  data_ready_ = true;
   if (!apps.has_value()) {
     OnFirstLoginFlowComplete(start_time, /*success=*/false);
     return;
   }
 
-  // TODO(crbug.com/327058999): Implement launcher ordering and shelf pinning.
+  // TODO(crbug.com/327058999): Implement launcher ordering.
   std::vector<const PreloadAppDefinition*> apps_to_install;
   for (const PreloadAppDefinition& app : apps.value()) {
     if (ShouldInstallApp(app)) {
       apps_to_install.push_back(&app);
     }
   }
+
+  if (base::FeatureList::IsEnabled(apps::kAppPreloadServiceEnableShelfPin)) {
+    pin_apps_.clear();
+    pin_order_.clear();
+    // Collect the apps that will be pinned after install.
+    for (auto* const app : apps_to_install) {
+      if (shelf_pin_ordering.contains(*app->GetPackageId())) {
+        pin_apps_.push_back(*app->GetPackageId());
+      }
+    }
+    // Sort shelf pin ordering.
+    for (auto const& [key, val] : shelf_pin_ordering) {
+      pin_order_.push_back(key);
+    }
+    std::sort(pin_order_.begin(), pin_order_.end(),
+              [&shelf_pin_ordering](apps::PackageId const& lhs,
+                                    apps::PackageId const& rhs) {
+                return shelf_pin_ordering[lhs] < shelf_pin_ordering[rhs];
+              });
+  }
+  for (auto& callback : get_pin_apps_callbacks_) {
+    std::move(callback).Run(pin_apps_, pin_order_);
+  }
+  get_pin_apps_callbacks_.clear();
+
   const auto install_barrier_callback = base::BarrierCallback<bool>(
       apps_to_install.size(),
       base::BindOnce(&AppPreloadService::OnAppInstallationsCompleted,

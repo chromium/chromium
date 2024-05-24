@@ -53,7 +53,8 @@ class AppPreloadServiceTest : public testing::Test {
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         startup_check_resetter_(
             AppPreloadService::DisablePreloadsOnStartupForTesting()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kAppPreloadService);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAppPreloadService, kAppPreloadServiceEnableShelfPin}, {});
     AppPreloadServiceFactory::SkipApiKeyCheckForTesting(true);
   }
 
@@ -236,6 +237,57 @@ TEST_F(AppPreloadServiceTest, FirstLoginStartedNotCompletedAfterServerError) {
   // not "completed".
   EXPECT_EQ(flow_started, true);
   EXPECT_EQ(flow_completed, std::nullopt);
+}
+
+TEST_F(AppPreloadServiceTest, GetPinApps) {
+  PackageId app1 = *PackageId::FromString("web:https://example.com/app1");
+  PackageId app2 = *PackageId::FromString("web:https://example.com/app2");
+  PackageId app3 = *PackageId::FromString("web:https://example.com/app3");
+  PackageId app4 = *PackageId::FromString("web:https://example.com/app4");
+
+  proto::AppPreloadListResponse response;
+  auto add_app = [&](const std::string& package_id) {
+    auto* app = response.add_apps_to_install();
+    app->set_package_id(package_id);
+    app->set_install_reason(
+        proto::AppPreloadListResponse::INSTALL_REASON_DEFAULT);
+  };
+  auto add_shelf_config = [&](const std::string& package_id, uint32_t order) {
+    auto* config = response.add_shelf_config();
+    config->add_package_id(package_id);
+    config->set_order(order);
+  };
+  add_app(app4.ToString());
+  add_app(app2.ToString());
+  add_app(app1.ToString());
+  add_shelf_config(app3.ToString(), 3);
+  add_shelf_config(app2.ToString(), 2);
+  add_shelf_config(app1.ToString(), 1);
+
+  url_loader_factory_.AddResponse(
+      app_preload_almanac_endpoint::GetServerUrl().spec(),
+      response.SerializeAsString());
+
+  auto* service = AppPreloadService::Get(GetProfile());
+  service->StartFirstLoginFlowForTesting(base::DoNothing());
+
+  base::test::TestFuture<const std::vector<PackageId>&,
+                         const std::vector<PackageId>&>
+      result;
+  service->GetPinApps(result.GetCallback());
+
+  // Pin apps should ignore app4 since it is not in pin ordering.
+  std::vector<apps::PackageId> pin_apps = result.Get<0>();
+  EXPECT_EQ(pin_apps.size(), 2u);
+  EXPECT_EQ(pin_apps[0], app2);
+  EXPECT_EQ(pin_apps[1], app1);
+
+  // Pin order should be sorted.
+  std::vector<apps::PackageId> pin_order = result.Get<1>();
+  EXPECT_EQ(pin_order.size(), 3u);
+  EXPECT_EQ(pin_order[0], app1);
+  EXPECT_EQ(pin_order[1], app2);
+  EXPECT_EQ(pin_order[2], app3);
 }
 
 }  // namespace apps
