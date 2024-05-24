@@ -349,7 +349,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self dismissPopovers];
 
   [self.inactiveTabsCoordinator hide];
-  [_toolbarsCoordinator stop];
 
   if (_bookmarksCoordinator) {
     [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
@@ -764,9 +763,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   _mediator.consumer = _baseViewController;
 
-  _toolbarsCoordinator =
-      [[TabGridToolbarsCoordinator alloc] initWithBaseViewController:nil
-                                                             browser:nil];
+  _toolbarsCoordinator = [[TabGridToolbarsCoordinator alloc]
+      initWithBaseViewController:nil
+                         browser:_regularBrowser];
   _toolbarsCoordinator.searchDelegate = self.baseViewController;
   _toolbarsCoordinator.toolbarTabGridDelegate = self.baseViewController;
   [_toolbarsCoordinator start];

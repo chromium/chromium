@@ -4,11 +4,18 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_mediator.h"
 
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
+
+@interface TabGridToolbarsMediator () <WebStateListObserving>
+
+@end
 
 @implementation TabGridToolbarsMediator {
   // Configuration that provides all buttons to display.
@@ -16,8 +23,29 @@
   TabGridToolbarsConfiguration* _previousConfiguration;
   id<TabGridToolbarsGridDelegate> _buttonsDelegate;
 
+  // Bridge for observing WebStateList events.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+
   // YES if buttons are disabled.
   BOOL _isDisabled;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+  }
+  return self;
+}
+
+#pragma mark - Public
+
+- (void)disconnect {
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+    _webStateListObserver.reset();
+    _webStateList = nullptr;
+  }
 }
 
 #pragma mark - GridToolbarsMutator
@@ -88,7 +116,59 @@
   }
 }
 
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+
+  CHECK_EQ(_webStateList, webStateList);
+  switch (change.type()) {
+    case WebStateListChange::Type::kDetach:
+    case WebStateListChange::Type::kInsert: {
+      [self updateTabCount:_webStateList->count()];
+      break;
+    }
+    case WebStateListChange::Type::kReplace:
+    case WebStateListChange::Type::kStatusOnly:
+    case WebStateListChange::Type::kMove:
+    case WebStateListChange::Type::kGroupCreate:
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+    case WebStateListChange::Type::kGroupMove:
+    case WebStateListChange::Type::kGroupDelete:
+      break;
+  }
+}
+
+- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
+  DCHECK_EQ(_webStateList, webStateList);
+  [self updateTabCount:_webStateList->count()];
+}
+
+#pragma mark - Setters
+
+- (void)setWebStateList:(WebStateList*)webStateList {
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+  }
+
+  _webStateList = webStateList;
+
+  if (_webStateList) {
+    _webStateList->AddObserver(_webStateListObserver.get());
+    [self updateTabCount:_webStateList->count()];
+  }
+}
+
 #pragma mark - Private
+
+// Updates the tab count of the `topToolbarConsumer`.
+- (void)updateTabCount:(int)tabCount {
+  self.topToolbarConsumer.pageControl.tabCount = tabCount;
+}
 
 // Helpers to configure all selection mode buttons.
 - (void)configureSelectionModeButtons {

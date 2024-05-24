@@ -526,9 +526,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
-  // Update the delegate, in case it wasn't before.
-  [self.delegate gridViewController:self
-                 didChangeItemCount:[self numberOfTabs]];
   [self removeEmptyStateAnimated:NO];
   self.lastInsertedItemID = web::WebStateID();
 }
@@ -1108,9 +1105,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   } else {
     [self removeEmptyStateAnimated:YES];
   }
-  // Whether the view is visible or not, the delegate must be updated.
-  [self.delegate gridViewController:self
-                 didChangeItemCount:[self numberOfTabs]];
+
   if (_mode == TabGridModeSearch) {
     if (_searchText.length) {
       [self updateSearchResultsHeader];
@@ -1331,9 +1326,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                 }
                               }];
 
-  [self.delegate gridViewController:self
-                 didChangeItemCount:[self numberOfTabs]];
-
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
   } else {
@@ -1387,9 +1379,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)modelAndViewUpdatesForInsertionDidCompleteForItemIdentifier:
     (GridItemIdentifier*)item {
   [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
-
-  NSInteger numberOfTabs = [self numberOfTabs];
-  [self.delegate gridViewController:self didChangeItemCount:numberOfTabs];
 }
 
 // Makes the required changes to the data source when an existing item is
@@ -1412,7 +1401,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   if (numberOfTabs > 0) {
     [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
   }
-  [self.delegate gridViewController:self didChangeItemCount:numberOfTabs];
   [self.delegate gridViewController:self didRemoveItemWIthID:removedItemID];
 }
 
