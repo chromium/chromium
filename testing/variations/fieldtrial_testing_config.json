@@ -6740,10 +6740,9 @@
             ],
             "experiments": [
                 {
-                    "name": "ConnecMigrationAndBlackhole_20231106",
+                    "name": "Enabled",
                     "enable_features": [
-                        "DisableBlackHoleOnNoNewNetwork",
-                        "MigrateSessionsOnNetworkChangeV2"
+                        "DisableBlackHoleOnNoNewNetwork"
                     ]
                 }
             ]
