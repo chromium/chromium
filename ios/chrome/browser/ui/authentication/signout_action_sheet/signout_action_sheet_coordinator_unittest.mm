@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -111,6 +113,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   SignoutActionSheetCoordinator* signout_coordinator_ = nullptr;
   ScopedKeyWindow scoped_key_window_;
@@ -278,6 +282,23 @@ TEST_F(SignoutActionSheetCoordinatorTest,
   EXPECT_CALL(completion_callback_, Run);
 
   [signout_coordinator_ start];
+}
+
+TEST_F(SignoutActionSheetCoordinatorTest,
+       ShouldShowActionSheetForManagedUserWithClearDataonSignoutFeature) {
+  scoped_feature_list_.InitWithFeatures(
+      {kClearDeviceDataOnSignOutForManagedUsers}, {});
+
+  // Sign in with a *managed* account.
+  authentication_service()->SignIn(
+      managed_identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
+      signin::ConsentLevel::kSignin));
+
+  CreateCoordinator();
+
+  [signout_coordinator_ start];
+  ASSERT_NE(nil, signout_coordinator_.title);
 }
 
 // TODO(crbug.com/40075765): Add test for recording signout outcome upon warning

@@ -89,13 +89,9 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util",
-
-    # TODO(crbug.com/325587123): This should depend on
-    # //ios/chrome/browser/sync/model but doing so creates a circular
-    # dependency.
-    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web_state_list/model",
     "//ios/chrome/browser/webdata_services/model",
@@ -110,6 +106,11 @@ source_set("model") {
     "//ios/web/common:web_view_creation_util",
     "//net",
     "//url",
+
+    # TODO(crbug.com/325587123): This should depend on
+    # //ios/chrome/browser/sync/model but doing so creates a circular
+    # dependency.
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
   ]
   public_deps = [
     ":constants",
@@ -375,6 +376,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",

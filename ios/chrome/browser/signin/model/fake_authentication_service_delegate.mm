@@ -11,9 +11,17 @@ FakeAuthenticationServiceDelegate::~FakeAuthenticationServiceDelegate() =
     default;
 
 void FakeAuthenticationServiceDelegate::ClearBrowsingData(
-    ProceduralBlock completion) {
+    base::OnceClosure completion) {
   ++clear_browsing_data_counter_;
   if (completion) {
-    completion();
+    std::move(completion).Run();
+  }
+}
+
+void FakeAuthenticationServiceDelegate::ClearBrowsingDataForSignedinPeriod(
+    base::OnceClosure completion) {
+  ++clear_browsing_data_counter_;
+  if (completion) {
+    std::move(completion).Run();
   }
 }

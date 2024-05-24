@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+
 #import <memory>
 
 #import "base/functional/bind.h"
@@ -12,6 +14,7 @@
 #import "base/test/bind.h"
 #import "base/test/gtest_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -33,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -222,6 +226,7 @@ class AuthenticationServiceTest : public PlatformTest {
         prefs::kRestrictAccountsToPatterns, std::move(allowed_patterns));
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState local_state_;
   raw_ptr<ChromeAccountManagerService> account_manager_;
   web::WebTaskEnvironment task_environment_{
@@ -488,6 +493,33 @@ TEST_F(AuthenticationServiceTest, SignedInManagedAccountSignOut) {
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
+}
+
+// Tests that local data is cleared on signout when
+// `kClearDeviceDataOnSignOutForManagedUsers` is enabled for a managed account.
+TEST_F(AuthenticationServiceTest,
+       SignedInManagedAccountSignOutWithClearDataFeatureEnabled) {
+  scoped_feature_list_.InitWithFeatures(
+      {kClearDeviceDataOnSignOutForManagedUsers}, {});
+  fake_system_identity_manager()->AddManagedIdentities(@[ @"foo3" ]);
+
+  authentication_service()->SignIn(
+      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
+      signin::ConsentLevel::kSignin));
+  VerifyLastSigninTimestamp();
+
+  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
+  // Data will be cleared regardless of `force_clear_browsing_data` value
+  // passed. This is intended because signout is not always triggered from UI
+  // sources that set this value to true.
+  authentication_service()->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/false, nil);
+  EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  EXPECT_EQ(ClearBrowsingDataCount(), 1);
 }
 
 // Tests that MDM errors do not lead to seeding empty account ids.

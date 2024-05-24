@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -52,7 +53,10 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   SignedInUserStateWithNoneManagedAccountAndNotSyncing,
   // Sign-in with a requirement to give more contextual information when the
   // forced sign-in policy is enabled.
-  SignedInUserStateWithForcedSigninInfoRequired
+  SignedInUserStateWithForcedSigninInfoRequired,
+  // Signed in with managed account with the ClearDeviceDataOnSignoutForManaged
+  // user feature enabled.
+  SignedInUserStateWithManagedAccountClearsDataOnSignout
 };
 
 @interface SignoutActionSheetCoordinator () {
@@ -109,6 +113,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     case SignedInUserStateWithNotSyncingAndReplaceSyncWithSignin:
       [self checkForUnsyncedDataAndSignOut];
       break;
+    case SignedInUserStateWithManagedAccountClearsDataOnSignout:
     case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
     case SignedInUserStateWithManagedAccountAndSyncing:
     case SignedInUserStateWithManagedAccountAndNotSyncing:
@@ -157,6 +162,11 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   DCHECK(self.browser);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+  if (self.authenticationService->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin) &&
+      base::FeatureList::IsEnabled(kClearDeviceDataOnSignOutForManagedUsers)) {
+    return SignedInUserStateWithManagedAccountClearsDataOnSignout;
+  }
   // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   if (!self.authenticationService->HasPrimaryIdentity(
@@ -211,6 +221,11 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
           hostedDomain);
       break;
     }
+    case SignedInUserStateWithManagedAccountClearsDataOnSignout: {
+      title = l10n_util::GetNSString(
+          IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT);
+      break;
+    }
     case SignedInUserStateWithNonManagedAccountAndSyncing: {
       title = l10n_util::GetNSString(
           IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_ACCOUNT);
@@ -249,6 +264,9 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       }
       return nil;
     }
+    case SignedInUserStateWithManagedAccountClearsDataOnSignout:
+      return l10n_util::GetNSString(
+          IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT);
     case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
     case SignedInUserStateWithManagedAccountAndSyncing:
     case SignedInUserStateWithNonManagedAccountAndSyncing: {
@@ -341,8 +359,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                     action:^{
                       base::UmaHistogramBoolean("Sync.SignoutWithUnsyncedData",
                                                 true);
-                      [weakSelf handleSignOutWithForceClearData:NO];
-                      [weakSelf dismissActionSheetCoordinator];
+                      [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDestructive];
       [self.actionSheetCoordinator
@@ -350,8 +367,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                     action:^{
                       base::UmaHistogramBoolean("Sync.SignoutWithUnsyncedData",
                                                 false);
-                      [weakSelf callCompletionBlock:NO];
-                      [weakSelf dismissActionSheetCoordinator];
+                      [weakSelf cancelSignout];
                     }
                      style:UIAlertActionStyleCancel];
       [self.actionSheetCoordinator start];
@@ -363,11 +379,22 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
-                      weakSelf.confirmSignOut = YES;
-                      // Stop the current action sheet coordinator and start a
-                      // new one for the next step.
-                      [weakSelf dismissActionSheetCoordinator];
-                      [weakSelf startActionSheetCoordinatorForSignout];
+                      [weakSelf handleSignOutForForcedSigninUsers];
+                    }
+                     style:UIAlertActionStyleDestructive];
+      break;
+    }
+    case SignedInUserStateWithManagedAccountClearsDataOnSignout: {
+      self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
+      NSString* const signOutButtonTitle =
+          l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON);
+      [self.actionSheetCoordinator
+          addItemWithTitle:signOutButtonTitle
+                    action:^{
+                      // `clearData` should not be set
+                      // based on the useer choice, but based on the account
+                      // state in `AuthenticationService`.
+                      [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
@@ -383,8 +410,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                       // `forceClearData` is set to YES or NO here - based on
                       // the account's state, AuthenticationService will decide
                       // to clear the data anyway.
-                      [weakSelf handleSignOutWithForceClearData:YES];
-                      [weakSelf dismissActionSheetCoordinator];
+                      [weakSelf signoutWithForceClearData:YES];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
@@ -395,8 +421,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
-                      [weakSelf handleSignOutWithForceClearData:NO];
-                      [weakSelf dismissActionSheetCoordinator];
+                      [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
@@ -409,15 +434,13 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
-                      [weakSelf handleSignOutWithForceClearData:YES];
-                      [weakSelf dismissActionSheetCoordinator];
+                      [weakSelf signoutWithForceClearData:YES];
                     }
                      style:UIAlertActionStyleDestructive];
       [self.actionSheetCoordinator
           addItemWithTitle:keepOnDeviceTitle
                     action:^{
-                      [weakSelf handleSignOutWithForceClearData:NO];
-                      [weakSelf dismissActionSheetCoordinator];
+                      [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDefault];
       break;
@@ -428,8 +451,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
-                      [weakSelf handleSignOutWithForceClearData:NO];
-                      [weakSelf dismissActionSheetCoordinator];
+                      [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
@@ -438,11 +460,28 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
-                  [weakSelf callCompletionBlock:NO];
-                  [weakSelf dismissActionSheetCoordinator];
+                  [weakSelf cancelSignout];
                 }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
+}
+
+- (void)cancelSignout {
+  [self callCompletionBlock:NO];
+  [self dismissActionSheetCoordinator];
+}
+
+- (void)signoutWithForceClearData:(BOOL)clearData {
+  [self handleSignOutWithForceClearData:clearData];
+  [self dismissActionSheetCoordinator];
+}
+
+- (void)handleSignOutForForcedSigninUsers {
+  self.confirmSignOut = YES;
+  // Stop the current action sheet coordinator and start a
+  // new one for the next step.
+  [self dismissActionSheetCoordinator];
+  [self startActionSheetCoordinatorForSignout];
 }
 
 // Signs the user out of the primary account and clears the data from their
@@ -492,6 +531,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 // Returns snackbar if needed.
 - (MDCSnackbarMessage*)signoutSnackbarMessage {
   switch (self.signedInUserState) {
+    case SignedInUserStateWithManagedAccountClearsDataOnSignout:
     case SignedInUserStateWithNotSyncingAndReplaceSyncWithSignin:
     case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
       break;

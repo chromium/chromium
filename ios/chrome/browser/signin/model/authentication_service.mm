@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer.h"
@@ -401,6 +402,8 @@ void AuthenticationService::SignOut(
   // Get first setup complete value before stopping the sync service.
   const bool is_initial_sync_feature_setup_complete =
       sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
+  const bool is_clear_data_feature_for_managed_users_enabled =
+      base::FeatureList::IsEnabled(kClearDeviceDataOnSignOutForManagedUsers);
 
   auto* account_mutator = identity_manager_->GetPrimaryAccountMutator();
   // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
@@ -410,16 +413,22 @@ void AuthenticationService::SignOut(
   crash_keys::SetCurrentlySignedIn(false);
   cached_mdm_errors_.clear();
 
-  // Browsing data for managed account needs to be cleared only if sync has
-  // started at least once. This also includes the case where a
-  // previously-syncing user was migrated to signed-in.
-  if (force_clear_browsing_data ||
-      (is_managed && is_initial_sync_feature_setup_complete) ||
-      (is_managed && is_migrated_from_syncing)) {
-    delegate_->ClearBrowsingData(completion);
+  base::OnceClosure callback_closure =
+      completion ? base::BindOnce(completion) : base::DoNothing();
+
+  if (is_managed && is_clear_data_feature_for_managed_users_enabled) {
+    delegate_->ClearBrowsingDataForSignedinPeriod(std::move(callback_closure));
+  } else if (force_clear_browsing_data ||
+             (is_managed && is_initial_sync_feature_setup_complete) ||
+             (is_managed && is_migrated_from_syncing)) {
+    // If `is_clear_data_feature_for_managed_users_enabled` is false, browsing
+    // data for managed account needs to be cleared only if sync has started at
+    // least once. This also includes the case where a previously-syncing user
+    // was migrated to signed-in.
+    delegate_->ClearBrowsingData(std::move(callback_closure));
   } else if (completion) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(completion));
+        FROM_HERE, std::move(callback_closure));
   }
 }
 

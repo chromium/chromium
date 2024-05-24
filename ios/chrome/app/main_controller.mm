@@ -266,7 +266,9 @@ class MainControllerAuthenticationServiceDelegate
   ~MainControllerAuthenticationServiceDelegate() override;
 
   // AuthenticationServiceDelegate implementation.
-  void ClearBrowsingData(ProceduralBlock completion) override;
+  void ClearBrowsingData(base::OnceClosure completion) override;
+  void ClearBrowsingDataForSignedinPeriod(
+      base::OnceClosure completion) override;
 
  private:
   raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
@@ -283,12 +285,29 @@ MainControllerAuthenticationServiceDelegate::
     ~MainControllerAuthenticationServiceDelegate() = default;
 
 void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
-    ProceduralBlock completion) {
+    base::OnceClosure completion) {
   [dispatcher_
       removeBrowsingDataForBrowserState:browser_state_
                              timePeriod:browsing_data::TimePeriod::ALL_TIME
                              removeMask:BrowsingDataRemoveMask::REMOVE_ALL
-                        completionBlock:completion];
+                        completionBlock:CallbackToBlock(std::move(completion))];
+}
+
+void MainControllerAuthenticationServiceDelegate::
+    ClearBrowsingDataForSignedinPeriod(base::OnceClosure completion) {
+  base::Time last_signin_timestamp =
+      browser_state_->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
+
+  // If `kLastSigninTimestamp` has the default base::Time() value, data will be
+  // cleared for all time, which is intended to happen in this case.
+  [dispatcher_
+      removeBrowsingDataInRangeForBrowserState:browser_state_
+                                     startTime:last_signin_timestamp
+                                       endTime:base::Time::Now()
+                                    removeMask:BrowsingDataRemoveMask::
+                                                   REMOVE_ALL_FOR_TIME_PERIOD
+                               completionBlock:base::CallbackToBlock(
+                                                   std::move(completion))];
 }
 
 }  // namespace

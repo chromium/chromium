@@ -392,6 +392,9 @@ BASE_DECLARE_FEATURE(kDisableLensCamera);
 // Feature flag to enable color icons in the Omnibox.
 BASE_DECLARE_FEATURE(kOmniboxColorIcons);
 
+// Feature flag that allows clearing data for managed users signing out.
+BASE_DECLARE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];

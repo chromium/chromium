@@ -41,6 +41,11 @@ enum class BrowsingDataRemoveMask {
                REMOVE_FORM_DATA | REMOVE_HISTORY | REMOVE_PASSWORDS |
                REMOVE_BOOKMARKS | REMOVE_READING_LIST |
                REMOVE_LAST_USER_ACCOUNT,
+
+  // Includes all the available remove options that support partial deletion.
+  REMOVE_ALL_FOR_TIME_PERIOD = REMOVE_SITE_DATA | REMOVE_CACHE |
+                               REMOVE_FORM_DATA | REMOVE_HISTORY |
+                               REMOVE_PASSWORDS | REMOVE_LAST_USER_ACCOUNT,
 };
 
 // Implementation of bitwise "or", "and" operators and the corresponding
