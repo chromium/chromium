@@ -69,6 +69,10 @@ void TestPaymentsAutofillClient::ConfirmUploadIbanToCloud(
   legal_message_lines_ = std::move(legal_message_lines);
   offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
 }
+
+bool TestPaymentsAutofillClient::CloseWebauthnDialog() {
+  return true;
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void TestPaymentsAutofillClient::ShowAutofillProgressDialog(

@@ -47,6 +47,10 @@ void PaymentsAutofillClient::ShowWebauthnVerifyPendingDialog(
     WebauthnDialogCallback verify_pending_dialog_callback) {}
 
 void PaymentsAutofillClient::UpdateWebauthnOfferDialogWithError() {}
+
+bool PaymentsAutofillClient::CloseWebauthnDialog() {
+  return false;
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void PaymentsAutofillClient::CreditCardUploadCompleted(

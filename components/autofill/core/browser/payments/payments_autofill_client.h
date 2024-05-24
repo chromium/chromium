@@ -140,6 +140,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Will update the WebAuthn dialog content when there is an error fetching the
   // challenge.
   virtual void UpdateWebauthnOfferDialogWithError();
+
+  // Will close the current visible WebAuthn dialog. Returns true if dialog was
+  // visible and has been closed.
+  virtual bool CloseWebauthnDialog();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Shows upload result to users. Called after credit card upload is finished.

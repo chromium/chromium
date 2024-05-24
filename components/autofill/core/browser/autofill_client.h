@@ -498,10 +498,6 @@ class AutofillClient {
   // Hides the virtual card enroll bubble and icon if it is visible.
   virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
 
-  // Will close the current visible WebAuthn dialog. Returns true if dialog was
-  // visible and has been closed.
-  virtual bool CloseWebauthnDialog();
-
 #else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Display the cardholder name fix flow prompt and run the |callback| if
   // the card should be uploaded to payments with updated name from the user.

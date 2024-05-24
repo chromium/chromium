@@ -585,7 +585,7 @@ void CreditCardAccessManager::Authenticate(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       // Close the Webauthn verify pending dialog if it enters CVC
       // authentication flow since the card unmask prompt will pop up.
-      autofill_client().CloseWebauthnDialog();
+      payments_autofill_client().CloseWebauthnDialog();
 #endif
 
       // Delegate the task to CreditCardCvcAuthenticator.
@@ -795,7 +795,7 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
   // Close the Webauthn verify pending dialog. If FIDO authentication succeeded,
   // card is filled to the form, otherwise fall back to CVC authentication which
   // does not need the verify pending dialog either.
-  autofill_client().CloseWebauthnDialog();
+  payments_autofill_client().CloseWebauthnDialog();
 #endif
 
   if (response.did_succeed) {

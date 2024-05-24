@@ -58,6 +58,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       LegalMessageLines legal_message_lines,
       bool should_show_prompt,
       PaymentsAutofillClient::SaveIbanPromptCallback callback) override;
+  bool CloseWebauthnDialog() override;
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   TestPaymentsNetworkInterface* GetPaymentsNetworkInterface() override;

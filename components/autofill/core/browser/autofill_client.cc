@@ -124,10 +124,6 @@ void AutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 }
 
-bool AutofillClient::CloseWebauthnDialog() {
-  return false;
-}
-
 #else
 void AutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {

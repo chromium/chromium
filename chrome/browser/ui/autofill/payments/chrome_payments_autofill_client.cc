@@ -168,6 +168,17 @@ void ChromePaymentsAutofillClient::UpdateWebauthnOfferDialogWithError() {
     controller->UpdateDialog(WebauthnDialogState::kOfferError);
   }
 }
+
+bool ChromePaymentsAutofillClient::CloseWebauthnDialog() {
+  WebauthnDialogControllerImpl* controller =
+      WebauthnDialogControllerImpl::GetForPage(
+          web_contents()->GetPrimaryPage());
+  if (controller) {
+    return controller->CloseDialog();
+  }
+
+  return false;
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromePaymentsAutofillClient::CreditCardUploadCompleted(

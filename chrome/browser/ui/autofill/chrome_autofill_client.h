@@ -141,7 +141,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void ShowMandatoryReauthOptInConfirmation() override;
 #if !BUILDFLAG(IS_ANDROID)
   void HideVirtualCardEnrollBubbleAndIconIfVisible() override;
-  bool CloseWebauthnDialog() override;
 #else  // !BUILDFLAG(IS_ANDROID)
   void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback) override;

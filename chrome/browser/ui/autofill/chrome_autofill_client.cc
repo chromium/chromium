@@ -159,8 +159,6 @@
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/webauthn_dialog.h"
-#include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -553,19 +551,6 @@ void ChromeAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
   if (controller && controller->IsIconVisible())
     controller->HideIconAndBubble();
 }
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-bool ChromeAutofillClient::CloseWebauthnDialog() {
-  WebauthnDialogControllerImpl* controller =
-      WebauthnDialogControllerImpl::GetForPage(
-          web_contents()->GetPrimaryPage());
-  if (controller)
-    return controller->CloseDialog();
-
-  return false;
-}
-
 #else  // BUILDFLAG(IS_ANDROID)
 void ChromeAutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {

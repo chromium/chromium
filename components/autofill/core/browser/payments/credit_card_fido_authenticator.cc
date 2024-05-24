@@ -297,7 +297,7 @@ void CreditCardFidoAuthenticator::GetAssertion(
   // closed, then the offer was declined during the fetching challenge process,
   // and thus returned early.
   if (current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW) {
-    if (autofill_client_->CloseWebauthnDialog()) {
+    if (autofill_client_->GetPaymentsAutofillClient()->CloseWebauthnDialog()) {
       // Now that the dialog has closed and will proceed to a WebAuthn prompt,
       // the user must have accepted the dialog without cancelling.
       autofill_metrics::LogWebauthnOptInPromoUserDecision(
@@ -322,7 +322,7 @@ void CreditCardFidoAuthenticator::MakeCredential(
   // level authentication dialog. If dialog is already closed, then the offer
   // was declined during the fetching challenge process, and thus returned
   // early.
-  if (autofill_client_->CloseWebauthnDialog()) {
+  if (autofill_client_->GetPaymentsAutofillClient()->CloseWebauthnDialog()) {
     // Now that the dialog has closed and will proceed to a WebAuthn prompt,
     // the user must have accepted the dialog without cancelling.
     autofill_metrics::LogWebauthnOptInPromoUserDecision(
