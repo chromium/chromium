@@ -314,6 +314,11 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
   testShowTwoAccessiblePermissionsInPageInfo
 #endif
 - (void)MAYBE_testShowTwoAccessiblePermissionsInPageInfo {
+  // TODO(crbug.com/342245057): Camera access is broken in the simulator on iOS
+  // 17.5.
+  if (@available(iOS 17.5, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 17.5.");
+  }
   // Open a page that requests microphone permissions.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(

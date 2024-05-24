@@ -195,6 +195,11 @@ void TapDoneButtonOnInfobarModal() {
 // notification and then toggle camera permission through the infobar modal
 // through pressing the "Edit" button on the banner.
 - (void)testAllowAndBlockCameraPermission {
+  // TODO(crbug.com/342245057): Camera access is broken in the simulator on iOS
+  // 17.5.
+  if (@available(iOS 17.5, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 17.5.");
+  }
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL("/permissions/camera_only.html")];
@@ -273,7 +278,11 @@ void TapDoneButtonOnInfobarModal() {
 // could see a banner notification and then toggle the permissions through both
 // the infobar modal and the location bar badge.
 - (void)testAllowAndBlockCameraAndMicrophonePermissions {
-  // TODO(crbug.com/40921852): Failing on iOS17.
+  // TODO(crbug.com/342245057): Camera access is broken in the simulator on iOS
+  // 17.5.
+  if (@available(iOS 17.5, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 17.5.");
+  }
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(
                               "/permissions/camera_and_microphone.html")];
@@ -370,6 +379,11 @@ void TapDoneButtonOnInfobarModal() {
 // Tests that permissions infobar banner, modal and badge works the same way in
 // incognito by toggling camera access.
 - (void)testTogglePermissionsInIncognito {
+  // TODO(crbug.com/342245057): Camera access is broken in the simulator on iOS
+  // 17.5.
+  if (@available(iOS 17.5, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 17.5.");
+  }
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey
@@ -545,6 +559,11 @@ void TapDoneButtonOnInfobarModal() {
 
 // Tests that permissions are reset after reload.
 - (void)testPermissionsAfterReload {
+  // TODO(crbug.com/342245057): Camera access is broken in the simulator on iOS
+  // 17.5.
+  if (@available(iOS 17.5, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 17.5.");
+  }
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   // Opens a page that requests camera permission.
   [ChromeEarlGrey
