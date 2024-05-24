@@ -92,6 +92,7 @@ struct CONTENT_EXPORT NewTraceReport : BaseTraceReport {
 struct CONTENT_EXPORT ClientTraceReport : BaseTraceReport {
   ClientTraceReport();
   ~ClientTraceReport();
+
   // The current upload state for this report represented by
   // ReportUploadState.
   ReportUploadState upload_state;
@@ -131,8 +132,10 @@ class CONTENT_EXPORT TraceReportDatabase {
   // Delete traces between the |start| and |end| dates inclusively.
   bool DeleteTracesInDateRange(const base::Time start, const base::Time end);
 
-  // Delete all traces older than |age| from today.
-  bool DeleteTracesOlderThan(const base::TimeDelta age);
+  // Delete all reports older than |age| from today.
+  bool DeleteTraceReportsOlderThan(const base::TimeDelta age);
+  // Delete all trace content older than |age| from today.
+  bool DeleteTraceContentOlderThan(const base::TimeDelta age);
 
   // Mark all reports that are pending upload as skipped with `skip_reason`.
   bool AllPendingUploadSkipped(SkipUploadReason skip_reason);
@@ -151,8 +154,8 @@ class CONTENT_EXPORT TraceReportDatabase {
   std::optional<size_t> UploadCountSince(std::string scenario_name,
                                          base::Time since);
 
-  // Returns the saved count per scenario.
-  base::flat_map<std::string, size_t> GetScenarioCounts();
+  // Returns the saved count per scenario since `since`.
+  base::flat_map<std::string, size_t> GetScenarioCountsSince(base::Time since);
 
   // Returns all the reports currently stored in the database.
   std::vector<ClientTraceReport> GetAllReports();

@@ -355,21 +355,44 @@ bool TraceReportDatabase::DeleteTracesInDateRange(const base::Time start,
   return delete_traces_in_range.Run();
 }
 
-bool TraceReportDatabase::DeleteTracesOlderThan(base::TimeDelta days_old) {
+bool TraceReportDatabase::DeleteTraceReportsOlderThan(base::TimeDelta age) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_initialized()) {
     return false;
   }
 
-  sql::Statement delete_traces_older_than(database_.GetCachedStatement(
-      SQL_FROM_HERE, "DELETE FROM local_traces WHERE creation_time < ?"));
+  sql::Statement delete_reports_older_than(
+      database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
+        DELETE FROM local_traces
+        WHERE creation_time < ?)sql"));
 
-  delete_traces_older_than.BindTime(0,
-                                    base::Time(base::Time::Now() - days_old));
+  delete_reports_older_than.BindTime(0, base::Time(base::Time::Now() - age));
 
-  CHECK(delete_traces_older_than.is_valid());
+  CHECK(delete_reports_older_than.is_valid());
 
-  return delete_traces_older_than.Run();
+  return delete_reports_older_than.Run();
+}
+
+bool TraceReportDatabase::DeleteTraceContentOlderThan(base::TimeDelta age) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_initialized()) {
+    return false;
+  }
+
+  sql::Statement delete_content_older_than(
+      database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
+        UPDATE local_traces
+        SET trace_content = null
+        WHERE creation_time < ?
+        AND state=?)sql"));
+
+  delete_content_older_than.BindTime(0, base::Time(base::Time::Now() - age));
+  delete_content_older_than.BindInt(
+      1, static_cast<int>(ReportUploadState::kNotUploaded));
+
+  CHECK(delete_content_older_than.is_valid());
+
+  return delete_content_older_than.Run();
 }
 
 bool TraceReportDatabase::AllPendingUploadSkipped(
@@ -495,7 +518,8 @@ std::optional<size_t> TraceReportDatabase::UploadCountSince(
   return std::nullopt;
 }
 
-base::flat_map<std::string, size_t> TraceReportDatabase::GetScenarioCounts() {
+base::flat_map<std::string, size_t> TraceReportDatabase::GetScenarioCountsSince(
+    base::Time since) {
   base::flat_map<std::string, size_t> scenario_counts;
   if (!is_initialized()) {
     return scenario_counts;
@@ -504,7 +528,10 @@ base::flat_map<std::string, size_t> TraceReportDatabase::GetScenarioCounts() {
   sql::Statement statement(
       database_.GetCachedStatement(SQL_FROM_HERE,
                                    R"sql(SELECT scenario_name, COUNT(uuid) FROM
-                                   local_traces GROUP BY scenario_name)sql"));
+                                   local_traces
+                                   WHERE creation_time > ?
+                                   GROUP BY scenario_name)sql"));
+  statement.BindTime(0, since);
   CHECK(statement.is_valid());
 
   while (statement.Step()) {

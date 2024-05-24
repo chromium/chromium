@@ -181,7 +181,7 @@ TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
     }
   )pb";
 
-  constexpr size_t kNumSavedTraces = 20;
+  constexpr size_t kNumSavedTraces = 200;
   for (size_t i = 0; i < kNumSavedTraces; ++i) {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(

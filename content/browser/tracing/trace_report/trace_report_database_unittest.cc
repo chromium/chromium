@@ -124,7 +124,7 @@ TEST_F(TraceReportDatabaseTest, DeletingAllTraces) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 }
 
-TEST_F(TraceReportDatabaseTest, DeletingTracesInRange) {
+TEST_F(TraceReportDatabaseTest, DeleteTracesInDateRange) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   const base::Time today = base::Time::Now();
@@ -157,7 +157,7 @@ TEST_F(TraceReportDatabaseTest, DeletingTracesInRange) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 5u);
 }
 
-TEST_F(TraceReportDatabaseTest, DeleteTracesOlderThan) {
+TEST_F(TraceReportDatabaseTest, DeleteTraceReportsOlderThan) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   const base::Time today = base::Time::Now();
@@ -175,8 +175,36 @@ TEST_F(TraceReportDatabaseTest, DeleteTracesOlderThan) {
 
   EXPECT_EQ(trace_report_.GetAllReports().size(), 8u);
 
-  ASSERT_TRUE(trace_report_.DeleteTracesOlderThan(base::Days(10)));
+  ASSERT_TRUE(trace_report_.DeleteTraceReportsOlderThan(base::Days(10)));
   EXPECT_EQ(trace_report_.GetAllReports().size(), 5u);
+}
+
+TEST_F(TraceReportDatabaseTest, DeleteTraceContentOlderThan) {
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
+
+  const base::Time today = base::Time::Now();
+
+  // Create multiple NewTraceReport and add to the local_traces table.
+  for (int i = 0; i < 5; i++) {
+    NewTraceReport new_report = MakeNewTraceReport(today);
+    ASSERT_TRUE(trace_report_.AddTrace(new_report));
+  }
+
+  std::vector<base::Token> old_traces;
+  for (int i = 0; i < 3; i++) {
+    NewTraceReport new_report = MakeNewTraceReport(today - base::Days(20));
+    new_report.skip_reason = SkipUploadReason::kNotAnonymized;
+    old_traces.push_back(new_report.uuid);
+    ASSERT_TRUE(trace_report_.AddTrace(new_report));
+  }
+
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 8u);
+
+  ASSERT_TRUE(trace_report_.DeleteTraceContentOlderThan(base::Days(10)));
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 8u);
+  for (const auto& uuid : old_traces) {
+    EXPECT_FALSE(trace_report_.GetTraceContent(uuid));
+  }
 }
 
 TEST_F(TraceReportDatabaseTest, AllPendingUploadSkipped) {
@@ -308,13 +336,16 @@ TEST_F(TraceReportDatabaseTest, UploadCountSince) {
 }
 
 TEST_F(TraceReportDatabaseTest, GetScenarioCounts) {
-  EXPECT_EQ(0u, trace_report_.GetScenarioCounts().size());
+  const base::Time now = base::Time::Now();
+  EXPECT_EQ(0u,
+            trace_report_.GetScenarioCountsSince(now - base::Days(2)).size());
 
   // Create Report for the local traces database.
   NewTraceReport new_report = MakeNewTraceReport();
 
   ASSERT_TRUE(trace_report_.AddTrace(new_report));
-  auto scenario_counts = trace_report_.GetScenarioCounts();
+  auto scenario_counts =
+      trace_report_.GetScenarioCountsSince(now - base::Days(2));
 
   EXPECT_EQ(1U, scenario_counts.size());
   EXPECT_EQ(1U, scenario_counts["test_scenario"]);
