@@ -157,17 +157,9 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
   }
 
   if (ash::features::IsPickerUpdateEnabled()) {
-    if (ash::features::IsPickerFlipEnabled()) {
-      AppendAcceleratorData(
-          accelerators,
-          base::make_span(ash::kTogglePickerFlipAcceleratorData,
-                          ash::kTogglePickerFlipAcceleratorDataLength));
-    } else {
-      AppendAcceleratorData(
-          accelerators,
-          base::make_span(ash::kTogglePickerAcceleratorData,
-                          ash::kTogglePickerAcceleratorDataLength));
-    }
+    AppendAcceleratorData(
+        accelerators, base::make_span(ash::kTogglePickerAcceleratorData,
+                                      ash::kTogglePickerAcceleratorDataLength));
   }
 
   // Debug accelerators.

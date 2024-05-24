@@ -5833,10 +5833,6 @@ const char kAshPickerCloudName[] = "Picker cloud search";
 const char kAshPickerCloudDescription[] =
     "Enable cloud-based search for the Picker feature on ChromeOS.";
 
-const char kAshPickerFlipName[] = "Flip Picker feature";
-const char kAshPickerFlipDescription[] =
-    "Enable new flipped Picker feature on ChromeOS.";
-
 const char kAshPickerFeatureKeyName[] = "Feature key for Picker feature";
 const char kAshPickerFeatureKeyDescription[] =
     "Feature key to use the new Picker feature on ChromeOS.";
