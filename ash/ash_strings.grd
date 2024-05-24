@@ -3449,6 +3449,10 @@ No devices connected.
         Noise cancellation
       </message>
 
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_STYLE_TRANSFER" desc="label used for input style transfer toggle">
+        Studio mic
+      </message>
+
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_HFP_MIC_SR" desc="label used for input hfp mic sr toggle">
         Bluetooth Super Resolution
       </message>

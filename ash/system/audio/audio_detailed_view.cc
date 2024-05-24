@@ -79,6 +79,10 @@ constexpr auto kTextRowInsets = gfx::Insets::VH(8, 24);
 AudioDetailedView::NoiseCancellationCallback*
     g_noise_cancellation_toggle_callback = nullptr;
 
+// This callback is only used for tests.
+AudioDetailedView::StyleTransferCallback* g_style_transfer_toggle_callback =
+    nullptr;
+
 speech::LanguageCode GetLiveCaptionLocale() {
   std::string live_caption_locale = speech::kUsEnglishLocale;
   PrefService* pref_service =
@@ -117,6 +121,14 @@ std::u16string GetTextForAgcInfo(const std::vector<std::string>& app_names) {
              ? l10n_util::FormatString(
                    agc_info_string, {base::UTF8ToUTF16(app_names[0])}, nullptr)
              : agc_info_string;
+}
+
+void AddSeparator(views::View* container) {
+  auto* separator =
+      container->AddChildView(std::make_unique<views::Separator>());
+  separator->SetColorId(cros_tokens::kCrosSysSeparator);
+  separator->SetOrientation(views::Separator::Orientation::kHorizontal);
+  separator->SetProperty(views::kMarginsKey, kSeparatorMargins);
 }
 
 }  // namespace
@@ -172,6 +184,11 @@ void AudioDetailedView::SetMapNoiseCancellationToggleCallbackForTest(
     AudioDetailedView::NoiseCancellationCallback*
         noise_cancellation_toggle_callback) {
   g_noise_cancellation_toggle_callback = noise_cancellation_toggle_callback;
+}
+
+void AudioDetailedView::SetMapStyleTransferToggleCallbackForTest(
+    AudioDetailedView::StyleTransferCallback* style_transfer_toggle_callback) {
+  g_style_transfer_toggle_callback = style_transfer_toggle_callback;
 }
 
 void AudioDetailedView::Update() {
@@ -400,6 +417,61 @@ AudioDetailedView::CreateNoiseCancellationToggleRow(const AudioDevice& device) {
   return noise_cancellation_view;
 }
 
+std::unique_ptr<HoverHighlightView>
+AudioDetailedView::CreateStyleTransferToggleRow(const AudioDevice& device) {
+  auto toggle_icon =
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          kUnifiedMenuMicStyleTransferIcon, cros_tokens::kCrosSysOnSurface,
+          kQsSliderIconSize));
+  style_transfer_icon_ = toggle_icon.get();
+
+  auto style_transfer_view =
+      std::make_unique<HoverHighlightView>(/*listener=*/this);
+  style_transfer_view->AddViewAndLabel(
+      std::move(toggle_icon),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_AUDIO_INPUT_STYLE_TRANSFER));
+  views::Label* style_transfer_label = style_transfer_view->text_label();
+  style_transfer_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                        *style_transfer_label);
+
+  // Create a non-clickable non-focusable toggle button on the right. The events
+  // and focus behavior should be handled by `style_transfer_view_` instead.
+  const bool style_transfer_state =
+      CrasAudioHandler::Get()->GetStyleTransferState();
+
+  auto toggle = std::make_unique<Switch>();
+  toggle->SetIsOn(style_transfer_state);
+  toggle->SetCanProcessEventsWithinSubtree(false);
+  toggle->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  // Ignore the toggle for accessibility.
+  auto& view_accessibility = toggle->GetViewAccessibility();
+  view_accessibility.SetIsLeaf(true);
+  view_accessibility.SetIsIgnored(true);
+  style_transfer_button_ = toggle.get();
+  style_transfer_view->AddRightView(toggle.release());
+
+  style_transfer_view->tri_view()->SetInsets(kToggleButtonRowViewPadding);
+  style_transfer_view->tri_view()->SetContainerLayout(
+      TriView::Container::CENTER, std::make_unique<views::BoxLayout>(
+                                      views::BoxLayout::Orientation::kVertical,
+                                      kToggleButtonRowLabelPadding));
+  style_transfer_view->SetPreferredSize(kToggleButtonRowPreferredSize);
+  style_transfer_view->SetProperty(views::kMarginsKey, kToggleButtonRowMargins);
+  style_transfer_view->SetAccessibilityState(
+      style_transfer_state
+          ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX
+          : HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
+
+  // This is only used for testing.
+  if (g_style_transfer_toggle_callback) {
+    g_style_transfer_toggle_callback->Run(device.id, style_transfer_view.get());
+  }
+
+  return style_transfer_view;
+}
+
 std::unique_ptr<HoverHighlightView> AudioDetailedView::CreateAgcInfoRow(
     const AudioDevice& device) {
   auto agc_info_view = std::make_unique<HoverHighlightView>(/*listener=*/this);
@@ -497,6 +569,13 @@ void AudioDetailedView::OnInputNoiseCancellationTogglePressed() {
   noise_cancellation_button_->SetIsOn(new_state);
 }
 
+void AudioDetailedView::OnInputStyleTransferTogglePressed() {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  const bool new_state = !audio_handler->GetStyleTransferState();
+  audio_handler->SetStyleTransferState(new_state);
+  style_transfer_button_->SetIsOn(new_state);
+}
+
 void AudioDetailedView::OnSettingsButtonClicked() {
   if (!TrayPopupUtils::CanOpenWebUISettings()) {
     return;
@@ -580,6 +659,14 @@ void AudioDetailedView::UpdateAudioDevices() {
   UpdateScrollableList();
 }
 
+void AudioDetailedView::AddSeparatorIfNotLast(views::View* container,
+                                             const AudioDevice& device) {
+  if (device.is_input ? &device != &input_devices_.back()
+                      : &device != &output_devices_.back()) {
+    AddSeparator(container);
+  }
+}
+
 void AudioDetailedView::UpdateScrollableList() {
   // Resets all raw pointers inside the `scroll_content()`. Otherwise it can
   // lead to a crash when the the view is clicked. Also clears `device_map_`
@@ -588,6 +675,9 @@ void AudioDetailedView::UpdateScrollableList() {
   noise_cancellation_view_ = nullptr;
   noise_cancellation_icon_ = nullptr;
   noise_cancellation_button_ = nullptr;
+  style_transfer_view_ = nullptr;
+  style_transfer_icon_ = nullptr;
+  style_transfer_button_ = nullptr;
   live_caption_view_ = nullptr;
   live_caption_icon_ = nullptr;
   live_caption_button_ = nullptr;
@@ -638,20 +728,22 @@ void AudioDetailedView::UpdateScrollableList() {
       }
     }
 
+    // Adds the input style transfer toggle.
+    if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
+        audio_handler->IsStyleTransferSupportedForDevice(device.id)) {
+      style_transfer_view_ = container->AddChildView(
+          AudioDetailedView::CreateStyleTransferToggleRow(device));
+
+      AddSeparatorIfNotLast(container, device);
+    }
+
     // Adds the input noise cancellation toggle.
     if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
         audio_handler->IsNoiseCancellationSupportedForDevice(device.id)) {
       noise_cancellation_view_ = container->AddChildView(
           AudioDetailedView::CreateNoiseCancellationToggleRow(device));
 
-      // Adds a `Separator` if this input device is not the last one.
-      if (&device != &input_devices_.back()) {
-        auto* separator =
-            container->AddChildView(std::make_unique<views::Separator>());
-        separator->SetColorId(cros_tokens::kCrosSysSeparator);
-        separator->SetOrientation(views::Separator::Orientation::kHorizontal);
-        separator->SetProperty(views::kMarginsKey, kSeparatorMargins);
-      }
+      AddSeparatorIfNotLast(container, device);
     }
 
     // Adds a warning message if NBS is selected.
@@ -718,6 +810,11 @@ void AudioDetailedView::HandleViewClicked(views::View* view) {
 
   if (noise_cancellation_view_ && view == noise_cancellation_view_) {
     OnInputNoiseCancellationTogglePressed();
+    return;
+  }
+
+  if (style_transfer_view_ && view == style_transfer_view_) {
+    OnInputStyleTransferTogglePressed();
     return;
   }
 

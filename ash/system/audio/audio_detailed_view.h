@@ -75,6 +75,11 @@ class ASH_EXPORT AudioDetailedView
   static void SetMapNoiseCancellationToggleCallbackForTest(
       NoiseCancellationCallback* map_noise_cancellation_toggle_callback);
 
+  using StyleTransferCallback =
+      base::RepeatingCallback<void(uint64_t, views::View*)>;
+  static void SetMapStyleTransferToggleCallbackForTest(
+      StyleTransferCallback* map_style_transfer_toggle_callback);
+
   views::View* GetAsView();
 
   // Updates the `AudioDetailedView` and re-layout.
@@ -120,6 +125,10 @@ class ASH_EXPORT AudioDetailedView
   std::unique_ptr<HoverHighlightView> CreateNoiseCancellationToggleRow(
       const AudioDevice& device);
 
+  // Creates the style transfer toggle row in the input subsection.
+  std::unique_ptr<HoverHighlightView> CreateStyleTransferToggleRow(
+      const AudioDevice& device);
+
   // Creates the agc info row in the input subsection.
   std::unique_ptr<HoverHighlightView> CreateAgcInfoRow(
       const AudioDevice& device);
@@ -137,6 +146,9 @@ class ASH_EXPORT AudioDetailedView
   // Callback passed to the noise cancellation toggle button.
   void OnInputNoiseCancellationTogglePressed();
 
+  // Callback passed to the style transfer toggle button.
+  void OnInputStyleTransferTogglePressed();
+
   // Callback passed to the Settings button.
   void OnSettingsButtonClicked();
 
@@ -149,6 +161,11 @@ class ASH_EXPORT AudioDetailedView
 
   // Updates `output_devices_` and `input_devices_`.
   void UpdateAudioDevices();
+
+  // Adds a separator if the `device` is the last one in `input_devices_` if
+  // it's an input device or is the last one in `output_devices_` if it's an
+  // output device.
+  void AddSeparatorIfNotLast(views::View* container, const AudioDevice& device);
 
   // Updates the child views in `scroll_content()`.
   void UpdateScrollableList();
@@ -193,6 +210,9 @@ class ASH_EXPORT AudioDetailedView
   raw_ptr<HoverHighlightView> noise_cancellation_view_ = nullptr;
   raw_ptr<views::ImageView> noise_cancellation_icon_ = nullptr;
   raw_ptr<Switch> noise_cancellation_button_ = nullptr;
+  raw_ptr<HoverHighlightView> style_transfer_view_ = nullptr;
+  raw_ptr<views::ImageView> style_transfer_icon_ = nullptr;
+  raw_ptr<Switch> style_transfer_button_ = nullptr;
   raw_ptr<views::Button> settings_button_ = nullptr;
 
   base::ScopedObservation<SessionController, SessionObserver>
