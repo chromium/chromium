@@ -508,18 +508,15 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
   WebContents* raw_web_contents =
       GetWebContentsAtImpl(index_at_time_of_removal);
   std::optional<SessionID> id = std::nullopt;
-  if (create_historical_tab)
+  if (create_historical_tab) {
     id = delegate_->CreateHistoricalTab(raw_web_contents);
+  }
 
   std::optional<int> next_selected_index =
       DetermineNewSelectedIndex(index_at_time_of_removal);
 
-  UngroupTab(index_at_time_of_removal);
-
   std::unique_ptr<tabs::TabModel> old_data =
-      std::move(GetContentsDataAsVector()[index_at_time_of_removal]);
-  GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() +
-                                  index_at_time_of_removal);
+      RemoveTabFromIndexImpl(index_at_time_of_removal);
 
   if (empty()) {
     selection_model_.Clear();
@@ -2681,6 +2678,26 @@ void TabStripModel::InsertTabAtIndexImpl(
   if (group_model_ && group.has_value()) {
     TabGroupStateChanged(index, web_contents, std::nullopt, group);
   }
+}
+
+std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
+    int index) {
+  tabs::TabModel* tab = GetTabAtIndex(index);
+  const std::optional<tab_groups::TabGroupId> old_group = tab->group();
+
+  // Remove the tab from `contents_data_`.
+  std::unique_ptr<tabs::TabModel> old_data;
+  old_data = std::move(GetContentsDataAsVector()[index]);
+  GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() + index);
+
+  // Update the tab properties.
+  old_data->set_group(std::nullopt);
+
+  if (group_model_ && old_group) {
+    TabGroupStateChanged(index, tab->contents(), old_group, std::nullopt);
+  }
+
+  return old_data;
 }
 
 void TabStripModel::TabGroupStateChanged(
