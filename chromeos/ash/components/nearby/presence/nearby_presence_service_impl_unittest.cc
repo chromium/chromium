@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chromeos/ash/components/nearby/presence/credentials/fake_nearby_presence_credential_manager.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
@@ -41,6 +42,8 @@ const std::vector<uint8_t> kDeviceId = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab,
 const mojom::ActionType kAction1 = mojom::ActionType::kInstantTetheringAction;
 const mojom::ActionType kAction2 = mojom::ActionType::kActiveUnlockAction;
 const mojom::ActionType kAction3 = mojom::ActionType::kPhoneHubAction;
+
+constexpr auto kLatencyDelta = base::Milliseconds(123u);
 
 namespace {
 
@@ -169,6 +172,8 @@ class NearbyPresenceServiceImplTest : public testing::Test {
             &test_url_loader_factory_),
         push_notification_service_.get());
 
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+
     InitializeNearbyPresenceService();
   }
 
@@ -188,6 +193,8 @@ class NearbyPresenceServiceImplTest : public testing::Test {
 
       run_loop.Run();
     }
+
+    task_environment_.FastForwardBy(kLatencyDelta);
 
     {
       auto run_loop = base::RunLoop();
@@ -210,6 +217,8 @@ class NearbyPresenceServiceImplTest : public testing::Test {
 
     EXPECT_TRUE(scan_delegate_.WasOnPresenceDeviceFoundCalled());
     EXPECT_TRUE(IsScanSessionActive());
+    histogram_tester()->ExpectTimeBucketCount(
+        "Nearby.Presence.DeviceFound.Latency", kLatencyDelta, 1);
   }
 
   void TestOnScanStarted(
@@ -225,8 +234,12 @@ class NearbyPresenceServiceImplTest : public testing::Test {
 
   bool IsScanSessionActive() { return scan_session_ != nullptr; }
 
+  base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
+
  protected:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
   FakeNearbyPresence fake_nearby_presence_;
   FakeScanDelegate scan_delegate_;
   testing::NiceMock<ash::nearby::MockNearbyConnections> nearby_connections_;
@@ -385,6 +398,8 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
     run_loop.Run();
   }
 
+  task_environment_.FastForwardBy(kLatencyDelta);
+
   {
     auto run_loop = base::RunLoop();
     scan_delegate_.SetNextScanDelegateCallback(run_loop.QuitClosure());
@@ -404,6 +419,8 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
 
   EXPECT_TRUE(scan_delegate_.WasOnPresenceDeviceFoundCalled());
   EXPECT_TRUE(IsScanSessionActive());
+  histogram_tester()->ExpectTimeBucketCount(
+      "Nearby.Presence.DeviceFound.Latency", kLatencyDelta, 1);
 
   {
     auto run_loop = base::RunLoop();

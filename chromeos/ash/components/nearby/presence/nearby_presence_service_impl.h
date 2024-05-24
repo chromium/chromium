@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
@@ -99,6 +100,7 @@ class NearbyPresenceServiceImpl
           initialized_credential_manager);
   void UpdateCredentialsAfterCredentialManagerInitialized();
 
+  base::TimeTicks start_scan_start_time_;
   const raw_ptr<PrefService> pref_service_ = nullptr;
   const raw_ptr<ash::nearby::NearbyProcessManager> process_manager_ = nullptr;
   const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

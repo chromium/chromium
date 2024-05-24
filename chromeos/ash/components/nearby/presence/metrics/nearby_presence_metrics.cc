@@ -83,4 +83,9 @@ void RecordFirstTimeServerRegistrationDuration(
       registration_duration);
 }
 
+void RecordDeviceFoundLatency(base::TimeDelta device_found_latency) {
+  base::UmaHistogramTimes("Nearby.Presence.DeviceFound.Latency",
+                          device_found_latency);
+}
+
 }  // namespace ash::nearby::presence::metrics

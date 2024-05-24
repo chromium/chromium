@@ -827,6 +827,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Presence.DeviceFound.Latency" units="ms"
+    expires_after="2025-05-01">
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records time spent in milliseconds from starting a Presence scan to finding
+    a remote device. Emitted when each remote device is found.
+  </summary>
+</histogram>
+
 <histogram
     name="Nearby.Share.BackgroundScanning.DeviceNearbySharing.Notification.Flow"
     enum="NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent"

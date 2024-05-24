@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "chromeos/ash/components/nearby/presence/conversions/nearby_presence_conversions.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
+#include "chromeos/ash/components/nearby/presence/metrics/nearby_presence_metrics.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_connections_manager.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_enum_coversions.h"
 #include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
@@ -97,6 +98,8 @@ void NearbyPresenceServiceImpl::StartScan(
   auto filter = PresenceFilter::New(mojom::PresenceDeviceType::kChromeos);
   filters.push_back(std::move(filter));
 
+  start_scan_start_time_ = base::TimeTicks::Now();
+
   process_reference_->GetNearbyPresence()->StartScan(
       mojom::ScanRequest::New(/*account_name=*/std::string(), identity_types,
                               std::move(filters)),
@@ -158,6 +161,8 @@ void NearbyPresenceServiceImpl::Shutdown() {
 
 void NearbyPresenceServiceImpl::OnDeviceFound(mojom::PresenceDevicePtr device) {
   auto build_device = BuildPresenceDevice(std::move(device));
+  metrics::RecordDeviceFoundLatency(base::TimeTicks::Now() -
+                                    start_scan_start_time_);
   for (ScanDelegate* delegate : scan_delegate_set_) {
     delegate->OnPresenceDeviceFound(build_device);
   }

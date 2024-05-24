@@ -46,6 +46,7 @@ void RecordFirstTimeServerRegistrationFailureReason(
     ash::nearby::NearbyHttpResult failure_reason);
 void RecordFirstTimeServerRegistrationTotalAttemptsNeededCount(
     int attempt_count);
+void RecordDeviceFoundLatency(base::TimeDelta device_found_latency);
 
 }  // namespace ash::nearby::presence::metrics
 
