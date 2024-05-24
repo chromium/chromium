@@ -183,11 +183,14 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   void LoadAdaptationInternal(mojom::LoadAdaptationParamsPtr params,
                               mojo::PendingReceiver<mojom::OnDeviceModel> model,
                               LoadAdaptationCallback callback) {
+    base::ElapsedTimer timer;
     auto result = model_->LoadAdaptation(std::move(params));
     if (!result.has_value()) {
       std::move(callback).Run(result.error());
       return;
     }
+    base::UmaHistogramMediumTimes("OnDeviceModel.LoadAdaptationModelDuration",
+                                  timer.Elapsed());
     receivers_.Add(this, std::move(model), *result);
     std::move(callback).Run(mojom::LoadModelResult::kSuccess);
   }
