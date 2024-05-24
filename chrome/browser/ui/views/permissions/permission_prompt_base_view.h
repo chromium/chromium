@@ -59,6 +59,10 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
       Browser* browser,
       permissions::PermissionPrompt::Delegate& delegate);
 
+  static std::u16string GetAllowAlwaysText(
+      const std::vector<raw_ptr<permissions::PermissionRequest,
+                                VectorExperimental>>& visible_requests);
+
  private:
   const UrlIdentity url_identity_;
 

@@ -62,12 +62,25 @@ std::vector<EmbeddedPermissionPromptAskView::ButtonConfiguration>
 EmbeddedPermissionPromptAskView::GetButtonsConfiguration() const {
   std::vector<ButtonConfiguration> buttons;
   if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
-    buttons.emplace_back(
+    ButtonConfiguration allow_once = {
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
-        ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal, kAllowThisTimeId);
+        ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal, kAllowThisTimeId};
+
+    ButtonConfiguration allow_always = {
+        GetAllowAlwaysText(delegate()->Requests()), ButtonType::kAllow,
+        ui::ButtonStyle::kTonal, kAllowId};
+
+    if (permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get()) {
+      buttons.push_back(allow_always);
+      buttons.push_back(allow_once);
+    } else {
+      buttons.push_back(allow_once);
+      buttons.push_back(allow_always);
+    }
+  } else {
+    buttons.emplace_back(l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW),
+                         ButtonType::kAllow, ui::ButtonStyle::kTonal, kAllowId);
   }
-  buttons.emplace_back(l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW),
-                       ButtonType::kAllow, ui::ButtonStyle::kTonal, kAllowId);
   return buttons;
 }
 
