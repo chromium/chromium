@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         rust:
-          - 1.36.0  # MSRV
+          - 1.37.0  # MSRV
           - stable
           - beta
           - nightly
@@ -38,7 +38,7 @@ jobs:
           toolchain: ${{ matrix.rust }}
 
       - name: MSRV dependencies
-        if: matrix.rust == '1.36.0'
+        if: matrix.rust == '1.37.0'
         run: |
           cargo generate-lockfile
           cargo update -p serde_json --precise 1.0.99

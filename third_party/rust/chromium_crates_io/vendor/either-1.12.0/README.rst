@@ -25,11 +25,17 @@ __ https://docs.rs/either/
 How to use with cargo::
 
     [dependencies]
-    either = "1.11"
+    either = "1.12"
 
 
 Recent Changes
 --------------
+
+- 1.12.0
+
+  - **MSRV**: ``either`` now requires Rust 1.37 or later.
+
+  - Specialize ``nth_back`` for ``Either`` and ``IterEither``, by @cuviper (#106)
 
 - 1.11.0
 
