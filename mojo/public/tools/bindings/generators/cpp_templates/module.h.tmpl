@@ -38,9 +38,9 @@
 
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
-#include "{{module.path}}-features.h"
-#include "{{module.path}}-shared.h"
-#include "{{variant_path(module.path, variant)}}-forward.h"
+#include "{{module.path}}-features.h"  // IWYU pragma: export
+#include "{{module.path}}-shared.h"  // IWYU pragma: export
+#include "{{variant_path(module.path, variant)}}-forward.h"  // IWYU pragma: export
 
 {%- for import in imports %}
 {%-   if import|is_full_header_required_for_import %}
