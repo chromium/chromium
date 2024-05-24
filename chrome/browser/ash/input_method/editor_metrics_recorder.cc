@@ -153,21 +153,21 @@ EditorStates ToEditorStatesMetric(EditorBlockedReason reason) {
 EditorStates ToEditorStatesMetric(orca::mojom::TextQueryErrorCode error_code) {
   switch (error_code) {
     case orca::mojom::TextQueryErrorCode::kUnknown:
-      return EditorStates::ErrorUnknown;
+      return EditorStates::kErrorUnknown;
     case orca::mojom::TextQueryErrorCode::kInvalidArgument:
-      return EditorStates::ErrorInvalidArgument;
+      return EditorStates::kErrorInvalidArgument;
     case orca::mojom::TextQueryErrorCode::kResourceExhausted:
-      return EditorStates::ErrorResourceExhausted;
+      return EditorStates::kErrorResourceExhausted;
     case orca::mojom::TextQueryErrorCode::kBackendFailure:
-      return EditorStates::ErrorBackendFailure;
+      return EditorStates::kErrorBackendFailure;
     case orca::mojom::TextQueryErrorCode::kNoInternetConnection:
-      return EditorStates::ErrorNoInternetConnection;
+      return EditorStates::kErrorNoInternetConnection;
     case orca::mojom::TextQueryErrorCode::kUnsupportedLanguage:
-      return EditorStates::ErrorUnsupportedLanguage;
+      return EditorStates::kErrorUnsupportedLanguage;
     case orca::mojom::TextQueryErrorCode::kBlockedOutputs:
-      return EditorStates::ErrorBlockedOutputs;
+      return EditorStates::kErrorBlockedOutputs;
     case orca::mojom::TextQueryErrorCode::kRestrictedRegion:
-      return EditorStates::ErrorRestrictedRegion;
+      return EditorStates::kErrorRestrictedRegion;
   }
 }
 
