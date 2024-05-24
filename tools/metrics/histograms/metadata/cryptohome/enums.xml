@@ -1308,33 +1308,6 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Enroll other"/>
 </enum>
 
-<enum name="CryptohomeLECredError">
-  <summary>
-    The result when a Low Entropy CheckCredential operation was performed.
-  </summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Invalid LE secret"/>
-  <int value="2" label="Invalid Reset Secret"/>
-  <int value="3" label="Too many attempts"/>
-  <int value="4" label="Hash tree error"/>
-  <int value="5" label="Invalid LE label"/>
-  <int value="6" label="No free LE label"/>
-  <int value="7" label="Invalid Metadata"/>
-  <int value="8" label="Unclassified Error"/>
-  <int value="9" label="LE Locked"/>
-</enum>
-
-<enum name="CryptohomeLEReplayError">
-  <summary>
-    The result when a Low Entropy LogReplay operation was performed.
-  </summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Invalid log entry type"/>
-  <int value="2" label="Individual operation error"/>
-  <int value="3" label="Hash mismatch after replay"/>
-  <int value="4" label="Failed to remove leaf inserted during replay"/>
-</enum>
-
 <enum name="CryptohomeLoginDiskCleanupProgress">
   <int value="0" label="(unused)">Unused</int>
   <int value="1" label="Whole User Profiles cleaned above target">

@@ -937,39 +937,6 @@ chromium-metrics-reviews@google.com.
         summary="KeyManagement::WrapECCKey"/>
     <variant name=".KeyManagement.WrapRSAKey"
         summary="KeyManagement::WrapRSAKey"/>
-<!-- TODO(b/304710017): Remove .PinWeaver* histograms after we
-    fully migrated pinweaver_manager to libhwsec (target: M120)-->
-
-    <variant name=".PinWeaver" summary="PinWeaver"/>
-    <variant name=".PinWeaver.BlockGeneratePk"
-        summary="PinWeaver::BlockGeneratePk"/>
-    <variant name=".PinWeaver.CheckCredential"
-        summary="PinWeaver::CheckCredential"/>
-    <variant name=".PinWeaver.GeneratePk" summary="PinWeaver::GeneratePk"/>
-    <variant name=".PinWeaver.GetDelayInSeconds"
-        summary="PinWeaver::GetDelayInSeconds"/>
-    <variant name=".PinWeaver.GetDelaySchedule"
-        summary="PinWeaver::GetDelaySchedule"/>
-    <variant name=".PinWeaver.GetExpirationInSeconds"
-        summary="PinWeaver::GetExpirationInSeconds"/>
-    <variant name=".PinWeaver.GetLog" summary="PinWeaver::GetLog"/>
-    <variant name=".PinWeaver.GetVersion" summary="PinWeaver::GetVersion"/>
-    <variant name=".PinWeaver.GetWrongAuthAttempts"
-        summary="PinWeaver::GetWrongAuthAttempts"/>
-    <variant name=".PinWeaver.InsertCredential"
-        summary="PinWeaver::InsertCredential"/>
-    <variant name=".PinWeaver.InsertRateLimiter"
-        summary="PinWeaver::InsertRateLimiter"/>
-    <variant name=".PinWeaver.IsEnabled" summary="PinWeaver::IsEnabled"/>
-    <variant name=".PinWeaver.RemoveCredential"
-        summary="PinWeaver::RemoveCredential"/>
-    <variant name=".PinWeaver.ReplayLogOperation"
-        summary="PinWeaver::ReplayLogOperation"/>
-    <variant name=".PinWeaver.Reset" summary="PinWeaver::Reset"/>
-    <variant name=".PinWeaver.ResetCredential"
-        summary="PinWeaver::ResetCredential"/>
-    <variant name=".PinWeaver.StartBiometricsAuth"
-        summary="PinWeaver::StartBiometricsAuth"/>
     <variant name=".PinWeaverManager" summary="PinWeaverManager"/>
     <variant name=".PinWeaverManager.BlockGeneratePk"
         summary="PinWeaverManager::BlockGeneratePk"/>
