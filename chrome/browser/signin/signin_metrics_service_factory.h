@@ -12,8 +12,11 @@
 class Profile;
 class SigninMetricsService;
 
-// Singleton that owns all IdentityManager instances and associates them with
-// Profiles.
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
+// Singleton that manages the `SigninMetricsService` service per profile.
 class SigninMetricsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static SigninMetricsService* GetForProfile(Profile* profile);
@@ -35,6 +38,8 @@ class SigninMetricsServiceFactory : public ProfileKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_METRICS_SERVICE_FACTORY_H_

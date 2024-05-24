@@ -5,6 +5,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/core/browser/signin_metrics_service.h"
 
 SigninMetricsServiceFactory::SigninMetricsServiceFactory()
@@ -39,4 +40,9 @@ KeyedService* SigninMetricsServiceFactory::BuildServiceInstanceFor(
 
 bool SigninMetricsServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
+}
+
+void SigninMetricsServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  SigninMetricsService::RegisterProfilePrefs(registry);
 }

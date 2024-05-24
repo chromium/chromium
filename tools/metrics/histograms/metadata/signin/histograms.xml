@@ -1735,6 +1735,32 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SigninPending.Resolution"
+    enum="SigninPendingResolution" expires_after="2024-10-16">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the resolution method used when in Signin Pending, either Sign in
+    (reauth) or sign out of Chrome. The value is recorded when the resolution is
+    applied.
+  </summary>
+</histogram>
+
+<histogram name="Signin.SigninPending.ResolutionTime.{ResolutionType}"
+    units="ms" expires_after="2024-10-16">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the time spent from entering the Signin Pending state to
+    {ResolutionType}. The value is recorded when the resolution method is
+    applied.
+  </summary>
+  <token key="ResolutionType">
+    <variant name="Reauth" summary="signing back in (reauth)"/>
+    <variant name="Signout" summary="signing out"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.SigninStartedAccessPoint" enum="SigninAccessPoint"
     expires_after="2024-11-03">
   <owner>msarda@chromium.org</owner>
@@ -2068,6 +2094,24 @@ name="TransactionalReauthEntryPoint" -->
     in cases where the data is either automatically wiped or automatically not
     wiped).
   </summary>
+</histogram>
+
+<histogram name="Signin.WebSignin.TimeToChromeSignin.{AccessPoint}" units="ms"
+    expires_after="2024-10-16">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the time spent from being in Web Signin only to signing in to Chrome
+    via {AccessPoint}. The value is recorded when signing in to Chrome.
+
+    It will also be recorded when the user directly signs in to Chrome, with no
+    prior web only signed in state. The value recorded will be relativley very
+    low.
+  </summary>
+  <token key="AccessPoint">
+    <variant name="PasswordSigninPromo" summary="the Password Sign-in promo"/>
+    <variant name="ProfileMenu" summary="the Profile Menu"/>
+  </token>
 </histogram>
 
 </histograms>

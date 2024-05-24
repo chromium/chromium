@@ -573,6 +573,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Revoked on load due to cookie settings"/>
 </enum>
 
+<enum name="SigninPendingResolution">
+  <int value="0" label="Sign in (reauth)"/>
+  <int value="1" label="Sign out"/>
+</enum>
+
 <enum name="SigninReason">
   <int value="0" label="Signin primary account"/>
   <int value="1" label="Add secondary account"/>
