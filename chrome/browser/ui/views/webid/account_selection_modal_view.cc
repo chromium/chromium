@@ -29,6 +29,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -62,6 +63,47 @@ constexpr int kVerticalPadding = 8;
 constexpr int kDialogWidth = 448;
 // The margins of the modal dialog.
 constexpr int kDialogMargin = 20;
+
+class BackgroundImageView : public views::ImageView {
+  METADATA_HEADER(BackgroundImageView, views::ImageView)
+
+ public:
+  explicit BackgroundImageView(base::WeakPtr<content::WebContents> web_contents)
+      : web_contents_(web_contents) {
+    constexpr int kBackgroundWidth = 408;
+    constexpr int kBackgroundHeight = 100;
+    SetImageSize(gfx::Size(kBackgroundWidth, kBackgroundHeight));
+    UpdateBackgroundImage();
+  }
+
+  BackgroundImageView(const BackgroundImageView&) = delete;
+  BackgroundImageView& operator=(const BackgroundImageView&) = delete;
+  ~BackgroundImageView() override = default;
+
+  void UpdateBackgroundImage() {
+    CHECK(web_contents_);
+    const bool is_dark_mode = color_utils::IsDark(
+        web_contents_->GetColorProvider().GetColor(ui::kColorDialogBackground));
+    gfx::ImageSkia* background =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            is_dark_mode ? IDR_WEBID_MODAL_ICON_BACKGROUND_DARK
+                         : IDR_WEBID_MODAL_ICON_BACKGROUND_LIGHT);
+    SetImage(*background);
+  }
+
+  void OnThemeChanged() override {
+    views::ImageView::OnThemeChanged();
+    UpdateBackgroundImage();
+  }
+
+ private:
+  // Web contents is used to determine whether to show the light or dark mode
+  // image.
+  base::WeakPtr<content::WebContents> web_contents_;
+};
+
+BEGIN_METADATA(BackgroundImageView)
+END_METADATA
 
 AccountSelectionModalView::AccountSelectionModalView(
     const std::u16string& top_frame_for_display,
@@ -617,19 +659,8 @@ AccountSelectionModalView::CreateBrandIconImageView(
   }
 
   // Create background image view.
-  constexpr int kBackgroundWidth = 408;
-  constexpr int kBackgroundHeight = 100;
-  const bool is_dark_mode = color_utils::IsDark(
-      web_contents_->GetColorProvider().GetColor(ui::kColorDialogBackground));
-  gfx::ImageSkia* background =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          is_dark_mode ? IDR_WEBID_MODAL_ICON_BACKGROUND_DARK
-                       : IDR_WEBID_MODAL_ICON_BACKGROUND_LIGHT);
-  std::unique_ptr<views::ImageView> background_image_view =
-      std::make_unique<views::ImageView>();
-  background_image_view->SetImage(*background);
-  background_image_view->SetImageSize(
-      gfx::Size(kBackgroundWidth, kBackgroundHeight));
+  std::unique_ptr<BackgroundImageView> background_image_view =
+      std::make_unique<BackgroundImageView>(web_contents_);
 
   // Put background image view into a FillLayout container.
   std::unique_ptr<views::View> background_container =
