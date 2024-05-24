@@ -18,6 +18,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.function.BooleanSupplier;
+
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
 public class BookmarkToolbarCoordinator {
     private final BookmarkToolbar mToolbar;
@@ -37,7 +39,8 @@ public class BookmarkToolbarCoordinator {
             BookmarkUiPrefs bookmarkUiPrefs,
             ModalDialogManager modalDialogManager,
             Runnable endSearchRunnable,
-            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager) {
+            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager,
+            BooleanSupplier incognitoEnabledSupplier) {
         mToolbar =
                 (BookmarkToolbar)
                         selectableListLayout.initializeToolbar(
@@ -70,7 +73,8 @@ public class BookmarkToolbarCoordinator {
                         new BookmarkAddNewFolderCoordinator(
                                 context, modalDialogManager, bookmarkModel),
                         endSearchRunnable,
-                        bookmarkMoveSnackbarManager);
+                        bookmarkMoveSnackbarManager,
+                        incognitoEnabledSupplier);
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }

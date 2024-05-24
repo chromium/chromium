@@ -52,9 +52,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
@@ -70,6 +68,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /** Unit tests for {@link BookmarkToolbarMediator}. */
 @Batch(Batch.UNIT_TESTS)
@@ -103,6 +102,8 @@ public class BookmarkToolbarMediatorTest {
     BookmarkToolbarMediator mMediator;
     PropertyModel mModel;
     OneshotSupplierImpl<BookmarkDelegate> mBookmarkDelegateSupplier;
+    BooleanSupplier mIncognitoEnabledSupplier;
+    boolean mIncognitoEnabled = true;
 
     @Before
     public void setUp() {
@@ -114,11 +115,10 @@ public class BookmarkToolbarMediatorTest {
                                 R.style.Theme_BrowserUI_DayNight));
         doNothing().when(mContext).startActivity(any());
 
-        IncognitoUtils.setEnabledForTesting(true);
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
-
         // Setup the bookmark model ids/items.
         mBookmarkModel = FakeBookmarkModel.createModel();
+
+        mIncognitoEnabledSupplier = () -> mIncognitoEnabled;
 
         initModelAndMediator();
     }
@@ -148,7 +148,8 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkUiPrefs,
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
-                        mBookmarkMoveSnackbarManager);
+                        mBookmarkMoveSnackbarManager,
+                        mIncognitoEnabledSupplier);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
     }
 
@@ -187,7 +188,8 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkUiPrefs,
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
-                        mBookmarkMoveSnackbarManager);
+                        mBookmarkMoveSnackbarManager,
+                        mIncognitoEnabledSupplier);
     }
 
     @Test
@@ -916,5 +918,35 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
         assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_IncognitoEnabledMode() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        BookmarkId bookmark =
+                mBookmarkModel.addBookmark(
+                        new BookmarkId(7, BookmarkType.NORMAL),
+                        0,
+                        "Test",
+                        JUnitTestGURLs.EXAMPLE_URL);
+
+        mIncognitoEnabled = true;
+        mMediator.onSelectionStateChange(Collections.singletonList(bookmark));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+
+        mIncognitoEnabled = false;
+        mMediator.onSelectionStateChange(Collections.singletonList(bookmark));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
     }
 }

@@ -21,8 +21,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -34,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
 class BookmarkToolbarMediator
@@ -78,6 +77,7 @@ class BookmarkToolbarMediator
     private final BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
     private final Runnable mEndSearchRunnable;
     private final BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
+    private final BooleanSupplier mIncognitoEnabledSupplier;
 
     // TODO(crbug.com/40255666): Remove reference to BookmarkDelegate if possible.
     private @Nullable BookmarkDelegate mBookmarkDelegate;
@@ -96,7 +96,8 @@ class BookmarkToolbarMediator
             BookmarkUiPrefs bookmarkUiPrefs,
             BookmarkAddNewFolderCoordinator bookmarkAddNewFolderCoordinator,
             Runnable endSearchRunnable,
-            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager) {
+            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager,
+            BooleanSupplier incognitoEnabledSupplier) {
         mContext = context;
         mModel = model;
 
@@ -112,6 +113,7 @@ class BookmarkToolbarMediator
         mBookmarkAddNewFolderCoordinator = bookmarkAddNewFolderCoordinator;
         mEndSearchRunnable = endSearchRunnable;
         mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
+        mIncognitoEnabledSupplier = incognitoEnabledSupplier;
 
         mModel.set(BookmarkToolbarProperties.SORT_MENU_IDS, SORT_MENU_IDS);
         mModel.set(
@@ -372,9 +374,7 @@ class BookmarkToolbarMediator
         boolean showEdit = selectedBookmarks.size() == 1;
         boolean showOpenInNewTab = selectedBookmarks.size() > 0;
         boolean showOpenInIncognito =
-                selectedBookmarks.size() > 0
-                        && IncognitoUtils.isIncognitoModeEnabled(
-                                ProfileManager.getLastUsedRegularProfile());
+                selectedBookmarks.size() > 0 && mIncognitoEnabledSupplier.getAsBoolean();
         boolean showMove = selectedBookmarks.size() > 0;
         boolean showMarkRead;
         boolean showMarkUnread;
