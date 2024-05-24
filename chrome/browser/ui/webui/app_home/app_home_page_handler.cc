@@ -550,7 +550,9 @@ void AppHomePageHandler::OnWebAppInstallManagerDestroyed() {
 void AppHomePageHandler::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
-  page_->AddApp(CreateAppInfoPtrFromExtension(extension));
+  if (extensions::ui_util::ShouldDisplayInNewTabPage(extension, profile_)) {
+    page_->AddApp(CreateAppInfoPtrFromExtension(extension));
+  }
 }
 
 void AppHomePageHandler::OnExtensionUnloaded(
