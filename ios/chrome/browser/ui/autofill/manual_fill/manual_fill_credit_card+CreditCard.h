@@ -16,7 +16,8 @@ class CreditCard;
 // Convenience initializer from a autofill::CreditCard. It also prepares some
 // fields for user presentation, like creating an obfuscated version of the
 // credit card number and formatting month/year fields.
-- (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard;
+- (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard
+                              icon:(UIImage*)icon;
 
 @end
 

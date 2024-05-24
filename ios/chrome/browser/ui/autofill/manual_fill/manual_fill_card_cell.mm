@@ -80,6 +80,13 @@ using base::SysNSStringToUTF8;
 
 @end
 
+namespace {
+
+// Width of the card icon.
+constexpr CGFloat kCardIconWidth = 40;
+
+}  // namespace
+
 @interface ManualFillCardCell () <UITextViewDelegate>
 
 // The dynamic constraints for all the lines (i.e. not set in createView).
@@ -216,10 +223,7 @@ using base::SysNSStringToUTF8;
 
   // Create the UIViews, add them to the contentView.
   self.cardLabel = CreateLabel();
-  self.cardIcon = [[UIImageView alloc] init];
-  self.cardIcon.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.cardIcon setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                                   forAxis:UILayoutConstraintAxisHorizontal];
+  self.cardIcon = [self createCardIcon];
   self.overflowMenuButton = CreateOverflowMenuButton();
   self.headerView =
       CreateHeaderView(self.cardIcon, self.cardLabel, self.overflowMenuButton);
@@ -353,7 +357,7 @@ using base::SysNSStringToUTF8;
 // Adds the data from the ManualFillCreditCard to the corresponding UIViews.
 - (void)populateViewsWithCardData:(ManualFillCreditCard*)card
                       menuActions:(NSArray<UIAction*>*)menuActions {
-  self.cardIcon.image = NativeImage(card.issuerNetworkIconID);
+  self.cardIcon.image = card.icon;
 
   if (menuActions && menuActions.count) {
     self.overflowMenuButton.menu = [UIMenu menuWithChildren:menuActions];
@@ -710,6 +714,22 @@ using base::SysNSStringToUTF8;
   [expirationSeparatorLabel setTextColor:[UIColor colorNamed:kSeparatorColor]];
   expirationSeparatorLabel.text = @"/";
   return expirationSeparatorLabel;
+}
+
+// Creates and configures the card icon image view.
+- (UIImageView*)createCardIcon {
+  UIImageView* cardIcon = [[UIImageView alloc] init];
+  cardIcon.translatesAutoresizingMaskIntoConstraints = NO;
+  [cardIcon setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                              forAxis:UILayoutConstraintAxisHorizontal];
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    cardIcon.contentMode = UIViewContentModeScaleAspectFill;
+    [cardIcon.widthAnchor constraintEqualToConstant:kCardIconWidth].active =
+        YES;
+  }
+
+  return cardIcon;
 }
 
 // Adds or hides ChipButton depending on the 'test' boolean.

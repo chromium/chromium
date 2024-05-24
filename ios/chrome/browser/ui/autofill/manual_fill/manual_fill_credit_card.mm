@@ -8,7 +8,7 @@
 
 - (instancetype)initWithGUID:(NSString*)GUID
                      network:(NSString*)network
-         issuerNetworkIconID:(int)issuerNetworkIconID
+                        icon:(UIImage*)icon
                     bankName:(NSString*)bankName
                   cardHolder:(NSString*)cardHolder
                       number:(NSString*)number
@@ -21,7 +21,7 @@
   if (self) {
     _GUID = [GUID copy];
     _network = [network copy];
-    _issuerNetworkIconID = issuerNetworkIconID;
+    _icon = icon;
     _bankName = [bankName copy];
     _cardHolder = [cardHolder copy];
     _number = [number copy];
@@ -64,12 +64,12 @@
   // Not returning raw number, just obfuscated number, in case this ends up in
   // logs.
   return [NSString
-      stringWithFormat:
-          @"<%@ (%p): GUID: %@, network: %@, issuerNetworkIconID:%d, "
-          @"bankName: %@, cardHolder: %@, obfuscatedNumber: %@, "
-          @"expirationYear: %@, expirationMonth: %@>",
-          NSStringFromClass([self class]), self, self.GUID, self.network,
-          self.issuerNetworkIconID, self.bankName, self.cardHolder,
-          self.obfuscatedNumber, self.expirationYear, self.expirationMonth];
+      stringWithFormat:@"<%@ (%p): GUID: %@, network: %@, "
+                       @"bankName: %@, cardHolder: %@, obfuscatedNumber: %@, "
+                       @"expirationYear: %@, expirationMonth: %@>",
+                       NSStringFromClass([self class]), self, self.GUID,
+                       self.network, self.bankName, self.cardHolder,
+                       self.obfuscatedNumber, self.expirationYear,
+                       self.expirationMonth];
 }
 @end

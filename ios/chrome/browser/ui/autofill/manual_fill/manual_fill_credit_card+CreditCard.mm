@@ -14,7 +14,8 @@
 
 @implementation ManualFillCreditCard (CreditCardForm)
 
-- (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard {
+- (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard
+                              icon:(UIImage*)icon {
   NSString* GUID =
       base::SysUTF16ToNSString(base::ASCIIToUTF16(creditCard.guid()));
   NSString* network = base::SysUTF16ToNSString(creditCard.NetworkForDisplay());
@@ -34,10 +35,6 @@
        autofill::CreditCard::RecordType::kMaskedServerCard) &&
       (creditCard.record_type() !=
        autofill::CreditCard::RecordType::kVirtualCard);
-
-  const int issuerNetworkIconID =
-      autofill::data_util::GetPaymentRequestData(creditCard.network())
-          .icon_resource_id;
 
   // Unicode characters used in card number:
   //  - 0x0020 - Space.
@@ -60,7 +57,7 @@
 
   return [self initWithGUID:GUID
                     network:network
-        issuerNetworkIconID:issuerNetworkIconID
+                       icon:icon
                    bankName:bankName
                  cardHolder:cardHolder
                      number:number

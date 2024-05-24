@@ -36,8 +36,8 @@
 // The credit card expiration month.
 @property(nonatomic, readonly) NSString* expirationMonth;
 
-// The credit card icon id.
-@property(nonatomic, readonly) int issuerNetworkIconID;
+// The credit card icon.
+@property(nonatomic, readonly) UIImage* icon;
 
 // The type of card: masked, local, virtual, etc.
 @property(nonatomic, readonly) autofill::CreditCard::RecordType recordType;
@@ -50,7 +50,7 @@
 // equality, so we can differentiate between an obfuscated and a complete one.
 - (instancetype)initWithGUID:(NSString*)GUID
                      network:(NSString*)network
-         issuerNetworkIconID:(int)issuerNetworkIconID
+                        icon:(UIImage*)icon
                     bankName:(NSString*)bankName
                   cardHolder:(NSString*)cardHolder
                       number:(NSString*)number

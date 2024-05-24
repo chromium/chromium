@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 using ManualFillCreditCardiOSTest = PlatformTest;
@@ -15,6 +17,7 @@ autofill::CreditCard::RecordType LOCAL_CARD_RECORD_TYPE =
 TEST_F(ManualFillCreditCardiOSTest, Creation) {
   NSString* GUID = @"1234-5678-abcd";
   NSString* network = @"Viza";
+  UIImage* icon = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
   NSString* bankName = @"Bank of 'Merica";
   NSString* cardHolder = @"Fred Itcard";
   NSString* number = @"4321 1234 4321 1234";
@@ -24,7 +27,7 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
   ManualFillCreditCard* card =
       [[ManualFillCreditCard alloc] initWithGUID:GUID
                                          network:network
-                             issuerNetworkIconID:1
+                                            icon:icon
                                         bankName:bankName
                                       cardHolder:cardHolder
                                           number:number
@@ -36,7 +39,7 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
   EXPECT_TRUE(card);
   EXPECT_TRUE([GUID isEqualToString:card.GUID]);
   EXPECT_TRUE([network isEqualToString:card.network]);
-  EXPECT_EQ(card.issuerNetworkIconID, 1);
+  EXPECT_NSEQ(icon, card.icon);
   EXPECT_TRUE([cardHolder isEqualToString:card.cardHolder]);
   EXPECT_TRUE([number isEqualToString:card.number]);
   EXPECT_TRUE([obfuscatedNumber isEqualToString:card.obfuscatedNumber]);
@@ -49,6 +52,7 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
 TEST_F(ManualFillCreditCardiOSTest, Equality) {
   NSString* GUID = @"1234-5678-abcd";
   NSString* network = @"Viza";
+  UIImage* icon = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
   NSString* bankName = @"Bank of 'Merica";
   NSString* cardHolder = @"Fred Itcard";
   NSString* number = @"4321 1234 4321 1234";
@@ -59,7 +63,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
   ManualFillCreditCard* card =
       [[ManualFillCreditCard alloc] initWithGUID:GUID
                                          network:network
-                             issuerNetworkIconID:1
+                                            icon:icon
                                         bankName:bankName
                                       cardHolder:cardHolder
                                           number:number
@@ -72,7 +76,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
   ManualFillCreditCard* equalCard =
       [[ManualFillCreditCard alloc] initWithGUID:GUID
                                          network:network
-                             issuerNetworkIconID:1
+                                            icon:icon
                                         bankName:bankName
                                       cardHolder:cardHolder
                                           number:number
@@ -87,7 +91,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
   ManualFillCreditCard* differentGuidCredential =
       [[ManualFillCreditCard alloc] initWithGUID:@"wxyz-8765-4321"
                                          network:network
-                             issuerNetworkIconID:1
+                                            icon:icon
                                         bankName:bankName
                                       cardHolder:cardHolder
                                           number:number

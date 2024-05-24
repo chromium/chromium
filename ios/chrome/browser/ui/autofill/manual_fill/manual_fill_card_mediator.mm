@@ -30,6 +30,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/resource/resource_bundle.h"
 #import "url/gurl.h"
 
 using autofill::CreditCard;
@@ -138,8 +139,9 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
 
 // Creates a ManualFillCardItem for the given `card`.
 - (ManualFillCardItem*)createManualFillCardItemForCard:(CreditCard*)card {
-  ManualFillCreditCard* manualFillCreditCard =
-      [[ManualFillCreditCard alloc] initWithCreditCard:*card];
+  ManualFillCreditCard* manualFillCreditCard = [[ManualFillCreditCard alloc]
+      initWithCreditCard:*card
+                    icon:[self iconForCreditCard:card]];
   NSArray<UIAction*>* menuActions = IsKeyboardAccessoryUpgradeEnabled()
                                         ? [self createMenuActionsForCard:card]
                                         : @[];
@@ -200,13 +202,38 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
   return @[ editAction, showDetailsAction ];
 }
 
+// Returns the icon associated with the provided credit card.
+- (UIImage*)iconForCreditCard:(const autofill::CreditCard*)creditCard {
+  // Check if custom card art is available.
+  GURL cardArtURL =
+      _personalDataManager->payments_data_manager().GetCardArtURL(*creditCard);
+  if (IsKeyboardAccessoryUpgradeEnabled() && !cardArtURL.is_empty() &&
+      cardArtURL.is_valid()) {
+    gfx::Image* image = _personalDataManager->payments_data_manager()
+                            .GetCreditCardArtImageForUrl(cardArtURL);
+    if (image) {
+      return image->ToUIImage();
+    }
+  }
+
+  // Otherwise, try to get the default card icon
+  autofill::Suggestion::Icon icon = creditCard->CardIconForAutofillSuggestion();
+  return icon == autofill::Suggestion::Icon::kNoIcon
+             ? nil
+             : ui::ResourceBundle::GetSharedInstance()
+                   .GetNativeImageNamed(
+                       autofill::CreditCard::IconResourceId(icon))
+                   .ToUIImage();
+}
+
 #pragma mark - FullCardRequestResultDelegateObserving
 
 - (void)onFullCardRequestSucceeded:(const CreditCard&)card
                          fieldType:(manual_fill::PaymentFieldType)fieldType {
   // Credit card are not shown as 'Secure'.
-  ManualFillCreditCard* manualFillCreditCard =
-      [[ManualFillCreditCard alloc] initWithCreditCard:card];
+  ManualFillCreditCard* manualFillCreditCard = [[ManualFillCreditCard alloc]
+      initWithCreditCard:card
+                    icon:[self iconForCreditCard:&card]];
   NSString* fillValue;
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableVirtualCards)) {
