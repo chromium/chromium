@@ -1980,6 +1980,10 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
+    @DisabledTest(
+            message =
+                    "Failing due to side-effects from testDataSharingIncognitoMode,"
+                            + " crbug.com/342638430")
     public void testDataSharing() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create a tab group.
