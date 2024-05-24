@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/buildflags.gni")
+
 assert(is_chromeos)
 
 source_set("magic_boost") {
@@ -25,6 +27,10 @@ source_set("magic_boost") {
     "//ui/gfx",
     "//ui/views",
   ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
+  }
 }
 
 source_set("test_support") {

@@ -6,11 +6,14 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/bind.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -21,11 +24,16 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace chromeos {
 
@@ -39,7 +47,7 @@ constexpr int kContainerPadding = 32;
 constexpr int kTextContainerBetweenChildSpacing = 16;
 constexpr int kContainerBottomPadding = 28;
 constexpr int kWidgetWidth = kImageWidth;
-constexpr int kWidgetHeight = 600;
+constexpr int kWidgetHeight = 650;
 constexpr int kBetweenButtonsSpacing = 8;
 constexpr int kButtonHeight = 32;
 constexpr gfx::Insets kButtonContainerInsets =
@@ -52,10 +60,10 @@ constexpr gfx::Size kImagePreferredSize(/*width=*/kImageWidth, /*height=*/236);
 
 // Placeholder texts
 // TODO(b/339528642): Replace with real strings.
-const std::u16string title_text = u"Disclaimer title";
-const std::u16string secondary_button_text = u"No thanks";
-const std::u16string primary_button_text = u"Try it";
-const std::u16string body_text =
+const std::u16string kTestTitleText = u"Disclaimer title";
+const std::u16string kTestSecondaryButtonText = u"No thanks";
+const std::u16string kTestPrimaryButtonText = u"Try it";
+const std::u16string kTestBodyText =
     u"Body text that is multi-line which means it can span from one line to up "
     u"to three lines for this case.";
 
@@ -71,6 +79,110 @@ const gfx::FontList title_text_font_list =
                   /*font_size=*/18,
                   gfx::Font::Weight::MEDIUM);
 
+views::StyledLabel::RangeStyleInfo GetBodyTextStyle() {
+  views::StyledLabel::RangeStyleInfo style;
+  style.custom_font = body_text_font_list;
+  style.override_color_id = static_cast<ui::ColorId>(ui::kColorSysOnSurface);
+  return style;
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// Placeholder link text and url.
+const std::u16string kTestLinkText = u"Google link";
+constexpr char kTestURL[] = "https://www.google.com";
+
+// Opens the passed in `url` in a new tab.
+void OnLinkClick(const std::string& url) {
+  // TODO(b/339044721): open the url in a new tab.
+}
+
+views::StyledLabel::RangeStyleInfo GetLinkTextStyle() {
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&OnLinkClick, kTestURL));
+  link_style.override_color_id = static_cast<ui::ColorId>(ui::kColorSysPrimary);
+  return link_style;
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+views::Builder<views::StyledLabel> GetTextBodyBuilder(
+    const std::u16string& text) {
+  return views::Builder<views::StyledLabel>()
+      .SetText(text)
+      .AddStyleRange(gfx::Range(0, text.length()), GetBodyTextStyle())
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetAutoColorReadabilityEnabled(false);
+}
+
+std::u16string GetTitle() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_MAGIC_BOOST_DISCLAIMER_TITLE);
+#else
+  return kTestTitleText;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return GetTextBodyBuilder(
+      l10n_util::GetStringUTF16(IDS_MAGIC_BOOST_DISCLAMIER_PARAGRAPH_ONE));
+#else
+  return GetTextBodyBuilder(kTestBodyText);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::vector<size_t> offsets;
+  const std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO, {kTestLinkText}, &offsets);
+
+  return views::Builder<views::StyledLabel>()
+      .SetText(text)
+      .AddStyleRange(gfx::Range(0, offsets.at(0)), GetBodyTextStyle())
+      .AddStyleRange(
+          gfx::Range(offsets.at(0), offsets.at(0) + kTestLinkText.length()),
+          GetLinkTextStyle())
+      .AddStyleRange(
+          gfx::Range(offsets.at(0) + kTestLinkText.length(), text.length()),
+          GetBodyTextStyle())
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetAutoColorReadabilityEnabled(false);
+
+#else
+  return GetTextBodyBuilder(kTestBodyText);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return GetTextBodyBuilder(
+      l10n_util::GetStringUTF16(IDS_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE));
+#else
+  return GetTextBodyBuilder(kTestBodyText);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+views::Builder<views::StyledLabel> GetParagraphFourBuilder() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::vector<size_t> offsets;
+  const std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR, {kTestLinkText}, &offsets);
+
+  return views::Builder<views::StyledLabel>()
+      .SetText(text)
+      .AddStyleRange(gfx::Range(0, offsets.at(0)), GetBodyTextStyle())
+      .AddStyleRange(
+          gfx::Range(offsets.at(0), offsets.at(0) + kTestLinkText.length()),
+          GetLinkTextStyle())
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetAutoColorReadabilityEnabled(false);
+#else
+  return GetTextBodyBuilder(kTestBodyText);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 }  // namespace
 
 MagicBoostDisclaimerView::MagicBoostDisclaimerView()
@@ -80,13 +192,11 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView()
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
       .SetBackground(views::CreateThemedRoundedRectBackground(
-          ui::kColorPrimaryBackground,
+          ui::kColorSysBaseContainerElevated,
           views::LayoutProvider::Get()->GetCornerRadiusMetric(
               views::ShapeContextTokens::kMenuRadius)))
       .AddChildren(
           views::Builder<views::ImageView>()
-              // TODO(b/339044721): The json file linked to this image id is a
-              // placeholder. Update the image json to the actual image.
               .SetImage(
                   ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                       IDR_MAGIC_BOOST_DISCLAIMER_IMAGE))
@@ -102,31 +212,22 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView()
                                .SetEnabledColorId(ui::kColorSysOnSurface)
                                .SetHorizontalAlignment(
                                    gfx::HorizontalAlignment::ALIGN_LEFT)
-                               .SetText(title_text),
-                           views::Builder<views::Label>()
-                               .SetFontList(body_text_font_list)
-                               .SetEnabledColorId(ui::kColorSysSurfaceVariant)
-                               .SetHorizontalAlignment(
-                                   gfx::HorizontalAlignment::ALIGN_LEFT)
-                               .SetText(body_text)
-                               .SetMultiLine(true),
-                           views::Builder<views::Label>()
-                               .SetFontList(body_text_font_list)
-                               .SetEnabledColorId(ui::kColorSysSurfaceVariant)
-                               .SetHorizontalAlignment(
-                                   gfx::HorizontalAlignment::ALIGN_LEFT)
-                               .SetText(body_text)
-                               .SetMultiLine(true)),
+                               .SetText(GetTitle()),
+                           GetParagraphOneBuilder(), GetParagraphTwoBuilder(),
+                           GetParagraphThreeBuilder(),
+                           GetParagraphFourBuilder()),
           views::Builder<views::BoxLayoutView>()
               .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
               .SetBetweenChildSpacing(kBetweenButtonsSpacing)
-              .SetPreferredSize(gfx::Size(kWidgetWidth, kButtonHeight))
               .SetBorder(views::CreateEmptyBorder(kButtonContainerInsets))
               .AddChildren(
                   views::Builder<views::MdTextButton>()
-                      .SetText(secondary_button_text)
+                      .SetText(kTestSecondaryButtonText)
                       .SetID(magic_boost::ViewId::DisclaimerViewDeclineButton)
-                      .SetAccessibleName(secondary_button_text)
+                      .SetAccessibleName(kTestSecondaryButtonText)
+                      // Sets the button's height to a customized
+                      // `kButtonHeight` instead of using the default height.
+                      .SetMaxSize(gfx::Size(kImageWidth, kButtonHeight))
                       .SetStyle(ui::ButtonStyle::kProminent)
                       .SetCallback(base::BindRepeating(
                           &MagicBoostDisclaimerView::OnDeclineButtonPressed,
@@ -134,14 +235,13 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView()
                   views::Builder<views::MdTextButton>()
                       .CopyAddressTo(&accept_button_)
                       .SetID(magic_boost::ViewId::DisclaimerViewAcceptButton)
-                      .SetText(primary_button_text)
-                      .SetAccessibleName(primary_button_text)
+                      .SetText(kTestPrimaryButtonText)
+                      .SetAccessibleName(kTestPrimaryButtonText)
+                      .SetMaxSize(gfx::Size(kImageWidth, kButtonHeight))
                       .SetStyle(ui::ButtonStyle::kProminent)
                       .SetCallback(base::BindRepeating(
                           &MagicBoostDisclaimerView::OnAcceptButtonPressed,
-                          weak_ptr_factory_.GetWeakPtr())))
-
-              )
+                          weak_ptr_factory_.GetWeakPtr()))))
       .BuildChildren();
 }
 
