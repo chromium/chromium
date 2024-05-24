@@ -4,21 +4,28 @@
 
 #include "components/sync/test/mock_model_type_worker.h"
 
+#include <map>
+#include <set>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
 
 namespace {
+
+using testing::UnorderedElementsAreArray;
 
 class ForwardingCommitQueue : public CommitQueue {
  public:
@@ -38,31 +45,40 @@ class ForwardingCommitQueue : public CommitQueue {
 
 }  // namespace
 
-MockModelTypeWorker::MockModelTypeWorker(
-    const sync_pb::ModelTypeState& model_type_state,
-    ModelTypeProcessor* processor)
-    : model_type_state_(model_type_state), processor_(processor) {
-  model_type_state_.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+// static
+std::unique_ptr<MockModelTypeWorker>
+MockModelTypeWorker::CreateWorkerAndConnectSync(
+    std::unique_ptr<DataTypeActivationResponse> context) {
+  // WrapUnique() used because the constructor is private.
+  auto worker = base::WrapUnique(new MockModelTypeWorker(std::move(context)));
+  worker->processor_->ConnectSync(std::make_unique<ForwardingCommitQueue>(
+      worker->weak_ptr_factory_.GetWeakPtr()));
+  return worker;
 }
+
+MockModelTypeWorker::MockModelTypeWorker(
+    std::unique_ptr<DataTypeActivationResponse> context)
+    : model_type_state_(context->model_type_state),
+      processor_(std::move(context->type_processor)) {}
 
 MockModelTypeWorker::~MockModelTypeWorker() = default;
-
-std::unique_ptr<CommitQueue> MockModelTypeWorker::MakeForwardingCommitQueue() {
-  return std::make_unique<ForwardingCommitQueue>(
-      weak_ptr_factory_.GetWeakPtr());
-}
 
 void MockModelTypeWorker::NudgeForCommit() {
   if (get_local_changes_upon_nudge_enabled_) {
     processor_->GetLocalChanges(
         INT_MAX, base::BindRepeating(&MockModelTypeWorker::LocalChangesReceived,
                                      weak_ptr_factory_.GetWeakPtr()));
+    // Processors often use a proxy object to communicate with the worker, so it
+    // is necessary to process posted tasks.
+    base::RunLoop().RunUntilIdle();
   }
 }
 
 void MockModelTypeWorker::LocalChangesReceived(
     CommitRequestDataList&& commit_request) {
+  if (commit_request.empty()) {
+    return;
+  }
   // Verify that all request entities have valid id, version combinations.
   for (const std::unique_ptr<CommitRequestData>& commit_request_data :
        commit_request) {
@@ -78,7 +94,10 @@ size_t MockModelTypeWorker::GetNumPendingCommits() const {
 
 std::vector<const CommitRequestData*> MockModelTypeWorker::GetNthPendingCommit(
     size_t n) const {
-  DCHECK_LT(n, GetNumPendingCommits());
+  EXPECT_LT(n, GetNumPendingCommits());
+  if (n >= GetNumPendingCommits()) {
+    return {};
+  }
   std::vector<const CommitRequestData*> nth_pending_commits;
   for (const std::unique_ptr<CommitRequestData>& request_data :
        pending_commits_[n]) {
@@ -120,14 +139,22 @@ void MockModelTypeWorker::VerifyNthPendingCommit(
     const std::vector<ClientTagHash>& tag_hashes,
     const std::vector<sync_pb::EntitySpecifics>& specifics_list) {
   ASSERT_EQ(tag_hashes.size(), specifics_list.size());
+  std::map<ClientTagHash, sync_pb::EntitySpecifics> tag_hash_to_specifics;
+  for (size_t i = 0; i < tag_hashes.size(); i++) {
+    tag_hash_to_specifics[tag_hashes[i]] = specifics_list[i];
+  }
+
   std::vector<const CommitRequestData*> list = GetNthPendingCommit(n);
   ASSERT_EQ(tag_hashes.size(), list.size());
-  for (size_t i = 0; i < tag_hashes.size(); i++) {
-    ASSERT_TRUE(list[i]);
-    const EntityData& data = *list[i]->entity;
-    EXPECT_EQ(tag_hashes[i], data.client_tag_hash);
-    EXPECT_EQ(specifics_list[i].SerializeAsString(),
-              data.specifics.SerializeAsString());
+
+  for (const CommitRequestData* data : list) {
+    ASSERT_TRUE(data);
+    const EntityData& actual_entity = *data->entity;
+
+    ASSERT_TRUE(tag_hash_to_specifics.count(actual_entity.client_tag_hash));
+    EXPECT_EQ(tag_hash_to_specifics[actual_entity.client_tag_hash]
+                  .SerializeAsString(),
+              actual_entity.specifics.SerializeAsString());
   }
 }
 
@@ -135,13 +162,12 @@ void MockModelTypeWorker::VerifyPendingCommits(
     const std::vector<std::vector<ClientTagHash>>& tag_hashes) {
   ASSERT_EQ(tag_hashes.size(), GetNumPendingCommits());
   for (size_t i = 0; i < tag_hashes.size(); i++) {
-    std::vector<const CommitRequestData*> commits = GetNthPendingCommit(i);
-    ASSERT_EQ(tag_hashes[i].size(), commits.size());
-    for (size_t j = 0; j < tag_hashes[i].size(); j++) {
-      ASSERT_TRUE(commits[j]);
-      EXPECT_EQ(tag_hashes[i][j], commits[j]->entity->client_tag_hash)
-          << "Hash for tag " << tag_hashes[i][j] << " doesn't match.";
+    std::vector<ClientTagHash> actual_hashes;
+    for (const CommitRequestData* data : GetNthPendingCommit(i)) {
+      ASSERT_TRUE(data);
+      actual_hashes.push_back(data->entity->client_tag_hash);
     }
+    EXPECT_THAT(actual_hashes, UnorderedElementsAreArray(tag_hashes[i]));
   }
 }
 
@@ -151,8 +177,7 @@ void MockModelTypeWorker::UpdateModelTypeState(
 }
 
 void MockModelTypeWorker::UpdateFromServer() {
-  processor_->OnUpdateReceived(model_type_state_, UpdateResponseDataList(),
-                               /*gc_directive=*/std::nullopt);
+  UpdateFromServer(UpdateResponseDataList());
 }
 
 void MockModelTypeWorker::UpdateFromServer(
@@ -180,9 +205,16 @@ void MockModelTypeWorker::UpdateFromServer(
   UpdateFromServer(std::move(updates));
 }
 
-void MockModelTypeWorker::UpdateFromServer(UpdateResponseDataList updates) {
+void MockModelTypeWorker::UpdateFromServer(
+    UpdateResponseDataList updates,
+    std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
+  model_type_state_.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   processor_->OnUpdateReceived(model_type_state_, std::move(updates),
-                               /*gc_directive=*/std::nullopt);
+                               gc_directive);
+  // Processors often use a proxy object to communicate with the worker, so it
+  // is necessary to process posted tasks.
+  base::RunLoop().RunUntilIdle();
 }
 
 syncer::UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
@@ -277,10 +309,9 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateTombstoneUpdateData(
 }
 
 void MockModelTypeWorker::TombstoneFromServer(const ClientTagHash& tag_hash) {
-  UpdateResponseDataList list;
-  list.push_back(GenerateTombstoneUpdateData(tag_hash));
-  processor_->OnUpdateReceived(model_type_state_, std::move(list),
-                               /*gc_directive=*/std::nullopt);
+  UpdateResponseDataList updates;
+  updates.push_back(GenerateTombstoneUpdateData(tag_hash));
+  UpdateFromServer(std::move(updates));
 }
 
 void MockModelTypeWorker::AckOnePendingCommit() {
@@ -298,6 +329,9 @@ void MockModelTypeWorker::AckOnePendingCommit(int64_t version_offset) {
   processor_->OnCommitCompleted(
       model_type_state_, list,
       /*error_response_list=*/FailedCommitResponseDataList());
+  // Processors often use a proxy object to communicate with the worker, so it
+  // is necessary to process posted tasks.
+  base::RunLoop().RunUntilIdle();
 }
 
 void MockModelTypeWorker::FailOneCommit() {
@@ -311,11 +345,17 @@ void MockModelTypeWorker::FailOneCommit() {
   processor_->OnCommitCompleted(
       model_type_state_,
       /*committed_response_list=*/CommitResponseDataList(), list);
+  // Processors often use a proxy object to communicate with the worker, so it
+  // is necessary to process posted tasks.
+  base::RunLoop().RunUntilIdle();
 }
 
 void MockModelTypeWorker::FailFullCommitRequest() {
   pending_commits_.pop_front();
   processor_->OnCommitFailed(SyncCommitError::kBadServerResponse);
+  // Processors often use a proxy object to communicate with the worker, so it
+  // is necessary to process posted tasks.
+  base::RunLoop().RunUntilIdle();
 }
 
 CommitResponseData MockModelTypeWorker::SuccessfulCommitResponse(
@@ -370,20 +410,7 @@ void MockModelTypeWorker::UpdateWithEncryptionKey(
     const std::string& ekn,
     UpdateResponseDataList update) {
   model_type_state_.set_encryption_key_name(ekn);
-  processor_->OnUpdateReceived(model_type_state_, std::move(update),
-                               /*gc_directive=*/std::nullopt);
-}
-
-void MockModelTypeWorker::UpdateWithGarbageCollection(
-    const sync_pb::GarbageCollectionDirective& gcd) {
-  processor_->OnUpdateReceived(model_type_state_, UpdateResponseDataList(),
-                               gcd);
-}
-
-void MockModelTypeWorker::UpdateWithGarbageCollection(
-    UpdateResponseDataList update,
-    const sync_pb::GarbageCollectionDirective& gcd) {
-  processor_->OnUpdateReceived(model_type_state_, std::move(update), gcd);
+  UpdateFromServer(std::move(update));
 }
 
 void MockModelTypeWorker::DisableGetLocalChangesUponNudge() {

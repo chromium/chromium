@@ -152,16 +152,13 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
         GetTestActivationRequest(),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<syncer::DataTypeActivationResponse> response) {
-              worker_ = std::make_unique<MockModelTypeWorker>(
-                  response->model_type_state, real_processor_.get());
+              worker_ = MockModelTypeWorker::CreateWorkerAndConnectSync(
+                  std::move(response));
               loop.Quit();
             }));
     loop.Run();
 
-    // ClientTagBasedModelTypeProcessor requires connecting before other
-    // interactions with the worker happen.
-    DCHECK(worker_);
-    real_processor_->ConnectSync(worker_->MakeForwardingCommitQueue());
+    ASSERT_NE(nullptr, worker_);
   }
 
   std::map<std::string, std::unique_ptr<EntityData>> GetAllData() {

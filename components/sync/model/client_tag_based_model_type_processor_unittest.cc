@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
@@ -32,13 +34,13 @@
 #include "components/sync/test/mock_model_type_worker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using sync_pb::EntityMetadata;
-using sync_pb::EntitySpecifics;
-using sync_pb::ModelTypeState;
-
 namespace syncer {
 
 namespace {
+
+using sync_pb::EntityMetadata;
+using sync_pb::EntitySpecifics;
+using sync_pb::ModelTypeState;
 
 const char kDefaultAuthenticatedAccountId[] = "DefaultAccountId";
 
@@ -501,15 +503,16 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
   void CheckPostConditions() { EXPECT_FALSE(expect_error_); }
 
   void OnReadyToConnect(std::unique_ptr<DataTypeActivationResponse> context) {
-    model_type_state_ = context->model_type_state;
-    worker_ = std::make_unique<MockModelTypeWorker>(model_type_state_,
-                                                    type_processor());
-    // The context contains a proxy to the processor, but this call is
-    // side-stepping that completely and connecting directly to the real
-    // processor, since these tests are single-threaded and don't need proxies.
-    type_processor()->ConnectSync(worker_->MakeForwardingCommitQueue());
-    ASSERT_TRUE(run_loop_);
-    run_loop_->Quit();
+    worker_ =
+        MockModelTypeWorker::CreateWorkerAndConnectSync(std::move(context));
+
+    // The processor uses ModelTypeProcessorProxy, which requires processing
+    // tasks to complete.
+    task_environment_.RunUntilIdle();
+
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
   }
 
   void ErrorReceived(const ModelError& error) {
@@ -524,7 +527,9 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
     }
   }
 
-  sync_pb::ModelTypeState model_type_state() { return model_type_state_; }
+  sync_pb::ModelTypeState model_type_state() {
+    return worker_ ? worker_->model_type_state() : sync_pb::ModelTypeState();
+  }
 
   void WaitForStartCallbackIfNeeded() {
     if (!type_processor()->IsModelReadyToSyncForTest() ||
@@ -538,12 +543,11 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
   bool error_reported() const { return error_reported_; }
 
  private:
-  std::unique_ptr<TestModelTypeSyncBridge> bridge_;
-  sync_pb::ModelTypeState model_type_state_;
-
   // This sets SequencedTaskRunner::CurrentDefaultHandle on the current thread,
   // which the type processor will pick up as the sync task runner.
   base::test::SingleThreadTaskEnvironment task_environment_;
+
+  std::unique_ptr<TestModelTypeSyncBridge> bridge_;
 
   // This run loop is used to wait for OnReadyToConnect is called.
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -765,6 +769,50 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldApplyIncrementalUpdates) {
   EXPECT_EQ(2U, db()->metadata_count());
 }
 
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldReportErrorDuringActivation) {
+  InitializeToMetadataLoaded();
+
+  std::optional<ModelError> received_error;
+  DataTypeActivationRequest request;
+  request.error_handler = base::BindLambdaForTesting(
+      [&](const ModelError& error) { received_error = error; });
+
+  request.cache_guid = kCacheGuid;
+  request.authenticated_account_id =
+      CoreAccountId::FromString(kDefaultAuthenticatedAccountId);
+  request.sync_mode = SyncMode::kFull;
+  request.configuration_start_time = base::Time::Now();
+
+  base::RunLoop loop;
+  std::unique_ptr<syncer::DataTypeActivationResponse>
+      data_type_activation_response;
+  type_processor()->OnSyncStarting(
+      request,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<syncer::DataTypeActivationResponse> response) {
+            data_type_activation_response = std::move(response);
+            loop.Quit();
+          }));
+  loop.Run();
+
+  ASSERT_NE(nullptr, data_type_activation_response);
+
+  // Report error while the activation is in flight, i.e. before ConnectSync()
+  // is invoked.
+  ModelError error{FROM_HERE, "boom"};
+  type_processor()->ReportError(error);
+
+  // Mimic completion.
+  OnReadyToConnect(std::move(data_type_activation_response));
+
+  // The error should have been reported.
+  ASSERT_TRUE(type_processor()->GetError().has_value());
+  EXPECT_EQ(type_processor()->GetError()->location(), error.location());
+  ASSERT_TRUE(received_error.has_value());
+  EXPECT_EQ(received_error->location(), error.location());
+}
+
 // Test that an error during the merge is propagated to the error handler.
 TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldReportErrorDuringMerge) {
   ModelReadyToSync();
@@ -844,11 +892,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldLoadDataForPendingCommit) {
   OnSyncStarting();
   EntitySpecifics specifics8 = WritePrefItem(bridge(), kKey1, kValue2);
   OnCommitDataLoaded();
-  EXPECT_EQ(2U, worker()->GetNumPendingCommits());
+  EXPECT_EQ(1U, worker()->GetNumPendingCommits());
   worker()->VerifyNthPendingCommit(0, {GetPrefHash(kKey1)}, {specifics8});
-  // GetDataForCommit() was launched as a result of GetLocalChanges call().
-  // Since all data are in memory, the 2nd pending commit should be empty.
-  worker()->VerifyNthPendingCommit(1, {}, {});
 
   // Put, connect, data.
   ResetStateWriteItem(kKey1, kValue1);
@@ -875,11 +920,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldLoadDataForPendingCommit) {
   OnSyncStarting();
   bridge()->DeleteItem(kKey1);
   OnCommitDataLoaded();
-  EXPECT_EQ(2U, worker()->GetNumPendingCommits());
+  EXPECT_EQ(1U, worker()->GetNumPendingCommits());
   worker()->VerifyNthPendingCommit(0, {GetPrefHash(kKey1)}, {kEmptySpecifics});
-  // GetDataForCommit() was launched as a result of GetLocalChanges call().
-  // Since all data are in memory, the 2nd pending commit should be empty.
-  worker()->VerifyNthPendingCommit(1, {}, {});
 
   // Delete, connect, data.
   ResetStateWriteItem(kKey1, kValue1);
@@ -1853,7 +1895,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldStopAndClearMetadata) {
   // Once we're ready to commit, all three local items should consider
   // themselves uncommitted and pending for commit.
   worker()->VerifyPendingCommits(
-      {{GetPrefHash(kKey1)}, {GetPrefHash(kKey2)}, {GetPrefHash(kKey3)}});
+      {{GetPrefHash(kKey1), GetPrefHash(kKey2), GetPrefHash(kKey3)}});
 }
 
 // Test proper handling of disable-sync before initial sync done.
@@ -2122,8 +2164,7 @@ TEST_F(FullUpdateClientTagBasedModelTypeProcessorTest,
   // Create 2 entries, one is version 3, another is version 1.
   sync_pb::GarbageCollectionDirective garbage_collection_directive;
   garbage_collection_directive.set_version_watermark(1);
-  worker()->UpdateWithGarbageCollection(std::move(updates),
-                                        garbage_collection_directive);
+  worker()->UpdateFromServer(std::move(updates), garbage_collection_directive);
   WriteItemAndAck(kKey1, kValue1);
   WriteItemAndAck(kKey2, kValue2);
 
@@ -2137,7 +2178,7 @@ TEST_F(FullUpdateClientTagBasedModelTypeProcessorTest,
   // Tell the client to delete all data.
   sync_pb::GarbageCollectionDirective new_directive;
   new_directive.set_version_watermark(2);
-  worker()->UpdateWithGarbageCollection(new_directive);
+  worker()->UpdateFromServer({}, new_directive);
 
   // Verify that merge is called on the bridge to replace the current sync data.
   EXPECT_EQ(2, bridge()->merge_call_count());
@@ -2162,8 +2203,8 @@ TEST_F(FullUpdateClientTagBasedModelTypeProcessorTest,
 
   {
     base::HistogramTester histogram_tester;
-    worker()->UpdateWithGarbageCollection(std::move(updates1),
-                                          garbage_collection_directive);
+    worker()->UpdateFromServer(std::move(updates1),
+                               garbage_collection_directive);
     ASSERT_EQ(1, bridge()->merge_call_count());
 
     // The duration should get recorded.
@@ -2178,8 +2219,8 @@ TEST_F(FullUpdateClientTagBasedModelTypeProcessorTest,
         ClientTagHash(), GeneratePrefSpecifics(kKey1, kValue1), 1, "k1"));
     base::HistogramTester histogram_tester;
     // Send one more update with the same data.
-    worker()->UpdateWithGarbageCollection(std::move(updates2),
-                                          garbage_collection_directive);
+    worker()->UpdateFromServer(std::move(updates2),
+                               garbage_collection_directive);
     ASSERT_EQ(2, bridge()->merge_call_count());
 
     // The duration should not get recorded again.
@@ -2461,7 +2502,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
                   kSupportsIncrementalUpdatesMismatch);
   sync_pb::GarbageCollectionDirective garbage_collection_directive;
   garbage_collection_directive.set_version_watermark(2);
-  worker()->UpdateWithGarbageCollection(garbage_collection_directive);
+  worker()->UpdateFromServer({}, garbage_collection_directive);
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,

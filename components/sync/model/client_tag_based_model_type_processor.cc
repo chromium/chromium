@@ -346,6 +346,10 @@ void ClientTagBasedModelTypeProcessor::ReportErrorImpl(const ModelError& error,
 
   if (IsConnected()) {
     DisconnectSync();
+  } else {
+    // There could be in-flight connection requests that would eventually invoke
+    // ConnectSync(), unless cancelled here.
+    weak_ptr_factory_for_worker_.InvalidateWeakPtrs();
   }
 
   model_error_ = error;

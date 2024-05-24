@@ -208,13 +208,9 @@ void ExtensionSessionsTest::CreateSessionModels() {
       sync_start_future;
   service->GetControllerDelegate()->OnSyncStarting(
       request, sync_start_future.GetCallback());
-  syncer::MockModelTypeWorker worker(
-      sync_pb::ModelTypeState(), sync_start_future.Get()->type_processor.get());
-
-  // ClientTagBasedModelTypeProcessor requires connecting before other
-  // interactions with the worker happen.
-  sync_start_future.Get()->type_processor->ConnectSync(
-      worker.MakeForwardingCommitQueue());
+  std::unique_ptr<syncer::MockModelTypeWorker> worker =
+      syncer::MockModelTypeWorker::CreateWorkerAndConnectSync(
+          sync_start_future.Take());
 
   const base::Time time_now = base::Time::Now();
   syncer::SyncDataList initial_data;
@@ -249,13 +245,13 @@ void ExtensionSessionsTest::CreateSessionModels() {
     header_update.response_version = 1;
     syncer::UpdateResponseDataList updates;
     updates.push_back(std::move(header_update));
-    worker.UpdateFromServer(std::move(updates));
+    worker->UpdateFromServer(std::move(updates));
 
     for (const auto& tab : tabs) {
       sync_pb::EntitySpecifics tab_entity;
       *tab_entity.mutable_session() = tab;
-      worker.UpdateFromServer(TagHashFromSpecifics(tab_entity.session()),
-                              tab_entity);
+      worker->UpdateFromServer(TagHashFromSpecifics(tab_entity.session()),
+                               tab_entity);
     }
   }
 

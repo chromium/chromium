@@ -20,6 +20,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
@@ -37,8 +38,8 @@ namespace syncer {
 // plausible UpdateResponseData and CommitResponseData messages.
 class MockModelTypeWorker : public CommitQueue {
  public:
-  MockModelTypeWorker(const sync_pb::ModelTypeState& model_type_state,
-                      ModelTypeProcessor* processor);
+  static std::unique_ptr<MockModelTypeWorker> CreateWorkerAndConnectSync(
+      std::unique_ptr<DataTypeActivationResponse> context);
 
   MockModelTypeWorker(const MockModelTypeWorker&) = delete;
   MockModelTypeWorker& operator=(const MockModelTypeWorker&) = delete;
@@ -47,10 +48,6 @@ class MockModelTypeWorker : public CommitQueue {
 
   // Callback when local changes are received from the processor.
   void LocalChangesReceived(CommitRequestDataList&& commit_request);
-
-  // Returns a CommitQueue that forwards all calls to `this`, useful for APIs
-  // that need to take ownership of a CommitQueue.
-  std::unique_ptr<CommitQueue> MakeForwardingCommitQueue();
 
   // Implementation for CommitQueue.
   void NudgeForCommit() override;
@@ -77,6 +74,10 @@ class MockModelTypeWorker : public CommitQueue {
   // Updates the model type state to be used in all future updates from server.
   void UpdateModelTypeState(const sync_pb::ModelTypeState& model_type_state);
 
+  const sync_pb::ModelTypeState model_type_state() const {
+    return model_type_state_;
+  }
+
   // Trigger an update from the server. See GenerateUpdateData for parameter
   // descriptions. |version_offset| defaults to 1 and |ekn| defaults to the
   // current encryption key name the worker has.
@@ -90,7 +91,9 @@ class MockModelTypeWorker : public CommitQueue {
                         const sync_pb::EntitySpecifics& specifics,
                         int64_t version_offset,
                         const std::string& ekn);
-  void UpdateFromServer(UpdateResponseDataList updates);
+  void UpdateFromServer(UpdateResponseDataList updates,
+                        std::optional<sync_pb::GarbageCollectionDirective>
+                            gc_directive = std::nullopt);
 
   // Returns an UpdateResponseData representing an update received from
   // the server. Updates server state accordingly.
@@ -151,18 +154,14 @@ class MockModelTypeWorker : public CommitQueue {
   void UpdateWithEncryptionKey(const std::string& ekn,
                                UpdateResponseDataList update);
 
-  void UpdateWithGarbageCollection(
-      UpdateResponseDataList updates,
-      const sync_pb::GarbageCollectionDirective& gcd);
-
-  void UpdateWithGarbageCollection(
-      const sync_pb::GarbageCollectionDirective& gcd);
-
   // Overrides the default behavior to immediately get local changes from the
   // processor as soon as NudgeForCommit() is invoked.
   void DisableGetLocalChangesUponNudge();
 
  private:
+  explicit MockModelTypeWorker(
+      std::unique_ptr<DataTypeActivationResponse> context);
+
   // Generate an ID string.
   static std::string GenerateId(const ClientTagHash& tag_hash);
 
@@ -183,7 +182,7 @@ class MockModelTypeWorker : public CommitQueue {
   sync_pb::ModelTypeState model_type_state_;
 
   // A pointer to the processor for this mock worker.
-  const raw_ptr<ModelTypeProcessor, AcrossTasksDanglingUntriaged> processor_;
+  const std::unique_ptr<ModelTypeProcessor> processor_;
 
   // A record of past commits requests.
   base::circular_deque<CommitRequestDataList> pending_commits_;
