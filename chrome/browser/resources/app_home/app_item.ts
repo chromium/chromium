@@ -161,7 +161,7 @@ export class AppItemElement extends PolymerElement {
     return !this.appInfo.storePageUrl;
   }
   private isOpenInWindowHidden_() {
-    return this.appInfo.isLocallyInstalled || this.appInfo.isDeprecatedApp;
+    return !this.appInfo.isLocallyInstalled || this.appInfo.isDeprecatedApp;
   }
   private isLaunchOnStartupDisabled_() {
     return !this.appInfo.mayToggleRunOnOsLoginMode;

@@ -86,7 +86,7 @@ cr-checkbox::part(label-container) {
   <cr-checkbox id="openInWindow"
       class="dropdown-item label-first"
       on-click="onOpenInWindowItemClick_"
-      hidden="[[!isOpenInWindowHidden_(appInfo)]]"
+      hidden="[[isOpenInWindowHidden_(appInfo)]]"
       checked="{{appInfo.openInWindow}}" noink>
     $i18n{appWindowOpenLabel}
   </cr-checkbox>
