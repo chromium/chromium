@@ -90,7 +90,7 @@
 -mojo/
 -native_client/
 -native_client_sdk/
--net/
+-net/third_party/
 -ppapi/
 -printing/
 -remoting/
