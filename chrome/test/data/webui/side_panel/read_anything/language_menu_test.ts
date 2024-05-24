@@ -325,7 +325,9 @@ suite('LanguageMenu', () => {
       });
 
       test('it shows and hides downloading notification', async () => {
-        enabledLanguagesInPref = ['Italian', 'English (United States)'];
+        // @ts-ignore
+        languageMenu.baseLanguages = ['it-it'];
+        enabledLanguagesInPref = ['it-it', 'English (United States)'];
         setEnabledLanguages();
         languagesToNotificationMap['it'] = VoicePackStatus.INSTALLING;
         setNotificationForLanguage();
@@ -342,6 +344,26 @@ suite('LanguageMenu', () => {
         assertLanguageNotification(getNotificationItems()[1]!, '');
         assertLanguageNotification(getNotificationItems()[2]!, '');
       });
+
+      test('non-Google language does not show downloading notification', () => {
+        // @ts-ignore
+        languageMenu.baseLanguages = ['it', 'en-us'];
+        enabledLanguagesInPref = ['it', 'en-us', 'es'];
+        setEnabledLanguages();
+
+        availableVoices = [
+          {name: 'test voice 1', lang: 'en-us'} as SpeechSynthesisVoice,
+          {name: 'espeak voice', lang: 'es'} as SpeechSynthesisVoice,
+        ];
+        setAvailableVoices();
+        languagesToNotificationMap['es'] = VoicePackStatus.INSTALLING;
+        setNotificationForLanguage();
+
+        assertEquals(getNotificationItems().length, 2);
+        assertLanguageNotification(getNotificationItems()[0]!, '');
+        assertLanguageNotification(getNotificationItems()[1]!, '');
+      });
+
 
       test(
           'with other voices it shows high quality allocation notification',

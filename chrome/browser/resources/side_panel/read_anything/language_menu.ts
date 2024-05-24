@@ -82,6 +82,10 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   // directly to better aid in testing.
   private baseLanguages = AVAILABLE_GOOGLE_TTS_LOCALES;
 
+  // A non-Google language is one that's not associated with a Google voice
+  // that can be downloaded from the language pack.
+  private nonGoogleLanguages: string[] = [];
+
   constructor() {
     super();
     this.addEventListener('cr-dialog-open', () => {
@@ -123,6 +127,9 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       return [];
     }
 
+    // Ensure this is cleared each time we recompute available languages.
+    this.nonGoogleLanguages = [];
+
     const selectedLangLowerCase = selectedLang?.toLowerCase();
     // Ensure we've added the available pack manager supported languages to
     // the language menu first, only on ChromeOS.
@@ -144,6 +151,10 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
           lang.toLowerCase(),
           this.getDisplayName(localeToDisplayName, lang),
         ]);
+
+        if (chrome.readingMode.isLanguagePackDownloadingEnabled) {
+          this.nonGoogleLanguages.push(lang.toLowerCase());
+        }
       }
     });
 
@@ -192,6 +203,12 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private isNotificationError(
       lang: string,
       voicePackInstallStatus: {[language: string]: VoicePackStatus}): boolean {
+    // Don't show notification text for a non-Google TTS language, as we're
+    // not attempting a download.
+    if (this.nonGoogleLanguages.includes(lang)) {
+      return false;
+    }
+
     const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
 
     if (!voicePackLanguage) {
@@ -217,6 +234,12 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private getNotificationText(
       lang: string,
       voicePackInstallStatus: {[language: string]: VoicePackStatus}): string {
+    // Don't show notification text for a non-Google TTS language, as we're
+    // not attempting a download.
+    if (this.nonGoogleLanguages.includes(lang)) {
+      return '';
+    }
+
     // Make sure to convert the lang string, otherwise there could be a
     // mismatch in a language and locale and what is stored in the installation
     // map.
