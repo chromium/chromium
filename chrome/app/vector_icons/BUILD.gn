@@ -95,6 +95,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "fullscreen_refresh.icon",
     "generic_stop.icon",
     "globe.icon",
+    "guardian.icon",
     "guest_menu_art.icon",
     "hardware_computer.icon",
     "hardware_computer_small.icon",

@@ -9,15 +9,10 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
 
-namespace gfx {
-class ImageSkia;
-}
-
 // The blocking dialog for the app blocked by local settings.
 class AppLocalBlockDialogView : public AppDialogView {
  public:
-  AppLocalBlockDialogView(const std::string& app_name,
-                          const gfx::ImageSkia& image);
+  explicit AppLocalBlockDialogView(const std::string& app_name);
   ~AppLocalBlockDialogView() override;
 
   static AppLocalBlockDialogView* GetActiveViewForTesting();
