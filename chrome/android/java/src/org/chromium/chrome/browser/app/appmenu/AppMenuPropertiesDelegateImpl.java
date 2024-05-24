@@ -1032,7 +1032,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
 
         // now try to insert it.
-        assert mReadAloudPos != 1 : "Unexpectedly missing position for the read aloud menu item";
+        assert mReadAloudPos != -1 : "Unexpectedly missing position for the read aloud menu item";
         if (mReadAloudPos != -1) {
             item.setVisible(true);
             mHasReadAloudInserted = true;

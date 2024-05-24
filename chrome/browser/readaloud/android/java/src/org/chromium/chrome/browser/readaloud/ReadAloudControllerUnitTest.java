@@ -499,7 +499,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     public void testClosingTab() {
-        // Close a  tab before any playback starts - tests null checks
+        // Close a tab before any playback starts - tests null checks
         mController.getTabModelTabObserverforTests().willCloseTab(mTab);
 
         verify(mPlayerCoordinator, never()).dismissPlayers();
