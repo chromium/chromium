@@ -24,6 +24,7 @@
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/core/browser/signin_metrics_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -186,9 +187,13 @@ class DiceResponseHandlerTest : public testing::Test,
         signin::AccountConsistencyMethod::kDice, &signin_client_,
         account_reconcilor_.get());
 
+    signin_metrics_service_ = std::make_unique<SigninMetricsService>(
+        *identity_test_env_.identity_manager(), pref_service());
+
     dice_response_handler_ = std::make_unique<DiceResponseHandler>(
         &signin_client_, identity_test_env_.identity_manager(),
         account_reconcilor_.get(), about_signin_internals_.get(),
+        signin_metrics_service_.get(),
         /*registration_token_helper_factory=*/
         DiceResponseHandler::RegistrationTokenHelperFactory());
   }
@@ -274,6 +279,7 @@ class DiceResponseHandlerTest : public testing::Test,
   SigninErrorController signin_error_controller_;
   std::unique_ptr<AboutSigninInternals> about_signin_internals_;
   std::unique_ptr<AccountReconcilor> account_reconcilor_;
+  std::unique_ptr<SigninMetricsService> signin_metrics_service_;
   std::unique_ptr<DiceResponseHandler> dice_response_handler_;
   int reconcilor_blocked_count_ = 0;
   int reconcilor_unblocked_count_ = 0;
