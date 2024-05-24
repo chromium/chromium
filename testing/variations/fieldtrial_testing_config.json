@@ -20260,7 +20260,7 @@
                 {
                     "name": "Enabled_20240713",
                     "params": {
-                        "migrate_stale_tabs": "false"
+                        "migrate_stale_tabs": "true"
                     },
                     "enable_features": [
                         "TabStateFlatBuffer"
