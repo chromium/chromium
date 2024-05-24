@@ -7,7 +7,6 @@
 #import <string_view>
 
 #import "base/location.h"
-#import "base/strings/string_piece.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
-
 #import <stdio.h>
 #import <unistd.h>
 
@@ -13,7 +12,6 @@
 #import "base/files/file.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/tools/strings/grit_header_parsing.h"

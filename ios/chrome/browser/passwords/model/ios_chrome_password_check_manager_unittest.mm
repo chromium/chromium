@@ -14,7 +14,6 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
-#import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"

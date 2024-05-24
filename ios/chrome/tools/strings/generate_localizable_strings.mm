@@ -33,7 +33,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/strings/string_piece.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/tools/strings/grit_header_parsing.h"
 #import "ui/base/resource/data_pack.h"

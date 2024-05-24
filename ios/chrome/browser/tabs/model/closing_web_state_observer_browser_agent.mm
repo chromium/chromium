@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 
 #import "base/metrics/histogram_macros.h"
-#import "base/strings/string_piece.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sessions/ios/ios_restore_live_tab.h"
 #import "components/sessions/ios/ios_webstate_live_tab.h"

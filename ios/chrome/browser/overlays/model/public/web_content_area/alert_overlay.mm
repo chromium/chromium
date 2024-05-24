@@ -7,7 +7,6 @@
 #import <string_view>
 
 #import "base/check_op.h"
-#import "base/strings/string_piece.h"
 
 namespace alert_overlays {
 

@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+Testing.h"
 
 #import <memory>
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -52,6 +50,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+Testing.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/common/string_util.h"

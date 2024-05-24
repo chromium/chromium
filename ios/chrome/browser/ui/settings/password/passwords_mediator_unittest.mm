@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/location.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
