@@ -1443,16 +1443,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.StopSource" enum="SyncStopSource"
-    expires_after="2024-06-30">
-  <owner>treib@chromium.org</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Tracks how sync was turned off. Logged every time sync is told to stop
-    permanently by the user (e.g. it won't come back on by itself).
-  </summary>
-</histogram>
-
 <histogram name="Sync.SyncablePrefValueChanged" enum="SyncablePref"
     expires_after="2024-10-06">
   <owner>ankushkush@google.com</owner>

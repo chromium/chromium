@@ -1191,11 +1191,6 @@ void SyncServiceImpl::OnActionableProtocolError(
                                ERROR_REASON_ACTIONABLE_ERROR);
       break;
     case DISABLE_SYNC_ON_CLIENT:
-      if (error.error_type == NOT_MY_BIRTHDAY) {
-        base::UmaHistogramEnumeration("Sync.StopSource", BIRTHDAY_ERROR,
-                                      STOP_SOURCE_LIMIT);
-      }
-
       if (error.error_type == NOT_MY_BIRTHDAY ||
           error.error_type == ENCRYPTION_OBSOLETE) {
         // Note: For legacy reasons, `kImplicitPassphrase` is used to represent
