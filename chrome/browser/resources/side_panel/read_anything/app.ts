@@ -423,7 +423,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.clearReadAloudState();
 
       this.synth.onvoiceschanged = () => {
+        // Now that the voice list has changed, refresh the VoicePackStatuses in
+        // case a language has been uninstalled.
+        this.refreshVoicePackStatuses();
+
+        // Get a new list of voices
         this.getVoices(/*refresh =*/ true);
+
         // If the selected voice is now unavailable, such as after an install,
         // reselect a new voice.
         if (this.selectedVoice &&
@@ -914,6 +920,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           this.setVoicePackStatus_(lang, VoicePackStatus.INSTALLING);
           chrome.readingMode.sendInstallVoicePackRequest(lang);
         }
+      } else {
+        // If the voices shouldn't be installed, update the state as EXISTS
+        this.setVoicePackStatus_(lang, VoicePackStatus.EXISTS);
       }
     } else if (voicePackStatus === VoicePackStatus.DOWNLOADED) {
       // If we've never seen the voice pack for this language, then it was
@@ -1108,6 +1117,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
     }
     return this.availableVoices;
+  }
+
+  private refreshVoicePackStatuses() {
+    for (const lang of Object.keys(this.voicePackInstallStatus)) {
+      this.sendGetVoicePackInfoRequest(lang);
+    }
   }
 
   private populateDisplayNamesForLocaleCodes() {
@@ -1936,6 +1951,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     if (!currentlyEnabled) {
       this.installVoicePackIfPossible(toggledLanguage);
+    } else {
+      // If the language has been deselected, remove the language from the list
+      // of language packs to download
+      const langCodeForVoicePackManager =
+          convertLangOrLocaleForVoicePackManager(toggledLanguage);
+      if (langCodeForVoicePackManager) {
+        this.languagesForVoiceDownloads.delete(langCodeForVoicePackManager);
+      }
     }
     this.enabledLanguagesInPref = currentlyEnabled ?
         this.enabledLanguagesInPref.filter(lang => lang !== toggledLanguage) :
