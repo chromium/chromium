@@ -711,6 +711,7 @@ LensOverlayController::CreateLensQueryController(
 LensOverlayController::OverlayInitializationData::OverlayInitializationData(
     const SkBitmap& screenshot,
     const std::string& data_uri,
+    lens::PaletteId color_palette,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
     std::vector<lens::mojom::OverlayObjectPtr> objects,
@@ -719,6 +720,7 @@ LensOverlayController::OverlayInitializationData::OverlayInitializationData(
     lens::mojom::CenterRotatedBoxPtr selected_region)
     : current_screenshot_(screenshot),
       current_screenshot_data_uri_(data_uri),
+      color_palette_(color_palette),
       page_url_(page_url),
       page_title_(page_title),
       interaction_response_(interaction_response),
@@ -820,6 +822,22 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
     return;
   }
 
+  // Resolve the color palette based on the vibrant screenshot color.
+  lens::PaletteId color_palette = lens::PaletteId::kFallback;
+  if (lens::features::IsDynamicThemeDetectionEnabled()) {
+    std::vector<SkColor> colors;
+    for (const auto& pair : lens::kPalettes) {
+      colors.emplace_back(pair.first);
+    }
+    SkColor screenshot_color = lens::ExtractVibrantOrDominantColorFromImage(
+        bitmap, lens::features::DynamicThemeMinPopulationPct());
+    SkColor theme_color = lens::FindBestMatchedColorOrTransparent(
+        colors, screenshot_color, lens::features::DynamicThemeMinChroma());
+    if (theme_color != SK_ColorTRANSPARENT) {
+      color_palette = lens::kPalettes.at(theme_color);
+    }
+  }
+
   content::WebContents* active_web_contents = tab_->GetContents();
 
   std::optional<GURL> page_url;
@@ -834,8 +852,8 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
   }
 
   initialization_data_ = std::make_unique<OverlayInitializationData>(
-      bitmap, webui::MakeDataURIForImage(data->as_vector(), "jpeg"), page_url,
-      page_title);
+      bitmap, webui::MakeDataURIForImage(data->as_vector(), "jpeg"),
+      color_palette, page_url, page_title);
 
   ShowOverlayWidget();
 

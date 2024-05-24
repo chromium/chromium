@@ -369,6 +369,9 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
         {
             {"search-bubble", "true"},
             {"results-search-url", kResultsSearchBaseUrl},
+            {"use-dynamic-theme", "true"},
+            {"use-dynamic-theme-min-population-pct", "0.1"},
+            {"use-dynamic-theme-min-chroma", "3.0"},
         });
   }
 
@@ -700,6 +703,36 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   // Verify screenshot was captured and stored.
   auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_FALSE(screenshot_bitmap.empty());
+
+  // Verify screenshot was encoded and passed to WebUI.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_
+                   .last_received_screenshot_data_uri_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, DynamicTheme) {
+  WaitForPaint();
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify screenshot was captured and stored.
+  auto screenshot_bitmap = controller->current_screenshot();
+  EXPECT_FALSE(screenshot_bitmap.empty());
+
+  // Verify color palette is initialized to the expected value.
+  ASSERT_EQ(lens::PaletteId::kFallback, controller->color_palette());
 
   // Verify screenshot was encoded and passed to WebUI.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);

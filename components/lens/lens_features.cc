@@ -105,6 +105,15 @@ const base::FeatureParam<bool> kIsFindInPageEntryPointEnabled{
 const base::FeatureParam<bool> kUseBrowserDarkModeSettingForLensOverlay{
     &kLensOverlay, "use-browser-dark-mode-setting", true};
 
+const base::FeatureParam<bool> kDynamicThemeForLensOverlay{
+    &kLensOverlay, "use-dynamic-theme", true};
+
+const base::FeatureParam<double> kDynamicThemeMinPopulationPct{
+    &kLensOverlay, "use-dynamic-theme-min-population-pct", 0.0f};
+
+const base::FeatureParam<double> kDynamicThemeMinChroma{
+    &kLensOverlay, "use-dynamic-theme-min-chroma", 3.0f};
+
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
     "https://lensfrontend-pa.googleapis.com/v1/crupload"};
@@ -366,6 +375,18 @@ bool IsFindInPageEntryPointEnabled() {
 
 bool UseBrowserDarkModeSettingForLensOverlay() {
   return kUseBrowserDarkModeSettingForLensOverlay.Get();
+}
+
+bool IsDynamicThemeDetectionEnabled() {
+  return kDynamicThemeForLensOverlay.Get();
+}
+
+double DynamicThemeMinPopulationPct() {
+  return kDynamicThemeMinPopulationPct.Get();
+}
+
+double DynamicThemeMinChroma() {
+  return kDynamicThemeMinChroma.Get();
 }
 
 }  // namespace lens::features

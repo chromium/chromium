@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
+#include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
@@ -226,6 +227,11 @@ class LensOverlayController : public LensSearchboxClient,
     return initialization_data_->current_screenshot_;
   }
 
+  // Returns the dynamic color palette identifier based on the screenshot.
+  lens::PaletteId color_palette() {
+    return initialization_data_->color_palette_;
+  }
+
   // Returns the results side panel coordinator
   lens::LensOverlaySidePanelCoordinator* results_side_panel_coordinator() {
     return results_side_panel_coordinator_.get();
@@ -374,6 +380,7 @@ class LensOverlayController : public LensSearchboxClient,
     OverlayInitializationData(
         const SkBitmap& screenshot,
         const std::string& data_uri,
+        lens::PaletteId color_palette,
         std::optional<GURL> page_url,
         std::optional<std::string> page_title,
         std::vector<lens::mojom::OverlayObjectPtr> objects =
@@ -394,6 +401,9 @@ class LensOverlayController : public LensSearchboxClient,
     // The screenshot that is currently being rendered by the WebUI.
     SkBitmap current_screenshot_;
     std::string current_screenshot_data_uri_;
+
+    // The dynamic color palette identifier based on the screenshot.
+    lens::PaletteId color_palette_;
 
     // The page url, if it is allowed to be shared.
     std::optional<GURL> page_url_;

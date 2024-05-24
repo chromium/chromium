@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "components/lens/lens_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
@@ -437,58 +438,33 @@ TEST_F(LensOverlayImageHelperTest, ColorUtilityFunctions) {
 }
 
 TEST_F(LensOverlayImageHelperTest, FindBestMatchedColorOrTransparent) {
-  // Colors pulled from
-  // https://www.figma.com/design/MkL8eSQvcZ9hlO3jcx47Jt/Chromnient-I%2FO-Specs
-  // Setting this up as a map to match expected usage from caller in
-  // order to find the theme name with the best matched primary color.
-  std::map<SkColor, const std::string> color_map = {
-      {SkColorSetRGB(0x60, 0x18, 0xD6), "grape"},
-      {SkColorSetRGB(0x95, 0x00, 0x84), "candy"},
-      {SkColorSetRGB(0xA2, 0x00, 0x3B), "gum"},
-      {SkColorSetRGB(0x8F, 0x31, 0x00), "tangerine"},
-      {SkColorSetRGB(0x50, 0x42, 0x2B), "schoolbus"},
-      {SkColorSetRGB(0x18, 0x5D, 0x00), "cactus"},
-      {SkColorSetRGB(0x00, 0x5A, 0x5C), "turquoise"},
-      {SkColorSetRGB(0xA3, 0x06, 0x21), "tomato"},
-      {SkColorSetRGB(0x8E, 0x4E, 0x00), "cinnamon"},
-      {SkColorSetRGB(0x6D, 0x5E, 0x00), "lemon"},
-      {SkColorSetRGB(0x56, 0x65, 0x00), "lime"},
-      {SkColorSetRGB(0x00, 0x6D, 0x42), "evergreen"},
-      {SkColorSetRGB(0x00, 0x6B, 0x5B), "mint"},
-      {SkColorSetRGB(0x00, 0x67, 0x7D), "ice"},
-      {SkColorSetRGB(0x00, 0x65, 0x90), "glacier"},
-      {SkColorSetRGB(0x0A, 0x2B, 0xCE), "sapphire"},
-      {SkColorSetRGB(0x74, 0x00, 0x9F), "lavender"},
-  };
-
   std::vector<SkColor> colors;
-  for (const auto& pair : color_map) {
+  for (const auto& pair : kPalettes) {
     colors.emplace_back(pair.first);
   }
   // No match for close to grayscale colors
-  EXPECT_EQ(SK_ColorTRANSPARENT,
+  EXPECT_EQ(kPaletteFallbackPrimaryColor,
             FindBestMatchedColorOrTransparent(colors, SK_ColorWHITE, 3.0f));
-  EXPECT_EQ(SK_ColorTRANSPARENT,
+  EXPECT_EQ(kPaletteFallbackPrimaryColor,
             FindBestMatchedColorOrTransparent(colors, SK_ColorGRAY, 3.0f));
-  EXPECT_EQ(SK_ColorTRANSPARENT,
+  EXPECT_EQ(kPaletteFallbackPrimaryColor,
             FindBestMatchedColorOrTransparent(colors, SK_ColorBLACK, 3.0f));
-  EXPECT_EQ(SK_ColorTRANSPARENT,
+  EXPECT_EQ(kPaletteFallbackPrimaryColor,
             FindBestMatchedColorOrTransparent(
                 colors, SkColorSetRGB(0x43, 0x46, 0x44), 3.0f));
-
   // Closest matching colors.
-  EXPECT_EQ("grape", color_map[FindBestMatchedColorOrTransparent(
-                         colors, SkColorSetRGB(0x50, 0x12, 0xC4), 3.0f)]);
-  EXPECT_EQ(
-      "turquoise",
-      color_map[FindBestMatchedColorOrTransparent(colors, SK_ColorCYAN, 3.0f)]);
-  EXPECT_EQ(
-      "tangerine",
-      color_map[FindBestMatchedColorOrTransparent(colors, SK_ColorRED, 3.0f)]);
-  EXPECT_EQ("cactus", color_map[FindBestMatchedColorOrTransparent(
-                          colors, SK_ColorGREEN, 3.0f)]);
-  EXPECT_EQ("schoolbus", color_map[FindBestMatchedColorOrTransparent(
-                             colors, SkColorSetRGB(0x48, 0x39, 0x12), 3.0f)]);
+  EXPECT_EQ(kPaletteGrapePrimaryColor,
+            FindBestMatchedColorOrTransparent(
+                colors, SkColorSetRGB(0x50, 0x12, 0xC4), 3.0f));
+  EXPECT_EQ(kPaletteTurquoisePrimaryColor,
+            FindBestMatchedColorOrTransparent(colors, SK_ColorCYAN, 3.0f));
+  EXPECT_EQ(kPaletteTangerinePrimaryColor,
+            FindBestMatchedColorOrTransparent(colors, SK_ColorRED, 3.0f));
+  EXPECT_EQ(kPaletteCactusPrimaryColor,
+            FindBestMatchedColorOrTransparent(colors, SK_ColorGREEN, 3.0f));
+  EXPECT_EQ(kPaletteSchoolbusPrimaryColor,
+            FindBestMatchedColorOrTransparent(
+                colors, SkColorSetRGB(0x48, 0x39, 0x12), 3.0f));
 }
 
 }  // namespace lens
