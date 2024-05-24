@@ -32,6 +32,7 @@
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
@@ -877,6 +878,61 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
                                     *recovery_key_store_);
   CHECK(security_domain_secret.has_value());
   EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
+}
+
+TEST_F(EnclaveManagerTest, EpochChanged) {
+  ASSERT_TRUE(Register());
+
+  BoolCallback setup_callback;
+  manager_.SetupWithPIN("123456", setup_callback.callback());
+  setup_callback.WaitForCallback();
+  EXPECT_TRUE(manager_.is_ready());
+
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult state;
+  state.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  state.key_version = kSecretVersion;
+
+  EXPECT_TRUE(manager_.ConsiderSecurityDomainState(state, base::DoNothing()));
+  EXPECT_TRUE(manager_.is_idle());
+
+  BoolCallback update_callback;
+  state.key_version = kSecretVersion + 1;
+  EXPECT_FALSE(
+      manager_.ConsiderSecurityDomainState(state, update_callback.callback()));
+  update_callback.WaitForCallback();
+  EXPECT_FALSE(manager_.is_ready());
+}
+
+TEST_F(EnclaveManagerTest, PINChanged) {
+  ASSERT_TRUE(Register());
+
+  BoolCallback setup_callback;
+  manager_.SetupWithPIN("123456", setup_callback.callback());
+  setup_callback.WaitForCallback();
+  EXPECT_TRUE(manager_.is_ready());
+
+  const webauthn_pb::EnclaveLocalState::User& user =
+      manager_.local_state_for_testing().users().begin()->second;
+  webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin = user.wrapped_pin();
+  wrapped_pin.set_generation(wrapped_pin.generation() + 1);
+
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult state;
+  state.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  state.key_version = kSecretVersion;
+  state.gpm_pin_metadata.emplace(user.pin_public_key(),
+                                 wrapped_pin.SerializeAsString(),
+                                 /*expiry=*/base::Time::FromTimeT(1));
+
+  BoolCallback update_callback;
+  EXPECT_TRUE(
+      manager_.ConsiderSecurityDomainState(state, update_callback.callback()));
+  update_callback.WaitForCallback();
+  EXPECT_TRUE(manager_.is_ready());
+  const webauthn_pb::EnclaveLocalState::User& updated_user =
+      manager_.local_state_for_testing().users().begin()->second;
+  EXPECT_EQ(updated_user.wrapped_pin().generation(), wrapped_pin.generation());
 }
 
 TEST_F(EnclaveManagerTest, SigningFails) {
