@@ -818,6 +818,26 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   delegate_ = std::exchange(params.delegate, nullptr);
   content_main_params_.emplace(std::move(params));
 
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  std::string process_type =
+      command_line.GetSwitchValueASCII(switches::kProcessType);
+
+  // Create and start the ThreadPool early to allow the rest of the startup
+  // code to use the thread_pool.h API.
+  if (!process_type.empty()) {
+    if (process_type != switches::kZygoteProcess) {
+      // Zygotes will run this at a later point in time when the command line
+      // has been updated.
+      CreateChildThreadPool(process_type);
+    }
+  } else {
+    // Create and start the ThreadPool early to allow the rest of the startup
+    // code to use the thread_pool.h API.
+    delegate_->CreateThreadPool("Browser");
+    DCHECK_NE(base::ThreadPoolInstance::Get(), nullptr);
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // Now that mojo's core is initialized we can enable tracing. Note that only
   // Android builds have the ctor/dtor handlers set up to use trace events at
@@ -887,11 +907,6 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
       delegate_->BasicStartupComplete();
   if (basic_startup_exit_code.has_value())
     return basic_startup_exit_code.value();
-
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  std::string process_type =
-      command_line.GetSwitchValueASCII(switches::kProcessType);
 
   base::allocator::PartitionAllocSupport::Get()->ReconfigureEarlyish(
       process_type);
@@ -1096,9 +1111,6 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
   // Run this logic on all child processes.
   if (!process_type.empty()) {
     if (process_type != switches::kZygoteProcess) {
-      // Zygotes will run this at a later point in time when the command line
-      // has been updated.
-      CreateChildThreadPool(process_type);
       if (delegate_->ShouldCreateFeatureList(
               ContentMainDelegate::InvokedInChildProcess())) {
         InitializeFieldTrialAndFeatureList();
@@ -1185,11 +1197,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
       InitializeMojoCore();
     }
 
-    // Create and start the ThreadPool early to allow the rest of the startup
-    // code to use the thread_pool.h API.
-    const bool has_thread_pool =
-        GetContentClient()->browser()->CreateThreadPool("Browser");
-
     std::optional<int> pre_browser_main_exit_code = delegate_->PreBrowserMain();
     if (pre_browser_main_exit_code.has_value())
       return pre_browser_main_exit_code.value();
@@ -1236,10 +1243,8 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
       base::HangWatcher::GetInstance()->Start();
     }
 
-    if (has_thread_pool) {
-      // The FeatureList needs to create before starting the ThreadPool.
-      StartBrowserThreadPool();
-    }
+    // The FeatureList needs to be created before starting the ThreadPool.
+    StartBrowserThreadPool();
 
     BrowserTaskExecutor::PostFeatureListSetup();
 

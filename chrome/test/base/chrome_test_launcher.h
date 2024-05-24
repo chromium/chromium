@@ -59,6 +59,7 @@ class ChromeTestChromeMainDelegate
 #if BUILDFLAG(IS_WIN)
   bool ShouldHandleConsoleControlEvents() override;
 #endif
+  void CreateThreadPool(std::string_view name) override;
 };
 
 // Delegate used for setting up and running chrome browser tests.

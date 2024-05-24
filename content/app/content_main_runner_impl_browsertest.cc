@@ -251,9 +251,8 @@ class ContentMainRunnerImplBrowserTest : public ContentBrowserTest {
 
   void TestBasicStartupComplete() {
     // The PostEarlyInitialization test checks that ContentMainRunnerImpl set up
-    // the ThreadPoolInstance and FeatureList. These tests would be invalid if
-    // they already exist before starting.
-    EXPECT_FALSE(base::ThreadPoolInstance::Get());
+    // the FeatureList. This test is invalid if it already exists
+    // before starting.
     EXPECT_FALSE(base::FeatureList::GetInstance());
   }
 

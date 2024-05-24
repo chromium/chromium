@@ -187,10 +187,6 @@ ChromeTestLauncherDelegate::GetUserDataDirectoryCommandLineSwitch() {
 class BrowserTestChromeContentBrowserClient
     : public ChromeContentBrowserClient {
  public:
-  bool CreateThreadPool(std::string_view name) override {
-    base::test::TaskEnvironment::CreateThreadPool();
-    return true;
-  }
 
 #if BUILDFLAG(IS_WIN)
   std::string GetAppContainerId() override {
@@ -256,6 +252,10 @@ bool ChromeTestChromeMainDelegate::ShouldHandleConsoleControlEvents() {
   return false;
 }
 #endif
+
+void ChromeTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
+  base::test::TaskEnvironment::CreateThreadPool();
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 content::ContentMainDelegate*

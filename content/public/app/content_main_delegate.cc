@@ -82,6 +82,10 @@ ContentMainDelegate::CreateVariationsIdsProvider() {
   return nullptr;
 }
 
+void ContentMainDelegate::CreateThreadPool(std::string_view name) {
+  base::ThreadPoolInstance::Create(name);
+}
+
 std::optional<int> ContentMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   return std::nullopt;

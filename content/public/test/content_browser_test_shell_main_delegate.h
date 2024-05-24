@@ -29,6 +29,7 @@ class ContentBrowserTestShellMainDelegate : public ShellMainDelegate {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
 #endif
+  void CreateThreadPool(std::string_view name) override;
   // ShellMainDelegate overrides.
   content::ContentBrowserClient* CreateContentBrowserClient() override;
 

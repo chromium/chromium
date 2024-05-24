@@ -138,7 +138,6 @@ using AttributionReportingOsRegistrar =
 
 namespace android_webview {
 namespace {
-static bool g_should_create_thread_pool = true;
 #if DCHECK_IS_ON()
 // A boolean value to determine if the NetworkContext has been created yet. This
 // exists only to check correctness: g_check_cleartext_permitted may only be set
@@ -843,14 +842,6 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
       request_headers, ignore_navigation);
 }
 
-bool AwContentBrowserClient::CreateThreadPool(std::string_view name) {
-  if (g_should_create_thread_pool) {
-    base::ThreadPoolInstance::Create(name);
-    return true;
-  }
-  return false;
-}
-
 std::unique_ptr<content::LoginDelegate>
 AwContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
@@ -1235,11 +1226,6 @@ void AwContentBrowserClient::OnDisplayInsecureContent(
         aw_settings->GetMixedContentMode(),
         AwSettings::MixedContentMode::COUNT);
   }
-}
-
-// static
-void AwContentBrowserClient::DisableCreatingThreadPool() {
-  g_should_create_thread_pool = false;
 }
 
 blink::mojom::OriginTrialsSettingsPtr

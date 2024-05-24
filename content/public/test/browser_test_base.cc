@@ -627,6 +627,8 @@ void BrowserTestBase::SetUp() {
   std::optional<int> startup_error = delegate->BasicStartupComplete();
   ASSERT_FALSE(startup_error.has_value());
 
+  delegate->CreateThreadPool("Browser");
+
   // We can only setup startup tracing after mojo is initialized above.
   tracing::EnableStartupTracingIfNeeded();
 
@@ -650,9 +652,6 @@ void BrowserTestBase::SetUp() {
     if (delegate->ShouldInitializeMojo(invoked_in_browser))
       InitializeMojoCore();
 
-    const bool has_thread_pool =
-        GetContentClientForTesting()->browser()->CreateThreadPool("Browser");
-
     std::optional<int> pre_browser_main_exit_code = delegate->PreBrowserMain();
     ASSERT_FALSE(pre_browser_main_exit_code.has_value());
 
@@ -668,8 +667,7 @@ void BrowserTestBase::SetUp() {
         delegate->PostEarlyInitialization(invoked_in_browser);
     ASSERT_FALSE(post_early_initialization_exit_code.has_value());
 
-    if (has_thread_pool)
-      StartBrowserThreadPool();
+    StartBrowserThreadPool();
 
     BrowserTaskExecutor::PostFeatureListSetup();
     tracing::InitTracingPostThreadPoolStartAndFeatureList(

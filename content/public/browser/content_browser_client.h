@@ -2195,14 +2195,6 @@ class CONTENT_EXPORT ContentBrowserClient {
                               int /* render_process_id */,
                               int /* render_frame_id */)> callback);
 
-  // Called when starting BrowserMainLoop to create a base::ThreadPoolInstance.
-  // The embedder may choose to not create a thread pool; in that case
-  // ThreadPoolInstance::Get() will be null. Returns true if the
-  // ThreadPoolInstance was created.
-  // Note: the embedder should *not* start the ThreadPoolInstance for
-  // BrowserMainLoop, BrowserMainLoop itself is responsible for that.
-  virtual bool CreateThreadPool(std::string_view name);
-
   // Returns true if the tab security level is acceptable to allow WebAuthn
   // requests, false otherwise. This is not attached to
   // WebAuthenticationDelegate so it can be available on Android as well.

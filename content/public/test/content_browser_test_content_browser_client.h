@@ -21,7 +21,6 @@ class ContentBrowserTestContentBrowserClient
   ContentBrowserTestContentBrowserClient();
   ~ContentBrowserTestContentBrowserClient() override;
 
-  bool CreateThreadPool(std::string_view name) override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
 };

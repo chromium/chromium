@@ -37,6 +37,7 @@ class ChromeOSTestChromeMainDelegate : public ChromeMainDelegate {
   // ChromeMainDelegateOverrides.
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentUtilityClient* CreateContentUtilityClient() override;
+  void CreateThreadPool(std::string_view name) override;
 };
 
 // Delegate used for setting up and running chrome browser tests.

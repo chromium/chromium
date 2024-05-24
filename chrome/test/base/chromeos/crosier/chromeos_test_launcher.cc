@@ -27,10 +27,6 @@ auto RunEchoService(mojo::PendingReceiver<echo::mojom::EchoService> receiver) {
 class BrowserTestChromeOSContentBrowserClient
     : public ChromeContentBrowserClient {
  public:
-  bool CreateThreadPool(std::string_view name) override {
-    base::test::TaskEnvironment::CreateThreadPool();
-    return true;
-  }
 };
 
 // A replacement ChromeContentUtilityClient that binds the
@@ -84,6 +80,10 @@ ChromeOSTestChromeMainDelegate::CreateContentUtilityClient() {
   chrome_content_utility_client_ =
       std::make_unique<BrowserTestChromeOSContentUtilityClient>();
   return chrome_content_utility_client_.get();
+}
+
+void ChromeOSTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
+  base::test::TaskEnvironment::CreateThreadPool();
 }
 
 content::ContentMainDelegate*
