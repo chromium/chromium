@@ -610,6 +610,12 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
 // ChromeAuthenticatorRequestDelegate
 // ---------------------------------------------------------------------
 
+std::vector<std::unique_ptr<device::cablev2::Pairing>>
+ChromeAuthenticatorRequestDelegate::TestObserver::
+    GetCablePairingsFromSyncedDevices() {
+  return {};
+}
+
 // static
 void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -1102,6 +1108,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
 void ChromeAuthenticatorRequestDelegate::SetHints(
     const AuthenticatorRequestClientDelegate::Hints& hints) {
+  if (g_observer) {
+    g_observer->HintsSet(hints);
+  }
   dialog_controller_->SetHints(hints);
 }
 
