@@ -10,6 +10,7 @@ source_set("coordinator") {
     "lens_modal_animator.mm",
   ]
   deps = [
+    ":features",
     ":lens_availability",
     ":lens_entrypoint",
     "//base",

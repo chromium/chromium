@@ -683,6 +683,11 @@ const char kLensCircleToSearchEnabledName[] = "Lens Circle to Search";
 const char kLensCircleToSearchEnabledDescription[] =
     "When enabled, circle to search is available in Lens.";
 
+const char kLensWebPageEarlyTransitionEnabledName[] =
+    "Lens web page early transition";
+const char kLensWebPageEarlyTransitionEnabledDescription[] =
+    "Enables earlier transitions from Lens UI to web page.";
+
 const char kLinkedServicesSettingIosName[] = "Linked Services Setting";
 const char kLinkedServicesSettingIosDescription[] =
     "Add Linked Services Setting to the Sync Settings page.";

@@ -587,6 +587,11 @@ extern const char kIPHiOSTabGridSwipeRightForIncognitoDescription[];
 extern const char kLensCircleToSearchEnabledName[];
 extern const char kLensCircleToSearchEnabledDescription[];
 
+// Title and description for the flag to enable the Lens web page early
+// transition.
+extern const char kLensWebPageEarlyTransitionEnabledName[];
+extern const char kLensWebPageEarlyTransitionEnabledDescription[];
+
 // Title and description for the flag to add Linked Services Setting to the Sync
 // Settings page.
 extern const char kLinkedServicesSettingIosName[];
