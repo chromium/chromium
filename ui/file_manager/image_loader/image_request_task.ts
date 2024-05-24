@@ -29,7 +29,7 @@ export class ImageRequestTask {
    * The maximum milliseconds to load video. If loading video exceeds the limit,
    * we give up generating video thumbnail and free the consumed memory.
    */
-  static readonly MAX_MILLISECONDS_TO_LOAD_VIDEO: number = 3000;
+  static readonly MAX_MILLISECONDS_TO_LOAD_VIDEO: number = 10000;
 
   /**
    * The default width of a non-square thumbnail. The value is set to match the

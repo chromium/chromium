@@ -4,8 +4,20 @@
 
 import type {ImageRequestTask} from './image_request_task.js';
 
-/** Maximum download tasks to be run in parallel. */
-export const MAXIMUM_IN_PARALLEL = 5;
+
+// `deviceMemory` might be 0.5 or 0.25, so we normalize to minimum of 2.
+const memory = Math.max(2, navigator.deviceMemory);
+// For low end devices `hardwareCount` can be low like 4 some other devies are
+// low in memory, it will have the value 4 as in 4GB.
+const resourceCount = Math.min(navigator.hardwareConcurrency, memory, 10);
+
+/**
+ * Maximum download tasks to be run in parallel, for low end devices we expect
+ * the result to be 2, higher end devices we expect to be at least 4, but no
+ * more than 5.
+ */
+export const MAXIMUM_IN_PARALLEL = resourceCount / 2;
+console.warn(`Image Loader maximum parallel tasks: ${MAXIMUM_IN_PARALLEL}`);
 
 /**
  * Scheduler for ImageRequestTask objects. Fetches tasks from a queue and
