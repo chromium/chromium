@@ -759,7 +759,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--disable-site-isolation-trials",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
+             "--disable-threaded-compositing", "--disable-threaded-animation",
+             "--disable-features=OriginKeyedProcessesByDefault"],
     "owners": [
       "alexmos@chromium.org",
       "creis@chromium.org",
@@ -1297,7 +1298,8 @@
     "bases": ["external/wpt/is-input-pending"],
     "exclusive_tests": "ALL",
     "args": ["--enable-threaded-compositing",
-             "--disable-auto-wpt-origin-isolation"],
+             "--disable-auto-wpt-origin-isolation",
+             "--disable-features=OriginKeyedProcessesByDefault"],
     "expires": "Jul 1, 2024"
   },
 
@@ -1874,7 +1876,7 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-features=OriginAgentClusterDefaultWarning",
-      "--disable-features=OriginAgentClusterDefaultEnable",
+      "--disable-features=OriginAgentClusterDefaultEnable,OriginKeyedProcessesByDefault",
       "--disable-auto-wpt-origin-isolation",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
