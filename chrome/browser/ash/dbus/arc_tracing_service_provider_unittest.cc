@@ -67,6 +67,15 @@ class ArcTracingServiceProviderTest : public arc::OverviewTracingTestBase {
 
     CHECK(trace_outdir_.CreateUniqueTempDir());
     provider_->set_trace_outdir_for_testing(trace_outdir_.GetPath());
+
+    // Set arbitrary times for tests which fail to start a trace or don't
+    // attempt to - we don't actually use the times because a model file is not
+    // generated, but at least make the times non-zero.
+    auto* first_handler = provider_->GetOrCreateNextHandler();
+    first_handler->set_now(
+        base::Time::FromSecondsSinceUnixEpoch(1'700'009'000));
+    first_handler->set_trace_time_base(
+        base::Time::FromSecondsSinceUnixEpoch(1'700'000'000));
   }
 
   void SetupForRequest(std::string_view method_name) {
@@ -234,23 +243,71 @@ TEST_F(ArcTracingServiceProviderTest, StopTraceByLosingFocus) {
 }
 
 TEST_F(ArcTracingServiceProviderTest, FailedStart) {
-  auto* handler = provider_->GetOrCreateNextHandler();
-  // Arbitrary times - we don't actually use them because a model file is not
-  // generated, but at least make the times non-zero.
-  handler->set_now(base::Time::FromSecondsSinceUnixEpoch(1'700'009'000));
-  provider_->GetOrCreateNextHandler()->set_trace_time_base(
-      base::Time::FromSecondsSinceUnixEpoch(1'700'000'000));
-
   exo::Surface s;
   auto arc_widget = arc::ArcTaskWindowBuilder()
                         .SetTaskId(22)
                         .SetPackageName("org.funstuff.client")
                         .SetShellRootSurface(&s)
                         .BuildOwnsNativeWidget();
+  arc_widget->ShowInactive();
 
   ASSERT_EQ("ARC window isn't active", InvokeStartMethod(5));
 
   EXPECT_EQ("", InvokeGetStatusMethod());
+}
+
+TEST_F(ArcTracingServiceProviderTest, FailedStartDueToOneExtraWindow) {
+  exo::Surface arc_surface, extra_surface;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetTaskId(22)
+                        .SetPackageName("org.funstuff.client")
+                        .SetShellRootSurface(&arc_surface)
+                        .BuildOwnsNativeWidget();
+  auto extra_widget = arc::ArcTaskWindowBuilder()
+                          .SetTaskId(2244)
+                          .SetPackageName("net.productive.notfun")
+                          .SetShellRootSurface(&arc_surface)
+                          .SetTitle("Looking busy")
+                          .BuildOwnsNativeWidget();
+
+  extra_widget->Show();
+  arc_widget->Show();
+
+  provider_->GetOrCreateNextHandler()->set_non_trace_app_windows(
+      {extra_widget->GetNativeWindow()});
+  ASSERT_EQ(
+      "Extra windows are open. Close them and try the trace again: |Looking "
+      "busy|",
+      InvokeStartMethod(/*max_time_seconds=*/5));
+}
+
+TEST_F(ArcTracingServiceProviderTest, FailedStartDueToTwoExtraWindows) {
+  constexpr int kWidgetCount = 3;
+  // Note the trace widget is shown last, so it is active.
+  constexpr int kTraceWidget = 2;
+  std::array<exo::Surface, kWidgetCount> surfaces;
+  std::array<std::unique_ptr<views::Widget>, kWidgetCount> widgets;
+  arc::OverviewTracingHandler::AppWindowList non_trace_windows;
+
+  for (int i = 0; i < kWidgetCount; i++) {
+    widgets[i] = arc::ArcTaskWindowBuilder()
+                     .SetTaskId(220 + i)
+                     .SetPackageName("org.funstuff.client")
+                     .SetShellRootSurface(&surfaces[i])
+                     .SetTitle(base::StringPrintf("arc window %d", i))
+                     .BuildOwnsNativeWidget();
+    widgets[i]->Show();
+    if (i != kTraceWidget) {
+      non_trace_windows.emplace_back(widgets[i]->GetNativeWindow());
+    }
+  }
+
+  provider_->GetOrCreateNextHandler()->set_non_trace_app_windows(
+      std::move(non_trace_windows));
+  ASSERT_EQ(
+      "Extra windows are open. Close them and try the trace again: |arc window "
+      "0|, |arc window 1|",
+      InvokeStartMethod(/*max_time_seconds=*/42.42));
 }
 
 }  // namespace

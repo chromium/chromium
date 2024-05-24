@@ -47,4 +47,13 @@ void OverviewTracingTestHandler::StopTracingOnController(
   after_stop_ = std::move(after_stop);
 }
 
+OverviewTracingHandler::AppWindowList
+OverviewTracingTestHandler::AllAppWindows() const {
+  AppWindowList windows = non_trace_app_windows_;
+  if (arc_active_window_for_testing()) {
+    windows.emplace_back(arc_active_window_for_testing());
+  }
+  return windows;
+}
+
 }  // namespace arc

@@ -97,8 +97,18 @@ class OverviewTracingHandler : public wm::ActivationChangeObserver,
   void StartTracing(const base::FilePath& save_path, base::TimeDelta max_time);
   void StopTracing();
 
+  using AppWindowList = std::vector<raw_ptr<aura::Window>>;
+
+  // Returns the windows which are not the currently-active ARC window, if any.
+  AppWindowList NonTraceTargetWindows() const;
+
   bool is_tracing() const;
   bool arc_window_is_active() const;
+
+ protected:
+  aura::Window* arc_active_window_for_testing() const {
+    return arc_active_window_;
+  }
 
  private:
   GraphicsModelReadyCb graphics_model_ready_;
@@ -110,6 +120,11 @@ class OverviewTracingHandler : public wm::ActivationChangeObserver,
       content::TracingController::StartTracingDoneCallback after_start);
   virtual void StopTracingOnController(
       content::TracingController::CompletionCallback after_stop);
+
+  // Returns all aura windows that we know about, if any. Virtual for testing
+  // purposes. Necessary because there are times we won't allow a trace to
+  // continue if extraneous apps are open.
+  virtual AppWindowList AllAppWindows() const;
 
   // There is a ScopedTimeClockOverrides for tests that makes this seem
   // redundant, but it is rather awkward to have a single test base which

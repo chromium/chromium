@@ -32,6 +32,10 @@ class OverviewTracingTestHandler : public OverviewTracingHandler {
     trace_time_base_ = trace_time_base;
   }
 
+  void set_non_trace_app_windows(AppWindowList non_trace_app_windows) {
+    non_trace_app_windows_ = std::move(non_trace_app_windows);
+  }
+
   // Invokes the callback which the OverviewTracingHandler has requested be
   // called after the trace has started.
   void StartTracingOnControllerRespond();
@@ -58,6 +62,7 @@ class OverviewTracingTestHandler : public OverviewTracingHandler {
       override;
   void StopTracingOnController(
       content::TracingController::CompletionCallback after_stop) override;
+  AppWindowList AllAppWindows() const override;
 
   // Callback which the parent class has requested be called after the
   // trace has finished.
@@ -73,6 +78,10 @@ class OverviewTracingTestHandler : public OverviewTracingHandler {
 
   // Current time as far as the trace handler logic is concerned.
   base::Time now_;
+
+  // All app windows iterated by ForEachAppWindow, except the active arc window,
+  // which is always iterated over.
+  AppWindowList non_trace_app_windows_;
 };
 
 }  // namespace arc
