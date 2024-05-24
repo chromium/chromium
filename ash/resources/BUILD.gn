@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ash/ambient/resources/resources.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 import("//tools/grit/repack.gni")
@@ -74,6 +75,12 @@ template("ash_test_resources") {
 
     if (defined(invoker.deps)) {
       deps += invoker.deps
+    }
+
+    if (is_chrome_branded) {
+      sources += [ "$root_gen_dir/chromeos/ash/resources/internal/ash_internal_resources_${percent}_percent.pak" ]
+      deps +=
+          [ "//chromeos/ash/resources/internal:ash_internal_scaled_resources" ]
     }
 
     if (percent == "100") {

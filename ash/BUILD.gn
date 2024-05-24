@@ -3411,7 +3411,10 @@ component("ash") {
   }
 
   if (is_chrome_branded) {
-    deps += [ "//chromeos/ash/resources/internal/strings" ]
+    deps += [
+      "//chromeos/ash/resources/internal:ash_internal_scaled_resources",
+      "//chromeos/ash/resources/internal/strings",
+    ]
   }
 }
 

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ash/ambient/resources/resources.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
@@ -81,6 +82,12 @@ template("chrome_repack_percent") {
         "//chrome/browser/resources/chromeos:app_icon_resources",
         "//ui/chromeos/resources",
       ]
+      if (is_chrome_branded) {
+        sources += [ "$root_gen_dir/chromeos/ash/resources/internal/ash_internal_resources_${percent}_percent.pak" ]
+        deps += [
+          "//chromeos/ash/resources/internal:ash_internal_scaled_resources",
+        ]
+      }
     }
     if (enable_extensions) {
       sources += [ "$root_gen_dir/extensions/extensions_browser_resources_${percent}_percent.pak" ]

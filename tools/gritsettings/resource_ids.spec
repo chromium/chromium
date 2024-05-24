@@ -778,6 +778,9 @@
   "chromeos/ash/resources/ash_resources.grd": {
     "includes": [5760],
   },
+  "chromeos/ash/resources/internal/ash_internal_scaled_resources.grd": {
+    "structures": [5770],
+  },
   "chromeos/ash/resources/internal/ash_internal_strings.grd": {
     "messages": [5780],
   },
