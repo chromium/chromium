@@ -8,6 +8,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.Log;
 import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
@@ -24,6 +28,7 @@ import java.util.List;
  */
 public class GoogleBottomBarCoordinator {
 
+    private static final String TAG = "GBBCoordinator";
     private static final String BUTTON_LIST_PARAM = "google_bottom_bar_button_list";
 
     public static final StringCachedFieldTrialParameter GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST =
@@ -42,6 +47,9 @@ public class GoogleBottomBarCoordinator {
 
     private final Context mContext;
     private final GoogleBottomBarViewCreator mGoogleBottomBarViewCreator;
+    private final Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
+
+    private boolean mHasNativeInitializationFinished;
 
     /**
      * Constructor.
@@ -62,12 +70,13 @@ public class GoogleBottomBarCoordinator {
             GoogleBottomBarIntentParams googleBottomBarIntentParams,
             List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
         mContext = activity;
+        mPageInsightsCoordinatorSupplier = pageInsightsCoordinatorSupplier;
         mGoogleBottomBarViewCreator =
                 new GoogleBottomBarViewCreator(
                         activity,
                         tabProvider,
                         shareDelegateSupplier,
-                        pageInsightsCoordinatorSupplier,
+                        this::getPageInsightsCoordinator,
                         getButtonConfig(
                                 googleBottomBarIntentParams, customButtonsOnGoogleBottomBar));
     }
@@ -93,6 +102,24 @@ public class GoogleBottomBarCoordinator {
         return context.getResources().getDimensionPixelSize(R.dimen.google_bottom_bar_height);
     }
 
+    /**
+     * Indicates the completion of native initialization processes.
+     *
+     * <p>This method is called when the native components necessary for the operation of Google
+     * Bottom Bar View have finished their initialization.
+     */
+    public void onFinishNativeInitialization() {
+        if (!mHasNativeInitializationFinished) {
+            mHasNativeInitializationFinished = true;
+            mGoogleBottomBarViewCreator.logButtons();
+        }
+    }
+
+    @VisibleForTesting
+    GoogleBottomBarViewCreator getGoogleBottomBarViewCreatorForTesting() {
+        return mGoogleBottomBarViewCreator;
+    }
+
     private BottomBarConfig getButtonConfig(
             GoogleBottomBarIntentParams intentParams,
             List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
@@ -107,5 +134,15 @@ public class GoogleBottomBarCoordinator {
         // Fall back on encoded string provided in Finch param
         return configCreator.create(
                 GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST.getValue(), customButtonsOnGoogleBottomBar);
+    }
+
+    private @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {
+        if (mHasNativeInitializationFinished) {
+            return mPageInsightsCoordinatorSupplier.get();
+        }
+        Log.e(
+                TAG,
+                "Can't access PageInsights Coordinator before native initialization is finished.");
+        return null;
     }
 }

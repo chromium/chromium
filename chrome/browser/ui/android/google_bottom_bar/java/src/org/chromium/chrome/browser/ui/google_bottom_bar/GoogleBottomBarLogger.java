@@ -136,7 +136,9 @@ class GoogleBottomBarLogger {
                     BottomBarConfigCreator.ButtonId.PIH_EXPANDED -> {
                 return pageInsightsCoordinatorSupplier.hasValue()
                         ? GoogleBottomBarButtonEvent.PIH_CHROME
-                        : GoogleBottomBarButtonEvent.PIH_EMBEDDER;
+                        : buttonConfig.getPendingIntent() != null
+                                ? GoogleBottomBarButtonEvent.PIH_EMBEDDER
+                                : GoogleBottomBarButtonEvent.UNKNOWN;
             }
             case BottomBarConfigCreator.ButtonId.SHARE -> {
                 return buttonConfig.getPendingIntent() != null

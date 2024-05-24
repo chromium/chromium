@@ -332,6 +332,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         maybeCreatePageInsightsComponent();
 
+        mGoogleBottomBarCoordinator = getGoogleBottomBarCoordinator();
+        if (mGoogleBottomBarCoordinator != null) {
+            mGoogleBottomBarCoordinator.onFinishNativeInitialization();
+        }
+
         new OneShotCallback<>(
                 mProfileSupplier,
                 mCallbackController.makeCancelable(

@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
@@ -26,7 +27,7 @@ public class GoogleBottomBarViewCreator {
     private final BottomBarConfig mConfig;
     private final GoogleBottomBarActionsHandler mActionsHandler;
     private final Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
-    private View mRootView;
+    private ViewGroup mRootView;
 
     /**
      * Constructor.
@@ -96,6 +97,18 @@ public class GoogleBottomBarViewCreator {
         return maybeUpdateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
     }
 
+    void logButtons() {
+        for (ButtonConfig buttonConfig : mConfig.getButtonList()) {
+            View button = mRootView.findViewById(buttonConfig.getId());
+            if (button != null) {
+                int buttonEvent =
+                        GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(
+                                mPageInsightsCoordinatorSupplier, buttonConfig);
+                GoogleBottomBarLogger.logButtonShown(buttonEvent);
+            }
+        }
+    }
+
     private @Nullable ButtonConfig findButtonConfig(@ButtonId int buttonId) {
         return mConfig.getButtonList().stream()
                 .filter(config -> config.getId() == buttonId)
@@ -103,14 +116,16 @@ public class GoogleBottomBarViewCreator {
                 .orElse(null);
     }
 
-    private View createGoogleBottomBarEvenLayoutView() {
+    private ViewGroup createGoogleBottomBarEvenLayoutView() {
         GoogleBottomBarLogger.logCreatedEvent(GoogleBottomBarCreatedEvent.EVEN_LAYOUT);
-        return LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_even, null);
+        return (ViewGroup)
+                LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_even, null);
     }
 
-    private View createGoogleBottomBarSpotlightLayoutView() {
+    private ViewGroup createGoogleBottomBarSpotlightLayoutView() {
         GoogleBottomBarLogger.logCreatedEvent(GoogleBottomBarCreatedEvent.SPOTLIGHT_LAYOUT);
-        return LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_spotlight, null);
+        return (ViewGroup)
+                LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_spotlight, null);
     }
 
     private boolean maybeUpdateButton(
@@ -125,12 +140,10 @@ public class GoogleBottomBarViewCreator {
         button.setContentDescription(buttonConfig.getDescription());
         button.setOnClickListener(mActionsHandler.getClickListener(buttonConfig));
 
-        int buttonEvent =
-                GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(
-                        mPageInsightsCoordinatorSupplier, buttonConfig);
-        if (isFirstTimeShown) {
-            GoogleBottomBarLogger.logButtonShown(buttonEvent);
-        } else {
+        if (!isFirstTimeShown) {
+            int buttonEvent =
+                    GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(
+                            mPageInsightsCoordinatorSupplier, buttonConfig);
             GoogleBottomBarLogger.logButtonUpdated(buttonEvent);
         }
         return true;
