@@ -1248,7 +1248,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kLocal];
 }
-- (void)testNewFolderNameCommittedOnNavigatingAwayAccount {
+
+// TODO(crbug.com/342589920): Test failing on ios-fieldtrial-rel or when there
+// is no field trial config.
+- (void)DISABLED_testNewFolderNameCommittedOnNavigatingAwayAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kAccount];
 }
