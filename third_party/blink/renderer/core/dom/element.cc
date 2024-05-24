@@ -714,10 +714,7 @@ Node* Element::Clone(Document& factory,
   if (!shadow_root) {
     return copy;
   }
-  if ((RuntimeEnabledFeatures::ShadowRootClonableEnabled() &&
-       shadow_root->clonable()) ||
-      (!RuntimeEnabledFeatures::ShadowRootClonableEnabled() &&
-       data.Has(CloneOption::kIncludeAllShadowRoots))) {
+  if (shadow_root->clonable()) {
     if (shadow_root->GetMode() == ShadowRootMode::kOpen ||
         shadow_root->GetMode() == ShadowRootMode::kClosed) {
       // 7.1 Run attach a shadow root with copy, node’s shadow root’s mode,
@@ -746,9 +743,6 @@ Node* Element::Clone(Document& factory,
       // node’s shadow root, in tree order: append the result of cloning child
       // with document and the clone children flag set, to copy’s shadow root.
       NodeCloningData shadow_data{CloneOption::kIncludeDescendants};
-      if (!RuntimeEnabledFeatures::ShadowRootClonableEnabled()) {
-        shadow_data.Put(CloneOption::kIncludeAllShadowRoots);
-      }
       cloned_shadow_root.CloneChildNodesFrom(*shadow_root, shadow_data);
     }
   }
@@ -5592,7 +5586,6 @@ ShadowRoot& Element::AttachShadowRootInternal(
   DCHECK(!AlwaysCreateUserAgentShadowRoot());
   CHECK(!serializable ||
         RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled());
-  CHECK(!clonable || RuntimeEnabledFeatures::ShadowRootClonableEnabled());
 
   GetDocument().SetContainsShadowRoot();
 

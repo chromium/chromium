@@ -3604,12 +3604,6 @@
       status: "experimental",
     },
     {
-      // See crbug.com/1510466: this is the shadow root clonable implementation.
-      // This shipped in M124, and should be safe to remove in M126 or so.
-      name: "ShadowRootClonable",
-      status: "stable",
-    },
-    {
       // crbug.com/329677645
       name: "ShapeResultCachedPreviousSafeToBreakOffset",
       status: "stable",
