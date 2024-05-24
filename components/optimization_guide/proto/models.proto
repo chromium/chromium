@@ -122,7 +122,7 @@ message ModelInfo {
 
 // The scenarios for which the optimization guide has models for.
 enum OptimizationTarget {
-  reserved 14, 44;
+  reserved 14;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
@@ -214,6 +214,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_COMPOSE = 42;
   // Target for generating passage embeddings.
   OPTIMIZATION_TARGET_PASSAGE_EMBEDDER = 43;
+  // Target for breaking up sentences into phrases.
+  OPTIMIZATION_TARGET_PHRASE_SEGMENTATION = 44;
   // Target to determine whether to show promotion for Compose.
   OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION = 45;
 }
