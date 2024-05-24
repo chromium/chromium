@@ -126,7 +126,7 @@ extern const base::FeatureParam<int> kMemoryFreeBytesThreshold;
 
 BASE_DECLARE_FEATURE(kPMProcessPriorityPolicy);
 
-extern const base::FeatureParam<bool> kBoostChildFrames;
+extern const base::FeatureParam<bool> kInheritParentPriority;
 
 extern const base::FeatureParam<bool> kDownvoteAdFrames;
 

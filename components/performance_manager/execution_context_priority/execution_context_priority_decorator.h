@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "components/performance_manager/execution_context_priority/boosting_vote_aggregator.h"
 #include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
 #include "components/performance_manager/execution_context_priority/override_vote_aggregator.h"
 #include "components/performance_manager/execution_context_priority/root_vote_observer.h"
@@ -49,10 +48,6 @@ class ExecutionContextPriorityDecorator final : public GraphOwned {
   // Used to cast a negative vote that overrides the vote from
   // |max_vote_aggregator_|.
   OverrideVoteAggregator override_vote_aggregator_;
-
-  // Can be used to express a relationship between 2 execution contextes where
-  // one must always have at least the priority of another one.
-  BoostingVoteAggregator boosting_vote_aggregator_;
 
   // Aggregates all the votes from the voters.
   MaxVoteAggregator max_vote_aggregator_;

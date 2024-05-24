@@ -15,7 +15,7 @@
 #include "components/performance_manager/public/features.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "components/performance_manager/execution_context_priority/child_frame_booster.h"
+#include "components/performance_manager/execution_context_priority/inherit_parent_priority_voter.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace performance_manager::execution_context_priority {
@@ -35,15 +35,11 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
   //            ^                  ^
   //            | (override)       | (default)
   //            |                  |
-  //        Downvoter        |boosting_vote_aggregator_|
-  //                             ^                ^
-  //                             | (boost)        | (default)
-  //                             |                |
-  //                       Boost voter       |max_vote_aggregator_|
-  //                                            ^    ^        ^
-  //                                           /     |         \
-  //                                          /      |          \
-  //                                      Voter1, Voter2, ..., VoterN
+  //        Downvoter        |max_vote_aggregator_|
+  //                            ^    ^        ^
+  //                           /     |         \
+  //                          /      |          \
+  //                      Voter1, Voter2, ..., VoterN
   //
 
   // --- Set up the voting tree from top to bottom. ---
@@ -52,16 +48,14 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
     // Set up the OverrideVoteAggregator, which is needed by AdFrameVoter.
     override_vote_aggregator_.SetUpstreamVotingChannel(
         root_vote_observer_.GetVotingChannel());
-    boosting_vote_aggregator_.SetUpstreamVotingChannel(
+    max_vote_aggregator_.SetUpstreamVotingChannel(
         override_vote_aggregator_.GetDefaultVotingChannel());
   } else {
     // There is no downvoter without AdFrameVoter. The OverrideVoteAggregator is
     // skipped.
-    boosting_vote_aggregator_.SetUpstreamVotingChannel(
+    max_vote_aggregator_.SetUpstreamVotingChannel(
         root_vote_observer_.GetVotingChannel());
   }
-  max_vote_aggregator_.SetUpstreamVotingChannel(
-      boosting_vote_aggregator_.GetVotingChannel());
 
   // --- Set up downvoters. ---
 
@@ -92,9 +86,10 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
   }
 
 #if BUILDFLAG(IS_MAC)
-  // Boosts the priority of child frames in a page.
-  if (features::kBoostChildFrames.Get()) {
-    AddVoter<ChildFrameBooster>(&boosting_vote_aggregator_);
+  // Casts a vote for each child frame with the parent's priority.
+  if (features::kInheritParentPriority.Get()) {
+    AddVoter<InheritParentPriorityVoter>(
+        max_vote_aggregator_.GetVotingChannel());
   }
 #endif
 }
