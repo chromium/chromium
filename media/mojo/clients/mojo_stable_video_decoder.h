@@ -5,6 +5,7 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_STABLE_VIDEO_DECODER_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_STABLE_VIDEO_DECODER_H_
 
+#include "base/containers/id_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +14,7 @@
 #include "media/base/video_decoder.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/gfx/generic_shared_memory_id.h"
 
 namespace media {
 
@@ -61,6 +63,8 @@ class MojoStableVideoDecoder final : public VideoDecoder {
   VideoDecoderType GetDecoderType() const final;
 
  private:
+  class SharedImageHolder;
+
   // OOPVideoDecoder has a couple of important assumptions:
   //
   // 1) It needs to be constructed, used, and destroyed on the same sequence
@@ -83,6 +87,11 @@ class MojoStableVideoDecoder final : public VideoDecoder {
       const WaitingCB& waiting_cb,
       mojo::PendingRemote<stable::mojom::StableVideoDecoder>
           pending_remote_decoder);
+
+  scoped_refptr<SharedImageHolder> CreateOrUpdateSharedImageForFrame(
+      const scoped_refptr<FrameResource>& frame_resource);
+
+  void UnregisterSharedImage(gfx::GenericSharedMemoryId frame_id);
 
   void OnFrameResourceDecoded(scoped_refptr<FrameResource> frame_resource);
 
@@ -115,7 +124,15 @@ class MojoStableVideoDecoder final : public VideoDecoder {
   std::unique_ptr<VideoDecoder> oop_video_decoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  OutputCB output_cb_;
+  // |shared_images_| caches SharedImages so that we can re-use them if
+  // possible. The fact that we keep a reference to a SharedImageHolder
+  // guarantees that the corresponding SharedImage lives for at least as long as
+  // the OOPVideoDecoder knows about the corresponding buffer.
+  base::IDMap</*V=*/scoped_refptr<SharedImageHolder>,
+              /*K=*/gfx::GenericSharedMemoryId>
+      shared_images_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<MojoStableVideoDecoder> weak_this_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);

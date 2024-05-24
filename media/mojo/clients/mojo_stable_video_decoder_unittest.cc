@@ -4,11 +4,15 @@
 
 #include "media/mojo/clients/mojo_stable_video_decoder.h"
 
+#include <sys/mman.h>
+
+#include "base/posix/eintr_wrapper.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/decoder.h"
 #include "media/base/media_util.h"
 #include "media/base/supported_video_decoder_config.h"
@@ -31,7 +35,9 @@
 
 using testing::_;
 using testing::InSequence;
+using testing::Matcher;
 using testing::Mock;
+using testing::Return;
 using testing::StrictMock;
 using testing::WithArgs;
 
@@ -82,6 +88,130 @@ VideoDecoderConfig CreateValidUnsupportedVideoDecoderConfig() {
       EncryptionScheme::kUnencrypted);
   DCHECK(config.IsValidConfig());
   return config;
+}
+
+// Creates a NV12 stable::mojom::VideoFrame with the given dimensions. The
+// VideoFrame is backed by FDs that look like dma-bufs (they actually just point
+// to memfd shared memory).
+stable::mojom::VideoFramePtr CreateTestNV12DecodedFrame(
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    base::TimeDelta timestamp) {
+  stable::mojom::VideoFramePtr mojo_frame = stable::mojom::VideoFrame::New();
+  CHECK(mojo_frame);
+
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::NATIVE_PIXMAP;
+  gmb_handle.id = gfx::GpuMemoryBufferId(1);
+
+  const size_t y_plane_stride = base::checked_cast<size_t>(coded_size.width());
+  const size_t y_plane_size =
+      y_plane_stride * base::checked_cast<size_t>(coded_size.height());
+  const size_t uv_plane_stride = 2 * ((y_plane_stride + 1) / 2);
+  const size_t uv_plane_size =
+      uv_plane_stride *
+      ((base::checked_cast<size_t>(coded_size.height()) + 1) / 2);
+
+  auto y_fd = base::ScopedFD(memfd_create("nv12_dummy_buffer", 0));
+  if (!y_fd.is_valid()) {
+    return nullptr;
+  }
+  if (HANDLE_EINTR(ftruncate(y_fd.get(), y_plane_size + uv_plane_size)) < 0) {
+    return nullptr;
+  }
+  auto uv_fd = base::ScopedFD(HANDLE_EINTR(dup(y_fd.get())));
+  if (!uv_fd.is_valid()) {
+    return nullptr;
+  }
+
+  gfx::NativePixmapPlane y_plane;
+  y_plane.stride = base::checked_cast<uint32_t>(y_plane_stride);
+  y_plane.offset = 0;
+  y_plane.size = base::strict_cast<uint64_t>(y_plane_size);
+  y_plane.fd = std::move(y_fd);
+  gmb_handle.native_pixmap_handle.planes.push_back(std::move(y_plane));
+
+  gfx::NativePixmapPlane uv_plane;
+  uv_plane.stride = base::checked_cast<uint32_t>(uv_plane_stride);
+  uv_plane.offset = base::checked_cast<uint64_t>(y_plane_size);
+  uv_plane.size = base::checked_cast<uint64_t>(uv_plane_size);
+  uv_plane.fd = std::move(uv_fd);
+  gmb_handle.native_pixmap_handle.planes.push_back(std::move(uv_plane));
+
+  mojo_frame->format = PIXEL_FORMAT_NV12;
+  mojo_frame->coded_size = coded_size;
+  mojo_frame->visible_rect = visible_rect;
+  mojo_frame->natural_size = natural_size;
+  mojo_frame->timestamp = timestamp;
+  mojo_frame->metadata.protected_video = false;
+  mojo_frame->metadata.hw_protected = false;
+  mojo_frame->metadata.needs_detiling = false;
+  mojo_frame->gpu_memory_buffer_handle = std::move(gmb_handle);
+
+  return mojo_frame;
+}
+
+// IsValidSharedImageInfoForNV12Frame() is a custom matcher to help write
+// expectations for CreateSharedImage() calls.
+// AssertSharedImageInfoIsValidForNV12Frame() is a helper for the matcher.
+void AssertSharedImageInfoIsValidForNV12Frame(
+    const gpu::SharedImageInfo& actual,
+    const gfx::Rect& expected_visible_rect,
+    const gfx::ColorSpace& expected_color_space,
+    bool* result) {
+  *result = false;
+  ASSERT_EQ(actual.meta.format, viz::MultiPlaneFormat::kNV12);
+  ASSERT_TRUE(actual.meta.format.PrefersExternalSampler());
+  ASSERT_EQ(actual.meta.size, gfx::Size(expected_visible_rect.right(),
+                                        expected_visible_rect.bottom()));
+  ASSERT_EQ(actual.meta.color_space, expected_color_space);
+  ASSERT_EQ(actual.meta.surface_origin, kTopLeft_GrSurfaceOrigin);
+  ASSERT_EQ(actual.meta.alpha_type, kPremul_SkAlphaType);
+  ASSERT_EQ(actual.meta.usage, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                   gpu::SHARED_IMAGE_USAGE_SCANOUT);
+  ASSERT_EQ(actual.debug_label, "MojoStableVideoDecoder");
+  *result = true;
+}
+MATCHER_P2(IsValidSharedImageInfoForNV12Frame,
+           expected_visible_rect,
+           expected_color_space,
+           "") {
+  bool valid;
+  AssertSharedImageInfoIsValidForNV12Frame(arg, expected_visible_rect,
+                                           expected_color_space, &valid);
+  return valid;
+}
+
+// IsValidNV12NativeGpuMemoryBufferHandle() is a custom matcher to help write
+// expectations for CreateSharedImage() calls.
+// AssertNV12NativeGpuMemoryBufferHandleIsValid() is a helper for the matcher.
+void AssertNV12NativeGpuMemoryBufferHandleIsValid(
+    const gfx::GpuMemoryBufferHandle& actual,
+    const gfx::Size& coded_size,
+    bool* result) {
+  *result = false;
+  ASSERT_EQ(actual.type, gfx::NATIVE_PIXMAP);
+  ASSERT_EQ(actual.native_pixmap_handle.planes.size(), 2u);
+  ASSERT_EQ(actual.native_pixmap_handle.planes[0].stride,
+            base::checked_cast<uint32_t>(coded_size.width()));
+  ASSERT_EQ(actual.native_pixmap_handle.planes[0].offset, 0u);
+  ASSERT_EQ(actual.native_pixmap_handle.planes[0].size,
+            base::checked_cast<uint64_t>(coded_size.GetArea()));
+  ASSERT_TRUE(actual.native_pixmap_handle.planes[0].fd.is_valid());
+  ASSERT_EQ(actual.native_pixmap_handle.planes[1].stride,
+            base::checked_cast<uint32_t>(coded_size.width()));
+  ASSERT_EQ(actual.native_pixmap_handle.planes[1].offset,
+            base::checked_cast<uint64_t>(coded_size.GetArea()));
+  ASSERT_EQ(actual.native_pixmap_handle.planes[1].size,
+            base::checked_cast<uint64_t>(coded_size.GetArea() / 2));
+  ASSERT_TRUE(actual.native_pixmap_handle.planes[1].fd.is_valid());
+  *result = true;
+}
+MATCHER_P(IsValidNV12NativeGpuMemoryBufferHandle, coded_size, "") {
+  bool valid;
+  AssertNV12NativeGpuMemoryBufferHandleIsValid(arg, coded_size, &valid);
+  return valid;
 }
 
 class MockVideoFrameHandleReleaser
@@ -152,6 +282,15 @@ class MockStableVideoDecoderService : public stable::mojom::StableVideoDecoder {
   MOCK_METHOD1(Reset, void(ResetCallback callback));
 
   MOCK_METHOD1(DoConstruct, void(const gfx::ColorSpace& target_color_space));
+
+  stable::mojom::VideoDecoderClient* video_decoder_client_remote() const {
+    return video_decoder_client_remote_.get();
+  }
+
+  StrictMock<MockVideoFrameHandleReleaser>* mock_video_frame_handle_releaser()
+      const {
+    return mock_video_frame_handle_releaser_.get();
+  }
 
   MojoDecoderBufferReader* mojo_decoder_buffer_reader() const {
     return mojo_decoder_buffer_reader_.get();
@@ -278,23 +417,33 @@ class TestEndpoints {
         std::move(mojo_stable_vd_pending_remote));
   }
 
-  ~TestEndpoints() {
-    // The |client_| must be destroyed on the |media_task_runner_|, but the
-    // TestEndpoints instance can be destroyed on the main test thread.
-    // Therefore, we must post a task to destroy the |client_|. However,
-    // *|client_| has raw pointers to *|client_media_log_| and
-    // *|gpu_factories_|. In order to prevent those pointers from becoming
-    // dangling while waiting for the destroy task to run, we also post a task
-    // to the |media_task_runner_| to destroy the |client_media_log_| and the
-    // |gpu_factories_|. The *|gpu_factories_| has a raw pointer to *|sii_|, so
-    // for the same reason, we post a task to the |media_task_runner_| to ensure
+  void DestroyClientSide() {
+    // The |client_| must be destroyed on the |media_task_runner_|, but
+    // DestroyClientSide() runs on the the main test thread. Therefore, we must
+    // post a task to destroy the |client_|. However, *|client_| has raw
+    // pointers to *|client_media_log_| and *|gpu_factories_|. In order to
+    // prevent those pointers from becoming dangling while waiting for the
+    // destroy task to run, we also post a task to the |media_task_runner_| to
+    // destroy the |client_media_log_| and the |gpu_factories_|. The
+    // *|gpu_factories_| has a raw pointer to *|sii_|, so for the same reason,
+    // we post a task to the |media_task_runner_| to ensure
     // *|sii_| outlives *|gpu_factories_|.
-    media_task_runner_->DeleteSoon(FROM_HERE, std::move(client_));
-    media_task_runner_->DeleteSoon(FROM_HERE, std::move(client_media_log_));
-    media_task_runner_->DeleteSoon(FROM_HERE, std::move(gpu_factories_));
-    media_task_runner_->PostTask(FROM_HERE,
-                                 base::DoNothingWithBoundArgs(std::move(sii_)));
+    if (client_) {
+      media_task_runner_->DeleteSoon(FROM_HERE, std::move(client_));
+    }
+    if (client_media_log_) {
+      media_task_runner_->DeleteSoon(FROM_HERE, std::move(client_media_log_));
+    }
+    if (gpu_factories_) {
+      media_task_runner_->DeleteSoon(FROM_HERE, std::move(gpu_factories_));
+    }
+    if (sii_) {
+      media_task_runner_->PostTask(
+          FROM_HERE, base::DoNothingWithBoundArgs(std::move(sii_)));
+    }
   }
+
+  ~TestEndpoints() { DestroyClientSide(); }
 
   StrictMock<MockSharedImageInterface>* shared_image_interface() const {
     return sii_.get();
@@ -556,105 +705,482 @@ TEST_F(MojoStableVideoDecoderTest,
   task_environment_.RunUntilIdle();
 }
 
+// This test sends four frames to the service for decoding and expects to
+// receive four decoded frames. The order and properties of these decoded frames
+// plus the timing for releasing them ensures we exercise some of the difficult
+// lifetime corner cases (more details inside the test).
 TEST_F(MojoStableVideoDecoderTest, Decode) {
   const VideoDecoderConfig config = CreateValidSupportedVideoDecoderConfig();
   std::unique_ptr<TestEndpoints> endpoints =
       CreateAndInitializeMojoStableVideoDecoder(config);
   ASSERT_TRUE(endpoints);
 
-  constexpr uint8_t kEncodedData[] = {1, 2, 3};
-  constexpr base::TimeDelta kTimestamp = base::Milliseconds(128u);
-  constexpr base::TimeDelta kDuration = base::Milliseconds(16u);
-  constexpr base::TimeDelta kFrontDiscardPadding = base::Milliseconds(2u);
-  constexpr base::TimeDelta kBackDiscardPadding = base::Milliseconds(5u);
-  constexpr bool kIsKeyFrame = true;
-  constexpr uint64_t kSecureHandle = 42;
-  scoped_refptr<DecoderBuffer> decoder_buffer_to_send =
-      DecoderBuffer::CopyFrom(kEncodedData);
-  ASSERT_TRUE(decoder_buffer_to_send);
-  decoder_buffer_to_send->set_timestamp(kTimestamp);
-  decoder_buffer_to_send->set_duration(kDuration);
-  decoder_buffer_to_send->set_discard_padding(
-      std::make_pair(kFrontDiscardPadding, kBackDiscardPadding));
-  decoder_buffer_to_send->set_is_key_frame(kIsKeyFrame);
-  decoder_buffer_to_send->WritableSideData().secure_handle = kSecureHandle;
+  constexpr base::TimeDelta kRealTimestamps[] = {
+      base::Milliseconds(128u),
+      base::Milliseconds(144u),
+      base::Milliseconds(160u),
+      base::Milliseconds(176u),
+  };
+  base::TimeDelta received_fake_timestamps[std::size(kRealTimestamps)] = {};
 
-  // First, we'll call MojoStableVideoDecoder::Decode() and store both the
-  // DecoderBuffer (without the encoded data) and the Decode() reply callback as
-  // seen by the service.
-  mojom::DecoderBufferPtr received_mojo_decoder_buffer;
-  StrictMock<base::MockOnceCallback<void(DecoderStatus)>> decode_cb_to_send;
-  stable::mojom::StableVideoDecoder::DecodeCallback received_decode_cb;
-  EXPECT_CALL(*endpoints->service(), Decode(_, _))
-      .WillOnce(
-          [&](const scoped_refptr<DecoderBuffer>& buffer,
-              stable::mojom::StableVideoDecoder::DecodeCallback callback) {
-            ASSERT_TRUE(buffer);
-            received_mojo_decoder_buffer = mojom::DecoderBuffer::From(*buffer);
-            ASSERT_TRUE(received_mojo_decoder_buffer);
-            received_decode_cb = std::move(callback);
-          });
-  media_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MojoStableVideoDecoder::Decode,
-                     base::Unretained(endpoints->client()),
-                     decoder_buffer_to_send, decode_cb_to_send.Get()));
+  // First there's the Decode() portion of the test. This just sends a Decode()
+  // request for each frame and waits for the decode callback for each request
+  // to be called. In this portion, no decoded frames are sent by the service,
+  // but this creates enough state in the OOPVideoDecoder so that decoded frames
+  // are accepted in a later portion of the test.
+  for (size_t i = 0; i < std::size(kRealTimestamps); i++) {
+    constexpr uint8_t kEncodedData[] = {1, 2, 3};
+    const base::TimeDelta kTimestamp = kRealTimestamps[i];
+    constexpr base::TimeDelta kDuration = base::Milliseconds(16u);
+    constexpr base::TimeDelta kFrontDiscardPadding = base::Milliseconds(2u);
+    constexpr base::TimeDelta kBackDiscardPadding = base::Milliseconds(5u);
+    constexpr bool kIsKeyFrame = true;
+    constexpr uint64_t kSecureHandle = 42;
+
+    scoped_refptr<DecoderBuffer> decoder_buffer_to_send =
+        DecoderBuffer::CopyFrom(kEncodedData);
+    ASSERT_TRUE(decoder_buffer_to_send);
+    decoder_buffer_to_send->set_timestamp(kTimestamp);
+    decoder_buffer_to_send->set_duration(kDuration);
+    decoder_buffer_to_send->set_discard_padding(
+        std::make_pair(kFrontDiscardPadding, kBackDiscardPadding));
+    decoder_buffer_to_send->set_is_key_frame(kIsKeyFrame);
+    decoder_buffer_to_send->WritableSideData().secure_handle = kSecureHandle;
+
+    // First, we'll call MojoStableVideoDecoder::Decode() and store both the
+    // DecoderBuffer (without the encoded data) and the Decode() reply callback
+    // as seen by the service.
+    mojom::DecoderBufferPtr received_mojo_decoder_buffer;
+    StrictMock<base::MockOnceCallback<void(DecoderStatus)>> decode_cb_to_send;
+    stable::mojom::StableVideoDecoder::DecodeCallback received_decode_cb;
+    EXPECT_CALL(*endpoints->service(), Decode(_, _))
+        .WillOnce(
+            [&](const scoped_refptr<DecoderBuffer>& buffer,
+                stable::mojom::StableVideoDecoder::DecodeCallback callback) {
+              ASSERT_TRUE(buffer);
+              received_mojo_decoder_buffer =
+                  mojom::DecoderBuffer::From(*buffer);
+              ASSERT_TRUE(received_mojo_decoder_buffer);
+              received_decode_cb = std::move(callback);
+            });
+    media_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MojoStableVideoDecoder::Decode,
+                       base::Unretained(endpoints->client()),
+                       decoder_buffer_to_send, decode_cb_to_send.Get()));
+    task_environment_.RunUntilIdle();
+    ASSERT_TRUE(Mock::VerifyAndClearExpectations(endpoints->service()));
+
+    // Next, we'll retrieve the encoded data and ensure it matches what we sent.
+    scoped_refptr<DecoderBuffer> received_decoder_buffer_with_data;
+    endpoints->service()->mojo_decoder_buffer_reader()->ReadDecoderBuffer(
+        std::move(received_mojo_decoder_buffer),
+        base::BindOnce(
+            [](scoped_refptr<DecoderBuffer>* dst_buffer,
+               scoped_refptr<DecoderBuffer> buffer) {
+              *dst_buffer = std::move(buffer);
+            },
+            &received_decoder_buffer_with_data));
+    task_environment_.RunUntilIdle();
+    ASSERT_TRUE(received_decoder_buffer_with_data);
+    // We want to check that the |received_decoder_buffer_with_data| matches the
+    // |decoder_buffer_to_send| except for the timestamp: that's because the
+    // OOPVideoDecoder sends DecoderBuffers to the service with fake timestamps.
+    // Hence, before calling MatchesForTesting(), let's restore the real
+    // timestamp.
+    ASSERT_FALSE(received_decoder_buffer_with_data->end_of_stream());
+    EXPECT_NE(received_decoder_buffer_with_data->timestamp(), kTimestamp);
+    received_fake_timestamps[i] =
+        received_decoder_buffer_with_data->timestamp();
+    received_decoder_buffer_with_data->set_timestamp(kTimestamp);
+    EXPECT_TRUE(received_decoder_buffer_with_data->MatchesForTesting(
+        *decoder_buffer_to_send));
+
+    // Next, we'll pretend that the service replies to the Decode() request.
+    // This reply should be received as a call to the callback passed to
+    // MojoStableVideoDecoder::Decode().
+    const DecoderStatus kDecoderStatusToReplyWith = DecoderStatus::Codes::kOk;
+    EXPECT_CALL(decode_cb_to_send, Run(kDecoderStatusToReplyWith))
+        .WillOnce([&]() {
+          EXPECT_TRUE(media_task_runner_->RunsTasksInCurrentSequence());
+        });
+    std::move(received_decode_cb).Run(kDecoderStatusToReplyWith);
+    task_environment_.RunUntilIdle();
+
+    // Note: the VideoDecoder::Decode() API takes a scoped_refptr<DecoderBuffer>
+    // instead of a scoped_refptr<const DecoderBuffer>, so in theory, the
+    // implementation can change the DecoderBuffer in unexpected ways. The
+    // OOPVideoDecoder does change the DecoderBuffer internally, but it should
+    // restore it to its original state before returning from Decode(). The
+    // following expectations test that.
+    EXPECT_EQ(decoder_buffer_to_send->timestamp(), kTimestamp);
+    EXPECT_EQ(decoder_buffer_to_send->duration(), kDuration);
+    EXPECT_EQ(decoder_buffer_to_send->discard_padding().first,
+              kFrontDiscardPadding);
+    EXPECT_EQ(decoder_buffer_to_send->discard_padding().second,
+              kBackDiscardPadding);
+    EXPECT_EQ(decoder_buffer_to_send->is_key_frame(), kIsKeyFrame);
+    ASSERT_EQ(decoder_buffer_to_send->size(), std::size(kEncodedData));
+    EXPECT_EQ(base::make_span(decoder_buffer_to_send->data(),
+                              decoder_buffer_to_send->size()),
+              base::make_span(kEncodedData, std::size(kEncodedData)));
+    ASSERT_TRUE(decoder_buffer_to_send->side_data().has_value());
+    EXPECT_EQ(decoder_buffer_to_send->side_data()->secure_handle,
+              kSecureHandle);
+  }
+
+  // Now on to the second portion of the test: the service will start outputting
+  // decoded frames to the client. Let's suppose the service sends the first
+  // decoded frame. When the MojoStableVideoDecoder receives it, it should
+  // create a SharedImage, wrap it in a gpu::Mailbox-backed VideoFrame, and
+  // output it through the output callback. We'll hold on to the output
+  // VideoFrame as |received_decoded_video_frame_1| to release it later.
+  constexpr gfx::Size kDecodedFrame1CodedSize(1280, 720);
+  constexpr gfx::Rect kDecodedFrame1VisibleRect(10, 10, 1000, 700);
+  constexpr gfx::Size kDecodedFrame1NaturalSize(2000, 800);
+  const base::UnguessableToken kDecodedFrame1ReleaseToken =
+      base::UnguessableToken::Create();
+  const gpu::Mailbox kDecodedFrame1Mailbox = gpu::Mailbox::Generate();
+  const gpu::SyncToken kDecodedFrame1SharedImageSyncToken(
+      /*namespace_id=*/gpu::GPU_IO,
+      /*command_buffer_id=*/gpu::CommandBufferId::FromUnsafeValue(1u),
+      /*release_count=*/5u);
+  stable::mojom::VideoFramePtr decoded_video_frame_to_send_1 =
+      CreateTestNV12DecodedFrame(
+          kDecodedFrame1CodedSize, kDecodedFrame1VisibleRect,
+          kDecodedFrame1NaturalSize, received_fake_timestamps[0]);
+  ASSERT_TRUE(decoded_video_frame_to_send_1);
+  scoped_refptr<VideoFrame> received_decoded_video_frame_1;
+  {
+    InSequence sequence;
+    // Note: the Matcher<gfx::GpuMemoryBufferHandle> is needed to disambiguate
+    // among all the CreateSharedImage() overloads.
+    EXPECT_CALL(
+        *endpoints->shared_image_interface(),
+        CreateSharedImage(IsValidSharedImageInfoForNV12Frame(
+                              kDecodedFrame1VisibleRect, gfx::ColorSpace()),
+                          Matcher<gfx::GpuMemoryBufferHandle>(
+                              IsValidNV12NativeGpuMemoryBufferHandle(
+                                  kDecodedFrame1CodedSize))))
+        .WillOnce([&](const gpu::SharedImageInfo& si_info,
+                      gfx::GpuMemoryBufferHandle buffer_handle) {
+          return base::MakeRefCounted<gpu::ClientSharedImage>(
+              kDecodedFrame1Mailbox, si_info.meta, gpu::SyncToken(),
+              gpu::GpuMemoryBufferHandleInfo(
+                  std::move(buffer_handle), si_info.meta.format,
+                  kDecodedFrame1CodedSize, gfx::BufferUsage::SCANOUT_VDA_WRITE),
+              endpoints->shared_image_interface()->holder());
+        });
+    EXPECT_CALL(*endpoints->shared_image_interface(), GenUnverifiedSyncToken())
+        .WillOnce(Return(kDecodedFrame1SharedImageSyncToken));
+    EXPECT_CALL(*endpoints->client_output_cb(), Run(_))
+        .WillOnce([&](scoped_refptr<VideoFrame> video_frame) {
+          received_decoded_video_frame_1 = std::move(video_frame);
+        });
+  }
+  endpoints->service()->video_decoder_client_remote()->OnVideoFrameDecoded(
+      decoded_video_frame_to_send_1.Clone(),
+      /*can_read_without_stalling=*/true, kDecodedFrame1ReleaseToken);
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(Mock::VerifyAndClearExpectations(endpoints->service()));
+  ASSERT_TRUE(
+      Mock::VerifyAndClearExpectations(endpoints->shared_image_interface()));
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(endpoints->client_output_cb()));
+  ASSERT_TRUE(received_decoded_video_frame_1);
+  EXPECT_EQ(received_decoded_video_frame_1->format(), PIXEL_FORMAT_NV12);
+  // Note: the output VideoFrame's coded size should match the SharedImage's
+  // size, not the coded size of the frame received from the service.
+  EXPECT_EQ(received_decoded_video_frame_1->coded_size(),
+            gfx::Size(kDecodedFrame1VisibleRect.right(),
+                      kDecodedFrame1VisibleRect.bottom()));
+  EXPECT_EQ(received_decoded_video_frame_1->visible_rect(),
+            kDecodedFrame1VisibleRect);
+  EXPECT_EQ(received_decoded_video_frame_1->natural_size(),
+            kDecodedFrame1NaturalSize);
+  EXPECT_EQ(received_decoded_video_frame_1->ColorSpace(), gfx::ColorSpace());
+  ASSERT_TRUE(received_decoded_video_frame_1->HasTextures());
+  ASSERT_EQ(received_decoded_video_frame_1->NumTextures(), 1u);
+  EXPECT_EQ(received_decoded_video_frame_1->mailbox_holder(0).mailbox,
+            kDecodedFrame1Mailbox);
+  EXPECT_EQ(received_decoded_video_frame_1->mailbox_holder(0).sync_token,
+            kDecodedFrame1SharedImageSyncToken);
+  EXPECT_TRUE(
+      received_decoded_video_frame_1->metadata().read_lock_fences_enabled);
 
-  // Next, we'll retrieve the encoded data and ensure it matches what we sent.
-  scoped_refptr<DecoderBuffer> received_decoder_buffer_with_data;
-  endpoints->service()->mojo_decoder_buffer_reader()->ReadDecoderBuffer(
-      std::move(received_mojo_decoder_buffer),
-      base::BindOnce(
-          [](scoped_refptr<DecoderBuffer>* dst_buffer,
-             scoped_refptr<DecoderBuffer> buffer) {
-            *dst_buffer = std::move(buffer);
-          },
-          &received_decoder_buffer_with_data));
+  // Now the service will send the second decoded frame. This decoded frame has
+  // the same underlying dma-buf as the first frame. Furthermore, the coded size
+  // and the visible rectangle are such that the SharedImage can be re-used.
+  // We'll hold on to the output VideoFrame as |received_decoded_video_frame_2|
+  // to release it later.
+  constexpr gfx::Size kDecodedFrame2CodedSize = kDecodedFrame1CodedSize;
+  constexpr gfx::Rect kDecodedFrame2VisibleRect(20, 30, 990, 680);
+  constexpr gfx::Size kDecodedFrame2NaturalSize(3000, 900);
+  const base::UnguessableToken kDecodedFrame2ReleaseToken =
+      base::UnguessableToken::Create();
+  const gpu::SyncToken kDecodedFrame2SharedImageSyncToken(
+      /*namespace_id=*/gpu::GPU_IO,
+      /*command_buffer_id=*/gpu::CommandBufferId::FromUnsafeValue(1u),
+      /*release_count=*/8u);
+  stable::mojom::VideoFramePtr decoded_video_frame_to_send_2 =
+      decoded_video_frame_to_send_1.Clone();
+  ASSERT_TRUE(decoded_video_frame_to_send_2);
+  decoded_video_frame_to_send_2->coded_size = kDecodedFrame2CodedSize;
+  decoded_video_frame_to_send_2->visible_rect = kDecodedFrame2VisibleRect;
+  decoded_video_frame_to_send_2->natural_size = kDecodedFrame2NaturalSize;
+  decoded_video_frame_to_send_2->timestamp = received_fake_timestamps[1];
+  scoped_refptr<VideoFrame> received_decoded_video_frame_2;
+  {
+    InSequence sequence;
+    EXPECT_CALL(*endpoints->shared_image_interface(),
+                UpdateSharedImage(gpu::SyncToken(), kDecodedFrame1Mailbox));
+    EXPECT_CALL(*endpoints->shared_image_interface(), GenUnverifiedSyncToken())
+        .WillOnce(Return(kDecodedFrame2SharedImageSyncToken));
+    EXPECT_CALL(*endpoints->client_output_cb(), Run(_))
+        .WillOnce([&](scoped_refptr<VideoFrame> video_frame) {
+          received_decoded_video_frame_2 = std::move(video_frame);
+        });
+  }
+  endpoints->service()->video_decoder_client_remote()->OnVideoFrameDecoded(
+      decoded_video_frame_to_send_2.Clone(),
+      /*can_read_without_stalling=*/false, kDecodedFrame2ReleaseToken);
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(received_decoder_buffer_with_data);
-  // We want to check that the |received_decoder_buffer_with_data| matches the
-  // |decoder_buffer_to_send| except for the timestamp: that's because the
-  // OOPVideoDecoder sends DecoderBuffers to the service with fake timestamps.
-  // Hence, before calling MatchesForTesting(), let's restore the real
-  // timestamp.
-  ASSERT_FALSE(received_decoder_buffer_with_data->end_of_stream());
-  EXPECT_NE(received_decoder_buffer_with_data->timestamp(), kTimestamp);
-  received_decoder_buffer_with_data->set_timestamp(kTimestamp);
-  EXPECT_TRUE(received_decoder_buffer_with_data->MatchesForTesting(
-      *decoder_buffer_to_send));
+  ASSERT_TRUE(
+      Mock::VerifyAndClearExpectations(endpoints->shared_image_interface()));
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(endpoints->client_output_cb()));
+  ASSERT_TRUE(received_decoded_video_frame_2);
+  EXPECT_EQ(received_decoded_video_frame_2->format(), PIXEL_FORMAT_NV12);
+  // Note: the output VideoFrame's coded size should match the SharedImage's
+  // size, not the coded size of the frame received from the service, and the
+  // SharedImage for this frame is the same as for the first frame.
+  EXPECT_EQ(received_decoded_video_frame_2->coded_size(),
+            gfx::Size(kDecodedFrame1VisibleRect.right(),
+                      kDecodedFrame1VisibleRect.bottom()));
+  EXPECT_EQ(received_decoded_video_frame_2->visible_rect(),
+            kDecodedFrame2VisibleRect);
+  EXPECT_EQ(received_decoded_video_frame_2->natural_size(),
+            kDecodedFrame2NaturalSize);
+  EXPECT_EQ(received_decoded_video_frame_2->ColorSpace(), gfx::ColorSpace());
+  ASSERT_TRUE(received_decoded_video_frame_2->HasTextures());
+  ASSERT_EQ(received_decoded_video_frame_2->NumTextures(), 1u);
+  EXPECT_EQ(received_decoded_video_frame_2->mailbox_holder(0).mailbox,
+            kDecodedFrame1Mailbox);
+  EXPECT_EQ(received_decoded_video_frame_2->mailbox_holder(0).sync_token,
+            kDecodedFrame2SharedImageSyncToken);
+  EXPECT_TRUE(
+      received_decoded_video_frame_2->metadata().read_lock_fences_enabled);
 
-  // Finally, we'll pretend that the service replies to the Decode() request.
-  // This reply should be received as a call to the callback passed to
-  // MojoStableVideoDecoder::Decode().
-  const DecoderStatus kDecoderStatusToReplyWith = DecoderStatus::Codes::kOk;
-  EXPECT_CALL(decode_cb_to_send, Run(kDecoderStatusToReplyWith))
-      .WillOnce([&]() {
-        EXPECT_TRUE(media_task_runner_->RunsTasksInCurrentSequence());
-      });
-  std::move(received_decode_cb).Run(kDecoderStatusToReplyWith);
+  // Now, the service sends the third decoded frame. This frame has the same
+  // underlying dma-buf as the previous frames but a different color space. This
+  // means that the SharedImage for the previous two frames can't be re-used.
+  // We'll hold on to the output VideoFrame as |received_decoded_video_frame_3|
+  // to release it later.
+  constexpr gfx::ColorSpace kDecodedFrame3ColorSpace =
+      gfx::ColorSpace::CreateREC709();
+  const base::UnguessableToken kDecodedFrame3ReleaseToken =
+      base::UnguessableToken::Create();
+  const gpu::Mailbox kDecodedFrame3Mailbox = gpu::Mailbox::Generate();
+  const gpu::SyncToken kDecodedFrame3SharedImageSyncToken(
+      /*namespace_id=*/gpu::GPU_IO,
+      /*command_buffer_id=*/gpu::CommandBufferId::FromUnsafeValue(1u),
+      /*release_count=*/10u);
+  stable::mojom::VideoFramePtr decoded_video_frame_to_send_3 =
+      decoded_video_frame_to_send_2.Clone();
+  ASSERT_TRUE(decoded_video_frame_to_send_3);
+  decoded_video_frame_to_send_3->timestamp = received_fake_timestamps[2];
+  decoded_video_frame_to_send_3->color_space = kDecodedFrame3ColorSpace;
+  scoped_refptr<VideoFrame> received_decoded_video_frame_3;
+  {
+    InSequence sequence;
+    EXPECT_CALL(*endpoints->shared_image_interface(),
+                CreateSharedImage(
+                    IsValidSharedImageInfoForNV12Frame(
+                        kDecodedFrame2VisibleRect, kDecodedFrame3ColorSpace),
+                    Matcher<gfx::GpuMemoryBufferHandle>(
+                        IsValidNV12NativeGpuMemoryBufferHandle(
+                            kDecodedFrame1CodedSize))))
+        .WillOnce([&](const gpu::SharedImageInfo& si_info,
+                      gfx::GpuMemoryBufferHandle buffer_handle) {
+          return base::MakeRefCounted<gpu::ClientSharedImage>(
+              kDecodedFrame3Mailbox, si_info.meta, gpu::SyncToken(),
+              gpu::GpuMemoryBufferHandleInfo(
+                  std::move(buffer_handle), si_info.meta.format,
+                  kDecodedFrame2CodedSize, gfx::BufferUsage::SCANOUT_VDA_WRITE),
+              endpoints->shared_image_interface()->holder());
+        });
+    EXPECT_CALL(*endpoints->shared_image_interface(), GenUnverifiedSyncToken())
+        .WillOnce(Return(kDecodedFrame3SharedImageSyncToken));
+    EXPECT_CALL(*endpoints->client_output_cb(), Run(_))
+        .WillOnce([&](scoped_refptr<VideoFrame> video_frame) {
+          received_decoded_video_frame_3 = std::move(video_frame);
+        });
+  }
+  endpoints->service()->video_decoder_client_remote()->OnVideoFrameDecoded(
+      std::move(decoded_video_frame_to_send_3),
+      /*can_read_without_stalling=*/false, kDecodedFrame3ReleaseToken);
   task_environment_.RunUntilIdle();
+  ASSERT_TRUE(
+      Mock::VerifyAndClearExpectations(endpoints->shared_image_interface()));
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(endpoints->client_output_cb()));
+  ASSERT_TRUE(received_decoded_video_frame_3);
+  EXPECT_EQ(received_decoded_video_frame_3->format(), PIXEL_FORMAT_NV12);
+  // Note: the output VideoFrame's coded size should match the SharedImage's
+  // size, not the coded size of the frame received from the service.
+  EXPECT_EQ(received_decoded_video_frame_3->coded_size(),
+            gfx::Size(kDecodedFrame2VisibleRect.right(),
+                      kDecodedFrame2VisibleRect.bottom()));
+  EXPECT_EQ(received_decoded_video_frame_3->visible_rect(),
+            kDecodedFrame2VisibleRect);
+  EXPECT_EQ(received_decoded_video_frame_3->natural_size(),
+            kDecodedFrame2NaturalSize);
+  EXPECT_EQ(received_decoded_video_frame_3->ColorSpace(),
+            kDecodedFrame3ColorSpace);
+  ASSERT_TRUE(received_decoded_video_frame_3->HasTextures());
+  ASSERT_EQ(received_decoded_video_frame_3->NumTextures(), 1u);
+  EXPECT_EQ(received_decoded_video_frame_3->mailbox_holder(0).mailbox,
+            kDecodedFrame3Mailbox);
+  EXPECT_EQ(received_decoded_video_frame_3->mailbox_holder(0).sync_token,
+            kDecodedFrame3SharedImageSyncToken);
+  EXPECT_TRUE(
+      received_decoded_video_frame_3->metadata().read_lock_fences_enabled);
 
-  // Note: the VideoDecoder::Decode() API takes a scoped_refptr<DecoderBuffer>
-  // instead of a scoped_refptr<const DecoderBuffer>, so in theory, the
-  // implementation can change the DecoderBuffer in unexpected ways. The
-  // OOPVideoDecoder does change the DecoderBuffer internally, but it should
-  // restore it to its original state before returning from Decode(). The
-  // following expectations test that.
-  EXPECT_EQ(decoder_buffer_to_send->timestamp(), kTimestamp);
-  EXPECT_EQ(decoder_buffer_to_send->duration(), kDuration);
-  EXPECT_EQ(decoder_buffer_to_send->discard_padding().first,
-            kFrontDiscardPadding);
-  EXPECT_EQ(decoder_buffer_to_send->discard_padding().second,
-            kBackDiscardPadding);
-  EXPECT_EQ(decoder_buffer_to_send->is_key_frame(), kIsKeyFrame);
-  ASSERT_EQ(decoder_buffer_to_send->size(), std::size(kEncodedData));
-  EXPECT_EQ(base::make_span(decoder_buffer_to_send->data(),
-                            decoder_buffer_to_send->size()),
-            base::make_span(kEncodedData, std::size(kEncodedData)));
-  ASSERT_TRUE(decoder_buffer_to_send->side_data().has_value());
-  EXPECT_EQ(decoder_buffer_to_send->side_data()->secure_handle, kSecureHandle);
+  // Now the service will send the fourth decoded frame. This frame changes the
+  // coded size, so the OOPVideoDecoder should forget all previous buffers. That
+  // means that the only reference remaining to the second SharedImage created
+  // above will now be held by the |received_decoded_video_frame_3| (this is
+  // important for later). Also, the MojoStableVideoDecoder should create a new
+  // SharedImage. We'll hold on to the output VideoFrame as
+  // |received_decoded_video_frame_4| to release it later.
+  constexpr gfx::Size kDecodedFrame4CodedSize(640, 368);
+  constexpr gfx::Rect kDecodedFrame4VisibleRect(640, 360);
+  constexpr gfx::Size kDecodedFrame4NaturalSize(640, 360);
+  const base::UnguessableToken kDecodedFrame4ReleaseToken =
+      base::UnguessableToken::Create();
+  const gpu::Mailbox kDecodedFrame4Mailbox = gpu::Mailbox::Generate();
+  const gpu::SyncToken kDecodedFrame4SharedImageSyncToken(
+      /*namespace_id=*/gpu::GPU_IO,
+      /*command_buffer_id=*/gpu::CommandBufferId::FromUnsafeValue(1u),
+      /*release_count=*/15u);
+  stable::mojom::VideoFramePtr decoded_video_frame_to_send_4 =
+      CreateTestNV12DecodedFrame(
+          kDecodedFrame4CodedSize, kDecodedFrame4VisibleRect,
+          kDecodedFrame4NaturalSize, received_fake_timestamps[3]);
+  ASSERT_TRUE(decoded_video_frame_to_send_4);
+  scoped_refptr<VideoFrame> received_decoded_video_frame_4;
+  {
+    InSequence sequence;
+    EXPECT_CALL(
+        *endpoints->shared_image_interface(),
+        CreateSharedImage(IsValidSharedImageInfoForNV12Frame(
+                              kDecodedFrame4VisibleRect, gfx::ColorSpace()),
+                          Matcher<gfx::GpuMemoryBufferHandle>(
+                              IsValidNV12NativeGpuMemoryBufferHandle(
+                                  kDecodedFrame4CodedSize))))
+        .WillOnce([&](const gpu::SharedImageInfo& si_info,
+                      gfx::GpuMemoryBufferHandle buffer_handle) {
+          return base::MakeRefCounted<gpu::ClientSharedImage>(
+              kDecodedFrame4Mailbox, si_info.meta, gpu::SyncToken(),
+              gpu::GpuMemoryBufferHandleInfo(
+                  std::move(buffer_handle), si_info.meta.format,
+                  kDecodedFrame4CodedSize, gfx::BufferUsage::SCANOUT_VDA_WRITE),
+              endpoints->shared_image_interface()->holder());
+        });
+    EXPECT_CALL(*endpoints->shared_image_interface(), GenUnverifiedSyncToken())
+        .WillOnce(Return(kDecodedFrame4SharedImageSyncToken));
+    EXPECT_CALL(*endpoints->client_output_cb(), Run(_))
+        .WillOnce([&](scoped_refptr<VideoFrame> video_frame) {
+          received_decoded_video_frame_4 = std::move(video_frame);
+        });
+  }
+  endpoints->service()->video_decoder_client_remote()->OnVideoFrameDecoded(
+      std::move(decoded_video_frame_to_send_4),
+      /*can_read_without_stalling=*/false, kDecodedFrame4ReleaseToken);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(
+      Mock::VerifyAndClearExpectations(endpoints->shared_image_interface()));
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(endpoints->client_output_cb()));
+  ASSERT_TRUE(received_decoded_video_frame_4);
+  EXPECT_EQ(received_decoded_video_frame_4->format(), PIXEL_FORMAT_NV12);
+  // Note: the output VideoFrame's coded size should match the SharedImage's
+  // size, not the coded size of the frame received from the service.
+  EXPECT_EQ(received_decoded_video_frame_4->coded_size(),
+            gfx::Size(kDecodedFrame4VisibleRect.right(),
+                      kDecodedFrame4VisibleRect.bottom()));
+  EXPECT_EQ(received_decoded_video_frame_4->visible_rect(),
+            kDecodedFrame4VisibleRect);
+  EXPECT_EQ(received_decoded_video_frame_4->natural_size(),
+            kDecodedFrame4NaturalSize);
+  EXPECT_EQ(received_decoded_video_frame_4->ColorSpace(), gfx::ColorSpace());
+  ASSERT_TRUE(received_decoded_video_frame_4->HasTextures());
+  ASSERT_EQ(received_decoded_video_frame_4->NumTextures(), 1u);
+  EXPECT_EQ(received_decoded_video_frame_4->mailbox_holder(0).mailbox,
+            kDecodedFrame4Mailbox);
+  EXPECT_EQ(received_decoded_video_frame_4->mailbox_holder(0).sync_token,
+            kDecodedFrame4SharedImageSyncToken);
+  EXPECT_TRUE(
+      received_decoded_video_frame_4->metadata().read_lock_fences_enabled);
+
+  // Now the third portion of the test: we'll release the decoded frames. Let's
+  // release the first decoded frame. Since the SharedImage is still being used
+  // by the second decoded frame (which we're not going to release yet), we
+  // don't expect a call to DestroySharedImage() at this point. We only expect
+  // the service to be notified that the first decoded frame is no longer
+  // in use.
+  EXPECT_CALL(*endpoints->service()->mock_video_frame_handle_releaser(),
+              ReleaseVideoFrame(kDecodedFrame1ReleaseToken));
+  received_decoded_video_frame_1.reset();
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(
+      endpoints->service()->mock_video_frame_handle_releaser()));
+
+  // Now we're going to release the second decoded frame. This frame should be
+  // the only one holding a reference to the first SharedImage, so releasing it
+  // should result in a call to DestroySharedImage(). Note that there is no
+  // expected ordering between the call to DestroySharedImage() and the
+  // ReleaseVideoFrame() call. That's because frames should not be released
+  // until the client is completely done with them (because
+  // read_lock_fences_enabled is set to true). Therefore, it doesn't matter if
+  // the service recycles the underlying buffer before the corresponding
+  // SharedImage is destroyed.
+  EXPECT_CALL(*endpoints->shared_image_interface(),
+              DestroySharedImage(gpu::SyncToken(), kDecodedFrame1Mailbox));
+  EXPECT_CALL(*endpoints->service()->mock_video_frame_handle_releaser(),
+              ReleaseVideoFrame(kDecodedFrame2ReleaseToken));
+  received_decoded_video_frame_2.reset();
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(
+      Mock::VerifyAndClearExpectations(endpoints->shared_image_interface()));
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(
+      endpoints->service()->mock_video_frame_handle_releaser()));
+
+  // Next, let's release the third decoded frame. As described above, this frame
+  // should be the only one holding a reference to the second SharedImage, so
+  // releasing it should result in a call to DestroySharedImage().
+  EXPECT_CALL(*endpoints->shared_image_interface(),
+              DestroySharedImage(gpu::SyncToken(), kDecodedFrame3Mailbox));
+  EXPECT_CALL(*endpoints->service()->mock_video_frame_handle_releaser(),
+              ReleaseVideoFrame(kDecodedFrame3ReleaseToken));
+  received_decoded_video_frame_3.reset();
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(
+      Mock::VerifyAndClearExpectations(endpoints->shared_image_interface()));
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(
+      endpoints->service()->mock_video_frame_handle_releaser()));
+
+  // Finally, we'll do something tricky: first, we'll destroy the client side of
+  // things. In particular, that involves destroying the MojoStableVideoDecoder
+  // and releasing a reference to the MockSharedImageInterface. Then, we'll
+  // release |received_decoded_video_frame_4|. This should still cause
+  // DestroySharedImage() to be called because the
+  // |received_decoded_video_frame_4| indirectly should hold a reference to the
+  // MockSharedImageInterface. The service, however, should not get notified
+  // that the frame was released because the client no longer exists.
+  StrictMock<MockSharedImageInterface>* const sii =
+      endpoints->shared_image_interface();
+  endpoints->DestroyClientSide();
+  task_environment_.RunUntilIdle();
+  EXPECT_CALL(*sii,
+              DestroySharedImage(gpu::SyncToken(), kDecodedFrame4Mailbox));
+  received_decoded_video_frame_4.reset();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(MojoStableVideoDecoderTest, Reset) {
