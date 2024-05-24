@@ -24,8 +24,14 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
       "trusted-types parse-html-subset sanitize-inner-html static-types "
       // Add TrustedTypes policies for cr-lottie.
       "lottie-worker-script-loader "
+      // Add TrustedTypes policies used during tests.
+      "webui-test-script webui-test-html "
+      // Add TrustedTypes policy for creating the PDF plugin.
+      "print-preview-plugin-loader "
       // Add TrustedTypes policies necessary for using Polymer.
-      "polymer-html-literal polymer-template-event-attribute-policy;");
+      "polymer-html-literal polymer-template-event-attribute-policy "
+      // Add TrustedTypes policies necessary for using Desktop's Lit bundle.
+      "lit-html-desktop;");
 }
 
 void SetJSModuleDefaults(content::WebUIDataSource* source) {
