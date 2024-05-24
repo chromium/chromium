@@ -220,15 +220,6 @@ ScopedVASurface::ScopedVASurface(scoped_refptr<VaapiWrapper> vaapi_wrapper,
   DCHECK(vaapi_wrapper_);
 }
 
-scoped_refptr<VASurface> ScopedVASurface::AsVASurface() {
-  auto ref_counted_va_surface = base::MakeRefCounted<VASurface>(
-      va_surface_id_, size_, va_rt_format_,
-      base::BindOnce(&VaapiWrapper::DestroySurface,
-                     std ::move(vaapi_wrapper_)));
-  va_surface_id_ = VA_INVALID_ID;
-  return ref_counted_va_surface;
-}
-
 ScopedVASurface::~ScopedVASurface() {
   if (va_surface_id_ != VA_INVALID_ID)
     vaapi_wrapper_->DestroySurface(va_surface_id_);

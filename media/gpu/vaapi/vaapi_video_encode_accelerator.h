@@ -108,6 +108,10 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Holds input frames coming from the client ready to be encoded.
   struct InputFrameRef;
 
+  // Thin wrapper around a ScopedVASurface to furnish it with a ReleaseCB to do
+  // something with it upon destruction, e.g. return it to a vector or pool.
+  class ScopedVASurfaceWrapper;
+
   //
   // Tasks for each of the VEA interface calls to be executed on
   // |encoder_task_runner_|.
@@ -141,29 +145,29 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   bool CreateSurfacesForGpuMemoryBufferEncoding(
       const VideoFrame& frame,
       const std::vector<gfx::Size>& spatial_layer_resolutions,
-      std::vector<scoped_refptr<VASurface>>* input_surfaces,
-      std::vector<scoped_refptr<VASurface>>* reconstructed_surfaces);
+      std::vector<std::unique_ptr<ScopedVASurfaceWrapper>>* input_surfaces,
+      std::vector<std::unique_ptr<ScopedVASurfaceWrapper>>*
+          reconstructed_surfaces);
 
   // Create input and reconstructed surfaces used in encoding from SharedMemory
   // VideoFrame |frame|. This must be called only in non native input mode.
   bool CreateSurfacesForShmemEncoding(
       const VideoFrame& frame,
-      scoped_refptr<VASurface>* input_surface,
-      scoped_refptr<VASurface>* reconstructed_surface);
+      std::unique_ptr<ScopedVASurfaceWrapper>* input_surface,
+      std::unique_ptr<ScopedVASurfaceWrapper>* reconstructed_surface);
 
-  // Creates one |encode_size| VASurface using |vaapi_wrapper_|.
-  // It returns a reference of an exiting available surface. If there is no
-  // available surface and the number of previously allocated surfaces is less
-  // than threshold, then it returns a reference to the newly created
-  // surface, that is also added to |available_encode_surfaces_[encode_size]|.
-  // Returns nullptr if too many surfaces have already been allocated, or if
-  // creation fails.
-  scoped_refptr<VASurface> CreateEncodeSurface(const gfx::Size& encode_size);
+  // Creates or retrieves a ScopedVASurface compatible with |encode_size|. If
+  // there is no available surface and the number of previously allocated
+  // surfaces is less than threshold, then it returns a reference to a newly
+  // created surface. Returns nullptr if too many surfaces have already been
+  // allocated, or if creation fails.
+  std::unique_ptr<ScopedVASurfaceWrapper> GetOrCreateReconstructedSurface(
+      const gfx::Size& encode_size);
 
   // Creates or retrieves a ScopedVASurface compatible with |encode_size| and
   // |surface_usage_hints|. Returns nullptr if the surfaces fail to be created
-  // successfully. Created surfaces are kept in |input_surfaces_[encode_size]|.
-  ScopedVASurface* CreateInputSurface(
+  // successfully.
+  std::unique_ptr<ScopedVASurfaceWrapper> GetOrCreateInputSurface(
       VaapiWrapper& vaapi_wrapper,
       const gfx::Size& encode_size,
       const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints);
@@ -174,8 +178,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Executes BlitSurface() using |vpp_vaapi_wrapper_| with |source_surface|,
   // |source_visible_rect|. Returns the destination VASurface in BlitSurface()
   // whose size is |encode_size| on success, otherwise nullptr.
-  scoped_refptr<VASurface> ExecuteBlitSurface(
-      const VASurface& source_surface,
+  std::unique_ptr<ScopedVASurfaceWrapper> ExecuteBlitSurface(
+      const ScopedVASurface* source_surface,
       const gfx::Rect source_visible_rect,
       const gfx::Size& encode_size);
 
@@ -187,19 +191,21 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
       base::TimeDelta frame_timestamp,
       uint8_t spatial_index,
       bool end_of_picture,
-      const VASurface& input_surface,
-      scoped_refptr<VASurface> reconstructed_surface);
+      VASurfaceID input_surface_id,
+      std::unique_ptr<ScopedVASurfaceWrapper> reconstructed_surface);
 
   // Continues encoding frames as long as input_queue_ is not empty, and we are
   // able to create new EncodeJobs.
   void EncodePendingInputs();
 
-  // Callback that returns a no longer used ScopedVASurface to
-  // |va_surfaces| for reuse and kicks EncodePendingInputs() again.
-  void RecycleVASurface(
-      std::vector<std::unique_ptr<ScopedVASurface>>* va_surfaces,
-      std::unique_ptr<ScopedVASurface> va_surface,
-      VASurfaceID va_surface_id);
+  // Callback that returns a no longer used ScopedVASurface |va_surface| to
+  // |input_surfaces_[encode_size]| or |available_encode_surfaces_[encode_size]|
+  // respectively, for reuse.
+  void RecycleInputScopedVASurface(const gfx::Size& encode_size,
+                                   std::unique_ptr<ScopedVASurface> va_surface);
+  void RecycleEncodeScopedVASurface(
+      const gfx::Size& encode_size,
+      std::unique_ptr<ScopedVASurface> va_surface);
 
   // Returns pending bitstream buffers to the client if we have both pending
   // encoded data to be completed and bitstream buffers available to download
