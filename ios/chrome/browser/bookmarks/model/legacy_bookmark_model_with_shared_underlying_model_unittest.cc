@@ -423,4 +423,22 @@ TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
   }
 }
 
+TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest, Destruction) {
+  testing::NiceMock<bookmarks::MockBookmarkModelObserver> observer;
+
+  {
+    LegacyBookmarkModelWithSharedUnderlyingModel view(
+        /*underlying_model=*/shared_model_.get(),
+        bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes,
+        /*managed_bookmark_service=*/nullptr);
+    view.AddObserver(&observer);
+    EXPECT_CALL(observer, BookmarkModelBeingDeleted()).WillOnce([&]() {
+      view.RemoveObserver(&observer);
+    });
+  }
+
+  // `view` goes out of scope here and that should have invoked
+  // BookmarkModelBeingDeleted().
+}
+
 }  // namespace ios

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -101,7 +102,14 @@ LegacyBookmarkModelWithSharedUnderlyingModel::
 }
 
 LegacyBookmarkModelWithSharedUnderlyingModel::
-    ~LegacyBookmarkModelWithSharedUnderlyingModel() = default;
+    ~LegacyBookmarkModelWithSharedUnderlyingModel() {
+  scoped_observation_.Reset();
+  // This mimics what BookmarkModel does in the destructor, necessary because
+  // `this` gets destroyed before the underlying BookmarkModel.
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkModelBeingDeleted();
+  }
+}
 
 const bookmarks::BookmarkModel*
 LegacyBookmarkModelWithSharedUnderlyingModel::underlying_model() const {
@@ -231,10 +239,8 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkModelLoaded(
 }
 
 void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkModelBeingDeleted() {
-  scoped_observation_.Reset();
-  for (bookmarks::BookmarkModelObserver& observer : observers_) {
-    observer.BookmarkModelBeingDeleted();
-  }
+  // The underlying BookmarkModel cannot be destroyed before `this`.
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
 }
 
 void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeMoved(
