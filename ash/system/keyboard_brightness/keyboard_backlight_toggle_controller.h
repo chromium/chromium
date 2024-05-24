@@ -36,7 +36,8 @@ class KeyboardBacklightToggleController : public UnifiedSliderListener {
 
  private:
   const raw_ptr<UnifiedSystemTrayModel> model_;
-  raw_ptr<UnifiedSliderView> slider_ = nullptr;
+  // TODO(b/342513656): Fix the dangling ptr issue.
+  raw_ptr<UnifiedSliderView, DanglingUntriaged> slider_ = nullptr;
 
   // TODO(b/298085976): This state was added as a temporary solution to fix
   // dialog showing with empty contents (b/286102843). After this fix, this
