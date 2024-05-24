@@ -24,8 +24,6 @@ extern bool IsTabGroupsSaveV2Enabled();
 
 extern bool IsTabGroupsSaveUIUpdateEnabled();
 
-extern bool ShouldCloseAllTabGroupsOnSignOut();
-
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_FEATURES_H_

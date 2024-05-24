@@ -173,10 +173,6 @@ SavedTabGroupSyncBridge::ApplyIncrementalSyncChanges(
 
 void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  if (!ShouldCloseAllTabGroupsOnSignOut()) {
-    return;
-  }
-
   // Close all the groups locally. They should still exist in sync server.
   std::vector<base::Uuid> group_ids;
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {

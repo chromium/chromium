@@ -48,9 +48,4 @@ bool IsTabGroupsSaveUIUpdateEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveUIUpdate);
 }
 
-bool ShouldCloseAllTabGroupsOnSignOut() {
-  return GetFieldTrialParamByFeatureAsBool(
-      kTabGroupSyncUno, "close_all_tab_groups_on_sign_out", false);
-}
-
 }  // namespace tab_groups

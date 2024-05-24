@@ -265,12 +265,6 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
 
 // Verify that on sign-out, all data is locally deleted.
 TEST_F(SavedTabGroupSyncBridgeTest, DisableSyncDeletesAllLocalData) {
-  std::map<std::string, std::string> params = {
-      {"close_all_tab_groups_on_sign_out", "true"},
-  };
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(kTabGroupSyncUno, params);
-
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {}, 0);
