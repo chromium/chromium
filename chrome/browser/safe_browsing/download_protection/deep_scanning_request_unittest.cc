@@ -395,6 +395,9 @@ TEST_F(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
               download_protection_service_.GetFakeBinaryUploadService()
                   ->last_request()
                   .tags(1));
+    EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
+                    ->last_request()
+                    .blocking());
   };
 
   {
@@ -416,6 +419,39 @@ TEST_F(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
     run_loop.Run();
     expect_dlp_and_malware_tags();
   }
+}
+
+TEST_F(DeepScanningRequestFeaturesEnabledTest, VerifyBlockingSet) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
+      kScanForDlpAndMalware);
+
+  auto no_block_settings = []() {
+    enterprise_connectors::AnalysisSettings settings;
+    settings.block_until_verdict =
+        enterprise_connectors::BlockUntilVerdict::kNoBlock;
+    return settings;
+  };
+
+  base::RunLoop run_loop;
+  DeepScanningRequest request(
+      &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      DownloadCheckResult::SAFE,
+      base::BindRepeating(
+          [](base::RepeatingClosure closure, DownloadCheckResult result) {
+            if (result != DownloadCheckResult::ASYNC_SCANNING) {
+              closure.Run();
+            }
+          },
+          run_loop.QuitClosure()),
+      &download_protection_service_, no_block_settings(),
+      /*password=*/std::nullopt);
+
+  request.Start();
+  run_loop.Run();
+  EXPECT_FALSE(download_protection_service_.GetFakeBinaryUploadService()
+                   ->last_request()
+                   .blocking());
 }
 
 class DeepScanningRequestAllFeaturesEnabledTest

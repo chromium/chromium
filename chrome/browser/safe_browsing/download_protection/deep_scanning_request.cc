@@ -563,6 +563,9 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
   for (const auto& tag : analysis_settings_.tags) {
     request->add_tag(tag.first);
   }
+
+  request->set_blocking(analysis_settings_.block_until_verdict !=
+                        enterprise_connectors::BlockUntilVerdict::kNoBlock);
 }
 
 void DeepScanningRequest::PrepareClientDownloadRequest(
