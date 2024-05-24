@@ -1,16 +1,10 @@
 This is a testharness.js-based test.
-Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] td as child of tr with display: contents, within table with display: flex, has cell role
   assert_equals: <td data-expectedrole="cell" data-testname="td as child of tr with display: contents, within table with display: flex, has cell role" class="ex-role">x</td> expected "cell" but got "gridcell"
 [FAIL] td as child of tr with display: contents, within table with role=table with display: flex, has cell role
   assert_equals: <td data-expectedrole="cell" data-testname="td as child of tr with display: contents, within table with role=table with display: flex, has cell role" class="ex-role">x</td> expected "cell" but got "gridcell"
 [FAIL] td within tr in table with role table, all with display: contents, has cell role
   assert_equals: <td style="display: contents;" data-expectedrole="cell" data-testname="td within tr in table with role table, all with display: contents, has cell role" class="ex-role">x</td> expected "cell" but got "gridcell"
-[FAIL] Label: div with listitem role, as child of div with display: contents, has listitem role
-  assert_equals: <div role="listitem" data-expectedrole="listitem" data-expectedlabel="x" data-testname="div with listitem role, as child of div with display: contents, has listitem role" class="ex-role-and-label ex-label-only ex-role-only">x</div> expected "x" but got ""
-[FAIL] Label: div with listitem role (as child of div with list role), both with display: contents, has listitem role
-  assert_equals: <div role="listitem" style="display: contents;" data-expectedrole="listitem" data-expectedlabel="y" data-testname="div with listitem role (as child of div with list role), both with display: contents, has listitem role" class="ex-role-and-label ex-label-only ex-role-only">y</div> expected "y" but got ""
-[FAIL] Label: div with listitem role with display: contents, as child of div with list role, has listitem role
-  assert_equals: <div role="listitem" style="display: contents;" data-expectedrole="listitem" data-expectedlabel="y" data-testname="div with listitem role with display: contents, as child of div with list role, has listitem role" class="ex-role-and-label ex-label-only ex-role-only">y</div> expected "y" but got ""
 Harness: the test ran to completion.
 

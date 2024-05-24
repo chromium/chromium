@@ -1,0 +1,68 @@
+This is a wdspec test.
+[FAIL] test_unhandled_prompt_behavior_as_object_default[handler0-dismiss and notify-True-True]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object_default[handler1-accept-True-False]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object_default[handler2-expected_capability2-False-True]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[alert-accept]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[alert-accept and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[alert-dismiss]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[alert-dismiss and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[alert-ignore]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[beforeUnload-accept]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[beforeUnload-accept and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[beforeUnload-dismiss]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[beforeUnload-dismiss and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[beforeUnload-ignore]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[confirm-accept]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[confirm-accept and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[confirm-dismiss]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[confirm-dismiss and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[confirm-ignore]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[default-accept]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[default-accept and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[default-dismiss]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[default-dismiss and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[default-ignore]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[prompt-accept]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[prompt-accept and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[prompt-dismiss]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[prompt-dismiss and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_unhandled_prompt_behavior_as_object[prompt-ignore]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_beforeunload_prompts_always_automatically_accepted[accept]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_beforeunload_prompts_always_automatically_accepted[accept and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_beforeunload_prompts_always_automatically_accepted[dismiss]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_beforeunload_prompts_always_automatically_accepted[dismiss and notify]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[FAIL] test_beforeunload_prompts_always_automatically_accepted[ignore]
+  AssertionError: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+Harness: the test ran to completion.

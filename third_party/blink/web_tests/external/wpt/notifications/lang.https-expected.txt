@@ -1,40 +1,45 @@
 This is a testharness.js-based test.
-[NOTRUN] Roundtripping lang "". Expecting "".
-[NOTRUN] Roundtripping lang "en". Expecting "en".
-[NOTRUN] Roundtripping lang "en-US-x-hixie". Expecting "en-US-x-hixie".
-[NOTRUN] Roundtripping lang "de-DE". Expecting "de-DE".
-[NOTRUN] Roundtripping lang "de-de". Expecting "de-de".
-[NOTRUN] Roundtripping lang "de-De". Expecting "de-De".
-[NOTRUN] Roundtripping lang "de-dE". Expecting "de-dE".
-[NOTRUN] Roundtripping lang "de-DE-1996". Expecting "de-DE-1996".
-[NOTRUN] Roundtripping lang "de-Latn-DE". Expecting "de-Latn-DE".
-[NOTRUN] Roundtripping lang "de-Latf-DE". Expecting "de-Latf-DE".
-[NOTRUN] Roundtripping lang "de-Latn-DE-1996". Expecting "de-Latn-DE-1996".
-[NOTRUN] Roundtripping lang "de-CH". Expecting "de-CH".
-[NOTRUN] Roundtripping lang "it-CH". Expecting "it-CH".
-[NOTRUN] Roundtripping lang "fr-CH". Expecting "fr-CH".
-[NOTRUN] Roundtripping lang "rm-CH". Expecting "rm-CH".
-[NOTRUN] Roundtripping lang "es-CH". Expecting "es-CH".
-[NOTRUN] Roundtripping lang "Latn-de". Expecting "".
-[NOTRUN] Roundtripping lang "Latf-de". Expecting "".
-[NOTRUN] Roundtripping lang "tic-tac-tac-toe". Expecting "".
-[NOTRUN] Roundtripping lang "cocoa-1-bar". Expecting "".
-[NOTRUN] Roundtripping lang "cocoa-a-bar". Expecting "".
-[NOTRUN] Roundtripping lang "en-". Expecting "".
-[NOTRUN] Roundtripping lang "en--". Expecting "".
-[NOTRUN] Roundtripping lang "foo--bar". Expecting "".
-[NOTRUN] Roundtripping lang "id---Java". Expecting "".
-[NOTRUN] Roundtripping lang "fr-x". Expecting "".
-[NOTRUN] Roundtripping lang "fr-xenomorph". Expecting "".
-[NOTRUN] Roundtripping lang "fr-x-xenomorph". Expecting "".
-[NOTRUN] Roundtripping lang "a". Expecting "".
-[NOTRUN] Roundtripping lang "a-fr-lang". Expecting "".
-[NOTRUN] Roundtripping lang "b-fr-lang". Expecting "".
-[NOTRUN] Roundtripping lang "es1-KK-aa-bb-cc-dd". Expecting "".
-[NOTRUN] Roundtripping lang "es2-KL-aa-bb-cc-dd". Expecting "".
-[NOTRUN] Roundtripping lang "es3-KM-aa-bb-cc-dd". Expecting "".
-[NOTRUN] Roundtripping lang "fooÉ". Expecting "".
-[NOTRUN] Roundtripping lang "foöÉ-bÁr". Expecting "".
-[NOTRUN] Roundtripping lang "foöÉbÁr". Expecting "".
+[FAIL] Roundtripping lang "Latn-de". Expecting "".
+  assert_equals: notification.lang expected "" but got "Latn-de"
+[FAIL] Roundtripping lang "Latf-de". Expecting "".
+  assert_equals: notification.lang expected "" but got "Latf-de"
+[FAIL] Roundtripping lang "tic-tac-tac-toe". Expecting "".
+  assert_equals: notification.lang expected "" but got "tic-tac-tac-toe"
+[FAIL] Roundtripping lang "cocoa-1-bar". Expecting "".
+  assert_equals: notification.lang expected "" but got "cocoa-1-bar"
+[FAIL] Roundtripping lang "cocoa-a-bar". Expecting "".
+  assert_equals: notification.lang expected "" but got "cocoa-a-bar"
+[FAIL] Roundtripping lang "en-". Expecting "".
+  assert_equals: notification.lang expected "" but got "en-"
+[FAIL] Roundtripping lang "en--". Expecting "".
+  assert_equals: notification.lang expected "" but got "en--"
+[FAIL] Roundtripping lang "foo--bar". Expecting "".
+  assert_equals: notification.lang expected "" but got "foo--bar"
+[FAIL] Roundtripping lang "id---Java". Expecting "".
+  assert_equals: notification.lang expected "" but got "id---Java"
+[FAIL] Roundtripping lang "fr-x". Expecting "".
+  assert_equals: notification.lang expected "" but got "fr-x"
+[FAIL] Roundtripping lang "fr-xenomorph". Expecting "".
+  assert_equals: notification.lang expected "" but got "fr-xenomorph"
+[FAIL] Roundtripping lang "fr-x-xenomorph". Expecting "".
+  assert_equals: notification.lang expected "" but got "fr-x-xenomorph"
+[FAIL] Roundtripping lang "a". Expecting "".
+  assert_equals: notification.lang expected "" but got "a"
+[FAIL] Roundtripping lang "a-fr-lang". Expecting "".
+  assert_equals: notification.lang expected "" but got "a-fr-lang"
+[FAIL] Roundtripping lang "b-fr-lang". Expecting "".
+  assert_equals: notification.lang expected "" but got "b-fr-lang"
+[FAIL] Roundtripping lang "es1-KK-aa-bb-cc-dd". Expecting "".
+  assert_equals: notification.lang expected "" but got "es1-KK-aa-bb-cc-dd"
+[FAIL] Roundtripping lang "es2-KL-aa-bb-cc-dd". Expecting "".
+  assert_equals: notification.lang expected "" but got "es2-KL-aa-bb-cc-dd"
+[FAIL] Roundtripping lang "es3-KM-aa-bb-cc-dd". Expecting "".
+  assert_equals: notification.lang expected "" but got "es3-KM-aa-bb-cc-dd"
+[FAIL] Roundtripping lang "fooÉ". Expecting "".
+  assert_equals: notification.lang expected "" but got "fooÉ"
+[FAIL] Roundtripping lang "foöÉ-bÁr". Expecting "".
+  assert_equals: notification.lang expected "" but got "foöÉ-bÁr"
+[FAIL] Roundtripping lang "foöÉbÁr". Expecting "".
+  assert_equals: notification.lang expected "" but got "foöÉbÁr"
 Harness: the test ran to completion.
 

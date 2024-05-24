@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_request_body[None-{'a': 123}-10]
+  assert 0 == 10
+[FAIL] test_request_body[{'a': 1}-{'a': 12345678}-15]
+  assert 0 == 15
+Harness: the test ran to completion.

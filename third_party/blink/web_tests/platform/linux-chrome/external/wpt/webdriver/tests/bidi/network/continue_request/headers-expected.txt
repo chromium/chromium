@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_modify_headers[request_headers1-modified_headers1]
+  StopIteration
+[FAIL] test_modify_headers[request_headers2-modified_headers2]
+  StopIteration
+[FAIL] test_modify_headers[request_headers3-modified_headers3]
+  StopIteration
+[FAIL] test_override_cookies
+  AssertionError: assert 1 == 0
+Harness: the test ran to completion.

@@ -1,0 +1,34 @@
+This is a wdspec test.
+[FAIL] test_params_headers_header_name_invalid_value[]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid header)
+[FAIL] test_params_headers_header_name_invalid_value[\\x00]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid header)
+[FAIL] test_params_headers_header_name_invalid_value["]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid header)
+[FAIL] test_params_headers_header_name_invalid_value[{]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid header)
+[FAIL] test_params_headers_header_name_invalid_value[\\x80]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid header)
+[FAIL] test_params_headers_header_value_value_invalid_value[ a]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_headers_header_value_value_invalid_value[a ]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_headers_header_value_value_invalid_value[\\ta]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_headers_header_value_value_invalid_value[a\\t]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_headers_header_value_value_invalid_value[a\\nb]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid header)
+[FAIL] test_params_headers_header_value_value_invalid_value[a\\x00b]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid header)
+[FAIL] test_params_method_invalid_value[]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_method_invalid_value[\\x00]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_method_invalid_value["]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_method_invalid_value[{]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+[FAIL] test_params_method_invalid_value[\\x80]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
+Harness: the test ran to completion.
