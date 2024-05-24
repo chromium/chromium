@@ -496,16 +496,34 @@ pub fn cfg_to_condition(cfg: &cargo_platform::Cfg) -> String {
             "windows" => "is_win",
             _ => unreachable!(),
         },
-        cargo_platform::Cfg::KeyPair(key, value) => {
-            assert_eq!(key, "target_os");
-            target_os_to_condition(value)
-        }
+        cargo_platform::Cfg::KeyPair(key, value) => match key.as_ref() {
+            "target_os" => target_os_to_condition(value),
+            "target_arch" => target_arch_to_condition(value),
+            _ => unreachable!("unknown key in cargo_platform::Cfg"),
+        },
     }
     .to_string()
 }
 
 fn triple_to_condition(triple: &str) -> &'static str {
-    for (t, c) in TRIPLE_TO_GN_CONDITION {
+    for (t, c) in &[
+        ("i686-linux-android", "is_android && target_cpu == \"x86\""),
+        ("x86_64-linux-android", "is_android && target_cpu == \"x64\""),
+        ("armv7-linux-android", "is_android && target_cpu == \"arm\""),
+        ("aarch64-linux-android", "is_android && target_cpu == \"arm64\""),
+        ("aarch64-fuchsia", "is_fuchsia && target_cpu == \"arm64\""),
+        ("x86_64-fuchsia", "is_fuchsia && target_cpu == \"x64\""),
+        ("aarch64-apple-ios", "is_ios && target_cpu == \"arm64\""),
+        ("armv7-apple-ios", "is_ios && target_cpu == \"arm\""),
+        ("x86_64-apple-ios", "is_ios && target_cpu == \"x64\""),
+        ("i386-apple-ios", "is_ios && target_cpu == \"x86\""),
+        ("i686-pc-windows-msvc", "is_win && target_cpu == \"x86\""),
+        ("x86_64-pc-windows-msvc", "is_win && target_cpu == \"x64\""),
+        ("i686-unknown-linux-gnu", "(is_linux || is_chromeos) && target_cpu == \"x86\""),
+        ("x86_64-unknown-linux-gnu", "(is_linux || is_chromeos) && target_cpu == \"x64\""),
+        ("x86_64-apple-darwin", "is_mac && target_cpu == \"x64\""),
+        ("aarch64-apple-darwin", "is_mac && target_cpu == \"arm64\""),
+    ] {
         if *t == triple {
             return c;
         }
@@ -515,7 +533,14 @@ fn triple_to_condition(triple: &str) -> &'static str {
 }
 
 fn target_os_to_condition(target_os: &str) -> &'static str {
-    for (t, c) in TARGET_OS_TO_GN_CONDITION {
+    for (t, c) in &[
+        ("android", "is_android"),
+        ("darwin", "is_mac"),
+        ("fuchsia", "is_fuchsia"),
+        ("ios", "is_ios"),
+        ("linux", "is_linux || is_chromeos"),
+        ("windows", "is_win"),
+    ] {
         if *t == target_os {
             return c;
         }
@@ -524,33 +549,20 @@ fn target_os_to_condition(target_os: &str) -> &'static str {
     panic!("target os {target_os} not found")
 }
 
-static TRIPLE_TO_GN_CONDITION: &[(&str, &str)] = &[
-    ("i686-linux-android", "is_android && target_cpu == \"x86\""),
-    ("x86_64-linux-android", "is_android && target_cpu == \"x64\""),
-    ("armv7-linux-android", "is_android && target_cpu == \"arm\""),
-    ("aarch64-linux-android", "is_android && target_cpu == \"arm64\""),
-    ("aarch64-fuchsia", "is_fuchsia && target_cpu == \"arm64\""),
-    ("x86_64-fuchsia", "is_fuchsia && target_cpu == \"x64\""),
-    ("aarch64-apple-ios", "is_ios && target_cpu == \"arm64\""),
-    ("armv7-apple-ios", "is_ios && target_cpu == \"arm\""),
-    ("x86_64-apple-ios", "is_ios && target_cpu == \"x64\""),
-    ("i386-apple-ios", "is_ios && target_cpu == \"x86\""),
-    ("i686-pc-windows-msvc", "is_win && target_cpu == \"x86\""),
-    ("x86_64-pc-windows-msvc", "is_win && target_cpu == \"x64\""),
-    ("i686-unknown-linux-gnu", "(is_linux || is_chromeos) && target_cpu == \"x86\""),
-    ("x86_64-unknown-linux-gnu", "(is_linux || is_chromeos) && target_cpu == \"x64\""),
-    ("x86_64-apple-darwin", "is_mac && target_cpu == \"x64\""),
-    ("aarch64-apple-darwin", "is_mac && target_cpu == \"arm64\""),
-];
+fn target_arch_to_condition(target_arch: &str) -> &'static str {
+    for (t, c) in &[
+        ("aarch64", "target_cpu == \"arm64\""),
+        ("arm", "target_cpu == \"arm\""),
+        ("x86", "target_cpu == \"x86\""),
+        ("x86_64", "target_cpu == \"x64\""),
+    ] {
+        if *t == target_arch {
+            return c;
+        }
+    }
 
-static TARGET_OS_TO_GN_CONDITION: &[(&str, &str)] = &[
-    ("android", "is_android"),
-    ("darwin", "is_mac"),
-    ("fuchsia", "is_fuchsia"),
-    ("ios", "is_ios"),
-    ("linux", "is_linux || is_chromeos"),
-    ("windows", "is_win"),
-];
+    panic!("target arch {target_arch} not found")
+}
 
 #[cfg(test)]
 mod tests {
@@ -602,6 +614,26 @@ mod tests {
         assert_eq!(
             Condition::from_platform_set(platform_set).unwrap().0,
             "(is_android && target_cpu == \"arm\") || (is_win)"
+        );
+
+        // A cfg expression on arch only.
+        assert_eq!(
+            Condition::from_platform_set(PlatformSet::one(Some(Platform::Cfg(
+                CfgExpr::from_str("target_arch = \"aarch64\"").unwrap()
+            ))))
+            .unwrap()
+            .0,
+            "(target_cpu == \"arm64\")"
+        );
+
+        // A cfg expression on arch and OS (but not via the target triple string).
+        assert_eq!(
+            Condition::from_platform_set(PlatformSet::one(Some(Platform::Cfg(
+                CfgExpr::from_str("all(target_arch = \"aarch64\", unix)").unwrap()
+            ))))
+            .unwrap()
+            .0,
+            "((!is_win) && (target_cpu == \"arm64\"))"
         );
     }
 }

@@ -6,7 +6,7 @@
 
 use std::collections::BTreeSet;
 
-use cargo_platform::Cfg;
+use cargo_platform::{Cfg, CfgExpr};
 use once_cell::sync::OnceCell;
 
 pub use cargo_platform::Platform;
@@ -56,14 +56,73 @@ impl PlatformSet {
     }
 }
 
+// Whether a CfgExpr matches any build target supported by Chromium.
+fn supported_cfg_expr(e: &CfgExpr) -> bool {
+    fn validity_can_be_true(v: ExprValidity) -> bool {
+        match v {
+            ExprValidity::Valid => true,
+            ExprValidity::AlwaysTrue => true,
+            ExprValidity::AlwaysFalse => false,
+        }
+    }
+    fn recurse(e: &CfgExpr) -> ExprValidity {
+        match e {
+            CfgExpr::All(x) => {
+                if x.iter().all(|e| validity_can_be_true(recurse(e))) {
+                    // TODO(danakj): We don't combine to anything fancy.
+                    // Technically, if they are all AlwaysTrue it should combine
+                    // as such, and then it could be inverted to AlwaysFalse.
+                    ExprValidity::Valid
+                } else {
+                    ExprValidity::AlwaysFalse
+                }
+            }
+            CfgExpr::Any(x) => {
+                if x.iter().any(|e| validity_can_be_true(recurse(e))) {
+                    // TODO(danakj): We don't combine to anything fancy.
+                    // Technically, if anything is AlwaysTrue it should combine
+                    // as such, and then it could be inverted to AlwaysFalse.
+                    ExprValidity::Valid
+                } else {
+                    ExprValidity::AlwaysFalse
+                }
+            }
+            CfgExpr::Not(x) => match recurse(x) {
+                ExprValidity::AlwaysFalse => ExprValidity::AlwaysTrue,
+                ExprValidity::Valid => ExprValidity::Valid,
+                ExprValidity::AlwaysTrue => ExprValidity::AlwaysFalse,
+            },
+            CfgExpr::Value(v) => supported_cfg_value(v),
+        }
+    }
+    validity_can_be_true(recurse(e))
+}
+
+// If a Cfg option is always true/false in Chromium, or needs to be conditional
+// in the build file's rules.
+fn supported_cfg_value(cfg: &Cfg) -> ExprValidity {
+    if supported_os_cfgs().iter().any(|c| c == cfg) {
+        ExprValidity::Valid // OS is always conditional, as we support more than one.
+    } else if supported_arch_cfgs().iter().any(|c| c == cfg) {
+        ExprValidity::Valid // Arch is always conditional, as we support more than one.
+    } else {
+        // Other configs may resolve to AlwaysTrue or AlwaysFalse. If it's
+        // unknown, we treat it as AlwaysFalse since we don't know how to
+        // convert it to a build file condition.
+        supported_other_cfgs()
+            .iter()
+            .find(|(c, _)| c == cfg)
+            .map(|(_, validity)| *validity)
+            .unwrap_or(ExprValidity::AlwaysFalse)
+    }
+}
+
 /// Whether `platform`, either an explicit rustc target triple or a `cfg(...)`
 /// expression, matches any build target supported by Chromium.
 pub fn matches_supported_target(platform: &Platform) -> bool {
     match platform {
         Platform::Name(name) => SUPPORTED_NAMED_PLATFORMS.iter().any(|p| *p == name),
-        Platform::Cfg(cfg_expr) => {
-            supported_os_cfgs().iter().any(|c| cfg_expr.matches(std::slice::from_ref(c)))
-        }
+        Platform::Cfg(expr) => supported_cfg_expr(expr),
     }
 }
 
@@ -96,16 +155,6 @@ pub fn filter_unsupported_platform_terms(platform: Platform) -> Option<Platform>
     }
 }
 
-#[cfg(test)]
-pub fn supported_os_cfgs_for_testing() -> &'static [Cfg] {
-    supported_os_cfgs()
-}
-
-#[cfg(test)]
-pub fn supported_named_platforms_for_testing() -> &'static [&'static str] {
-    SUPPORTED_NAMED_PLATFORMS
-}
-
 // The validity of a cfg expr for our set of supported platforms.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ExprValidity {
@@ -122,7 +171,7 @@ enum ExprValidity {
 // Rewrites `cfg_expr` to exclude unsupported terms. `ExprValidity::Valid` if
 // the rewritten expr is valid: it contains no unsupported terms. Otherwise
 // returns `AlwaysTrue` or `AlwaysFalse`.
-fn cfg_expr_filter_visitor(cfg_expr: &mut cargo_platform::CfgExpr) -> ExprValidity {
+fn cfg_expr_filter_visitor(cfg_expr: &mut CfgExpr) -> ExprValidity {
     use ExprValidity::*;
     // Any logical operation on a set of valid expressions also yields a valid
     // expression. If any of the set is invalid, we must apply special handling
@@ -130,14 +179,14 @@ fn cfg_expr_filter_visitor(cfg_expr: &mut cargo_platform::CfgExpr) -> ExprValidi
     // false.
     match cfg_expr {
         // A not(...) expr inverts the truth value of an invalid expr.
-        cargo_platform::CfgExpr::Not(sub_expr) => match cfg_expr_filter_visitor(sub_expr) {
+        CfgExpr::Not(sub_expr) => match cfg_expr_filter_visitor(sub_expr) {
             Valid => Valid,
             AlwaysTrue => AlwaysFalse,
             AlwaysFalse => AlwaysTrue,
         },
         // An all(...) expr is always false if any term is always false. If any
         // term is always true, it can be removed.
-        cargo_platform::CfgExpr::All(sub_exprs) => {
+        CfgExpr::All(sub_exprs) => {
             let mut validity = Valid;
             sub_exprs.retain_mut(|e| match cfg_expr_filter_visitor(e) {
                 // Keep valid terms.
@@ -169,7 +218,7 @@ fn cfg_expr_filter_visitor(cfg_expr: &mut cargo_platform::CfgExpr) -> ExprValidi
         }
         // An any(...) expr is always true if any term is always true. If any
         // term is always false, it can be removed.
-        cargo_platform::CfgExpr::Any(sub_exprs) => {
+        CfgExpr::Any(sub_exprs) => {
             let mut validity = Valid;
             sub_exprs.retain_mut(|e| match cfg_expr_filter_visitor(e) {
                 // Keep valid terms.
@@ -199,32 +248,7 @@ fn cfg_expr_filter_visitor(cfg_expr: &mut cargo_platform::CfgExpr) -> ExprValidi
                 Valid
             }
         }
-        cargo_platform::CfgExpr::Value(cfg) => {
-            transform_cfg(cfg);
-            if supported_os_cfgs().iter().any(|c| c == cfg) {
-                Valid
-            } else {
-                // TODO(danakj): Maybe this should be `Valid`, if there are conditions that are
-                // sometimes true depending on which OS we're targeting.
-                AlwaysFalse
-            }
-        }
-    }
-}
-
-/// Some cfgs imply other cfgs, so we can just convert them to the other.
-fn transform_cfg(cfg: &mut Cfg) {
-    match cfg {
-        // Chromium always uses the "msvc" env if and only if we're on windows, so we can uplift
-        // the env to say the rule always applies to windows.
-        Cfg::KeyPair(a, b) if a == "target_env" && b == "msvc" => {
-            *cfg = Cfg::Name("windows".to_string())
-        }
-        // Chromium never targets UWP.
-        Cfg::KeyPair(a, b) if a == "target_vendor" && b == "uwp" => {
-            *cfg = Cfg::Name("false".to_string())
-        }
-        _ => (),
+        CfgExpr::Value(cfg) => supported_cfg_value(cfg),
     }
 }
 
@@ -242,6 +266,30 @@ fn supported_os_cfgs() -> &'static [Cfg] {
             ["unix", "windows"].into_iter().map(|os| Cfg::Name(os.to_string())),
         )
         .collect()
+    })
+}
+
+fn supported_arch_cfgs() -> &'static [Cfg] {
+    static CFG_SET: OnceCell<Vec<Cfg>> = OnceCell::new();
+    CFG_SET.get_or_init(|| {
+        [
+            // Set of supported arches for `cfg(target_arch = ...)`.
+            "aarch64", "arm", "x86", "x86_64",
+        ]
+        .into_iter()
+        .map(|a| Cfg::KeyPair("target_arch".to_string(), a.to_string()))
+        .collect()
+    })
+}
+
+fn supported_other_cfgs() -> &'static [(Cfg, ExprValidity)] {
+    static CFG_SET: OnceCell<Vec<(Cfg, ExprValidity)>> = OnceCell::new();
+    CFG_SET.get_or_init(|| {
+        use ExprValidity::*;
+        vec![
+            // target_env = "msvc" is always true for us, so it can be dropped from expressions.
+            (Cfg::KeyPair("target_env".to_string(), "msvc".to_string()), AlwaysTrue),
+        ]
     })
 }
 
@@ -274,14 +322,14 @@ mod tests {
 
     #[test]
     fn platform_is_supported() {
-        for named_platform in supported_named_platforms_for_testing() {
+        for named_platform in SUPPORTED_NAMED_PLATFORMS {
             assert!(matches_supported_target(&Platform::Name(named_platform.to_string())));
         }
 
         assert!(!matches_supported_target(&Platform::Name("x86_64-unknown-redox".to_string())));
         assert!(!matches_supported_target(&Platform::Name("wasm32-wasi".to_string())));
 
-        for os in supported_os_cfgs_for_testing() {
+        for os in supported_os_cfgs() {
             assert!(matches_supported_target(&Platform::Cfg(CfgExpr::Value(os.clone()))));
         }
 
@@ -291,9 +339,6 @@ mod tests {
         assert!(!matches_supported_target(&Platform::Cfg(
             CfgExpr::from_str("target_os = \"haiku\"").unwrap()
         )));
-        assert!(!matches_supported_target(&Platform::Cfg(
-            CfgExpr::from_str("target_arch = \"sparc\"").unwrap()
-        )));
 
         assert!(matches_supported_target(&Platform::Cfg(
             CfgExpr::from_str("any(unix, target_os = \"wasi\")").unwrap()
@@ -301,6 +346,18 @@ mod tests {
 
         assert!(!matches_supported_target(&Platform::Cfg(
             CfgExpr::from_str("all(unix, target_os = \"wasi\")").unwrap()
+        )));
+
+        for arch in supported_arch_cfgs() {
+            assert!(matches_supported_target(&Platform::Cfg(CfgExpr::Value(arch.clone()))));
+        }
+
+        assert!(!matches_supported_target(&Platform::Cfg(
+            CfgExpr::from_str("target_arch = \"sparc\"").unwrap()
+        )));
+
+        assert!(matches_supported_target(&Platform::Cfg(
+            CfgExpr::from_str("not(windows)").unwrap()
         )));
     }
 
@@ -338,7 +395,7 @@ mod tests {
             filter_unsupported_platform_terms(Platform::Cfg(
                 CfgExpr::from_str("not(all(windows, target_env = \"msvc\"))").unwrap()
             )),
-            Some(Platform::Cfg(CfgExpr::from_str("not(all(windows, windows))").unwrap()))
+            Some(Platform::Cfg(CfgExpr::from_str("not(windows)").unwrap()))
         );
 
         assert_eq!(
@@ -348,7 +405,39 @@ mod tests {
                 )
                 .unwrap()
             )),
-            Some(Platform::Cfg(CfgExpr::from_str("not(all(windows, windows))").unwrap()))
+            Some(Platform::Cfg(CfgExpr::from_str("not(windows)").unwrap()))
         );
+    }
+
+    #[test]
+    // From windows-targets crate.
+    fn windows_target_cfgs() {
+        // Accepted. `windows_raw_dylib` is not a known cfg so considered AlwaysFalse.
+        let cfg = "all(target_arch = \"aarch64\", target_env = \"msvc\", not(windows_raw_dylib))";
+        assert_eq!(
+            filter_unsupported_platform_terms(Platform::Cfg(CfgExpr::from_str(cfg).unwrap())),
+            Some(Platform::Cfg(CfgExpr::from_str("target_arch = \"aarch64\"").unwrap()))
+        );
+        assert!(matches_supported_target(&Platform::Cfg(CfgExpr::from_str(cfg).unwrap())));
+
+        // Accepted. `windows_raw_dylib` is not a known cfg so considered AlwaysFalse.
+        let cfg = "all(any(target_arch = \"x86_64\", target_arch = \"arm64ec\"), \
+                   target_env = \"msvc\", not(windows_raw_dylib))";
+        assert_eq!(
+            filter_unsupported_platform_terms(Platform::Cfg(CfgExpr::from_str(cfg).unwrap())),
+            Some(Platform::Cfg(CfgExpr::from_str("target_arch = \"x86_64\"").unwrap()))
+        );
+
+        // Accepted. `windows_raw_dylib` is not a known cfg so considered AlwaysFalse.
+        let cfg = "all(target_arch = \"x86\", target_env = \"msvc\", not(windows_raw_dylib))";
+        assert_eq!(
+            filter_unsupported_platform_terms(Platform::Cfg(CfgExpr::from_str(cfg).unwrap())),
+            Some(Platform::Cfg(CfgExpr::from_str("target_arch = \"x86\"").unwrap()))
+        );
+
+        // Rejected for gnu env.
+        let cfg = "all(target_arch = \"x86\", target_env = \"gnu\", not(target_abi = \"llvm\"), \
+                   not(windows_raw_dylib))";
+        assert!(!matches_supported_target(&Platform::Cfg(CfgExpr::from_str(cfg).unwrap())));
     }
 }
