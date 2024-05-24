@@ -2262,6 +2262,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kMemorySaverModeSavings,
+      performance_manager::user_tuning::prefs::kMemorySaverModeAggressiveness,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           MemorySaverModeAggressiveness::kConservative),
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           MemorySaverModeAggressiveness::kAggressive),
+      false));
   handlers->AddHandler(
       std::make_unique<performance_manager::MemorySaverPolicyHandler>());
   // Note: This needs to be created after `DefaultSearchPolicyHandler`.
