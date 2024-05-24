@@ -1969,13 +1969,6 @@
           },
         },
       },
-      'fuchsia-arm64-cast-receiver-rel': {
-        # Temporarily only run this on CI due to resource and naming
-        # constraints.
-        # TODO(crbug.com/40241445): Remove this when resource requirements are
-        # lower.
-        'ci_only': True,
-      },
       'fuchsia-code-coverage': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter',
