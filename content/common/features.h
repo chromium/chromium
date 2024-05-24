@@ -55,6 +55,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeDelayPostAuctionInterestGroupUpdate);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeSellerWorkletThreadPool);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFledgeSellerWorkletThreadPoolSize;
+#if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kFocusRenderWidgetHostViewAndroidOnActionDown);
+#endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontSrcLocalMatching);
 #if !BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kForwardMemoryPressureEventsToGpuProcess);

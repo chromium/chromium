@@ -11,6 +11,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -784,8 +785,15 @@ bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableForIOv2For(
 
 void RenderWidgetHostViewChildFrame::PreProcessTouchEvent(
     const blink::WebTouchEvent& event) {
-  if (event.GetType() == blink::WebInputEvent::Type::kTouchStart)
-    Focus();
+  if (event.GetType() == blink::WebInputEvent::Type::kTouchStart) {
+    if (frame_connector_ && !frame_connector_->HasFocus()) {
+#if BUILDFLAG(IS_ANDROID)
+      UMA_HISTOGRAM_BOOLEAN(
+          "Android.FocusChanged.RenderWidgetHostViewChildFrame", true);
+#endif
+      Focus();
+    }
+  }
 }
 
 viz::FrameSinkId RenderWidgetHostViewChildFrame::GetRootFrameSinkId() {

@@ -1379,6 +1379,15 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
   RecordToolTypeForActionDown(event);
 
   if (event.GetAction() == ui::MotionEventAndroid::Action::DOWN) {
+    if (base::FeatureList::IsEnabled(
+            features::kFocusRenderWidgetHostViewAndroidOnActionDown) &&
+        !HasFocus()) {
+      // On Android, |this| class should always be focused even when a
+      // ChildFrame is handling touch.
+      // TODO(b/340824076): Adding Focus call on ActionDown is a workaround to
+      // this problem. This line should be removed after this bug is fixed.
+      Focus();
+    }
     if (ime_adapter_android_)
       ime_adapter_android_->UpdateOnTouchDown();
     if (gesture_listener_manager_)
