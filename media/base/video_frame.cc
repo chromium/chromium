@@ -556,6 +556,37 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImages(
 }
 
 // static
+scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
+    VideoPixelFormat format,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    gpu::SyncToken sync_token,
+    uint32_t texture_target,
+    ReleaseMailboxCB mailbox_holder_release_cb,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    base::TimeDelta timestamp) {
+  scoped_refptr<VideoFrame> frame = CreateFrameForNativeTexturesInternal(
+      format, coded_size, visible_rect, natural_size, timestamp);
+  if (!frame) {
+    return nullptr;
+  }
+
+  if (shared_image) {
+    frame->mailbox_holders_[0] =
+        gpu::MailboxHolder(shared_image->mailbox(), sync_token, texture_target);
+    frame->shared_images_[0] = shared_image->MakeUnowned();
+  }
+  frame->mailbox_holders_and_gmb_release_cb_ =
+      WrapReleaseMailboxCB(std::move(mailbox_holder_release_cb));
+
+  DCHECK(frame->HasTextures());
+  DCHECK_GT(frame->NumTextures(), 0u);
+
+  return frame;
+}
+
+// static
 scoped_refptr<VideoFrame> VideoFrame::WrapExternalData(
     VideoPixelFormat format,
     const gfx::Size& coded_size,

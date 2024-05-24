@@ -169,7 +169,6 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
 
   // No need to wait on any sync token as the SharedImage |mailbox_| should be
   // ready for use.
-  scoped_refptr<gpu::ClientSharedImage> shared_image;
   if (!dcomp_texture_resources_) {
     DVLOG_FUNC(1) << "AddMailbox";
     gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
@@ -181,7 +180,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     // |usage| passed to NotifyMailboxAdded() here and the |usage| that
     // DCOMPTextureBacking's constructor uses to initialize
     // ClearTrackingSharedImageBacking.
-    shared_image =
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
         sii->NotifyMailboxAdded(mailbox_, viz::SinglePlaneFormat::kBGRA_8888,
                                 natural_size_, gfx::ColorSpace::CreateSRGB(),
                                 kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
@@ -194,12 +193,11 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
             std::move(shared_image), factory_);
   }
 
-  scoped_refptr<gpu::ClientSharedImage>
-      shared_images[media::VideoFrame::kMaxPlanes] = {
-          dcomp_texture_resources_->GetSharedImage()};
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      dcomp_texture_resources_->GetSharedImage();
 
-  auto frame = media::VideoFrame::WrapSharedImages(
-      media::PIXEL_FORMAT_BGRA, shared_images, gpu::SyncToken(),
+  auto frame = media::VideoFrame::WrapSharedImage(
+      media::PIXEL_FORMAT_BGRA, shared_image, gpu::SyncToken(),
       GL_TEXTURE_EXTERNAL_OES,
       base::BindPostTask(
           media_task_runner_,

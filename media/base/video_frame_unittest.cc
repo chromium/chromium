@@ -611,11 +611,10 @@ TEST(VideoFrame, TextureNoLongerNeededCallbackIsCalled) {
                                    gpu::CommandBufferId::FromUnsafeValue(1), 1);
 
   {
-    scoped_refptr<gpu::ClientSharedImage>
-        shared_images[VideoFrame::kMaxPlanes] = {
-            gpu::ClientSharedImage::CreateForTesting()};
-    scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImages(
-        PIXEL_FORMAT_ARGB, shared_images, gpu::SyncToken(), 5,
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        gpu::ClientSharedImage::CreateForTesting();
+    scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
+        PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(), 5,
         base::BindOnce(&TextureCallback, &called_sync_token),
         gfx::Size(10, 10),   // coded_size
         gfx::Rect(10, 10),   // visible_rect

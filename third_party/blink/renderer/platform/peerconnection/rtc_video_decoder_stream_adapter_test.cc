@@ -321,15 +321,13 @@ class RTCVideoDecoderStreamAdapterTest
 
   void FinishDecodeOnMediaThread(uint32_t timestamp) {
     DCHECK(media_thread_task_runner_->RunsTasksInCurrentSequence());
-    scoped_refptr<gpu::ClientSharedImage>
-        shared_images[media::VideoFrame::kMaxPlanes];
-    shared_images[0] = gpu::ClientSharedImage::CreateForTesting();
-    scoped_refptr<media::VideoFrame> frame =
-        media::VideoFrame::WrapSharedImages(
-            media::PIXEL_FORMAT_ARGB, shared_images, gpu::SyncToken(), 0,
-            media::VideoFrame::ReleaseMailboxCB(), gfx::Size(640, 360),
-            gfx::Rect(640, 360), gfx::Size(640, 360),
-            base::Microseconds(timestamp));
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        gpu::ClientSharedImage::CreateForTesting();
+    scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapSharedImage(
+        media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(), 0,
+        media::VideoFrame::ReleaseMailboxCB(), gfx::Size(640, 360),
+        gfx::Rect(640, 360), gfx::Size(640, 360),
+        base::Microseconds(timestamp));
     output_cb_.Run(std::move(frame));
   }
 

@@ -884,16 +884,13 @@ class LayerTreeHostContextTestDontUseLostResources
     color_video_frame_ = VideoFrame::CreateColorFrame(
         gfx::Size(4, 4), 0x80, 0x80, 0x80, base::TimeDelta());
     ASSERT_TRUE(color_video_frame_);
-    scoped_refptr<gpu::ClientSharedImage>
-        shared_images[media::VideoFrame::kMaxPlanes];
-    shared_images[0] = shared_image;
-    hw_video_frame_ = VideoFrame::WrapSharedImages(
-        media::PIXEL_FORMAT_ARGB, shared_images, sync_token, GL_TEXTURE_2D,
+    hw_video_frame_ = VideoFrame::WrapSharedImage(
+        media::PIXEL_FORMAT_ARGB, shared_image, sync_token, GL_TEXTURE_2D,
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(4, 4),
         gfx::Rect(0, 0, 4, 4), gfx::Size(4, 4), base::TimeDelta());
     ASSERT_TRUE(hw_video_frame_);
-    scaled_hw_video_frame_ = VideoFrame::WrapSharedImages(
-        media::PIXEL_FORMAT_ARGB, shared_images, sync_token, GL_TEXTURE_2D,
+    scaled_hw_video_frame_ = VideoFrame::WrapSharedImage(
+        media::PIXEL_FORMAT_ARGB, shared_image, sync_token, GL_TEXTURE_2D,
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(4, 4),
         gfx::Rect(0, 0, 3, 2), gfx::Size(4, 4), base::TimeDelta());
     ASSERT_TRUE(scaled_hw_video_frame_);

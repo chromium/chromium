@@ -318,11 +318,10 @@ class VideoResourceUpdaterTest : public testing::Test {
     const int kDimension = 10;
     gfx::Size size(kDimension, kDimension);
 
-    scoped_refptr<gpu::ClientSharedImage>
-        shared_images[VideoFrame::kMaxPlanes] = {
-            gpu::ClientSharedImage::CreateForTesting()};
-    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImages(
-        format, shared_images, kMailboxSyncToken, target,
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        gpu::ClientSharedImage::CreateForTesting();
+    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImage(
+        format, shared_image, kMailboxSyncToken, target,
         base::BindOnce(&VideoResourceUpdaterTest::SetReleaseSyncToken,
                        base::Unretained(this)),
         size,                // coded_size

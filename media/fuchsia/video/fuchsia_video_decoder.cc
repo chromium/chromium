@@ -171,11 +171,8 @@ class FuchsiaVideoDecoder::OutputMailbox {
     is_used_ = true;
     reuse_callback_ = std::move(reuse_callback);
 
-    scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes];
-    shared_images[0] = shared_image_;
-
-    auto frame = VideoFrame::WrapSharedImages(
-        pixel_format, shared_images, create_sync_token_, 0,
+    auto frame = VideoFrame::WrapSharedImage(
+        pixel_format, shared_image_, create_sync_token_, 0,
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &OutputMailbox::OnFrameDestroyed, base::Unretained(this))),
         coded_size, visible_rect, natural_size, timestamp);

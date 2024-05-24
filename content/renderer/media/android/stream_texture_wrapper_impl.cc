@@ -77,9 +77,6 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                   gpu::SHARED_IMAGE_USAGE_RASTER_READ);
-  scoped_refptr<gpu::ClientSharedImage>
-      shared_images[media::VideoFrame::kMaxPlanes];
-  shared_images[0] = shared_image;
 
   // The pixel format doesn't matter here as long as it's valid for texture
   // frames. But SkiaRenderer wants to ensure that the format of the resource
@@ -93,8 +90,8 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   // created, so we don't need to wait on any synctoken, mailbox is ready to
   // use.
   scoped_refptr<media::VideoFrame> new_frame =
-      media::VideoFrame::WrapSharedImages(
-          media::PIXEL_FORMAT_ABGR, shared_images, gpu::SyncToken(),
+      media::VideoFrame::WrapSharedImage(
+          media::PIXEL_FORMAT_ABGR, shared_image, gpu::SyncToken(),
           GL_TEXTURE_EXTERNAL_OES,
           base::BindPostTask(main_task_runner_,
                              base::BindOnce(&OnReleaseVideoFrame, factory_,

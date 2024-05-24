@@ -238,6 +238,20 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
 
+  // Wraps a native texture shared image with a VideoFrame.
+  // |mailbox_holder_release_cb| will be called with a sync token as the
+  // argument when the VideoFrame is to be destroyed.
+  static scoped_refptr<VideoFrame> WrapSharedImage(
+      VideoPixelFormat format,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      gpu::SyncToken sync_token,
+      uint32_t texture_target,
+      ReleaseMailboxCB mailbox_holder_release_cb,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      base::TimeDelta timestamp);
+
   // Wraps packed image data residing in a memory buffer with a VideoFrame.
   // The image data resides in |data| and is assumed to be packed tightly in a
   // buffer of logical dimensions |coded_size| with the appropriate bit depth

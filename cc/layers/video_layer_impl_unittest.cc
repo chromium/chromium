@@ -462,14 +462,13 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
   LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
-  scoped_refptr<gpu::ClientSharedImage>
-      shared_images[media::VideoFrame::kMaxPlanes];
-  shared_images[0] = gpu::ClientSharedImage::CreateForTesting();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      gpu::ClientSharedImage::CreateForTesting();
 
   gfx::Size resource_size = gfx::Size(10, 10);
   scoped_refptr<media::VideoFrame> video_frame =
-      media::VideoFrame::WrapSharedImages(
-          media::PIXEL_FORMAT_ARGB, shared_images, gpu::SyncToken(),
+      media::VideoFrame::WrapSharedImage(
+          media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
           GL_TEXTURE_2D, base::DoNothing(), resource_size, gfx::Rect(10, 10),
           resource_size, base::TimeDelta());
   ASSERT_TRUE(video_frame);

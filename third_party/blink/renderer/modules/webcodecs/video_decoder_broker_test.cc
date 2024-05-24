@@ -62,15 +62,13 @@ class FakeGpuVideoDecoder : public media::FakeVideoDecoder {
 
   scoped_refptr<media::VideoFrame> MakeVideoFrame(
       const media::DecoderBuffer& buffer) override {
-    scoped_refptr<gpu::ClientSharedImage>
-        shared_image[media::VideoFrame::kMaxPlanes] = {
-            gpu::ClientSharedImage::CreateForTesting()};
-    scoped_refptr<media::VideoFrame> frame =
-        media::VideoFrame::WrapSharedImages(
-            media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(), 0,
-            media::VideoFrame::ReleaseMailboxCB(), current_config_.coded_size(),
-            current_config_.visible_rect(), current_config_.natural_size(),
-            buffer.timestamp());
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        gpu::ClientSharedImage::CreateForTesting();
+    scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapSharedImage(
+        media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(), 0,
+        media::VideoFrame::ReleaseMailboxCB(), current_config_.coded_size(),
+        current_config_.visible_rect(), current_config_.natural_size(),
+        buffer.timestamp());
     frame->metadata().power_efficient = true;
     return frame;
   }
