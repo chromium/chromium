@@ -13,6 +13,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -361,7 +362,7 @@ PrivacySection::PrivacySection(Profile* profile,
 
   // Fingerprint search tags are added if necessary. Remove fingerprint search
   // tags update dynamically during a user session.
-  if (!IsGuestModeActive() && AreFingerprintSettingsAllowed()) {
+  if (!IsGuestModeActive() /*&& AreFingerprintSettingsAllowed()*/) {
     updater.AddSearchTags(GetFingerprintSearchConcepts());
 
     fingerprint_pref_change_registrar_.Init(pref_service_);
@@ -681,7 +682,12 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("osSettingsAppId", web_app::kOsSettingsAppId);
 
-  html_source->AddBoolean("showSecureDnsSetting", true);
+  html_source->AddString("authPrompt",
+                         l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT,
+                             u"ChromeOS Settings"));
+
+  html_source->AddBoolean("showSecureDnsSetting", false);
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);
   html_source->AddBoolean(
       "isDeprecateDnsDialogEnabled",

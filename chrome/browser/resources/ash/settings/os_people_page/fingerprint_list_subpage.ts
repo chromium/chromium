@@ -50,7 +50,7 @@ export class SettingsFingerprintListSubpageElement extends
        */
       authToken: {
         type: String,
-        value: '',
+        notify: true,
         observer: 'onAuthTokenChanged_',
       },
 
@@ -81,7 +81,7 @@ export class SettingsFingerprintListSubpageElement extends
     };
   }
 
-  authToken: string;
+  authToken: string|undefined;
   private fingerprints_: string[];
   private showSetupFingerprintDialog_: boolean;
   private allowAddAnotherFinger_: boolean;
@@ -141,7 +141,7 @@ export class SettingsFingerprintListSubpageElement extends
   }
 
   private onFingerprintDeleteTapped_(e: DomRepeatEvent<number>): void {
-    this.browserProxy_.removeEnrollment(e.model.index, this.authToken)
+    this.browserProxy_.removeEnrollment(e.model.index, this.authToken as string)
         .then(success => {
           if (success) {
             recordSettingChange(Setting.kRemoveFingerprintV2);
