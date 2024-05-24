@@ -34,6 +34,8 @@ const char kTotalTokenRetrievalTime[] =
     "PushNotification.ChromeOS.GCM.Token.RetrievalTime";
 const char kTotalSuccessfulRegistrationResponseTime[] =
     "PushNotification.ChromeOS.MultiLoginUpdateApi.ResponseTime.Success";
+const char kTotalFailedRegistrationResponseTime[] =
+    "PushNotification.ChromeOS.MultiLoginUpdateApi.ResponseTime.Failure";
 
 class FakeInstanceID : public instance_id::InstanceID {
  public:
@@ -150,6 +152,7 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
     histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 0);
     histogram_tester_.ExpectTotalCount(kTotalSuccessfulRegistrationResponseTime,
                                        0);
+    histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 0);
   }
 
   void TearDown() override {
@@ -232,6 +235,7 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartService) {
                                .representative_target_id());
   histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 1);
   CheckForSuccessfulRegistration();
+  histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 0);
 }
 
 TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPref) {
@@ -254,6 +258,7 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPref) {
                 .representative_target_id());
   histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 1);
   CheckForSuccessfulRegistration();
+  histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 0);
 }
 
 TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPrefStoreReset) {
@@ -276,6 +281,7 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPrefStoreReset) {
                 .representative_target_id());
   histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 1);
   CheckForSuccessfulRegistration();
+  histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 0);
   push_notification_service_->OnStoreReset();
   EXPECT_EQ(std::string(),
             pref_service_.GetString(
@@ -297,6 +303,7 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartServiceTokenFailure) {
   histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 0);
   EXPECT_FALSE(fake_client_factory_.fake_server_client());
   EXPECT_FALSE(push_notification_service_->IsServiceInitialized());
+  histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 0);
 }
 
 TEST_F(PushNotificationServiceDesktopImplTest,
@@ -316,6 +323,7 @@ TEST_F(PushNotificationServiceDesktopImplTest,
   CheckForFailedRegistration(
       PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError::
           kAuthenticationError);
+  histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 1);
 }
 
 TEST_F(PushNotificationServiceDesktopImplTest,
@@ -335,6 +343,7 @@ TEST_F(PushNotificationServiceDesktopImplTest,
   CheckForFailedRegistration(
       PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError::
           kAuthenticationError);
+  histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 1);
 
   registration_scheduler->InvokeRequestCallback();
 
@@ -342,11 +351,13 @@ TEST_F(PushNotificationServiceDesktopImplTest,
   CheckForFailedRegistration(
       PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError::
           kAuthenticationError);
+  histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 2);
 
   registration_scheduler->InvokeRequestCallback();
 
   histogram_tester_.ExpectTotalCount(kTotalTokenRetrievalTime, 3);
   CheckForSuccessfulRegistration();
+  histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 2);
 }
 
 TEST_F(PushNotificationServiceDesktopImplTest, OnMessageRecieved) {

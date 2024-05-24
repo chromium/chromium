@@ -203,11 +203,12 @@ void PushNotificationServiceDesktopImpl::OnTokenReceived(
       request_proto,
       base::BindOnce(&PushNotificationServiceDesktopImpl::
                          OnPushNotificationRegistrationSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), /*api_call_start_time=*/
-                     base::TimeTicks::Now()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /*api_call_start_time=*/base::TimeTicks::Now()),
       base::BindOnce(&PushNotificationServiceDesktopImpl::
                          OnPushNotificationRegistrationFailure,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /*api_call_start_time=*/base::TimeTicks::Now()));
 }
 
 void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationSuccess(
@@ -215,7 +216,8 @@ void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationSuccess(
     const proto::NotificationsMultiLoginUpdateResponse& response) {
   metrics::
       RecordPushNotificationServiceTimeToReceiveRegistrationSuccessResponse(
-          base::TimeTicks::Now() - api_call_start_time);
+          /*registration_response_time=*/base::TimeTicks::Now() -
+          api_call_start_time);
   VLOG(1) << __func__ << ": Push notification service registration successful";
   is_initialized_ = true;
   server_client_.reset();
@@ -227,8 +229,13 @@ void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationSuccess(
 }
 
 void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationFailure(
+    base::TimeTicks api_call_start_time,
     PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError
         error) {
+  metrics::
+      RecordPushNotificationServiceTimeToReceiveRegistrationFailureResponse(
+          /*registration_response_time=*/base::TimeTicks::Now() -
+          api_call_start_time);
   LOG(ERROR) << __func__
              << ": Push notification service registration failure: " << error;
   server_client_.reset();

@@ -89,6 +89,7 @@ class PushNotificationServiceDesktopImpl : public PushNotificationService,
       base::TimeTicks api_call_start_time,
       const proto::NotificationsMultiLoginUpdateResponse& response);
   void OnPushNotificationRegistrationFailure(
+      base::TimeTicks api_call_start_time,
       PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError
           error);
 
