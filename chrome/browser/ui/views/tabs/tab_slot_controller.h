@@ -95,7 +95,7 @@ class TabSlotController {
   virtual void ToggleTabGroupCollapsedState(
       const tab_groups::TabGroupId group,
       ToggleTabGroupCollapsedStateOrigin origin =
-          ToggleTabGroupCollapsedStateOrigin::kImplicitAction) = 0;
+          ToggleTabGroupCollapsedStateOrigin::kMenuAction) = 0;
 
   // Notify this controller of a tab group editor bubble opening/closing.
   virtual void NotifyTabGroupEditorBubbleOpened() = 0;

@@ -27,13 +27,21 @@ enum CloseTabSource {
 
 // Source of the call to ToggleTabGroup(). The source of the call can trigger
 // different behaviors such as logging and different animations. Tests will
-// generally use |kImplicitAction| unless testing a particular code path.
+// generally use |kMenuAction| unless testing a particular code path.
 enum class ToggleTabGroupCollapsedStateOrigin {
-  kImplicitAction,
+  // Use when triggering a submenu action or other automated process such as
+  // "Add tab to group".
+  kMenuAction,
+  // Use when a mouse click interacts with the tab group header.
   kMouse,
+  // Use when a keyboard event (SPACE or ENTER) interacts with the tab group
+  // header while focused via keyboard navigation.
   kKeyboard,
-  kGesture
-
+  // Use when a gesture control (TAP) interacts with the tab group header.
+  kGesture,
+  // Use when tabs in the group are selected. This causes a collapsed group to
+  // expand if the range of tabs include a collapsed group.
+  kTabsSelected,
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_TYPES_H_

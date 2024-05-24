@@ -104,12 +104,15 @@ class TabStripController {
   virtual void MoveGroup(const tab_groups::TabGroupId& group,
                          int final_index) = 0;
 
-  // Switches the collapsed state of a tab group. Returns false if the state was
-  // not successfully switched.
+  // Toggles the collapsed state of `group`. Collapsed becomes expanded.
+  // Expanded becomes collapsed. `origin` should be used to denote the way in
+  // which the tab group was toggled (Ex: From a context menu, mouse press,
+  // touch/gesture control, etc). Tests will default to `kMenuAction` unless
+  // specified otherwise.
   virtual void ToggleTabGroupCollapsedState(
       const tab_groups::TabGroupId group,
       ToggleTabGroupCollapsedStateOrigin origin =
-          ToggleTabGroupCollapsedStateOrigin::kImplicitAction) = 0;
+          ToggleTabGroupCollapsedStateOrigin::kMenuAction) = 0;
 
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,

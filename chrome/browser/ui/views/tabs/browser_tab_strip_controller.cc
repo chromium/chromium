@@ -424,51 +424,59 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
     const tab_groups::TabGroupId group,
     ToggleTabGroupCollapsedStateOrigin origin) {
   const bool is_currently_collapsed = IsGroupCollapsed(group);
-  if (is_currently_collapsed) {
-    if (origin != ToggleTabGroupCollapsedStateOrigin::kImplicitAction) {
+  bool should_toggle_group = true;
+
+  if (!is_currently_collapsed && GetActiveIndex().has_value()) {
+    const int active_index = GetActiveIndex().value();
+    if (model_->GetTabGroupForTab(active_index) == group) {
+      // If the active tab is in the group that is toggling to collapse, the
+      // active tab should switch to the next available tab. If there are no
+      // available tabs for the active tab to switch to, a new tab will
+      // be created.
+      const std::optional<int> next_active =
+          model_->GetNextExpandedActiveTab(active_index, group);
+      if (next_active.has_value()) {
+        model_->ActivateTabAt(
+            next_active.value(),
+            TabStripUserGestureDetails(
+                TabStripUserGestureDetails::GestureType::kOther));
+      } else {
+        // Create a new tab that will automatically be activated
+        should_toggle_group = false;
+        CreateNewTab();
+      }
+    } else {
+      // If the active tab is not in the group that is toggling to collapse,
+      // reactive the active tab to deselect any other potentially selected
+      // tabs.
+      model_->ActivateTabAt(
+          active_index, TabStripUserGestureDetails(
+                            TabStripUserGestureDetails::GestureType::kOther));
+    }
+  }
+
+  if (origin != ToggleTabGroupCollapsedStateOrigin::kMenuAction ||
+      should_toggle_group) {
+    tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, origin);
+    model_->group_model()->GetTabGroup(group)->SetVisualData(
+        tab_groups::TabGroupVisualData(GetGroupTitle(group),
+                                       GetGroupColorId(group),
+                                       !is_currently_collapsed),
+        true);
+  }
+
+  const bool is_implicit_action =
+      origin == ToggleTabGroupCollapsedStateOrigin::kMenuAction ||
+      origin == ToggleTabGroupCollapsedStateOrigin::kTabsSelected;
+  if (!is_implicit_action) {
+    if (is_currently_collapsed) {
       base::RecordAction(
           base::UserMetricsAction("TabGroups_TabGroupHeader_Expanded"));
-    }
-  } else {
-    if (GetActiveIndex().has_value()) {
-      const int active_index = GetActiveIndex().value();
-      if (model_->GetTabGroupForTab(active_index) == group) {
-        // If the active tab is in the group that is toggling to collapse, the
-        // active tab should switch to the next available tab. If there are no
-        // available tabs for the active tab to switch to, a new tab will
-        // be created.
-        const std::optional<int> next_active =
-            model_->GetNextExpandedActiveTab(active_index, group);
-        if (next_active.has_value()) {
-          model_->ActivateTabAt(
-              next_active.value(),
-              TabStripUserGestureDetails(
-                  TabStripUserGestureDetails::GestureType::kOther));
-        } else {
-          // Create a new tab that will automatically be activated
-          CreateNewTab();
-        }
-      } else {
-        // If the active tab is not in the group that is toggling to collapse,
-        // reactive the active tab to deselect any other potentially selected
-        // tabs.
-        model_->ActivateTabAt(
-            active_index, TabStripUserGestureDetails(
-                              TabStripUserGestureDetails::GestureType::kOther));
-      }
-    }
-    if (origin != ToggleTabGroupCollapsedStateOrigin::kImplicitAction) {
+    } else {
       base::RecordAction(
           base::UserMetricsAction("TabGroups_TabGroupHeader_Collapsed"));
     }
   }
-  tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, origin);
-
-  model_->group_model()->GetTabGroup(group)->SetVisualData(
-      tab_groups::TabGroupVisualData(GetGroupTitle(group),
-                                     GetGroupColorId(group),
-                                     !is_currently_collapsed),
-      true);
 }
 
 void BrowserTabStripController::ShowContextMenuForTab(
