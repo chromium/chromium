@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/win/scoped_hstring.h"
 
 namespace device {

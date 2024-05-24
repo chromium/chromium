@@ -4,6 +4,7 @@
 
 #include "device/fido/fido_request_handler_base.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -12,7 +13,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

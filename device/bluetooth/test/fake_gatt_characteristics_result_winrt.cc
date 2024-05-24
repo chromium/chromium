@@ -4,7 +4,6 @@
 
 #include "device/bluetooth/test/fake_gatt_characteristics_result_winrt.h"
 
-#include "base/strings/string_piece.h"
 #include "base/win/vector.h"
 #include "device/bluetooth/test/fake_gatt_characteristic_winrt.h"
 

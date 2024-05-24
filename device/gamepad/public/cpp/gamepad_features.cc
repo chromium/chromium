@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "device/gamepad/public/cpp/gamepad_switches.h"
 
 namespace features {

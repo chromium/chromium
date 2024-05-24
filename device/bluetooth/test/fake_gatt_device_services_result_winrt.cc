@@ -9,7 +9,6 @@
 
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/win/vector.h"
 #include "device/bluetooth/test/fake_gatt_device_service_winrt.h"
 
