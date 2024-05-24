@@ -4635,11 +4635,18 @@ void RenderViewContextMenu::PluginActionAt(
   // A PDF plugin exists in a child frame embedded inside the PDF extension's
   // frame. To trigger any plugin action, detect this child frame and trigger
   // the actions from there.
-  content::RenderFrameHost* extension_rfh =
-      chrome_pdf::features::IsOopifPdfEnabled()
-          ? pdf_frame_util::FindFullPagePdfExtensionHost(source_web_contents_)
-          : source_web_contents_->GetPrimaryMainFrame();
-  plugin_rfh = pdf_frame_util::FindPdfChildFrame(extension_rfh);
+  content::RenderFrameHost* rfh = GetRenderFrameHost();
+  if (chrome_pdf::features::IsOopifPdfEnabled() && IsFrameInPdfViewer(rfh)) {
+    // For OOPIF PDF viewer, the current frame should be the PDF plugin frame.
+    // The PDF extension frame shouldn't be performing any plugin actions.
+    CHECK(rfh->GetProcess()->IsPdf());
+    plugin_rfh = rfh;
+  } else {
+    // For GuestView PDF viewer, find the plugin frame by using the PDF
+    // extension frame.
+    plugin_rfh = pdf_frame_util::FindPdfChildFrame(
+        source_web_contents_->GetPrimaryMainFrame());
+  }
 #endif
   if (!plugin_rfh)
     plugin_rfh = source_web_contents_->GetPrimaryMainFrame();
