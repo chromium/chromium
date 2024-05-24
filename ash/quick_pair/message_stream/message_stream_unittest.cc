@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/message_stream/fake_bluetooth_socket.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"

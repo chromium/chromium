@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_QUICK_PAIR_QUICK_PAIR_HANDLER_H_
 
 #include <memory>
+#include "ash/quick_pair/common/log_buffer.h"
+#include "ash/quick_pair/common/logging.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -22,7 +24,8 @@ class FastPairImageDecoder;
 
 // WebUIMessageHandler for the Quick Pair debug page at
 // chrome://nearby-internals
-class QuickPairHandler : public content::WebUIMessageHandler {
+class QuickPairHandler : public content::WebUIMessageHandler,
+                         public ash::quick_pair::LogBuffer::Observer {
  public:
   QuickPairHandler();
   QuickPairHandler(const QuickPairHandler&) = delete;
@@ -35,6 +38,17 @@ class QuickPairHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
  private:
+  // LogBuffer::Observer
+  void OnLogMessageAdded(
+      const ash::quick_pair::LogBuffer::LogMessage& log_message) override;
+  void OnLogBufferCleared() override;
+
+  // Message handler callback that returns the Log Buffer in dictionary form.
+  void HandleGetLogMessages(const base::Value::List& args);
+
+  // Message handler callback that clears the Log Buffer.
+  void ClearLogBuffer(const base::Value::List& args);
+
   // Fast Pair UI Triggers.
   void NotifyFastPairError(const base::Value::List& args);
   void NotifyFastPairDiscovery(const base::Value::List& args);
@@ -54,6 +68,9 @@ class QuickPairHandler : public content::WebUIMessageHandler {
       fast_pair_notification_controller_;
   std::unique_ptr<ash::quick_pair::FastPairImageDecoder> image_decoder_;
 
+  base::ScopedObservation<ash::quick_pair::LogBuffer,
+                          ash::quick_pair::LogBuffer::Observer>
+      observation_{this};
   base::WeakPtrFactory<QuickPairHandler> weak_ptr_factory_{this};
 };
 
