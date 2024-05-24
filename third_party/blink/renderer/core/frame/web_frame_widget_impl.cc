@@ -2180,19 +2180,21 @@ void WebFrameWidgetImpl::SetZoomLevel(double zoom_level) {
   zoom_level_ = zoom_level;
   double zoom_factor = View()->SetMainFrameZoomLevel(zoom_level_);
   if (auto* local_frame = LocalRootImpl()->GetFrame()) {
-    if (Document* document = local_frame->GetDocument()) {
-      auto* plugin_document = DynamicTo<PluginDocument>(document);
-      if (!plugin_document || !plugin_document->GetPluginView()) {
-        local_frame->SetPageZoomFactor(zoom_factor);
+    if (local_frame->IsAttached()) {
+      if (Document* document = local_frame->GetDocument()) {
+        auto* plugin_document = DynamicTo<PluginDocument>(document);
+        if (!plugin_document || !plugin_document->GetPluginView()) {
+          local_frame->SetPageZoomFactor(zoom_factor);
+        }
       }
-    }
 
-    // Part of the UpdateVisualProperties dance we send the zoom level to
-    // RemoteFrames that are below the local root for this widget.
-    ForEachRemoteFrameControlledByWidget(
-        [zoom_level](RemoteFrame* remote_frame) {
-          remote_frame->ZoomLevelChanged(zoom_level);
-        });
+      // Part of the UpdateVisualProperties dance we send the zoom level to
+      // RemoteFrames that are below the local root for this widget.
+      ForEachRemoteFrameControlledByWidget(
+          [zoom_level](RemoteFrame* remote_frame) {
+            remote_frame->ZoomLevelChanged(zoom_level);
+          });
+    }
   }
 }
 
