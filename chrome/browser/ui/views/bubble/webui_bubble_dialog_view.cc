@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 
+#include "build/build_config.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
@@ -17,11 +18,32 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
+#if defined(USE_AURA)
+#include "chrome/browser/ui/views/bubble/webui_bubble_event_handler_aura.h"
+#include "ui/aura/window.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#endif
+
 namespace {
 
 // The min size available to the WebBubbleDialogView. These are arbitrary sizes
 // that match those set by ExtensionPopup.
 constexpr gfx::Size kMinSize(25, 25);
+
+#if defined(USE_AURA)
+bool ShouldUseEventHandlerForBubbleDrag(aura::Window* window) {
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+  // Only use the event handler for non desktop aura windows. In the case of
+  // desktop aura windows the host WM is responsible for controlling the drag.
+  return views::DesktopNativeWidgetAura::ForWindow(window) == nullptr;
+#else
+  return true;
+#endif
+}
+#endif
 
 // WebUIBubbleView provides the functionality needed to embed a WebContents
 // within a Views hierarchy.
@@ -122,9 +144,18 @@ void WebUIBubbleDialogView::AddedToWidget() {
   // This view needs to be added to the widget before setting itself as the host
   // of the contents, so that the contents' resizing request can be propagated
   // to the widget.
+  views::Widget* widget = GetWidget();
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-  bubble_widget_observation_.Observe(GetWidget());
+  bubble_widget_observation_.Observe(widget);
   web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
+
+#if defined(USE_AURA)
+  aura::Window* window = widget->GetNativeView();
+  if (ShouldUseEventHandlerForBubbleDrag(window)) {
+    event_handler_ = std::make_unique<WebUIBubbleEventHandlerAura>();
+    window->AddPreTargetHandler(event_handler_.get());
+  }
+#endif
 }
 
 gfx::Rect WebUIBubbleDialogView::GetBubbleBounds() {

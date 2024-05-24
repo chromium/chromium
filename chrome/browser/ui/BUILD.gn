@@ -6779,6 +6779,8 @@ static_library("ui") {
       "views/apps/chrome_native_app_window_views_aura.h",
       "views/apps/shaped_app_window_targeter.cc",
       "views/apps/shaped_app_window_targeter.h",
+      "views/bubble/webui_bubble_event_handler_aura.cc",
+      "views/bubble/webui_bubble_event_handler_aura.h",
       "views/eye_dropper/eye_dropper_aura.cc",
       "views/renderer_context_menu/render_view_context_menu_views.cc",
       "views/renderer_context_menu/render_view_context_menu_views.h",

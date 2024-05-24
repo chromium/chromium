@@ -10407,6 +10407,8 @@ test("unit_tests") {
     if (use_aura) {
       sources += [
         "../browser/ui/views/apps/shaped_app_window_targeter_unittest.cc",
+        "../browser/ui/views/bubble/webui_bubble_event_handler_aura_unittest.cc",
+
         # Get this compiling on Mac - see http://crbug.com/657883.
       ]
       if (use_nss_certs) {
