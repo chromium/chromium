@@ -734,10 +734,10 @@ class CONTENT_EXPORT WebContentsDelegate {
   ShouldOverrideUserAgentForPrerender2();
 
   // Returns true if the embedder allows initiator and transition type mismatch
-  // of prerender activation that activation navigation has no initiator
-  // (embedder-initiated).
+  // for prerender activation navigations that are embedder-initiated and have
+  // no initiators.
   //
-  // This mitigation is mainly for Android WebView (speculationrules +
+  // This relaxation is mainly for Android WebView (speculationrules +
   // `WebView.loadUrl`), as WebView is intended to host embedder-trusted
   // contents.
   virtual bool ShouldAllowPartialParamMismatchOfPrerender2(
