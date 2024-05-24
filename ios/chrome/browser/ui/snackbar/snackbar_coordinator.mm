@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/public/provider/chrome/browser/material/material_branding_api.h"
 
-BASE_FEATURE(kSnackbarUseLegacyDismissalBehavior,
-             "SnackbarUseLegacyDismissalBehavior",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allow access to `usesLegacyDismissalBehavior` since the autoroller to update
 // the header is broken.
 @interface MDCSnackbarMessage (UsesLegacyDismissalBehavior)
@@ -87,12 +83,8 @@ BASE_FEATURE(kSnackbarUseLegacyDismissalBehavior,
 
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message
                bottomOffset:(CGFloat)offset {
-  // TODO:(crbug.com/333567367) Clean up the killswitch.
-  if (base::FeatureList::IsEnabled(kSnackbarUseLegacyDismissalBehavior)) {
-    if ([message
-            respondsToSelector:@selector(setUsesLegacyDismissalBehavior:)]) {
-      message.usesLegacyDismissalBehavior = YES;
-    }
+  if ([message respondsToSelector:@selector(setUsesLegacyDismissalBehavior:)]) {
+    message.usesLegacyDismissalBehavior = YES;
   }
 
   [[MDCSnackbarManager defaultManager]
