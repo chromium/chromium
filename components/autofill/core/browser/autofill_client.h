@@ -300,7 +300,7 @@ class AutofillClient {
     AutofillSuggestionTriggerSource trigger_source =
         AutofillSuggestionTriggerSource::kUnspecified;
     int32_t form_control_ax_id = 0;
-    PopupAnchorType anchor_type;
+    PopupAnchorType anchor_type = PopupAnchorType::kField;
   };
 
   // Describes the position of the Autofill popup on the screen.
