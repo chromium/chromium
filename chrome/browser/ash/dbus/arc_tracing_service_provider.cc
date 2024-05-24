@@ -8,7 +8,9 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/browser/ash/arc/tracing/overview_tracing_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "dbus/bus.h"
@@ -61,9 +63,15 @@ void ArcTracingServiceProvider::OnTraceEnd(
     std::unique_ptr<arc::OverviewTracingResult> result) {
   if (result->path.empty()) {
     AddStatusMessage(result->status);
-  } else {
-    AddStatusMessage(
-        base::StrCat({result->status, ": ", result->path.value()}));
+  } else if (auto* information =
+                 result->model.GetDict().FindDict(arc::kKeyInformation);
+             information) {
+    auto pfps = information->FindDouble(arc::kKeyPerceivedFps);
+    auto duration = information->FindDouble(arc::kKeyDuration);
+    AddStatusMessage(base::StringPrintf(
+        "%s: %s - perceived FPS=%.2f, duration=%.2fs", result->status.c_str(),
+        result->path.value().c_str(), pfps.value_or(0),
+        duration.value_or(0) / 1'000'000.0));
   }
   // Do this in a separate task because the handler may still have code to run
   // after we return.

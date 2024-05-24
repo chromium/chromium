@@ -7,6 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_handler.h"
+#include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "content/public/test/browser_task_environment.h"
 
@@ -52,6 +53,27 @@ void OverviewTracingTestBase::TearDown() {
   profile_.reset();
 
   ash::AshTestBase::TearDown();
+}
+
+void OverviewTracingTestBase::CommitAndPresentFrames(
+    arc::OverviewTracingTestHandler* handler,
+    exo::Surface* surface,
+    int count,
+    base::TimeDelta delta) {
+  for (int i = 0; i < count; i++) {
+    surface->Commit();
+    std::list<exo::Surface::FrameCallback> frame_callbacks;
+    std::list<exo::Surface::PresentationCallback> presentation_callbacks;
+    surface->AppendSurfaceHierarchyCallbacks(&frame_callbacks,
+                                             &presentation_callbacks);
+    gfx::PresentationFeedback feedback(handler->SystemTicksNow(),
+                                       /*interval=*/base::TimeDelta(),
+                                       /*flags=*/0);
+    for (auto& cb : presentation_callbacks) {
+      cb.Run(feedback);
+    }
+    FastForwardClockAndTaskQueue(handler, delta);
+  }
 }
 
 void OverviewTracingTestBase::FastForwardClockAndTaskQueue(

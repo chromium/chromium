@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/tracing/overview_tracing_handler.h"
 #include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_base.h"
 #include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_handler.h"
@@ -146,9 +147,15 @@ TEST_F(ArcTracingServiceProviderTest, StartTraceAndGetStatus) {
 
   handler->StartTracingOnControllerRespond();
 
+  // Present 60 frames per second until end of trace time.
+  auto frame_time = base::Microseconds(16'666);
+  CommitAndPresentFrames(handler, &s, max_time / frame_time, frame_time);
+
   // Fast forward past the max tracing interval. This will stop the trace at the
-  // end of the fast-forward, which is 400ms after the timeout.
-  FastForwardClockAndTaskQueue(handler, max_time + base::Milliseconds(400));
+  // end of the fast-forward, which is 400ms after the timeout. There are no
+  // events here, so this does not add to the trace duration, so it does not
+  // deflate the FPS measurement.
+  FastForwardClockAndTaskQueue(handler, base::Milliseconds(400));
 
   // Pass results from trace controller to handler.
   handler->StopTracingOnControllerRespond(
@@ -156,11 +163,20 @@ TEST_F(ArcTracingServiceProviderTest, StartTraceAndGetStatus) {
 
   task_environment()->RunUntilIdle();
 
-  EXPECT_EQ(base::StringPrintf(R"(Trace started
-Building model...
-Tracing model is ready: %s/overview_tracing_arctaskwindowdefaulttitle_2023-11-15_08-43-22.json)",
-                               trace_outdir_.GetPath().value().c_str()),
-            InvokeGetStatusMethod());
+  re2::RE2 expected_msg_re{
+      base::StrCat({"Trace started\n", "Building model...\n",
+                    "Tracing model is ready: ", trace_outdir_.GetPath().value(),
+                    "/overview_tracing_arctaskwindowdefaulttitle_2023-11-15_08-"
+                    "43-22.json - ",
+                    "perceived FPS=([0-9.]+), ", "duration=([0-9.]+)s"})};
+
+  double fps, duration;
+  std::string actual_msg = InvokeGetStatusMethod();
+
+  ASSERT_TRUE(RE2::FullMatch(actual_msg, expected_msg_re, &fps, &duration))
+      << actual_msg;
+  EXPECT_NEAR(fps, 60, 0.5);
+  EXPECT_NEAR(duration, 5, 0.2);
 }
 
 TEST_F(ArcTracingServiceProviderTest, StopTraceByLosingFocus) {
@@ -186,9 +202,11 @@ TEST_F(ArcTracingServiceProviderTest, StopTraceByLosingFocus) {
 
   handler->StartTracingOnControllerRespond();
 
-  // Fast forward to before the max tracing interval. This alone does not stop
-  // the test.
-  FastForwardClockAndTaskQueue(handler, max_time - base::Seconds(1));
+  // Present frames at 24 fps until 1 second before end of trace. This alone
+  // does not stop the test since we don't hit the time limit.
+  const auto frame_time = base::Milliseconds(42);
+  CommitAndPresentFrames(
+      handler, &s, (max_time - base::Seconds(1)) / frame_time, frame_time);
 
   // Minimizing window will lose focus and stop the trace.
   arc_widget->Minimize();
@@ -199,11 +217,20 @@ TEST_F(ArcTracingServiceProviderTest, StopTraceByLosingFocus) {
 
   task_environment()->RunUntilIdle();
 
-  EXPECT_EQ(base::StringPrintf(R"(Trace started
-Building model...
-Tracing model is ready: %s/overview_tracing_arctaskwindowdefaulttitle_2024-01-12_13-30-00.json)",
-                               trace_outdir_.GetPath().value().c_str()),
-            InvokeGetStatusMethod());
+  re2::RE2 expected_msg_re{
+      base::StrCat({"Trace started\n", "Building model...\n",
+                    "Tracing model is ready: ", trace_outdir_.GetPath().value(),
+                    "/overview_tracing_arctaskwindowdefaulttitle_2024-01-12_13-"
+                    "30-00.json - ",
+                    "perceived FPS=([0-9.]+), ", "duration=([0-9.]+)s"})};
+
+  double fps, duration;
+  std::string actual_msg = InvokeGetStatusMethod();
+
+  ASSERT_TRUE(RE2::FullMatch(actual_msg, expected_msg_re, &fps, &duration))
+      << actual_msg;
+  EXPECT_NEAR(fps, 24, 0.5);
+  EXPECT_NEAR(duration, 4, 0.2);
 }
 
 TEST_F(ArcTracingServiceProviderTest, FailedStart) {

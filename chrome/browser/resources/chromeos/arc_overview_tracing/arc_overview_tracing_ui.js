@@ -59,6 +59,9 @@ function initializeOverviewUi() {
 /**
  * Helper that calculates overall frequency of events.
  *
+ * TODO(matvore): Use |information.(app|perceived)_fps| and delete this function
+ * once https://crrev.com/c/5554144 has been around for a while.
+ *
  * @param {Events} events events to analyze.
  * @param {number} duration duration of analyzed period.
  */

@@ -44,10 +44,9 @@ constexpr char kUnknownActivity[] = "unknown";
 constexpr char kKeyActivity[] = "activity";
 constexpr char kKeyBuffers[] = "buffers";
 constexpr char kKeyChrome[] = "chrome";
-constexpr char kKeyDuration[] = "duration";
+constexpr char kKeyAppFps[] = "app_fps";
 constexpr char kKeyGlobalEvents[] = "global_events";
 constexpr char kKeyIcon[] = "icon";
-constexpr char kKeyInformation[] = "information";
 constexpr char kKeyViews[] = "views";
 constexpr char kKeyPlatform[] = "platform";
 constexpr char kKeySystem[] = "system";
@@ -489,6 +488,9 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
 
   NormalizeTimestamps();
 
+  perceived_fps_ = present_frames.presents().size() * 1'000'000.0 / duration_;
+  app_fps_ = present_frames.commits().size() * 1'000'000.0 / duration_;
+
   system_model_.CloseRangeForValueEvents(duration_ - 1 /* max_timestamp */);
 
   return true;
@@ -553,6 +555,8 @@ void ArcTracingGraphicsModel::Reset() {
   view_buffers_.clear();
   system_model_.Reset();
   duration_ = 0;
+  app_fps_ = 0;
+  perceived_fps_ = 0;
   app_title_ = std::string();
   app_icon_png_.clear();
   platform_ = std::string();
@@ -581,6 +585,8 @@ base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
   // Information
   base::Value::Dict information;
   information.Set(kKeyDuration, static_cast<double>(duration_));
+  information.Set(kKeyPerceivedFps, perceived_fps_);
+  information.Set(kKeyAppFps, app_fps_);
   if (!platform_.empty()) {
     information.Set(kKeyPlatform, platform_);
   }
@@ -662,6 +668,15 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
   if (informaton) {
     if (!ReadDuration(informaton, &duration_)) {
       return false;
+    }
+
+    const auto perceived_fps_value = informaton->FindDouble(kKeyPerceivedFps);
+    if (perceived_fps_value.has_value()) {
+      perceived_fps_ = *perceived_fps_value;
+    }
+    const auto app_fps_value = informaton->FindDouble(kKeyAppFps);
+    if (app_fps_value.has_value()) {
+      app_fps_ = *perceived_fps_value;
     }
 
     const std::string* platform_value = informaton->FindString(kKeyPlatform);

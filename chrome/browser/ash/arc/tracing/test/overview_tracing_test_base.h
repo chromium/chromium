@@ -16,6 +16,7 @@
 class TestingProfile;
 
 namespace exo {
+class Surface;
 class WMHelper;
 }  // namespace exo
 
@@ -46,6 +47,13 @@ class OverviewTracingTestBase : public ash::AshTestBase {
   // Sets the timezone given its ICU name. The original timezone will be
   // restored in the TearDown method.
   static void SetTimeZone(const char* name);
+
+  // Runs commit and present events for `count` frames on `surface`, each
+  // separated by `delta`.
+  void CommitAndPresentFrames(arc::OverviewTracingTestHandler* handler,
+                              exo::Surface* surface,
+                              int count,
+                              base::TimeDelta delta);
 
  protected:
   void FastForwardClockAndTaskQueue(arc::OverviewTracingTestHandler* handler,

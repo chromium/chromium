@@ -330,20 +330,7 @@ TEST_F(OverviewTracingHandlerTest, CommitAndPresentTimestampsInModel) {
 
   FastForwardClockAndTaskQueue(handler_.get(), base::Seconds(1));
 
-  for (int i = 0; i < 5; i++) {
-    s.Commit();
-    std::list<exo::Surface::FrameCallback> frame_callbacks;
-    std::list<exo::Surface::PresentationCallback> presentation_callbacks;
-    s.AppendSurfaceHierarchyCallbacks(&frame_callbacks,
-                                      &presentation_callbacks);
-    gfx::PresentationFeedback feedback(handler_->SystemTicksNow(),
-                                       base::TimeDelta() /* interval */,
-                                       0 /* flags */);
-    for (auto& cb : presentation_callbacks) {
-      cb.Run(feedback);
-    }
-    FastForwardClockAndTaskQueue(handler_.get(), base::Milliseconds(42));
-  }
+  CommitAndPresentFrames(handler_.get(), &s, 5, base::Milliseconds(42));
 
   FastForwardClockAndTaskQueue(handler_.get(), base::Seconds(5));
 
