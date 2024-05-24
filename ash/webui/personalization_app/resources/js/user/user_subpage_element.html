@@ -9,21 +9,22 @@
     height: 100%;
     min-height: var(--personalization-app-subpage-container-min-height);
   }
+
   user-preview {
     grid-area: userpreview;
     margin-bottom: 16px;
   }
+
   avatar-list {
+    background-color: var(--cros-bg-color);
+    border: none;
     grid-area: avatars;
     padding-bottom: 12px;
   }
+
   user-preview + avatar-list {
     border-top: 1px solid var(--cros-separator-color);
     padding-top: 10px;
-  }
-  :host-context(body.jelly-enabled) avatar-list {
-    background-color: var(--cros-bg-color);
-    border: none;
   }
 </style>
 <div id="container">

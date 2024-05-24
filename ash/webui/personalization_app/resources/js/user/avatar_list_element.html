@@ -1,51 +1,54 @@
 <style>
   :host {
-    --personalization-app-avatar-image-size: 64px;
-    --personalization-app-avatar-image-padding: 8px;
-    --personalization-app-avatar-ripple-color: rgba(var(--cros-ripple-color-prominent-rgb), 1);
-    --personalization-app-avatar-ripple-opacity: var(--cros-button-primary-ripple-opacity);
-  }
-  :host-context(body.jelly-enabled) {
     --personalization-app-avatar-image-size: 72px;
     --personalization-app-avatar-image-padding: 10px;
     --personalization-app-avatar-ripple-color: var(--cros-sys-ripple_primary);
     --personalization-app-avatar-ripple-opacity: 100%;
   }
+
   iron-list {
     height: 100%;
     width: 100%;
   }
+
   .hidden {
     display: none;
   }
+
   .option-container {
     padding: var(--personalization-app-avatar-image-padding);
   }
+
   .image-container {
     background-color: var(--personalization-app-grid-item-background-color);
     border-radius: 50%;
     cursor: pointer;
     position: relative;
   }
+
   .image-container:hover {
     filter: brightness(0.94);
   }
+
   .image-border-container {
     border-radius: 50%;
     height: var(--personalization-app-avatar-image-size);
     outline: 1px solid rgba(0, 0, 0, 0.08);
     width: var(--personalization-app-avatar-image-size);
   }
+
   .image-container img {
     background-size: var(--personalization-app-avatar-image-size) var(--personalization-app-avatar-image-size);
     border-radius: 50%;
     height: var(--personalization-app-avatar-image-size);
     width: var(--personalization-app-avatar-image-size);
   }
+
   paper-ripple {
     color: rgba(var(--cros-ripple-color-rgb), 1);
     --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
   }
+
   avatar-camera {
     bottom: 0;
     left: 0;
@@ -53,6 +56,7 @@
     right: 0;
     top: 0;
   }
+
   .avatar-button-container {
     background-color: var(--cros-sys-primary_container, var(--cros-highlight-color));
     border-radius: 100%;
@@ -63,26 +67,32 @@
     text-align: center;
     vertical-align: middle;
   }
+
   .avatar-button-container:hover {
     background-color: var(--cros-sys-highlight_text, var(--cros-text-highlight-color));
   }
+
   .avatar-button-container:focus-visible {
     outline: 2px solid var(--cros-focus-ring-color);
   }
+
   .avatar-button-container paper-ripple {
     color: var(--personalization-app-avatar-ripple-color);
     --paper-ripple-opacity: var(--personalization-app-avatar-ripple-opacity);
   }
+
   .avatar-button-container iron-icon {
     line-height: inherit;
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
     --iron-icon-fill-color: var(--cros-link-color);
   }
+
   .image-container:focus-visible {
     border-radius: 50%;
     outline: 2px solid var(--cros-focus-ring-color);
   }
+
   .image-container iron-icon[icon='personalization:checkmark'],
   .image-container iron-icon[icon='personalization-shared:circle-checkmark'] {
     --iron-icon-height: 20px;
@@ -91,8 +101,10 @@
     position: absolute;
     right: 0;
   }
+
   .image-container:not([aria-selected='true'])
       iron-icon[icon='personalization:checkmark'],
+
   .image-container:not([aria-selected='true'])
       iron-icon[icon='personalization-shared:circle-checkmark'] {
     display: none;
