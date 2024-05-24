@@ -1,0 +1,38 @@
+import("//testing/test.gni")
+
+source_set("base") {
+  sources = [
+    "enterprise_companion.cc",
+    "enterprise_companion.h",
+    "lock.cc",
+    "lock.h",
+  ]
+  deps = [
+    "//base",
+    "//components/named_system_lock",
+  ]
+}
+
+executable("enterprise_companion") {
+  sources = [ "main.cc" ]
+  deps = [ ":base" ]
+
+  if (is_win) {
+    configs += [ "//build/config/win:windowed" ]
+  }
+}
+
+test("enterprise_companion_tests") {
+  testonly = true
+
+  sources = [
+    "enterprise_companion_unittest.cc",
+    "test/run_all_unittests.cc",
+  ]
+  deps = [
+    ":base",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
