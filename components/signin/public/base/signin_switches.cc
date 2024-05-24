@@ -155,7 +155,7 @@ constexpr int kMinorModeRestrictionsFetchDeadlineDefaultValueMs =
     400;
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     // Based on Signin.SyncOptIn.PreSyncConfirmationLatency
-    900;
+    1000;
 #elif BUILDFLAG(IS_IOS)
     // Based on Signin.AccountCapabilities.UserVisibleLatency
     1000;
