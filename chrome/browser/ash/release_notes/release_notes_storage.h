@@ -16,7 +16,7 @@ namespace ash {
 // This stores the latest milestone with new Release Notes content. If the last
 // milestone the user has seen the notification is before this, a new
 // notification will be shown.
-inline constexpr int kLastChromeVersionWithReleaseNotes = 125;
+inline constexpr int kLastChromeVersionWithReleaseNotes = 127;
 
 // Class used to determine when/if to show user notification that release notes
 // are available for their recently updated device.
