@@ -438,12 +438,14 @@ class CONTENT_EXPORT ContentRendererClient {
   // Returns a RendererFactory to use as the "base" for a
   // RendererFactorySelector. Returns `nullptr` to get the default behaviour.
   // The arguments will outlive the returned factory.
+  // element_id 0 is reserved as an invalid node ID.
   virtual std::unique_ptr<media::RendererFactory> GetBaseRendererFactory(
       content::RenderFrame* render_frame,
       media::MediaLog* media_log,
       media::DecoderFactory* decoder_factory,
       base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
-          get_gpu_factories_cb);
+          get_gpu_factories_cb,
+      int element_id = 0);
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
   // Creates a new cast_streaming::ResourceProvider. Will only be called once

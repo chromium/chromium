@@ -541,6 +541,8 @@ class CORE_EXPORT HTMLMediaElement
   void OnFirstFrame(base::TimeTicks frame_time,
                     size_t bytes_to_first_frame) override {}
 
+  int GetElementId() override { return GetDomNodeId(); }
+
   void SetCcLayer(cc::Layer*) final;
   WebMediaPlayer::TrackId AddAudioTrack(const WebString&,
                                         WebMediaPlayerClient::AudioTrackKind,

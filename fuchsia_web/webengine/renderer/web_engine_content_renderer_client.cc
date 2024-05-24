@@ -304,7 +304,8 @@ WebEngineContentRendererClient::GetBaseRendererFactory(
     media::MediaLog* media_log,
     media::DecoderFactory* decoder_factory,
     base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
-        get_gpu_factories_cb) {
+        get_gpu_factories_cb,
+    int element_id) {
   auto* interface_broker = render_frame->GetBrowserInterfaceBroker();
 
   mojo::Remote<mojom::WebEngineMediaResourceProvider> media_resource_provider;

@@ -223,6 +223,9 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Notify the client that the RemotePlayback has been disabled/enabled.
   virtual void OnRemotePlaybackDisabled(bool disabled) = 0;
 
+  // Returns the DOMNodeId of the DOM element hosting this media player.
+  virtual int GetElementId() = 0;
+
  protected:
   ~WebMediaPlayerClient() = default;
 };

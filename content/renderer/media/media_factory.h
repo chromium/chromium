@@ -134,7 +134,8 @@ class MediaFactory {
       const RenderFrameMediaPlaybackOptions& renderer_media_playback_options,
       media::DecoderFactory* decoder_factory,
       std::unique_ptr<media::RemotePlaybackClientWrapper> client_wrapper,
-      base::WeakPtr<media::MediaObserver>* out_media_observer);
+      base::WeakPtr<media::MediaObserver>* out_media_observer,
+      int element_id);
 
   blink::WebMediaPlayer* CreateWebMediaPlayerForMediaStream(
       blink::WebMediaPlayerClient* client,

@@ -66,7 +66,8 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
       media::MediaLog* media_log,
       media::DecoderFactory* decoder_factory,
       base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
-          get_gpu_factories_cb) override;
+          get_gpu_factories_cb,
+      int element_id) override;
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
   std::unique_ptr<cast_streaming::ResourceProvider>
