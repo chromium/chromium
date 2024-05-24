@@ -24,22 +24,43 @@
 #include "base/files/file_util.h"
 #endif  // NDEBUG
 
-DependencyManager::DependencyManager() {
+namespace {
+
+// An ordered container of pointers to DependencyNode. The order depends
+// on the operation to perform (initialisation, destruction, ...).
+using OrderedDependencyNodes =
+    std::vector<raw_ptr<DependencyNode, VectorExperimental>>;
+
+// Convert a vector of pointers to DependencyNode to a vector of pointers to
+// KeyedServiceBaseFactory.
+std::vector<raw_ptr<KeyedServiceBaseFactory, VectorExperimental>>
+OrderedFactoriesFromOrderedDependencyNodes(
+    const OrderedDependencyNodes& ordered_dependency_nodes) {
+  std::vector<raw_ptr<KeyedServiceBaseFactory, VectorExperimental>>
+      ordered_factories;
+  ordered_factories.reserve(ordered_dependency_nodes.size());
+  for (DependencyNode* dependency_node : ordered_dependency_nodes) {
+    ordered_factories.push_back(
+        static_cast<KeyedServiceBaseFactory*>(dependency_node));
+  }
+  return ordered_factories;
 }
 
-DependencyManager::~DependencyManager() {
-}
+}  // namespace
+
+DependencyManager::DependencyManager() = default;
+
+DependencyManager::~DependencyManager() = default;
 
 void DependencyManager::AddComponent(KeyedServiceBaseFactory* component) {
 #if DCHECK_IS_ON()
   // TODO(crbug.com/40158018): Tighten this check to ensure that no factories
   // are registered after CreateContextServices() is called.
-  DCHECK(!context_services_created_ ||
-         !(component->ServiceIsCreatedWithContext() ||
-           component->ServiceIsNULLWhileTesting()))
+  DCHECK(!any_context_created_ || !(component->ServiceIsCreatedWithContext() ||
+                                    component->ServiceIsNULLWhileTesting()))
       << "Tried to construct " << component->name()
       << " after context.\n"
-         "Keyed Service Factories must be constructed before the context is "
+         "Keyed Service Factories must be constructed before any context is "
          "created. Typically this is done by calling FooFactory::GetInstance() "
          "for all factories in a method called "
          "Ensure.*KeyedServiceFactoriesBuilt().";
@@ -90,22 +111,17 @@ void DependencyManager::RegisterPrefsForServices(
 void DependencyManager::CreateContextServices(void* context,
                                               bool is_testing_context) {
 #if DCHECK_IS_ON()
-  context_services_created_ = true;
+  any_context_created_ = true;
 #endif
   MarkContextLive(context);
 
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
-  if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
-    NOTREACHED_IN_MIGRATION();
-  }
+  const OrderedFactories construction_order = GetConstructionOrder();
 
 #ifndef NDEBUG
   DumpContextDependencies(context);
 #endif
 
-  for (DependencyNode* dependency_node : construction_order) {
-    KeyedServiceBaseFactory* factory =
-        static_cast<KeyedServiceBaseFactory*>(dependency_node);
+  for (KeyedServiceBaseFactory* factory : construction_order) {
     if (is_testing_context && factory->ServiceIsNULLWhileTesting() &&
         !factory->HasTestingFactory(context)) {
       factory->SetEmptyTestingFactory(context);
@@ -116,8 +132,7 @@ void DependencyManager::CreateContextServices(void* context,
 }
 
 void DependencyManager::DestroyContextServices(void* context) {
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order =
-      GetDestructionOrder();
+  const OrderedFactories destruction_order = GetDestructionOrder();
 
 #ifndef NDEBUG
   DumpContextDependencies(context);
@@ -142,9 +157,9 @@ void DependencyManager::PerformInterlockedTwoPhaseShutdown(
     void* context1,
     DependencyManager* dependency_manager2,
     void* context2) {
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order1 =
+  const OrderedFactories destruction_order1 =
       dependency_manager1->GetDestructionOrder();
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order2 =
+  const OrderedFactories destruction_order2 =
       dependency_manager2->GetDestructionOrder();
 
 #ifndef NDEBUG
@@ -162,30 +177,33 @@ void DependencyManager::PerformInterlockedTwoPhaseShutdown(
   DestroyFactoriesInOrder(context2, destruction_order2);
 }
 
-std::vector<raw_ptr<DependencyNode, VectorExperimental>>
-DependencyManager::GetDestructionOrder() {
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
+DependencyManager::OrderedFactories DependencyManager::GetConstructionOrder() {
+  OrderedDependencyNodes construction_order;
+  if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
+    NOTREACHED_IN_MIGRATION();
+  }
+  return OrderedFactoriesFromOrderedDependencyNodes(construction_order);
+}
+
+DependencyManager::OrderedFactories DependencyManager::GetDestructionOrder() {
+  OrderedDependencyNodes destruction_order;
   if (!dependency_graph_.GetDestructionOrder(&destruction_order))
     NOTREACHED_IN_MIGRATION();
-  return destruction_order;
+  return OrderedFactoriesFromOrderedDependencyNodes(destruction_order);
 }
 
 void DependencyManager::ShutdownFactoriesInOrder(
     void* context,
-    std::vector<raw_ptr<DependencyNode, VectorExperimental>>& order) {
-  for (DependencyNode* dependency_node : order) {
-    KeyedServiceBaseFactory* factory =
-        static_cast<KeyedServiceBaseFactory*>(dependency_node);
+    const OrderedFactories& factories) {
+  for (KeyedServiceBaseFactory* factory : factories) {
     factory->ContextShutdown(context);
   }
 }
 
 void DependencyManager::DestroyFactoriesInOrder(
     void* context,
-    std::vector<raw_ptr<DependencyNode, VectorExperimental>>& order) {
-  for (DependencyNode* dependency_node : order) {
-    KeyedServiceBaseFactory* factory =
-        static_cast<KeyedServiceBaseFactory*>(dependency_node);
+    const OrderedFactories& factories) {
+  for (KeyedServiceBaseFactory* factory : factories) {
     factory->ContextDestroyed(context);
   }
 }

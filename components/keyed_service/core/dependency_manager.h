@@ -113,19 +113,31 @@ class KEYED_SERVICE_EXPORT DependencyManager {
  private:
   friend class KeyedServiceBaseFactory;
 
+  // An ordered container of pointers to KeyedServiceBaseFactory. The order
+  // depends on the operation to perform (initialisation, destruction, ...).
+  using OrderedFactories =
+      std::vector<raw_ptr<KeyedServiceBaseFactory, VectorExperimental>>;
+
 #ifndef NDEBUG
   // Hook for subclass to dump the dependency graph of service for |context|.
   virtual void DumpContextDependencies(void* context) const = 0;
 #endif  // NDEBUG
 
-  std::vector<raw_ptr<DependencyNode, VectorExperimental>>
-  GetDestructionOrder();
-  static void ShutdownFactoriesInOrder(
-      void* context,
-      std::vector<raw_ptr<DependencyNode, VectorExperimental>>& order);
-  static void DestroyFactoriesInOrder(
-      void* context,
-      std::vector<raw_ptr<DependencyNode, VectorExperimental>>& order);
+  // Returns the list of factories in the order they should be initialised.
+  OrderedFactories GetConstructionOrder();
+
+  // Returns the list of factories in the order they should be destroyed.
+  OrderedFactories GetDestructionOrder();
+
+  // Invokes `ContextShutdown(context)` for all factories in the order
+  // specified by `factories`.
+  static void ShutdownFactoriesInOrder(void* context,
+                                       const OrderedFactories& factories);
+
+  // Invokes `ContextDestroyed(context)` for all factories in the order
+  // specified by `factories`.
+  static void DestroyFactoriesInOrder(void* context,
+                                      const OrderedFactories& factories);
 
   DependencyGraph dependency_graph_;
 
@@ -136,7 +148,10 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   std::set<raw_ptr<void, SetExperimental>> dead_context_pointers_;
 
 #if DCHECK_IS_ON()
-  bool context_services_created_ = false;
+  // Used to record whether any `context` has been created. This is used
+  // to prevent registering KeyedServiceFactories after the creation of
+  // a context.
+  bool any_context_created_ = false;
 #endif
   bool disallow_factory_registration_ = false;
   std::string registration_function_name_error_message_;
