@@ -1101,11 +1101,24 @@ _CONFIG = [
             'third_party/blink/public',
         ],
         'allowed': [
+            'base::OnceCallback',
+            'base::OnceClosure',
+            'base::RepeatingCallback',
+            'base::RepeatingClosure',
+
             'gfx::Point',
             'gfx::PointF',
             'gfx::Rect',
             'gfx::RectF',
-            'std::array',
+
+            # The Blink public API is shared between non-Blink and Blink code
+            # and must use the regular variants.
+            'mojom::.+',
+
+            # Prefer WebString over std::string in the public API. Other STL
+            # types are generally allowed for interop with non-Blink code, as
+            # containers like WTF::Vector are not exposed outside Blink.
+            'std::.+',
         ],
     },
     {
@@ -1114,14 +1127,6 @@ _CONFIG = [
         ],
         'allowed': [
             'media::OutputDeviceStatus',
-        ],
-    },
-    {
-        'paths': [
-            'third_party/blink/public/web/web_frame_widget.h',
-        ],
-        'allowed': [
-            'base::OnceCallback',
         ],
     },
     {
