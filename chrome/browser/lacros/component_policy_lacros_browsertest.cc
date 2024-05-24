@@ -128,10 +128,9 @@ IN_PROC_BROWSER_TEST_F(ComponentPolicyLacrosBrowserTest,
   auto* profile = ProfileManager::GetPrimaryUserProfile();
 
   auto* registry = profile->GetPolicySchemaRegistryService()->registry();
-  std::string error;
-  registry->RegisterComponent(
-      ns, policy::Schema::Parse(kValidationSchemaJson, &error));
-  ASSERT_TRUE(error.empty());
+  const auto schema = policy::Schema::Parse(kValidationSchemaJson);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
+  registry->RegisterComponent(ns, *schema);
 
   TestPolicyServiceObserver observer(
       profile->GetProfilePolicyConnector()->policy_service(), ns.domain);
@@ -145,10 +144,9 @@ IN_PROC_BROWSER_TEST_F(ComponentPolicyLacrosBrowserTest, BasicUpdateSuccess) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
 
   auto* registry = profile->GetPolicySchemaRegistryService()->registry();
-  std::string error;
-  registry->RegisterComponent(
-      ns, policy::Schema::Parse(kValidationSchemaJson, &error));
-  ASSERT_TRUE(error.empty());
+  const auto schema = policy::Schema::Parse(kValidationSchemaJson);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
+  registry->RegisterComponent(ns, *schema);
   registry->SetDomainReady(ns.domain);
 
   TestPolicyServiceObserver observer(
