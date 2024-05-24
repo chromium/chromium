@@ -353,8 +353,18 @@ void MahiWebContentsManager::RequestPDFContent(
     return;
   }
 
+  std::vector<content::WebContents*> inner_contents =
+      focused_web_contents_ ? focused_web_contents_->GetInnerWebContents()
+                            : std::vector<content::WebContents*>();
+
+  if (inner_contents.size() != 1u) {
+    LOG(ERROR) << "Couldn't find inner WebContents contains PDF.";
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   pdf_observer_ = std::make_unique<MahiPDFObserver>(
-      focused_web_contents_, ui::kAXModeWebContentsOnly, rfh_pdf->GetAXTreeID(),
+      inner_contents[0], ui::kAXModeWebContentsOnly, rfh_pdf->GetAXTreeID(),
       base::BindOnce(&MahiWebContentsManager::OnGetAXTreeUpdatesForPDF,
                      weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -362,9 +372,9 @@ void MahiWebContentsManager::RequestPDFContent(
 void MahiWebContentsManager::OnGetAXTreeUpdatesForPDF(
     GetContentCallback callback,
     const std::vector<ui::AXTreeUpdate>& updates) {
-  // TODO: extract the content from updates.
-
-  std::move(callback).Run(nullptr);
+  content_extraction_delegate_->ExtractContent(
+      focused_web_content_state_, std::move(updates), client_->client_id(),
+      std::move(callback));
 
   // No need to observes more a11y changes from PDF content.
   pdf_observer_.reset();

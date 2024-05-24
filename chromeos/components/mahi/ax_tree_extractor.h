@@ -45,6 +45,14 @@ class AXTreeExtractor {
                       GetContentSizeCallback callback);
 
  private:
+  void ExtractContentFromSnapshot(
+      mojom::ExtractionRequestPtr extraction_request,
+      ExtractContentCallback callback);
+
+  void ExtractContentFromAXTreeUpdates(
+      mojom::ExtractionRequestPtr extraction_request,
+      ExtractContentCallback callback);
+
   void DistillViaAlgorithm(const ui::AXTree* tree,
                            std::vector<ui::AXNodeID>* content_node_ids);
 

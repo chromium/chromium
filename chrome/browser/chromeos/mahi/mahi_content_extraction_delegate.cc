@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -26,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "url/gurl.h"
 
 #if DCHECK_IS_ON()
@@ -121,17 +123,38 @@ void MahiContentExtractionDelegate::ExtractContent(
     return;
   }
 
-  // Both algorithms are used for content extraction.
-  mojom::ExtractionMethodsPtr extraction_methods =
-      mojom::ExtractionMethods::New(/*use_algorithm=*/true,
-                                    /*use_screen2x=*/true);
-
   // Generates the extraction request.
   mojom::ExtractionRequestPtr extraction_request =
       mojom::ExtractionRequest::New(
           /*ukm_source_id=*/web_content_state.ukm_source_id,
-          /*snapshot=*/web_content_state.snapshot,
-          /*extraction_methods=*/std::move(extraction_methods));
+          /*snapshot=*/std::make_optional(web_content_state.snapshot),
+          /*extraction_methods=*/
+          mojom::ExtractionMethods::New(/*use_algorithm=*/true,
+                                        /*use_screen2x=*/true),
+          /*updates=*/std::nullopt);
+
+  remote_content_extraction_service_->ExtractContent(
+      std::move(extraction_request),
+      base::BindOnce(&MahiContentExtractionDelegate::OnGetContent,
+                     weak_pointer_factory_.GetWeakPtr(),
+                     web_content_state.page_id, client_id,
+                     web_content_state.url, std::move(callback)));
+}
+
+void MahiContentExtractionDelegate::ExtractContent(
+    const WebContentState& web_content_state,
+    const std::vector<ui::AXTreeUpdate>& updates,
+    const base::UnguessableToken& client_id,
+    GetContentCallback callback) {
+  // Generates the extraction request.
+  mojom::ExtractionRequestPtr extraction_request =
+      mojom::ExtractionRequest::New(
+          /*ukm_source_id=*/web_content_state.ukm_source_id,
+          /*snapshot=*/std::nullopt,
+          /*extraction_methods=*/
+          mojom::ExtractionMethods::New(/*use_algorithm=*/true,
+                                        /*use_screen2x=*/true),
+          /*updates=*/std::make_optional(updates));
 
   remote_content_extraction_service_->ExtractContent(
       std::move(extraction_request),

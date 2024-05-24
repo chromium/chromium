@@ -26,10 +26,17 @@ struct ExtractionRequest {
   int64? ukm_source_id@0;
 
   // The accessibility tree snapshot that requires content extraction.
-  ax.mojom.AXTreeUpdate snapshot@1;
+  // This is obtained by taking a snapshot of a accessibility tree.
+  // When `snapshot` is set, `updates` will be disregared.
+  ax.mojom.AXTreeUpdate? snapshot@1;
 
   // The methods that will be used for extraction.
   ExtractionMethods extraction_methods@2;
+
+  // A series of accessibility tree updates that requires content extraction.
+  // This is obtained by observing accessibility changes.
+  // Only used if `snapshot` is not set.
+  array<ax.mojom.AXTreeUpdate>? updates@3;
 };
 
 enum ResponseStatus {

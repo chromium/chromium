@@ -46,6 +46,13 @@ class MahiContentExtractionDelegate {
                       const base::UnguessableToken& client_id,
                       GetContentCallback callback);
 
+  // Requests the content extraction service to get content from a list of a11y
+  // updates.
+  void ExtractContent(const WebContentState& web_content_state,
+                      const std::vector<ui::AXTreeUpdate>& updates,
+                      const base::UnguessableToken& client_id,
+                      GetContentCallback callback);
+
  private:
   void OnGetContentSize(const base::UnguessableToken& page_id,
                         const base::Time& start_time,

@@ -384,6 +384,53 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
             fake_mahi_web_contents_manager_->focused_web_content_state().title);
 }
 
+IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPDFContents) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If `MahiBrowserDelegate` interface is not available on ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Initially, the focused state and the requested state should be different.
+  base::UnguessableToken focused_page_id =
+      fake_mahi_web_contents_manager_->focused_web_content_state().page_id;
+
+  // First create a web page so there is a place to extract the contents from.
+  base::RunLoop run_loop;
+  EXPECT_CALL(browser_delegate_, OnFocusedPageChanged)
+      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
+                   base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(/*success=*/true);
+      })
+      .WillOnce([&run_loop, &focused_page_id, this](
+                    crosapi::mojom::MahiPageInfoPtr page_info,
+                    base::OnceCallback<void(bool)> callback) {
+        EXPECT_TRUE(page_info->IsDistillable.has_value());
+        EXPECT_TRUE(page_info->IsDistillable.value());
+        EXPECT_EQ(page_info->url.ExtractFileName(), kPDFFilename);
+        std::move(callback).Run(/*success=*/true);
+
+        focused_page_id = page_info->page_id;
+        // Simulate a request to extract content from client.
+        fake_mahi_web_contents_manager_->RequestContentFromPage(
+            focused_page_id,
+            base::BindLambdaForTesting(
+                [&](crosapi::mojom::MahiPageContentPtr page_content) {
+                  run_loop.Quit();
+                }));
+      });
+  CreateWebContentWithPDF();
+
+  EXPECT_EQ(
+      focused_page_id,
+      fake_mahi_web_contents_manager_->focused_web_content_state().page_id);
+  EXPECT_EQ(fake_mahi_web_contents_manager_->focused_web_content_state()
+                .url.ExtractFileName(),
+            kPDFFilename);
+}
+
 IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, ContextMenuMetrics) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If `MahiBrowserDelegate` interface is not available on ash-chrome, this

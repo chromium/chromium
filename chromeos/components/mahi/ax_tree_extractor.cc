@@ -12,8 +12,10 @@
 #include "base/i18n/break_iterator.h"
 #include "base/strings/string_util.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree.h"
 
 namespace mahi {
@@ -83,8 +85,8 @@ void GetContents(const ui::AXNode* root,
   }
   // Use dfs search to ensure the contents is the same order as users see them
   // in the page.
-  // TODO(chenjih): Revisit this if ax tree can be super deep. But this should 
-  // be quite rare. 
+  // TODO(chenjih): Revisit this if ax tree can be super deep. But this should
+  // be quite rare.
   for (auto iter = root->UnignoredChildrenBegin();
        iter != root->UnignoredChildrenEnd(); ++iter) {
     GetContents(iter.get(), content_node_ids, contents);
@@ -126,40 +128,18 @@ void AXTreeExtractor::OnScreen2xReady(
 void AXTreeExtractor::ExtractContent(
     mojom::ExtractionRequestPtr extraction_request,
     ExtractContentCallback callback) {
-  // Deserializes the snapshot.
-  std::unique_ptr<ui::AXTree> tree =
-      std::make_unique<ui::AXTree>(extraction_request->snapshot);
-
-  std::vector<ui::AXNodeID> content_node_ids;
-  if (extraction_request->extraction_methods->use_algorithm) {
-    DistillViaAlgorithm(tree.get(), &content_node_ids);
+  if (extraction_request->snapshot.has_value()) {
+    ExtractContentFromSnapshot(std::move(extraction_request),
+                               std::move(callback));
+  } else {
+    if (!extraction_request->updates.has_value()) {
+      mojo::ReportBadMessage("No AXTree snapshot or updates were detected.");
+      std::move(callback).Run(nullptr);
+      return;
+    }
+    ExtractContentFromAXTreeUpdates(std::move(extraction_request),
+                                    std::move(callback));
   }
-
-  mojom::ResponseStatus error_status = mojom::ResponseStatus::kSuccess;
-  if (extraction_request->extraction_methods->use_screen2x &&
-      screen2x_main_content_extractor_.is_bound() &&
-      screen2x_main_content_extractor_.is_connected()) {
-    auto on_ax_tree_distilled_callback =
-        base::BindOnce(&AXTreeExtractor::OnDistilledForContentExtraction,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(tree),
-                       std::move(callback), error_status);
-
-    screen2x_main_content_extractor_->ExtractMainContent(
-        extraction_request->snapshot, extraction_request->ukm_source_id.value(),
-        base::BindOnce(&AXTreeExtractor::OnGetScreen2xResult,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(content_node_ids),
-                       std::move(on_ax_tree_distilled_callback)));
-    return;
-  }
-
-  // If screen2x is not available when receiving a request, report the error
-  // status. Don't early return here as rule based algorithm may still work.
-  if (extraction_request->extraction_methods->use_screen2x) {
-    error_status = mojom::ResponseStatus::kScreen2xNotAvailable;
-  }
-  OnDistilledForContentExtraction(std::move(tree), std::move(callback),
-                                  error_status, content_node_ids);
 }
 
 void AXTreeExtractor::GetContentSize(
@@ -167,7 +147,7 @@ void AXTreeExtractor::GetContentSize(
     GetContentSizeCallback callback) {
   // Deserializes the snapshot.
   std::unique_ptr<ui::AXTree> tree =
-      std::make_unique<ui::AXTree>(content_size_request->snapshot);
+      std::make_unique<ui::AXTree>(content_size_request->snapshot.value());
 
   std::vector<ui::AXNodeID> content_node_ids;
   if (content_size_request->extraction_methods->use_algorithm) {
@@ -184,7 +164,7 @@ void AXTreeExtractor::GetContentSize(
                        std::move(callback), error_status);
 
     screen2x_main_content_extractor_->ExtractMainContent(
-        content_size_request->snapshot,
+        content_size_request->snapshot.value(),
         content_size_request->ukm_source_id.value(),
         base::BindOnce(&AXTreeExtractor::OnGetScreen2xResult,
                        weak_ptr_factory_.GetWeakPtr(),
@@ -200,6 +180,81 @@ void AXTreeExtractor::GetContentSize(
   }
   OnDistilledForContentSize(std::move(tree), std::move(callback), error_status,
                             content_node_ids);
+}
+
+void AXTreeExtractor::ExtractContentFromSnapshot(
+    mojom::ExtractionRequestPtr extraction_request,
+    ExtractContentCallback callback) {
+  if (!extraction_request->snapshot.has_value()) {
+    mojo::ReportBadMessage("No AXTree snapshot were detected.");
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  // Deserializes the snapshot.
+  std::unique_ptr<ui::AXTree> tree =
+      std::make_unique<ui::AXTree>(extraction_request->snapshot.value());
+
+  std::vector<ui::AXNodeID> content_node_ids;
+  if (extraction_request->extraction_methods->use_algorithm) {
+    DistillViaAlgorithm(tree.get(), &content_node_ids);
+  }
+
+  mojom::ResponseStatus error_status = mojom::ResponseStatus::kSuccess;
+  if (extraction_request->extraction_methods->use_screen2x &&
+      screen2x_main_content_extractor_.is_bound() &&
+      screen2x_main_content_extractor_.is_connected()) {
+    auto on_ax_tree_distilled_callback =
+        base::BindOnce(&AXTreeExtractor::OnDistilledForContentExtraction,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(tree),
+                       std::move(callback), error_status);
+
+    screen2x_main_content_extractor_->ExtractMainContent(
+        extraction_request->snapshot.value(),
+        extraction_request->ukm_source_id.value(),
+        base::BindOnce(&AXTreeExtractor::OnGetScreen2xResult,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(content_node_ids),
+                       std::move(on_ax_tree_distilled_callback)));
+    return;
+  }
+
+  // If screen2x is not available when receiving a request, report the error
+  // status. Don't early return here as rule based algorithm may still work.
+  if (extraction_request->extraction_methods->use_screen2x) {
+    error_status = mojom::ResponseStatus::kScreen2xNotAvailable;
+  }
+  OnDistilledForContentExtraction(std::move(tree), std::move(callback),
+                                  error_status, content_node_ids);
+}
+
+// TODO(b:333803190): consider merging this with ExtractContentFromSnapshot if
+// possible.
+void AXTreeExtractor::ExtractContentFromAXTreeUpdates(
+    mojom::ExtractionRequestPtr extraction_request,
+    ExtractContentCallback callback) {
+  if (!extraction_request->updates.has_value()) {
+    mojo::ReportBadMessage("No AXTree updates were detected.");
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::unique_ptr<ui::AXTree> tree = std::make_unique<ui::AXTree>();
+  // Unserialize the updates.
+  for (const ui::AXTreeUpdate& update : extraction_request->updates.value()) {
+    tree->Unserialize(update);
+  }
+
+  std::vector<ui::AXNodeID> content_node_ids;
+  if (extraction_request->extraction_methods->use_algorithm) {
+    DistillViaAlgorithm(tree.get(), &content_node_ids);
+  }
+
+  // TODO(b:333803190): Figure out how to call screen2x using the tree.
+
+  OnDistilledForContentExtraction(std::move(tree), std::move(callback),
+                                  mojom::ResponseStatus::kScreen2xNotAvailable,
+                                  content_node_ids);
 }
 
 void AXTreeExtractor::DistillViaAlgorithm(
