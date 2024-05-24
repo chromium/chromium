@@ -62,7 +62,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
 
   std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressService>(
-          identity_manager, browser_state->GetPrefs(),
+          identity_manager,
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
               identity_manager, browser_state->GetSharedURLLoaderFactory()),
           ios::WebDataServiceFactory::GetPlusAddressWebDataForBrowserState(

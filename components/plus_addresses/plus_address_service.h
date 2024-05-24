@@ -26,8 +26,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/origin.h"
 
-class PrefService;
-
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -67,7 +65,6 @@ class PlusAddressService : public KeyedService,
 
   PlusAddressService(
       signin::IdentityManager* identity_manager,
-      PrefService* pref_service,
       std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
       scoped_refptr<PlusAddressWebDataService> webdata_service);
   ~PlusAddressService() override;
@@ -205,10 +202,6 @@ class PlusAddressService : public KeyedService,
   // Stores pointer to IdentityManager instance. It must outlive the
   // PlusAddressService and can be null during tests.
   const raw_ptr<signin::IdentityManager> identity_manager_;
-
-  // Stores pointer to a PrefService to create `repeating_timer_` when the user
-  // signs in after PlusAddressService is created.
-  const raw_ptr<PrefService> pref_service_;
 
   // A timer to periodically retrieve all plus addresses from a remote server
   // to keep this service in sync.

@@ -26,14 +26,11 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
-#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -124,7 +121,7 @@ class PlusAddressServiceTest : public ::testing::Test {
   // Forces (re-)initialization of the `PlusAddressService`, which can be useful
   // when classes override feature parameters.
   void InitService() {
-    service_.emplace(identity_manager(), /*pref_service=*/nullptr,
+    service_.emplace(identity_manager(),
                      std::make_unique<PlusAddressHttpClientImpl>(
                          identity_manager(), shared_loader_factory()),
                      /*webdata_service=*/nullptr);
@@ -741,7 +738,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
     task_environment_.RunUntilIdle();
     // Initialize the `service_` using the `plus_webdata_service_`.
     service_.emplace(
-        /*identity_manager=*/nullptr, /*pref_service=*/nullptr,
+        /*identity_manager=*/nullptr,
         std::make_unique<PlusAddressHttpClientImpl>(
             /*identity_manager=*/nullptr,
             /*url_loader_factory=*/nullptr),

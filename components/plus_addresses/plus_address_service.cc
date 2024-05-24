@@ -24,11 +24,9 @@
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_jit_allocator.h"
 #include "components/plus_addresses/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -97,11 +95,9 @@ bool ShouldOfferPlusAddressCreation(PasswordFormType form_type) {
 
 PlusAddressService::PlusAddressService(
     signin::IdentityManager* identity_manager,
-    PrefService* pref_service,
     std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
     scoped_refptr<PlusAddressWebDataService> webdata_service)
     : identity_manager_(identity_manager),
-      pref_service_(pref_service),
       plus_address_http_client_(std::move(plus_address_http_client)),
       webdata_service_(std::move(webdata_service)),
       plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(

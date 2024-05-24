@@ -75,7 +75,7 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
 
   std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressService>(
-          identity_manager, profile->GetPrefs(),
+          identity_manager,
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
               identity_manager, profile->GetURLLoaderFactory()),
           WebDataServiceFactory::GetPlusAddressWebDataForProfile(

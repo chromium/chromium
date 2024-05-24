@@ -33,7 +33,6 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
   PlusAddressAffiliationSourceAdapterTest() {
     service_ = std::make_unique<PlusAddressService>(
         /*identity_manager=*/nullptr,
-        /*pref_service=*/nullptr,
         std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
         /*webdata_service=*/nullptr);
     adapter_ =

@@ -47,8 +47,6 @@ source_set("plus_addresses") {
     "plus_address_jit_allocator.h",
     "plus_address_metrics.cc",
     "plus_address_metrics.h",
-    "plus_address_prefs.cc",
-    "plus_address_prefs.h",
     "plus_address_service.cc",
     "plus_address_service.h",
   ]
@@ -56,7 +54,6 @@ source_set("plus_addresses") {
     ":parsing",
     "//components/affiliations/core/browser:affiliations",
     "//components/plus_addresses/webdata",
-    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
     "//net",
