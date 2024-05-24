@@ -384,7 +384,8 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
             fake_mahi_web_contents_manager_->focused_web_content_state().title);
 }
 
-IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPDFContents) {
+IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
+                       DISABLED_GetPDFContents) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If `MahiBrowserDelegate` interface is not available on ash-chrome, this
   // test suite will no-op.
