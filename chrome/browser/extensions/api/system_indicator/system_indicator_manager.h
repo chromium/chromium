@@ -15,8 +15,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "ui/gfx/image/image.h"
 
 class Profile;

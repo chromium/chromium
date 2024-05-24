@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_COMMON_EXTENSION_ICON_SET_H_
-#define EXTENSIONS_COMMON_EXTENSION_ICON_SET_H_
+#ifndef EXTENSIONS_COMMON_ICONS_EXTENSION_ICON_SET_H_
+#define EXTENSIONS_COMMON_ICONS_EXTENSION_ICON_SET_H_
 
 #include <set>
 #include <string>
@@ -64,4 +64,4 @@ class ExtensionIconSet {
   IconMap map_;
 };
 
-#endif  // EXTENSIONS_COMMON_EXTENSION_ICON_SET_H_
+#endif  // EXTENSIONS_COMMON_ICONS_EXTENSION_ICON_SET_H_

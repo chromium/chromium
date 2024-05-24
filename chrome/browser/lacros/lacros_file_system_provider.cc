@@ -17,7 +17,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/browser/unloaded_extension_reason.h"
-#include "extensions/common/extension_icon_set.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
