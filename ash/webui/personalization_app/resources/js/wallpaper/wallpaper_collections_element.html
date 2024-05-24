@@ -123,11 +123,11 @@
     --personalization-app-grid-item-background-color: var(--google-grey-200);
   }
 
-  :host-context(body.jelly-enabled) wallpaper-grid-item[is-local-no-images]::part(item) {
+  wallpaper-grid-item[is-local-no-images]::part(item) {
     background: linear-gradient(var(--cros-sys-primary), var(--cros-sys-primary_container));
   }
 
-  :host-context(body.jelly-enabled) wallpaper-grid-item[is-local-no-images]::part(image) {
+  wallpaper-grid-item[is-local-no-images]::part(image) {
     display: none;
   }
 

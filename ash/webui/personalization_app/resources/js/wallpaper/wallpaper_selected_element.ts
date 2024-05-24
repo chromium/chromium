@@ -22,7 +22,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {CurrentAttribution, CurrentWallpaper, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosSharedAlbumsEnabled, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
+import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCheckmarkIcon} from '../utils.js';
@@ -286,8 +286,7 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
       imagesByCollectionId:
           Record<WallpaperCollection['id'], WallpaperImage[]|null>) {
     // Only show the description dialog if title and content exist.
-    if (!isPersonalizationJellyEnabled() || !image?.descriptionContent ||
-        !image?.descriptionTitle) {
+    if (!image?.descriptionContent || !image?.descriptionTitle) {
       return false;
     }
     switch (path) {
@@ -451,9 +450,6 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
   }
 
   private onClickShowDescription_() {
-    assert(
-        isPersonalizationJellyEnabled(),
-        'description dialog only available if personalization jelly enabled');
     assert(
         this.showDescriptionButton_,
         'description dialog can only be opened if button is visible');

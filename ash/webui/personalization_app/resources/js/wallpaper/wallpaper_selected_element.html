@@ -1,6 +1,6 @@
 <style include="wallpaper common cros-button-style">
   #container {
-    border-bottom: 1px solid var(--cros-separator-color);
+    border: none;
     box-sizing: border-box;
     display: grid;
     grid-template-columns: 224px 20px minmax(0, 1fr);
@@ -23,10 +23,6 @@
       'image . text'
       'image . text'
       '.     . .';
-  }
-
-  :host-context(body.jelly-enabled) #container {
-    border: none;
   }
 
   #imageContainer,

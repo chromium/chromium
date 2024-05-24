@@ -13,7 +13,7 @@
   }
 
   wallpaper-selected {
-    background-color: var(--cros-bg-color);
+    background-color: var(--cros-sys-app_base_shaded);
     grid-area: selected;
     position: sticky;
     top: 56px;
@@ -33,17 +33,6 @@
     position: sticky;
     top: 56px;
     z-index: 1;
-  }
-
-  :host-context(body.jelly-enabled) wallpaper-selected {
-    background-color: var(--cros-sys-app_base_shaded);
-  }
-
-  :host-context(body.jelly-enabled) wallpaper-collections,
-  wallpaper-images,
-  google-photos-collection,
-  local-images {
-    background-color: var(--cros-bg-color);
   }
 </style>
 <div id="wallpaperContainer">

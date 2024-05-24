@@ -24,7 +24,7 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosIntegrationEnabled, isManagedSeaPenEnabled, isPersonalizationJellyEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
+import {isGooglePhotosIntegrationEnabled, isManagedSeaPenEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isSelectionEvent} from '../utils.js';
@@ -373,13 +373,6 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
 
       hasError_: Boolean,
 
-      isPersonalizationJellyEnabled_: {
-        type: Boolean,
-        value() {
-          return isPersonalizationJellyEnabled();
-        },
-      },
-
       isSeaPenEnabled_: {
         type: Boolean,
         value() {
@@ -403,7 +396,6 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
   private tiles_: Tile[];
   private promotedTiles_: Tile[];
   private hasError_: boolean;
-  private isPersonalizationJellyEnabled_: boolean;
 
   static get observers() {
     return [

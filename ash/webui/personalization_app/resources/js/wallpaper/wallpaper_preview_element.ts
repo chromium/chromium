@@ -17,7 +17,6 @@ import '../../common/icons.html.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {CurrentAttribution, CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
-import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -52,12 +51,6 @@ export class WallpaperPreviewElement extends WithPersonalizationStore {
         type: Boolean,
         computed: 'isPolicyControlled_(image_)',
       },
-      isPersonalizationJellyEnabled_: {
-        type: Boolean,
-        value() {
-          return isPersonalizationJellyEnabled();
-        },
-      },
     };
   }
 
@@ -66,7 +59,6 @@ export class WallpaperPreviewElement extends WithPersonalizationStore {
   private imageLoading_: boolean;
   private loading_: boolean;
   private policyControlled_: boolean;
-  private isPersonalizationJellyEnabled_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -5,7 +5,6 @@
 import 'chrome://personalization/strings.m.js';
 
 import {WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -310,7 +309,6 @@ suite('WallpaperGridItemElementTest', function() {
   });
 
   test('shows an info icon for infoText', async () => {
-    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
 
     wallpaperGridItemElement = initElement(
         WallpaperGridItemElement,
@@ -324,8 +322,6 @@ suite('WallpaperGridItemElementTest', function() {
   });
 
   test('no info icon if infoText is empty string', async () => {
-    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
-
     wallpaperGridItemElement = initElement(
         WallpaperGridItemElement,
         {infoText: '', src: {url: createSvgDataUrl('test')}});
@@ -347,7 +343,6 @@ suite('WallpaperGridItemElementTest', function() {
   });
 
   test('no info icon if placeholder', async () => {
-    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
     wallpaperGridItemElement =
         initElement(WallpaperGridItemElement, {infoText: 'some text'});
     await waitAfterNextRender(wallpaperGridItemElement);
