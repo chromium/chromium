@@ -16,6 +16,7 @@ build_webui("build") {
   ]
 
   css_files = [
+    "app.css",
     "demos/buttons/buttons_demo.css",
     "demos/card/card_demo.css",
     "demos/cr_a11y_announcer/cr_a11y_announcer_demo.css",
@@ -40,7 +41,6 @@ build_webui("build") {
   # Files holding a Polymer or native custom element definition AND have an
   # equivalent .html template file.
   web_component_files = [
-    "app.ts",
     "demos/buttons/buttons_demo.ts",
     "demos/card/card_demo.ts",
     "demos/cr_action_menu/cr_action_menu_demo.ts",
@@ -68,6 +68,8 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
+    "app.html.ts",
+    "app.ts",
     "demos/cr_a11y_announcer/cr_a11y_announcer_demo.html.ts",
     "demos/cr_a11y_announcer/cr_a11y_announcer_demo.ts",
   ]

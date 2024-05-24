@@ -4,11 +4,12 @@
   <div class="row">
     <cr-toggle
         aria-label="Label for toggle"
-        checked="{{checked_}}">
+        ?checked="${this.checked_}"
+        @checked-changed="${this.onCheckedChanged_}">
     </cr-toggle>
     <span aria-hidden="true">Label for toggle</span>
     <span>
-      Checked? [[checked_]]
+      Checked? ${this.checked_}
     </span>
   </div>
 
