@@ -3,7 +3,7 @@ default: null
 desc: |-
   This policy changes the savings level of Memory Saver.
 
-  This only takes effect when Memory Saver is enabled through settings or through the <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME">HighEfficiencyModeEnabled</ph> policy, and will effect how heuristics are used to determine when to discard tabs. For example, reducing the lifetime of an inactive tab before discarding it can save memory, but it also means that tabs will be reloaded more frequently which can lead to bad user experience and cost more network traffic.
+  This only takes effect when Memory Saver is enabled through settings or through the <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME">HighEfficiencyModeEnabled</ph> policy, and will affect how heuristics are used to determine when to discard tabs. For example, reducing the lifetime of an inactive tab before discarding it can save memory, but it also means that tabs will be reloaded more frequently which can lead to bad user experience and cost more network traffic.
 
   Setting the policy to 0 - Memory Saver will get moderate memory savings. Tabs become inactive after a longer period of time
 
