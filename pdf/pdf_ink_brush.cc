@@ -23,33 +23,10 @@ std::string CreateBrushUri() {
   return "ink://ink/texture:test-texture";
 }
 
-}  // namespace
+std::unique_ptr<InkBrush> CreateInkBrush(PdfInkBrush::Type type,
+                                         PdfInkBrush::Params params) {
+  CHECK_GT(params.size, 0);
 
-// static
-std::optional<PdfInkBrush::Type> PdfInkBrush::StringToType(
-    const std::string& brush_type) {
-  if (brush_type == "highlighter") {
-    return Type::kHighlighter;
-  }
-  if (brush_type == "pen") {
-    return Type::kPen;
-  }
-  return std::nullopt;
-}
-
-PdfInkBrush::PdfInkBrush(Type brush_type, Params brush_params)
-    : type_(brush_type), params_(brush_params), ink_brush_(CreateInkBrush()) {
-  CHECK_GT(brush_params.size, 0);
-  CHECK(ink_brush_);
-}
-
-PdfInkBrush::~PdfInkBrush() = default;
-
-const InkBrush& PdfInkBrush::GetInkBrush() const {
-  return *ink_brush_;
-}
-
-std::unique_ptr<InkBrush> PdfInkBrush::CreateInkBrush() {
   // TODO(crbug.com/335524380): Use real values here.
   InkBrushTip tip;
   tip.corner_rounding = 0;
@@ -73,9 +50,34 @@ std::unique_ptr<InkBrush> PdfInkBrush::CreateInkBrush() {
   CHECK(family);
 
   return InkBrush::Create(std::move(family),
-                          /*color=*/params_.color,
-                          /*size=*/params_.size,
+                          /*color=*/params.color,
+                          /*size=*/params.size,
                           /*epsilon=*/0.1f);
+}
+
+}  // namespace
+
+// static
+std::optional<PdfInkBrush::Type> PdfInkBrush::StringToType(
+    const std::string& brush_type) {
+  if (brush_type == "highlighter") {
+    return Type::kHighlighter;
+  }
+  if (brush_type == "pen") {
+    return Type::kPen;
+  }
+  return std::nullopt;
+}
+
+PdfInkBrush::PdfInkBrush(Type brush_type, Params brush_params)
+    : ink_brush_(CreateInkBrush(brush_type, brush_params)) {
+  CHECK(ink_brush_);
+}
+
+PdfInkBrush::~PdfInkBrush() = default;
+
+const InkBrush& PdfInkBrush::GetInkBrush() const {
+  return *ink_brush_;
 }
 
 }  // namespace chrome_pdf

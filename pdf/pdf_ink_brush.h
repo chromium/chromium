@@ -17,8 +17,6 @@ class InkBrush;
 
 // A wrapper class used to create ink brushes specifically for PDF annotation
 // mode.
-// TODO(crbug.com/335524382): Add unit tests that check that `PdfInkBrush`
-// properly creates `InkBrush` instances.
 class PdfInkBrush {
  public:
   // The types of brushes supported in PDF annotation mode.
@@ -26,10 +24,6 @@ class PdfInkBrush {
     kHighlighter,
     kPen,
   };
-
-  // Converts `brush_type` to a `Type`, returning `std::nullopt` if `brush_type`
-  // does not correspond to any `Type`.
-  static std::optional<Type> StringToType(const std::string& brush_type);
 
   // Parameters for the brush.
   struct Params {
@@ -43,23 +37,14 @@ class PdfInkBrush {
   PdfInkBrush& operator=(const PdfInkBrush&) = delete;
   ~PdfInkBrush();
 
-  Type type() const { return type_; }
-
-  const Params& params() const { return params_; }
+  // Converts `brush_type` to a `Type`, returning `std::nullopt` if `brush_type`
+  // does not correspond to any `Type`.
+  static std::optional<Type> StringToType(const std::string& brush_type);
 
   // Returns the `InkBrush` that `this` represents.
   const InkBrush& GetInkBrush() const;
 
  private:
-  // Returns a new ink brush of `type_` with `params_` Returns nullptr if failed
-  // to create an ink brush.
-  std::unique_ptr<InkBrush> CreateInkBrush();
-
-  // TODO(crbug.com/342414726): These fields are only used for unit tests. Tests
-  // should instead check the parameters in `InkBrush`.
-  Type type_;
-  Params params_;
-
   // The ink brush of type `type_` with params` params_`. Always non-nullptr.
   std::unique_ptr<InkBrush> ink_brush_;
 };

@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "pdf/ink/ink_brush.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/test/mouse_event_builder.h"
@@ -128,9 +129,11 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessagePen) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  EXPECT_EQ(PdfInkBrush::Type::kPen, brush->type());
-  EXPECT_EQ(SkColorSetRGB(10, 255, 50), brush->params().color);
-  EXPECT_EQ(8.0f, brush->params().size);
+  const InkBrush& ink_brush = brush->GetInkBrush();
+  EXPECT_EQ(SkColorSetRGB(10, 255, 50), ink_brush.GetColorForTesting());
+  EXPECT_EQ(8.0f, ink_brush.GetSizeForTesting());
+  // TODO(crbug.com/335524382): Update with real value.
+  EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 
 // Verify that a set highlighter message sets the annotation brush to a
@@ -148,9 +151,11 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  EXPECT_EQ(PdfInkBrush::Type::kHighlighter, brush->type());
-  EXPECT_EQ(SkColorSetRGB(240, 133, 0), brush->params().color);
-  EXPECT_EQ(4.5f, brush->params().size);
+  const InkBrush& ink_brush = brush->GetInkBrush();
+  EXPECT_EQ(SkColorSetRGB(240, 133, 0), ink_brush.GetColorForTesting());
+  EXPECT_EQ(4.5f, ink_brush.GetSizeForTesting());
+  // TODO(crbug.com/335524382): Update with real value.
+  EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 
 // Verify that brushes with zero color values can be set as the annotation
@@ -168,9 +173,11 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  EXPECT_EQ(PdfInkBrush::Type::kPen, brush->type());
-  EXPECT_EQ(SkColorSetRGB(0, 0, 0), brush->params().color);
-  EXPECT_EQ(4.5f, brush->params().size);
+  const InkBrush& ink_brush = brush->GetInkBrush();
+  EXPECT_EQ(SkColorSetRGB(0, 0, 0), ink_brush.GetColorForTesting());
+  EXPECT_EQ(4.5f, ink_brush.GetSizeForTesting());
+  // TODO(crbug.com/335524382): Update with real value.
+  EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 
 // Verify that the size of the brush is translated when the size is 0. This
@@ -189,9 +196,11 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageSizeZeroTranslation) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  EXPECT_EQ(PdfInkBrush::Type::kHighlighter, brush->type());
-  EXPECT_EQ(SkColorSetRGB(255, 255, 255), brush->params().color);
-  EXPECT_EQ(1.0f, brush->params().size);
+  const InkBrush& ink_brush = brush->GetInkBrush();
+  EXPECT_EQ(SkColorSetRGB(255, 255, 255), ink_brush.GetColorForTesting());
+  EXPECT_EQ(1.0f, ink_brush.GetSizeForTesting());
+  // TODO(crbug.com/335524382): Update with real value.
+  EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 
 // Verify that the size of the brush is properly translated. The PDF extension's
@@ -209,9 +218,11 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageSizeOneTranslation) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  EXPECT_EQ(PdfInkBrush::Type::kHighlighter, brush->type());
-  EXPECT_EQ(SkColorSetRGB(255, 255, 255), brush->params().color);
-  EXPECT_EQ(8.0f, brush->params().size);
+  const InkBrush& ink_brush = brush->GetInkBrush();
+  EXPECT_EQ(SkColorSetRGB(255, 255, 255), ink_brush.GetColorForTesting());
+  EXPECT_EQ(8.0f, ink_brush.GetSizeForTesting());
+  // TODO(crbug.com/335524382): Update with real value.
+  EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 
 TEST_F(InkModuleTest, HandleSetAnnotationModeMessage) {

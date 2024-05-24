@@ -11,7 +11,9 @@ source_set("stub") {
 
   sources = [
     "ink_brush_family_stub.cc",
+    "ink_brush_family_stub.h",
     "ink_brush_stub.cc",
+    "ink_brush_stub.h",
     "ink_in_progress_stroke_stub.cc",
     "ink_in_progress_stroke_stub.h",
     "ink_intersects_stub.cc",
