@@ -228,6 +228,9 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   void DidCacheStorageMatch(base::TimeTicks event_dispatch_time,
                             blink::mojom::MatchResultPtr result);
 
+  void MaybeDeleteThis();
+  bool IsResponseAlreadyCommittedByRaceNetworkRequest();
+
   network::mojom::URLResponseHeadPtr response_head_;
   std::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_;
