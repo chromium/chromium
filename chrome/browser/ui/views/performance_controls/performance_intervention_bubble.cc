@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_bubble.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/performance_controls/performance_intervention_bubble_delegate.h"
+#include "chrome/browser/ui/performance_controls/performance_intervention_bubble_observer.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,35 +30,53 @@ const char kViewClassName[] = "PerformanceInterventionBubble";
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PerformanceInterventionBubble,
                                       kPerformanceInterventionDialogBody);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    PerformanceInterventionBubble,
+    kPerformanceInterventionDialogDismissButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    PerformanceInterventionBubble,
+    kPerformanceInterventionDialogDeactivateButton);
 
 // static
 views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
     Browser* browser,
-    PerformanceInterventionButton* anchor_view) {
+    PerformanceInterventionButton* anchor_view,
+    PerformanceInterventionBubbleObserver* observer) {
+  auto bubble_delegate =
+      std::make_unique<PerformanceInterventionBubbleDelegate>(browser,
+                                                              observer);
+
+  PerformanceInterventionBubbleDelegate* const delegate = bubble_delegate.get();
   auto dialog_model =
-      ui::DialogModel::Builder()
+      ui::DialogModel::Builder(std::move(bubble_delegate))
           .SetInternalName(kViewClassName)
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE))
           .SetIsAlertDialog()
-          .SetDialogDestroyingCallback(
-              base::BindOnce(&PerformanceInterventionButton::OnBubbleDestroyed,
-                             base::Unretained(anchor_view)))
+          .SetCloseActionCallback(base::BindOnce(
+              &PerformanceInterventionBubbleDelegate::OnBubbleClosed,
+              base::Unretained(delegate)))
           .AddParagraph(
               ui::DialogModelLabel(IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY)
                   .set_is_secondary()
                   .set_allow_character_break(),
               std::u16string(), kPerformanceInterventionDialogBody)
           .AddOkButton(
-              base::DoNothing(),
-              ui::DialogModel::Button::Params().SetLabel(
-                  l10n_util::GetStringUTF16(
-                      IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON)))
+              base::BindOnce(&PerformanceInterventionBubbleDelegate::
+                                 OnDeactivateButtonClicked,
+                             base::Unretained(delegate)),
+              ui::DialogModel::Button::Params()
+                  .SetLabel(l10n_util::GetStringUTF16(
+                      IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON))
+                  .SetId(kPerformanceInterventionDialogDeactivateButton))
           .AddCancelButton(
-              base::DoNothing(),
-              ui::DialogModel::Button::Params().SetLabel(
-                  l10n_util::GetStringUTF16(
-                      IDS_PERFORMANCE_INTERVENTION_DISMISS_BUTTON)))
+              base::BindOnce(&PerformanceInterventionBubbleDelegate::
+                                 OnDismissButtonClicked,
+                             base::Unretained(delegate)),
+              ui::DialogModel::Button::Params()
+                  .SetLabel(l10n_util::GetStringUTF16(
+                      IDS_PERFORMANCE_INTERVENTION_DISMISS_BUTTON))
+                  .SetId(kPerformanceInterventionDialogDismissButton))
           .Build();
 
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(
@@ -62,6 +84,7 @@ views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
   auto* const bubble = bubble_unique.get();
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique))->Show();
+  observer->OnBubbleShown();
 
   return bubble;
 }

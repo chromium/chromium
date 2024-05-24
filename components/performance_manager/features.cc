@@ -81,6 +81,10 @@ BASE_FEATURE(kPerformanceIntervention,
              "PerformanceIntervention",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta> kInterventionButtonTimeout{
+    &kPerformanceIntervention, "intervention_button_timeout",
+    base::Seconds(10)};
+
 const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold{
     &kPerformanceIntervention, "cpu_time_over_threshold", base::Seconds(60)};
 const base::FeatureParam<base::TimeDelta> kCPUSampleFrequency{

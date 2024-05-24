@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,8 +22,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 PerformanceInterventionButton::PerformanceInterventionButton(
     BrowserView* browser_view)
@@ -50,9 +53,7 @@ PerformanceInterventionButton::~PerformanceInterventionButton() = default;
 void PerformanceInterventionButton::Show() {
   SetVisible(true);
   PreferredSizeChanged();
-  CHECK(GetWidget());
-  bubble_ = PerformanceInterventionBubble::CreateBubble(
-      browser_view_->browser(), this);
+  CreateBubble();
 }
 
 void PerformanceInterventionButton::Hide() {
@@ -65,7 +66,12 @@ bool PerformanceInterventionButton::IsButtonShowing() {
 }
 
 bool PerformanceInterventionButton::IsBubbleShowing() {
-  return bubble_ != nullptr;
+  return bubble_dialog_model_host_ != nullptr;
+}
+
+void PerformanceInterventionButton::OnWidgetDestroying(views::Widget* widget) {
+  bubble_dialog_model_host_ = nullptr;
+  scoped_widget_observation_.Reset();
 }
 
 void PerformanceInterventionButton::OnThemeChanged() {
@@ -77,18 +83,19 @@ void PerformanceInterventionButton::OnThemeChanged() {
           GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)));
 }
 
-void PerformanceInterventionButton::OnBubbleDestroyed() {
-  bubble_ = nullptr;
-}
-
 void PerformanceInterventionButton::OnClicked() {
   if (IsBubbleShowing()) {
-    PerformanceInterventionBubble::CloseBubble(bubble_);
+    PerformanceInterventionBubble::CloseBubble(bubble_dialog_model_host_);
   } else {
-    CHECK(GetWidget());
-    bubble_ = PerformanceInterventionBubble::CreateBubble(
-        browser_view_->browser(), this);
+    CreateBubble();
   }
+}
+
+void PerformanceInterventionButton::CreateBubble() {
+  CHECK(GetWidget());
+  bubble_dialog_model_host_ = PerformanceInterventionBubble::CreateBubble(
+      browser_view_->browser(), this, controller_.get());
+  scoped_widget_observation_.Observe(bubble_dialog_model_host_->GetWidget());
 }
 
 BEGIN_METADATA(PerformanceInterventionButton)

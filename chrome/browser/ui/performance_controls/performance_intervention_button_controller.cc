@@ -4,18 +4,21 @@
 
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/performance_controls/performance_intervention_button_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "content/public/browser/web_contents.h"
 
@@ -67,7 +70,7 @@ void PerformanceInterventionButtonController::OnActionableTabListChanged(
     }
   } else if (!delegate_->IsBubbleShowing()) {
     // Intervention button shouldn't hide while the dialog is being shown.
-    delegate_->Hide();
+    HideToolbarButton();
   }
 }
 
@@ -89,7 +92,7 @@ void PerformanceInterventionButtonController::OnTabStripModelChanged(
     // resource health.
     if (base::Contains(actionable_cpu_tabs_, current_page_context.value())) {
       actionable_cpu_tabs_.clear();
-      delegate_->Hide();
+      HideToolbarButton();
       return;
     }
   }
@@ -109,7 +112,42 @@ void PerformanceInterventionButtonController::OnTabStripModelChanged(
     }
 
     if (actionable_cpu_tabs_.empty()) {
-      delegate_->Hide();
+      HideToolbarButton();
     }
   }
+}
+
+void PerformanceInterventionButtonController::OnBubbleShown() {
+  hide_button_timer_.Stop();
+}
+
+void PerformanceInterventionButtonController::OnBubbleHidden() {
+  // Immediately hide the toolbar button since there is no longer
+  // any actionable tabs.
+  if (actionable_cpu_tabs_.empty()) {
+    HideToolbarButton();
+    return;
+  }
+
+  CHECK(!hide_button_timer_.IsRunning());
+  // It is safe to use the base::Unretained(this) for the timer callback
+  // as the controller owns the timer and will exist for the lifetime of
+  // the timer.
+  hide_button_timer_.Start(
+      FROM_HERE,
+      performance_manager::features::kInterventionButtonTimeout.Get(),
+      base::BindRepeating(
+          &PerformanceInterventionButtonController::HideToolbarButton,
+          base::Unretained(this)));
+}
+
+void PerformanceInterventionButtonController::OnDeactivateButtonClicked() {
+  // Immediately hide the toolbar button since the user has taken the suggested
+  // action.
+  HideToolbarButton();
+}
+
+void PerformanceInterventionButtonController::HideToolbarButton() {
+  hide_button_timer_.Stop();
+  delegate_->Hide();
 }

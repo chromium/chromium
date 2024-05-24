@@ -211,6 +211,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       PressButton(kToolbarPerformanceInterventionButtonElementId),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      FlushEvents(),
       PressButton(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody));
@@ -238,4 +239,68 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       TriggerOnActionableTabListChange({}),
       EnsurePresent(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody));
+}
+
+// If the actionable tab list becomes empty while the intervention dialog is
+// showing, after the dialog closes, the button should hide since there are no
+// actionable tabs.
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       ButtonHidesAfterDialogCloses) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()),
+      TriggerOnActionableTabListChange({0}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      FlushEvents(),
+      // Triggering the actionable tab list again shouldn't affect
+      // dialog visibility
+      TriggerOnActionableTabListChange({}),
+      EnsurePresent(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      FlushEvents(),
+      PressButton(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDismissButton),
+      WaitForHide(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      WaitForHide(kToolbarPerformanceInterventionButtonElementId));
+}
+
+// Clicking the dismiss dialog button should keep the toolbar button if the
+// actionable tab list didn't become empty while the dialog was open.
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       ButtonStaysAfterDismissClicked) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()),
+      TriggerOnActionableTabListChange({0}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      FlushEvents(),
+      PressButton(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDismissButton),
+      WaitForHide(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      EnsurePresent(kToolbarPerformanceInterventionButtonElementId));
+}
+
+// Clicking the deactivate dialog button should immediately hide the performance
+// intervention toolbar button because the user enacted the suggested action.
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       ButtonHidesAfterDeactivateClicked) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()),
+      TriggerOnActionableTabListChange({0}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      FlushEvents(),
+      PressButton(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDeactivateButton),
+      WaitForHide(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      WaitForHide(kToolbarPerformanceInterventionButtonElementId));
 }

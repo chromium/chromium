@@ -10,6 +10,7 @@
 
 class Browser;
 class PerformanceInterventionButton;
+class PerformanceInterventionBubbleObserver;
 
 namespace views {
 class BubbleDialogModelHost;
@@ -20,12 +21,17 @@ class BubbleDialogModelHost;
 class PerformanceInterventionBubble {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPerformanceInterventionDialogBody);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kPerformanceInterventionDialogDismissButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kPerformanceInterventionDialogDeactivateButton);
 
   // Creates the performance intervention bubble dialog anchored to the
   // intervention toolbar button.
   static views::BubbleDialogModelHost* CreateBubble(
       Browser* browser,
-      PerformanceInterventionButton* anchor_view);
+      PerformanceInterventionButton* anchor_view,
+      PerformanceInterventionBubbleObserver* observer);
 
   // Hides performance intervention bubble dialog.
   static void CloseBubble(views::BubbleDialogModelHost*);
