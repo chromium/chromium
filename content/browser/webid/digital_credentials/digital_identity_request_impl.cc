@@ -5,6 +5,7 @@
 #include "content/browser/webid/digital_credentials/digital_identity_request_impl.h"
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"
@@ -24,6 +25,8 @@ using base::Value;
 using blink::mojom::RequestDigitalIdentityStatus;
 using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
+using DigitalIdentityInterstitialAbortCallback =
+    content::ContentBrowserClient::DigitalIdentityInterstitialAbortCallback;
 
 namespace content {
 namespace {
@@ -45,6 +48,40 @@ const base::Value::Dict* FindSingleElementListEntry(
 }
 
 }  // anonymous namespace
+
+DigitalIdentityRequestImpl::RenderFrameHostLifecycleObserver::
+    RenderFrameHostLifecycleObserver(
+        const raw_ptr<WebContents> web_contents,
+        const raw_ptr<RenderFrameHost> render_frame_host,
+        DigitalIdentityInterstitialAbortCallback abort_callback)
+    : WebContentsObserver(web_contents),
+      render_frame_host_(render_frame_host),
+      abort_callback_(std::move(abort_callback)) {}
+
+DigitalIdentityRequestImpl::RenderFrameHostLifecycleObserver::
+    ~RenderFrameHostLifecycleObserver() = default;
+
+void DigitalIdentityRequestImpl::RenderFrameHostLifecycleObserver::
+    RenderFrameHostStateChanged(
+        content::RenderFrameHost* rfh,
+        content::RenderFrameHost::LifecycleState old_state,
+        content::RenderFrameHost::LifecycleState new_state) {
+  if (rfh != render_frame_host_.get() ||
+      new_state == content::RenderFrameHost::LifecycleState::kActive ||
+      !abort_callback_) {
+    return;
+  }
+  std::move(abort_callback_).Run();
+}
+
+void DigitalIdentityRequestImpl::RenderFrameHostLifecycleObserver::
+    RenderFrameHostChanged(RenderFrameHost* old_host,
+                           RenderFrameHost* new_host) {
+  if (old_host != render_frame_host_.get() || !abort_callback_) {
+    return;
+  }
+  std::move(abort_callback_).Run();
+}
 
 // static
 void DigitalIdentityRequestImpl::Create(
@@ -124,7 +161,10 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
     const base::expected<std::string, RequestStatusForMetrics>& response) {
   // Invalidate pending requests in case that the request gets aborted.
   weak_ptr_factory_.InvalidateWeakPtrs();
+
   provider_.reset();
+  render_frame_host_lifecycle_observer_.reset();
+  update_interstitial_on_abort_callback_.Reset();
 
   base::UmaHistogramEnumeration("Blink.DigitalIdentityRequest.Status",
                                 response.has_value()
@@ -182,6 +222,20 @@ void DigitalIdentityRequestImpl::Request(
     return;
   }
 
+  RenderFrameHost* render_frame_host_ptr = &render_frame_host();
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host_ptr);
+  if (!web_contents) {
+    CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
+    return;
+  }
+
+  render_frame_host_lifecycle_observer_.reset(
+      new RenderFrameHostLifecycleObserver(
+          web_contents, render_frame_host_ptr,
+          base::BindOnce(&DigitalIdentityRequestImpl::Abort,
+                         weak_ptr_factory_.GetWeakPtr())));
+
   std::optional<std::string> request_json_string =
       digital_credential_provider->request;
   std::string request_to_send =
@@ -200,6 +254,10 @@ void DigitalIdentityRequestImpl::Request(
 }
 
 void DigitalIdentityRequestImpl::Abort() {
+  if (update_interstitial_on_abort_callback_) {
+    std::move(update_interstitial_on_abort_callback_).Run();
+  }
+
   CompleteRequestWithStatus(
       RequestDigitalIdentityStatus::kErrorCanceled,
       base::unexpected(RequestStatusForMetrics::kErrorAborted));
@@ -247,11 +305,12 @@ void DigitalIdentityRequestImpl::ShowInterstitialIfNeeded(
     return;
   }
 
-  GetContentClient()->browser()->ShowDigitalIdentityInterstitialIfNeeded(
-      *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
-      is_only_requesting_age,
-      base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
-                     weak_ptr_factory_.GetWeakPtr(), response.value()));
+  update_interstitial_on_abort_callback_ =
+      GetContentClient()->browser()->ShowDigitalIdentityInterstitialIfNeeded(
+          *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
+          is_only_requesting_age,
+          base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
+                         weak_ptr_factory_.GetWeakPtr(), response.value()));
 }
 
 void DigitalIdentityRequestImpl::OnInterstitialDone(

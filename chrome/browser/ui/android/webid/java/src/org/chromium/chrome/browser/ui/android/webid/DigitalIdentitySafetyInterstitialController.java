@@ -21,13 +21,15 @@ import org.chromium.url.Origin;
 
 /** Shows modal dialog asking user whether they want to share their identity with website. */
 public class DigitalIdentitySafetyInterstitialController {
-    private DigitalIdentitySafetyInterstitialController() {}
+    private PropertyModel mDialogModel;
+    private Origin mOrigin;
 
-    public static void show(
-            ModalDialogManager modalDialogManager,
-            boolean isHighRisk,
-            Origin origin,
-            Callback<Integer> callback) {
+    public DigitalIdentitySafetyInterstitialController(Origin origin) {
+        mOrigin = origin;
+    }
+
+    public void show(
+            ModalDialogManager modalDialogManager, boolean isHighRisk, Callback<Integer> callback) {
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {
                     @Override
@@ -67,7 +69,7 @@ public class DigitalIdentitySafetyInterstitialController {
         String bodyText =
                 context.getString(
                         bodyTextResourceId,
-                        UrlFormatter.formatOriginForSecurityDisplay(origin, SchemeDisplay.SHOW));
+                        UrlFormatter.formatOriginForSecurityDisplay(mOrigin, SchemeDisplay.SHOW));
 
         Resources resources = context.getResources();
         PropertyModel.Builder dialogModelBuilder =
@@ -90,7 +92,18 @@ public class DigitalIdentitySafetyInterstitialController {
                         .with(
                                 ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                                 UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS);
-        modalDialogManager.showDialog(
-                dialogModelBuilder.build(), ModalDialogManager.ModalDialogType.APP);
+
+        mDialogModel = dialogModelBuilder.build();
+        modalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    public void abort() {
+        Context context = ContextUtils.getApplicationContext();
+        String abortedMessage =
+                context.getString(
+                        R.string.digital_identity_interstitial_request_aborted_dialog_text,
+                        UrlFormatter.formatOriginForSecurityDisplay(mOrigin, SchemeDisplay.SHOW));
+        mDialogModel.set(ModalDialogProperties.MESSAGE_PARAGRAPH_2, abortedMessage);
+        mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
     }
 }

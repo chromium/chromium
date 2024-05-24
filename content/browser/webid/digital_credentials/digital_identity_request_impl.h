@@ -12,8 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
 #include "url/gurl.h"
@@ -54,6 +56,32 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   void Abort() override;
 
  private:
+  // Notifies callback if the passed-in WebContents no longer uses the
+  // passed-in RenderFrameHost or the passed-in RenderFrameHost becomes
+  // inactive.
+  class RenderFrameHostLifecycleObserver : public WebContentsObserver {
+   public:
+    RenderFrameHostLifecycleObserver(
+        const raw_ptr<WebContents> web_contents,
+        raw_ptr<RenderFrameHost> render_frame_host,
+        ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+            abort_callback);
+    ~RenderFrameHostLifecycleObserver() override;
+
+   private:
+    // WebContentsObserver:
+    void RenderFrameHostChanged(RenderFrameHost* old_host,
+                                RenderFrameHost* new_host) override;
+    void RenderFrameHostStateChanged(
+        content::RenderFrameHost* rfh,
+        content::RenderFrameHost::LifecycleState old_state,
+        content::RenderFrameHost::LifecycleState new_state) override;
+
+    const raw_ptr<RenderFrameHost> render_frame_host_;
+    ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+        abort_callback_;
+  };
+
   DigitalIdentityRequestImpl(
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
@@ -92,6 +120,16 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
 
   std::unique_ptr<DigitalIdentityProvider> provider_;
   RequestCallback callback_;
+
+  // Callback which updates interstitial to inform user that the credential
+  // request has been aborted.
+  ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+      update_interstitial_on_abort_callback_;
+
+  // Updates interstitial to indicate that credential request was canceled when
+  // page navigation occurs.
+  std::unique_ptr<RenderFrameHostLifecycleObserver>
+      render_frame_host_lifecycle_observer_;
 
   base::WeakPtrFactory<DigitalIdentityRequestImpl> weak_ptr_factory_{this};
 };

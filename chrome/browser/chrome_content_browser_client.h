@@ -907,7 +907,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::WebContents* web_contents) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  void ShowDigitalIdentityInterstitialIfNeeded(
+  DigitalIdentityInterstitialAbortCallback
+  ShowDigitalIdentityInterstitialIfNeeded(
       content::WebContents& web_contents,
       const url::Origin& origin,
       bool is_only_requesting_age,

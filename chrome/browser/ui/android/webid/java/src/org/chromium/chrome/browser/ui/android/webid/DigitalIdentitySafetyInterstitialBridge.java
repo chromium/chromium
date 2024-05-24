@@ -35,6 +35,8 @@ public class DigitalIdentitySafetyInterstitialBridge {
 
     private long mNativeDigitalIdentitySafetyInterstitialBridgeAndroid;
 
+    private DigitalIdentitySafetyInterstitialController mController;
+
     private DigitalIdentitySafetyInterstitialBridge(
             long digitalIdentitySafetyInterstitialBridgeAndroid) {
         mNativeDigitalIdentitySafetyInterstitialBridgeAndroid =
@@ -51,6 +53,7 @@ public class DigitalIdentitySafetyInterstitialBridge {
     @CalledByNative
     private void destroy() {
         mNativeDigitalIdentitySafetyInterstitialBridgeAndroid = 0;
+        mController = null;
     }
 
     @CalledByNative
@@ -91,10 +94,10 @@ public class DigitalIdentitySafetyInterstitialBridge {
             return;
         }
 
-        DigitalIdentitySafetyInterstitialController.show(
+        mController = new DigitalIdentitySafetyInterstitialController(origin);
+        mController.show(
                 modalDialogManager,
                 /* isHighRisk= */ showHighRiskDialog,
-                origin,
                 (/*DialogDismissalCause*/ Integer dismissalCause) -> {
                     onDone(
                             dismissalCause.intValue()
@@ -104,7 +107,16 @@ public class DigitalIdentitySafetyInterstitialBridge {
                 });
     }
 
+    @CalledByNative
+    public void abort() {
+        if (mController != null) {
+            mController.abort();
+        }
+    }
+
     public void onDone(@DigitalIdentityRequestStatusForMetrics int statusForMetrics) {
+        mController = null;
+
         if (mNativeDigitalIdentitySafetyInterstitialBridgeAndroid != 0) {
             DigitalIdentitySafetyInterstitialBridgeJni.get()
                     .onInterstitialDone(

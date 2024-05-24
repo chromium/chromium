@@ -1527,13 +1527,15 @@ ContentBrowserClient::CreateIdentityRequestDialogController(
   return std::make_unique<IdentityRequestDialogController>();
 }
 
-void ContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
+ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+ContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
     WebContents& web_contents,
     const url::Origin& origin,
     bool is_only_requesting_age,
     DigitalIdentityInterstitialCallback callback) {
   std::move(callback).Run(
       DigitalIdentityProvider::RequestStatusForMetrics::kErrorOther);
+  return base::OnceClosure();
 }
 
 std::unique_ptr<DigitalIdentityProvider>

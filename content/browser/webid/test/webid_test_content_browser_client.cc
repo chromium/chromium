@@ -24,13 +24,15 @@ void WebIdTestContentBrowserClient::SetIdentityRequestDialogController(
   test_dialog_controller_ = std::move(controller);
 }
 
-void WebIdTestContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
+ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+WebIdTestContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
     content::WebContents& web_contents,
     const url::Origin& origin,
     bool is_only_requesting_age,
     DigitalIdentityInterstitialCallback callback) {
   std::move(callback).Run(
       DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
+  return base::OnceClosure();
 }
 
 std::unique_ptr<DigitalIdentityProvider>

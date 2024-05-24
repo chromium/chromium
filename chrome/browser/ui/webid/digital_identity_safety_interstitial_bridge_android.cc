@@ -14,7 +14,8 @@ using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
 
 DigitalIdentitySafetyInterstitialBridgeAndroid::
-    DigitalIdentitySafetyInterstitialBridgeAndroid() {
+    DigitalIdentitySafetyInterstitialBridgeAndroid()
+    : weak_ptr_factory_(this) {
   JNIEnv* env = AttachCurrentThread();
   j_bridge_ = Java_DigitalIdentitySafetyInterstitialBridge_create(
       env, reinterpret_cast<intptr_t>(this));
@@ -26,7 +27,8 @@ DigitalIdentitySafetyInterstitialBridgeAndroid::
   Java_DigitalIdentitySafetyInterstitialBridge_destroy(env, j_bridge_);
 }
 
-void DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitialIfNeeded(
+content::ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
+DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitialIfNeeded(
     content::WebContents& web_contents,
     const url::Origin& origin,
     bool is_only_requesting_age,
@@ -41,8 +43,18 @@ void DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitialIfNeeded(
     j_window = web_contents.GetTopLevelNativeWindow()->GetJavaObject();
   }
 
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+
   Java_DigitalIdentitySafetyInterstitialBridge_showInterstitialIfNeeded(
       env, j_bridge_, j_window, j_origin, is_only_requesting_age);
+
+  // If no interstitial was shown,
+  // DigitalIdentitySafetyInterstitialBridgeAndroid will have been destroyed.
+  return weak_ptr.get()
+             ? base::BindOnce(
+                   &DigitalIdentitySafetyInterstitialBridgeAndroid::Abort,
+                   weak_ptr_factory_.GetWeakPtr())
+             : base::OnceClosure();
 }
 
 void DigitalIdentitySafetyInterstitialBridgeAndroid::OnInterstitialDone(
@@ -51,4 +63,9 @@ void DigitalIdentitySafetyInterstitialBridgeAndroid::OnInterstitialDone(
   std::move(callback_).Run(
       static_cast<content::DigitalIdentityProvider::RequestStatusForMetrics>(
           status_for_metrics));
+}
+
+void DigitalIdentitySafetyInterstitialBridgeAndroid::Abort() {
+  JNIEnv* env = AttachCurrentThread();
+  Java_DigitalIdentitySafetyInterstitialBridge_abort(env, j_bridge_);
 }
