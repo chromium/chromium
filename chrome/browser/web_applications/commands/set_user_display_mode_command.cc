@@ -39,6 +39,12 @@ SetUserDisplayModeCommand::~SetUserDisplayModeCommand() = default;
 void SetUserDisplayModeCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
+
+  if (!app_lock_->registrar().IsLocallyInstalled(app_id_)) {
+    CompleteAndSelfDestruct(CommandResult::kFailure);
+    return;
+  }
+
   DoSetDisplayMode(*app_lock_, app_id_, user_display_mode_,
                    /*is_user_action=*/true);
   if (user_display_mode_ != mojom::UserDisplayMode::kBrowser) {
