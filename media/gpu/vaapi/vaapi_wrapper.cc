@@ -657,21 +657,23 @@ void FillNV12Padding(const VAImage& image,
   CHECK_GE(base::strict_cast<int>(image.width), visible_size.width());
   CHECK_LE(base::strict_cast<int>(image.height), media::limits::kMaxDimension);
   CHECK_GE(base::strict_cast<int>(image.height), visible_size.height());
-  CHECK_EQ(0, visible_size.width() % 2);
 
   for (uint32_t plane = 0; plane < image.num_planes; plane++) {
     uint8_t* plane_data = data + image.offsets[plane];
     const int stride = base::checked_cast<int>(image.pitches[plane]);
+    const int visible_width_in_bytes =
+        plane == 0 ? visible_size.width()
+                   : 2 * ((visible_size.width() + 1) / 2);
     const size_t visible_height =
         VideoFrame::Rows(plane, PIXEL_FORMAT_NV12, visible_size.height());
     const size_t image_height =
         VideoFrame::Rows(plane, PIXEL_FORMAT_NV12, image.height);
 
     // Fill 0 to the right non-visible area.
-    CHECK_GE(stride, visible_size.width());
-    libyuv::SetPlane(/*dst_y=*/plane_data + visible_size.width(),
+    CHECK_GE(stride, visible_width_in_bytes);
+    libyuv::SetPlane(/*dst_y=*/plane_data + visible_width_in_bytes,
                      /*dst_stride_y=*/stride,
-                     /*width=*/stride - visible_size.width(),
+                     /*width=*/stride - visible_width_in_bytes,
                      /*height=*/base::checked_cast<int>(visible_height),
                      /*value=*/0u);
 
