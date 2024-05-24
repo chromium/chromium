@@ -928,8 +928,8 @@ chromium-metrics-reviews@google.com.
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
-    Tracks status of SELinux contexts restore flows of Android /data for ARC++ P
-    container. This also means ARC++ container boot delay.
+    Tracks status of SELinux contexts restore flows of Android /data. This also
+    means ARC++ boot delay.
   </summary>
 </histogram>
 
