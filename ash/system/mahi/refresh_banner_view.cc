@@ -37,7 +37,7 @@ namespace {
 
 constexpr int kRefreshBannerCornerRadius = 20;
 constexpr base::TimeDelta kRefreshBannerAnimationDurationMs =
-    base::Milliseconds(100);
+    base::Milliseconds(150);
 constexpr gfx::Insets kRefreshBannerInteriorMargin =
     gfx::Insets::TLBR(4, 20, mahi_constants::kRefreshBannerStackDepth + 4, 20);
 constexpr gfx::Insets kTitleLabelMargin = gfx::Insets::TLBR(0, 0, 0, 8);
@@ -159,18 +159,11 @@ void RefreshBannerView::Show() {
   // TODO(b/331109652): Determine whether the banner should still animate if it
   // was already visible.
   SetVisible(true);
-  gfx::Transform transform;
-  transform.Translate(
-      gfx::Vector2d(0, mahi_constants::kRefreshBannerStackDepth));
+  layer()->SetOpacity(0.0);
   views::AnimationBuilder()
       .Once()
-      .SetDuration(base::TimeDelta())
-      .SetOpacity(this, 0)
-      .SetTransform(this, transform)
-      .At(base::Milliseconds(0))
       .SetDuration(kRefreshBannerAnimationDurationMs)
-      .SetOpacity(this, 1)
-      .SetTransform(this, gfx::Transform());
+      .SetOpacity(this, 1);
 }
 
 void RefreshBannerView::Hide() {
