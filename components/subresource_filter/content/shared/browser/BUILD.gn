@@ -10,7 +10,6 @@ static_library("browser") {
     "activation_state_computing_navigation_throttle.h",
     "child_frame_navigation_filtering_throttle.cc",
     "child_frame_navigation_filtering_throttle.h",
-    "page_activation_throttle_delegate.h",
     "page_load_statistics.cc",
     "page_load_statistics.h",
     "ruleset_publisher_impl.cc",

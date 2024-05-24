@@ -33,7 +33,6 @@
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client_request.h"
 #include "components/subresource_filter/content/browser/throttle_manager_test_support.h"
-#include "components/subresource_filter/content/shared/browser/page_activation_throttle_delegate.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
@@ -80,7 +79,7 @@ const char kActivationListHistogram[] =
 const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
 
 class TestSafeBrowsingActivationThrottleDelegate
-    : public PageActivationThrottleDelegate {
+    : public SafeBrowsingPageActivationThrottle::Delegate {
  public:
   TestSafeBrowsingActivationThrottleDelegate() = default;
   ~TestSafeBrowsingActivationThrottleDelegate() override = default;
@@ -89,7 +88,7 @@ class TestSafeBrowsingActivationThrottleDelegate
   TestSafeBrowsingActivationThrottleDelegate& operator=(
       const TestSafeBrowsingActivationThrottleDelegate&) = delete;
 
-  // PageActivationThrottleDelegate:
+  // SafeBrowsingActivationThrottle::Delegate:
   mojom::ActivationLevel OnPageActivationComputed(
       content::NavigationHandle* handle,
       mojom::ActivationLevel effective_level,

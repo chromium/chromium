@@ -7,7 +7,6 @@
 
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
-#include "components/subresource_filter/content/shared/browser/page_activation_throttle_delegate.h"
 
 namespace subresource_filter {
 enum class ActivationDecision;
@@ -18,29 +17,31 @@ enum class ActivationLevel;
 
 }  // namespace subresource_filter
 
+namespace content {
+class NavigationHandle;
+}  // namespace content
+
 namespace fingerprinting_protection_filter {
 
 // Class that manages interaction between the per-navigation/per-page
 // subresource filter objects (i.e., the throttles and throttle manager) and
 // the per-profile objects (e.g., content settings).
-class ProfileInteractionManager
-    : public subresource_filter::PageActivationThrottleDelegate {
+class ProfileInteractionManager {
  public:
   explicit ProfileInteractionManager(
       PrefService* pref_service_,
       privacy_sandbox::TrackingProtectionSettings*
           tracking_protection_settings);
-  ~ProfileInteractionManager() override;
+  ~ProfileInteractionManager();
 
   ProfileInteractionManager(const ProfileInteractionManager&) = delete;
   ProfileInteractionManager& operator=(const ProfileInteractionManager&) =
       delete;
 
-  // PageActivationThrottleDelegate:
-  subresource_filter::mojom::ActivationLevel OnPageActivationComputed(
+  virtual subresource_filter::mojom::ActivationLevel OnPageActivationComputed(
       content::NavigationHandle* navigation_handle,
       subresource_filter::mojom::ActivationLevel initial_activation_level,
-      subresource_filter::ActivationDecision* decision) override;
+      subresource_filter::ActivationDecision* decision);
 
  private:
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>

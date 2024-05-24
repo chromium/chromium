@@ -25,7 +25,6 @@
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
-#include "components/subresource_filter/content/shared/browser/page_activation_throttle_delegate.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/browser_thread.h"
@@ -68,13 +67,11 @@ std::optional<RedirectPosition> GetEnforcementRedirectPosition(
 
 }  // namespace
 
-SafeBrowsingPageActivationThrottle::
-    SafeBrowsingPageActivationThrottle(
-        content::NavigationHandle* handle,
-        PageActivationThrottleDelegate* delegate,
-        scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-        scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-            database_manager)
+SafeBrowsingPageActivationThrottle::SafeBrowsingPageActivationThrottle(
+    content::NavigationHandle* handle,
+    SafeBrowsingPageActivationThrottle::Delegate* delegate,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager)
     : NavigationThrottle(handle),
       io_task_runner_(std::move(io_task_runner)),
       database_client_(nullptr,

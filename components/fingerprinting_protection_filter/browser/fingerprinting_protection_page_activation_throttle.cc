@@ -8,10 +8,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_profile_interaction_manager.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
-#include "components/subresource_filter/content/shared/browser/page_activation_throttle_delegate.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace fingerprinting_protection_filter {
@@ -22,8 +23,9 @@ using ::subresource_filter::mojom::ActivationLevel;
 FingerprintingProtectionPageActivationThrottle::
     FingerprintingProtectionPageActivationThrottle(
         content::NavigationHandle* handle,
-        subresource_filter::PageActivationThrottleDelegate* delegate)
-    : NavigationThrottle(handle), delegate_(delegate) {}
+        ProfileInteractionManager* profile_interaction_manager)
+    : NavigationThrottle(handle),
+      profile_interaction_manager_(profile_interaction_manager) {}
 
 FingerprintingProtectionPageActivationThrottle::
     ~FingerprintingProtectionPageActivationThrottle() = default;
@@ -65,8 +67,8 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
     return;
   }
   ActivationLevel activation_level = features::kActivationLevel.Get();
-  if (delegate_) {
-    activation_level = delegate_->OnPageActivationComputed(
+  if (profile_interaction_manager_) {
+    activation_level = profile_interaction_manager_->OnPageActivationComputed(
         navigation_handle(), activation_level, &decision);
   }
   FingerprintingProtectionWebContentsHelper::FromWebContents(

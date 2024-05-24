@@ -12,6 +12,7 @@
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace fingerprinting_protection_filter {
 
