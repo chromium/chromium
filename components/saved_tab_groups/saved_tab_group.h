@@ -123,16 +123,16 @@ class SavedTabGroup {
   SavedTabGroup& MoveTabFromSync(const base::Uuid& saved_tab_guid,
                                  size_t new_index);
 
-  // Merges this groups data with a specific from sync and returns the newly
-  // merged specific. Side effect: Updates the values of this group.
-  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> MergeGroup(
-      const sync_pb::SavedTabGroupSpecifics& sync_specific);
+  // Merges this groups data with the `remote_group`. Side effect: updates the
+  // values of this group. `remote_group` should never contain tabs, only
+  // metadata is being merged.
+  void MergeRemoteGroupMetadata(const std::u16string& title,
+                                TabGroupColorId color,
+                                std::optional<size_t> position,
+                                base::Time update_time);
 
-  // We should merge a group if one of the following is true:
-  // 1. The data from `sync_specific` has the most recent (larger) update time.
-  // 2. The `sync_specific` has the oldest (smallest) creation time.
-  bool ShouldMergeGroup(
-      const sync_pb::SavedTabGroupSpecifics& sync_specific) const;
+  // Returns whether the remote group has more recent updates.
+  bool RemoteGroupHasMoreRecentUpdates(base::Time remote_update_time) const;
 
   // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
   // `SavedTabGroupTab`.

@@ -427,33 +427,35 @@ void SavedTabGroupModel::MoveTabInGroupTo(const base::Uuid& group_id,
   }
 }
 
-std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeGroup(
-    const sync_pb::SavedTabGroupSpecifics& sync_specific) {
-  const base::Uuid& group_id = base::Uuid::ParseLowercase(sync_specific.guid());
-
-  DCHECK(Contains(group_id));
+const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(
+    const base::Uuid& guid,
+    const std::u16string& title,
+    TabGroupColorId color,
+    std::optional<size_t> position,
+    base::Time update_time) {
+  CHECK(Contains(guid));
 
   // For unpinned groups, `pinned_index` should be std::nullopt since its
   // position doesn't matter.
-  const int index = GetIndexOf(group_id).value();
+  const int index = GetIndexOf(guid).value();
   const std::optional<size_t> pinned_index =
       saved_tab_groups_[index].is_pinned() ? std::optional<size_t>(index)
                                            : std::nullopt;
 
   // Merge group and get `preferred_pinned_index`.
-  saved_tab_groups_[index].MergeGroup(std::move(sync_specific));
+  saved_tab_groups_[index].MergeRemoteGroupMetadata(title, color, position,
+                                                    update_time);
   std::optional<size_t> preferred_pinned_index =
       saved_tab_groups_[index].position();
 
   if (pinned_index != preferred_pinned_index) {
-    int new_index;
+    int new_index = 0;
     if (preferred_pinned_index.has_value()) {
       // If the group is pinned, find the pinned position to insert.
       new_index = preferred_pinned_index.value();
     } else {
       // If the group is unpinned, find the first unpinned group index to
       // insert.
-      new_index = 0;
       for (auto& group : saved_tab_groups_) {
         if (group.is_pinned()) {
           ++new_index;
@@ -461,30 +463,31 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeGroup(
       }
     }
 
-    ReorderGroupFromSync(group_id,
-                         std::min(std::max(new_index, 0), Count() - 1));
+    ReorderGroupFromSync(guid, std::min(std::max(new_index, 0), Count() - 1));
   }
 
-  for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedFromSync(group_id);
+  for (SavedTabGroupModelObserver& observer : observers_) {
+    observer.SavedTabGroupUpdatedFromSync(guid);
   }
 
-  return Get(group_id)->ToSpecifics();
+  // Note that `index` can't be used anymore because groups could be re-ordered.
+  return Get(guid);
 }
 
-std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeTab(
-    const sync_pb::SavedTabGroupSpecifics& sync_specific) {
-  const base::Uuid& group_guid =
-      base::Uuid::ParseLowercase(sync_specific.tab().group_guid());
-
-  const base::Uuid& tab_guid = base::Uuid::ParseLowercase(sync_specific.guid());
+const SavedTabGroupTab* SavedTabGroupModel::MergeRemoteTab(
+    const SavedTabGroupTab& remote_tab) {
+  const base::Uuid& group_guid = remote_tab.saved_group_guid();
+  const base::Uuid& tab_guid = remote_tab.saved_tab_guid();
   SavedTabGroup* const group = GetGroupContainingTab(tab_guid);
   CHECK(group);
+  // TODO(crbug.com/319521964): check whether group has the same group GUID.
 
   const std::optional<int> index = group->GetIndexOfTab(tab_guid);
-  const int preferred_index = sync_specific.tab().position();
 
-  group->GetTab(tab_guid)->MergeTab(std::move(sync_specific));
+  // TODO(crbug.com/319521964): check that remote tab always contains position.
+  const int preferred_index = remote_tab.position().value_or(0);
+
+  group->GetTab(tab_guid)->MergeRemoteTab(remote_tab);
 
   if (index != preferred_index) {
     const int num_tabs = group->saved_tabs().size();
@@ -497,7 +500,7 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeTab(
     observer.SavedTabGroupUpdatedFromSync(group_guid, tab_guid);
   }
 
-  return group->GetTab(tab_guid)->ToSpecifics();
+  return group->GetTab(tab_guid);
 }
 
 void SavedTabGroupModel::ReorderGroupLocally(const base::Uuid& id,

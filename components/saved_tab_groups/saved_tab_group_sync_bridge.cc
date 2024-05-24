@@ -50,6 +50,22 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
   return entity_data;
 }
 
+std::optional<size_t> GroupPositionFromSpecifics(
+    const sync_pb::SavedTabGroupSpecifics& specifics) {
+  if (!IsTabGroupsSaveUIUpdateEnabled()) {
+    return specifics.group().position();
+  }
+  if (specifics.group().has_pinned_position()) {
+    return specifics.group().pinned_position();
+  }
+  return std::nullopt;
+}
+
+base::Time TimeFromWindowsEpochMicros(int64_t time_windows_epoch_micros) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(time_windows_epoch_micros));
+}
+
 }  // anonymous namespace
 
 SavedTabGroupSyncBridge::SavedTabGroupSyncBridge(
@@ -350,10 +366,9 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
     syncer::MetadataChangeList* metadata_change_list,
     syncer::ModelTypeStore::WriteBatch* write_batch,
     bool notify_sync) {
-  std::string group_id =
-      specifics.has_tab() ? specifics.tab().group_guid() : specifics.guid();
-  const SavedTabGroup* existing_group =
-      model_->Get(base::Uuid::ParseLowercase(group_id));
+  base::Uuid group_guid = base::Uuid::ParseLowercase(
+      specifics.has_tab() ? specifics.tab().group_guid() : specifics.guid());
+  const SavedTabGroup* existing_group = model_->Get(group_guid);
 
   // Cases where `specifics` is a group.
   if (specifics.has_group()) {
@@ -361,16 +376,22 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
       // Resolve the conflict by merging the sync and local data. Once
       // finished, write the result to the store and update sync with the new
       // merged result if appropriate.
-      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> merged_entry =
-          model_->MergeGroup(std::move(specifics));
+      existing_group = model_->MergeRemoteGroupMetadata(
+          group_guid, base::UTF8ToUTF16(specifics.group().title()),
+          SavedTabGroup::SyncColorToTabGroupColor(specifics.group().color()),
+          GroupPositionFromSpecifics(specifics),
+          TimeFromWindowsEpochMicros(
+              specifics.update_time_windows_epoch_micros()));
+      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> updated_specifics =
+          existing_group->ToSpecifics();
 
       // Write result to the store.
-      write_batch->WriteData(merged_entry->guid(),
-                             merged_entry->SerializeAsString());
+      write_batch->WriteData(updated_specifics->guid(),
+                             updated_specifics->SerializeAsString());
 
       // Update sync with the new merged result.
       if (notify_sync)
-        SendToSync(std::move(merged_entry), metadata_change_list);
+        SendToSync(std::move(updated_specifics), metadata_change_list);
     } else {
       // We do not have this group. Add the group from sync into local storage.
       write_batch->WriteData(specifics.guid(), specifics.SerializeAsString());
@@ -382,13 +403,15 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
 
   // Cases where `specifics` is a tab.
   if (specifics.has_tab()) {
-    if (existing_group && existing_group->ContainsTab(
-                              base::Uuid::ParseLowercase(specifics.guid()))) {
+    base::Uuid tab_guid = base::Uuid::ParseLowercase(specifics.guid());
+    if (existing_group && existing_group->ContainsTab(tab_guid)) {
       // Resolve the conflict by merging the sync and local data. Once finished,
       // write the result to the store and update sync with the new merged
       // result if appropriate.
+      const SavedTabGroupTab* merged_tab =
+          model_->MergeRemoteTab(SavedTabGroupTab::FromSpecifics(specifics));
       std::unique_ptr<sync_pb::SavedTabGroupSpecifics> merged_entry =
-          model_->MergeTab(std::move(specifics));
+          merged_tab->ToSpecifics();
 
       // Write result to the store.
       write_batch->WriteData(merged_entry->guid(),

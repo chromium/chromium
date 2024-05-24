@@ -40,26 +40,22 @@ SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;
 SavedTabGroupTab::~SavedTabGroupTab() = default;
 
 bool SavedTabGroupTab::ShouldMergeTab(
-    const sync_pb::SavedTabGroupSpecifics& sync_specific) const {
-  bool sync_update_is_latest =
-      sync_specific.update_time_windows_epoch_micros() >=
-      update_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds();
-  return sync_update_is_latest;
+    const SavedTabGroupTab& remote_tab) const {
+  return remote_tab.update_time_windows_epoch_micros() >=
+         update_time_windows_epoch_micros();
 }
 
-std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::MergeTab(
-    const sync_pb::SavedTabGroupSpecifics& sync_specific) {
-  if (ShouldMergeTab(sync_specific)) {
-    SetURL(GURL(sync_specific.tab().url()));
-    SetTitle(base::UTF8ToUTF16(sync_specific.tab().title()));
-    SetPosition(sync_specific.tab().position());
-    SetUpdateTimeWindowsEpochMicros(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(sync_specific.update_time_windows_epoch_micros())));
+void SavedTabGroupTab::MergeRemoteTab(const SavedTabGroupTab& remote_tab) {
+  if (!ShouldMergeTab(remote_tab)) {
+    return;
   }
 
-  return ToSpecifics();
+  SetURL(remote_tab.url());
+  SetTitle(remote_tab.title());
+  // TODO(crbug.com/319521964): check that remote tab always contains position.
+  SetPosition(remote_tab.position().value_or(0));
+  SetUpdateTimeWindowsEpochMicros(
+      remote_tab.update_time_windows_epoch_micros());
 }
 
 // static

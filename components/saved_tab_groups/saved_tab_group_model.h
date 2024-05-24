@@ -127,12 +127,14 @@ class SavedTabGroupModel {
                         const base::Uuid& tab_id,
                         int index);
 
-  // Attempts to merge the sync_specific with the local object that holds the
-  // same guid.
-  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> MergeGroup(
-      const sync_pb::SavedTabGroupSpecifics& sync_specific);
-  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> MergeTab(
-      const sync_pb::SavedTabGroupSpecifics& sync_specific);
+  // Attempts to merge the remote group metadata or tab with the local object
+  // that holds the same `guid`.
+  const SavedTabGroup* MergeRemoteGroupMetadata(const base::Uuid& guid,
+                                                const std::u16string& title,
+                                                TabGroupColorId color,
+                                                std::optional<size_t> position,
+                                                base::Time update_time);
+  const SavedTabGroupTab* MergeRemoteTab(const SavedTabGroupTab& remote_tab);
 
   // Changes the index of a given tab group by id. The new index provided is the
   // expected index after the group is removed. Notify local observers if the

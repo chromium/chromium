@@ -87,14 +87,12 @@ class SavedTabGroupTab {
 
   // Merges this tabs data with a specific from sync and returns the newly
   // merged specific. Side effect: Updates the values in the tab.
-  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> MergeTab(
-      const sync_pb::SavedTabGroupSpecifics& sync_specific);
+  void MergeRemoteTab(const SavedTabGroupTab& remote_tab);
 
   // We should merge a tab if one of the following is true:
   // 1. The data from `sync_specific` has the most recent (larger) update time.
   // 2. The `sync_specific` has the oldest (smallest) creation time.
-  bool ShouldMergeTab(
-      const sync_pb::SavedTabGroupSpecifics& sync_specific) const;
+  bool ShouldMergeTab(const SavedTabGroupTab& remote_tab) const;
 
   // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
   // `SavedTabGroupTab`.

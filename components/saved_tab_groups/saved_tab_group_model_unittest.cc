@@ -518,16 +518,18 @@ TEST_P(SavedTabGroupModelTest, MergeGroupsFromModel) {
   SavedTabGroup group2 = SavedTabGroup::FromSpecifics(*group1->ToSpecifics());
   group2.SetColor(tab_groups::TabGroupColorId::kPink);
   group2.SetTitle(u"Updated title");
-  SavedTabGroup merged_group = SavedTabGroup::FromSpecifics(
-      *saved_tab_group_model_->MergeGroup(*group2.ToSpecifics()));
+  const SavedTabGroup* merged_group =
+      saved_tab_group_model_->MergeRemoteGroupMetadata(
+          group2.saved_guid(), group2.title(), group2.color(),
+          group2.position(), group2.update_time_windows_epoch_micros());
 
-  EXPECT_EQ(group2.title(), merged_group.title());
-  EXPECT_EQ(group2.color(), merged_group.color());
-  EXPECT_EQ(group2.saved_guid(), merged_group.saved_guid());
+  EXPECT_EQ(group2.title(), merged_group->title());
+  EXPECT_EQ(group2.color(), merged_group->color());
+  EXPECT_EQ(group2.saved_guid(), merged_group->saved_guid());
   EXPECT_EQ(group2.creation_time_windows_epoch_micros(),
-            merged_group.creation_time_windows_epoch_micros());
+            merged_group->creation_time_windows_epoch_micros());
   EXPECT_EQ(group2.update_time_windows_epoch_micros(),
-            merged_group.update_time_windows_epoch_micros());
+            merged_group->update_time_windows_epoch_micros());
 }
 
 TEST_P(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
@@ -562,9 +564,12 @@ TEST_P(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
   EXPECT_EQ(1, updated_group2.position());
 
   // Merge the updated group 2 and verify the position is set to 1.
-  SavedTabGroup merged_group = SavedTabGroup::FromSpecifics(
-      *saved_tab_group_model_->MergeGroup(*updated_group2.ToSpecifics()));
-  EXPECT_EQ(1, merged_group.position());
+  const SavedTabGroup* merged_group =
+      saved_tab_group_model_->MergeRemoteGroupMetadata(
+          updated_group2.saved_guid(), updated_group2.title(),
+          updated_group2.color(), updated_group2.position(),
+          updated_group2.update_time_windows_epoch_micros());
+  EXPECT_EQ(1, merged_group->position());
 
   // Verify group 2 should be the 2nd one in the list.
   if (IsV2UIEnabled()) {
@@ -606,9 +611,12 @@ TEST_P(SavedTabGroupModelTest, MergeUnpinnedGroupRetainUnpinned) {
   EXPECT_EQ(std::nullopt, updated_group2.position());
 
   // Merge the updated group 2 and verify it's unpinned.
-  SavedTabGroup merged_group = SavedTabGroup::FromSpecifics(
-      *saved_tab_group_model_->MergeGroup(*updated_group2.ToSpecifics()));
-  EXPECT_EQ(std::nullopt, merged_group.position());
+  const SavedTabGroup* merged_group =
+      saved_tab_group_model_->MergeRemoteGroupMetadata(
+          updated_group2.saved_guid(), updated_group2.title(),
+          updated_group2.color(), updated_group2.position(),
+          updated_group2.update_time_windows_epoch_micros());
+  EXPECT_EQ(std::nullopt, merged_group->position());
 
   // Verify group 2 should place behind group 1.
   ASSERT_THAT(GetSavedTabGroupIds(),
@@ -623,16 +631,16 @@ TEST_P(SavedTabGroupModelTest, MergeTabsFromModel) {
   tab2.SetTitle(u"Updated Title");
   tab2.SetURL(GURL("chrome://updated_url"));
 
-  SavedTabGroupTab merged_tab = SavedTabGroupTab::FromSpecifics(
-      *saved_tab_group_model_->MergeTab(*tab2.ToSpecifics()));
+  const SavedTabGroupTab* merged_tab =
+      saved_tab_group_model_->MergeRemoteTab(tab2);
 
-  EXPECT_EQ(tab2.url(), merged_tab.url());
-  EXPECT_EQ(tab2.saved_tab_guid(), merged_tab.saved_tab_guid());
-  EXPECT_EQ(tab2.saved_group_guid(), merged_tab.saved_group_guid());
+  EXPECT_EQ(tab2.url(), merged_tab->url());
+  EXPECT_EQ(tab2.saved_tab_guid(), merged_tab->saved_tab_guid());
+  EXPECT_EQ(tab2.saved_group_guid(), merged_tab->saved_group_guid());
   EXPECT_EQ(tab2.creation_time_windows_epoch_micros(),
-            merged_tab.creation_time_windows_epoch_micros());
+            merged_tab->creation_time_windows_epoch_micros());
   EXPECT_EQ(tab2.update_time_windows_epoch_micros(),
-            merged_tab.update_time_windows_epoch_micros());
+            merged_tab->update_time_windows_epoch_micros());
 }
 
 // Tests that groups inserted in the model are in order stay inserted in sorted

@@ -289,37 +289,29 @@ void SavedTabGroup::UpdateTabPositionsImpl() {
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
 }
 
-bool SavedTabGroup::ShouldMergeGroup(
-    const sync_pb::SavedTabGroupSpecifics& sync_specific) const {
-  bool sync_update_is_latest =
-      sync_specific.update_time_windows_epoch_micros() >=
-      update_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds();
-  // TODO(dljames): crbug/1371953 - Investigate if we should consider the
-  // creation time.
-  return sync_update_is_latest;
+bool SavedTabGroup::RemoteGroupHasMoreRecentUpdates(
+    base::Time remote_group_update_time) const {
+  // TODO(crbug.com/40870787): Investigate if we should consider the creation
+  // time.
+  return remote_group_update_time >= update_time_windows_epoch_micros();
 }
 
-std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroup::MergeGroup(
-    const sync_pb::SavedTabGroupSpecifics& sync_specific) {
-  if (ShouldMergeGroup(sync_specific)) {
-    SetTitle(base::UTF8ToUTF16(sync_specific.group().title()));
-    SetColor(SyncColorToTabGroupColor(sync_specific.group().color()));
-    if (IsTabGroupsSaveUIUpdateEnabled()) {
-      if (sync_specific.group().has_pinned_position()) {
-        SetPosition(sync_specific.group().pinned_position());
-      } else {
-        SetPinned(false);
-      }
-    } else {
-      SetPosition(sync_specific.group().position());
-    }
-    SetUpdateTimeWindowsEpochMicros(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(sync_specific.update_time_windows_epoch_micros())));
+void SavedTabGroup::MergeRemoteGroupMetadata(const std::u16string& title,
+                                             TabGroupColorId color,
+                                             std::optional<size_t> position,
+                                             base::Time update_time) {
+  if (!RemoteGroupHasMoreRecentUpdates(update_time)) {
+    return;
   }
 
-  return ToSpecifics();
+  SetTitle(title);
+  SetColor(color);
+  if (position.has_value()) {
+    SetPosition(position.value());
+  } else if (IsTabGroupsSaveUIUpdateEnabled()) {
+    SetPinned(false);
+  }
+  SetUpdateTimeWindowsEpochMicros(update_time);
 }
 
 // static
