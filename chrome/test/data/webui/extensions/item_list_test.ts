@@ -9,6 +9,7 @@ import type {ExtensionsItemListElement} from 'chrome://extensions/extensions.js'
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {createExtensionInfo, testVisible} from './test_util.js';
 
 suite('ExtensionItemListTest', function() {
@@ -163,36 +164,30 @@ suite('ExtensionItemListTest', function() {
     loadTimeData.getString('browserManagedByOrg');
   });
 
-  test('SafetyCheckPanel', function() {
-    // The extension review panel should not be visible if
-    // safetyCheckShowReviewPanel and safetyHubShowReviewPanel are set to
-    // false.
-    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': false});
-    loadTimeData.overrideValues({'safetyHubShowReviewPanel': false});
-
-    // set up the element again to capture the updated value of
-    // safetyCheckShowReviewPanel.
+  test('SafetyCheckPanel_Disabled', function() {
+    // Panel is hidden if safetyCheckShowReviewPanel and
+    // safetyHubShowReviewPanel are disabled.
+    loadTimeData.overrideValues(
+        {safetyCheckShowReviewPanel: false, safetyHubShowReviewPanel: false});
     setupElement();
-
     flush();
     boundTestVisible('extensions-review-panel', false);
-    // The extension review panel should be visible if the feature flag is set
-    // to true.
-    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': true});
+  });
 
-    // set up the element again to capture the updated value of
-    // safetyCheckShowReviewPanel.
+  test('SafetyCheckPanel_EnabledSafetyCheck', function() {
+    // Panel is visible if safetyCheckShowReviewPanel is enabled.
+    loadTimeData.overrideValues(
+        {safetyCheckShowReviewPanel: true, safetyHubShowReviewPanel: false});
     setupElement();
-
     flush();
     boundTestVisible('extensions-review-panel', true);
+  });
 
-    // The extension review panel should  be visible if
-    // safetyHubShowReviewPanel is set to true.
-    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': false});
-    loadTimeData.overrideValues({'safetyHubShowReviewPanel': true});
+  test('SafetyCheckPanel_EnabledSafetyHub', function() {
+    // Panel is visible if safetyHubShowReviewPanel is enabled.
+    loadTimeData.overrideValues(
+        {safetyCheckShowReviewPanel: false, safetyHubShowReviewPanel: true});
     setupElement();
-
     flush();
     boundTestVisible('extensions-review-panel', true);
   });
@@ -201,6 +196,7 @@ suite('ExtensionItemListTest', function() {
     // Panel is hidden if panel is disabled.
     loadTimeData.overrideValues({'MV2DeprecationPanelEnabled': false});
     setupElement();
+    flush();
     boundTestVisible('extensions-mv2-deprecation-panel', false);
   });
 
