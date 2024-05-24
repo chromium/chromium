@@ -6234,9 +6234,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_SckPicker_20240522",
                     "enable_features": [
-                        "DesktopCapturePermissionChecker"
+                        "DesktopCapturePermissionChecker",
+                        "ScreenCaptureKitPickerScreen",
+                        "ScreenCaptureKitStreamPickerSonoma"
                     ]
                 }
             ]
@@ -18723,41 +18725,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ScreenCaptureKitMacScreen"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScreenCaptureKitStreamPickerSonoma": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_SCScreenshotManager",
-                    "params": {
-                        "capture_mode": "sc_screenshot_manager"
-                    },
-                    "enable_features": [
-                        "ScreenCaptureKitPickerScreen",
-                        "ScreenCaptureKitStreamPickerSonoma",
-                        "ThumbnailCapturerMac"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScreenCaptureKitStreamPickerVentura": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScreenCaptureKitStreamPickerVentura"
                     ]
                 }
             ]
