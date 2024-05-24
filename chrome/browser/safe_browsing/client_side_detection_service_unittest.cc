@@ -224,9 +224,7 @@ class ClientSideDetectionServiceTest
                 response_data, net_error);
   }
 
-  bool OverPhishingReportLimit() {
-    return csd_service_->OverPhishingReportLimit();
-  }
+  bool AtPhishingReportLimit() { return csd_service_->AtPhishingReportLimit(); }
 
   std::deque<base::Time>& GetPhishingReportTimes() {
     return csd_service_->phishing_report_times_;
@@ -377,7 +375,7 @@ TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
   // Check that we have recorded all 5 requests within the correct time range.
   std::deque<base::Time>& report_times = GetPhishingReportTimes();
   EXPECT_EQ(5U, report_times.size());
-  EXPECT_TRUE(OverPhishingReportLimit());
+  EXPECT_TRUE(AtPhishingReportLimit());
   while (!report_times.empty()) {
     base::Time time = report_times.back();
     report_times.pop_back();
@@ -466,7 +464,52 @@ TEST_P(ClientSideDetectionServiceTest, GetNumReportTest) {
   csd_service_->AddPhishingReport(now);
 
   EXPECT_EQ(2, csd_service_->GetPhishingNumReports());
-  EXPECT_FALSE(OverPhishingReportLimit());
+  EXPECT_FALSE(AtPhishingReportLimit());
+
+  csd_service_->AddPhishingReport(now);
+  EXPECT_EQ(3, csd_service_->GetPhishingNumReports());
+  EXPECT_TRUE(AtPhishingReportLimit());
+}
+
+TEST_P(ClientSideDetectionServiceTest, GetNumReportAtLimitWhenProfileIsNull) {
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      nullptr, model_observer_tracker_.get(), background_task_runner_);
+  EXPECT_TRUE(AtPhishingReportLimit());
+}
+
+TEST_P(ClientSideDetectionServiceTest,
+       GetNumReportTestWhenPrefsPreloadedAndOverLimit) {
+  // The current report limit is 3 as per
+  // ClientSideDetectionService::kMaxReportsPerInterval.
+  base::Value::List time_list;
+  time_list.Append(base::Value(base::Time::Now().InSecondsFSinceUnixEpoch()));
+  time_list.Append(base::Value(base::Time::Now().InSecondsFSinceUnixEpoch()));
+  time_list.Append(base::Value(base::Time::Now().InSecondsFSinceUnixEpoch()));
+
+  profile_->GetPrefs()->SetList(prefs::kSafeBrowsingCsdPingTimestamps,
+                                std::move(time_list));
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get(), background_task_runner_);
+  EXPECT_TRUE(AtPhishingReportLimit());
+}
+
+TEST_P(ClientSideDetectionServiceTest,
+       GetNumReportTestWhenPrefsPreloadedNotOverLimit) {
+  // The current report limit is 3 as per
+  // ClientSideDetectionService::kMaxReportsPerInterval.
+  base::Value::List time_list;
+  time_list.Append(base::Value(base::Time::Now().InSecondsFSinceUnixEpoch()));
+  time_list.Append(base::Value(base::Time::Now().InSecondsFSinceUnixEpoch()));
+
+  profile_->GetPrefs()->SetList(prefs::kSafeBrowsingCsdPingTimestamps,
+                                std::move(time_list));
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get(), background_task_runner_);
+  EXPECT_FALSE(AtPhishingReportLimit());
 }
 
 TEST_P(ClientSideDetectionServiceTest, GetNumReportTestESB) {
@@ -485,16 +528,32 @@ TEST_P(ClientSideDetectionServiceTest, GetNumReportTestESB) {
   csd_service_->AddPhishingReport(now - twenty_five_hours);
   csd_service_->AddPhishingReport(now);
   csd_service_->AddPhishingReport(now);
-  csd_service_->AddPhishingReport(now);
+
+  EXPECT_EQ(2, csd_service_->GetPhishingNumReports());
+  // We have not quite hit the limit for both ESB and SSB users.
+  EXPECT_FALSE(AtPhishingReportLimit());
+
+  // Adding one more will hit the limit just for SSB users.
   csd_service_->AddPhishingReport(now);
 
-  EXPECT_EQ(4, csd_service_->GetPhishingNumReports());
-
+  EXPECT_EQ(3, csd_service_->GetPhishingNumReports());
   if (base::FeatureList::IsEnabled(kSafeBrowsingDailyPhishingReportsLimit)) {
-    EXPECT_FALSE(OverPhishingReportLimit());
+    EXPECT_FALSE(AtPhishingReportLimit());
   } else {
-    EXPECT_TRUE(OverPhishingReportLimit());
+    EXPECT_TRUE(AtPhishingReportLimit());
   }
+
+  // Adding 7 more to 10 reports total will hit the limit for ESB users as the
+  // limit is predefined in this class.
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
+
+  EXPECT_TRUE(AtPhishingReportLimit());
 }
 
 TEST_P(ClientSideDetectionServiceTest, CacheTest) {

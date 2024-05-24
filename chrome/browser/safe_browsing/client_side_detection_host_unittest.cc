@@ -156,7 +156,7 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_CONST_METHOD1(IsPrivateIPAddress, bool(const net::IPAddress&));
   MOCK_CONST_METHOD1(IsLocalResource, bool(const net::IPAddress&));
   MOCK_METHOD2(GetValidCachedResult, bool(const GURL&, bool*));
-  MOCK_METHOD0(OverPhishingReportLimit, bool());
+  MOCK_METHOD0(AtPhishingReportLimit, bool());
   MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
   MOCK_METHOD0(GetModelType, CSDModelType());
   MOCK_METHOD0(IsModelAvailable, bool());
@@ -398,7 +398,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
               DoAll(SetArgPointee<1>(true), Return(*get_valid_cached_result)));
     }
     if (over_phishing_report_limit) {
-      EXPECT_CALL(*csd_service_, OverPhishingReportLimit())
+      EXPECT_CALL(*csd_service_, AtPhishingReportLimit())
           .WillOnce(Return(*over_phishing_report_limit));
     }
     if (is_local) {
@@ -1551,7 +1551,7 @@ TEST_F(ClientSideDetectionHostDebugFeaturesTest,
   GURL url("http://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
                                 &kFalse);
-  EXPECT_CALL(*csd_service_, OverPhishingReportLimit()).Times(0);
+  EXPECT_CALL(*csd_service_, AtPhishingReportLimit()).Times(0);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
   fake_phishing_detector_.CheckMessage(&url);
