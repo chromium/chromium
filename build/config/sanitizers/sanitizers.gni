@@ -43,7 +43,7 @@ declare_args() {
   # reduces code size. Behind a flag as there are a number of previously
   # undetected violations that still need to be fixed.
   # TODO(crbug.com/40240570): Default this to true and remove.
-  msan_eager_checks = false
+  msan_eager_checks = true
 
   # Use dynamic libraries instrumented by one of the sanitizers instead of the
   # standard system libraries. Set this flag to build the libraries from source.
