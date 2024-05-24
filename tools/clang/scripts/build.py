@@ -934,6 +934,9 @@ def main():
         '^.*Sanitizer-.*sunrpc.*cpp$',
         # sysroot/host glibc version mismatch, crbug.com/1506551
         '^.*Sanitizer.*mallinfo2.cpp$',
+        # Allocator tests fail after kernel upgrade on the builders. Suppress
+        # until the test fix has landed (crbug.com/342324064).
+        '^SanitizerCommon-Unit :: ./Sanitizer-x86_64-Test/.*$',
     ]
   elif sys.platform == 'darwin':
     lit_excludes += [
