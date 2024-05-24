@@ -229,7 +229,7 @@ public class TabGroupVisualDataManagerUnitTest {
         doReturn(true).when(mTabGroupModelFilter).isTabGroupHiding(GROUP_1_ID);
         mTabModelObserverCaptor
                 .getValue()
-                .onFinishingMultipleTabClosure(tabs, /* canRestore= */ false);
+                .onFinishingMultipleTabClosure(tabs, /* canRestore= */ true);
         // Verify the properties are not deleted yet.
         verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
         verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);

@@ -76,7 +76,7 @@ public class TabGroupVisualDataManager {
                                             filter.deleteTabGroupCollapsed(rootId);
                                         }
                                     };
-                            if (!canRestore && filter.isTabGroupHiding(tab.getTabGroupId())) {
+                            if (filter.isTabGroupHiding(tab.getTabGroupId())) {
                                 // Post this work because if the closure is non-undoable, but the
                                 // tab group is hiding we don't want sync to pick up this deletion
                                 // and we should post so all the observers are notified before we do

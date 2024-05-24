@@ -2501,8 +2501,14 @@ public class TabSwitcherLayoutTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
 
         // Assert default color is cleared.
-        assertEquals(INVALID_COLOR_ID, TabGroupColorUtils.getTabGroupColor(groupRootId));
-        assertEquals(INVALID_COLOR_ID, TabGroupColorUtils.getTabGroupColor(tab2.getRootId()));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            INVALID_COLOR_ID, TabGroupColorUtils.getTabGroupColor(groupRootId));
+                    assertEquals(
+                            INVALID_COLOR_ID,
+                            TabGroupColorUtils.getTabGroupColor(tab2.getRootId()));
+                });
     }
 
     // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
