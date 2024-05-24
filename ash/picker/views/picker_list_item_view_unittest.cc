@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_badge_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/callback_helpers.h"
@@ -77,6 +78,27 @@ TEST_F(PickerListItemViewTest, SetsBadgeNotVisible) {
   item_view.SetBadgeVisible(false);
 
   EXPECT_FALSE(item_view.trailing_badge_for_testing().GetVisible());
+}
+
+TEST_F(PickerListItemViewTest, SetBadgeActionDoHasNoLabelText) {
+  PickerListItemView item_view(base::DoNothing());
+
+  item_view.SetBadgeAction(PickerActionType::kDo);
+
+  EXPECT_EQ(item_view.trailing_badge_for_testing().GetText(), u"");
+}
+
+TEST_F(PickerListItemViewTest, SetBadgeActionHasLabelText) {
+  PickerListItemView item_view(base::DoNothing());
+
+  item_view.SetBadgeAction(PickerActionType::kInsert);
+  EXPECT_NE(item_view.trailing_badge_for_testing().GetText(), u"");
+
+  item_view.SetBadgeAction(PickerActionType::kOpen);
+  EXPECT_NE(item_view.trailing_badge_for_testing().GetText(), u"");
+
+  item_view.SetBadgeAction(PickerActionType::kCreate);
+  EXPECT_NE(item_view.trailing_badge_for_testing().GetText(), u"");
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/picker/metrics/picker_session_metrics.h"
+#include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
@@ -53,6 +54,10 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   PickerAssetFetcher* GetAssetFetcher() override { return nullptr; }
   PickerSessionMetrics& GetSessionMetrics() override {
     return session_metrics_;
+  }
+  PickerActionType GetActionForResult(
+      const PickerSearchResult& result) override {
+    return PickerActionType::kInsert;
   }
 
  private:

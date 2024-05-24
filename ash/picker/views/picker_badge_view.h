@@ -30,7 +30,7 @@ class ASH_EXPORT PickerBadgeView : public views::FlexLayoutView {
   PickerBadgeView& operator=(const PickerBadgeView&) = delete;
   ~PickerBadgeView() override;
 
-  const std::u16string& GetText();
+  const std::u16string& GetText() const;
   void SetText(const std::u16string& text);
 
   // views::FlexLayoutView:

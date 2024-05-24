@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
@@ -40,6 +41,10 @@ class MockSearchResultsViewDelegate : public PickerSearchResultsViewDelegate {
               (const PickerSearchResult&),
               (override));
   MOCK_METHOD(void, NotifyPseudoFocusChanged, (views::View*), (override));
+  MOCK_METHOD(PickerActionType,
+              GetActionForResult,
+              (const PickerSearchResult&),
+              (override));
 };
 
 class PickerEmojiBarViewTest : public views::ViewsTestBase {

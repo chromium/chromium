@@ -239,10 +239,14 @@ void PickerSearchResultsView::AddResultToSection(
     PickerSectionView* section_view) {
   // `base::Unretained` is safe here because `this` will own the item view which
   // takes this callback.
-  section_view->AddResult(
+  PickerItemView* view = section_view->AddResult(
       result, &preview_controller_,
       base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,
                           base::Unretained(this), result));
+
+  if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+    list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
+  }
 }
 
 void PickerSearchResultsView::SetPseudoFocusedView(views::View* view) {

@@ -9,6 +9,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
+#include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
@@ -198,6 +199,11 @@ void PickerView::SelectZeroStateResult(const PickerSearchResult& result) {
   SelectSearchResult(result);
 }
 
+PickerActionType PickerView::GetActionForResult(
+    const PickerSearchResult& result) {
+  return delegate_->GetActionForResult(result);
+}
+
 void PickerView::GetZeroStateRecentResults(PickerCategory category,
                                            SearchResultsCallback callback) {
   delegate_->GetResultsForCategory(
@@ -228,10 +234,21 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
     delegate_->ShowEditor(editor_data->preset_query_id,
                           editor_data->freeform_text);
   } else {
-    delegate_->GetSessionMetrics().SetInsertedResult(
-        result, search_results_view_->GetIndex(result));
-    delegate_->InsertResultOnNextFocus(result);
-    GetWidget()->Close();
+    switch (delegate_->GetActionForResult(result)) {
+      case PickerActionType::kInsert:
+        delegate_->GetSessionMetrics().SetInsertedResult(
+            result, search_results_view_->GetIndex(result));
+        delegate_->InsertResultOnNextFocus(result);
+        GetWidget()->Close();
+        break;
+      case PickerActionType::kOpen:
+        delegate_->OpenResult(result);
+        GetWidget()->Close();
+        break;
+      case PickerActionType::kDo:
+      case PickerActionType::kCreate:
+        NOTREACHED_NORETURN();
+    }
   }
 }
 

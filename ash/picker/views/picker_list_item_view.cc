@@ -84,8 +84,6 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
   // Trailing badge should always be preferred size and centered vertically.
   trailing_badge_ = item_contents->AddChildView(
       views::Builder<PickerBadgeView>()
-          .SetText(
-              l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_INSERT))
           .SetProperty(views::kCrossAxisAlignmentKey,
                        views::LayoutAlignment::kCenter)
           .SetProperty(views::kMarginsKey, kBadgeLeftPadding)
@@ -150,6 +148,26 @@ void PickerListItemView::SetSecondaryText(
           cros_tokens::kCrosSysOnSurfaceVariant));
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
+}
+
+void PickerListItemView::SetBadgeAction(PickerActionType action) {
+  switch (action) {
+    case PickerActionType::kDo:
+      trailing_badge_->SetText(u"");
+      break;
+    case PickerActionType::kInsert:
+      trailing_badge_->SetText(
+          l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_INSERT));
+      break;
+    case PickerActionType::kOpen:
+      trailing_badge_->SetText(
+          l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_OPEN));
+      break;
+    case PickerActionType::kCreate:
+      trailing_badge_->SetText(
+          l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_CREATE));
+      break;
+  }
 }
 
 void PickerListItemView::SetBadgeVisible(bool visible) {

@@ -15,6 +15,7 @@
 
 namespace ash {
 
+enum class PickerActionType;
 class PickerAssetFetcher;
 class PickerSearchResult;
 class PickerSearchResultsSection;
@@ -73,6 +74,10 @@ class ASH_EXPORT PickerViewDelegate {
 
   virtual void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) = 0;
+
+  // Returns the current action for `result`.
+  virtual PickerActionType GetActionForResult(
+      const PickerSearchResult& result) = 0;
 
   virtual PickerAssetFetcher* GetAssetFetcher() = 0;
 

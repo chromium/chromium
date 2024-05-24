@@ -10,6 +10,7 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
@@ -577,5 +578,143 @@ TEST_F(PickerControllerTest, GetSentenceCaseSelectedText) {
 
   EXPECT_EQ(input_field.text(), u"How are you? Fine. Thanks!  Ok");
 }
+
+struct ActionTestCase {
+  PickerSearchResult result;
+  std::optional<PickerActionType> unfocused_action;
+  std::optional<PickerActionType> no_selection_action;
+  std::optional<PickerActionType> has_selection_action;
+};
+
+class PickerControllerActionTest
+    : public PickerControllerTest,
+      public testing::WithParamInterface<ActionTestCase> {};
+
+TEST_P(PickerControllerActionTest, GetActionForResultUnfocused) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+
+  if (GetParam().unfocused_action.has_value()) {
+    EXPECT_EQ(controller.GetActionForResult(GetParam().result),
+              GetParam().unfocused_action);
+  }
+}
+
+TEST_P(PickerControllerActionTest, GetActionForResultNoSelection) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+
+  if (GetParam().no_selection_action.has_value()) {
+    EXPECT_EQ(controller.GetActionForResult(GetParam().result),
+              GetParam().no_selection_action);
+  }
+}
+
+TEST_P(PickerControllerActionTest, GetActionForResultHasSelection) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+
+  if (GetParam().has_selection_action.has_value()) {
+    EXPECT_EQ(controller.GetActionForResult(GetParam().result),
+              GetParam().has_selection_action);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PickerControllerActionTest,
+    testing::ValuesIn<ActionTestCase>({
+        {
+            .result = PickerSearchResult::Text(u""),
+            .no_selection_action = PickerActionType::kInsert,
+            .has_selection_action = PickerActionType::kInsert,
+        },
+        {
+            .result = PickerSearchResult::Emoji(u""),
+            .no_selection_action = PickerActionType::kInsert,
+            .has_selection_action = PickerActionType::kInsert,
+        },
+        {
+            .result = PickerSearchResult::Symbol(u""),
+            .no_selection_action = PickerActionType::kInsert,
+            .has_selection_action = PickerActionType::kInsert,
+        },
+        {
+            .result = PickerSearchResult::Emoticon(u""),
+            .no_selection_action = PickerActionType::kInsert,
+            .has_selection_action = PickerActionType::kInsert,
+        },
+        {
+            .result = PickerSearchResult::Clipboard(
+                base::UnguessableToken::Create(),
+                PickerSearchResult::ClipboardData::DisplayFormat::kFile,
+                u"",
+                {}),
+            .no_selection_action = PickerActionType::kInsert,
+            .has_selection_action = PickerActionType::kInsert,
+        },
+        {
+            .result = PickerSearchResult::Gif({}, {}, {}, {}, {}, u""),
+            .no_selection_action = PickerActionType::kInsert,
+            .has_selection_action = PickerActionType::kInsert,
+        },
+        {
+            .result = PickerSearchResult::BrowsingHistory({}, u"", {}),
+            .unfocused_action = PickerActionType::kOpen,
+            .no_selection_action = PickerActionType::kInsert,
+            .has_selection_action = PickerActionType::kInsert,
+        },
+        {
+            .result = PickerSearchResult::LocalFile(u"", {}),
+            .unfocused_action = PickerActionType::kOpen,
+            .no_selection_action = PickerActionType::kInsert,
+            .has_selection_action = PickerActionType::kInsert,
+        },
+        {
+            .result = PickerSearchResult::DriveFile(u"", {}, {}, {}),
+            .unfocused_action = PickerActionType::kOpen,
+            .no_selection_action = PickerActionType::kInsert,
+            .has_selection_action = PickerActionType::kInsert,
+        },
+        {
+            .result =
+                PickerSearchResult::Category(PickerCategory::kExpressions),
+            .unfocused_action = PickerActionType::kDo,
+            .no_selection_action = PickerActionType::kDo,
+            .has_selection_action = PickerActionType::kDo,
+        },
+        {
+            .result = PickerSearchResult::SearchRequest(u"", {}),
+            .unfocused_action = PickerActionType::kDo,
+            .no_selection_action = PickerActionType::kDo,
+            .has_selection_action = PickerActionType::kDo,
+        },
+        {
+            .result = PickerSearchResult::Editor(
+                PickerSearchResult::EditorData::Mode::kWrite,
+                u"",
+                {},
+                {},
+                {}),
+            .unfocused_action = PickerActionType::kCreate,
+            .no_selection_action = PickerActionType::kCreate,
+            .has_selection_action = PickerActionType::kCreate,
+        },
+    }));
+
 }  // namespace
 }  // namespace ash

@@ -7253,6 +7253,12 @@ New install
       <message name="IDS_PICKER_RESULT_BADGE_LABEL_INSERT" translateable="false" desc="Label of the badge in a result that can be inserted.">
         Insert
       </message>
+      <message name="IDS_PICKER_RESULT_BADGE_LABEL_OPEN" translateable="false" desc="Label of the badge in a result that can be opened.">
+        Open
+      </message>
+      <message name="IDS_PICKER_RESULT_BADGE_LABEL_CREATE" translateable="false" desc="Label of the badge in a result that can be created.">
+        Create
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

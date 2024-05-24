@@ -65,7 +65,7 @@ PickerBadgeView::PickerBadgeView() {
 
 PickerBadgeView::~PickerBadgeView() = default;
 
-const std::u16string& PickerBadgeView::GetText() {
+const std::u16string& PickerBadgeView::GetText() const {
   return label_->GetText();
 }
 

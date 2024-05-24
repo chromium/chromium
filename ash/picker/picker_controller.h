@@ -94,6 +94,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
       SuggestedEditorResultsCallback callback) override;
   PickerAssetFetcher* GetAssetFetcher() override;
   PickerSessionMetrics& GetSessionMetrics() override;
+  PickerActionType GetActionForResult(
+      const PickerSearchResult& result) override;
 
   // views:WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

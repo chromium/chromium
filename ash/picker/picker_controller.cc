@@ -13,6 +13,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_asset_fetcher.h"
@@ -546,6 +548,69 @@ PickerAssetFetcher* PickerController::GetAssetFetcher() {
 
 PickerSessionMetrics& PickerController::GetSessionMetrics() {
   return *session_metrics_;
+}
+
+PickerActionType PickerController::GetActionForResult(
+    const PickerSearchResult& result) {
+  const PickerModeType mode = model_->GetMode();
+  return std::visit(
+      base::Overloaded{
+          [mode](const PickerSearchResult::TextData& data) {
+            CHECK(mode == PickerModeType::kNoSelection ||
+                  mode == PickerModeType::kHasSelection);
+            return PickerActionType::kInsert;
+          },
+          [mode](const PickerSearchResult::EmojiData& data) {
+            CHECK(mode == PickerModeType::kNoSelection ||
+                  mode == PickerModeType::kHasSelection);
+            return PickerActionType::kInsert;
+          },
+          [mode](const PickerSearchResult::SymbolData& data) {
+            CHECK(mode == PickerModeType::kNoSelection ||
+                  mode == PickerModeType::kHasSelection);
+            return PickerActionType::kInsert;
+          },
+          [mode](const PickerSearchResult::EmoticonData& data) {
+            CHECK(mode == PickerModeType::kNoSelection ||
+                  mode == PickerModeType::kHasSelection);
+            return PickerActionType::kInsert;
+          },
+          [mode](const PickerSearchResult::ClipboardData& data) {
+            CHECK(mode == PickerModeType::kNoSelection ||
+                  mode == PickerModeType::kHasSelection);
+            return PickerActionType::kInsert;
+          },
+          [mode](const PickerSearchResult::GifData& data) {
+            CHECK(mode == PickerModeType::kNoSelection ||
+                  mode == PickerModeType::kHasSelection);
+            return PickerActionType::kInsert;
+          },
+          [mode](const PickerSearchResult::BrowsingHistoryData& data) {
+            return mode == PickerModeType::kUnfocused
+                       ? PickerActionType::kOpen
+                       : PickerActionType::kInsert;
+          },
+          [mode](const PickerSearchResult::LocalFileData& data) {
+            return mode == PickerModeType::kUnfocused
+                       ? PickerActionType::kOpen
+                       : PickerActionType::kInsert;
+          },
+          [mode](const PickerSearchResult::DriveFileData& data) {
+            return mode == PickerModeType::kUnfocused
+                       ? PickerActionType::kOpen
+                       : PickerActionType::kInsert;
+          },
+          [](const PickerSearchResult::CategoryData& data) {
+            return PickerActionType::kDo;
+          },
+          [](const PickerSearchResult::SearchRequestData& data) {
+            return PickerActionType::kDo;
+          },
+          [](const PickerSearchResult::EditorData& data) {
+            return PickerActionType::kCreate;
+          },
+      },
+      result.data());
 }
 
 void PickerController::OnWidgetDestroying(views::Widget* widget) {

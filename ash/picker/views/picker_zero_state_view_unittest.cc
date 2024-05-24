@@ -85,6 +85,10 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
               (PickerCategory, SearchResultsCallback),
               (override));
   MOCK_METHOD(void, NotifyPseudoFocusChanged, (views::View*), (override));
+  MOCK_METHOD(PickerActionType,
+              GetActionForResult,
+              (const PickerSearchResult& result),
+              (override));
 };
 
 class PickerZeroStateViewTest : public views::ViewsTestBase {

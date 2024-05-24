@@ -15,6 +15,7 @@
 namespace ash {
 
 class PickerPreviewBubbleController;
+enum class PickerActionType;
 
 // View for a Picker item which can be selected.
 class ASH_EXPORT PickerItemView : public views::Button {

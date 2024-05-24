@@ -15,6 +15,7 @@ class View;
 namespace ash {
 
 class PickerSearchResult;
+enum class PickerActionType;
 
 // Delegate for `PickerZeroStateView`.
 class ASH_EXPORT PickerZeroStateViewDelegate {
@@ -37,6 +38,9 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
 
   // `view` may be `nullptr` if there's no pseudo focused view.
   virtual void NotifyPseudoFocusChanged(views::View* view) = 0;
+
+  virtual PickerActionType GetActionForResult(
+      const PickerSearchResult& result) = 0;
 };
 
 }  // namespace ash

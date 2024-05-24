@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -44,6 +45,7 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
 
   void SetSecondaryText(const std::u16string& secondary_text);
 
+  void SetBadgeAction(PickerActionType action);
   void SetBadgeVisible(bool visible);
 
   const views::View* leading_container_for_testing() const {

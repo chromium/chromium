@@ -35,6 +35,7 @@ class PickerSearchResult;
 class PickerSmallItemGridView;
 class PickerSymbolItemView;
 class PickerTraversableItemContainer;
+enum class PickerActionType;
 
 // View for a Picker section with a title and related items.
 class ASH_EXPORT PickerSectionView : public views::View {
@@ -75,9 +76,9 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // Creates an item based on `result` and adds it to the section view.
   // `preview_controller` can be null if previews are not needed. If it's not
   // null, it must outlive this class.
-  void AddResult(const PickerSearchResult& result,
-                 PickerPreviewBubbleController* preview_controller,
-                 SelectResultCallback select_result_callback);
+  PickerItemView* AddResult(const PickerSearchResult& result,
+                            PickerPreviewBubbleController* preview_controller,
+                            SelectResultCallback select_result_callback);
 
   void ClearItems();
 

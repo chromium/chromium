@@ -9,6 +9,7 @@
 
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/mock_picker_asset_fetcher.h"
+#include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_category_view.h"
@@ -99,9 +100,11 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   struct Options {
     std::vector<PickerCategory> available_categories;
     FakeSearchFunction search_function;
+    PickerActionType action_type = PickerActionType::kInsert;
   };
 
-  explicit FakePickerViewDelegate(Options options = {}) : options_(options) {}
+  FakePickerViewDelegate() = default;
+  explicit FakePickerViewDelegate(Options options) : options_(options) {}
 
   std::vector<PickerCategory> GetAvailableCategories() override {
     if (options_.available_categories.empty()) {
@@ -137,7 +140,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void InsertResultOnNextFocus(const PickerSearchResult& result) override {
     last_inserted_result_ = result;
   }
-  void OpenResult(const PickerSearchResult& result) override {}
+  void OpenResult(const PickerSearchResult& result) override {
+    last_opened_result_ = result;
+  }
 
   void ShowEmojiPicker(ui::EmojiPickerCategory category,
                        std::u16string_view query) override {
@@ -158,9 +163,16 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   PickerSessionMetrics& GetSessionMetrics() override {
     return session_metrics_;
   }
+  PickerActionType GetActionForResult(
+      const PickerSearchResult& result) override {
+    return options_.action_type;
+  }
 
   std::optional<PickerSearchResult> last_inserted_result() const {
     return last_inserted_result_;
+  }
+  std::optional<PickerSearchResult> last_opened_result() const {
+    return last_opened_result_;
   }
 
   std::optional<std::u16string> emoji_picker_query() const {
@@ -177,6 +189,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   MockPickerAssetFetcher asset_fetcher_;
   PickerSessionMetrics session_metrics_;
   std::optional<PickerSearchResult> last_inserted_result_;
+  std::optional<PickerSearchResult> last_opened_result_;
   std::optional<std::u16string> emoji_picker_query_;
   bool showed_editor_ = false;
   std::optional<PickerCategory> requested_case_transformation_category_ =
@@ -251,7 +264,7 @@ TEST_F(PickerViewTest, EmptySearchFieldContentsSwitchesToZeroStateView) {
               Property(&views::View::GetVisible, false));
 }
 
-TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
+TEST_F(PickerViewTest, LeftClickSearchResultInsertsResult) {
   {
     base::test::TestFuture<void> future;
     FakePickerViewDelegate delegate({
@@ -265,6 +278,7 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
                       /*has_more_results=*/false),
               });
             }),
+        .action_type = PickerActionType::kInsert,
     });
     auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
     widget->Show();
@@ -285,6 +299,7 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
     ViewDrawnWaiter().Wait(result_view);
     LeftClickOn(result_view);
 
+    EXPECT_EQ(delegate.last_opened_result(), std::nullopt);
     EXPECT_THAT(delegate.last_inserted_result(),
                 Optional(PickerSearchResult::Text(u"result")));
   }
@@ -298,6 +313,45 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
       .SetFinalQuerySize(1)
       .SetResultIndex(0);
   EXPECT_THAT(metrics_recorder_.GetEvents(), ContainsEvent(expected_event));
+}
+
+TEST_F(PickerViewTest, LeftClickSearchResultOpensResult) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(
+                    PickerSectionType::kLinks,
+                    {PickerSearchResult::BrowsingHistory({}, u"a", {})},
+                    /*has_more_results=*/false),
+            });
+          }),
+      .action_type = PickerActionType::kOpen,
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  ASSERT_THAT(
+      view->search_results_view_for_testing().section_views_for_testing(),
+      Not(IsEmpty()));
+  ASSERT_THAT(view->search_results_view_for_testing()
+                  .section_views_for_testing()[0]
+                  ->item_views_for_testing(),
+              Not(IsEmpty()));
+
+  PickerItemView* result_view = view->search_results_view_for_testing()
+                                    .section_views_for_testing()[0]
+                                    ->item_views_for_testing()[0];
+  ViewDrawnWaiter().Wait(result_view);
+  LeftClickOn(result_view);
+
+  EXPECT_EQ(delegate.last_inserted_result(), std::nullopt);
+  EXPECT_THAT(delegate.last_opened_result(),
+              Optional(PickerSearchResult::BrowsingHistory({}, u"a", {})));
 }
 
 TEST_F(PickerViewTest, SwitchesToCategoryView) {

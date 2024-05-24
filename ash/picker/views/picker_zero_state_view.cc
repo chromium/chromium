@@ -15,6 +15,7 @@
 #include "ash/picker/picker_clipboard_provider.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_icons.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_section_list_view.h"
@@ -283,10 +284,14 @@ void PickerZeroStateView::OnFetchRecentResults(
         GetSectionTitleForPickerSectionType(PickerSectionType::kNone));
   }
   for (const auto& result : results) {
-    recent_section_view_->AddResult(
+    PickerItemView* view = recent_section_view_->AddResult(
         result, &preview_controller_,
         base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                             weak_ptr_factory_.GetWeakPtr(), result));
+
+    if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+      list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
+    }
   }
   SetPseudoFocusedView(section_list_view_->GetTopItem());
 }
