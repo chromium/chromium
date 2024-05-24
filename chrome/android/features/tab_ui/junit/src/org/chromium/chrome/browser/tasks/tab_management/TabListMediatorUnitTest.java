@@ -2691,14 +2691,12 @@ public class TabListMediatorUnitTest {
 
         // Fake a different color on the group to check that the color was set properly on group
         // creation.
-        mModel.get(POSITION1).model.set(TabProperties.TAB_GROUP_COLOR_ID, COLOR_2);
+        when(mTabGroupModelFilter.getTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_2);
 
         mTabGroupModelFilterObserverCaptor
                 .getValue()
                 .didCreateNewGroup(mTab1, mTabGroupModelFilter);
-        assertEquals(
-                nextSuggestedColorId,
-                mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_COLOR_ID));
+        assertEquals(COLOR_2, mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_COLOR_ID));
     }
 
     @Test
@@ -2732,6 +2730,39 @@ public class TabListMediatorUnitTest {
         assertEquals(
                 nextSuggestedColorId,
                 mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_COLOR_ID));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void testTabGroupColorIconToggle_listMode() {
+        int invalidColorId = -1;
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.LIST);
+
+        TabListMediator mMediatorSpy = spy(mMediator);
+        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(true);
+        doReturn(true).when(mMediatorSpy).isTabInTabGroup(any());
+
+        mMediatorSpy.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+        initAndAssertAllProperties(mMediatorSpy);
+
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        // Get the next suggested color id to mock the setting of a color on tab group creation.
+        int nextSuggestedColorId = TabGroupColorUtils.getNextSuggestedColorId(mTabGroupModelFilter);
+
+        // Assert that the next suggested color was assigned to that group.
+        assertEquals(
+                nextSuggestedColorId,
+                mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_COLOR_ID));
+
+        // Fake that the group is no longer a tab group any more.
+        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
+        doReturn(false).when(mMediatorSpy).isTabInTabGroup(any());
+
+        mMediatorSpy.resetWithListOfTabs(tabs, /* quickMode= */ false);
+        assertEquals(
+                invalidColorId, mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_COLOR_ID));
     }
 
     @Test

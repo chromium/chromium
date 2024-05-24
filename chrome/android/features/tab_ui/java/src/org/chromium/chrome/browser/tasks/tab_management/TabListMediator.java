@@ -894,20 +894,17 @@ class TabListMediator {
 
                 @Override
                 public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
-                    if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                        // On new group creation for the tab group representation in the GTS, update
-                        // the tab group color icon.
-                        if (mMode == TabListMode.LIST) {
-                            int groupIndex = filter.indexOf(destinationTab);
-                            Tab groupTab = filter.getTabAt(groupIndex);
-                            PropertyModel model = getModelFromId(groupTab.getId());
+                    // On new group creation for the tab group representation in the GTS, update
+                    // the tab group color icon.
+                    if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
+                            && mMode == TabListMode.LIST) {
+                        int groupIndex = filter.indexOf(destinationTab);
+                        Tab groupTab = filter.getTabAt(groupIndex);
+                        PropertyModel model = getModelFromId(groupTab.getId());
 
-                            if (model != null) {
-                                final @TabGroupColorId int colorId =
-                                        TabGroupColorUtils.getOrCreateTabGroupColor(
-                                                destinationTab.getRootId(), filter);
-                                model.set(TabProperties.TAB_GROUP_COLOR_ID, colorId);
-                            }
+                        if (model != null) {
+                            int colorId = filter.getTabGroupColor(destinationTab.getRootId());
+                            model.set(TabProperties.TAB_GROUP_COLOR_ID, colorId);
                         }
                     }
                 }
@@ -1628,11 +1625,16 @@ class TabListMediator {
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             // If the tab to update is in ListMode, update it with the most recent stored color.
-            if (mMode == TabListMode.LIST && isInTabGroup) {
-                final @TabGroupColorId int tabGroupColorId =
-                        TabGroupColorUtils.getOrCreateTabGroupColor(
-                                tab.getRootId(),
-                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get());
+            if (mMode == TabListMode.LIST) {
+                int tabGroupColorId = INVALID_COLOR_ID;
+                // Only update the color if the tab is a representation of a tab group, otherwise
+                // hide the icon by setting the color to INVALID.
+                if (isInTabGroup) {
+                    TabGroupModelFilter filter =
+                            (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                    tabGroupColorId = filter.getTabGroupColor(tab.getRootId());
+                }
+
                 PropertyModel model = getModelFromId(tab.getId());
                 if (model != null) {
                     model.set(TabProperties.TAB_GROUP_COLOR_ID, tabGroupColorId);
@@ -1926,14 +1928,14 @@ class TabListMediator {
 
         int colorId = INVALID_COLOR_ID;
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-
             // While groups always have a color, only set it here when it should be shown next to
             // the title. In GRID mode this is not the case, as the color replaces the favicon.
             // Rather it's LIST mode where we do this, and additionally not when we've opened a
             // dialog for a particular group, checked by isParentComponentTabSwitcher().
             if (mMode == TabListMode.LIST && isInTabGroup && isParentComponentTabSwitcher()) {
-                colorId = TabGroupColorUtils.getOrCreateTabGroupColor(tab.getRootId(), filter);
+                TabGroupModelFilter filter =
+                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                colorId = filter.getTabGroupColor(tab.getRootId());
             }
         }
 
