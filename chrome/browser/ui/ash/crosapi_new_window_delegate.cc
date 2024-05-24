@@ -220,8 +220,7 @@ void CrosapiNewWindowDelegate::OpenUrl(const GURL& url,
     if (browser_context) {
       url_to_open = ash::ExternalFileURLToFuseboxMonikerFileURL(
           browser_context, url, /*read_only=*/true,
-          /*lifetime=*/base::Hours(20),
-          /*keep_extension=*/true);
+          /*lifetime=*/base::Hours(20));
     }
   }
 

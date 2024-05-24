@@ -157,11 +157,7 @@ GURL ConvertArcUrlToExternalFileUrlIfNeeded(const GURL& url) {
 GURL ConvertToMonikerFileUrl(Profile* profile, GURL content_url) {
   return ash::ExternalFileURLToFuseboxMonikerFileURL(
       profile, arc::ArcUrlToExternalFileUrl(content_url),
-      /*read_only=*/true, webshare::PrepareDirectoryTask::kSharedFileLifetime,
-      // TODO(nigeltao): keep_extension=false is for refactoring compatibility,
-      // but probably isn't necessary and I think we can flip it to true (and
-      // then remove the argument entirely).
-      /*keep_extension=*/false);
+      /*read_only=*/true, webshare::PrepareDirectoryTask::kSharedFileLifetime);
 }
 
 apps::IntentPtr ConvertLaunchIntent(
