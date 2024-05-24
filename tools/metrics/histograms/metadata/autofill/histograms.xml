@@ -4302,6 +4302,21 @@ chromium-metrics-reviews@google.com.
   <token key="FlowType" variants="Autofill.ProgressDialog.FlowType"/>
 </histogram>
 
+<histogram name="Autofill.Quality.AutomationRate.{FormType}" units="%"
+    expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the percentage of input text field characters that were autofilled.
+    This function measures text input as a number of UTF-16 code points. Fields
+    with more than 150 code points input are ignored. Emitted on form
+    submission.
+  </summary>
+  <token key="FormType" variants="Autofill.Ablation.FormType"/>
+</histogram>
+
 <histogram name="Autofill.QueriedCreditCardFormIsSecure" enum="BooleanSecure"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
