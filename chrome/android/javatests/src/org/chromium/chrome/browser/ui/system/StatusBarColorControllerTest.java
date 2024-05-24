@@ -276,6 +276,7 @@ public class StatusBarColorControllerTest {
     @LargeTest
     @Feature({"StatusBar"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @DisabledTest(message = "crbug.com/342539152")
     public void testFocusAndScrollColors() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
