@@ -484,6 +484,67 @@ message KioskHeartbeatTelemetry {
   // No payload
 }
 
+// A message describing a single attention span of a person for the Kiosk
+// Vision telemetry report.
+message KioskVisionView {
+  // Start time of this view. In seconds since epoch.
+  optional int64 start_time_sec = 1;
+  // End time of this view. In seconds.
+  optional int64 end_time_sec = 2;
+}
+
+// A message describing the attention of one person for the Kiosk Vision
+// telemetry report.
+message KioskVisionAudience {
+  // The start date when this person was first detected.
+  // In seconds since epoch.
+  optional int64 presence_start_date_sec = 1;
+  // The end date when this person was no longer detected.
+  // In seconds since epoch.
+  optional int64 presence_end_date_sec = 2;
+  // The view information of this person.
+  // Repeated, as a person can view multiple times.
+  repeated KioskVisionView views = 3;
+}
+
+// A message to report Kiosk Vision's audience data.
+message KioskVisionTelemetry {
+  // Start date of this aggregate report. In seconds since epoch.
+  optional int64 start_date_sec = 1;
+  // End date of this aggregate report. In seconds since epoch.
+  optional int64 end_date_sec = 2;
+  // Number of persons that left in the time frame of this aggregate
+  // report and looked at the sign.
+  optional int32 view_count = 3;
+  // Number of persons that left in the time frame of this aggregate
+  // report and didn't look at the sign.
+  optional int32 pass_count = 4;
+  // Audience information. Only information from people that are no
+  // longer detected is transmitted. This also means that the
+  // audience information includes older data.
+  repeated KioskVisionAudience audience = 5;
+}
+
+// A message to report the current state and potential errors of the
+// KioskVision framework to the telemetry api.
+message KioskVisionStatusReport {
+  enum KioskVisionState {
+    // Kiosk vision is functioning normally.
+    KIOSK_VISION_STATE_ACTIVE = 0;
+    // An unknown error has occurred.
+    KIOSK_VISION_STATE_UNKNOWN_ERROR = 1;
+    // The KioskVision framework could not detect a camera.
+    KIOSK_VISION_STATE_CAMERA_NOT_FOUND = 2;
+  }
+  optional KioskVisionState state = 1;
+
+  // Time stamp of this status report (seconds since epoch).
+  optional int64 time_stamp_sec = 2;
+
+  // Time stamp of the last status change (seconds since epoch).
+  optional int64 state_change_time_stamp_sec = 3;
+}
+
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.
 // IMPORTANT: Do not add additional non-message fields (bool, int, string,
@@ -515,8 +576,12 @@ message TelemetryData {
   optional RuntimeCountersTelemetry runtime_counters_telemetry = 10;
   // Website telemetry data.
   optional WebsiteTelemetry website_telemetry = 11;
-  // Kiosk Heartbeats as telemetry data
+  // Kiosk Heartbeats as telemetry data.
   optional KioskHeartbeatTelemetry heartbeat_telemetry = 12;
+  // Kiosk Vision telemetry data.
+  optional KioskVisionTelemetry kiosk_vision_telemetry = 13;
+  // Kiosk Vision status data.
+  optional KioskVisionStatusReport kiosk_vision_status = 14;
 }
 
 // Type of event metric being reported.
