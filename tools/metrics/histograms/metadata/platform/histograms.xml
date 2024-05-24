@@ -954,6 +954,10 @@ chromium-metrics-reviews@google.com.
         summary="PinWeaverManager::GetVersion"/>
     <variant name=".PinWeaverManager.GetWrongAuthAttempts"
         summary="PinWeaverManager::GetWrongAuthAttempts"/>
+    <variant name=".PinWeaverManager.HasAnyCredential"
+        summary="PinWeaverManager::HasAnyCredential"/>
+    <variant name=".PinWeaverManager.Initialize"
+        summary="PinWeaverManager::Initialize"/>
     <variant name=".PinWeaverManager.InsertCredential"
         summary="PinWeaverManager::InsertCredential"/>
     <variant name=".PinWeaverManager.InsertRateLimiter"
@@ -968,6 +972,8 @@ chromium-metrics-reviews@google.com.
         summary="PinWeaverManager::StartBiometricsAuth"/>
     <variant name=".PinWeaverManager.StateIsReady"
         summary="PinWeaverManager::StateIsReady"/>
+    <variant name=".PinWeaverManager.SyncHashTree"
+        summary="PinWeaverManager::SyncHashTree"/>
     <variant name=".Random" summary="Random"/>
     <variant name=".Random.RandomBlob" summary="Random::RandomBlob"/>
     <variant name=".Random.RandomSecureBlob"
