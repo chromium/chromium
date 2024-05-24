@@ -161,8 +161,22 @@ function compareToBaseLine(current, baseline) {
   `;
 }
 
+function getHtmlForTest(map, title) {
+  return `
+      <h2 id="${title.replaceAll(' ', '-').toLowerCase()}">${title} - ${map.stat.passing} / ${map.stat.total} (${
+        map.stat.total - map.stat.passing
+      } remaining)
+      </h2>
+      <div>
+        ${Array.from(map.children.values())
+          .map((t) => generateTestReport(t, map.path))
+          .join('')}
+      </div>`;
+}
+
 function generateHtml(
   map,
+  mapInterop,
   commitHash,
   chromeVersion,
   wptHash,
@@ -190,19 +204,8 @@ function generateHtml(
         <span>
           running Chrome ${chromeVersion} @ <time>${date}</time>
         </span>
-        <h2>${map.stat.passing} / ${map.stat.total} (${
-          map.stat.total - map.stat.passing
-        } remaining)</h2>
       ${isFiltered ? `<p>${compareToBaseLine(map.stat, baseline)}</p>` : ''}
     </div>`;
-
-  const tests = `
-      <div>
-        ${Array.from(map.children.values())
-          .map((t) => generateTestReport(t, map.path))
-          .join('')}
-      </div>
-    `;
 
   const template = fs.readFileSync(
     path.join(__dirname, './template.html'),
@@ -211,7 +214,11 @@ function generateHtml(
 
   return template
     .replace('<chromium-bidi-header />', header)
-    .replace('<chromium-bidi-tests />', tests);
+    .replace('<chromium-bidi-tests />', getHtmlForTest(map, 'BiDi tests'))
+    .replace(
+      '<chromium-bidi-tests-interop />',
+      getHtmlForTest(mapInterop, 'Interop tests')
+    );
 }
 
 function generateTestReport(map, parent) {
@@ -284,9 +291,16 @@ function linkWptCommit(commitHash) {
   return `https://github.com/web-platform-tests/wpt/commit/${commitHash}`;
 }
 
-export function generateReport(reportData, commitHash, chromeVersion, wptHash) {
+export function generateReport(
+  reportData,
+  interopReportData,
+  commitHash,
+  chromeVersion,
+  wptHash
+) {
   return generateHtml(
     groupTests(flattenTests(reportData)),
+    groupTests(flattenTests(interopReportData)),
     commitHash,
     chromeVersion,
     wptHash,

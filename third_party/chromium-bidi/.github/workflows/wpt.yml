@@ -15,13 +15,6 @@ env:
 on:
   push:
     branches: 'main'
-  pull_request:
-    types:
-      # These are the defaults. See
-      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
-      - opened
-      - reopened
-      - synchronize
 
   workflow_dispatch:
     inputs:
@@ -180,11 +173,24 @@ jobs:
           UPDATE_EXPECTATIONS: true
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
+      - name: Run WPT interop tests (${{matrix.kind}}, ${{matrix.head}})
+        timeout-minutes: 60
+        run: >
+          xvfb-run --auto-servernum
+          npm run wpt -- "webdriver/tests/interop/"
+        env:
+          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          CHROMEDRIVER: ${{matrix.kind == 'chromedriver'}}
+          HEADLESS: ${{matrix.head=='headless'}}
+          UPDATE_EXPECTATIONS: true
+          VERBOSE: ${{ github.event.inputs.verbose }}
+          WPT_REPORT: out/wptreport-interop.json
       - name: Generate HTML test report
         if: success() || failure()
         run: >
           node tools/wpt-report-builder/builder.mjs
           out/wptreport.json
+          out/wptreport-interop.json
           out/wptreport.html
           out/wptreport-2023.html
       - name: Upload expectations

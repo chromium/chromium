@@ -61,19 +61,36 @@ function readReport(filePath) {
 }
 
 const jsonPath = process.argv[2];
-const outputPath = process.argv[3];
-const filteredOutputPath = process.argv[4];
+const jsonInteropPath = process.argv[3];
+const outputPath = process.argv[4];
+const filteredOutputPath = process.argv[5];
 const reportData = readReport(jsonPath);
+const reportInteropData = readReport(jsonInteropPath);
 const filteredReportData = apply2023Filter(reportData);
+const filteredInteropReportData = apply2023Filter(reportInteropData);
+
 const currentCommit = getCurrentCommit();
 const chromeVersion = getChromeVersion();
 const wptCommit = getWptCommit();
 
 fs.writeFileSync(
   outputPath,
-  generateReport(reportData, currentCommit, chromeVersion, wptCommit)
+  generateReport(
+    reportData,
+    reportInteropData,
+    currentCommit,
+    chromeVersion,
+    wptCommit
+  )
 );
+
 fs.writeFileSync(
   filteredOutputPath,
-  generateReport(filteredReportData, currentCommit, chromeVersion, wptCommit)
+  generateReport(
+    filteredReportData,
+    filteredInteropReportData,
+    currentCommit,
+    chromeVersion,
+    wptCommit
+  )
 );

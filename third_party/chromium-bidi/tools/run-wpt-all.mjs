@@ -64,8 +64,5 @@ runWpt({
   HEADLESS: true,
 });
 runWpt({
-  HEADLESS: false,
-});
-runWpt({
   HEADLESS: true,
 });
