@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -348,7 +349,8 @@ void ProactiveNudgeTracker::CollectTrainingData(
     const segmentation_platform::TrainingRequestId training_request_id,
     ProactiveNudgeDerivedEngagement engagement) {
   segmentation_platform::TrainingLabels training_labels;
-  // TODO(harringtond): Add UMA for Compose.ProactiveNudge.DerivedEngagement.
+  base::UmaHistogramEnumeration("Compose.ProactiveNudge.DerivedEngagement",
+                                engagement);
   training_labels.output_metric =
       std::make_pair("Compose.ProactiveNudge.DerivedEngagement",
                      static_cast<base::HistogramBase::Sample>(engagement));

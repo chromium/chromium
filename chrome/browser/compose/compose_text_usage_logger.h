@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_COMPOSE_COMPOSE_TEXT_USAGE_LOGGER_H_
 
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/common/signatures.h"
 #include "content/public/browser/document_user_data.h"
 
 namespace compose {
@@ -39,10 +40,16 @@ class ComposeTextUsageLogger
     bool sensitive_field = false;
     int64_t estimate_typed_characters = 0;
     int64_t form_control_type = -1;
+    autofill::FieldSignature field_signature;
+    autofill::FormSignature form_signature;
+    base::TimeTicks last_update_time;
+    base::TimeDelta editing_time;
 
     std::u16string initial_text;
     std::u16string final_text;
     bool is_autofill_field_type = false;
+    // Is it either a textarea or a contenteditable.
+    bool is_long_field = false;
   };
 
   raw_ptr<ukm::UkmRecorder> ukm_recorder_;

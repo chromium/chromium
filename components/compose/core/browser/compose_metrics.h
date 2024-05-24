@@ -209,8 +209,9 @@ enum class ComposeRequestFeedback {
 };
 
 // The output metric for the proactive nudge segmentation model. Represents what
-// effect the nudge had on the user's engagement. Stored as
-// "Compose.ProactiveNudge.DerivedEngagement".
+// effect the nudge had on the user's engagement. Keep in sync with
+// ProactiveNudgeDerivedEngagement in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ProactiveNudgeDerivedEngagement {
   // The user didn't interact with the nudge.
   kIgnored,

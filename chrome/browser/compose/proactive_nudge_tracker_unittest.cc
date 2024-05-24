@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -627,6 +628,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, MinimalUse) {
 }
 
 TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, SuggestionGenerated) {
+  base::HistogramTester histograms;
   TestFuture<segmentation_platform::TrainingLabels>& training_labels =
       TriggerNudgeForField(0, CreateTestFormFieldData());
   compose::ComposeSessionEvents events;
@@ -642,6 +644,9 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, SuggestionGenerated) {
           "Compose.ProactiveNudge.DerivedEngagement",
           static_cast<base::HistogramBase::Sample>(
               ProactiveNudgeDerivedEngagement::kGeneratedComposeSuggestion)));
+  histograms.ExpectUniqueSample(
+      "Compose.ProactiveNudge.DerivedEngagement",
+      ProactiveNudgeDerivedEngagement::kGeneratedComposeSuggestion, 1);
 }
 
 TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, AcceptedSuggestion) {

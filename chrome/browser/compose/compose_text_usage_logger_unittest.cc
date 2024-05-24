@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -62,7 +63,9 @@ FormData CreateForm(
 
 class ComposeTextUsageLoggerTest : public ChromeRenderViewHostTestHarness {
  public:
-  ComposeTextUsageLoggerTest() = default;
+  ComposeTextUsageLoggerTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ComposeTextUsageLoggerTest(ComposeTextUsageLoggerTest&) = delete;
   ComposeTextUsageLoggerTest& operator=(const ComposeTextUsageLoggerTest&) =
       delete;
@@ -135,6 +138,33 @@ TEST_F(ComposeTextUsageLoggerTest, TextFieldEntry) {
                   })));
 }
 
+// Same as TextFieldEntry, but kEnableAdditionalTextMetrics is disabled, to
+// provide some coverage of the kill switch in the off position.
+TEST_F(ComposeTextUsageLoggerTest, TestEnableAdditionalTextMetricsIsOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kEnableAdditionalTextMetrics);
+
+  FormData form_data = CreateForm(FormControlType::kInputText);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(form_data));
+
+  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+                 u"Some text");
+
+  DeleteContents();
+
+  EXPECT_THAT(LoggedTextUsage(),
+              testing::ElementsAre(ukm::TestUkmRecorder::HumanReadableUkmEntry(
+                  ukm_source_id_,
+                  {
+                      {"AutofillFormControlType",
+                       static_cast<int64_t>(FormControlType::kInputText)},
+                      {"IsAutofillFieldType", 0},
+                      {"TypedCharacterCount", 8},
+                      {"TypedWordCount", 2},
+                  })));
+}
+
 TEST_F(ComposeTextUsageLoggerTest, TextAreaEntry) {
   FormData form_data = CreateForm(FormControlType::kTextArea);
   autofill_manager()->AddSeenFormStructure(
@@ -154,6 +184,18 @@ TEST_F(ComposeTextUsageLoggerTest, TextAreaEntry) {
                       {"TypedCharacterCount", 8},
                       {"TypedWordCount", 2},
                   })));
+
+  // Check that field and form signatures are reported. We don't bother checking
+  // for the exact hash values, because it's non-trivial to compute them for the
+  // test.
+  EXPECT_THAT(
+      ukm_recorder_
+          .GetEntries("Compose.TextElementUsage",
+                      {"FieldSignature", "FormSignature"})[0]
+          .metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair("FormSignature", testing::Not(testing::Eq(0))),
+          testing::Pair("FieldSignature", testing::Not(testing::Eq(0)))));
 }
 
 TEST_F(ComposeTextUsageLoggerTest, FormNotFound) {
@@ -489,5 +531,63 @@ TEST_F(ComposeTextUsageLoggerTest, TwoTypesOfFormsModified) {
                   {"TypedWordCount", 4},
               })));
 }
+
+TEST_F(ComposeTextUsageLoggerTest, EditingTime) {
+  base::HistogramTester histograms;
+  FormData form_data = CreateForm(FormControlType::kTextArea);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(form_data));
+  auto form_id = form_data.global_id();
+  auto field_id = form_data.fields[0].global_id();
+
+  SimulateTyping(form_id, field_id, u"h");
+  task_environment()->FastForwardBy(base::Seconds(1));
+  SimulateTyping(form_id, field_id, u"e");
+  task_environment()->FastForwardBy(base::Seconds(1));  // 2 total
+  SimulateTyping(form_id, field_id, u"ll");
+  task_environment()->FastForwardBy(base::Seconds(5));  // 7 total
+  SimulateTyping(form_id, field_id, u"o");
+  task_environment()->FastForwardBy(base::Seconds(15));  // 12 total (max 5).
+  SimulateTyping(form_id, field_id, u" w");
+  task_environment()->FastForwardBy(base::Seconds(4));  // 16 total.
+  SimulateTyping(form_id, field_id, u"orld!");
+
+  DeleteContents();
+
+  EXPECT_THAT(
+      ukm_recorder_.GetEntries("Compose.TextElementUsage", {"EditingTime"}),
+      testing::UnorderedElementsAre(ukm::TestUkmRecorder::HumanReadableUkmEntry(
+          ukm_source_id_, {
+                              // GetExponentialBucketMinForUserTiming(16) = 16
+                              {"EditingTime", 16},
+                          })));
+  histograms.ExpectUniqueTimeSample(
+      "Compose.TextElementUsage.LongField.EditingTime", base::Seconds(16), 1);
+}
+
+TEST_F(ComposeTextUsageLoggerTest, NoLongFieldEditingTimeForShortFields) {
+  base::HistogramTester histograms;
+  FormData form_data = CreateForm(FormControlType::kInputText);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(form_data));
+  auto form_id = form_data.global_id();
+  auto field_id = form_data.fields[0].global_id();
+
+  SimulateTyping(form_id, field_id, u"h");
+  task_environment()->FastForwardBy(base::Seconds(4));
+  SimulateTyping(form_id, field_id, u"ello");
+
+  DeleteContents();
+
+  EXPECT_THAT(
+      ukm_recorder_.GetEntries("Compose.TextElementUsage", {"EditingTime"}),
+      testing::UnorderedElementsAre(ukm::TestUkmRecorder::HumanReadableUkmEntry(
+          ukm_source_id_, {
+                              {"EditingTime", 4},
+                          })));
+  histograms.ExpectTotalCount("Compose.TextElementUsage.LongField.EditingTime",
+                              0);
+}
+
 }  // namespace
 }  // namespace compose

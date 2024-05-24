@@ -141,6 +141,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.ProactiveNudge.DerivedEngagement"
+    enum="ProactiveNudgeDerivedEngagement" expires_after="2024-12-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    The final derived engagement value for the nudge. Reported when the compose
+    session ends, if the nudge was shown as a result of segmentation platform
+    evaluation. Sessions end on insert, manual cancel, page navigation or tab
+    destruction.
+  </summary>
+</histogram>
+
 <histogram name="Compose.ProactiveNudge.ShowStatus" enum="ComposeShowStatus"
     expires_after="2024-11-01">
   <owner>perrier@chromium.org</owner>
@@ -220,6 +232,18 @@ chromium-metrics-reviews@google.com.
     <variant name="Accepted" summary="MSBB was accepted or acknowledged"/>
     <variant name="Ignored" summary="MSBB was rejected or ignored"/>
   </token>
+</histogram>
+
+<histogram name="Compose.TextElementUsage.LongField.EditingTime" units="ms"
+    expires_after="2024-12-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Records the time a user spends editing a long field (TextArea or
+    contenteditable). This is the sum of time between each keystroke, up to a
+    maximum of 5 seconds for each. Reported once per long field a user edits,
+    once per page load.
+  </summary>
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Request.Duration.Error"
