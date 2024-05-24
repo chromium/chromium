@@ -122,6 +122,7 @@ HRESULT CommandQueue::ExecuteCommandList(ID3D12CommandList* command_list) {
 
 HRESULT CommandQueue::ExecuteCommandLists(
     base::span<ID3D12CommandList*> command_lists) {
+  TRACE_EVENT0("gpu", "dml::CommandQueue::ExecuteCommandLists");
   command_queue_->ExecuteCommandLists(
       base::checked_cast<uint32_t>(command_lists.size()), command_lists.data());
   ++last_fence_value_;

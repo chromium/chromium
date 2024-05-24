@@ -213,6 +213,7 @@ void UploadBufferWithBarrier(CommandRecorder* command_recorder,
                              Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
                              Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
                              size_t buffer_size) {
+  TRACE_EVENT0("gpu", "dml::UploadBufferWithBarrier");
   // Copy the data from source buffer to destination buffer.
   D3D12_RESOURCE_BARRIER barriers[1];
   barriers[0] = CreateTransitionBarrier(dst_buffer.Get(),
@@ -234,6 +235,7 @@ void ReadbackBufferWithBarrier(
     Microsoft::WRL::ComPtr<ID3D12Resource> readback_buffer,
     Microsoft::WRL::ComPtr<ID3D12Resource> default_buffer,
     size_t buffer_size) {
+  TRACE_EVENT0("gpu", "dml::ReadbackBufferWithBarrier");
   // Copy the data from source buffer to destination buffer.
   D3D12_RESOURCE_BARRIER barriers[1];
   barriers[0] = CreateTransitionBarrier(default_buffer.Get(),

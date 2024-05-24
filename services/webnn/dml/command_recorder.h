@@ -137,6 +137,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
       Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator,
       Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder);
 
+  // Records execution of a dispatchable object (an operator initializer, or a
+  // compiled operator) onto a command list.
+  void RecordDispatch(IDMLDispatchable* dispatchable,
+                      IDMLBindingTable* binding_table);
+
   bool is_open_ = false;
   // The first call to `CloseAndExecute()` sets the first submitted fence value.
   uint64_t last_submitted_fence_value_ = UINT64_MAX;

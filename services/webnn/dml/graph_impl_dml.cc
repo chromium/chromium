@@ -4739,6 +4739,7 @@ HRESULT GraphImplDml::RecordGraphExecution(
     const ComputeResources* compute_resources,
     const PersistentResource* persistent_resource,
     const GraphBufferBindingInfo& graph_buffer_binding_info) {
+  TRACE_EVENT0("gpu", "dml::GraphImpl::RecordGraphExecution");
   // Open the command recorder for recording the graph execution commands.
   RETURN_IF_FAILED(compute_resources->command_recorder->Open());
 
