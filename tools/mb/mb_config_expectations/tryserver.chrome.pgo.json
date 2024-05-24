@@ -90,6 +90,7 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_freelist_dispatcher": false,
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }
