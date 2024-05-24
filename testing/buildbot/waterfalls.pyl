@@ -46,6 +46,7 @@
         'os_type': 'chromeos',
         'cros_board': 'betty',
         'cros_dut_pool': 'vmlab',
+        'run_cft': True,
       },
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': {
         'additional_compile_targets': [
@@ -6491,6 +6492,7 @@
         'os_type': 'chromeos',
         'cros_board': 'betty',
         'cros_dut_pool': 'vmlab',
+        'run_cft': True,
       },
       'chromeos-betty-pi-arc-chrome-accessibility-fyi': {
         'additional_compile_targets': [

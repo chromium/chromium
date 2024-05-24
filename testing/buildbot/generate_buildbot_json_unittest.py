@@ -4311,6 +4311,7 @@ MATRIX_SKYLAB_WATERFALL = """\
         },
         'cros_board': 'octopus',
         'cros_dut_pool': 'chromium',
+        'run_cft': True,
       },
     },
   },

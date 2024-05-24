@@ -873,6 +873,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if 'dut_pool' in result or 'cros_dut_pool' in tester_config:
       result['dut_pool'] = tester_config.get('cros_dut_pool') or result.get(
           'dut_pool')
+    if 'run_cft' in result or 'run_cft' in tester_config:
+      result['run_cft'] = tester_config.get('run_cft') or result.get('run_cft')
 
     result = self.apply_common_transformations(waterfall,
                                                tester_name,

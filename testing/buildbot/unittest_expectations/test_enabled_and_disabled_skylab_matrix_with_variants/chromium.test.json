@@ -9,6 +9,7 @@
         "cros_img": "octopus-release/R89-13655.0.0",
         "dut_pool": "chromium",
         "name": "tast.basic OCTOPUS_TOT",
+        "run_cft": true,
         "suite": "tast.basic",
         "tast_expr": "dummy expr",
         "test": "tast.basic",
