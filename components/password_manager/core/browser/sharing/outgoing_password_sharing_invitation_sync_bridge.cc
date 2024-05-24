@@ -154,7 +154,7 @@ OutgoingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void OutgoingPasswordSharingInvitationSyncBridge::GetData(
+void OutgoingPasswordSharingInvitationSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys,
     DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

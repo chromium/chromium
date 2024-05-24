@@ -134,7 +134,7 @@ class OutgoingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
       const std::string& storage_key) {
     base::RunLoop loop;
     std::unique_ptr<DataBatch> batch;
-    bridge_->GetData(
+    bridge_->GetDataForCommit(
         {storage_key},
         base::BindOnce(
             [](base::RunLoop* loop, std::unique_ptr<DataBatch>* out_batch,

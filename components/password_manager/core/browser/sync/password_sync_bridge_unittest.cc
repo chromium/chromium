@@ -470,11 +470,11 @@ class PasswordSyncBridgeTest : public testing::Test {
   std::optional<sync_pb::PasswordSpecifics> GetDataFromBridge(
       const std::string& storage_key) {
     std::unique_ptr<syncer::DataBatch> batch;
-    bridge_->GetData({storage_key},
-                     base::BindLambdaForTesting(
-                         [&](std::unique_ptr<syncer::DataBatch> in_batch) {
-                           batch = std::move(in_batch);
-                         }));
+    bridge_->GetDataForCommit(
+        {storage_key}, base::BindLambdaForTesting(
+                           [&](std::unique_ptr<syncer::DataBatch> in_batch) {
+                             batch = std::move(in_batch);
+                           }));
     EXPECT_THAT(batch, NotNull());
     if (!batch || !batch->HasNext()) {
       return std::nullopt;

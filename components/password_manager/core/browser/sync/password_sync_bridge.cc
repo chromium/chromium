@@ -913,8 +913,8 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void PasswordSyncBridge::GetData(StorageKeyList storage_keys,
-                                 DataCallback callback) {
+void PasswordSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                          DataCallback callback) {
   // This method is called only when there are uncommitted changes on startup.
   // There are more efficient implementations, but since this method is rarely
   // called, simplicity is preferred over efficiency.
