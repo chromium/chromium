@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/task_environment.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "components/account_id/account_id.h"
@@ -55,6 +56,7 @@ class FileIndexServiceRegistryTest : public testing::Test {
   std::unique_ptr<ash::BrowserContextHelper> browser_context_helper_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(FileIndexServiceRegistryTest, PrimaryUser) {
