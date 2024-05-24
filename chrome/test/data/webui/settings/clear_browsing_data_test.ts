@@ -396,6 +396,8 @@ suite('ClearBrowsingDataDesktop', function() {
 });
 
 // TODO(crbug.com/40283307): Remove once CbdTimeframeRequired finished.
+// This test suite should only test code that exist only during the
+// crbug.com/40283307 experiment for the in-experiment group.
 suite('CbdTimeRangeExperiment_ExperimentOn', function() {
   let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let element: SettingsClearBrowsingDataDialogElement;
@@ -477,6 +479,101 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
     return testTimeRangeDropdownRequiresSelection(/*tabIndex*/ 1);
   });
 
+  async function assertSelectionRecordedToMetric(
+      element: SettingsClearBrowsingDataDialogElement,
+      testBrowserProxy: TestClearBrowsingDataBrowserProxy, tabIndex: number,
+      prefName: string, inialPrefValue: number,
+      expectedProxyCallFunctionName: string) {
+    // Ensure the test starts with a known pref state.
+    element.setPrefValue(prefName, inialPrefValue);
+
+    // The user selects the tab of interest.
+    element.$.tabs.selected = tabIndex;
+    await microtasksFinished();
+
+    // Select a datatype for deletion to enable the clear button.
+    const page = element.$.pages.selectedItem as HTMLElement;
+    const cookiesCheckbox =
+        page.querySelector<SettingsCheckboxElement>('.cookies-checkbox');
+    assertTrue(!!cookiesCheckbox);
+    cookiesCheckbox.$.checkbox.click();
+    await microtasksFinished();
+    assertFalse(element.$.clearButton.disabled);
+
+    // The user selects a time range value.
+    const dropdownMenu =
+        page.querySelector<SettingsDropdownMenuElement>('.time-range-select');
+    assertTrue(!!dropdownMenu);
+    const selectElement = dropdownMenu.shadowRoot!.querySelector('select');
+    assertTrue(!!selectElement);
+    selectElement.value = TimePeriodExperiment.LAST_WEEK.toString();
+    selectElement.dispatchEvent(new CustomEvent('change'));
+    await microtasksFinished();
+
+    // The user confirms the deletion.
+    element.$.clearButton.click();
+    await microtasksFinished();
+
+    // The selection is recorded only if clearing is done the first time, which
+    // is indicated by the original pref value being NOT_SELECTED.
+    if (inialPrefValue === TimePeriodExperiment.NOT_SELECTED) {
+      const metricValue =
+          await testBrowserProxy.whenCalled(expectedProxyCallFunctionName);
+      assertEquals(
+          1, testBrowserProxy.getCallCount(expectedProxyCallFunctionName),
+          'metrics should be recored');
+      assertEquals(TimePeriodExperiment.LAST_WEEK, metricValue);
+    } else {
+      assertEquals(
+          0, testBrowserProxy.getCallCount(expectedProxyCallFunctionName),
+          'no metrics should be recorded');
+    }
+  }
+
+  test('SelectionRecordedToMetrics_Basic', function() {
+    return assertSelectionRecordedToMetric(
+        /*element*/ element,
+        /*testBrowserProxy*/ testBrowserProxy,
+        /*tabIndex*/ 0,
+        /*prefName*/ 'browser.clear_data.time_period_v2_basic',
+        /*inialPrefValue*/ TimePeriodExperiment.NOT_SELECTED,
+        /*expectedProxyCallFunctionName*/
+        'recordSettingsClearBrowsingDataBasicTimePeriodHistogram');
+  });
+
+  test('SelectionRecordedToMetrics_Advanced', function() {
+    return assertSelectionRecordedToMetric(
+        /*element*/ element,
+        /*testBrowserProxy*/ testBrowserProxy,
+        /*tabIndex*/ 1,
+        /*prefName*/ 'browser.clear_data.time_period_v2',
+        /*inialPrefValue*/ TimePeriodExperiment.NOT_SELECTED,
+        /*expectedProxyCallFunctionName*/
+        'recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram');
+  });
+
+  test('SelectionNotRecordedToMetrics_Basic', function() {
+    return assertSelectionRecordedToMetric(
+        /*element*/ element,
+        /*testBrowserProxy*/ testBrowserProxy,
+        /*tabIndex*/ 0,
+        /*prefName*/ 'browser.clear_data.time_period_v2_basic',
+        /*inialPrefValue*/ TimePeriodExperiment.LAST_DAY,
+        /*expectedProxyCallFunctionName*/
+        'recordSettingsClearBrowsingDataBasicTimePeriodHistogram');
+  });
+
+  test('SelectionNotRecordedToMetrics_Advanced', function() {
+    return assertSelectionRecordedToMetric(
+        /*element*/ element,
+        /*testBrowserProxy*/ testBrowserProxy,
+        /*tabIndex*/ 1,
+        /*prefName*/ 'browser.clear_data.time_period_v2',
+        /*inialPrefValue*/ TimePeriodExperiment.LAST_DAY,
+        /*expectedProxyCallFunctionName*/
+        'recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram');
+  });
+
   test('DualWritePrefs_BasicDualWriteSelection', function() {
     return testCbdExperimentDualWritesPref(
         /*element*/ element,
@@ -519,6 +616,8 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
 });
 
 // TODO(crbug.com/40283307): Remove once CbdTimeframeRequired finished.
+// This test suite should only test code that exist only during the
+// crbug.com/40283307 experiment for the out-of-experiment group.
 suite('CbdTimeRangeExperiment_ExperimentOff', function() {
   let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let element: SettingsClearBrowsingDataDialogElement;
@@ -640,14 +739,25 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertFalse(cancelButton.disabled);
     assertFalse(spinner.active);
 
-    // Confirming the deletion persists the dropdown selection to the pref and
-    // sends the time range for clearing.
+    // Confirming the deletion persists the dropdown selection to the pref,
+    // records the time period in metrics, and sends it for clearing.
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
     testBrowserProxy.setClearBrowsingDataPromise(promiseResolver.promise);
     element.$.clearButton.click();
     await microtasksFinished();
 
     assertEquals(TimePeriod.LAST_WEEK, element.getPref(prefName).value);
+    // TODO(crbug.com/40283307): The in-experiment metrics are slightly
+    // different, hence get tested in their own test suite. Remove the
+    // surrounding conditional once crbug.com/40283307 completed.
+    if (!loadTimeData.getBoolean('enableCbdTimeframeRequired')) {
+      const metricValue = await testBrowserProxy.whenCalled(
+          tabIndex === 0 ?
+              'recordSettingsClearBrowsingDataBasicTimePeriodHistogram' :
+              'recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram');
+      assertEquals(TimePeriod.LAST_WEEK, metricValue);
+    }
+
     const args = await testBrowserProxy.whenCalled('clearBrowsingData');
     const dataTypes = args[0];
     assertEquals(1, dataTypes.length);

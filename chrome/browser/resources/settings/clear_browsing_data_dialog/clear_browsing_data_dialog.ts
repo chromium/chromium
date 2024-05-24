@@ -46,7 +46,7 @@ import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 
 import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
-import {ClearBrowsingDataBrowserProxyImpl} from './clear_browsing_data_browser_proxy.js';
+import {ClearBrowsingDataBrowserProxyImpl, TimePeriod, TimePeriodExperiment} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog.html.js';
 
 /**
@@ -74,30 +74,6 @@ export interface SettingsClearBrowsingDataDialogElement {
     pages: IronPagesElement,
     tabs: CrTabsElement,
   };
-}
-
-export enum TimePeriod {
-  LAST_HOUR = 0,
-  LAST_DAY = 1,
-  LAST_WEEK = 2,
-  FOUR_WEEKS = 3,
-  ALL_TIME = 4,
-  // OLDER_THAN_30_DAYS = 5 is not used on Desktop.
-  // LAST_15_MINUTES = 6 is not used on Desktop.
-  TIME_PERIOD_LAST = ALL_TIME
-}
-
-// TODO(crbug.com/40283307): Remove this after CbdTimeframeRequired finishes.
-export enum TimePeriodExperiment {
-  NOT_SELECTED = -1,
-  LAST_HOUR = 0,
-  LAST_DAY = 1,
-  LAST_WEEK = 2,
-  FOUR_WEEKS = 3,
-  ALL_TIME = 4,
-  // OLDER_THAN_30_DAYS = 5 is not used on Desktop.
-  LAST_15_MINUTES = 6,
-  TIME_PERIOD_LAST = LAST_15_MINUTES
 }
 
 const SettingsClearBrowsingDataDialogElementBase = RouteObserverMixin(
@@ -636,6 +612,40 @@ export class SettingsClearBrowsingDataDialogElement extends
     this.clearingInProgress_ = true;
     this.clearingDataAlertString_ = loadTimeData.getString('clearingData');
 
+    const page = this.$.pages.selectedItem as HTMLElement;
+    const dataTypes = this.getSelectedDataTypes_(page);
+    const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
+    const timePeriod = Number(dropdownMenu.getSelectedValue());
+
+    if (this.isBasicTabSelected_()) {
+      chrome.metricsPrivate.recordUserAction('ClearBrowsingData_BasicTab');
+      // For users in the CbdTimeframeRequired experiment, the selection should
+      // only be recorded the first time they clear data. This needs to be
+      // checked before the selected time range is written to prefs.
+      if (!this.enableCbdTimeframeRequired_ ||
+          this.getPref<TimePeriodExperiment>(
+                  'browser.clear_data.time_period_v2_basic')
+                  .value === TimePeriodExperiment.NOT_SELECTED) {
+        this.browserProxy_
+            .recordSettingsClearBrowsingDataBasicTimePeriodHistogram(
+                timePeriod);
+      }
+    } else {
+      // Advanced tab.
+      chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');
+      // For users in the CbdTimeframeRequired experiment, the selection should
+      // only be recorded the first time they clear data. This needs to be
+      // checked before the selected time range is written to prefs.
+      if (!this.enableCbdTimeframeRequired_ ||
+          this.getPref<TimePeriodExperiment>(
+                  'browser.clear_data.time_period_v2')
+                  .value === TimePeriodExperiment.NOT_SELECTED) {
+        this.browserProxy_
+            .recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(
+                timePeriod);
+      }
+    }
+
     this.setPrefValue(
         'browser.last_clear_browsing_data_tab', this.selectedTabIndex_);
     // Dropdown menu and checkbox selections of both tabs should be persisted
@@ -651,16 +661,6 @@ export class SettingsClearBrowsingDataDialogElement extends
 
     // Dual write prefs only after the regular prefs have been written above.
     this.cbdExperimentDualWritePrefs_();
-
-    const page = this.$.pages.selectedItem as HTMLElement;
-    const dataTypes = this.getSelectedDataTypes_(page);
-    const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
-
-    if (this.isBasicTabSelected_()) {
-      chrome.metricsPrivate.recordUserAction('ClearBrowsingData_BasicTab');
-    } else {
-      chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');
-    }
 
     const {showHistoryNotice, showPasswordsNotice} =
         await this.browserProxy_.clearBrowsingData(

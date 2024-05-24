@@ -84,6 +84,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.ClearBrowsingData.Advanced.TimePeriod"
+    enum="SettingsClearBrowsingDataTimePeriod" expires_after="2024-11-01">
+  <owner>rainhard@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Records the time period that users cleared from the Clear Browsing Data
+    dialog advanced tab. Users in the CbdTimeframeRequired experiment record
+    this only for the first deletion.
+  </summary>
+</histogram>
+
+<histogram name="Settings.ClearBrowsingData.Basic.TimePeriod"
+    enum="SettingsClearBrowsingDataTimePeriod" expires_after="2024-11-01">
+  <owner>rainhard@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Records the time period that users cleared from the Clear Browsing Data
+    dialog basic tab. Users in the CbdTimeframeRequired experiment record this
+    only for the first deletion.
+  </summary>
+</histogram>
+
 <histogram name="Settings.ClearBrowsingData.OpenMyActivity"
     enum="ClearBrowsingDataMyActivityNavigation" expires_after="2024-11-03">
   <owner>andzaytsev@google.com</owner>

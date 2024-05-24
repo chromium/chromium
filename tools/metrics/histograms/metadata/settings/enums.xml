@@ -296,6 +296,16 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Restore the last session and open URLs"/>
 </enum>
 
+<enum name="SettingsClearBrowsingDataTimePeriod">
+  <int value="0" label="Last hour"/>
+  <int value="1" label="Last day"/>
+  <int value="2" label="Last week"/>
+  <int value="3" label="Four weeks"/>
+  <int value="4" label="All time"/>
+  <int value="5" label="Older than 30 days"/>
+  <int value="6" label="Last 15 minutes"/>
+</enum>
+
 <enum name="SettingsPrivacyElementInteractions">
   <int value="0" label="Sync control button"/>
   <int value="1" label="Allow Chrome sign in toggle"/>
