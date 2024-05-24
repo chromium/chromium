@@ -262,8 +262,6 @@ void WindowSplitter::UpdateDrag(const gfx::PointF& location_in_screen,
     return;
   }
 
-  // TODO(b/306237420): Support cancellation after dwell delay.
-
   if (!ReadyToSplit() && !dwell_activation_timer_.IsRunning()) {
     RestartDwellTimer();
   }
@@ -320,6 +318,7 @@ void WindowSplitter::RestartDwellTimer() {
 void WindowSplitter::RemovePhantomWindow() {
   phantom_window_controller_.reset();
   dwell_activation_timer_.Stop();
+  dwell_cancellation_timer_.Stop();
 }
 
 void WindowSplitter::ShowPhantomWindowCallback() {
@@ -339,6 +338,10 @@ void WindowSplitter::ShowPhantomWindowCallback() {
             MaybeSplitWindow(current_topmost_window, dragged_window(),
                              last_location_in_screen_)) {
       ShowPhantomWindow(split_bounds->dragged_window_bounds);
+      dwell_cancellation_timer_.Start(
+          FROM_HERE, kDwellCancellationDuration,
+          base::BindOnce(&WindowSplitter::Disengage,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   }
 }

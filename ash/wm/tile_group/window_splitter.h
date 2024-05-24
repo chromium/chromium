@@ -74,6 +74,10 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
   static constexpr base::TimeDelta kDwellActivationDuration =
       base::Milliseconds(450);
 
+  // Amount of time the phantom window stays shown before cancelling.
+  static constexpr base::TimeDelta kDwellCancellationDuration =
+      base::Milliseconds(1500);
+
   // Max cursor movement velocity threshold, which if exceeded will reset window
   // splitting activation.
   static constexpr double kDwellMaxVelocityPixelsPerSec = 60.0;
@@ -175,6 +179,9 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
 
   // Timer for activating phantom window.
   base::OneShotTimer dwell_activation_timer_;
+
+  // Timer for cancelling window splitting.
+  base::OneShotTimer dwell_cancellation_timer_;
 
   // Tracks cursor velocity.
   ui::VelocityTracker velocity_tracker_;

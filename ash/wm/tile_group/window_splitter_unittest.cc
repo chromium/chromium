@@ -124,6 +124,11 @@ class WindowSplitterTest : public AshTestBase {
                                       base::Milliseconds(100));
   }
 
+  void FastForwardPastCancellationDuration() {
+    task_environment()->FastForwardBy(
+        WindowSplitter::kDwellCancellationDuration + base::Milliseconds(100));
+  }
+
   // Moves the cursor back and forth across the top margin of the given window,
   // at the specified speed in pixels per second.
   // Returns the last location of the cursor, in screen coordinates.
@@ -373,6 +378,38 @@ TEST_F(WindowSplitterTest, DragSplitWindowShowPreviewMultipleTimes) {
 
   ExpectHistogramWithSplit(histogram_tester, SplitRegion::kBottom,
                            /*preview_count=*/3);
+}
+
+TEST_F(WindowSplitterTest, DragDwellCancelPhantomWindow) {
+  auto topmost_window = CreateToplevelTestWindow(kTopmostWindowBounds);
+  auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
+
+  base::HistogramTester histogram_tester;
+
+  {
+    // Nested scope used to exercise metrics update on splitter destruction.
+    WindowSplitter splitter(dragged_window.get());
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    gfx::PointF screen_location(kTopmostWindowBounds.right_center());
+    screen_location.Offset(-5, 0);
+    splitter.UpdateDrag(screen_location, /*can_split=*/true);
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    FastForwardPastDwellDuration();
+    EXPECT_TRUE(RightHalf(kTopmostWindowBounds)
+                    .Contains(GetPhantomWindowTargetBounds(splitter)));
+
+    FastForwardPastCancellationDuration();
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    splitter.CompleteDrag(screen_location);
+    EXPECT_EQ(topmost_window->GetBoundsInScreen(), kTopmostWindowBounds);
+    EXPECT_EQ(dragged_window->GetBoundsInScreen(), kDraggedWindowBounds);
+  }
+
+  ExpectHistogramWithNoSplit(histogram_tester,
+                             /*preview_count=*/1);
 }
 
 TEST_F(WindowSplitterTest, DragEnterExitMarginNoSplitBeforePhantom) {
