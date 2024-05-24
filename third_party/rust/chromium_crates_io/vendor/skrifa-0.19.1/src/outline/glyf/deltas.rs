@@ -1,5 +1,6 @@
 use core::ops::RangeInclusive;
 
+use raw::tables::glyf::PointCoord;
 use read_fonts::{
     tables::glyf::{PointFlags, PointMarker},
     tables::gvar::{GlyphDelta, Gvar},
@@ -10,17 +11,15 @@ use read_fonts::{
 
 use super::PHANTOM_POINT_COUNT;
 
-pub type Delta = Point<Fixed>;
-
 /// Compute a set of deltas for the component offsets of a composite glyph.
 ///
 /// Interpolation is meaningless for component offsets so this is a
 /// specialized function that skips the expensive bits.
-pub fn composite_glyph(
+pub fn composite_glyph<D: PointCoord>(
     gvar: &Gvar,
     glyph_id: GlyphId,
     coords: &[F2Dot14],
-    deltas: &mut [Delta],
+    deltas: &mut [Point<D>],
 ) -> Result<(), ReadError> {
     compute_deltas_for_glyph(gvar, glyph_id, coords, deltas, |scalar, tuple, deltas| {
         for tuple_delta in tuple.deltas() {
@@ -34,8 +33,8 @@ pub fn composite_glyph(
     Ok(())
 }
 
-pub struct SimpleGlyph<'a> {
-    pub points: &'a [Point<i32>],
+pub struct SimpleGlyph<'a, C: PointCoord> {
+    pub points: &'a [Point<C>],
     pub flags: &'a mut [PointFlags],
     pub contours: &'a [u16],
 }
@@ -45,15 +44,20 @@ pub struct SimpleGlyph<'a> {
 /// This function will use interpolation to infer missing deltas for tuples
 /// that contain sparse sets. The `iup_buffer` buffer is temporary storage
 /// used for this and the length must be >= glyph.points.len().
-pub fn simple_glyph(
+pub fn simple_glyph<C, D>(
     gvar: &Gvar,
     glyph_id: GlyphId,
     coords: &[F2Dot14],
     has_var_lsb: bool,
-    glyph: SimpleGlyph,
-    iup_buffer: &mut [Point<Fixed>],
-    deltas: &mut [Delta],
-) -> Result<(), ReadError> {
+    glyph: SimpleGlyph<C>,
+    iup_buffer: &mut [Point<D>],
+    deltas: &mut [Point<D>],
+) -> Result<(), ReadError>
+where
+    C: PointCoord,
+    D: PointCoord,
+    D: From<C>,
+{
     if iup_buffer.len() < glyph.points.len() || glyph.points.len() < PHANTOM_POINT_COUNT {
         return Err(ReadError::InvalidArrayLen);
     }
@@ -83,7 +87,7 @@ pub fn simple_glyph(
         // Prepare our working buffer by converting the points to 16.16
         // and clearing the HAS_DELTA flags.
         for ((flag, point), iup_point) in flags.iter_mut().zip(points).zip(&mut iup_buffer[..]) {
-            *iup_point = point.map(Fixed::from_i32);
+            *iup_point = point.map(D::from);
             flag.clear_marker(PointMarker::HAS_DELTA);
         }
         for tuple_delta in tuple.deltas() {
@@ -96,7 +100,7 @@ pub fn simple_glyph(
         interpolate_deltas(points, flags, contours, &mut iup_buffer[..])
             .ok_or(ReadError::OutOfBounds)?;
         for ((delta, point), iup_point) in deltas.iter_mut().zip(points).zip(iup_buffer.iter()) {
-            *delta += *iup_point - point.map(Fixed::from_i32);
+            *delta += *iup_point - point.map(D::from);
         }
         Ok(())
     })?;
@@ -104,17 +108,22 @@ pub fn simple_glyph(
 }
 
 /// The common parts of simple and complex glyph processing
-fn compute_deltas_for_glyph(
+fn compute_deltas_for_glyph<C, D>(
     gvar: &Gvar,
     glyph_id: GlyphId,
     coords: &[F2Dot14],
-    deltas: &mut [Delta],
+    deltas: &mut [Point<D>],
     mut apply_tuple_missing_deltas_fn: impl FnMut(
         Fixed,
         TupleVariation<GlyphDelta>,
-        &mut [Point<Fixed>],
+        &mut [Point<D>],
     ) -> Result<(), ReadError>,
-) -> Result<(), ReadError> {
+) -> Result<(), ReadError>
+where
+    C: PointCoord,
+    D: PointCoord,
+    D: From<C>,
+{
     for delta in deltas.iter_mut() {
         *delta = Default::default();
     }
@@ -143,12 +152,17 @@ fn compute_deltas_for_glyph(
 ///
 /// Modeled after the FreeType implementation:
 /// <https://github.com/freetype/freetype/blob/bbfcd79eacb4985d4b68783565f4b494aa64516b/src/truetype/ttgxvar.c#L3881>
-fn interpolate_deltas(
-    points: &[Point<i32>],
+fn interpolate_deltas<C, D>(
+    points: &[Point<C>],
     flags: &[PointFlags],
     contours: &[u16],
-    out_points: &mut [Point<Fixed>],
-) -> Option<()> {
+    out_points: &mut [Point<D>],
+) -> Option<()>
+where
+    C: PointCoord,
+    D: PointCoord,
+    D: From<C>,
+{
     let mut jiggler = Jiggler { points, out_points };
     let mut point_ix = 0usize;
     for &end_point_ix in contours {
@@ -201,21 +215,31 @@ fn interpolate_deltas(
 
 struct RefPoints(usize, usize);
 
-struct Jiggler<'a> {
-    points: &'a [Point<i32>],
-    out_points: &'a mut [Point<Fixed>],
+struct Jiggler<'a, C, D>
+where
+    C: PointCoord,
+    D: PointCoord,
+    D: From<C>,
+{
+    points: &'a [Point<C>],
+    out_points: &'a mut [Point<D>],
 }
 
-impl<'a> Jiggler<'a> {
+impl<'a, C, D> Jiggler<'a, C, D>
+where
+    C: PointCoord,
+    D: PointCoord,
+    D: From<C>,
+{
     /// Shift the coordinates of all points in the specified range using the
     /// difference given by the point at `ref_ix`.
     ///
     /// Modeled after the FreeType implementation: <https://github.com/freetype/freetype/blob/bbfcd79eacb4985d4b68783565f4b494aa64516b/src/truetype/ttgxvar.c#L3776>
     fn shift(&mut self, range: RangeInclusive<usize>, ref_ix: usize) -> Option<()> {
-        let ref_in = self.points.get(ref_ix)?.map(Fixed::from_i32);
+        let ref_in = self.points.get(ref_ix)?.map(D::from);
         let ref_out = self.out_points.get(ref_ix)?;
         let delta = *ref_out - ref_in;
-        if delta.x == Fixed::ZERO && delta.y == Fixed::ZERO {
+        if delta.x == D::zeroed() && delta.y == D::zeroed() {
             return Some(());
         }
         // Apply the reference point delta to the entire range excluding the
@@ -247,8 +271,8 @@ impl<'a> Jiggler<'a> {
                 if self.points.get(ref1_ix)?.$coord > self.points.get(ref2_ix)?.$coord {
                     core::mem::swap(&mut ref1_ix, &mut ref2_ix);
                 }
-                let in1 = Fixed::from_i32(self.points.get(ref1_ix)?.$coord);
-                let in2 = Fixed::from_i32(self.points.get(ref2_ix)?.$coord);
+                let in1 = D::from(self.points.get(ref1_ix)?.$coord);
+                let in2 = D::from(self.points.get(ref2_ix)?.$coord);
                 let out1 = self.out_points.get(ref1_ix)?.$coord;
                 let out2 = self.out_points.get(ref2_ix)?.$coord;
                 // If the reference points have the same coordinate but different delta,
@@ -257,7 +281,7 @@ impl<'a> Jiggler<'a> {
                     let scale = if in1 != in2 {
                         (out2 - out1) / (in2 - in1)
                     } else {
-                        Fixed::ZERO
+                        D::zeroed()
                     };
                     let d1 = out1 - in1;
                     let d2 = out2 - in2;
@@ -267,7 +291,7 @@ impl<'a> Jiggler<'a> {
                         .iter()
                         .zip(self.out_points.get_mut(range.clone())?)
                     {
-                        let mut out = Fixed::from_i32(point.$coord);
+                        let mut out = D::from(point.$coord);
                         if out <= in1 {
                             out += d1;
                         } else if out >= in2 {

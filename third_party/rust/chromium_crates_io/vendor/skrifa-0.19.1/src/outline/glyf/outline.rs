@@ -2,13 +2,13 @@
 
 use std::mem::size_of;
 
-use raw::tables::glyf::ToPathStyle;
+use raw::tables::glyf::{PointCoord, ToPathStyle};
 use read_fonts::{
     tables::glyf::{to_path, Glyph, PointFlags, ToPathError},
     types::{F26Dot6, Fixed, GlyphId, Pen, Point},
 };
 
-use super::{super::Hinting, OutlineMemory};
+use super::super::Hinting;
 
 /// Represents the information necessary to scale a glyph outline.
 ///
@@ -92,34 +92,48 @@ impl<'a> Outline<'a> {
         }
         size
     }
-
-    /// Allocates new memory for scaling this glyph from the given buffer.
-    ///
-    /// The size of the buffer must be at least as large as the size returned
-    /// by [`Self::required_buffer_size`].
-    pub fn memory_from_buffer(
-        &self,
-        buf: &'a mut [u8],
-        hinting: Hinting,
-    ) -> Option<OutlineMemory<'a>> {
-        OutlineMemory::new(self, buf, hinting)
-    }
 }
 
 #[derive(Debug)]
-pub struct ScaledOutline<'a> {
-    pub points: &'a mut [Point<F26Dot6>],
+pub struct ScaledOutline<'a, C>
+where
+    C: PointCoord,
+{
+    pub points: &'a mut [Point<C>],
     pub flags: &'a mut [PointFlags],
     pub contours: &'a mut [u16],
-    pub phantom_points: [Point<F26Dot6>; 4],
+    pub phantom_points: [Point<C>; 4],
 }
 
-impl<'a> ScaledOutline<'a> {
-    pub fn adjusted_lsb(&self) -> F26Dot6 {
+impl<'a, C> ScaledOutline<'a, C>
+where
+    C: PointCoord,
+{
+    pub(crate) fn new(
+        points: &'a mut [Point<C>],
+        phantom_points: [Point<C>; 4],
+        flags: &'a mut [PointFlags],
+        contours: &'a mut [u16],
+    ) -> Self {
+        let x_shift = phantom_points[0].x;
+        if x_shift != C::zeroed() {
+            for point in points.iter_mut() {
+                point.x = point.x - x_shift;
+            }
+        }
+        Self {
+            points,
+            flags,
+            contours,
+            phantom_points,
+        }
+    }
+
+    pub fn adjusted_lsb(&self) -> C {
         self.phantom_points[0].x
     }
 
-    pub fn adjusted_advance_width(&self) -> F26Dot6 {
+    pub fn adjusted_advance_width(&self) -> C {
         self.phantom_points[1].x - self.phantom_points[0].x
     }
 

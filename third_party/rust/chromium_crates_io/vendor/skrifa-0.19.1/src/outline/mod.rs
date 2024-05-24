@@ -93,6 +93,8 @@ pub use hint::{HintingInstance, HintingMode, LcdLayout};
 
 pub use read_fonts::types::Pen as OutlinePen;
 
+use self::glyf::{FreeTypeScaler, HarfBuzzScaler};
+
 use super::{
     instance::{LocationRef, NormalizedCoord, Size},
     GLYF_COMPOSITE_RECURSION_LIMIT,
@@ -315,26 +317,41 @@ impl<'a> OutlineGlyph<'a> {
         settings: impl Into<DrawSettings<'a>>,
         pen: &mut impl OutlinePen,
     ) -> Result<AdjustedMetrics, DrawError> {
-        let settings = settings.into();
-        match settings.instance {
-            DrawInstance::Unhinted(size, location) => {
+        let settings: DrawSettings<'a> = settings.into();
+        match (settings.instance, settings.path_style) {
+            (DrawInstance::Unhinted(size, location), ToPathStyle::FreeType) => {
                 self.draw_unhinted(size, location, settings.memory, settings.path_style, pen)
             }
-            DrawInstance::Hinted {
-                instance,
-                is_pedantic,
-            } => {
-                if instance.is_enabled() {
-                    instance.draw(self, settings.memory, settings.path_style, pen, is_pedantic)
+            (DrawInstance::Unhinted(size, location), ToPathStyle::HarfBuzz) => {
+                self.draw_unhinted(size, location, settings.memory, settings.path_style, pen)
+            }
+            (
+                DrawInstance::Hinted {
+                    instance: hinting_instance,
+                    is_pedantic,
+                },
+                ToPathStyle::FreeType,
+            ) => {
+                if hinting_instance.is_enabled() {
+                    hinting_instance.draw(
+                        self,
+                        settings.memory,
+                        settings.path_style,
+                        pen,
+                        is_pedantic,
+                    )
                 } else {
                     self.draw_unhinted(
-                        instance.size(),
-                        instance.location(),
+                        hinting_instance.size(),
+                        hinting_instance.location(),
                         settings.memory,
                         settings.path_style,
                         pen,
                     )
                 }
+            }
+            (DrawInstance::Hinted { .. }, ToPathStyle::HarfBuzz) => {
+                Err(DrawError::HarfBuzzHintingUnsupported)
             }
         }
     }
@@ -343,7 +360,7 @@ impl<'a> OutlineGlyph<'a> {
         &self,
         size: Size,
         location: impl Into<LocationRef<'a>>,
-        memory: Option<&mut [u8]>,
+        user_memory: Option<&mut [u8]>,
         path_style: ToPathStyle,
         pen: &mut impl OutlinePen,
     ) -> Result<AdjustedMetrics, DrawError> {
@@ -351,16 +368,34 @@ impl<'a> OutlineGlyph<'a> {
         let coords = location.into().coords();
         match &self.kind {
             OutlineKind::Glyf(glyf, outline) => {
-                with_glyf_memory(outline, Hinting::None, memory, |buf| {
-                    let mem = outline
-                        .memory_from_buffer(buf, Hinting::None)
-                        .ok_or(DrawError::InsufficientMemory)?;
-                    let scaled_outline = glyf.draw(mem, outline, ppem, coords)?;
-                    scaled_outline.to_path(path_style, pen)?;
+                with_glyf_memory(outline, Hinting::None, user_memory, |buf| {
+                    let (lsb, advance_width) = match path_style {
+                        ToPathStyle::FreeType => {
+                            let scaled_outline =
+                                FreeTypeScaler::unhinted(glyf.clone(), outline, buf, ppem, coords)?
+                                    .scale(&outline.glyph, outline.glyph_id)?;
+                            scaled_outline.to_path(path_style, pen)?;
+                            (
+                                scaled_outline.adjusted_lsb().to_f32(),
+                                scaled_outline.adjusted_advance_width().to_f32(),
+                            )
+                        }
+                        ToPathStyle::HarfBuzz => {
+                            let scaled_outline =
+                                HarfBuzzScaler::unhinted(glyf.clone(), outline, buf, ppem, coords)?
+                                    .scale(&outline.glyph, outline.glyph_id)?;
+                            scaled_outline.to_path(path_style, pen)?;
+                            (
+                                scaled_outline.adjusted_lsb(),
+                                scaled_outline.adjusted_advance_width(),
+                            )
+                        }
+                    };
+
                     Ok(AdjustedMetrics {
                         has_overlaps: outline.has_overlaps,
-                        lsb: Some(scaled_outline.adjusted_lsb().to_f32()),
-                        advance_width: Some(scaled_outline.adjusted_advance_width().to_f32()),
+                        lsb: Some(lsb),
+                        advance_width: Some(advance_width),
                     })
                 })
             }
@@ -504,7 +539,8 @@ pub(super) fn with_glyf_memory<R>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::MetadataProvider;
+    use crate::{instance::Location, MetadataProvider};
+    use kurbo::{Affine, BezPath, PathEl, Point};
     use read_fonts::{scaler_test, types::GlyphId, FontRef, TableProvider};
 
     use pretty_assertions::assert_eq;
@@ -919,6 +955,257 @@ mod tests {
         assert_walked_forwards_like_harfbuzz(
             &MOSTLY_OFF_CURVE_POINTS,
             font_test_data::MOSTLY_OFF_CURVE,
+        );
+    }
+
+    // A location noted for making FreeType and HarfBuzz results differ
+    // See https://github.com/googlefonts/sleipnir/pull/15
+    fn icon_loc_off_default(font: &FontRef) -> Location {
+        font.axes().location(&[
+            ("wght", 700.0),
+            ("opsz", 48.0),
+            ("GRAD", 200.0),
+            ("FILL", 1.0),
+        ])
+    }
+
+    fn pt(x: f32, y: f32) -> Point {
+        (x as f64, y as f64).into()
+    }
+
+    // String command rounded to two decimal places, suitable for assert comparison
+    fn svg_commands(elements: &[PathEl]) -> Vec<String> {
+        elements
+            .iter()
+            .map(|e| match e {
+                PathEl::MoveTo(p) => format!("M{:.2},{:.2}", p.x, p.y),
+                PathEl::LineTo(p) => format!("L{:.2},{:.2}", p.x, p.y),
+                PathEl::QuadTo(c0, p) => format!("Q{:.2},{:.2} {:.2},{:.2}", c0.x, c0.y, p.x, p.y),
+                PathEl::CurveTo(c0, c1, p) => format!(
+                    "C{:.2},{:.2} {:.2},{:.2} {:.2},{:.2}",
+                    c0.x, c0.y, c1.x, c1.y, p.x, p.y
+                ),
+                PathEl::ClosePath => "Z".to_string(),
+            })
+            .collect()
+    }
+
+    // Declared here to avoid a write-fonts dependency that is awkward for google3 at time of writing
+    #[derive(Default)]
+    struct BezPen {
+        path: BezPath,
+    }
+
+    impl OutlinePen for BezPen {
+        fn move_to(&mut self, x: f32, y: f32) {
+            self.path.move_to(pt(x, y));
+        }
+
+        fn line_to(&mut self, x: f32, y: f32) {
+            self.path.line_to(pt(x, y));
+        }
+
+        fn quad_to(&mut self, cx0: f32, cy0: f32, x: f32, y: f32) {
+            self.path.quad_to(pt(cx0, cy0), pt(x, y));
+        }
+
+        fn curve_to(&mut self, cx0: f32, cy0: f32, cx1: f32, cy1: f32, x: f32, y: f32) {
+            self.path.curve_to(pt(cx0, cy0), pt(cx1, cy1), pt(x, y));
+        }
+
+        fn close(&mut self) {
+            self.path.close_path();
+        }
+    }
+
+    // We take glyph id here to bypass the need to resolve codepoint:gid and apply substitutions
+    fn assert_glyph_path_start_with(
+        font: &FontRef,
+        gid: GlyphId,
+        loc: Location,
+        path_style: ToPathStyle,
+        expected_path_start: &[PathEl],
+    ) {
+        let glyph = font
+            .outline_glyphs()
+            .get(gid)
+            .unwrap_or_else(|| panic!("No glyph for {gid}"));
+
+        let mut pen = BezPen::default();
+        glyph
+            .draw(
+                DrawSettings::unhinted(Size::unscaled(), &loc).with_path_style(path_style),
+                &mut pen,
+            )
+            .unwrap_or_else(|e| panic!("Unable to draw {gid}: {e}"));
+        let bez = Affine::FLIP_Y * pen.path; // like an icon svg
+        let actual_path_start = &bez.elements()[..expected_path_start.len()];
+        // round2 can still leave very small differences from the typed 2-decimal value
+        // and the diff isn't pleasent so just compare as svg string fragments
+        assert_eq!(
+            svg_commands(expected_path_start),
+            svg_commands(actual_path_start)
+        );
+    }
+
+    const MATERIAL_SYMBOL_GID_MAIL_AT_DEFAULT: GlyphId = GlyphId::new(1);
+    const MATERIAL_SYMBOL_GID_MAIL_OFF_DEFAULT: GlyphId = GlyphId::new(2);
+
+    #[test]
+    fn draw_icon_freetype_style_at_default() {
+        let font = FontRef::new(font_test_data::MATERIAL_SYMBOLS_SUBSET).unwrap();
+        assert_glyph_path_start_with(
+            &font,
+            MATERIAL_SYMBOL_GID_MAIL_AT_DEFAULT,
+            Location::default(),
+            ToPathStyle::FreeType,
+            &[
+                PathEl::MoveTo((160.0, -160.0).into()),
+                PathEl::QuadTo((127.0, -160.0).into(), (103.5, -183.5).into()),
+                PathEl::QuadTo((80.0, -207.0).into(), (80.0, -240.0).into()),
+            ],
+        );
+    }
+
+    #[test]
+    fn draw_icon_harfbuzz_style_at_default() {
+        let font = FontRef::new(font_test_data::MATERIAL_SYMBOLS_SUBSET).unwrap();
+        assert_glyph_path_start_with(
+            &font,
+            MATERIAL_SYMBOL_GID_MAIL_AT_DEFAULT,
+            Location::default(),
+            ToPathStyle::HarfBuzz,
+            &[
+                PathEl::MoveTo((160.0, -160.0).into()),
+                PathEl::QuadTo((127.0, -160.0).into(), (103.5, -183.5).into()),
+                PathEl::QuadTo((80.0, -207.0).into(), (80.0, -240.0).into()),
+            ],
+        );
+    }
+
+    #[test]
+    fn draw_icon_freetype_style_off_default() {
+        let font = FontRef::new(font_test_data::MATERIAL_SYMBOLS_SUBSET).unwrap();
+        assert_glyph_path_start_with(
+            &font,
+            MATERIAL_SYMBOL_GID_MAIL_OFF_DEFAULT,
+            icon_loc_off_default(&font),
+            ToPathStyle::FreeType,
+            &[
+                PathEl::MoveTo((150.0, -138.0).into()),
+                PathEl::QuadTo((113.0, -138.0).into(), (86.0, -165.5).into()),
+                PathEl::QuadTo((59.0, -193.0).into(), (59.0, -229.0).into()),
+            ],
+        );
+    }
+
+    #[test]
+    fn draw_icon_harfbuzz_style_off_default() {
+        let font = FontRef::new(font_test_data::MATERIAL_SYMBOLS_SUBSET).unwrap();
+        assert_glyph_path_start_with(
+            &font,
+            MATERIAL_SYMBOL_GID_MAIL_OFF_DEFAULT,
+            icon_loc_off_default(&font),
+            ToPathStyle::HarfBuzz,
+            &[
+                PathEl::MoveTo((150.0, -138.0).into()),
+                PathEl::QuadTo((113.22, -138.0).into(), (86.11, -165.61).into()),
+                PathEl::QuadTo((59.0, -193.22).into(), (59.0, -229.0).into()),
+            ],
+        );
+    }
+
+    const GLYF_COMPONENT_GID_NON_UNIFORM_SCALE: GlyphId = GlyphId::new(3);
+    const GLYF_COMPONENT_GID_SCALED_COMPONENT_OFFSET: GlyphId = GlyphId::new(7);
+    const GLYF_COMPONENT_GID_NO_SCALED_COMPONENT_OFFSET: GlyphId = GlyphId::new(8);
+
+    #[test]
+    fn draw_nonuniform_scale_component_freetype() {
+        let font = FontRef::new(font_test_data::GLYF_COMPONENTS).unwrap();
+        assert_glyph_path_start_with(
+            &font,
+            GLYF_COMPONENT_GID_NON_UNIFORM_SCALE,
+            Location::default(),
+            ToPathStyle::FreeType,
+            &[
+                PathEl::MoveTo((-138.0, -185.0).into()),
+                PathEl::LineTo((-32.0, -259.0).into()),
+                PathEl::LineTo((26.0, -175.0).into()),
+                PathEl::LineTo((-80.0, -101.0).into()),
+                PathEl::ClosePath,
+            ],
+        );
+    }
+
+    #[test]
+    fn draw_nonuniform_scale_component_harfbuzz() {
+        let font = FontRef::new(font_test_data::GLYF_COMPONENTS).unwrap();
+        assert_glyph_path_start_with(
+            &font,
+            GLYF_COMPONENT_GID_NON_UNIFORM_SCALE,
+            Location::default(),
+            ToPathStyle::HarfBuzz,
+            &[
+                PathEl::MoveTo((-137.8, -184.86).into()),
+                PathEl::LineTo((-32.15, -258.52).into()),
+                PathEl::LineTo((25.9, -175.24).into()),
+                PathEl::LineTo((-79.75, -101.58).into()),
+                PathEl::ClosePath,
+            ],
+        );
+    }
+
+    #[test]
+    fn draw_scaled_component_offset_freetype() {
+        let font = FontRef::new(font_test_data::GLYF_COMPONENTS).unwrap();
+        assert_glyph_path_start_with(
+            &font,
+            GLYF_COMPONENT_GID_SCALED_COMPONENT_OFFSET,
+            Location::default(),
+            ToPathStyle::FreeType,
+            &[
+                // Adds (x-transform magnitude * x-offset, y-transform magnitude * y-offset) to x/y offset
+                PathEl::MoveTo((715.0, -360.0).into()),
+            ],
+        );
+    }
+
+    #[test]
+    fn draw_no_scaled_component_offset_freetype() {
+        let font = FontRef::new(font_test_data::GLYF_COMPONENTS).unwrap();
+        assert_glyph_path_start_with(
+            &font,
+            GLYF_COMPONENT_GID_NO_SCALED_COMPONENT_OFFSET,
+            Location::default(),
+            ToPathStyle::FreeType,
+            &[PathEl::MoveTo((705.0, -340.0).into())],
+        );
+    }
+
+    #[test]
+    fn draw_scaled_component_offset_harfbuzz() {
+        let font = FontRef::new(font_test_data::GLYF_COMPONENTS).unwrap();
+        assert_glyph_path_start_with(
+            &font,
+            GLYF_COMPONENT_GID_SCALED_COMPONENT_OFFSET,
+            Location::default(),
+            ToPathStyle::HarfBuzz,
+            &[
+                // Adds (x-transform magnitude * x-offset, y-transform magnitude * y-offset) to x/y offset
+                PathEl::MoveTo((714.97, -360.0).into()),
+            ],
+        );
+    }
+
+    #[test]
+    fn draw_no_scaled_component_offset_harfbuzz() {
+        let font = FontRef::new(font_test_data::GLYF_COMPONENTS).unwrap();
+        assert_glyph_path_start_with(
+            &font,
+            GLYF_COMPONENT_GID_NO_SCALED_COMPONENT_OFFSET,
+            Location::default(),
+            ToPathStyle::HarfBuzz,
+            &[PathEl::MoveTo((704.97, -340.0).into())],
         );
     }
 }

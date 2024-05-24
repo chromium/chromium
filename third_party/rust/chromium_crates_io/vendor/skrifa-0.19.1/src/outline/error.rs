@@ -31,6 +31,9 @@ pub enum DrawError {
     ToPath(ToPathError),
     /// Error occured when reading font data.
     Read(ReadError),
+    /// HarfBuzz style drawing with hints is not supported
+    // Error rather than silently returning unhinted per f2f discussion.
+    HarfBuzzHintingUnsupported,
 }
 
 impl From<HintError> for DrawError {
@@ -76,6 +79,10 @@ impl fmt::Display for DrawError {
             Self::PostScript(e) => write!(f, "{e}"),
             Self::ToPath(e) => write!(f, "{e}"),
             Self::Read(e) => write!(f, "{e}"),
+            Self::HarfBuzzHintingUnsupported => write!(
+                f,
+                "HarfBuzz style paths with hinting is not (yet?) supported"
+            ),
         }
     }
 }

@@ -3,8 +3,10 @@
 use raw::tables::glyf::ToPathStyle;
 
 use super::{
-    cff, glyf, AdjustedMetrics, DrawError, Hinting, LocationRef, NormalizedCoord,
-    OutlineCollectionKind, OutlineGlyph, OutlineGlyphCollection, OutlineKind, OutlinePen, Size,
+    cff,
+    glyf::{self, FreeTypeScaler},
+    AdjustedMetrics, DrawError, Hinting, LocationRef, NormalizedCoord, OutlineCollectionKind,
+    OutlineGlyph, OutlineGlyphCollection, OutlineKind, OutlinePen, Size,
 };
 use crate::alloc::{boxed::Box, vec::Vec};
 
@@ -193,12 +195,20 @@ impl HintingInstance {
         let coords = self.coords.as_slice();
         match (&self.kind, &glyph.kind) {
             (HinterKind::Glyf(instance), OutlineKind::Glyf(glyf, outline)) => {
+                if matches!(path_style, ToPathStyle::HarfBuzz) {
+                    return Err(DrawError::HarfBuzzHintingUnsupported);
+                }
                 super::with_glyf_memory(outline, Hinting::Embedded, memory, |buf| {
-                    let mem = outline
-                        .memory_from_buffer(buf, Hinting::Embedded)
-                        .ok_or(DrawError::InsufficientMemory)?;
-                    let scaled_outline =
-                        glyf.draw_hinted(mem, outline, ppem, coords, instance, is_pedantic)?;
+                    let scaled_outline = FreeTypeScaler::hinted(
+                        glyf.clone(),
+                        outline,
+                        buf,
+                        ppem,
+                        coords,
+                        instance,
+                        is_pedantic,
+                    )?
+                    .scale(&outline.glyph, outline.glyph_id)?;
                     scaled_outline.to_path(path_style, pen)?;
                     Ok(AdjustedMetrics {
                         has_overlaps: outline.has_overlaps,

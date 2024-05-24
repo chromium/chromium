@@ -855,7 +855,7 @@ impl<'a> Engine<'a> {
 mod tests {
     use super::{super::MockEngine, math, CoordAxis, Engine, ZonePointer};
     use raw::{
-        tables::glyf::PointMarker,
+        tables::glyf::{bytecode::Opcode, PointMarker},
         types::{F26Dot6, Point},
     };
 
@@ -1115,21 +1115,274 @@ mod tests {
         engine.graphics.backward_compatibility = false;
         engine.graphics.zp0 = ZonePointer::Glyph;
         // with rounding
-        let point = engine.graphics.zones[1].point_mut(1).unwrap();
-        point.x = F26Dot6::from_bits(132);
-        point.y = F26Dot6::from_bits(-256);
+        engine.set_point_f26dot6(1, 1, (132, -256));
         engine.value_stack.push(1).unwrap();
         engine.op_mdap(1).unwrap();
         let point = engine.graphics.zones[1].point(1).unwrap();
         assert_eq!(point.map(F26Dot6::to_bits), Point::new(128, -258));
         // without rounding
-        let point = engine.graphics.zones[1].point_mut(2).unwrap();
-        point.x = F26Dot6::from_bits(132);
-        point.y = F26Dot6::from_bits(-256);
+        engine.set_point_f26dot6(1, 2, (132, -256));
         engine.value_stack.push(2).unwrap();
         engine.op_mdap(0).unwrap();
         let point = engine.graphics.zones[1].point(2).unwrap();
         assert_eq!(point.map(F26Dot6::to_bits), Point::new(132, -256));
+    }
+
+    #[test]
+    fn miap() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        set_test_vectors(&mut engine);
+        engine.graphics.backward_compatibility = false;
+        engine.graphics.zp0 = ZonePointer::Glyph;
+        // set a CVT distance
+        engine.cvt.set(1, F26Dot6::from_f64(0.75)).unwrap();
+        // with rounding
+        engine.set_point_f26dot6(1, 1, (132, -256));
+        engine.value_stack.push(1).unwrap();
+        engine.value_stack.push(1).unwrap();
+        engine.op_miap(1).unwrap();
+        let point = engine.graphics.zones[1].point(1).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(186, -229));
+        // without rounding
+        engine.set_point_f26dot6(1, 2, (132, -256));
+        engine.value_stack.push(2).unwrap();
+        engine.value_stack.push(1).unwrap();
+        engine.op_miap(0).unwrap();
+        let point = engine.graphics.zones[1].point(2).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(171, -236));
+    }
+
+    /// Tests bit 'a' of MDRP which just sets rp0 to the adjusted point
+    /// after move.
+    #[test]
+    fn mdrp_rp0() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        engine.graphics.rp0 = 0;
+        // Don't change rp0
+        engine.value_stack.push(1).unwrap();
+        engine.op_mdrp(Opcode::MDRP00000 as _).unwrap();
+        assert_eq!(engine.graphics.rp0, 0);
+        // Change rp0
+        engine.value_stack.push(1).unwrap();
+        engine.op_mdrp(Opcode::MDRP10000 as _).unwrap();
+        assert_eq!(engine.graphics.rp0, 1);
+    }
+
+    /// Test bit "b" which controls whether distances are adjusted
+    /// to the minimum_distance field of GraphicsState.
+    #[test]
+    fn mdrp_mindist() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        set_test_vectors(&mut engine);
+        engine.graphics.backward_compatibility = false;
+        engine.graphics.zp0 = ZonePointer::Glyph;
+        // without min distance check
+        engine.set_point_f26dot6(1, 1, (132, -256));
+        engine.value_stack.push(1).unwrap();
+        engine.op_mdrp(Opcode::MDRP00000 as _).unwrap();
+        let point = engine.graphics.zones[1].point(1).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(128, -258));
+        // with min distance check
+        engine.set_point_f26dot6(1, 2, (132, -256));
+        engine.value_stack.push(2).unwrap();
+        engine.op_mdrp(Opcode::MDRP01000 as _).unwrap();
+        let point = engine.graphics.zones[1].point(2).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(186, -229));
+    }
+
+    /// Test bit "c" which controls whether distances are rounded.
+    #[test]
+    fn mdrp_round() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        set_test_vectors(&mut engine);
+        engine.graphics.backward_compatibility = false;
+        engine.graphics.zp0 = ZonePointer::Glyph;
+        engine.op_rthg().unwrap();
+        // without rounding
+        engine.set_point_f26dot6(1, 1, (132, -231));
+        engine.value_stack.push(1).unwrap();
+        engine.op_mdrp(Opcode::MDRP00000 as _).unwrap();
+        let point = engine.graphics.zones[1].point(1).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(119, -238));
+        // with rounding
+        engine.set_point_f26dot6(1, 2, (132, -231));
+        engine.value_stack.push(2).unwrap();
+        engine.op_mdrp(Opcode::MDRP00100 as _).unwrap();
+        let point = engine.graphics.zones[1].point(2).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(147, -223));
+    }
+
+    /// Tests bit 'a' of MIRP which just sets rp0 to the adjusted point
+    /// after move.
+    #[test]
+    fn mirp_rp0() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        engine.graphics.rp0 = 0;
+        // Don't change rp0
+        engine.value_stack.push(1).unwrap();
+        engine.value_stack.push(1).unwrap();
+        engine.op_mirp(Opcode::MIRP00000 as _).unwrap();
+        assert_eq!(engine.graphics.rp0, 0);
+        // Change rp0
+        engine.value_stack.push(1).unwrap();
+        engine.value_stack.push(1).unwrap();
+        engine.op_mirp(Opcode::MIRP10000 as _).unwrap();
+        assert_eq!(engine.graphics.rp0, 1);
+    }
+
+    /// Test bit "b" which controls whether distances are adjusted
+    /// to the minimum_distance field of GraphicsState.
+    #[test]
+    fn mirp_mindist() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        set_test_vectors(&mut engine);
+        engine.graphics.backward_compatibility = false;
+        engine.graphics.zp0 = ZonePointer::Glyph;
+        // set a CVT distance
+        engine.cvt.set(1, F26Dot6::from_f64(0.75)).unwrap();
+        // without min distance check
+        engine.set_point_f26dot6(1, 1, (132, -256));
+        engine.value_stack.push(1).unwrap();
+        engine.value_stack.push(1).unwrap();
+        engine.op_mirp(Opcode::MIRP00000 as _).unwrap();
+        let point = engine.graphics.zones[1].point(1).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(171, -236));
+        // with min distance check
+        engine.set_point_f26dot6(1, 2, (132, -256));
+        engine.value_stack.push(2).unwrap();
+        engine.value_stack.push(1).unwrap();
+        engine.op_mirp(Opcode::MIRP01000 as _).unwrap();
+        let point = engine.graphics.zones[1].point(2).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(186, -229));
+    }
+
+    /// Test bit "c" which controls whether distances are rounded.
+    #[test]
+    fn mirp_round() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        set_test_vectors(&mut engine);
+        engine.graphics.backward_compatibility = false;
+        engine.graphics.zp0 = ZonePointer::Glyph;
+        // set a CVT distance
+        engine.cvt.set(1, F26Dot6::from_f64(0.75)).unwrap();
+        engine.op_rthg().unwrap();
+        // without rounding
+        engine.set_point_f26dot6(1, 1, (132, -231));
+        engine.value_stack.push(1).unwrap();
+        engine.value_stack.push(1).unwrap();
+        engine.op_mirp(Opcode::MIRP00000 as _).unwrap();
+        let point = engine.graphics.zones[1].point(1).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(162, -216));
+        // with rounding
+        engine.set_point_f26dot6(1, 2, (132, -231));
+        engine.value_stack.push(2).unwrap();
+        engine.value_stack.push(1).unwrap();
+        engine.op_mirp(Opcode::MIRP00100 as _).unwrap();
+        let point = engine.graphics.zones[1].point(2).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(147, -223));
+    }
+
+    #[test]
+    fn alignrp() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        set_test_vectors(&mut engine);
+        engine.graphics.backward_compatibility = false;
+        engine.graphics.zp0 = ZonePointer::Glyph;
+        engine.graphics.zp1 = ZonePointer::Glyph;
+        engine.graphics.rp0 = 0;
+        engine.set_point_f26dot6(1, 0, (132, -231));
+        engine.set_point_f26dot6(1, 1, (-72, 109));
+        engine.value_stack.push(1).unwrap();
+        engine.op_alignrp().unwrap();
+        let point = engine.graphics.zones[1].point(1).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(-45, 122));
+    }
+
+    #[test]
+    fn isect() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        engine.graphics.zp0 = ZonePointer::Glyph;
+        engine.graphics.zp1 = ZonePointer::Glyph;
+        engine.graphics.rp0 = 0;
+        // Two points for line 1
+        engine.set_point_f26dot6(1, 0, (0, 0));
+        engine.set_point_f26dot6(1, 1, (100, 100));
+        // And two more for line 2
+        engine.set_point_f26dot6(1, 2, (0, 100));
+        engine.set_point_f26dot6(1, 3, (100, 0));
+        // Push point numbers: first is the point where the
+        // intersection should be stored.
+        for ix in [4, 0, 1, 2, 3] {
+            engine.value_stack.push(ix).unwrap();
+        }
+        engine.op_isect().unwrap();
+        let point = engine.graphics.zones[1].point(4).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(50, 50));
+    }
+
+    #[test]
+    fn alignpts() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        set_test_vectors(&mut engine);
+        engine.graphics.backward_compatibility = false;
+        engine.graphics.zp0 = ZonePointer::Glyph;
+        engine.graphics.zp1 = ZonePointer::Glyph;
+        engine.set_point_f26dot6(1, 0, (132, -231));
+        engine.set_point_f26dot6(1, 1, (-72, 109));
+        engine.value_stack.push(0).unwrap();
+        engine.value_stack.push(1).unwrap();
+        engine.op_alignpts().unwrap();
+        let p1 = engine.graphics.zones[1].point(0).unwrap();
+        let p2 = engine.graphics.zones[1].point(1).unwrap();
+        assert_eq!(p1.map(F26Dot6::to_bits), Point::new(119, -238));
+        assert_eq!(p2.map(F26Dot6::to_bits), Point::new(-59, 116));
+    }
+
+    #[test]
+    fn ip() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        set_test_vectors(&mut engine);
+        engine.graphics.backward_compatibility = false;
+        engine.graphics.zp0 = ZonePointer::Glyph;
+        engine.graphics.zp1 = ZonePointer::Glyph;
+        engine.graphics.zp2 = ZonePointer::Glyph;
+        engine.graphics.rp1 = 2;
+        engine.graphics.rp2 = 3;
+        engine.set_point_f26dot6(1, 2, (72, -109));
+        engine.set_point_f26dot6(1, 1, (132, -231));
+        engine.value_stack.push(1).unwrap();
+        engine.op_ip().unwrap();
+        let point = engine.graphics.zones[1].point(1).unwrap();
+        assert_eq!(point.map(F26Dot6::to_bits), Point::new(147, -223));
+    }
+
+    #[test]
+    fn iup_flags() {
+        // IUP shift and interpolate logic is tested in ../zone.rs so just
+        // check the flags here.
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        assert!(!engine.graphics.did_iup_x);
+        assert!(!engine.graphics.did_iup_y);
+        // IUP[y]
+        engine.op_iup(0).unwrap();
+        assert!(!engine.graphics.did_iup_x);
+        assert!(engine.graphics.did_iup_y);
+        // IUP[x]
+        engine.op_iup(1).unwrap();
+        assert!(engine.graphics.did_iup_x);
+        assert!(engine.graphics.did_iup_y);
     }
 
     fn set_test_vectors(engine: &mut Engine) {
@@ -1138,5 +1391,13 @@ mod tests {
         engine.graphics.dual_proj_vector = v;
         engine.graphics.freedom_vector = v;
         engine.graphics.update_projection_state();
+    }
+
+    impl Engine<'_> {
+        fn set_point_f26dot6(&mut self, zone_ix: usize, point_ix: usize, xy: (i32, i32)) {
+            let p = self.graphics.zones[zone_ix].point_mut(point_ix).unwrap();
+            p.x = F26Dot6::from_bits(xy.0);
+            p.y = F26Dot6::from_bits(xy.1);
+        }
     }
 }

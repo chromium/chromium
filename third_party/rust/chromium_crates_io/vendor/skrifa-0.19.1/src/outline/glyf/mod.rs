@@ -5,12 +5,16 @@ mod hint;
 mod memory;
 mod outline;
 
+#[cfg(feature = "libm")]
+#[allow(unused_imports)]
+use core_maths::CoreFloat;
+
 pub use hint::{HintError, HintInstance, HintOutline};
-pub use memory::OutlineMemory;
 pub use outline::{Outline, ScaledOutline};
 
-use super::DrawError;
+use super::{DrawError, Hinting};
 use crate::GLYF_COMPOSITE_RECURSION_LIMIT;
+use memory::{FreeTypeOutlineMemory, HarfBuzzOutlineMemory};
 
 use read_fonts::{
     tables::{
@@ -161,38 +165,6 @@ impl<'a> Outlines<'a> {
         }
         (false, F26Dot6::from_bits(0x10000))
     }
-
-    pub fn draw(
-        &self,
-        memory: OutlineMemory<'a>,
-        outline: &Outline,
-        size: Option<f32>,
-        coords: &'a [F2Dot14],
-    ) -> Result<ScaledOutline<'a>, DrawError> {
-        Scaler::new(self.clone(), memory, size, coords, None, false, false)
-            .scale(&outline.glyph, outline.glyph_id)
-    }
-
-    pub fn draw_hinted(
-        &self,
-        memory: OutlineMemory<'a>,
-        outline: &Outline,
-        size: Option<f32>,
-        coords: &'a [F2Dot14],
-        hinter: &'a HintInstance,
-        pedantic_hinting: bool,
-    ) -> Result<ScaledOutline<'a>, DrawError> {
-        Scaler::new(
-            self.clone(),
-            memory,
-            size,
-            coords,
-            Some(hinter),
-            true,
-            pedantic_hinting,
-        )
-        .scale(&outline.glyph, outline.glyph_id)
-    }
 }
 
 impl<'a> Outlines<'a> {
@@ -252,18 +224,7 @@ impl<'a> Outlines<'a> {
     }
 
     fn advance_width(&self, gid: GlyphId, coords: &'a [F2Dot14]) -> i32 {
-        let default_advance = self
-            .hmtx
-            .h_metrics()
-            .last()
-            .map(|metric| metric.advance())
-            .unwrap_or(0);
-        let mut advance = self
-            .hmtx
-            .h_metrics()
-            .get(gid.to_u16() as usize)
-            .map(|metric| metric.advance())
-            .unwrap_or(default_advance) as i32;
+        let mut advance = self.hmtx.advance(gid).unwrap_or_default() as i32;
         if let Some(hvar) = &self.hvar {
             advance += hvar
                 .advance_width_delta(gid, coords)
@@ -275,19 +236,7 @@ impl<'a> Outlines<'a> {
     }
 
     fn lsb(&self, gid: GlyphId, coords: &'a [F2Dot14]) -> i32 {
-        let gid_index = gid.to_u16() as usize;
-        let mut lsb = self
-            .hmtx
-            .h_metrics()
-            .get(gid_index)
-            .map(|metric| metric.side_bearing())
-            .unwrap_or_else(|| {
-                self.hmtx
-                    .left_side_bearings()
-                    .get(gid_index.saturating_sub(self.hmtx.h_metrics().len()))
-                    .map(|lsb| lsb.get())
-                    .unwrap_or(0)
-            }) as i32;
+        let mut lsb = self.hmtx.side_bearing(gid).unwrap_or_default() as i32;
         if let Some(hvar) = &self.hvar {
             lsb += hvar
                 .lsb_delta(gid, coords)
@@ -299,9 +248,116 @@ impl<'a> Outlines<'a> {
     }
 }
 
-struct Scaler<'a> {
+trait Scaler {
+    fn coords(&self) -> &[F2Dot14];
+    fn outlines(&self) -> &Outlines;
+    fn setup_phantom_points(
+        &mut self,
+        bounds: [i16; 4],
+        lsb: i32,
+        advance: i32,
+        tsb: i32,
+        vadvance: i32,
+    );
+    fn load_simple(&mut self, glyph: &SimpleGlyph, glyph_id: GlyphId) -> Result<(), DrawError>;
+    fn load_composite(
+        &mut self,
+        glyph: &CompositeGlyph,
+        glyph_id: GlyphId,
+        recurse_depth: usize,
+    ) -> Result<(), DrawError>;
+
+    fn load(
+        &mut self,
+        glyph: &Option<Glyph>,
+        glyph_id: GlyphId,
+        recurse_depth: usize,
+    ) -> Result<(), DrawError> {
+        if recurse_depth > GLYF_COMPOSITE_RECURSION_LIMIT {
+            return Err(DrawError::RecursionLimitExceeded(glyph_id));
+        }
+        let glyph = match &glyph {
+            Some(glyph) => glyph,
+            // This is a valid empty glyph
+            None => return Ok(()),
+        };
+        let bounds = [glyph.x_min(), glyph.x_max(), glyph.y_min(), glyph.y_max()];
+        let outlines = self.outlines();
+        let coords: &[F2Dot14] = self.coords();
+        let lsb = outlines.lsb(glyph_id, coords);
+        let advance = outlines.advance_width(glyph_id, coords);
+        let [ascent, descent] = outlines.os2_vmetrics.map(|x| x as i32);
+        let tsb = ascent - bounds[3] as i32;
+        let vadvance = ascent - descent;
+        self.setup_phantom_points(bounds, lsb, advance, tsb, vadvance);
+        match glyph {
+            Glyph::Simple(simple) => self.load_simple(simple, glyph_id),
+            Glyph::Composite(composite) => self.load_composite(composite, glyph_id, recurse_depth),
+        }
+    }
+}
+
+/// f32 all the things. Hold your rounding. No hinting.
+pub(crate) struct HarfBuzzScaler<'a> {
     outlines: Outlines<'a>,
-    memory: OutlineMemory<'a>,
+    memory: HarfBuzzOutlineMemory<'a>,
+    coords: &'a [F2Dot14],
+    point_count: usize,
+    contour_count: usize,
+    component_delta_count: usize,
+    scale: F26Dot6,
+    is_scaled: bool,
+    /// Phantom points. These are 4 extra points appended to the end of an
+    /// outline that allow the bytecode interpreter to produce hinted
+    /// metrics.
+    ///
+    /// See <https://learn.microsoft.com/en-us/typography/opentype/spec/tt_instructing_glyphs#phantom-points>
+    phantom: [Point<f32>; PHANTOM_POINT_COUNT],
+}
+
+impl<'a> HarfBuzzScaler<'a> {
+    pub(crate) fn unhinted(
+        outlines: Outlines<'a>,
+        outline: &'a Outline,
+        buf: &'a mut [u8],
+        ppem: Option<f32>,
+        coords: &'a [F2Dot14],
+    ) -> Result<Self, DrawError> {
+        let (is_scaled, scale) = outlines.compute_scale(ppem);
+        let memory =
+            HarfBuzzOutlineMemory::new(outline, buf).ok_or(DrawError::InsufficientMemory)?;
+        Ok(Self {
+            outlines,
+            memory,
+            coords,
+            point_count: 0,
+            contour_count: 0,
+            component_delta_count: 0,
+            scale,
+            is_scaled,
+            phantom: Default::default(),
+        })
+    }
+
+    pub(crate) fn scale(
+        mut self,
+        glyph: &Option<Glyph>,
+        glyph_id: GlyphId,
+    ) -> Result<ScaledOutline<'a, f32>, DrawError> {
+        self.load(glyph, glyph_id, 0)?;
+        Ok(ScaledOutline::new(
+            &mut self.memory.points[..self.point_count],
+            self.phantom,
+            &mut self.memory.flags[..self.point_count],
+            &mut self.memory.contours[..self.contour_count],
+        ))
+    }
+}
+
+/// F26Dot6 coords, Fixed deltas, and a penchant for rounding
+pub(crate) struct FreeTypeScaler<'a> {
+    outlines: Outlines<'a>,
+    memory: FreeTypeOutlineMemory<'a>,
     coords: &'a [F2Dot14],
     point_count: usize,
     contour_count: usize,
@@ -319,18 +375,46 @@ struct Scaler<'a> {
     hinter: Option<&'a HintInstance>,
 }
 
-impl<'a> Scaler<'a> {
-    fn new(
+impl<'a> FreeTypeScaler<'a> {
+    pub(crate) fn unhinted(
         outlines: Outlines<'a>,
-        memory: OutlineMemory<'a>,
-        size: Option<f32>,
+        outline: &'a Outline,
+        buf: &'a mut [u8],
+        ppem: Option<f32>,
         coords: &'a [F2Dot14],
-        hinter: Option<&'a HintInstance>,
-        is_hinted: bool,
+    ) -> Result<Self, DrawError> {
+        let (is_scaled, scale) = outlines.compute_scale(ppem);
+        let memory = FreeTypeOutlineMemory::new(outline, buf, Hinting::None)
+            .ok_or(DrawError::InsufficientMemory)?;
+        Ok(Self {
+            outlines,
+            memory,
+            coords,
+            point_count: 0,
+            contour_count: 0,
+            component_delta_count: 0,
+            scale,
+            is_scaled,
+            is_hinted: false,
+            pedantic_hinting: false,
+            phantom: Default::default(),
+            hinter: None,
+        })
+    }
+
+    pub(crate) fn hinted(
+        outlines: Outlines<'a>,
+        outline: &'a Outline,
+        buf: &'a mut [u8],
+        ppem: Option<f32>,
+        coords: &'a [F2Dot14],
+        hinter: &'a HintInstance,
         pedantic_hinting: bool,
-    ) -> Self {
-        let (is_scaled, scale) = outlines.compute_scale(size);
-        Self {
+    ) -> Result<Self, DrawError> {
+        let (is_scaled, scale) = outlines.compute_scale(ppem);
+        let memory = FreeTypeOutlineMemory::new(outline, buf, Hinting::Embedded)
+            .ok_or(DrawError::InsufficientMemory)?;
+        Ok(Self {
             outlines,
             memory,
             coords,
@@ -340,54 +424,57 @@ impl<'a> Scaler<'a> {
             scale,
             is_scaled,
             // We don't hint unscaled outlines
-            is_hinted: is_hinted && is_scaled,
+            is_hinted: is_scaled,
             pedantic_hinting,
             phantom: Default::default(),
-            hinter,
-        }
+            hinter: Some(hinter),
+        })
     }
 
-    fn scale(
+    pub(crate) fn scale(
         mut self,
         glyph: &Option<Glyph>,
         glyph_id: GlyphId,
-    ) -> Result<ScaledOutline<'a>, DrawError> {
+    ) -> Result<ScaledOutline<'a, F26Dot6>, DrawError> {
         self.load(glyph, glyph_id, 0)?;
-        let outline = ScaledOutline {
-            points: &mut self.memory.scaled[..self.point_count],
-            flags: &mut self.memory.flags[..self.point_count],
-            contours: &mut self.memory.contours[..self.contour_count],
-            phantom_points: self.phantom,
-        };
-        let x_shift = self.phantom[0].x;
-        if x_shift != F26Dot6::ZERO {
-            for point in outline.points.iter_mut() {
-                point.x -= x_shift;
-            }
-        }
-        Ok(outline)
+        Ok(ScaledOutline::new(
+            &mut self.memory.scaled[..self.point_count],
+            self.phantom,
+            &mut self.memory.flags[..self.point_count],
+            &mut self.memory.contours[..self.contour_count],
+        ))
+    }
+}
+
+impl<'a> Scaler for FreeTypeScaler<'a> {
+    fn setup_phantom_points(
+        &mut self,
+        bounds: [i16; 4],
+        lsb: i32,
+        advance: i32,
+        tsb: i32,
+        vadvance: i32,
+    ) {
+        // The four "phantom" points as computed by FreeType.
+        // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/truetype/ttgload.c#L1365>
+        // horizontal:
+        self.phantom[0].x = F26Dot6::from_bits(bounds[0] as i32 - lsb);
+        self.phantom[0].y = F26Dot6::ZERO;
+        self.phantom[1].x = self.phantom[0].x + F26Dot6::from_bits(advance);
+        self.phantom[1].y = F26Dot6::ZERO;
+        // vertical:
+        self.phantom[2].x = F26Dot6::ZERO;
+        self.phantom[2].y = F26Dot6::from_bits(bounds[3] as i32 + tsb);
+        self.phantom[3].x = F26Dot6::ZERO;
+        self.phantom[3].y = self.phantom[2].y - F26Dot6::from_bits(vadvance);
     }
 
-    fn load(
-        &mut self,
-        glyph: &Option<Glyph>,
-        glyph_id: GlyphId,
-        recurse_depth: usize,
-    ) -> Result<(), DrawError> {
-        if recurse_depth > GLYF_COMPOSITE_RECURSION_LIMIT {
-            return Err(DrawError::RecursionLimitExceeded(glyph_id));
-        }
-        let glyph = match &glyph {
-            Some(glyph) => glyph,
-            // This is a valid empty glyph
-            None => return Ok(()),
-        };
-        let bounds = [glyph.x_min(), glyph.x_max(), glyph.y_min(), glyph.y_max()];
-        self.setup_phantom_points(bounds, glyph_id);
-        match glyph {
-            Glyph::Simple(simple) => self.load_simple(simple, glyph_id),
-            Glyph::Composite(composite) => self.load_composite(composite, glyph_id, recurse_depth),
-        }
+    fn coords(&self) -> &[F2Dot14] {
+        self.coords
+    }
+
+    fn outlines(&self) -> &Outlines {
+        &self.outlines
     }
 
     fn load_simple(&mut self, glyph: &SimpleGlyph, glyph_id: GlyphId) -> Result<(), DrawError> {
@@ -850,25 +937,267 @@ impl<'a> Scaler<'a> {
     }
 }
 
-impl<'a> Scaler<'a> {
-    fn setup_phantom_points(&mut self, bounds: [i16; 4], glyph_id: GlyphId) {
-        let lsb = self.outlines.lsb(glyph_id, self.coords);
-        let advance = self.outlines.advance_width(glyph_id, self.coords);
-        let [ascent, descent] = self.outlines.os2_vmetrics.map(|x| x as i32);
-        let tsb = ascent - bounds[3] as i32;
-        let vadvance = ascent - descent;
-        // The four "phantom" points as computed by FreeType.
-        // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/truetype/ttgload.c#L1365>
+impl<'a> Scaler for HarfBuzzScaler<'a> {
+    fn setup_phantom_points(
+        &mut self,
+        bounds: [i16; 4],
+        lsb: i32,
+        advance: i32,
+        tsb: i32,
+        vadvance: i32,
+    ) {
+        // Same pattern as FreeType, just f32
         // horizontal:
-        self.phantom[0].x = F26Dot6::from_bits(bounds[0] as i32 - lsb);
-        self.phantom[0].y = F26Dot6::ZERO;
-        self.phantom[1].x = self.phantom[0].x + F26Dot6::from_bits(advance);
-        self.phantom[1].y = F26Dot6::ZERO;
+        self.phantom[0].x = bounds[0] as f32 - lsb as f32;
+        self.phantom[0].y = 0.0;
+        self.phantom[1].x = self.phantom[0].x + advance as f32;
+        self.phantom[1].y = 0.0;
         // vertical:
-        self.phantom[2].x = F26Dot6::ZERO;
-        self.phantom[2].y = F26Dot6::from_bits(bounds[3] as i32 + tsb);
-        self.phantom[3].x = F26Dot6::ZERO;
-        self.phantom[3].y = self.phantom[2].y - F26Dot6::from_bits(vadvance);
+        self.phantom[2].x = 0.0;
+        self.phantom[2].y = bounds[3] as f32 + tsb as f32;
+        self.phantom[3].x = 0.0;
+        self.phantom[3].y = self.phantom[2].y - vadvance as f32;
+    }
+
+    fn coords(&self) -> &[F2Dot14] {
+        self.coords
+    }
+
+    fn outlines(&self) -> &Outlines {
+        &self.outlines
+    }
+
+    fn load_simple(&mut self, glyph: &SimpleGlyph, glyph_id: GlyphId) -> Result<(), DrawError> {
+        use DrawError::InsufficientMemory;
+        // Compute the ranges for our point/flag buffers and slice them.
+        let points_start = self.point_count;
+        let point_count = glyph.num_points();
+        let phantom_start = point_count;
+        let points_end = points_start + point_count + PHANTOM_POINT_COUNT;
+        let point_range = points_start..points_end;
+        // Points and flags are accumulated as we load the outline.
+        let points = self
+            .memory
+            .points
+            .get_mut(point_range.clone())
+            .ok_or(InsufficientMemory)?;
+        let flags = self
+            .memory
+            .flags
+            .get_mut(point_range)
+            .ok_or(InsufficientMemory)?;
+        glyph.read_points_fast(&mut points[..point_count], &mut flags[..point_count])?;
+        // Compute the range for our contour end point buffer and slice it.
+        let contours_start = self.contour_count;
+        let contour_end_pts = glyph.end_pts_of_contours();
+        let contour_count = contour_end_pts.len();
+        let contours_end = contours_start + contour_count;
+        let contours = self
+            .memory
+            .contours
+            .get_mut(contours_start..contours_end)
+            .ok_or(InsufficientMemory)?;
+        // Read the contour end points.
+        for (end_pt, contour) in contour_end_pts.iter().zip(contours.iter_mut()) {
+            *contour = end_pt.get();
+        }
+        // Adjust the running point/contour total counts
+        self.point_count += point_count;
+        self.contour_count += contour_count;
+        // Append phantom points to the outline.
+        for (i, phantom) in self.phantom.iter().enumerate() {
+            points[phantom_start + i] = *phantom;
+            flags[phantom_start + i] = Default::default();
+        }
+        // Acquire deltas
+        if self.outlines.gvar.is_some() && !self.coords.is_empty() {
+            let gvar = self.outlines.gvar.as_ref().unwrap();
+            let glyph = deltas::SimpleGlyph {
+                points: &mut points[..],
+                flags: &mut flags[..],
+                contours,
+            };
+            let deltas = self
+                .memory
+                .deltas
+                .get_mut(..point_count + PHANTOM_POINT_COUNT)
+                .ok_or(InsufficientMemory)?;
+            let iup_buffer = self
+                .memory
+                .iup_buffer
+                .get_mut(..point_count + PHANTOM_POINT_COUNT)
+                .ok_or(InsufficientMemory)?;
+            if deltas::simple_glyph(
+                gvar,
+                glyph_id,
+                self.coords,
+                self.outlines.has_var_lsb,
+                glyph,
+                iup_buffer,
+                deltas,
+            )
+            .is_ok()
+            {
+                for (point, delta) in points.iter_mut().zip(deltas) {
+                    *point += *delta;
+                }
+            }
+        }
+        // Apply scaling
+        if self.is_scaled {
+            let scale = self.scale.to_f32();
+            for point in points.iter_mut() {
+                *point = point.map(|c| c * scale);
+            }
+        }
+
+        if points_start != 0 {
+            // If we're not the first component, shift our contour end points.
+            for contour_end in contours.iter_mut() {
+                *contour_end += points_start as u16;
+            }
+        }
+        Ok(())
+    }
+
+    fn load_composite(
+        &mut self,
+        glyph: &CompositeGlyph,
+        glyph_id: GlyphId,
+        recurse_depth: usize,
+    ) -> Result<(), DrawError> {
+        use DrawError::InsufficientMemory;
+        let scale = self.scale.to_f32();
+        // The base indices of the points for the current glyph.
+        let point_base = self.point_count;
+        // Compute the per component deltas. Since composites can be nested, we
+        // use a stack and keep track of the base.
+        let mut have_deltas = false;
+        let delta_base = self.component_delta_count;
+        if self.outlines.gvar.is_some() && !self.coords.is_empty() {
+            let gvar = self.outlines.gvar.as_ref().unwrap();
+            let count = glyph.components().count() + PHANTOM_POINT_COUNT;
+            let deltas = self
+                .memory
+                .composite_deltas
+                .get_mut(delta_base..delta_base + count)
+                .ok_or(InsufficientMemory)?;
+            if deltas::composite_glyph(gvar, glyph_id, self.coords, &mut deltas[..]).is_ok() {
+                // If the font is missing variation data for LSBs in HVAR then we
+                // apply the delta to the first phantom point.
+                if !self.outlines.has_var_lsb {
+                    self.phantom[0].x += deltas[count - 4].x;
+                }
+                have_deltas = true;
+            }
+            self.component_delta_count += count;
+        }
+        if self.is_scaled {
+            for point in self.phantom.iter_mut() {
+                *point *= scale;
+            }
+        }
+        for (i, component) in glyph.components().enumerate() {
+            // Loading a component glyph will override phantom points so save a copy. We'll
+            // restore them unless the USE_MY_METRICS flag is set.
+            let phantom = self.phantom;
+            // Load the component glyph and keep track of the points range.
+            let start_point = self.point_count;
+            let component_glyph = self
+                .outlines
+                .loca
+                .get_glyf(component.glyph, &self.outlines.glyf)?;
+            self.load(&component_glyph, component.glyph, recurse_depth + 1)?;
+            let end_point = self.point_count;
+            if !component
+                .flags
+                .contains(CompositeGlyphFlags::USE_MY_METRICS)
+            {
+                // If the USE_MY_METRICS flag is missing, we restore the phantom points we
+                // saved at the start of the loop.
+                self.phantom = phantom;
+            }
+            let have_xform = component.flags.intersects(
+                CompositeGlyphFlags::WE_HAVE_A_SCALE
+                    | CompositeGlyphFlags::WE_HAVE_AN_X_AND_Y_SCALE
+                    | CompositeGlyphFlags::WE_HAVE_A_TWO_BY_TWO,
+            );
+            let mut transform = if have_xform {
+                let xform = &component.transform;
+                [
+                    xform.xx,
+                    xform.yx,
+                    xform.xy,
+                    xform.yy,
+                    F2Dot14::ZERO,
+                    F2Dot14::ZERO,
+                ]
+                .map(|x| x.to_f32())
+            } else {
+                [1.0, 0.0, 0.0, 1.0, 0.0, 0.0] // identity
+            };
+
+            let anchor_offset = match component.anchor {
+                Anchor::Offset { x, y } => {
+                    let (mut x, mut y) = (x as f32, y as f32);
+                    if have_xform
+                        && component.flags
+                            & (CompositeGlyphFlags::SCALED_COMPONENT_OFFSET
+                                | CompositeGlyphFlags::UNSCALED_COMPONENT_OFFSET)
+                            == CompositeGlyphFlags::SCALED_COMPONENT_OFFSET
+                    {
+                        // Scale x by the magnitude of the x-basis, y by the y-basis
+                        // FreeType implements hypot, we can just use the provided implementation
+                        x *= hypot(transform[0], transform[2]);
+                        y *= hypot(transform[1], transform[3]);
+                    }
+                    Point::new(x, y)
+                        + self
+                            .memory
+                            .composite_deltas
+                            .get(delta_base + i)
+                            .copied()
+                            .unwrap_or_default()
+                }
+                Anchor::Point { base, component } => {
+                    let (base_offset, component_offset) = (base as usize, component as usize);
+                    let base_point = self
+                        .memory
+                        .points
+                        .get(point_base + base_offset)
+                        .ok_or(DrawError::InvalidAnchorPoint(glyph_id, base))?;
+                    let component_point = self
+                        .memory
+                        .points
+                        .get(start_point + component_offset)
+                        .ok_or(DrawError::InvalidAnchorPoint(glyph_id, component))?;
+                    *base_point - *component_point
+                }
+            };
+            transform[4] = anchor_offset.x;
+            transform[5] = anchor_offset.y;
+
+            let points = &mut self.memory.points[start_point..end_point];
+            for point in points.iter_mut() {
+                *point = map_point(transform, *point);
+            }
+        }
+        if have_deltas {
+            self.component_delta_count = delta_base;
+        }
+        Ok(())
+    }
+}
+
+/// Magnitude of the vector (x, y)
+fn hypot(x: f32, y: f32) -> f32 {
+    x.hypot(y)
+}
+
+fn map_point(transform: [f32; 6], p: Point<f32>) -> Point<f32> {
+    Point {
+        x: transform[0] * p.x + transform[2] * p.y + transform[4],
+        y: transform[1] * p.x + transform[3] * p.y + transform[5],
     }
 }
 

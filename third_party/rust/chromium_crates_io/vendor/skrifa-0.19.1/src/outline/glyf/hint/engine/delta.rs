@@ -118,3 +118,78 @@ impl<'a> Engine<'a> {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::{super::zone::ZonePointer, MockEngine};
+    use raw::{
+        tables::glyf::bytecode::Opcode,
+        types::{F26Dot6, Point},
+    };
+
+    #[test]
+    fn deltap() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        engine.graphics.backward_compatibility = false;
+        engine.graphics.zp0 = ZonePointer::Glyph;
+        let raw_ppem = 16;
+        let raw_adjustment = 7;
+        for (point_ix, (ppem_bias, opcode)) in [
+            (0, Opcode::DELTAP1),
+            (16, Opcode::DELTAP2),
+            (32, Opcode::DELTAP3),
+        ]
+        .iter()
+        .enumerate()
+        {
+            let ppem = raw_ppem + ppem_bias;
+            engine.graphics.ppem = ppem;
+            // packed ppem + adjustment entry
+            let packed_ppem = raw_ppem - engine.graphics.delta_base as i32;
+            engine
+                .value_stack
+                .push((packed_ppem << 4) | raw_adjustment)
+                .unwrap();
+            // point index
+            engine.value_stack.push(point_ix as _).unwrap();
+            // exception count
+            engine.value_stack.push(1).unwrap();
+            engine.op_deltap(*opcode).unwrap();
+            let point = engine.graphics.zones[1].point(point_ix).unwrap();
+            assert_eq!(point.map(F26Dot6::to_bits), Point::new(-8, 0));
+        }
+    }
+
+    #[test]
+    fn deltac() {
+        let mut mock = MockEngine::new();
+        let mut engine = mock.engine();
+        let raw_ppem = 16;
+        let raw_adjustment = 7;
+        for (cvt_ix, (ppem_bias, opcode)) in [
+            (0, Opcode::DELTAC1),
+            (16, Opcode::DELTAC2),
+            (32, Opcode::DELTAC3),
+        ]
+        .iter()
+        .enumerate()
+        {
+            let ppem = raw_ppem + ppem_bias;
+            engine.graphics.ppem = ppem;
+            // packed ppem + adjustment entry
+            let packed_ppem = raw_ppem - engine.graphics.delta_base as i32;
+            engine
+                .value_stack
+                .push((packed_ppem << 4) | raw_adjustment)
+                .unwrap();
+            // cvt index
+            engine.value_stack.push(cvt_ix as _).unwrap();
+            // exception count
+            engine.value_stack.push(1).unwrap();
+            engine.op_deltac(*opcode).unwrap();
+            let value = engine.cvt.get(cvt_ix).unwrap();
+            assert_eq!(value.to_bits(), -8);
+        }
+    }
+}
