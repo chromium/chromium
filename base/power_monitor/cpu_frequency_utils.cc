@@ -55,6 +55,7 @@ std::optional<CpuThroughputEstimationResult> EstimateCpuThroughput() {
   // see: https://github.com/google/UIforETW/blob/main/UIforETW/CPUFrequency.cpp
   //      https://github.com/google/UIforETW/blob/main/UIforETW/SpinALot64.asm
   base::ElapsedTimer timer;
+  base::ElapsedThreadTimer thread_timer;
   const int kAmountOfIterations = 50000;
   const int kAmountOfInstructions = 10;
   for (int i = 0; i < kAmountOfIterations; ++i) {
@@ -74,6 +75,7 @@ std::optional<CpuThroughputEstimationResult> EstimateCpuThroughput() {
         : "eax");
   }
 
+  const base::TimeDelta elapsed_thread_time = thread_timer.Elapsed();
   const base::TimeDelta elapsed = timer.Elapsed();
   const double estimated_frequency =
       (kAmountOfIterations * kAmountOfInstructions) / elapsed.InSecondsF();
@@ -81,6 +83,8 @@ std::optional<CpuThroughputEstimationResult> EstimateCpuThroughput() {
   CpuThroughputEstimationResult result{
       .estimated_frequency = estimated_frequency,
       .migrated = false,
+      .wall_time = elapsed,
+      .thread_time = elapsed_thread_time,
   };
 
 #if BUILDFLAG(IS_WIN)

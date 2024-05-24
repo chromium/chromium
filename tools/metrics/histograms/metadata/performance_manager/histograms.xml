@@ -34,6 +34,90 @@ each histogram.
   <variant name="WriteSiteDataIntoStore"/>
 </variants>
 
+<histogram name="CPU.Experimental.CpuEstimationTaskMigrated" enum="Boolean"
+    expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    True if the CPU estimation task was running on a different CPU at the end of
+    the assembly loop than it was at the beginning.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only.
+  </summary>
+</histogram>
+
+<histogram name="CPU.Experimental.CpuEstimationTaskQueuedTime.{CoreType}"
+    units="microseconds" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time in microseconds during which the CPU estimation task was queued
+    before running.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only. Reported only on devices using the high resolution clock.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram name="CPU.Experimental.CpuEstimationTaskThreadTime.{CoreType}"
+    units="microseconds" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The thread time in microseconds it took to fully execute the CPU estimation
+    task.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only. Reported only on devices using the high resolution clock.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram name="CPU.Experimental.CpuEstimationTaskTotalTime.{CoreType}"
+    units="microseconds" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time in microseconds it took to fully execute the CPU estimation task,
+    that is its queued time + the wall time elapsed before the task finished.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only. Reported only on devices using the high resolution clock.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram name="CPU.Experimental.CpuEstimationTaskWallTime.{CoreType}"
+    units="microseconds" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The wall time in microseconds it took to fully execute the CPU estimation
+    task.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only. Reported only on devices using the high resolution clock.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram name="CPU.Experimental.CpuEstimationThreadTimePercent.{CoreType}"
+    units="%" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The ratio of thread time vs wall time of the CPU estimation task's
+    &quot;running&quot; portion, i.e. the thread time of the assembly loop
+    divided by its wall time.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
 <histogram
     name="CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.{CoreType}"
     units="%" expires_after="2024-07-10">
@@ -44,7 +128,8 @@ each histogram.
     base::EstimateCpuFrequency) over the max frequency of the fastest CPU, as
     reported by base::GetCpuMhzLimit.
 
-    Recorded every 5 minutes. Windows x86 only.
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only.
   </summary>
   <token key="CoreType" variants="CoreType"/>
 </histogram>
@@ -58,7 +143,8 @@ each histogram.
     base::EstimateCpuFrequency) over the max frequency of the fastest CPU, as
     reported by base::GetCpuMaxMhz.
 
-    Recorded every 5 minutes. Windows x86 only.
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only.
   </summary>
   <token key="CoreType" variants="CoreType"/>
 </histogram>

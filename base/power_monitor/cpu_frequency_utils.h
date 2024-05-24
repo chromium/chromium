@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/base_export.h"
+#include "base/time/time.h"
 #include "base/values.h"
 
 namespace base {
@@ -39,6 +40,10 @@ struct BASE_EXPORT CpuThroughputEstimationResult {
   // True if the current core is different after the estimation loop than
   // before.
   bool migrated;
+
+  // The wall time and thread time of the CPU estimation task's assembly loop.
+  base::TimeDelta wall_time;
+  base::TimeDelta thread_time;
 };
 
 // Returns the estimated CPU frequency of the current core by executing a tight

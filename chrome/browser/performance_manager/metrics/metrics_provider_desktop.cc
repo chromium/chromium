@@ -9,6 +9,7 @@
 #include "base/power_monitor/cpu_frequency_utils.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -30,6 +31,8 @@ uint64_t kBytesPerMb = 1024 * 1024;
 #if BUILDFLAG(IS_MAC)
 uint64_t kKilobytesPerMb = 1024;
 #endif
+
+base::TimeDelta kCpuThroughputSamplingInterval = base::Minutes(5);
 
 }  // namespace
 
@@ -181,10 +184,9 @@ MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
                           base::Unretained(this)));
 
   if constexpr (ShouldCollectCpuFrequencyMetrics()) {
-    cpu_frequency_metrics_timer_.Start(
-        FROM_HERE, base::Minutes(5),
-        base::BindRepeating(&MetricsProviderDesktop::RecordCpuFrequencyMetrics,
-                            base::Unretained(this)));
+    cpu_frequency_metrics_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_VISIBLE});
+    ScheduleCpuFrequencyTask();
   }
 }
 
@@ -279,8 +281,11 @@ void MetricsProviderDesktop::ResetTrackers() {
       "PerformanceManager.UserTuning.MemorySaverModeEnabledPercent");
 }
 
-void MetricsProviderDesktop::RecordCpuFrequencyMetrics() {
+void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
+    base::TimeTicks posted_at_time) {
   CHECK(ShouldCollectCpuFrequencyMetrics());
+
+  auto queued_time = base::TimeTicks::Now() - posted_at_time;
 
   static const double kHzInMhz = 1000 * 1000;
 
@@ -292,38 +297,91 @@ void MetricsProviderDesktop::RecordCpuFrequencyMetrics() {
     return;
   }
 
+  std::string_view core_type_suffix = "Performance";
+  if (cpu_frequency_info.type == base::CpuFrequencyInfo::CoreType::kBalanced) {
+    core_type_suffix = "Balanced";
+  } else if (cpu_frequency_info.type ==
+             base::CpuFrequencyInfo::CoreType::kEfficiency) {
+    core_type_suffix = "Efficiency";
+  }
+
+  base::UmaHistogramCustomMicrosecondsTimes(
+      base::StrCat(
+          {"CPU.Experimental.CpuEstimationTaskQueuedTime.", core_type_suffix}),
+      queued_time, base::Microseconds(1), base::Seconds(1), 50);
+
+  base::UmaHistogramCustomMicrosecondsTimes(
+      base::StrCat(
+          {"CPU.Experimental.CpuEstimationTaskTotalTime.", core_type_suffix}),
+      queued_time + cpu_throughput->wall_time, base::Microseconds(1),
+      base::Seconds(1), 50);
+
+  base::UmaHistogramCustomMicrosecondsTimes(
+      base::StrCat(
+          {"CPU.Experimental.CpuEstimationTaskThreadTime.", core_type_suffix}),
+      cpu_throughput->thread_time, base::Microseconds(1), base::Seconds(1), 50);
+
+  base::UmaHistogramCustomMicrosecondsTimes(
+      base::StrCat(
+          {"CPU.Experimental.CpuEstimationTaskWallTime.", core_type_suffix}),
+      cpu_throughput->wall_time, base::Microseconds(1), base::Seconds(1), 50);
+
+  base::UmaHistogramBoolean("CPU.Experimental.CpuEstimationTaskMigrated",
+                            cpu_throughput->migrated);
+
+  // These can be 0 in tests
+  if (!cpu_throughput->thread_time.is_zero() &&
+      !cpu_throughput->wall_time.is_zero()) {
+    base::UmaHistogramPercentage(
+        base::StrCat({"CPU.Experimental.CpuEstimationThreadTimePercent.",
+                      core_type_suffix}),
+        static_cast<int>(cpu_throughput->thread_time /
+                         cpu_throughput->wall_time * 100.0));
+  }
+
   if (cpu_throughput->migrated) {
-    // Don't record these metrics if the code migrated from one CPU to another
-    // in the middle of the estimation loop.
+    // Don't record frequency metrics if the code migrated from one CPU to
+    // another in the middle of the estimation loop. This is because the nominal
+    // frequency of the start and end cores might be different.
     return;
   }
 
   double estimated_mhz = cpu_throughput->estimated_frequency / kHzInMhz;
 
-  std::string_view suffix = "Performance";
-  if (cpu_frequency_info.type == base::CpuFrequencyInfo::CoreType::kBalanced) {
-    suffix = "Balanced";
-  } else if (cpu_frequency_info.type ==
-             base::CpuFrequencyInfo::CoreType::kEfficiency) {
-    suffix = "Efficiency";
-  }
-
   // Max/Limit can (rarely) be 0 in the field, perhaps in virtualized or
   // sandboxed environments.
   if (cpu_frequency_info.max_mhz > 0UL) {
     base::UmaHistogramPercentage(
-        base::StrCat(
-            {"CPU.Experimental.EstimatedFrequencyAsPercentOfMax.", suffix}),
+        base::StrCat({"CPU.Experimental.EstimatedFrequencyAsPercentOfMax.",
+                      core_type_suffix}),
         static_cast<int>(estimated_mhz * 100.0 /
                          static_cast<double>(cpu_frequency_info.max_mhz)));
   }
 
   if (cpu_frequency_info.mhz_limit > 0UL) {
     base::UmaHistogramPercentage(
-        base::StrCat(
-            {"CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.", suffix}),
+        base::StrCat({"CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.",
+                      core_type_suffix}),
         static_cast<int>(estimated_mhz * 100.0 /
                          static_cast<double>(cpu_frequency_info.mhz_limit)));
   }
+
+  ScheduleCpuFrequencyTask();
 }
+
+void MetricsProviderDesktop::ScheduleCpuFrequencyTask() {
+  cpu_frequency_metrics_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&MetricsProviderDesktop::PostCpuFrequencyEstimation,
+                     base::Unretained(this)),
+      kCpuThroughputSamplingInterval);
+}
+
+void MetricsProviderDesktop::PostCpuFrequencyEstimation() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MetricsProviderDesktop::RecordCpuFrequencyMetrics,
+                     base::Unretained(this), base::TimeTicks::Now()));
+}
+
 }  // namespace performance_manager

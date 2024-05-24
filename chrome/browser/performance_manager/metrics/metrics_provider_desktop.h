@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "components/metrics/metrics_provider.h"
@@ -76,7 +77,10 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   void RecordAvailableMemoryMetrics();
   void ResetTrackers();
 
-  void RecordCpuFrequencyMetrics();
+  void RecordCpuFrequencyMetrics(base::TimeTicks should_run_at);
+
+  void ScheduleCpuFrequencyTask();
+  void PostCpuFrequencyEstimation();
 
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<PrefService> local_state_;
@@ -88,7 +92,7 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
 
   base::RepeatingTimer available_memory_metrics_timer_;
 
-  base::RepeatingTimer cpu_frequency_metrics_timer_;
+  scoped_refptr<base::SequencedTaskRunner> cpu_frequency_metrics_runner_;
 
   std::unique_ptr<ScopedTimeInModeTracker> battery_saver_mode_tracker_;
   std::unique_ptr<ScopedTimeInModeTracker> memory_saver_mode_tracker_;

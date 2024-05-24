@@ -294,4 +294,29 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest,
               ShouldCollectCpuFrequencyMetrics()
           ? 1
           : 0);
+
+  tester.ExpectTotalCount(
+      "CPU.Experimental.CpuEstimationTaskQueuedTime.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
+  tester.ExpectTotalCount(
+      "CPU.Experimental.CpuEstimationTaskTotalTime.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
+  tester.ExpectTotalCount(
+      "CPU.Experimental.CpuEstimationTaskThreadTime.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
+  tester.ExpectTotalCount(
+      "CPU.Experimental.CpuEstimationTaskWallTime.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
 }
