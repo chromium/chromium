@@ -14,9 +14,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/push_notification/metrics/push_notification_metrics.h"
 #include "chrome/browser/push_notification/protos/notifications_multi_login_update.pb.h"
 #include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow.h"
 #include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow_impl.h"
@@ -39,6 +41,8 @@ const char kRegistrationId[] = "my-device";
 const char kApplicationId[] = "com.google.chrome.push_notification";
 const char kToken[] = "my-token";
 const char kClientId[] = "ChromeDesktop";
+const char kOAuthTokenRetrievalResult[] =
+    "PushNotification.ChromeOS.OAuth.Token.RetrievalResult";
 
 class FakePushNotificationApiCallFlow
     : public push_notification::PushNotificationDesktopApiCallFlow {
@@ -143,6 +147,10 @@ class PushNotificationServerClientDesktopImplTest : public testing::Test {
     client_ = PushNotificationServerClientDesktopImpl::Factory::Create(
         std::move(api_call_flow), identity_test_environment_.identity_manager(),
         shared_factory_);
+    histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                        /*bucket: failure=*/0, 0);
+    histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                        /*bucket: success=*/1, 0);
   }
 
   const std::string& http_method() { return api_call_flow_->http_method_; }
@@ -197,6 +205,7 @@ class PushNotificationServerClientDesktopImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   signin::IdentityTestEnvironment identity_test_environment_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   std::unique_ptr<PushNotificationServerClient> client_;
@@ -239,6 +248,10 @@ TEST_F(PushNotificationServerClientDesktopImplTest,
       future.Take();
   EXPECT_EQ(0, result_proto.registration_results(0).status().code());
   EXPECT_EQ("OK", result_proto.registration_results(0).status().message());
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: failure=*/0, 0);
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: success=*/1, 1);
 }
 
 TEST_F(PushNotificationServerClientDesktopImplTest,
@@ -265,6 +278,10 @@ TEST_F(PushNotificationServerClientDesktopImplTest,
   EXPECT_EQ(PushNotificationDesktopApiCallFlow::
                 PushNotificationApiCallFlowError::kInternalServerError,
             future.Get());
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: failure=*/0, 0);
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: success=*/1, 1);
 }
 
 TEST_F(PushNotificationServerClientDesktopImplTest, FetchAccessTokenFailure) {
@@ -283,6 +300,10 @@ TEST_F(PushNotificationServerClientDesktopImplTest, FetchAccessTokenFailure) {
   EXPECT_EQ(PushNotificationDesktopApiCallFlow::
                 PushNotificationApiCallFlowError::kAuthenticationError,
             future.Get());
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: success=*/1, 0);
 }
 
 TEST_F(PushNotificationServerClientDesktopImplTest, ParseResponseProtoFailure) {
@@ -307,6 +328,10 @@ TEST_F(PushNotificationServerClientDesktopImplTest, ParseResponseProtoFailure) {
   EXPECT_EQ(PushNotificationDesktopApiCallFlow::
                 PushNotificationApiCallFlowError::kResponseMalformed,
             future.Get());
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: failure=*/0, 0);
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: success=*/1, 1);
 }
 
 TEST_F(PushNotificationServerClientDesktopImplTest,
@@ -356,6 +381,10 @@ TEST_F(PushNotificationServerClientDesktopImplTest,
       future.Take();
   EXPECT_EQ(0, result_proto.registration_results(0).status().code());
   EXPECT_EQ("OK", result_proto.registration_results(0).status().message());
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: failure=*/0, 0);
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: success=*/1, 1);
 }
 
 TEST_F(PushNotificationServerClientDesktopImplTest,
@@ -404,6 +433,10 @@ TEST_F(PushNotificationServerClientDesktopImplTest,
                                    NotificationsMultiLoginUpdateResponse>),
         future.GetCallback()));
   }
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: failure=*/0, 0);
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: success=*/1, 1);
 }
 
 TEST_F(PushNotificationServerClientDesktopImplTest, GetAccessTokenUsed) {
@@ -424,6 +457,10 @@ TEST_F(PushNotificationServerClientDesktopImplTest, GetAccessTokenUsed) {
   EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/" +
                                std::string(kMultiLoginPath));
   EXPECT_EQ(kAccessToken, client_->GetAccessTokenUsed().value());
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: failure=*/0, 0);
+  histogram_tester_.ExpectBucketCount(kOAuthTokenRetrievalResult,
+                                      /*bucket: success=*/1, 1);
 }
 
 }  // namespace push_notification

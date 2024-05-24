@@ -16,6 +16,8 @@ const char kTotalFailedRegistrationResponseTime[] =
     "PushNotification.ChromeOS.MultiLoginUpdateApi.ResponseTime.Failure";
 const char kGcmTokenRetrievalResult[] =
     "PushNotification.ChromeOS.GCM.Token.RetrievalResult";
+const char kOAuthTokenRetrievalResult[] =
+    "PushNotification.ChromeOS.OAuth.Token.RetrievalResult";
 
 }  // namespace
 
@@ -40,6 +42,10 @@ void RecordPushNotificationServiceTimeToReceiveRegistrationFailureResponse(
 
 void RecordPushNotificationGcmTokenRetrievalResult(bool success) {
   base::UmaHistogramBoolean(kGcmTokenRetrievalResult, success);
+}
+
+void RecordPushNotificationOAuthTokenRetrievalResult(bool success) {
+  base::UmaHistogramBoolean(kOAuthTokenRetrievalResult, success);
 }
 
 }  // namespace push_notification::metrics

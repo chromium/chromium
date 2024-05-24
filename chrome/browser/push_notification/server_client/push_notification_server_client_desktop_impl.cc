@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/push_notification/metrics/push_notification_metrics.h"
 #include "chrome/browser/push_notification/protos/notifications_multi_login_update.pb.h"
 #include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow_impl.h"
 #include "components/signin/public/base/consent_level.h"
@@ -196,8 +197,10 @@ void PushNotificationServerClientDesktopImpl::OnAccessTokenFetched(
   if (error.state() != GoogleServiceAuthError::NONE) {
     OnApiCallFailed(PushNotificationDesktopApiCallFlow::
                         PushNotificationApiCallFlowError::kAuthenticationError);
+    metrics::RecordPushNotificationOAuthTokenRetrievalResult(/*success=*/false);
     return;
   }
+  metrics::RecordPushNotificationOAuthTokenRetrievalResult(/*success=*/true);
   access_token_used_ = access_token_info.token;
   CHECK(access_token_used_.has_value());
   proto::NotificationsMultiLoginUpdateRequest request_proto;
