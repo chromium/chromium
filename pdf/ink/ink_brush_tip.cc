@@ -8,6 +8,10 @@ namespace chrome_pdf {
 
 InkBrushTip::InkBrushTip() = default;
 
+InkBrushTip::InkBrushTip(InkBrushTip&&) noexcept = default;
+
+InkBrushTip& InkBrushTip::operator=(InkBrushTip&&) noexcept = default;
+
 InkBrushTip::~InkBrushTip() = default;
 
 }  // namespace chrome_pdf

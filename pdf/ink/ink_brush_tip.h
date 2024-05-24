@@ -13,6 +13,10 @@ namespace chrome_pdf {
 
 struct InkBrushTip {
   InkBrushTip();
+  InkBrushTip(const InkBrushTip&) = delete;
+  InkBrushTip& operator=(const InkBrushTip&) = delete;
+  InkBrushTip(InkBrushTip&&) noexcept;
+  InkBrushTip& operator=(InkBrushTip&&) noexcept;
   ~InkBrushTip();
 
   float scale_x = 1;

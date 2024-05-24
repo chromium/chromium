@@ -6,6 +6,7 @@
 
 #include <numbers>
 #include <optional>
+#include <utility>
 
 #include "base/check_op.h"
 #include "pdf/ink/ink_brush.h"
@@ -68,7 +69,7 @@ std::unique_ptr<InkBrush> PdfInkBrush::CreateInkBrush() {
 
   InkBrushPaint paint;
   paint.texture_layers.push_back(layer);
-  auto family = InkBrushFamily::Create(tip, paint, "");
+  auto family = InkBrushFamily::Create(std::move(tip), std::move(paint), "");
   CHECK(family);
 
   return InkBrush::Create(std::move(family),

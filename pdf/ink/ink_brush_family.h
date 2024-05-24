@@ -15,8 +15,8 @@ struct InkBrushTip;
 
 class InkBrushFamily {
  public:
-  static std::unique_ptr<InkBrushFamily> Create(const InkBrushTip& tip,
-                                                const InkBrushPaint& paint,
+  static std::unique_ptr<InkBrushFamily> Create(InkBrushTip tip,
+                                                InkBrushPaint paint,
                                                 std::string_view uri_string);
 
   ~InkBrushFamily();

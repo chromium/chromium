@@ -8,6 +8,10 @@ namespace chrome_pdf {
 
 InkBrushPaint::InkBrushPaint() = default;
 
+InkBrushPaint::InkBrushPaint(InkBrushPaint&&) noexcept = default;
+
+InkBrushPaint& InkBrushPaint::operator=(InkBrushPaint&&) noexcept = default;
+
 InkBrushPaint::~InkBrushPaint() = default;
 
 InkBrushPaint::TextureLayer::TextureLayer() = default;

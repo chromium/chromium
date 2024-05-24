@@ -13,6 +13,10 @@ namespace chrome_pdf {
 
 struct InkBrushPaint {
   InkBrushPaint();
+  InkBrushPaint(const InkBrushPaint&) = delete;
+  InkBrushPaint& operator=(const InkBrushPaint&) = delete;
+  InkBrushPaint(InkBrushPaint&&) noexcept;
+  InkBrushPaint& operator=(InkBrushPaint&&) noexcept;
   ~InkBrushPaint();
 
   enum class TextureMapping {
