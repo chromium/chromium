@@ -254,9 +254,8 @@ bool MojoStableVideoDecoder::NeedsBitstreamConversion() const {
 
 bool MojoStableVideoDecoder::CanReadWithoutStalling() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/327268445): finish implementing CanReadWithoutStalling().
-  NOTIMPLEMENTED();
-  return false;
+  CHECK(!!oop_video_decoder_);
+  return oop_video_decoder_->CanReadWithoutStalling();
 }
 
 int MojoStableVideoDecoder::GetMaxDecodeRequests() const {

@@ -838,6 +838,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   constexpr gfx::Size kDecodedFrame1CodedSize(1280, 720);
   constexpr gfx::Rect kDecodedFrame1VisibleRect(10, 10, 1000, 700);
   constexpr gfx::Size kDecodedFrame1NaturalSize(2000, 800);
+  constexpr bool kCanReadWithoutStallingAfterFrame1 = true;
   const base::UnguessableToken kDecodedFrame1ReleaseToken =
       base::UnguessableToken::Create();
   const gpu::Mailbox kDecodedFrame1Mailbox = gpu::Mailbox::Generate();
@@ -851,6 +852,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
           kDecodedFrame1NaturalSize, received_fake_timestamps[0]);
   ASSERT_TRUE(decoded_video_frame_to_send_1);
   scoped_refptr<VideoFrame> received_decoded_video_frame_1;
+  bool received_can_read_without_stalling_after_frame_1;
   {
     InSequence sequence;
     // Note: the Matcher<gfx::GpuMemoryBufferHandle> is needed to disambiguate
@@ -876,11 +878,13 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
     EXPECT_CALL(*endpoints->client_output_cb(), Run(_))
         .WillOnce([&](scoped_refptr<VideoFrame> video_frame) {
           received_decoded_video_frame_1 = std::move(video_frame);
+          received_can_read_without_stalling_after_frame_1 =
+              endpoints->client()->CanReadWithoutStalling();
         });
   }
   endpoints->service()->video_decoder_client_remote()->OnVideoFrameDecoded(
-      decoded_video_frame_to_send_1.Clone(),
-      /*can_read_without_stalling=*/true, kDecodedFrame1ReleaseToken);
+      decoded_video_frame_to_send_1.Clone(), kCanReadWithoutStallingAfterFrame1,
+      kDecodedFrame1ReleaseToken);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(
       Mock::VerifyAndClearExpectations(endpoints->shared_image_interface()));
@@ -905,6 +909,8 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
             kDecodedFrame1SharedImageSyncToken);
   EXPECT_TRUE(
       received_decoded_video_frame_1->metadata().read_lock_fences_enabled);
+  EXPECT_EQ(received_can_read_without_stalling_after_frame_1,
+            kCanReadWithoutStallingAfterFrame1);
 
   // Now the service will send the second decoded frame. This decoded frame has
   // the same underlying dma-buf as the first frame. Furthermore, the coded size
@@ -914,6 +920,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   constexpr gfx::Size kDecodedFrame2CodedSize = kDecodedFrame1CodedSize;
   constexpr gfx::Rect kDecodedFrame2VisibleRect(20, 30, 990, 680);
   constexpr gfx::Size kDecodedFrame2NaturalSize(3000, 900);
+  constexpr bool kCanReadWithoutStallingAfterFrame2 = false;
   const base::UnguessableToken kDecodedFrame2ReleaseToken =
       base::UnguessableToken::Create();
   const gpu::SyncToken kDecodedFrame2SharedImageSyncToken(
@@ -928,6 +935,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   decoded_video_frame_to_send_2->natural_size = kDecodedFrame2NaturalSize;
   decoded_video_frame_to_send_2->timestamp = received_fake_timestamps[1];
   scoped_refptr<VideoFrame> received_decoded_video_frame_2;
+  bool received_can_read_without_stalling_after_frame_2;
   {
     InSequence sequence;
     EXPECT_CALL(*endpoints->shared_image_interface(),
@@ -937,11 +945,13 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
     EXPECT_CALL(*endpoints->client_output_cb(), Run(_))
         .WillOnce([&](scoped_refptr<VideoFrame> video_frame) {
           received_decoded_video_frame_2 = std::move(video_frame);
+          received_can_read_without_stalling_after_frame_2 =
+              endpoints->client()->CanReadWithoutStalling();
         });
   }
   endpoints->service()->video_decoder_client_remote()->OnVideoFrameDecoded(
-      decoded_video_frame_to_send_2.Clone(),
-      /*can_read_without_stalling=*/false, kDecodedFrame2ReleaseToken);
+      decoded_video_frame_to_send_2.Clone(), kCanReadWithoutStallingAfterFrame2,
+      kDecodedFrame2ReleaseToken);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(
       Mock::VerifyAndClearExpectations(endpoints->shared_image_interface()));
@@ -967,6 +977,8 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
             kDecodedFrame2SharedImageSyncToken);
   EXPECT_TRUE(
       received_decoded_video_frame_2->metadata().read_lock_fences_enabled);
+  EXPECT_EQ(received_can_read_without_stalling_after_frame_2,
+            kCanReadWithoutStallingAfterFrame2);
 
   // Now, the service sends the third decoded frame. This frame has the same
   // underlying dma-buf as the previous frames but a different color space. This
@@ -975,6 +987,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   // to release it later.
   constexpr gfx::ColorSpace kDecodedFrame3ColorSpace =
       gfx::ColorSpace::CreateREC709();
+  constexpr bool kCanReadWithoutStallingAfterFrame3 = true;
   const base::UnguessableToken kDecodedFrame3ReleaseToken =
       base::UnguessableToken::Create();
   const gpu::Mailbox kDecodedFrame3Mailbox = gpu::Mailbox::Generate();
@@ -988,6 +1001,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   decoded_video_frame_to_send_3->timestamp = received_fake_timestamps[2];
   decoded_video_frame_to_send_3->color_space = kDecodedFrame3ColorSpace;
   scoped_refptr<VideoFrame> received_decoded_video_frame_3;
+  bool received_can_read_without_stalling_after_frame_3;
   {
     InSequence sequence;
     EXPECT_CALL(*endpoints->shared_image_interface(),
@@ -1011,11 +1025,13 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
     EXPECT_CALL(*endpoints->client_output_cb(), Run(_))
         .WillOnce([&](scoped_refptr<VideoFrame> video_frame) {
           received_decoded_video_frame_3 = std::move(video_frame);
+          received_can_read_without_stalling_after_frame_3 =
+              endpoints->client()->CanReadWithoutStalling();
         });
   }
   endpoints->service()->video_decoder_client_remote()->OnVideoFrameDecoded(
       std::move(decoded_video_frame_to_send_3),
-      /*can_read_without_stalling=*/false, kDecodedFrame3ReleaseToken);
+      kCanReadWithoutStallingAfterFrame3, kDecodedFrame3ReleaseToken);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(
       Mock::VerifyAndClearExpectations(endpoints->shared_image_interface()));
@@ -1041,6 +1057,8 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
             kDecodedFrame3SharedImageSyncToken);
   EXPECT_TRUE(
       received_decoded_video_frame_3->metadata().read_lock_fences_enabled);
+  EXPECT_EQ(received_can_read_without_stalling_after_frame_3,
+            kCanReadWithoutStallingAfterFrame3);
 
   // Now the service will send the fourth decoded frame. This frame changes the
   // coded size, so the OOPVideoDecoder should forget all previous buffers. That
@@ -1052,6 +1070,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   constexpr gfx::Size kDecodedFrame4CodedSize(640, 368);
   constexpr gfx::Rect kDecodedFrame4VisibleRect(640, 360);
   constexpr gfx::Size kDecodedFrame4NaturalSize(640, 360);
+  constexpr bool kCanReadWithoutStallingAfterFrame4 = false;
   const base::UnguessableToken kDecodedFrame4ReleaseToken =
       base::UnguessableToken::Create();
   const gpu::Mailbox kDecodedFrame4Mailbox = gpu::Mailbox::Generate();
@@ -1065,6 +1084,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
           kDecodedFrame4NaturalSize, received_fake_timestamps[3]);
   ASSERT_TRUE(decoded_video_frame_to_send_4);
   scoped_refptr<VideoFrame> received_decoded_video_frame_4;
+  bool received_can_read_without_stalling_after_frame_4;
   {
     InSequence sequence;
     EXPECT_CALL(
@@ -1088,11 +1108,13 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
     EXPECT_CALL(*endpoints->client_output_cb(), Run(_))
         .WillOnce([&](scoped_refptr<VideoFrame> video_frame) {
           received_decoded_video_frame_4 = std::move(video_frame);
+          received_can_read_without_stalling_after_frame_4 =
+              endpoints->client()->CanReadWithoutStalling();
         });
   }
   endpoints->service()->video_decoder_client_remote()->OnVideoFrameDecoded(
       std::move(decoded_video_frame_to_send_4),
-      /*can_read_without_stalling=*/false, kDecodedFrame4ReleaseToken);
+      kCanReadWithoutStallingAfterFrame4, kDecodedFrame4ReleaseToken);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(
       Mock::VerifyAndClearExpectations(endpoints->shared_image_interface()));
@@ -1117,6 +1139,8 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
             kDecodedFrame4SharedImageSyncToken);
   EXPECT_TRUE(
       received_decoded_video_frame_4->metadata().read_lock_fences_enabled);
+  EXPECT_EQ(received_can_read_without_stalling_after_frame_4,
+            kCanReadWithoutStallingAfterFrame4);
 
   // Now the third portion of the test: we'll release the decoded frames. Let's
   // release the first decoded frame. Since the SharedImage is still being used
