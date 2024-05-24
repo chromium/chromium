@@ -879,6 +879,7 @@ the generic promo launch. -->
   <int value="1" label="What's New"/>
   <int value="2" label="Sign In"/>
   <int value="3" label="Error"/>
+  <int value="4" label="SetUpList Continuation"/>
 </enum>
 
 <enum name="IOSUpgradeCenterFailureReason">

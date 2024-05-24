@@ -30,12 +30,17 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
     case TipsNotificationType::kSignin:
       return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_BODY};
+    case TipsNotificationType::kSetUpListContinuation:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_BODY};
     case TipsNotificationType::kError:
       NOTREACHED_NORETURN();
   }
 }
 
 // A bitfield with all notification types enabled.
+// TODO(crbug.com/342621716) Enable SetUpList Continuation Notif by setting
+// kEnableAllNotifications to 23.
 const int kEnableAllNotifications = 7;
 
 }  // namespace

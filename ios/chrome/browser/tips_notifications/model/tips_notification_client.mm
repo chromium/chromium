@@ -132,9 +132,11 @@ void TipsNotificationClient::HandleNotificationInteraction(
     case TipsNotificationType::kSignin:
       ShowSignin();
       break;
-    case TipsNotificationType::kError:
-      NOTREACHED_IN_MIGRATION();
+    case TipsNotificationType::kSetUpListContinuation:
+      ShowSetUpListContinuation();
       break;
+    case TipsNotificationType::kError:
+      NOTREACHED();
   }
 }
 
@@ -250,6 +252,7 @@ void TipsNotificationClient::MaybeRequestNotification(
       TipsNotificationType::kDefaultBrowser,
       TipsNotificationType::kWhatsNew,
       TipsNotificationType::kSignin,
+      TipsNotificationType::kSetUpListContinuation,
   };
 
   for (TipsNotificationType type : kTypes) {
@@ -306,6 +309,8 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
       return ShouldSendWhatsNew();
     case TipsNotificationType::kSignin:
       return ShouldSendSignin();
+    case TipsNotificationType::kSetUpListContinuation:
+      return ShouldSendSetUpListContinuation();
     case TipsNotificationType::kError:
       NOTREACHED_NORETURN();
   }
@@ -341,6 +346,11 @@ bool TipsNotificationClient::ShouldSendSignin() {
 
   return IsSigninEnabled(auth_service) &&
          !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+}
+
+bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
+  // TODO(crbug.com/342621716) Implement SetUpList continuation notif.
+  return false;
 }
 
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {
@@ -400,6 +410,10 @@ void TipsNotificationClient::ShowSignin() {
     [HandlerForProtocol(browser->GetCommandDispatcher(), SigninPresenter)
         showSignin:command];
   }];
+}
+
+void TipsNotificationClient::ShowSetUpListContinuation() {
+  // TODO(crbug.com/342621716) Implement SetUpList continuation notif.
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(
