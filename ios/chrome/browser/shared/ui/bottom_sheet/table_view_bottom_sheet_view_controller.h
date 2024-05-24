@@ -31,6 +31,9 @@
 // Returns the cell's accessory type for the provided index path.
 - (UITableViewCellAccessoryType)accessoryType:(NSIndexPath*)indexPath;
 
+// Sets appropriate margin sizes for password and payment autofill bottom sheets
+- (void)adjustTransactionsPrimaryActionButtonHorizontalConstraints;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_BOTTOM_SHEET_TABLE_VIEW_BOTTOM_SHEET_VIEW_CONTROLLER_H_

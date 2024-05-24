@@ -119,6 +119,8 @@ CGFloat const kSpacingAfterTitle = 4;
   }
 
   [super viewDidLoad];
+
+  [self adjustTransactionsPrimaryActionButtonHorizontalConstraints];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

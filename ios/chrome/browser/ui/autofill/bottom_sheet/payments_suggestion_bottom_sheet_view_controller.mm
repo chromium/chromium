@@ -113,6 +113,8 @@ CGFloat const kTitleLogoHeight = 24;
       DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
   [super viewDidLoad];
+
+  [self adjustTransactionsPrimaryActionButtonHorizontalConstraints];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
