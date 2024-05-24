@@ -109,6 +109,23 @@ def GetCurrentCrateIds() -> Set[str]:
     return result
 
 
+def GetVetExemptedCrateIds() -> Set[str]:
+    """Parses supply-chain/config.toml and returns a set of crate ids
+    that have `exemptions` entries."""
+    vet_config = toml.load(open(VET_CONFIG))
+    result = set()
+    if "exemptions" not in vet_config:
+        return result
+    for crate_name, exemptions in vet_config["exemptions"].items():
+        for exemption in exemptions:
+            # Ignoring which criteria are covered by the exemption
+            # (it is not needed if we just want to emit a warning).
+            crate_version = exemption["version"]
+            crate_id = f"{crate_name}@{crate_version}"
+            result.add(crate_id)
+    return result
+
+
 @dataclass(eq=True, order=True)
 class UpdatedCrate:
     old_crate_id: str
@@ -440,9 +457,14 @@ def UpdateCrate(args, crate_id: str, upstream_branch: str):
 
 
 def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
+    vet_exempted_crate_ids = GetVetExemptedCrateIds()
+    updated_old_crate_ids = set()
+
     # git mv <vendor/old version> <vendor/new version>
     print(f"  Running `git mv <old dir> <new dir>` (for better diff)...")
     for update in diff.updates:
+        updated_old_crate_ids.add(update.old_crate_id)
+
         old_dir = ConvertCrateIdToVendorDir(update.old_crate_id)
         new_dir = ConvertCrateIdToVendorDir(update.new_crate_id)
         Git("mv", "--force", f"{old_dir}", f"{new_dir}")
@@ -483,6 +505,14 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
     if args.upload:
         issue = Git("cl", "issue")
         print(f"  {issue}")
+
+    for exempted_crate_id in (
+            updated_old_crate_ids.intersection(vet_exempted_crate_ids)):
+        exempted_crate_name = ConvertCrateIdToCrateName(exempted_crate_id)
+        print(f"  WARNING: The `{exempted_crate_name}` crate "\
+               "is covered by an exemption rather than an audit. "\
+               "Please bump the exemption in `vet_config.toml.hbs` "\
+               "and run `tools/crates/run_gnrt.py vendor` again.")
 
 
 def RaiseErrorIfGitIsDirty():

@@ -96,6 +96,12 @@ closest to `origin/main`):
          - Record `does-not-implement-crypto` instead of `crypto-safe` if the
            crate does not implement crypto.
          - Record a lower-numbered `ub-risk-N` if appropriate.
+    - And also note that if the crate is currently covered by an exemption
+      in `config.toml`, then we want to bump the exemption instead of providing
+      a delta audit that is baselined on an exemption.
+      Note that `config.toml` shouldn't be edited manually - please edit
+      `vet_config.toml.hbs` and regenerate `config.toml` by running
+      `tools/crates/run_gnrt.py vendor`.
 1. Follow the cargo vet instructions to inspect diffs and certify the results
     - Note that special guidelines may apply to delta audits
       (TODO: Land the [PR here](https://github.com/google/rust-crate-audits/pull/16)).
