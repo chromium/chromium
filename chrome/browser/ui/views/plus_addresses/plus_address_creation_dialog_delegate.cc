@@ -57,12 +57,16 @@ namespace plus_addresses {
 
 namespace {
 const float kDescriptionWidthPercent = 0.8;
+const int kGoogleGLogoWidth = 50;
 const int kPlusAddressLabelVerticalMargin = 10;
 const int kPlusAddressLogoWidth = 100;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const gfx::VectorIcon& kLogoIcon = plus_addresses::kPlusAddressesLogoIcon;
+const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kGoogleGLogoIcon;
+const gfx::VectorIcon& kPlusAddressLogoIcon =
+    plus_addresses::kPlusAddressesLogoIcon;
 #else
-const gfx::VectorIcon& kLogoIcon = vector_icons::kProductIcon;
+const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kProductIcon;
+const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kProductIcon;
 #endif
 }  // namespace
 
@@ -105,11 +109,20 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           .Build();
 
   // Create hero image.
-  primary_view->AddChildView(
-      views::Builder<views::ImageView>()
-          .SetImage(ui::ImageModel::FromVectorIcon(kLogoIcon, ui::kColorIcon,
-                                                   kPlusAddressLogoWidth))
-          .Build());
+  std::unique_ptr<views::ImageView> logo_image;
+  if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
+    logo_image = views::Builder<views::ImageView>()
+                     .SetImage(ui::ImageModel::FromVectorIcon(
+                         kGoogleGLogoIcon, ui::kColorIcon, kGoogleGLogoWidth))
+                     .Build();
+  } else {
+    logo_image =
+        views::Builder<views::ImageView>()
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                kPlusAddressLogoIcon, ui::kColorIcon, kPlusAddressLogoWidth))
+            .Build();
+  }
+  primary_view->AddChildView(std::move(logo_image));
 
   // Add title view.
   primary_view->AddChildView(
