@@ -3163,6 +3163,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowFactorSetupSuccessScreen();
   } else if (screen_id == LocalPasswordSetupView::kScreenId) {
     ShowLocalPasswordSetupScreen();
+  } else if (screen_id == CategoriesSelectionScreenView::kScreenId) {
+    ShowCategoriesSelectionScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == InstallAttributesErrorView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||

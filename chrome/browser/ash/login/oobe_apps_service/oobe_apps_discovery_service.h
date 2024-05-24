@@ -43,7 +43,7 @@ class OobeAppsDiscoveryService : public KeyedService {
   ~OobeAppsDiscoveryService() override;
 
   // Queries for apps and use-cases for the endpoint.
-  void GetAppsAndUseCases(ResultCallbackAppsAndUseCases callback);
+  virtual void GetAppsAndUseCases(ResultCallbackAppsAndUseCases callback);
 
  private:
   // Downloads apps and use-cases from the server.

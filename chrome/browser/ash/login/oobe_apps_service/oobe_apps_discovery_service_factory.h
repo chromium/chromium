@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_APPS_SERVICE_OOBE_APPS_DISCOVERY_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_APPS_SERVICE_OOBE_APPS_DISCOVERY_SERVICE_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service.h"
 #include "chrome/browser/ash/login/oobe_apps_service/proto/oobe.pb.h"
@@ -26,6 +27,9 @@ class OobeAppsDiscoveryServiceFactory : public ProfileKeyedServiceFactory {
   OobeAppsDiscoveryServiceFactory& operator=(
       const OobeAppsDiscoveryServiceFactory&) = delete;
 
+  void SetOobeAppsDiscoveryServiceForTesting(
+      OobeAppsDiscoveryService* oobe_apps_dicovery_service_for_testing);
+
  private:
   friend base::NoDestructor<OobeAppsDiscoveryServiceFactory>;
 
@@ -34,6 +38,9 @@ class OobeAppsDiscoveryServiceFactory : public ProfileKeyedServiceFactory {
 
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+
+  raw_ptr<OobeAppsDiscoveryService> oobe_apps_dicovery_service_for_testing_ =
+      nullptr;
 };
 
 }  // namespace ash

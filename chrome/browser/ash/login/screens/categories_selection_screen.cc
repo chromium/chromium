@@ -21,8 +21,6 @@ constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionSkip[] = "skip";
 constexpr const char kUserActionLoaded[] = "loaded";
 
-constexpr const base::TimeDelta kDelayOverviewStepTime = base::Seconds(2);
-
 bool HasBeenSelected(std::string category_id) {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   const base::Value::List& selected_categories =
@@ -147,7 +145,7 @@ void CategoriesSelectionScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionLoaded) {
-    delay_overview_timer_.Start(FROM_HERE, kDelayOverviewStepTime, this,
+    delay_overview_timer_.Start(FROM_HERE, delay_overview_step_, this,
                                 &CategoriesSelectionScreen::ShowOverviewStep);
     return;
   }

@@ -18,6 +18,11 @@ namespace ash {
 // static
 OobeAppsDiscoveryService* OobeAppsDiscoveryServiceFactory::GetForProfile(
     Profile* profile) {
+  if (OobeAppsDiscoveryServiceFactory::GetInstance()
+          ->oobe_apps_dicovery_service_for_testing_) {
+    return OobeAppsDiscoveryServiceFactory::GetInstance()
+        ->oobe_apps_dicovery_service_for_testing_;
+  }
   return static_cast<OobeAppsDiscoveryService*>(
       OobeAppsDiscoveryServiceFactory::GetInstance()
           ->GetServiceForBrowserContext(profile, /*create=*/true));
@@ -39,6 +44,12 @@ OobeAppsDiscoveryServiceFactory::OobeAppsDiscoveryServiceFactory()
               .WithSystem(ProfileSelection::kNone)
               .Build()) {
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
+}
+
+void OobeAppsDiscoveryServiceFactory::SetOobeAppsDiscoveryServiceForTesting(
+    OobeAppsDiscoveryService* oobe_apps_dicovery_service_for_testing) {
+  oobe_apps_dicovery_service_for_testing_ =
+      oobe_apps_dicovery_service_for_testing;
 }
 
 OobeAppsDiscoveryServiceFactory::~OobeAppsDiscoveryServiceFactory() = default;
