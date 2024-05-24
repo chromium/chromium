@@ -1367,17 +1367,14 @@ void RenderViewContextMenu::InitMenu() {
   // it to visibly jump on the screen (see b/173569669).
   AppendReadWriteCardItems();
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillPopupDoesNotOverlapWithContextMenu)) {
-    // If the autofill popup is shown the context menu could
-    // overlap with the autofill popup, therefore we hide the autofill popup.
-    content::WebContents* web_contents = GetWebContents();
-    autofill::AutofillClient* autofill_client =
-        autofill::ContentAutofillClient::FromWebContents(web_contents);
-    if (autofill_client) {
-      autofill_client->HideAutofillSuggestions(
-          autofill::SuggestionHidingReason::kContextMenuOpened);
-    }
+  // If the autofill popup is shown the context menu could
+  // overlap with the autofill popup, therefore we hide the autofill popup.
+  content::WebContents* web_contents = GetWebContents();
+  autofill::AutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(web_contents);
+  if (autofill_client) {
+    autofill_client->HideAutofillSuggestions(
+        autofill::SuggestionHidingReason::kContextMenuOpened);
   }
 }
 

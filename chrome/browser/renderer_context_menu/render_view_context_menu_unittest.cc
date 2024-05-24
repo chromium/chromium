@@ -1182,8 +1182,6 @@ class RenderViewContextMenuHideAutofillSuggestionsTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      autofill::features::kAutofillPopupDoesNotOverlapWithContextMenu};
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       autofill_client_injector_;
 };
