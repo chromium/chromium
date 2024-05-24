@@ -399,6 +399,12 @@ class PpdProviderTest : public ::testing::Test {
                     "ppdMetadata": [ {
                       "name": "unused.ppd"
                     } ]
+                  },
+                  "printer_a_ref_2": {
+                    "ppdMetadata": [ {
+                      "name": "printer_a.ppd",
+                      "license": "fake_license"
+                    } ]
                   }
                 }
             })"},
@@ -438,6 +444,15 @@ class PpdProviderTest : public ::testing::Test {
              R"({
                 "reverseIndex": {
                   "printer_a_ref": {
+                    "manufacturer": "manufacturer_a_en",
+                    "model": "printer_a"
+                  }
+                }
+             })"},
+            {"metadata_v3/reverse_index-en-10.json",
+             R"({
+                "reverseIndex": {
+                  "printer_a_ref_2": {
                     "manufacturer": "manufacturer_a_en",
                     "model": "printer_a"
                   }
@@ -973,9 +988,31 @@ TEST_F(PpdProviderTest, CaseInsensitiveMakeAndModel) {
             captured_resolve_ppd_references_[0].ref.effective_make_and_model);
 }
 
+// Test that ResolvePpd is able to correctly retrieve PPD content for the given
+// not-primary effective make and model.
+TEST_F(PpdProviderTest, ResolvePpdFromSecondaryMakeAndModel) {
+  auto provider =
+      CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
+                      PropagateLocaleToMetadataManager::kDoPropagate});
+  StartFakePpdServer();
+  std::string ref = "pRiNteR_A_reF_2";
+
+  Printer::PpdReference ppd_ref;
+  ppd_ref.effective_make_and_model = ref;
+  provider->ResolvePpd(ppd_ref,
+                       base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
+                                      base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  // Check PpdProvider::ResolvePpd
+  ASSERT_EQ(1UL, captured_resolve_ppd_.size());
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_[0].code);
+  EXPECT_EQ(kCupsFilterPpdContents, captured_resolve_ppd_[0].ppd_contents);
+}
+
 // Tests that ResolvePpdLicense is able to correctly source the index and
-// determine the name of the PPD license associated with the given effecive make
-// and model (if any).
+// determine the name of the PPD license associated with the given effective
+// make and model (if any).
 TEST_F(PpdProviderTest, ResolvePpdLicense) {
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
@@ -1003,6 +1040,29 @@ TEST_F(PpdProviderTest, ResolvePpdLicense) {
   EXPECT_EQ("fake_license", captured_resolve_ppd_license_[0].license);
   EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_license_[1].code);
   EXPECT_EQ("", captured_resolve_ppd_license_[1].license);
+}
+
+// Tests that ResolvePpdLicense is able to correctly source the index and
+// determine the name of the PPD license associated with the given not-primary
+// effective make and model.
+TEST_F(PpdProviderTest, ResolvePpdLicenseFromSecondaryMakeAndModel) {
+  auto provider =
+      CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
+                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+  StartFakePpdServer();
+
+  // For this effective_make_and_model, we expect that there is associated
+  // license.
+  const char kEmm1[] = "printer_A_ref_2";
+  provider->ResolvePpdLicense(
+      kEmm1, base::BindOnce(&PpdProviderTest::CaptureResolvePpdLicense,
+                            base::Unretained(this)));
+
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(1UL, captured_resolve_ppd_license_.size());
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_license_[0].code);
+  EXPECT_EQ("fake_license", captured_resolve_ppd_license_[0].license);
 }
 
 // Verifies that we can extract the Manufacturer and Model selection for a
@@ -1034,6 +1094,27 @@ TEST_F(PpdProviderTest, ReverseLookup) {
 
   CapturedReverseLookup failed_capture = captured_reverse_lookup_[1];
   EXPECT_EQ(PpdProvider::NOT_FOUND, failed_capture.code);
+}
+
+// Verifies that we can extract the Manufacturer and Model selection for a
+// given not-primary effective make and model.
+TEST_F(PpdProviderTest, ReverseLookupFromSecondaryMakeAndModel) {
+  auto provider =
+      CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
+                      PropagateLocaleToMetadataManager::kDoPropagate});
+  StartFakePpdServer();
+  std::string ref = "printer_A_ref_2";
+  provider->ReverseLookup(ref,
+                          base::BindOnce(&PpdProviderTest::CaptureReverseLookup,
+                                         base::Unretained(this)));
+
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(1U, captured_reverse_lookup_.size());
+  CapturedReverseLookup success_capture = captured_reverse_lookup_[0];
+  EXPECT_EQ(PpdProvider::SUCCESS, success_capture.code);
+  EXPECT_EQ("manufacturer_a_en", success_capture.manufacturer);
+  EXPECT_EQ("printer_a", success_capture.model);
 }
 
 // Verifies that we never attempt to re-download a PPD that we
