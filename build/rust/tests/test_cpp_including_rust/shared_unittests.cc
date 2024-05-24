@@ -11,7 +11,7 @@
 #include "build/rust/tests/test_rust_shared_library/src/lib.rs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
 #else
 #include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_bitmap.h"
