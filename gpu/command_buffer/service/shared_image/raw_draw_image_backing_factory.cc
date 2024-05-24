@@ -9,15 +9,19 @@
 #include "gpu/command_buffer/service/shared_image/raw_draw_image_backing.h"
 
 namespace gpu {
-// NOTE: `SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY` is not supported as RawDraw
+// NOTE: These are the *exact* set of usages that the client must list in order
+// for the RawDraw backing to be applied. The client must explicitly opt into
+// using RawDraw, and that only in the expected context of rasterizing content
+// via OOP-raster into PaintOps to play back during compositing.
+// NOTE: `SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY` is not listed as RawDraw
 // works only with OOP-raster (since it must store PaintOps for playback during
 // compositing).
-constexpr uint32_t kSupportedUsage =
+constexpr uint32_t kRequiredUsage =
     SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
     SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_RAW_DRAW;
 
 RawDrawImageBackingFactory::RawDrawImageBackingFactory()
-    : SharedImageBackingFactory(kSupportedUsage) {}
+    : SharedImageBackingFactory(kRequiredUsage) {}
 
 RawDrawImageBackingFactory::~RawDrawImageBackingFactory() = default;
 
@@ -89,7 +93,7 @@ RawDrawImageBackingFactory::CreateSharedImage(
 bool RawDrawImageBackingFactory::CanUseRawDrawImageBacking(
     uint32_t usage,
     GrContextType gr_context_type) const {
-  return usage == kSupportedUsage;
+  return usage == kRequiredUsage;
 }
 
 bool RawDrawImageBackingFactory::IsSupported(
