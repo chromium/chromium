@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
@@ -192,6 +193,10 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     last_received_text_ = std::move(text);
   }
 
+  void ThemeReceived(lens::mojom::OverlayThemePtr theme) override {
+    last_received_theme_ = std::move(theme);
+  }
+
   void NotifyResultsPanelOpened() override {
     did_notify_results_opened_ = true;
   }
@@ -223,6 +228,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   mojo::Remote<lens::mojom::LensPage> overlay_page_;
 
   std::string last_received_screenshot_data_uri_;
+  std::optional<lens::mojom::OverlayThemePtr> last_received_theme_;
   std::vector<lens::mojom::OverlayObjectPtr> last_received_objects_;
   lens::mojom::TextPtr last_received_text_;
   bool did_notify_results_opened_ = false;
@@ -721,6 +727,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, DynamicTheme) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_screenshot_data_uri_.empty());
+  EXPECT_FALSE(
+      fake_controller->fake_overlay_page_.last_received_theme_.has_value());
+
   // Showing UI should change the state to screenshot and eventually to overlay.
   controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
@@ -730,15 +743,31 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, DynamicTheme) {
   // Verify screenshot was captured and stored.
   auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_FALSE(screenshot_bitmap.empty());
-
-  // Verify color palette is initialized to the expected value.
-  ASSERT_EQ(lens::PaletteId::kFallback, controller->color_palette());
-
   // Verify screenshot was encoded and passed to WebUI.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
   EXPECT_FALSE(fake_controller->fake_overlay_page_
                    .last_received_screenshot_data_uri_.empty());
+
+  // Verify expected color palette was identified.
+  ASSERT_EQ(lens::PaletteId::kFallback, controller->color_palette());
+  // Verify expected theme color were passed to WebUI.
+  auto expected_theme = lens::mojom::OverlayTheme::New();
+  expected_theme->primary = lens::kColorFallbackPrimary;
+  expected_theme->shader_layer_1 = lens::kColorFallbackShaderLayer1;
+  expected_theme->shader_layer_2 = lens::kColorFallbackShaderLayer2;
+  expected_theme->shader_layer_3 = lens::kColorFallbackShaderLayer3;
+  expected_theme->shader_layer_4 = lens::kColorFallbackShaderLayer4;
+  expected_theme->shader_layer_5 = lens::kColorFallbackShaderLayer5;
+  expected_theme->scrim = lens::kColorFallbackScrim;
+  expected_theme->surface_container_highest_light =
+      lens::kColorFallbackSurfaceContainerHighestLight;
+  expected_theme->surface_container_highest_dark =
+      lens::kColorFallbackSurfaceContainerHighestDark;
+  expected_theme->selection_element = lens::kColorFallbackSelectionElement;
+  EXPECT_TRUE(
+      fake_controller->fake_overlay_page_.last_received_theme_.has_value());
+  const auto& received_theme =
+      fake_controller->fake_overlay_page_.last_received_theme_.value();
+  EXPECT_EQ(received_theme->primary, expected_theme->primary);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {

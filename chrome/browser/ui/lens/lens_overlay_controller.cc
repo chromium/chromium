@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -498,6 +499,27 @@ void LensOverlayController::RemoveGlueForWebView(views::WebView* web_view) {
 
 void LensOverlayController::SendText(lens::mojom::TextPtr text) {
   page_->TextReceived(std::move(text));
+}
+
+void LensOverlayController::SendTheme(lens::PaletteId palette_id) {
+  auto theme = lens::mojom::OverlayTheme::New();
+  const auto& palette =
+      base::Contains(lens::kPaletteColors, palette_id)
+          ? lens::kPaletteColors.at(palette_id)
+          : lens::kPaletteColors.at(lens::PaletteId::kFallback);
+  theme->primary = palette.at(lens::ColorId::kPrimary);
+  theme->shader_layer_1 = palette.at(lens::ColorId::kShaderLayer1);
+  theme->shader_layer_2 = palette.at(lens::ColorId::kShaderLayer2);
+  theme->shader_layer_3 = palette.at(lens::ColorId::kShaderLayer3);
+  theme->shader_layer_4 = palette.at(lens::ColorId::kShaderLayer4);
+  theme->shader_layer_5 = palette.at(lens::ColorId::kShaderLayer5);
+  theme->scrim = palette.at(lens::ColorId::kScrim);
+  theme->surface_container_highest_light =
+      palette.at(lens::ColorId::kSurfaceContainerHighestLight);
+  theme->surface_container_highest_dark =
+      palette.at(lens::ColorId::kSurfaceContainerHighestDark);
+  theme->selection_element = palette.at(lens::ColorId::kSelectionElement);
+  page_->ThemeReceived(std::move(theme));
 }
 
 void LensOverlayController::SendObjects(
@@ -1065,6 +1087,7 @@ void LensOverlayController::InitializeOverlayUI(
   // This should only contain LensPage mojo calls and should not affect
   // `state_`.
   CHECK(page_);
+  SendTheme(init_data.color_palette_);
   page_->ScreenshotDataUriReceived(init_data.current_screenshot_data_uri_);
   if (!init_data.objects_.empty()) {
     SendObjects(CopyObjects(init_data.objects_));

@@ -22,7 +22,7 @@ interface SearchBubblePageHandler {
 };
 
 // A simplified theme.
-struct Theme {
+struct SearchboxTheme {
   skia.mojom.SkColor text_color;
   skia.mojom.SkColor background_color;
   // Color of Google logo. If not set show the logo multi-colored.
@@ -34,5 +34,5 @@ struct Theme {
 // WebUI-side handler for requests from the browser.
 interface SearchBubblePage {
   // Sets the current theme.
-  SetTheme(Theme theme);
+  SetTheme(SearchboxTheme theme);
 };

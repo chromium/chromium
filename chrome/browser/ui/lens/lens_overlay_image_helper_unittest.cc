@@ -443,26 +443,26 @@ TEST_F(LensOverlayImageHelperTest, FindBestMatchedColorOrTransparent) {
     colors.emplace_back(pair.first);
   }
   // No match for close to grayscale colors
-  EXPECT_EQ(kPaletteFallbackPrimaryColor,
+  EXPECT_EQ(SK_ColorTRANSPARENT,
             FindBestMatchedColorOrTransparent(colors, SK_ColorWHITE, 3.0f));
-  EXPECT_EQ(kPaletteFallbackPrimaryColor,
+  EXPECT_EQ(SK_ColorTRANSPARENT,
             FindBestMatchedColorOrTransparent(colors, SK_ColorGRAY, 3.0f));
-  EXPECT_EQ(kPaletteFallbackPrimaryColor,
+  EXPECT_EQ(SK_ColorTRANSPARENT,
             FindBestMatchedColorOrTransparent(colors, SK_ColorBLACK, 3.0f));
-  EXPECT_EQ(kPaletteFallbackPrimaryColor,
+  EXPECT_EQ(SK_ColorTRANSPARENT,
             FindBestMatchedColorOrTransparent(
                 colors, SkColorSetRGB(0x43, 0x46, 0x44), 3.0f));
   // Closest matching colors.
-  EXPECT_EQ(kPaletteGrapePrimaryColor,
+  EXPECT_EQ(kColorGrapePrimary,
             FindBestMatchedColorOrTransparent(
                 colors, SkColorSetRGB(0x50, 0x12, 0xC4), 3.0f));
-  EXPECT_EQ(kPaletteTurquoisePrimaryColor,
+  EXPECT_EQ(kColorTurquoisePrimary,
             FindBestMatchedColorOrTransparent(colors, SK_ColorCYAN, 3.0f));
-  EXPECT_EQ(kPaletteTangerinePrimaryColor,
+  EXPECT_EQ(kColorTangerinePrimary,
             FindBestMatchedColorOrTransparent(colors, SK_ColorRED, 3.0f));
-  EXPECT_EQ(kPaletteCactusPrimaryColor,
+  EXPECT_EQ(kColorCactusPrimary,
             FindBestMatchedColorOrTransparent(colors, SK_ColorGREEN, 3.0f));
-  EXPECT_EQ(kPaletteSchoolbusPrimaryColor,
+  EXPECT_EQ(kColorSchoolbusPrimary,
             FindBestMatchedColorOrTransparent(
                 colors, SkColorSetRGB(0x48, 0x39, 0x12), 3.0f));
 }

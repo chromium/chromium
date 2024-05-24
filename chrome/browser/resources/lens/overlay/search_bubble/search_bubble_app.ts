@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 
-import type {Theme} from './search_bubble.mojom-webui.js';
+import type {SearchboxTheme} from './search_bubble.mojom-webui.js';
 import {getTemplate} from './search_bubble_app.html.js';
 import {SearchBubbleProxyImpl} from './search_bubble_proxy.js';
 import type {SearchBubbleProxy} from './search_bubble_proxy.js';
@@ -18,7 +18,7 @@ export class SearchBubbleAppElement extends PolymerElement {
   singleColored: boolean;
   private setThemeListenerId_: number|null = null;
   private logoColor_: string;
-  private theme_: Theme;
+  private theme_: SearchboxTheme;
 
   static get is() {
     return 'search-bubble-app';
@@ -54,7 +54,7 @@ export class SearchBubbleAppElement extends PolymerElement {
     this.browserProxy_.handler.showUI();
     this.setThemeListenerId_ =
         this.browserProxy_.callbackRouter.setTheme.addListener(
-            (theme: Theme) => {
+            (theme: SearchboxTheme) => {
               this.theme_ = theme;
             });
   }
