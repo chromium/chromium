@@ -10,11 +10,40 @@
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/debugger/viz_debugger.h"
+#include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace viz {
+namespace {
+
+// Returns true if `quad` intersects with any of the quads in
+// `quads_with_masks`. It takes into account the fact that quads with rounded
+// display masks are all transparent except for the drawn masks. Note: `quad`
+// and `quads_with_masks` should all live in the same target space.
+bool IntersectsWithRoundedDisplayMask(const DrawQuad* quad,
+                                      std::vector<DrawQuad*> quads_with_masks) {
+  const gfx::Transform& transform =
+      quad->shared_quad_state->quad_to_target_transform;
+  const gfx::RectF target_rect = transform.MapRect(gfx::RectF(quad->rect));
+
+  for (const auto* mask_quad : quads_with_masks) {
+    const auto mask_bounds =
+        TextureDrawQuad::RoundedDisplayMasksInfo::GetRoundedDisplayMasksBounds(
+            mask_quad);
+
+    for (const gfx::RectF& mask_bound : mask_bounds) {
+      if (target_rect.Intersects(mask_bound)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+}  // namespace
 
 OverlayStrategyFullscreen::OverlayStrategyFullscreen(
     OverlayProcessorUsingStrategy* capability_checker)
@@ -37,11 +66,25 @@ void OverlayStrategyFullscreen::Propose(
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
-  // First non invisible quad of quad_list is the top most quad.
+
+  std::vector<DrawQuad*> quads_with_masks;
+
+  // Find the first visible quad without rounded-display mask textures.
+  // Allow quads with mask texture above the candidate quad. The mask textures
+  // are all transparent, expect for the black masks, therefore the promotion
+  // of fullscreen candidates is potentially possible.
+  // (See BlackFullscreenOptimization comment)
   auto front = quad_list->begin();
   while (front != quad_list->end()) {
-    if (!OverlayCandidate::IsInvisibleQuad(*front))
+    const bool has_mask_textures =
+        OverlayCandidate::QuadHasRoundedDisplayMasks(*front);
+    if (has_mask_textures) {
+      quads_with_masks.push_back(*front);
+    }
+
+    if (!OverlayCandidate::IsInvisibleQuad(*front) && !has_mask_textures) {
       break;
+    }
     ++front;
   }
 
@@ -71,6 +114,7 @@ void OverlayStrategyFullscreen::Propose(
   if (!candidate.display_rect.origin().IsOrigin() ||
       gfx::ToRoundedSize(candidate.display_rect.size()) !=
           render_pass->output_rect.size()) {
+    // BlackFullscreenOptimization:
     // Candidate Quad does not fully cover display but fullscreen is still
     // possible if all the other quads do not contribute to primary plane or
     // their contribution will simply result in the default black of DRM. The
@@ -98,6 +142,16 @@ void OverlayStrategyFullscreen::Propose(
       }
       ++after_front;
     }
+  }
+
+  // To achieve correct visual results, mask candidates should be promoted to
+  // overlays if the fullscreen quad overlaps promoted (and intersects any mask
+  // textures drawn above it).
+  // However, fullscreen strategy is not currently supported for multiple
+  // overlays. Therefore, if mask textures are drawn on top of a quad
+  // covering the entire display, that quad should be rejected.
+  if (IntersectsWithRoundedDisplayMask(quad, quads_with_masks)) {
+    return;
   }
 
   candidate.is_opaque = true;

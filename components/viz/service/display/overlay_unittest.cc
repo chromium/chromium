@@ -978,6 +978,69 @@ TEST_F(FullscreenOverlayTest, DRMDefaultBlackOptimization) {
   }
 }
 
+TEST_F(FullscreenOverlayTest,
+       DRMDefaultBlackOptimizationWithRoundedDisplayMaskTextures) {
+  auto pass = CreateRenderPass();
+  auto sub_fullscreen = pass->output_rect;
+  sub_fullscreen.Inset(32);
+
+  const int display_width = kDisplaySize.width();
+  const int display_height = kDisplaySize.height();
+  const int radius = 16;
+
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, gfx::Rect(0, 0, radius, display_height),
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+          radius, radius, /*is_horizontally_positioned=*/false));
+
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true,
+      gfx::Rect(display_width - radius, 0, radius, display_height),
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+          radius, radius, /*is_horizontally_positioned=*/false));
+
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        sub_fullscreen);
+
+  // Add a black solid color behind it.
+  CreateSolidColorQuadAt(pass->shared_quad_state_list.back(), SkColors::kBlack,
+                         pass.get(), pass->output_rect);
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  AggregatedRenderPass* main_pass = pass.get();
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  if (base::FeatureList::IsEnabled(
+          features::kUseDrmBlackFullscreenOptimization)) {
+    // Check that all the quads are gone.
+    EXPECT_EQ(0U, main_pass->quad_list.size());
+    // Check that we have only one overlay.
+    EXPECT_EQ(1U, candidate_list.size());
+    // Check that the candidate has replaced the primary plane.
+    EXPECT_EQ(candidate_list[0].plane_z_order, 0);
+  } else {
+    // No fullscreen promotion is possible.
+    EXPECT_EQ(0U, candidate_list.size());
+  }
+}
+
 TEST_F(FullscreenOverlayTest, SuccessfulOverlay) {
   auto pass = CreateRenderPass();
   gfx::Rect output_rect = pass->output_rect;
