@@ -86,6 +86,20 @@ static_library("common") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+static_library("credit_card_number_validation") {
+  sources = [
+    "credit_card_network_identifiers.h",
+    "credit_card_number_validation.cc",
+    "credit_card_number_validation.h",
+  ]
+
+  deps = [
+    ":common",
+    ":features",
+    "//base",
+  ]
+}
+
 component("features") {
   output_name = "autofill_core_common_features"
   defines = [ "IS_AUTOFILL_IMPL" ]
@@ -130,6 +144,7 @@ source_set("unit_tests") {
     "autofill_prefs_unittest.cc",
     "autofill_regexes_unittest.cc",
     "autofill_util_unittest.cc",
+    "credit_card_number_validation_unittest.cc",
     "dense_set_unittest.cc",
     "field_data_manager_unittest.cc",
     "form_data_unittest.cc",
@@ -141,6 +156,7 @@ source_set("unit_tests") {
 
   deps = [
     ":common",
+    ":credit_card_number_validation",
     "//base",
     "//base:i18n",
     "//base/test:test_support",

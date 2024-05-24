@@ -10,7 +10,7 @@
 
 // TODO(b/281812289): Remove this include when all dependencies switch to
 // including this file directly instead of relying on validation.h.
-#include "components/autofill/core/browser/credit_card_number_validation.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 
 namespace base {
 class Time;

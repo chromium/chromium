@@ -19,7 +19,7 @@
 
 // TODO(b/281812289): Remove this include when all dependencies switch to
 // including this file directly instead of relying on credit_card.h.
-#include "components/autofill/core/browser/data_model/credit_card_network_identifiers.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 
 namespace autofill {
 
