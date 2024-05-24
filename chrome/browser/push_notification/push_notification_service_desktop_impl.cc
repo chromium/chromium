@@ -219,6 +219,7 @@ void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationSuccess(
       RecordPushNotificationServiceTimeToReceiveRegistrationSuccessResponse(
           /*registration_response_time=*/base::TimeTicks::Now() -
           api_call_start_time);
+  metrics::RecordPushNotificationServiceRegistrationResult(/*success=*/true);
   VLOG(1) << __func__ << ": Push notification service registration successful";
   is_initialized_ = true;
   server_client_.reset();
@@ -237,6 +238,7 @@ void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationFailure(
       RecordPushNotificationServiceTimeToReceiveRegistrationFailureResponse(
           /*registration_response_time=*/base::TimeTicks::Now() -
           api_call_start_time);
+  metrics::RecordPushNotificationServiceRegistrationResult(/*success=*/false);
   LOG(ERROR) << __func__
              << ": Push notification service registration failure: " << error;
   server_client_.reset();

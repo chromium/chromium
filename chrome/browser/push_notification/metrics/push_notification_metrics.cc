@@ -18,6 +18,8 @@ const char kGcmTokenRetrievalResult[] =
     "PushNotification.ChromeOS.GCM.Token.RetrievalResult";
 const char kOAuthTokenRetrievalResult[] =
     "PushNotification.ChromeOS.OAuth.Token.RetrievalResult";
+const char kServiceRegistrationResult[] =
+    "PushNotification.ChromeOS.Registration.Result";
 
 }  // namespace
 
@@ -46,6 +48,10 @@ void RecordPushNotificationGcmTokenRetrievalResult(bool success) {
 
 void RecordPushNotificationOAuthTokenRetrievalResult(bool success) {
   base::UmaHistogramBoolean(kOAuthTokenRetrievalResult, success);
+}
+
+void RecordPushNotificationServiceRegistrationResult(bool success) {
+  base::UmaHistogramBoolean(kServiceRegistrationResult, success);
 }
 
 }  // namespace push_notification::metrics

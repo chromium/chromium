@@ -17,6 +17,7 @@ void RecordPushNotificationServiceTimeToReceiveRegistrationFailureResponse(
     base::TimeDelta registration_response_time);
 void RecordPushNotificationGcmTokenRetrievalResult(bool success);
 void RecordPushNotificationOAuthTokenRetrievalResult(bool success);
+void RecordPushNotificationServiceRegistrationResult(bool success);
 
 }  // namespace push_notification::metrics
 

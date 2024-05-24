@@ -38,6 +38,8 @@ const char kTotalFailedRegistrationResponseTime[] =
     "PushNotification.ChromeOS.MultiLoginUpdateApi.ResponseTime.Failure";
 const char kGcmTokenRetrievalResult[] =
     "PushNotification.ChromeOS.GCM.Token.RetrievalResult";
+const char kServiceRegistrationResult[] =
+    "PushNotification.ChromeOS.Registration.Result";
 
 class FakeInstanceID : public instance_id::InstanceID {
  public:
@@ -159,6 +161,10 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
                                         /*bucket: failure=*/0, 0);
     histogram_tester_.ExpectBucketCount(kGcmTokenRetrievalResult,
                                         /*bucket: success=*/1, 0);
+    histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                        /*bucket: failure=*/0, 0);
+    histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                        /*bucket: success=*/1, 0);
   }
 
   void TearDown() override {
@@ -244,6 +250,10 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartService) {
   histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 0);
   histogram_tester_.ExpectBucketCount(kGcmTokenRetrievalResult,
                                       /*bucket: success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: failure=*/0, 0);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: success=*/1, 1);
 }
 
 TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPref) {
@@ -268,6 +278,10 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPref) {
   CheckForSuccessfulRegistration();
   histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 0);
   histogram_tester_.ExpectBucketCount(kGcmTokenRetrievalResult,
+                                      /*bucket: success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: failure=*/0, 0);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
                                       /*bucket: success=*/1, 1);
 }
 
@@ -294,6 +308,10 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartServiceWithPrefStoreReset) {
   histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 0);
   histogram_tester_.ExpectBucketCount(kGcmTokenRetrievalResult,
                                       /*bucket: success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: failure=*/0, 0);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: success=*/1, 1);
   push_notification_service_->OnStoreReset();
   EXPECT_EQ(std::string(),
             pref_service_.GetString(
@@ -318,6 +336,10 @@ TEST_F(PushNotificationServiceDesktopImplTest, StartServiceTokenFailure) {
   histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 0);
   histogram_tester_.ExpectBucketCount(kGcmTokenRetrievalResult,
                                       /*bucket: failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: failure=*/0, 0);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: success=*/1, 0);
 }
 
 TEST_F(PushNotificationServiceDesktopImplTest,
@@ -340,6 +362,10 @@ TEST_F(PushNotificationServiceDesktopImplTest,
   histogram_tester_.ExpectBucketCount(kGcmTokenRetrievalResult,
                                       /*bucket: success=*/1, 1);
   histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 1);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: success=*/1, 0);
 }
 
 TEST_F(PushNotificationServiceDesktopImplTest,
@@ -376,6 +402,10 @@ TEST_F(PushNotificationServiceDesktopImplTest,
   histogram_tester_.ExpectTotalCount(kTotalFailedRegistrationResponseTime, 2);
   histogram_tester_.ExpectBucketCount(kGcmTokenRetrievalResult,
                                       /*bucket: success=*/1, 3);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: failure=*/0, 2);
+  histogram_tester_.ExpectBucketCount(kServiceRegistrationResult,
+                                      /*bucket: success=*/1, 1);
 }
 
 TEST_F(PushNotificationServiceDesktopImplTest, OnMessageRecieved) {
