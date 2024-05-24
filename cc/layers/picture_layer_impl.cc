@@ -1003,15 +1003,6 @@ bool PictureLayerImpl::IsDirectlyCompositedImage() const {
   return directly_composited_image_default_raster_scale_ > 0.f;
 }
 
-bool PictureLayerImpl::ScrollInteractionInProgress() const {
-  return layer_tree_impl()->GetActivelyScrollingType() !=
-         ActivelyScrollingType::kNone;
-}
-
-bool PictureLayerImpl::CurrentScrollCheckerboardsDueToNoRecording() const {
-  return layer_tree_impl()->CurrentScrollCheckerboardsDueToNoRecording();
-}
-
 void PictureLayerImpl::OnTilesAdded() {
   SetNeedsPushProperties();
 }
@@ -1275,8 +1266,10 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTransform(
   if (layer_tree_impl()->IsSyncTree() && layer_tree_impl()->IsReadyToActivate())
     return false;
   // To reduce memory usage, don't recreate highres tiling during scroll
-  if (ScrollInteractionInProgress())
+  if (layer_tree_impl()->GetActivelyScrollingType() !=
+      ActivelyScrollingType::kNone) {
     return false;
+  }
 
   return true;
 }

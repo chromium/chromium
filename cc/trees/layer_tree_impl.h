@@ -768,10 +768,6 @@ class CC_EXPORT LayerTreeImpl {
     return host_impl_->GetActivelyScrollingType();
   }
 
-  bool CurrentScrollCheckerboardsDueToNoRecording() {
-    return host_impl_->CurrentScrollCheckerboardsDueToNoRecording();
-  }
-
   // These functions are used for plumbing DelegatedInkMetadata from blink
   // through the compositor and into viz via a compositor frame. They should
   // only be called after the JS API |updateInkTrailStartPoint| has been

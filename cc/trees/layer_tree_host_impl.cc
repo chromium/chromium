@@ -320,7 +320,6 @@ void LayerTreeHostImpl::DidStartScroll() {
 
 void LayerTreeHostImpl::DidEndScroll() {
   scroll_affects_scroll_handler_ = false;
-  current_scroll_did_checkerboard_large_area_ = false;
 
   if (!settings().single_thread_proxy_scheduler) {
     client_->SetHasActiveThreadedScroll(false);
@@ -1333,7 +1332,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 
   int num_missing_tiles = 0;
   int num_incomplete_tiles = 0;
-  int64_t checkerboarded_no_recording_content_area = 0;
 
   bool have_copy_request =
       active_tree()->property_trees()->effect_tree().HasCopyRequests();
@@ -1399,8 +1397,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 
       num_missing_tiles += append_quads_data.num_missing_tiles;
       num_incomplete_tiles += append_quads_data.num_incomplete_tiles;
-      checkerboarded_no_recording_content_area +=
-          append_quads_data.checkerboarded_no_recording_content_area;
 
       if (append_quads_data.num_missing_tiles > 0) {
         have_missing_animated_tiles |=
@@ -1423,19 +1419,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
         append_quads_data.use_default_lower_bound_deadline;
     frame->has_shared_element_resources |=
         append_quads_data.has_shared_element_resources;
-  }
-
-  if (GetActivelyScrollingType() != ActivelyScrollingType::kNone &&
-      checkerboarded_no_recording_content_area > 0) {
-    CHECK(base::FeatureList::IsEnabled(features::kUseRecordedBoundsForTiling));
-    // TODO(crbug.com/41490692): With UseRecordedBoundsForTiling enabled,
-    // checkerboarded_no_recording_content_area means differently from its
-    // original meaning (which was some tiles out of blink interest rect has
-    // become visible) before CompositeAfterPaint. Calling
-    // SetCurrentScrollCheckerboardsDueToNoRecording() may cause unexpected
-    // consequences. Disable it for now, and will clean up after checking
-    // finch data of UseRecordedBoundsForTiling.
-    // SetCurrentScrollCheckerboardsDueToNoRecording();
   }
 
   // If CommitToActiveTree() is true, then we wait to draw until

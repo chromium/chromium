@@ -3730,74 +3730,6 @@ class MissingTilesLayer : public LayerImpl {
   }
 };
 
-TEST_F(LayerTreeHostImplTest, CurrentScrollCheckerboardsDueToNoRecording) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kUseRecordedBoundsForTiling);
-
-  LayerTreeSettings settings = DefaultSettings();
-  CreateHostImpl(settings, CreateLayerTreeFrameSink());
-  host_impl_->active_tree()->PushPageScaleFromMainThread(1, 0.25f, 4);
-
-  const gfx::Size content_size(1000, 1000);
-  const gfx::Size viewport_size(500, 500);
-  SetupViewportLayersOuterScrolls(viewport_size, content_size);
-
-  LayerImpl* outer_scroll_layer = OuterViewportScrollLayer();
-  outer_scroll_layer->SetDrawsContent(true);
-  LayerImpl* inner_scroll_layer = InnerViewportScrollLayer();
-  inner_scroll_layer->SetDrawsContent(true);
-
-  // Add layer that draws content and has checkerboarded areas.
-  auto* scroll_layer = AddLayer<MissingTilesLayer>(host_impl_->active_tree());
-  CopyProperties(inner_scroll_layer, scroll_layer);
-  scroll_layer->SetBounds(gfx::Size(500, 500));
-  scroll_layer->SetDrawsContent(true);
-  scroll_layer->SetHitTestOpaqueness(HitTestOpaqueness::kTransparent);
-  host_impl_->active_tree()->SetElementIdsForTesting();
-
-  UpdateDrawProperties(host_impl_->active_tree());
-
-  DrawFrame();
-
-  // No scroll has taken place so this should be false.
-  EXPECT_FALSE(host_impl_->CurrentScrollCheckerboardsDueToNoRecording());
-
-  // Send scroll begin.
-  GetInputHandler().ScrollBegin(
-      BeginState(gfx::Point(250, 250), gfx::Vector2dF(),
-                 ui::ScrollInputType::kTouchscreen)
-          .get(),
-      ui::ScrollInputType::kTouchscreen);
-
-  DrawFrame();
-
-  // Even though a ScrollBegin has been processed, we still don't consider the
-  // interaction to be "actively scrolling". Expect this to be false.
-  EXPECT_FALSE(host_impl_->CurrentScrollCheckerboardsDueToNoRecording());
-
-  gfx::Vector2dF scroll_delta(0, 10);
-
-  // Send scroll update.
-  GetInputHandler().ScrollUpdate(
-      UpdateState(gfx::Point(10, 10), scroll_delta, ui::ScrollInputType::kWheel)
-          .get());
-
-  host_impl_->SetFullViewportDamage();
-  DrawFrame();
-
-  // Now that a scroll update has been processed and the latest
-  // CalculateRenderPasses run has computed significant visible checkerboarding,
-  // expect this flag to be true.
-  // TODO(crbug.com/41490692): For now this is disabled.
-  EXPECT_FALSE(host_impl_->CurrentScrollCheckerboardsDueToNoRecording());
-
-  GetInputHandler().ScrollEnd();
-
-  // Expect state to be reset after a scroll end.
-  EXPECT_FALSE(host_impl_->CurrentScrollCheckerboardsDueToNoRecording());
-}
-
 TEST_F(LayerTreeHostImplTest, ImplPinchZoom) {
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
   DrawFrame();
@@ -18930,10 +18862,10 @@ TEST_F(LayerTreeHostImplTest, RecomputeRasterCapsOnLayerTreeFrameSinkUpdate) {
   EXPECT_FALSE(host_impl_->can_use_msaa());
 }
 
-// Check if picturelayer's ScrollInteractionInProgress() return true even when
-// BrowserControl is consuming ScrollUpdate.
+// Check if LayerTreeImpl::GetActivelyScrollingType() returns kPrecise even
+// when BrowserControl is consuming ScrollUpdate.
 TEST_F(LayerTreeHostImplBrowserControlsTest,
-       BrowserControlsScrollInteractionInProgress) {
+       BrowserControlsActivelyScrollingType) {
   gfx::Size inner_size = gfx::Size(100, 100);
   gfx::Size outer_size = gfx::Size(100, 100);
   gfx::Size content_size = gfx::Size(100, 200);
@@ -18964,7 +18896,8 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
                 .thread);
   // shownratio == 1
   EXPECT_EQ(1, host_impl_->active_tree()->CurrentTopControlsShownRatio());
-  EXPECT_EQ(picture_layer->ScrollInteractionInProgress(), false);
+  EXPECT_EQ(host_impl_->active_tree()->GetActivelyScrollingType(),
+            ActivelyScrollingType::kNone);
 
   // 0 < shownratio <1
   GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(),
@@ -18973,7 +18906,8 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
                                      .get());
   EXPECT_GT(host_impl_->active_tree()->CurrentTopControlsShownRatio(), 0);
   EXPECT_LT(host_impl_->active_tree()->CurrentTopControlsShownRatio(), 1);
-  EXPECT_EQ(picture_layer->ScrollInteractionInProgress(), true);
+  EXPECT_EQ(host_impl_->active_tree()->GetActivelyScrollingType(),
+            ActivelyScrollingType::kPrecise);
 
   GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(),
                                              gfx::Vector2dF(0, 30),
@@ -18981,12 +18915,14 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
                                      .get());
   // now shownratio == 0
   EXPECT_EQ(0, host_impl_->active_tree()->CurrentTopControlsShownRatio());
-  EXPECT_EQ(picture_layer->ScrollInteractionInProgress(), true);
+  EXPECT_EQ(host_impl_->active_tree()->GetActivelyScrollingType(),
+            ActivelyScrollingType::kPrecise);
 
   GetInputHandler().ScrollEnd();
   // scroll end, shownratio == 0
   EXPECT_EQ(0, host_impl_->active_tree()->CurrentTopControlsShownRatio());
-  EXPECT_EQ(picture_layer->ScrollInteractionInProgress(), false);
+  EXPECT_EQ(host_impl_->active_tree()->GetActivelyScrollingType(),
+            ActivelyScrollingType::kNone);
 }
 
 TEST_F(LayerTreeHostImplTest, AnimatedScrollSnapStrategyCurrentOffset) {

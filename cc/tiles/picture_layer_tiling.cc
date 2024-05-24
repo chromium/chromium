@@ -830,14 +830,6 @@ PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
        tile_priority.distance_to_visible >
            0.5f * max_skewport_extent_in_screen_space_);
 
-  // If the tile is within max_skewport_extent and a scroll interaction
-  // experiencing checkerboarding is currently taking place, then
-  // continue to rasterize the tile right now rather than for images only.
-  if (tile_priority.distance_to_visible <
-          max_skewport_extent_in_screen_space_ &&
-      client_->ScrollInteractionInProgress() &&
-      client_->CurrentScrollCheckerboardsDueToNoRecording())
-    process_for_images_only = false;
   return PrioritizedTile(tile, this, tile_priority, is_tile_occluded,
                          process_for_images_only,
                          ShouldDecodeCheckeredImagesForTile(tile));
