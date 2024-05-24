@@ -403,9 +403,10 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
   }
 
   // Check if the underlying native window is headless and if so, return early
-  // to avoid showing the popup menu.
+  // to avoid showing the popup menu. In content_shell, the window is not a
+  // `NativeWidgetMacNSWindow`, so this doesn't use a strict cast.
   NativeWidgetMacNSWindow* ns_window =
-      base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(cocoa_view_.window);
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>(cocoa_view_.window);
   if (ns_window && ns_window.isHeadless) {
     std::move(callback).Run(std::nullopt);
     return;
