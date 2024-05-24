@@ -34,7 +34,8 @@ class ChromeBrowserStateManager {
 
   // Returns the ChromeBrowserState associated with `path`, returns nullptr if
   // there is no loaded ChromeBrowserState at `path`.
-  virtual ChromeBrowserState* GetBrowserState(const base::FilePath& path) = 0;
+  virtual ChromeBrowserState* GetBrowserStateByPath(
+      const base::FilePath& path) = 0;
 
   // Returns the BrowserStateInfoCache associated with this manager.
   virtual BrowserStateInfoCache* GetBrowserStateInfoCache() = 0;

@@ -23,9 +23,9 @@ ProfileReportGeneratorIOS::ProfileReportGeneratorIOS() = default;
 ProfileReportGeneratorIOS::~ProfileReportGeneratorIOS() = default;
 
 bool ProfileReportGeneratorIOS::Init(const base::FilePath& path) {
-  browser_state_ =
-      GetApplicationContext()->GetChromeBrowserStateManager()->GetBrowserState(
-          path);
+  browser_state_ = GetApplicationContext()
+                       ->GetChromeBrowserStateManager()
+                       ->GetBrowserStateByPath(path);
 
   if (!browser_state_) {
     return false;

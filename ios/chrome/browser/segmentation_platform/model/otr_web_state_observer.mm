@@ -122,7 +122,7 @@ void OTRWebStateObserver::OnBrowserStateAdded(const base::FilePath& path) {
     return;
   }
   BrowserList* browser_list = BrowserListFactory::GetForBrowserState(
-      browser_state_manager_->GetBrowserState(path));
+      browser_state_manager_->GetBrowserStateByPath(path));
   DCHECK(browser_list);
 
   auto it = browser_state_data_.emplace(

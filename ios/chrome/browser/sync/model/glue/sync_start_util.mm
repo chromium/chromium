@@ -29,7 +29,7 @@ void StartSyncOnUIThread(const base::FilePath& browser_state_path,
   }
 
   ChromeBrowserState* browser_state =
-      browser_state_manager->GetBrowserState(browser_state_path);
+      browser_state_manager->GetBrowserStateByPath(browser_state_path);
   if (!browser_state) {
     DVLOG(2) << "ChromeBrowserState not found, can't start sync.";
     return;

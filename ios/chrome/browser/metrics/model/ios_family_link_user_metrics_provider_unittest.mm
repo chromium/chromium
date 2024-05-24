@@ -200,7 +200,8 @@ TEST_F(
   // Profile with supervision set by policy
   const base::FilePath profile_path = base::FilePath("fake/profile/default");
   AddTestBrowserState(profile_path);
-  SignIn(browser_state_manager()->GetBrowserState(profile_path), kTestEmail1,
+  SignIn(browser_state_manager()->GetBrowserStateByPath(profile_path),
+         kTestEmail1,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
 
@@ -227,14 +228,16 @@ TEST_F(
   // Profile with supervision set by user
   const base::FilePath profile_path = base::FilePath("fake/profile/default");
   AddTestBrowserState(profile_path);
-  SignIn(browser_state_manager()->GetBrowserState(profile_path), kTestEmail1,
+  SignIn(browser_state_manager()->GetBrowserStateByPath(profile_path),
+         kTestEmail1,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/false);
 
   // Profile with supervision set by policy
   const base::FilePath profile_path2 = base::FilePath("fake/profile2/default");
   AddTestBrowserState(profile_path2);
-  SignIn(browser_state_manager()->GetBrowserState(profile_path2), kTestEmail2,
+  SignIn(browser_state_manager()->GetBrowserStateByPath(profile_path2),
+         kTestEmail2,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
 
@@ -314,20 +317,22 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   // Profile with supervision set by user
   const base::FilePath profile_path = base::FilePath("fake/profile/default");
   AddTestBrowserState(profile_path);
-  SignIn(browser_state_manager()->GetBrowserState(profile_path), kTestEmail1,
+  SignIn(browser_state_manager()->GetBrowserStateByPath(profile_path),
+         kTestEmail1,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/false);
   AllowUnsafeSitesForSupervisedUser(
-      browser_state_manager()->GetBrowserState(profile_path));
+      browser_state_manager()->GetBrowserStateByPath(profile_path));
 
   // Profile with supervision set by policy
   const base::FilePath profile_path2 = base::FilePath("fake/profile2/default");
   AddTestBrowserState(profile_path2);
-  SignIn(browser_state_manager()->GetBrowserState(profile_path2), kTestEmail2,
+  SignIn(browser_state_manager()->GetBrowserStateByPath(profile_path2),
+         kTestEmail2,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
   RestrictAllSitesForSupervisedUser(
-      browser_state_manager()->GetBrowserState(profile_path2));
+      browser_state_manager()->GetBrowserStateByPath(profile_path2));
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();

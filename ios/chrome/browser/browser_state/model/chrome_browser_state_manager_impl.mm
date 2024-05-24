@@ -118,10 +118,10 @@ ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {}
 
 ChromeBrowserState*
 ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
-  return GetBrowserState(GetLastUsedBrowserStateDir(GetUserDataDir()));
+  return GetBrowserStateByPath(GetLastUsedBrowserStateDir(GetUserDataDir()));
 }
 
-ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserState(
+ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByPath(
     const base::FilePath& path) {
   // If the browser state is already loaded, just return it.
   auto iter = browser_states_.find(path);

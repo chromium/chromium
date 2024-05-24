@@ -166,7 +166,7 @@ struct PermissionsPref {
         infoCache->GetGAIAIdOfBrowserStateAtIndex(i);
     if (gaiaID == browserStateGaiaID) {
       base::FilePath path = infoCache->GetPathOfBrowserStateAtIndex(i);
-      return _chromeBrowserStateManager->GetBrowserState(path);
+      return _chromeBrowserStateManager->GetBrowserStateByPath(path);
     }
   }
 
