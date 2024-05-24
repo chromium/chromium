@@ -90,6 +90,10 @@ constexpr CGFloat kSpace = 8;
     }
     _gridViewController.mode = TabGridModeGroup;
     _gridViewController.viewDelegate = self;
+
+    // This view controller has a dark background and should be considered as
+    // dark mode regardless of the theme of the grid.
+    self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   }
   return self;
 }
