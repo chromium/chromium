@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Code specific to disabling GTest tests."""
 
+import os
 import re
 import subprocess
 import sys
@@ -11,9 +12,15 @@ from typing import List, Optional, Tuple, Union, Any, Dict, TypeVar
 import conditions
 from conditions import Condition
 import collections
+import errors
 
 A = TypeVar('A')
 B = TypeVar('B')
+
+CHROMIUM_SRC = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", ".."))
+CLANG_FORMAT = os.path.join(CHROMIUM_SRC, 'third_party', 'depot_tools',
+                            'clang_format.py')
 
 # The full set of macros which we consider when looking for test definitions.
 # Any such macro wrapping a GTest macro can be added to this list, so we can
@@ -595,12 +602,9 @@ def clang_format(file_contents: str, modified_lines: List[int]) -> str:
   # things simple for the calling code.
   modified_lines = [i + 1 for i in modified_lines]
 
-  clang_format_bin = 'clang-format'
-  if sys.platform.startswith('win'):
-    clang_format_bin += '.bat'
-
-  p = subprocess.Popen([clang_format_bin, '--style=file'] +
+  p = subprocess.Popen(['python3', CLANG_FORMAT, '--style=file'] +
                        [f'--lines={i}:{i}' for i in modified_lines],
+                       cwd=CHROMIUM_SRC,
                        stdin=subprocess.PIPE,
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE,
