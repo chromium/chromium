@@ -166,10 +166,10 @@ template("single_gcc_toolchain") {
     } else {
       toolchain_uses_reclient = use_reclient
     }
-    if (defined(toolchain_args.use_remoteexec_links)) {
-      toolchain_uses_reclient_links = toolchain_args.use_remoteexec_links
+    if (defined(toolchain_args.use_reclient_links)) {
+      toolchain_uses_reclient_links = toolchain_args.use_reclient_links
     } else {
-      toolchain_uses_reclient_links = use_remoteexec_links
+      toolchain_uses_reclient_links = use_reclient_links
     }
 
     if (defined(toolchain_args.cc_wrapper)) {

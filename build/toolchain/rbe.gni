@@ -19,9 +19,8 @@ declare_args() {
   # Set to true to enable remote executions.
   use_remoteexec = false
 
-  # TODO: crbug.com/342270134 - Rename use_remoteexec_links to use_reclient_links.
   # Set to true to enable remote linking using reclient.
-  use_remoteexec_links = false
+  use_reclient_links = false
 
   # TODO: crbug.com/342270134 - Rename rbe_cfg_dir to reclient_cfg_dir.
   # The directory where the re-client configuration files are.
@@ -103,15 +102,15 @@ if (use_reclient && current_toolchain == default_toolchain) {
 }
 
 if (is_win) {
-  if (use_remoteexec_links) {
+  if (use_reclient_links) {
     print("For now, remote linking is not available for Windows.")
-    use_remoteexec_links = false
+    use_reclient_links = false
   }
 }
 if (is_mac || is_ios) {
-  if (use_remoteexec_links) {
+  if (use_reclient_links) {
     print("For now, remote linking is not available on Macs.")
-    use_remoteexec_links = false
+    use_reclient_links = false
   }
 }
 

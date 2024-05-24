@@ -19,8 +19,8 @@
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
+        "use_reclient_links": true,
         "use_remoteexec": true,
-        "use_remoteexec_links": true,
         "use_siso": true
       }
     }

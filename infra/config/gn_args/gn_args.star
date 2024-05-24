@@ -1027,7 +1027,7 @@ gn_args.config(
 gn_args.config(
     name = "reclient_with_remoteexec_links",
     args = {
-        "use_remoteexec_links": True,
+        "use_reclient_links": True,
         "concurrent_links": 50,
     },
     configs = ["reclient"],
