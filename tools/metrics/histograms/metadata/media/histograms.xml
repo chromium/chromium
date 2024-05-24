@@ -4173,6 +4173,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaFoundationRenderer.D3D11CreateDeviceFailed"
+    enum="Hresult" expires_after="2024-10-01">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when the MediaFoundationRenderer fails to execute
+    D3D11CreateDevice.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaFoundationRenderer.ErrorReason"
     enum="MediaFoundationRendererErrorReason" expires_after="2025-02-27">
   <owner>xhwang@chromium.org</owner>
