@@ -313,6 +313,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WhatsNew.LoadEvent" enum="WhatsNewLoadEvent"
+    expires_after="2024-11-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records load events for the What's New page when a load event occurs. This
+    tracks how many times loading remote content is attempted, and whether it
+    succeeds, fails and results in an error page, fails and redirects to the New
+    Tab Page, fails and doesn't open the tab (for preloading), or fails and
+    closes the tab. Load is attempted when the page is first opened or on first
+    startup after updating to a new milestone. Success or failure will occur
+    when the network request completes. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="WhatsNew.LoadResponseCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-11-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code of the network request for the
+    remote content for the iframe in the What's New page. This request is
+    triggered when the What's New page is opened. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="WhatsNew.StartupType" enum="WhatsNewStartupType"
+    expires_after="2024-11-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records whether the What's New page should try to show, whether it is
+    overridden (e.g. by welcome) and whether the user is ineligible (e.g. due to
+    being in incognito mode). Recorded when startup tabs are being determined at
+    initialization. Desktop only.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
