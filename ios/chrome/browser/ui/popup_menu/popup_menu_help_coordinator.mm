@@ -209,7 +209,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   [self.overflowMenuBubblePresenter presentInViewController:menu
                                                        view:menu.view
                                                 anchorPoint:anchorPoint];
-  [self.overflowMenuBubblePresenter setArrowHidden:YES animated:NO];
 
   OverflowMenuAction* editActionsAction = [self.actionProvider
       actionForActionType:overflow_menu::ActionType::EditActions];

@@ -5359,7 +5359,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         New Incognito Tab
       </message>
       <message name="IDS_IOS_TOOLS_MENU_CUSTOMIZATION_IPH" desc="The text on an IPH for the iOS menu telling users they can customize the menu">
-        Swipe to learn how to customize your menu
+        Customize your menu
       </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_SEARCH" desc="The iOS menu item for opening a new tab and doing a new search in that tab." meaning="Do a new search in a new tab">
         New Search
