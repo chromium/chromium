@@ -35,10 +35,31 @@ void TapDismissButton() {
       performAction:grey_tap()];
 }
 
-void SwipeIPHInDirection(GREYDirection direction) {
+void SwipeIPHInDirection(GREYDirection direction, BOOL edge_swipe) {
   ScopedSynchronizationDisabler sync_disabler;
+
+  CGFloat xOriginStartPercentage = 0.5f;
+  CGFloat yOriginStartPercentage = 0.5f;
+  if (edge_swipe) {
+    switch (direction) {
+      case kGREYDirectionUp:
+        yOriginStartPercentage = 0.99f;
+        break;
+      case kGREYDirectionDown:
+        yOriginStartPercentage = 0;
+        break;
+      case kGREYDirectionLeft:
+        xOriginStartPercentage = 0.99f;
+        break;
+      case kGREYDirectionRight:
+        xOriginStartPercentage = 0;
+        break;
+    }
+  }
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kGestureInProductHelpViewBackgroundAXId)]
-      performAction:grey_swipeSlowInDirection(direction)];
+      performAction:grey_swipeFastInDirectionWithStartPoint(
+                        direction, xOriginStartPercentage,
+                        yOriginStartPercentage)];
 }

@@ -146,7 +146,7 @@ using ::chrome_test_util::TabGridSearchTabsButton;
         appearance,
         @"IPH doesn't show after the user taps to go to incognito twice.");
     // Swipe right.
-    SwipeIPHInDirection(kGREYDirectionRight);
+    SwipeIPHInDirection(kGREYDirectionRight, /*edge_swipe=*/NO);
   }
   [[EarlGrey selectElementWithMatcher:IncognitoTabGrid()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -163,7 +163,7 @@ using ::chrome_test_util::TabGridSearchTabsButton;
         appearance,
         @"IPH doesn't show after the user taps to go to incognito twice.");
     // Swipe left.
-    SwipeIPHInDirection(kGREYDirectionLeft);
+    SwipeIPHInDirection(kGREYDirectionLeft, /*edge_swipe=*/NO);
   }
   // The IPH should have auto-dismissed by now; verify that the user is NOT
   // viewing in incognito.

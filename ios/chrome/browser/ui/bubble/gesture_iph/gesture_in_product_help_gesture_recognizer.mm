@@ -126,14 +126,14 @@ UISwipeGestureRecognizerDirection GetOppositeDirection(
     state = UIGestureRecognizerStateBegan;
     _actualSwipeDirection = _expectedSwipeDirection;
   } else if (self.bidirectional &&
-             (180 - kMaxSwipeAngle < degrees && degrees < 180)) {
+             (180 - kMaxSwipeAngle < degrees && degrees <= 180)) {
     state = UIGestureRecognizerStateBegan;
     _actualSwipeDirection = GetOppositeDirection(_expectedSwipeDirection);
   }
 
   // If `[self isEdgeSwipe]`, determine whether the touch has started
   // from the edge.
-  if ([self isEdgeSwipe]) {
+  if (state != UIGestureRecognizerStateFailed && [self isEdgeSwipe]) {
     CGFloat startPointFromEdge = CGFLOAT_MAX;
     switch (_actualSwipeDirection) {
       case UISwipeGestureRecognizerDirectionUp:

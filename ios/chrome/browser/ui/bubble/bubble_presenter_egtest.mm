@@ -290,6 +290,39 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
       IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
 }
 
+// Tests that the pull-to-refresh IPH would be dismissed with the reason
+// `kSwipedAsInstructedByGestureIPH` when the user pulls down on the IPH.
+- (void)testPullToRefreshPerformAction {
+  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  // Trigger pull-to-refresh IPH.
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  const GURL destinationUrl2 =
+      self.testServer->GetURL("/chromium_logo_page.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+  [ChromeEarlGreyUI focusOmnibox];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  BOOL appearance = HasGestureIPHAppeared();
+  {
+    // Disable scoped synchronization to tap button.
+    ScopedSynchronizationDisabler sync_disabler;
+    GREYAssertTrue(
+        appearance,
+        @"Pull to refresh IPH did not appear after reloading from omnibox.");
+    // Swipe down.
+    SwipeIPHInDirection(kGREYDirectionDown, /*edge_swipe=*/NO);
+  }
+  appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(
+      appearance,
+      @"Pull to refresh IPH should be dismissed after swiping down.");
+  ExpectHistogramEmittedForIPHDismissal(
+      IPHDismissalReasonType::kSwipedAsInstructedByGestureIPH);
+}
+
 // Tests that bi-directional swipe IPH shows when both forward and backward are
 // navigatable, but only one-directional swipe shows when the user can only
 // navigate back OR forward. The bi-directional swipe IPH takes longer to
@@ -364,6 +397,36 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
       @"Swipe back/forward IPH still appeared after user opens a new tab.");
   ExpectHistogramEmittedForIPHDismissal(
       IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
+}
+
+// Tests that the back/forward swipe IPH would be dismissed with the reason
+// `kSwipedAsInstructedByGestureIPH` when the user swipes the page in the
+// correct direction.
+- (void)testSwipeBackForwardPerformAction {
+  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  const GURL destinationUrl2 =
+      self.testServer->GetURL("/chromium_logo_page.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+  BOOL appearance = HasGestureIPHAppeared();
+  {
+    // Disable scoped synchronization to tap button.
+    ScopedSynchronizationDisabler sync_disabler;
+    GREYAssertTrue(appearance,
+                   @"Swipe back/forward IPH did not appear after going back.");
+    // Swipe left on the right edge to go forward.
+    SwipeIPHInDirection(kGREYDirectionLeft, /*edge_swipe=*/YES);
+  }
+  appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(appearance, @"Swipe back/forward IPH should be dismissed "
+                              @"after swiping in the right direction.");
+  ExpectHistogramEmittedForIPHDismissal(
+      IPHDismissalReasonType::kSwipedAsInstructedByGestureIPH);
 }
 
 // Tests that the swipe back/forward IPH would NOT show if the page load fails.
