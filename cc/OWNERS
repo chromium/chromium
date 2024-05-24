@@ -9,6 +9,7 @@ set noparent
 # layers
 pdr@chromium.org
 wangxianzhu@chromium.org
+vmiura@chromium.org
 
 # mac-specific
 ccameron@chromium.org
@@ -18,6 +19,7 @@ sunnyps@chromium.org
 szager@chromium.org
 
 # tiles, tile management, and raster work
+vmiura@chromium.org
 vmpstr@chromium.org
 
 # texture uploading
@@ -60,5 +62,6 @@ fmalita@chromium.org
 blundell@chromium.org
 
 # general
+vmiura@chromium.org
 vmpstr@chromium.org
 khushalsagar@chromium.org
