@@ -558,9 +558,7 @@ class HashRealTimeServiceTest : public PlatformTest {
       int expected_prefix_count,
       int expected_network_result,
       const std::string& expected_network_result_suffix,
-      HashRealTimeService::OperationOutcome expected_operation_outcome,
-      std::optional<HashRealTimeService::BackoffReportErrorReason>
-          expected_backoff_error_reason) {
+      HashRealTimeService::OperationOutcome expected_operation_outcome) {
     EXPECT_CALL(
         *webui_delegate_,
         AddToHPRTLookupPings(testing::NotNull(), kTestRelayUrl, kOhttpKey))
@@ -603,16 +601,6 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_ohttp_client_destructed_early=*/false);
     CheckNoPostSuccessfulRequestMetrics();
     CheckOperationOutcomeMetric(expected_operation_outcome);
-    if (expected_backoff_error_reason.has_value()) {
-      histogram_tester_->ExpectUniqueSample(
-          /*name=*/"SafeBrowsing.HPRT.BackoffReportErrorReason",
-          /*sample=*/expected_backoff_error_reason.value(),
-          /*expected_bucket_count=*/1);
-    } else {
-      histogram_tester_->ExpectTotalCount(
-          /*name=*/"SafeBrowsing.HPRT.BackoffReportErrorReason",
-          /*expected_count=*/0);
-    }
 
     ResetMetrics();
 
@@ -1169,9 +1157,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetError) {
       /*expected_network_result=*/net::ERR_FAILED,
       /*expected_network_result_suffix=*/"NetErrorResult",
       /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kNetworkError,
-      /*expected_backoff_error_reason=*/
-      HashRealTimeService::BackoffReportErrorReason::kResponseError);
+      HashRealTimeService::OperationOutcome::kNetworkError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_RetriableNetError) {
   GURL url = GURL("https://example.test");
@@ -1185,8 +1171,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_RetriableNetError) {
       /*expected_network_result=*/net::ERR_INTERNET_DISCONNECTED,
       /*expected_network_result_suffix=*/"NetErrorResult",
       /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kRetriableError,
-      /*expected_backoff_error_reason=*/std::nullopt);
+      HashRealTimeService::OperationOutcome::kRetriableError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorNameNotResolved) {
   GURL url = GURL("https://example.test");
@@ -1200,9 +1185,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorNameNotResolved) {
       /*expected_network_result=*/net::ERR_NAME_NOT_RESOLVED,
       /*expected_network_result_suffix=*/"NetErrorResult",
       /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kNetworkError,
-      /*expected_backoff_error_reason=*/
-      HashRealTimeService::BackoffReportErrorReason::kResponseError);
+      HashRealTimeService::OperationOutcome::kNetworkError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorConnectionClosed) {
   GURL url = GURL("https://example.test");
@@ -1216,9 +1199,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorConnectionClosed) {
       /*expected_network_result=*/net::ERR_CONNECTION_CLOSED,
       /*expected_network_result_suffix=*/"NetErrorResult",
       /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kNetworkError,
-      /*expected_backoff_error_reason=*/
-      HashRealTimeService::BackoffReportErrorReason::kResponseError);
+      HashRealTimeService::OperationOutcome::kNetworkError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
   GURL url = GURL("https://example.test");
@@ -1232,9 +1213,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
       /*expected_network_result=*/0,
       /*expected_network_result_suffix=*/"NetErrorResult",
       /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kHttpError,
-      /*expected_backoff_error_reason=*/
-      HashRealTimeService::BackoffReportErrorReason::kResponseError);
+      HashRealTimeService::OperationOutcome::kHttpError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_OuterResponseCodeError) {
   GURL url = GURL("https://example.test");
@@ -1248,9 +1227,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_OuterResponseCodeError) {
       /*expected_network_result=*/net::HTTP_NOT_FOUND,
       /*expected_network_result_suffix=*/"OuterResponseResult",
       /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kHttpError,
-      /*expected_backoff_error_reason=*/
-      HashRealTimeService::BackoffReportErrorReason::kResponseError);
+      HashRealTimeService::OperationOutcome::kHttpError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_InnerResponseCodeError) {
   GURL url = GURL("https://example.test");
@@ -1263,9 +1240,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_InnerResponseCodeError) {
       /*expected_network_result=*/net::HTTP_UNAUTHORIZED,
       /*expected_network_result_suffix=*/"InnerResponseResult",
       /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kHttpError,
-      /*expected_backoff_error_reason=*/
-      HashRealTimeService::BackoffReportErrorReason::kResponseError);
+      HashRealTimeService::OperationOutcome::kHttpError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
   GURL url = GURL("https://example.test");
@@ -1277,9 +1252,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_network_result_suffix=*/"InnerResponseResult",
       /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kParseError,
-      /*expected_backoff_error_reason=*/
-      HashRealTimeService::BackoffReportErrorReason::kResponseError);
+      HashRealTimeService::OperationOutcome::kParseError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
   GURL url = GURL("https://example.test");
@@ -1294,9 +1267,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_network_result_suffix=*/"InnerResponseResult",
       /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kIncorrectFullHashLengthError,
-      /*expected_backoff_error_reason=*/
-      HashRealTimeService::BackoffReportErrorReason::kResponseError);
+      HashRealTimeService::OperationOutcome::kIncorrectFullHashLengthError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
   GURL url = GURL("https://example.test");
@@ -1313,9 +1284,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_network_result_suffix=*/"InnerResponseResult",
       /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kNoCacheDurationError,
-      /*expected_backoff_error_reason=*/
-      HashRealTimeService::BackoffReportErrorReason::kResponseError);
+      HashRealTimeService::OperationOutcome::kNoCacheDurationError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingOhttpKey) {
   GURL url = GURL("https://example.test");
@@ -1334,10 +1303,6 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingOhttpKey) {
   CheckNoNetworkRequestMetric();
   CheckOperationOutcomeMetric(
       HashRealTimeService::OperationOutcome::kOhttpKeyFetchFailed);
-  histogram_tester_->ExpectUniqueSample(
-      /*name=*/"SafeBrowsing.HPRT.BackoffReportErrorReason",
-      /*sample=*/HashRealTimeService::BackoffReportErrorReason::kInvalidKey,
-      /*expected_bucket_count=*/1);
   // If the OHTTP key is missing, lookup should fail before making a request to
   // network_context_.
   EXPECT_EQ(network_context_.total_requests(), 0u);
@@ -1664,7 +1629,7 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_RetriableError) {
   CheckEnteringBackoffMetric(/*expected_network_result=*/net::ERR_FAILED);
 }
 
-TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_MissingOhttpKey) {
+TEST_F(HashRealTimeServiceTest, TestBackoffModeNotSet_MissingOhttpKey) {
   GURL url = GURL("https://example.test");
   ohttp_key_service_->SetOhttpKey(std::nullopt);
   base::MockCallback<HPRTLookupResponseCallback> response_callback;
@@ -1680,8 +1645,8 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_MissingOhttpKey) {
                         base::SequencedTaskRunner::GetCurrentDefault());
   task_environment_.RunUntilIdle();
 
-  // Key related failure should also affect the backoff status.
-  EXPECT_EQ(service_->backoff_operator_->IsInBackoffMode(), true);
+  // Key related failure should not affect the backoff status.
+  EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
   CheckEnteringBackoffMetric(/*expected_network_result=*/std::nullopt);
 }
 

@@ -88,11 +88,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="NOT_SENT_UNCONSENTED"/>
 </enum>
 
-<enum name="BackoffReportErrorReason">
-  <int value="0" label="InvalidKey"/>
-  <int value="1" label="ResponseError"/>
-</enum>
-
 <enum name="BooleanBackoff">
   <int value="0" label="No backoff"/>
   <int value="1" label="Backoff mode enabled"/>

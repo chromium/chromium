@@ -350,9 +350,6 @@ void HashRealTimeService::OnGetOhttpKey(
     std::optional<std::string> key) {
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.HasOhttpKey", key.has_value());
   if (!key.has_value()) {
-    backoff_operator_->ReportError();
-    base::UmaHistogramEnumeration("SafeBrowsing.HPRT.BackoffReportErrorReason",
-                                  BackoffReportErrorReason::kInvalidKey);
     lookup_completer->CompleteLookup(/*is_lookup_successful=*/false,
                                      /*sb_threat_type=*/std::nullopt,
                                      OperationOutcome::kOhttpKeyFetchFailed);
@@ -511,8 +508,6 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
           "SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff", net_error,
           response_code);
     }
-    base::UmaHistogramEnumeration("SafeBrowsing.HPRT.BackoffReportErrorReason",
-                                  BackoffReportErrorReason::kResponseError);
   }
   return response;
 }

@@ -129,7 +129,7 @@ class HashRealTimeService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeSet_RetriableError);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
-                           TestBackoffModeSet_MissingOhttpKey);
+                           TestBackoffModeNotSet_MissingOhttpKey);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeRespected_FullyCached);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
@@ -170,15 +170,6 @@ class HashRealTimeService : public KeyedService {
     // [Deprecated] There is no OHTTP key service.
     kDeprecatedNoOhttpKeyService = 11,
     kMaxValue = kDeprecatedNoOhttpKeyService,
-  };
-
-  // The reason why ReportError is called on backoff operator.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class BackoffReportErrorReason {
-    kInvalidKey = 0,
-    kResponseError = 1,
-    kMaxValue = kResponseError,
   };
 
   // Used only for the return type of the function |DetermineSBThreatInfo|.
