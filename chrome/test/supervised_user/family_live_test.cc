@@ -23,8 +23,12 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "chrome/test/supervised_user/test_state_seeded_observer.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -50,6 +54,37 @@ std::string GetFamilyMemberIdentifier(FamilyIdentifier family_identifier,
   return family_identifier.value() + "_" + std::string(member_identifier);
 }
 
+bool HasAuthError(syncer::SyncServiceImpl* service) {
+  return service->GetAuthError().state() ==
+             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS ||
+         service->GetAuthError().state() ==
+             GoogleServiceAuthError::SERVICE_ERROR ||
+         service->GetAuthError().state() ==
+             GoogleServiceAuthError::REQUEST_CANCELED;
+}
+
+class SyncSetupChecker : public SingleClientStatusChangeChecker {
+ public:
+  explicit SyncSetupChecker(syncer::SyncServiceImpl* service)
+      : SingleClientStatusChangeChecker(service) {}
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for sync setup to complete";
+    if (service()->GetTransportState() ==
+            syncer::SyncService::TransportState::ACTIVE &&
+        service()->IsSyncFeatureActive()) {
+      return true;
+    }
+    // Sync is blocked by an auth error.
+    if (HasAuthError(service())) {
+      return true;
+    }
+
+    // Still waiting on sync setup.
+    return false;
+  }
+};
+
 }  // namespace
 
 FamilyLiveTest::FamilyLiveTest(FamilyIdentifier family_identifier)
@@ -67,6 +102,14 @@ FamilyLiveTest::~FamilyLiveTest() = default;
       2, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   member.browser()->tab_strip_model()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+
+  // After turning the sync on, wait until this is fully initialized.
+  syncer::SyncServiceImpl* service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+          member.browser()->profile());
+  CHECK(SyncSetupChecker(service).Wait()) << "SyncSetupChecker timed out.";
+  CHECK(InvalidationsStatusChecker(service, /*expected_status=*/true).Wait())
+      << "Invalidation checker timed out.";
 }
 
 void FamilyLiveTest::SetUp() {
