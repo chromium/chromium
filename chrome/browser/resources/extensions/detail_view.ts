@@ -109,6 +109,13 @@ export class ExtensionsDetailViewElement extends
         observer: 'onShowSafetyCheckChanged_',
       },
 
+      /** Whether the mv2 deprecation message warning is shown. */
+      showMv2DeprecationMessage_: {
+        type: Boolean,
+        computed: 'computeShowMv2DeprecationMessage_(' +
+            'data.isAffectedByMV2Deprecation)',
+      },
+
       /** Whether the extensions blocklist text is shown. */
       showBlocklistText_: {
         type: Boolean,
@@ -138,6 +145,7 @@ export class ExtensionsDetailViewElement extends
   showActivityLog: boolean;
   fromActivityLog: boolean;
   private showSafetyCheck_: boolean;
+  private showMv2DeprecationMessage_: boolean;
   private showBlocklistText_: boolean;
   private size_: string;
   private sortedViews_: chrome.developerPrivate.ExtensionView[];
@@ -452,6 +460,14 @@ export class ExtensionsDetailViewElement extends
     return !!(
         this.data.safetyCheckText && this.data.safetyCheckText.detailString &&
         this.data.acknowledgeSafetyCheckWarning !== true);
+  }
+
+  /**
+   * Returns whether the mv2 deprecation message warning should be displayed.
+   */
+  private computeShowMv2DeprecationMessage_(): boolean {
+    return loadTimeData.getBoolean('MV2DeprecationPanelEnabled') &&
+        this.data.isAffectedByMV2Deprecation;
   }
 
   private onShowSafetyCheckChanged_() {

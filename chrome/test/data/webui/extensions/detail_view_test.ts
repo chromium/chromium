@@ -685,6 +685,25 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(safetyWarningText!.textContent!.includes('Test Message'));
   });
 
+  test('Mv2DeprecationMessageWarning_Disabled', function() {
+    // Warning is hidden if feature is disabled.
+    loadTimeData.overrideValues({MV2DeprecationPanelEnabled: false});
+    testVisible(item, '#mv2DeprecationMessage', false);
+  });
+
+  test('Mv2DeprecationMessageWarning_Enabled', function() {
+    // Warning is hidden if feature is enabled but extension is not affected by
+    // the MV2 deprecation.
+    loadTimeData.overrideValues({MV2DeprecationPanelEnabled: true});
+    testVisible(item, '#mv2DeprecationMessage', false);
+
+    // Warning is visible if feature is enabled and extension is affected by the
+    // MV2 deprecation.
+    item.set('data.isAffectedByMV2Deprecation', true);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', true);
+  });
+
   test('PinnedToToolbar', async function() {
     assertFalse(
         isVisible(item.shadowRoot!.querySelector<ExtensionsToggleRowElement>(

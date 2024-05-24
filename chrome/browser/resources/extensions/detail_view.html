@@ -47,14 +47,15 @@
     padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
   }
 
-  .safety-check-warning-container {
+  .message-container {
     align-items: center;
     background-color: var(--google-grey-50);
     display: flex;
     padding: 15px;
+    margin-top: 2px;
   }
 
-  .safety-check-icon {
+  .message-icon {
     align-items: center;
     align-self: flex-start;
     display: flex;
@@ -63,16 +64,20 @@
     fill: var(--panel-icon-color);
   }
 
-  .safety-check-warning-container iron-icon {
+  .message-container iron-icon {
     height: var(--cr-icon-size);
     padding: 6px;
     width: var(--cr-icon-size);
   }
 
+  .message-text {
+    flex: 1;
+    margin-inline-start: 15px;
+  }
+
   @media (prefers-color-scheme: dark) {
-    .safety-check-warning-container {
-      /* Google Grey 911 according to Extensions Safety Check mock. */
-      background-color: rgb(53, 54, 58);
+    .message-container {
+      background-color: var(--google-grey-800);
     }
   }
 
@@ -213,12 +218,13 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         </cr-icon-button>
       </template>
     </div>
-    <div class="safety-check-warning-container" id="safetyCheckWarningContainer"
+
+    <div id="safetyCheckWarningContainer" class="message-container"
         hidden$="[[!showSafetyCheck_]]">
       <iron-icon aria-hidden="true" icon="extensions-icons:my_extensions"
-          class="safety-check-icon">
+          class="message-icon">
       </iron-icon>
-      <div class="safety-check-wrapper">
+      <div class="message-text">
         <span class="section-title" aria-level="2">
           $i18n{safetyCheckExtensionsDetailPagePrimaryLabel}
         </span>
@@ -233,6 +239,25 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         $i18n{remove}
       </cr-button>
     </div>
+
+    <div id="mv2DeprecationMessage" class="message-container"
+        hidden$="[[!showMv2DeprecationMessage_]]">
+      <iron-icon aria-hidden="true" icon="extensions-icons:my_extensions"
+          class="message-icon">
+      </iron-icon>
+      <div class="message-text">
+        <span class="section-title" aria-level="2">
+          $i18n{mv2DeprecationMessageWarningHeader}
+        </span>
+        <div class="section-content">
+          $i18nRaw{mv2DeprecationMessageWarningSubtitle}
+        </div>
+      </div>
+      <cr-button class="find-alternative-button">
+        $i18n{mv2DeprecationPanelFindAlternativeButton}
+      </cr-button>
+    </div>
+
     <div class="cr-row first control-line" id="enable-section">
       <span class$="[[computeEnabledStyle_(data.state)]]">
         [[computeEnabledText_(data.state, '$i18nPolymer{itemOn}',
