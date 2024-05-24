@@ -41,6 +41,10 @@ class ParcelNumberTracker {
 
   // All carriers that have been detected (by name) so far on this page.
   NSMutableSet<NSNumber*>* parcel_carriers_;
+
+  // Id (0) representing textual data found that is as good as having literal
+  // carrier identity. For example "Order Number", "Tracking Number", etc.
+  NSNumber* any_carrier_id_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_ANNOTATIONS_PARCEL_NUMBER_TRACKER_H_

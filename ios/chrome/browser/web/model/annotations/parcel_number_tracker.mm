@@ -30,6 +30,7 @@
 ParcelNumberTracker::ParcelNumberTracker() {
   parcel_tracking_numbers_ = [NSMutableDictionary dictionary];
   parcel_carriers_ = [NSMutableSet set];
+  any_carrier_id_ = [[NSNumber alloc] initWithInt:0];
 }
 
 ParcelNumberTracker::~ParcelNumberTracker() {
@@ -85,7 +86,8 @@ bool ParcelNumberTracker::HasNewTrackingNumbers() {
         [parcel_tracking_numbers_ objectForKey:key];
     if (base::FeatureList::IsEnabled(
             web::features::kEnableNewParcelTrackingNumberDetection) &&
-        ![parcel_carriers_ containsObject:key]) {
+        ![parcel_carriers_ containsObject:key] &&
+        ![parcel_carriers_ containsObject:any_carrier_id_]) {
       continue;
     }
     if (parcel.trackingNumbers.count) {
@@ -106,7 +108,8 @@ ParcelNumberTracker::GetNewTrackingNumbers() {
         [parcel_tracking_numbers_ objectForKey:key];
     if (base::FeatureList::IsEnabled(
             web::features::kEnableNewParcelTrackingNumberDetection) &&
-        ![parcel_carriers_ containsObject:key]) {
+        ![parcel_carriers_ containsObject:key] &&
+        ![parcel_carriers_ containsObject:any_carrier_id_]) {
       continue;
     }
     [trackingNumbers addObjectsFromArray:parcel.trackingNumbers];

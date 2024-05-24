@@ -207,3 +207,48 @@ TEST_F(ParcelNumberTrackerTest, TestImprovedCarrierAndNumberDetect) {
   EXPECT_EQ(new_tracking_numbers[1].carrierNumber, @"hijklmn");
   EXPECT_FALSE(tracker_.HasNewTrackingNumbers());
 }
+
+TEST_F(ParcelNumberTrackerTest, TestAnyCarrierAndNumberDetect) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {web::features::kEnableNewParcelTrackingNumberDetection}, {});
+
+  std::vector<web::TextAnnotation> results;
+  NSRange range = NSMakeRange(0, 3);
+
+  EXPECT_FALSE(tracker_.HasNewTrackingNumbers());
+
+  // Add a number for carrier 4.
+  NSTextCheckingResult* match =
+      [CustomTextCheckingResult parcelCheckingResultWithRange:range
+                                                      carrier:4
+                                                carrierNumber:@"123456789"];
+  results.emplace_back(web::ConvertMatchToAnnotation(@"123456789", range, match,
+                                                     @"TRACKING_NUMBER"));
+  tracker_.ProcessAnnotations(results);
+
+  // Expect that the tracking number has been removed.
+  EXPECT_EQ(0ul, results.size());
+  // and that no matching tracking numbers are available.
+  EXPECT_FALSE(tracker_.HasNewTrackingNumbers());
+
+  // Add an any-carrier carrier.
+  match = [CustomTextCheckingResult carrierCheckingResultWithRange:range
+                                                           carrier:0];
+  results.emplace_back(web::ConvertMatchToAnnotation(@"Tracking Number", range,
+                                                     match, @"CARRIER"));
+  tracker_.ProcessAnnotations(results);
+
+  // Expect that the tracking number is available.
+  EXPECT_TRUE(tracker_.HasNewTrackingNumbers());
+  NSArray<CustomTextCheckingResult*>* new_tracking_numbers =
+      tracker_.GetNewTrackingNumbers();
+  EXPECT_EQ(1ul, new_tracking_numbers.count);
+  EXPECT_EQ(new_tracking_numbers[0].carrier, 4);
+  EXPECT_EQ(new_tracking_numbers[0].carrierNumber, @"123456789");
+
+  // Expect the tracking number has been removed.
+  EXPECT_FALSE(tracker_.HasNewTrackingNumbers());
+  new_tracking_numbers = tracker_.GetNewTrackingNumbers();
+  EXPECT_EQ(0ul, new_tracking_numbers.count);
+}
