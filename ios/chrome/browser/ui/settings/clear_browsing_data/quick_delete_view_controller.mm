@@ -9,7 +9,9 @@
 #import "base/check.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_mutator.h"
@@ -38,22 +40,34 @@ constexpr CGFloat kTrashIconContainerViewBottomPadding = 18;
 // Top padding for the trash icon view.
 constexpr CGFloat kTrashIconContainerViewTopPadding = 33;
 
+// TableView's header and footer section heights.
+constexpr CGFloat kSectionHeaderHeight = 10;
+constexpr CGFloat kSectionFooterHeight = 0;
+
+// TableView's corner radius size.
+constexpr CGFloat kTableViewCornerRadius = 10;
+
 // Section identifiers in Quick Delete's table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierTimeRange,
+  SectionIdentifierTimeRange = kSectionIdentifierEnumZero,
+  SectionIdentifierBrowsingData,
 };
 
 // Item identifiers in Quick Delete's table view.
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
-  ItemIdentifierTimeRange,
+  ItemIdentifierTimeRange = kItemTypeEnumZero,
+  ItemIdentifierBrowsingData,
 };
 
 }  // namespace
 
-@interface QuickDeleteViewController () <ConfirmationAlertActionHandler> {
+@interface QuickDeleteViewController () <ConfirmationAlertActionHandler,
+                                         UITableViewDelegate> {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   UITableView* _tableView;
   browsing_data::TimePeriod _timeRange;
+  NSString* _browsingDataSummary;
+  NSLayoutConstraint* _tableViewHeightConstraint;
 }
 @end
 
@@ -67,8 +81,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)viewDidLoad {
-  // TODO(crbug.com/335387869): Add browsing data row.
+  _tableView = [self createTableView];
+  _dataSource = [self createAndFillDataSource];
+  _tableView.dataSource = _dataSource;
 
+  self.view.accessibilityViewIsModal = YES;
+
+  // Set the properties read by the super when constructing the views in
+  // `-[ConfirmationAlertViewController viewDidLoad]`.
   self.aboveTitleView = [self trashIconView];
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.titleString = l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
@@ -76,73 +96,48 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_CANCEL);
 
+  self.underTitleView = _tableView;
+
+  self.showsVerticalScrollIndicator = NO;
+  self.showDismissBarButton = NO;
+  self.topAlignedLayout = YES;
+  self.customScrollViewBottomInsets = 0;
   self.actionHandler = self;
 
   [super viewDidLoad];
 
+  [self displayGradientView:NO];
+
+  // Configure the color of the primary button to red, as the default colour is
+  // blue.
   UIButtonConfiguration* buttonConfiguration =
       self.primaryActionButton.configuration;
   buttonConfiguration.background.backgroundColor =
       [UIColor colorNamed:kRedColor];
   self.primaryActionButton.configuration = buttonConfiguration;
 
-  // TODO(crbug.com/340793372): The parent of this class,
-  // TableViewBottomSheetViewController, has a customisation that selects the
-  // first row by default. We should be able to disable this behaviour instead
-  // of deselecting the row here..
-  [_tableView deselectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                            animated:NO];
+  // Assign the table view's anchors now that it is in the same hierarchy as the
+  // top view and that the content has been loaded.
+  _tableViewHeightConstraint = [_tableView.heightAnchor
+      constraintEqualToConstant:_tableView.contentSize.height];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_tableView.widthAnchor
+        constraintEqualToAnchor:self.primaryActionButton.widthAnchor],
+    _tableViewHeightConstraint
+  ]];
 }
 
-#pragma mark - TableViewBottomSheetViewController
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
 
-- (UITableView*)createTableView {
-  _tableView = [super createTableView];
-  _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+  // Update the table view height since the browsing data row with the detail
+  // text is bigger then the standard row height.
+  _tableViewHeightConstraint.constant = _tableView.contentSize.height;
 
-  __weak __typeof(self) weakSelf = self;
-  _dataSource = [[UITableViewDiffableDataSource alloc]
-      initWithTableView:_tableView
-           cellProvider:^UITableViewCell*(UITableView* tableView,
-                                          NSIndexPath* indexPath,
-                                          NSNumber* itemIdentifier) {
-             return
-                 [weakSelf cellForTableView:tableView
-                                  indexPath:indexPath
-                             itemIdentifier:static_cast<ItemIdentifier>(
-                                                itemIdentifier.integerValue)];
-           }];
-
-  RegisterTableViewCell<TableViewPopUpCell>(_tableView);
-
-  NSDiffableDataSourceSnapshot* snapshot =
-      [[NSDiffableDataSourceSnapshot alloc] init];
-  [snapshot appendSectionsWithIdentifiers:@[ @(SectionIdentifierTimeRange) ]];
-  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierTimeRange) ]
-             intoSectionWithIdentifier:@(SectionIdentifierTimeRange)];
-
-  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
-  _tableView.dataSource = _dataSource;
-
-  return _tableView;
-}
-
-- (NSUInteger)rowCount {
-  // TODO(crbug.com/335387869): Add row for the browsing data.
-  return 1;
-}
-
-- (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
-  UITableViewCell* cell = [[UITableViewCell alloc] init];
-  // Setup UI as a real cell for an accurate height calculation.
-  CGFloat tableWidth = [self tableViewWidth];
-  // TODO(crbug.com/335387869): Add case for the browsing data row.
-  cell = [self
-      cellForTableView:_tableView
-             indexPath:[NSIndexPath indexPathForRow:ItemIdentifierTimeRange
-                                          inSection:SectionIdentifierTimeRange]
-        itemIdentifier:ItemIdentifierTimeRange];
-  return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
+  // Update the height of the bottom sheet since we might have a different
+  // height for the table view after all the rows have been loaded.
+  [self setUpBottomSheetDetents];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -173,32 +168,82 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // TODO(crbug.com/335387869): Deal with tap on Browing Data row.
 }
 
-- (void)tableView:(UITableView*)tableView
-    didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
-  // no-op, overriding parent method since we do not want to add a checkmark
-  // when the user selects a row.
-  // TODO(crbug.com/340793372): Remove this method when customizing
-  // TableViewBottomSheetViewController to allow disabling showing checkmarks
-  // when a row is taped.
-}
-
-- (void)tableView:(UITableView*)tableView
-      willDisplayCell:(UITableViewCell*)cell
-    forRowAtIndexPath:(NSIndexPath*)indexPath {
-  // no-op, overriding parent method since we want selection to be set on cell
-  // construction.
-  // TODO(crbug.com/340793372): Remove this method when customizing
-  // TableViewBottomSheetViewController to allow disabling showing checkmarks
-  // when a row is taped.
-}
-
 #pragma mark - BrowsingDataConsumer
 
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange {
   _timeRange = timeRange;
 }
 
+- (void)setBrowsingDataSummary:(NSString*)summary {
+  _browsingDataSummary = summary;
+}
+
 #pragma mark - Private
+
+// Returns `_tableView` used to show the time range and browsing data rows.
+- (UITableView*)createTableView {
+  UITableView* tableView =
+      [[UITableView alloc] initWithFrame:CGRectZero
+                                   style:ChromeTableViewStyle()];
+  tableView.layer.cornerRadius = kTableViewCornerRadius;
+  tableView.sectionHeaderHeight = kSectionHeaderHeight;
+  tableView.sectionFooterHeight = kSectionFooterHeight;
+  tableView.scrollEnabled = NO;
+  tableView.showsVerticalScrollIndicator = NO;
+  tableView.delegate = self;
+  tableView.userInteractionEnabled = YES;
+
+  tableView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+  tableView.backgroundColor = UIColor.clearColor;
+
+  // Remove extra space from UITableViewWrapperView.
+  tableView.directionalLayoutMargins =
+      NSDirectionalEdgeInsetsMake(0, CGFLOAT_MIN, 0, CGFLOAT_MIN);
+  tableView.tableHeaderView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+  tableView.tableFooterView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+
+  return tableView;
+}
+
+// Returns `_tableView`'s data source with the time range and browsing data rows
+// in different sections.
+- (UITableViewDiffableDataSource<NSNumber*, NSNumber*>*)
+    createAndFillDataSource {
+  __weak __typeof(self) weakSelf = self;
+  UITableViewDiffableDataSource* dataSource =
+      [[UITableViewDiffableDataSource alloc]
+          initWithTableView:_tableView
+               cellProvider:^UITableViewCell*(UITableView* tableView,
+                                              NSIndexPath* indexPath,
+                                              NSNumber* itemIdentifier) {
+                 return [weakSelf
+                     cellForTableView:tableView
+                            indexPath:indexPath
+                       itemIdentifier:static_cast<ItemIdentifier>(
+                                          itemIdentifier.integerValue)];
+               }];
+
+  RegisterTableViewCell<TableViewPopUpCell>(_tableView);
+  RegisterTableViewCell<TableViewDetailTextCell>(_tableView);
+
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+  [snapshot appendSectionsWithIdentifiers:@[
+    @(SectionIdentifierTimeRange), @(SectionIdentifierBrowsingData)
+  ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierTimeRange) ]
+             intoSectionWithIdentifier:@(SectionIdentifierTimeRange)];
+  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierBrowsingData) ]
+             intoSectionWithIdentifier:@(SectionIdentifierBrowsingData)];
+
+  [dataSource applySnapshot:snapshot animatingDifferences:NO];
+
+  return dataSource;
+}
 
 // Returns a cell for the specified `indexPath`.
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
@@ -215,6 +260,22 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       timeRangeCell.userInteractionEnabled = YES;
 
       return timeRangeCell;
+    }
+    case ItemIdentifierBrowsingData: {
+      TableViewDetailTextCell* browsingDataCell =
+          DequeueTableViewCell<TableViewDetailTextCell>(tableView);
+      browsingDataCell.textLabel.text =
+          l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_TITLE);
+      browsingDataCell.detailTextLabel.text = _browsingDataSummary;
+      browsingDataCell.detailTextLabel.textColor =
+          [UIColor colorNamed:kTextSecondaryColor];
+      browsingDataCell.allowMultilineDetailText = YES;
+      browsingDataCell.accessoryType =
+          UITableViewCellAccessoryDisclosureIndicator;
+      browsingDataCell.userInteractionEnabled = YES;
+      browsingDataCell.backgroundColor =
+          [UIColor colorNamed:kSecondaryBackgroundColor];
+      return browsingDataCell;
     }
   }
   NOTREACHED_NORETURN();

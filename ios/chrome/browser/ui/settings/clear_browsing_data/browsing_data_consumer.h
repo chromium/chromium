@@ -16,6 +16,9 @@ enum class TimePeriod;
 // Sets the ViewController with initial value for the deletion `timeRange`.
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange;
 
+// Sets the ViewController with the summary for the browsing data.
+- (void)setBrowsingDataSummary:(NSString*)summary;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_BROWSING_DATA_CONSUMER_H_
