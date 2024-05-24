@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -26,6 +27,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.ui.base.TestActivity;
@@ -34,6 +38,7 @@ import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
 public class PlusAddressCreationBottomSheetContentTest {
     private static final long NATIVE_PLUS_ADDRESS_CREATION_VIEW = 100L;
     private static final String MODAL_TITLE = "lorem ipsum title";
@@ -237,5 +242,13 @@ public class PlusAddressCreationBottomSheetContentTest {
         Assert.assertEquals(
                 mBottomSheetContent.getSheetClosedAccessibilityStringId(),
                 R.string.plus_address_bottom_sheet_content_description);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
+    public void testUiRedesignEnabled_noCancelButton() {
+        assertNull(
+                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button));
     }
 }

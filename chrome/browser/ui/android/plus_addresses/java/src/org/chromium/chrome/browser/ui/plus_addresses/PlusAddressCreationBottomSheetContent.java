@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -113,8 +114,12 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
                 });
 
         Button plusAddressCancelButton = mContentView.findViewById(R.id.plus_address_cancel_button);
-        plusAddressCancelButton.setText(plusAddressModalCancelText);
-        plusAddressCancelButton.setOnClickListener((View _view) -> mDelegate.onCanceled());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
+            mContentView.removeView(plusAddressCancelButton);
+        } else {
+            plusAddressCancelButton.setText(plusAddressModalCancelText);
+            plusAddressCancelButton.setOnClickListener((View _view) -> mDelegate.onCanceled());
+        }
     }
 
     public void setProposedPlusAddress(String proposedPlusAddress) {

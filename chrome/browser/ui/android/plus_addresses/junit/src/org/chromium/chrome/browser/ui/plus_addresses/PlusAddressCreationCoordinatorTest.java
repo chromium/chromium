@@ -21,6 +21,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -31,6 +33,7 @@ import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
 public class PlusAddressCreationCoordinatorTest {
     private static final String MODAL_TITLE = "lorem ipsum title";
     private static final String MODAL_PLUS_ADDRESS_DESCRIPTION =
