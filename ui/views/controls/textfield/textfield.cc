@@ -1066,9 +1066,22 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       (ax_value_used_to_compute_offsets_ != ax_value ||
        needs_ax_text_offsets_update_)) {
     GetViewAccessibility().ClearTextOffsets();
+
+    // TODO(ViewsAX): When this function is only used to initialize the cache
+    // with these values, refactor this part to not rely on the cache as it will
+    // cause a chicken and egg situation. For now, this is necessary to keep the
+    // text offsets up to date.
     RefreshAccessibleTextOffsets();
     ax_value_used_to_compute_offsets_ = ax_value;
     needs_ax_text_offsets_update_ = false;
+
+    node_data->AddIntListAttribute(
+        ax::mojom::IntListAttribute::kCharacterOffsets,
+        GetViewAccessibility().GetCharacterOffsets());
+    node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                   GetViewAccessibility().GetWordStarts());
+    node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                                   GetViewAccessibility().GetWordEnds());
   }
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }

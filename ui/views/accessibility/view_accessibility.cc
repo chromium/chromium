@@ -399,12 +399,25 @@ void ViewAccessibility::SetCharacterOffsets(
                             offsets);
 }
 
+const std::vector<int32_t>& ViewAccessibility::GetCharacterOffsets() const {
+  return data_.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kCharacterOffsets);
+}
+
 void ViewAccessibility::SetWordStarts(const std::vector<int32_t>& offsets) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts, offsets);
 }
 
+const std::vector<int32_t>& ViewAccessibility::GetWordStarts() const {
+  return data_.GetIntListAttribute(ax::mojom::IntListAttribute::kWordStarts);
+}
+
 void ViewAccessibility::SetWordEnds(const std::vector<int32_t>& offsets) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, offsets);
+}
+
+const std::vector<int32_t>& ViewAccessibility::GetWordEnds() const {
+  return data_.GetIntListAttribute(ax::mojom::IntListAttribute::kWordEnds);
 }
 
 void ViewAccessibility::ClearTextOffsets() {

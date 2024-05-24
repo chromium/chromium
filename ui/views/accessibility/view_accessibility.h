@@ -148,9 +148,15 @@ class VIEWS_EXPORT ViewAccessibility {
 
   void SetCharacterOffsets(const std::vector<int32_t>& offsets);
 
+  const std::vector<int32_t>& GetCharacterOffsets() const;
+
   void SetWordStarts(const std::vector<int32_t>& offsets);
 
+  const std::vector<int32_t>& GetWordStarts() const;
+
   void SetWordEnds(const std::vector<int32_t>& offsets);
+
+  const std::vector<int32_t>& GetWordEnds() const;
 
   void ClearTextOffsets();
 
