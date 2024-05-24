@@ -4234,7 +4234,7 @@
     },
     {
       name: "ViewTransitionOnNavigationForIframes",
-      status: "test",
+      status: "stable",
     },
     {
       // https://chromestatus.com/feature/5089552511533056
