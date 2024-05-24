@@ -429,13 +429,17 @@ void AddAppParentalControlsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_APP_PARENTAL_CONTROLS_CONFIRM_PIN_TITLE},
       {"appParentalControlsForgotPinLinkName",
        IDS_SETTINGS_APP_PARENTAL_CONTROLS_FORGOT_PIN_LINK_NAME},
+      {"appParentalControlsNoAppsText",
+       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_NO_APPS_FOUND_TEXT},
       {"appParentalControlsPinMismatchErrorText",
        IDS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_MISMATCH_ERROR_TEXT},
-      {"appParentalControlsTitle", IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_LABEL},
-      {"appParentalControlsSubtitle",
-       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL},
+      {"appParentalControlsSearchPrompt",
+       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SEARCH_PROMPT},
       {"appParentalControlsSetUpButton",
        IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SET_UP_BUTTON},
+      {"appParentalControlsSubtitle",
+       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL},
+      {"appParentalControlsTitle", IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_LABEL},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

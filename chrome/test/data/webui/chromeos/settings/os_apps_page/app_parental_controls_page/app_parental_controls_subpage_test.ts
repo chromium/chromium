@@ -13,7 +13,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {FakeAppParentalControlsHandler} from './fake_app_parental_controls_handler.js';
 import {createApp} from './test_utils.js';
 
-suite('AppParentalControlsPageTest', () => {
+suite('AppParentalControlsSubpage', () => {
   let page: SettingsAppParentalControlsSubpageElement;
   let handler: FakeAppParentalControlsHandler;
 
@@ -22,6 +22,13 @@ suite('AppParentalControlsPageTest', () => {
     page = new SettingsAppParentalControlsSubpageElement();
     document.body.appendChild(page);
     await flushTasks();
+  }
+
+  function getApps(): NodeListOf<HTMLElement> {
+    const appList = page.shadowRoot!.querySelector('#appParentalControlsList');
+    assertTrue(!!appList);
+    assertTrue(isVisible(appList));
+    return appList.querySelectorAll<HTMLElement>('block-app-item');
   }
 
   setup(() => {
@@ -42,11 +49,7 @@ suite('AppParentalControlsPageTest', () => {
 
     await createPage();
 
-    const appList = page.shadowRoot!.querySelector('#appParentalControlsList');
-    assertTrue(!!appList);
-    assertTrue(isVisible(appList));
-
-    const apps = appList.querySelectorAll<HTMLElement>('block-app-item');
+    const apps = getApps();
     assertEquals(2, apps.length);
     assertTrue(!!apps[0]);
     assertTrue(!!apps[1]);
@@ -66,11 +69,7 @@ suite('AppParentalControlsPageTest', () => {
 
     await createPage();
 
-    const appList = page.shadowRoot!.querySelector('#appParentalControlsList');
-    assertTrue(!!appList);
-    assertTrue(isVisible(appList));
-
-    const apps = appList.querySelectorAll<HTMLElement>('block-app-item');
+    const apps = getApps();
     assertEquals(1, apps.length);
 
     const appElement = apps[0];
@@ -112,12 +111,7 @@ suite('AppParentalControlsPageTest', () => {
         const observer = handler.getObserverRemote();
         assertTrue(!!observer);
 
-        const appList =
-            page.shadowRoot!.querySelector('#appParentalControlsList');
-        assertTrue(!!appList);
-        assertTrue(isVisible(appList));
-
-        const apps = appList.querySelectorAll<HTMLElement>('block-app-item');
+        const apps = getApps();
         assertEquals(1, apps.length);
 
         const appElement = apps[0];
@@ -133,4 +127,101 @@ suite('AppParentalControlsPageTest', () => {
         assertTrue(appToggle.checked);
         assertFalse(app.isBlocked);
       });
+});
+
+suite('AppParentalControlsSubpage search', () => {
+  let page: SettingsAppParentalControlsSubpageElement;
+  let handler: FakeAppParentalControlsHandler;
+
+  async function createPage(): Promise<void> {
+    Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
+    page = new SettingsAppParentalControlsSubpageElement();
+    document.body.appendChild(page);
+    await flushTasks();
+  }
+
+  function getApps(): NodeListOf<HTMLElement> {
+    const appList = page.shadowRoot!.querySelector('#appParentalControlsList');
+    assertTrue(!!appList);
+    assertTrue(isVisible(appList));
+    return appList.querySelectorAll<HTMLElement>('block-app-item');
+  }
+
+  setup(() => {
+    handler = new FakeAppParentalControlsHandler();
+    setAppParentalControlsProviderForTesting(handler);
+  });
+
+  teardown(() => {
+    Router.getInstance().resetRouteForTesting();
+    page.remove();
+  });
+
+  test('Search returns one result', async () => {
+    const filesAppTitle = 'Files';
+    handler.addAppForTesting(createApp('file-id', filesAppTitle, false));
+    handler.addAppForTesting(createApp('chrome-id', 'Chrome', false));
+
+    await createPage();
+
+    assertEquals(2, getApps().length);
+
+    page.searchTerm = 'f';
+    await flushTasks();
+
+    assertEquals(1, getApps().length);
+    const app = getApps()[0];
+    assertTrue(!!app);
+    const appTitle = app.shadowRoot!.querySelector<HTMLElement>('.app-title');
+    assertTrue(!!appTitle);
+    assertEquals(appTitle.innerText, filesAppTitle);
+  });
+
+  test('Search returns multiple results', async () => {
+    const cameraAppTitle = 'Camera';
+    const chromeAppTitle = 'Chrome';
+    handler.addAppForTesting(createApp('file-id', 'Files', false));
+    handler.addAppForTesting(createApp('chrome-id', chromeAppTitle, false));
+    handler.addAppForTesting(createApp('camera-id', cameraAppTitle, false));
+
+    await createPage();
+
+    assertEquals(3, getApps().length);
+
+    page.searchTerm = 'c';
+    await flushTasks();
+
+    assertEquals(2, getApps().length);
+
+    const app1 = getApps()[0];
+    assertTrue(!!app1);
+    const appTitle1 = app1.shadowRoot!.querySelector<HTMLElement>('.app-title');
+    assertTrue(!!appTitle1);
+    assertEquals(appTitle1.innerText, cameraAppTitle);
+
+    const app2 = getApps()[1];
+    assertTrue(!!app2);
+    const appTitle2 = app2.shadowRoot!.querySelector<HTMLElement>('.app-title');
+    assertTrue(!!appTitle2);
+    assertEquals(appTitle2.innerText, chromeAppTitle);
+  });
+
+  test('Search returns no results', async () => {
+    const filesAppTitle = 'Files';
+    handler.addAppForTesting(createApp('file-id', filesAppTitle, false));
+    handler.addAppForTesting(createApp('chrome-id', 'Chrome', false));
+
+    await createPage();
+
+    assertEquals(2, getApps().length);
+
+    page.searchTerm = 'zzz';
+    await flushTasks();
+
+    assertEquals(0, getApps().length);
+    const emptyAppList =
+        page.shadowRoot!.querySelector<HTMLElement>('#noAppsLabel');
+    assertTrue(!!emptyAppList);
+    assertTrue(isVisible(emptyAppList));
+  });
 });

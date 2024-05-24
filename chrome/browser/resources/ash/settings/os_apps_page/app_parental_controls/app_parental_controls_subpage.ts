@@ -4,6 +4,7 @@
 
 import '../../settings_shared.css.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {App, AppParentalControlsHandlerInterface, AppParentalControlsObserverReceiver} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
@@ -22,14 +23,22 @@ export class SettingsAppParentalControlsSubpageElement extends PolymerElement {
 
   static get properties() {
     return {
-      appList_: {
+      appList_: Array,
+
+      // App list that is filtered by searchTerm.
+      filteredAppList_: {
         type: Array,
-        value: [],
+        value: () => [],
+        computed: 'computeAppList_(appList_, searchTerm)',
       },
+
+      searchTerm: String,
     };
   }
 
-  private appList_: App[];
+  searchTerm: string;
+  private appList_: App[] = [];
+  private filteredAppList_: App[];
   private mojoInterfaceProvider: AppParentalControlsHandlerInterface;
   private observerReceiver: AppParentalControlsObserverReceiver|null;
 
@@ -56,8 +65,24 @@ export class SettingsAppParentalControlsSubpageElement extends PolymerElement {
     this.observerReceiver!.$.close();
   }
 
+  private computeAppList_(apps: App[], searchTerm: string): App[] {
+    let filteredApps: App[];
+    if (searchTerm) {
+      filteredApps = apps.filter((app: App) => {
+        assert(app.title);
+        return app.title.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+      return filteredApps;
+    }
+    return apps;
+  }
+
   private alphabeticalSort_(first: App, second: App): number {
     return first.title!.localeCompare(second.title!);
+  }
+
+  private isAppListEmpty_(apps: App[]): boolean {
+    return apps.length === 0;
   }
 
   onReadinessChanged(updatedApp: App): void {
