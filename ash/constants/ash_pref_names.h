@@ -1793,6 +1793,11 @@ inline constexpr char kPersonalizationKeyboardBacklightColorDisplayType[] =
 inline constexpr char kGenAIWallpaperSettings[] =
     "ash.personalization_app.gen_ai_wallpaper_enterprise_policy_settings";
 
+// An integer pref used by an admin policy to enable/disable GenAI VC Background
+// feature. See the policy at GenAIVcBackgroundSettings.yaml.
+inline constexpr char kGenAIVcBackgroundSettings[] =
+    "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings";
+
 // Integer pref corresponding to the autozoom state, the value should be one of
 // cros::mojom::CameraAutoFramingState.
 inline constexpr char kAutozoomState[] = "ash.camera.autozoom_state";

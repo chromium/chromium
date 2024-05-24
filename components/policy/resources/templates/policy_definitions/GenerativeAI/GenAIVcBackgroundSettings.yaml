@@ -1,0 +1,32 @@
+caption: Control the enablement of ChromeOS VC Background "Create with AI" feature
+desc: |-
+  This policy enables or disables VC Background "Create with AI" for ChromeOS.
+  0 = Disable the feature for users.
+
+  1 = Enable the feature for users. Note that no data is sent to Google to train or improve AI models.
+
+  If this policy is set to Unset, VC Background "Create with AI" feature is disabled for enterprise users.
+default: 1
+default_for_enterprise_users: 0
+example_value: 0
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://ash/webui/personalization_app/OWNERS
+items:
+- caption: Disable the feature
+  name: Disabled
+  value: 0
+- caption: Enable the feature
+  name: Enabled
+  value: 1
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+supported_on:
+- chrome_os:127-
+tags: []
+type: int-enum

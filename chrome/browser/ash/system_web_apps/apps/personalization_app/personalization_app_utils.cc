@@ -169,6 +169,11 @@ bool IsManagedSeaPenWallpaperEnabled(Profile* profile) {
          1;
 }
 
+bool IsManagedSeaPenVcBackgroundEnabled(Profile* profile) {
+  return profile->GetPrefs()->GetInteger(
+             ash::prefs::kGenAIVcBackgroundSettings) == 1;
+}
+
 GURL GetJpegDataUrl(const std::string_view encoded_jpg_data) {
   return GURL(base::StrCat(
       {"data:image/jpeg;base64,", base::Base64Encode(encoded_jpg_data)}));

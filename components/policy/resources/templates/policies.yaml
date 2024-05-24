@@ -1262,6 +1262,7 @@ policies:
   1261: MemorySaverModeSavings
   1262: KioskVisionTelemetryEnabled
   1263: GenAIWallpaperSettings
+  1264: GenAIVcBackgroundSettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -1665,6 +1665,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kGenAIWallpaperSettings,
     ash::prefs::kGenAIWallpaperSettings,
     base::Value::Type::INTEGER },
+  { key::kGenAIVcBackgroundSettings,
+    ash::prefs::kGenAIVcBackgroundSettings,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
