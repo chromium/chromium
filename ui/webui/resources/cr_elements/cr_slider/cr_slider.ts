@@ -178,7 +178,7 @@ export class CrSliderElement extends CrSliderElementBase {
   noKeybindings: boolean = false;
   snaps: boolean = false;
   ticks: SliderTick[]|number[] = [];
-  value: number;
+  value: number = 0;
 
   protected disabled_: boolean = false;
   protected label_: string = '';
@@ -232,10 +232,6 @@ export class CrSliderElement extends CrSliderElementBase {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-
-    if (changedProperties.has('value')) {
-      this.$.container.hidden = false;
-    }
 
     if ((changedProperties as Map<PropertyKey, unknown>).has('disabled_')) {
       this.setAttribute('tabindex', this.disabled_ ? '-1' : '0');

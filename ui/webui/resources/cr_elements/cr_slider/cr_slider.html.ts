@@ -7,7 +7,7 @@ import type {CrSliderElement} from './cr_slider.js';
 
 export function getHtml(this: CrSliderElement) {
   return html`
-<div id="container" hidden part="container">
+<div id="container" part="container">
   <div id="bar"></div>
   <div id="markers" ?hidden="${!this.markerCount}">
     ${this.getMarkers_().map((_item, index) => html`
