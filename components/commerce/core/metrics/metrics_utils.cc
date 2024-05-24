@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "url/gurl.h"
 
 namespace commerce::metrics {
 
@@ -21,6 +22,7 @@ const char kPDPStateHistogramName[] = "Commerce.PDPStateOnNavigation";
 const char kPDPStateWithLocalMetaName[] = "Commerce.PDPStateWithLocalMeta";
 const char kShoppingListIneligibleHistogramName[] =
     "Commerce.PDPNavigation.ShoppingList.IneligibilityReason";
+const char kPDPNavURLSize[] = "Commerce.PDPNavigation.URLSize";
 
 void RecordPDPStateToUma(ShoppingPDPState state) {
   base::UmaHistogramEnumeration(kPDPStateHistogramName, state);
@@ -35,6 +37,17 @@ void RecordPDPNavShoppingListEligible(ShoppingPDPState state,
 
   base::UmaHistogramBoolean(kPDPNavShoppingListEligibleHistogramName,
                             is_shopping_list_eligible);
+}
+
+void RecordUrlSizeforPDP(
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata,
+    const GURL& url) {
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue ||
+      !metadata.any_metadata().has_value()) {
+    return;
+  }
+  base::UmaHistogramCounts10000(kPDPNavURLSize, url.spec().size());
 }
 
 ShoppingPDPState ComputeStateForOptGuideResult(
@@ -66,7 +79,8 @@ void RecordPDPMetrics(optimization_guide::OptimizationGuideDecision decision,
                       const optimization_guide::OptimizationMetadata& metadata,
                       PrefService* pref_service,
                       bool is_off_the_record,
-                      bool is_shopping_list_eligible) {
+                      bool is_shopping_list_eligible,
+                      const GURL& url) {
   // If optimization guide isn't allowed to run, don't attempt to query and
   // record the metrics.
   if (!pref_service ||
@@ -79,6 +93,7 @@ void RecordPDPMetrics(optimization_guide::OptimizationGuideDecision decision,
 
   RecordPDPStateToUma(state);
   RecordPDPNavShoppingListEligible(state, is_shopping_list_eligible);
+  RecordUrlSizeforPDP(decision, metadata, url);
 }
 
 void RecordPDPStateWithLocalMeta(bool detected_by_server,
