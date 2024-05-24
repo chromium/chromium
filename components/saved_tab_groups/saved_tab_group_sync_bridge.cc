@@ -197,8 +197,8 @@ std::string SavedTabGroupSyncBridge::GetClientTag(
   return GetStorageKey(entity_data);
 }
 
-void SavedTabGroupSyncBridge::GetData(StorageKeyList storage_keys,
-                                      DataCallback callback) {
+void SavedTabGroupSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                               DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& guid : storage_keys) {

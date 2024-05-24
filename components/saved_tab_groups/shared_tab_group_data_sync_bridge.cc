@@ -55,8 +55,8 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void SharedTabGroupDataSyncBridge::GetData(StorageKeyList storage_keys,
-                                           DataCallback callback) {
+void SharedTabGroupDataSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                                    DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTIMPLEMENTED();
   auto batch = std::make_unique<syncer::MutableDataBatch>();
