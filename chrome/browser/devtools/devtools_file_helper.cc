@@ -15,6 +15,7 @@
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
@@ -333,10 +334,17 @@ void DevToolsFileHelper::SaveAsFileSelected(const std::string& url,
                               prefs::kDevToolsEditedFiles);
   base::Value::Dict& files_map = update.Get();
   files_map.Set(base::MD5String(url), base::FilePathToValue(path));
+
   std::string file_system_path = path.AsUTF8Unsafe();
+  // Run 'SaveCallback' only once we have actually written the file, but
+  // run it on the current task runner.
+  scoped_refptr<base::SequencedTaskRunner> current_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
   file_task_runner_->PostTask(
       FROM_HERE, BindOnce(&WriteToFile, path, content, is_base64)
-                     .Then(BindOnce(std::move(callback), file_system_path)));
+                     .Then(base::BindPostTask(
+                         current_task_runner,
+                         BindOnce(std::move(callback), file_system_path))));
 }
 
 void DevToolsFileHelper::AddFileSystem(
