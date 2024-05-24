@@ -407,7 +407,9 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        TryToShowTouchToFillFailsForPaymentMethodIfNoPaymentMethodsOnFile) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  autofill_client_.GetPersonalDataManager()->ClearAllLocalData();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearAllLocalData();
 
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
@@ -927,23 +929,17 @@ TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
 // Add one valid credit card to PDM and verify that credit card is not shown in
 // IBAN form.
 TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest, PassTheIbansToTheClient) {
-  autofill_client_.GetPersonalDataManager()->ClearAllLocalData();
-  autofill_client_.GetPersonalDataManager()
-      ->payments_data_manager()
-      .AddCreditCard(autofill::test::GetCreditCard());
+  TestPaymentsDataManager& paydm =
+      autofill_client_.GetPersonalDataManager()->test_payments_data_manager();
+  paydm.ClearAllLocalData();
+  paydm.AddCreditCard(autofill::test::GetCreditCard());
   Iban iban1;
   iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
-  autofill_client_.GetPersonalDataManager()
-      ->test_payments_data_manager()
-      .AddAsLocalIban(std::move(iban1));
+  paydm.AddAsLocalIban(std::move(iban1));
   Iban iban2;
   iban2.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_2)));
-  autofill_client_.GetPersonalDataManager()
-      ->test_payments_data_manager()
-      .AddAsLocalIban(std::move(iban2));
-  std::vector<Iban> ibans = autofill_client_.GetPersonalDataManager()
-                                ->test_payments_data_manager()
-                                .GetOrderedIbansToSuggest();
+  paydm.AddAsLocalIban(std::move(iban2));
+  std::vector<Iban> ibans = paydm.GetOrderedIbansToSuggest();
 
   EXPECT_CALL(autofill_client_,
               ShowTouchToFillIban(_, ElementsAreArray(ibans)));

@@ -49,11 +49,6 @@ void TestPersonalDataManager::set_payments_data_manager(
   payments_data_manager_observation_.Observe(payments_data_manager_.get());
 }
 
-void TestPersonalDataManager::ClearAllLocalData() {
-  test_address_data_manager().ClearProfiles();
-  test_payments_data_manager().ClearAllLocalData();
-}
-
 bool TestPersonalDataManager::IsDataLoaded() const {
   return true;
 }

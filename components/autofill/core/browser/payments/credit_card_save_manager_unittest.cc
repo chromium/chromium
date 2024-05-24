@@ -5207,7 +5207,7 @@ TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithEmptyCvc) {
 // card that matches the card in the form.
 TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithoutExistingCard) {
   personal_data().payments_data_manager().ClearAllServerDataForTesting();
-  personal_data().ClearAllLocalData();
+  personal_data().test_payments_data_manager().ClearAllLocalData();
   CreditCard local_card = test::WithCvc(test::GetCreditCard());
   CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
 

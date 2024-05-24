@@ -174,7 +174,7 @@ void AutofillMergeTest::GenerateResults(const std::string& input,
 void AutofillMergeTest::MergeProfiles(const std::string& profiles,
                                       std::string* merged_profiles) {
   // Start with no saved profiles.
-  personal_data_.ClearAllLocalData();
+  personal_data_.test_address_data_manager().ClearProfiles();
 
   // Create a test form.
   FormData form;

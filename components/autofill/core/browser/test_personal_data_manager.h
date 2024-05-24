@@ -56,9 +56,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   // Unique to TestPersonalDataManager:
   void SetPrefService(PrefService* pref_service);
 
-  // Clears all local address and payments data.
-  void ClearAllLocalData();
-
   // All of the following functions simply forward the call to a function of the
   // same name in the `test_address_data_manager()` or the
   // `test_payments_data_manager().

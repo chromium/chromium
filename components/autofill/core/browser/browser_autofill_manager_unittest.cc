@@ -3167,7 +3167,8 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
 
   if (!params.run_with_data_on_file) {
     personal_data().payments_data_manager().ClearAllServerDataForTesting();
-    personal_data().ClearAllLocalData();
+    personal_data().test_payments_data_manager().ClearAllLocalData();
+    personal_data().test_address_data_manager().ClearProfiles();
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -3555,6 +3556,7 @@ TEST_F(BrowserAutofillManagerTest,
 
 // Test that the importing logic is called on form submit.
 TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
+  TestAddressDataManager& adm = personal_data().test_address_data_manager();
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -3563,20 +3565,18 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
   FormData response_data =
       FillAutofillFormDataAndGetResults(form, form.fields[0], MakeGuid(1));
   ExpectFilledAddressFormElvis(response_data, false);
-  AutofillProfile filled_profile =
-      *personal_data().address_data_manager().GetProfileByGUID(MakeGuid(1));
+  AutofillProfile filled_profile = *adm.GetProfileByGUID(MakeGuid(1));
 
   // Remove the filled profile and simulate form submission. Since the
   // `personal_data()`'s auto accept imports for testing is enabled, expect
   // that the profile is imported again.
-  personal_data().ClearAllLocalData();
-  ASSERT_TRUE(personal_data().address_data_manager().GetProfiles().empty());
+  adm.ClearProfiles();
+  ASSERT_TRUE(adm.GetProfiles().empty());
   FormSubmitted(response_data);
   // Since the imported profile has a random GUID, AutofillProfile::operator==
   // cannot be used.
-  ASSERT_EQ(personal_data().address_data_manager().GetProfiles().size(), 1u);
-  EXPECT_TRUE(personal_data().address_data_manager().GetProfiles()[0]->Compare(
-      filled_profile));
+  ASSERT_EQ(adm.GetProfiles().size(), 1u);
+  EXPECT_TRUE(adm.GetProfiles()[0]->Compare(filled_profile));
 }
 
 // Test that the user perception of autofill for address filling survey is
