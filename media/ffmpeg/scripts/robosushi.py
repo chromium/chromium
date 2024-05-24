@@ -231,6 +231,9 @@ def ListSteps():
 
 def main(argv):
     parser = optparse.OptionParser(usage='Usage: %prog [options]')
+    parser.add_option('--branch',
+                      action='store',
+                      help='Manually set sushi branch name')
     parser.add_option('--prompt',
                       action='store_true',
                       help='Prompt for each robosushi step')
@@ -277,6 +280,8 @@ def main(argv):
         robo_configuration.set_skip_allowed(False)
     if options.force_gn_rebuild:
         robo_configuration.set_force_gn_rebuild()
+    if options.branch:
+        robo_configuration.SetBranchName(options.branch)
 
     if options.setup:
         exec_steps += ["setup"]
