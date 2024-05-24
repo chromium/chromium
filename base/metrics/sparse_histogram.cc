@@ -26,7 +26,7 @@ typedef HistogramBase::Count Count;
 typedef HistogramBase::Sample Sample;
 
 // static
-HistogramBase* SparseHistogram::FactoryGet(const std::string& name,
+HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
                                            int32_t flags) {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (!histogram) {
