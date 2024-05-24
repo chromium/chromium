@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -29,6 +30,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/transform.h"
@@ -39,6 +41,8 @@ using testing::ElementsAreArray;
 
 namespace viz {
 namespace {
+
+using RoundedDisplayMasksInfo = TextureDrawQuad::RoundedDisplayMasksInfo;
 
 static constexpr FrameSinkId kArbitraryFrameSinkId(1, 1);
 
@@ -723,6 +727,120 @@ TEST(DrawQuadTest, LargestQuadType) {
     }
   }
 }
+
+class TextureDrawQuadTest
+    : public testing::Test,
+      public ::testing::WithParamInterface<
+          std::tuple<RoundedDisplayMasksInfo, gfx::RectF, gfx::RectF>> {
+ public:
+  TextureDrawQuadTest()
+      : mask_info_(std::get<0>(GetParam())),
+        expected_origin_mask_bounds_(std::get<1>(GetParam())),
+        expected_other_mask_bounds_(std::get<2>(GetParam())) {}
+
+  TextureDrawQuadTest(const TextureDrawQuadTest&) = delete;
+  TextureDrawQuadTest& operator=(const TextureDrawQuadTest&) = delete;
+
+  ~TextureDrawQuadTest() override = default;
+
+ protected:
+  void AddQuadWithRoundedDisplayMasks(
+      gfx::Rect quad_rect,
+      bool is_overlay_candidate,
+      const gfx::Transform& quad_to_target_transform,
+      const RoundedDisplayMasksInfo& rounded_display_masks_info,
+      AggregatedRenderPass* render_pass) {
+    SharedQuadState* quad_state = render_pass->CreateAndAppendSharedQuadState();
+
+    quad_state->SetAll(
+        /*transform=*/quad_to_target_transform, quad_rect,
+        /*visible_layer_rect=*/quad_rect,
+        /*filter_info=*/gfx::MaskFilterInfo(),
+        /*clip=*/std::nullopt,
+        /*are contents opaque=*/true,
+        /*opacity_f=*/1.f,
+        /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
+        /*fast_rounded_corner=*/false);
+
+    TextureDrawQuad* texture_quad =
+        render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+    texture_quad->SetNew(quad_state, quad_rect, quad_rect,
+                         /*needs_blending=*/true, kInvalidResourceId,
+                         /*premultiplied=*/true, gfx::PointF(), gfx::PointF(),
+                         /*background=*/SkColors::kTransparent,
+                         /*flipped=*/false,
+                         /*nearest=*/false,
+                         /*secure_output=*/false,
+                         gfx::ProtectedVideoType::kClear);
+
+    texture_quad->rounded_display_masks_info = rounded_display_masks_info;
+  }
+
+  RoundedDisplayMasksInfo mask_info_;
+  gfx::RectF expected_origin_mask_bounds_;
+  gfx::RectF expected_other_mask_bounds_;
+};
+
+TEST_P(TextureDrawQuadTest, CorrectRoundedDisplayMaskBounds) {
+  constexpr auto kTestQuadRect = gfx::Rect(0, 0, 100, 100);
+
+  AggregatedRenderPass render_pass;
+  gfx::Transform identity;
+  identity.MakeIdentity();
+
+  AddQuadWithRoundedDisplayMasks(kTestQuadRect,
+                                 /*is_overlay_candidate=*/true, identity,
+                                 mask_info_, &render_pass);
+
+  const auto mask_bounds =
+      TextureDrawQuad::RoundedDisplayMasksInfo::GetRoundedDisplayMasksBounds(
+          render_pass.quad_list.front());
+
+  EXPECT_EQ(
+      mask_bounds[RoundedDisplayMasksInfo::kOriginRoundedDisplayMaskIndex],
+      expected_origin_mask_bounds_);
+  EXPECT_EQ(mask_bounds[RoundedDisplayMasksInfo::kOtherRoundedDisplayMaskIndex],
+            expected_other_mask_bounds_);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no_prefix*/,
+    TextureDrawQuadTest,
+    testing::Values(
+        std::make_tuple(
+            RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+                /*origin_rounded_display_mask_radius=*/10,
+                /*other_rounded_display_mask_radius=*/15,
+                /*is_horizontally_positioned=*/true),
+            /*expected_origin_mask_bounds=*/gfx::RectF(0, 0, 10, 10),
+            /*expected_other_mask_bounds=*/gfx::RectF(85, 0, 15, 15)),
+        std::make_tuple(
+            RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+                /*origin_rounded_display_mask_radius=*/10,
+                /*other_rounded_display_mask_radius=*/15,
+                /*is_horizontally_positioned=*/false),
+            /*expected_origin_mask_bounds=*/gfx::RectF(0, 0, 10, 10),
+            /*expected_other_mask_bounds=*/gfx::RectF(0, 85, 15, 15)),
+        std::make_tuple(
+            RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+                /*origin_rounded_display_mask_radius=*/0,
+                /*other_rounded_display_mask_radius=*/15,
+                /*is_horizontally_positioned=*/false),
+            /*expected_origin_mask_bounds=*/gfx::RectF(),
+            /*expected_other_mask_bounds=*/gfx::RectF(0, 85, 15, 15)),
+        std::make_tuple(
+            RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+                /*origin_rounded_display_mask_radius=*/10,
+                /*other_rounded_display_mask_radius=*/0,
+                /*is_horizontally_positioned=*/false),
+            /*expected_origin_mask_bounds=*/gfx::RectF(0, 0, 10, 10),
+            /*expected_other_mask_bounds=*/gfx::RectF(0, 100, 0, 0)),
+        std::make_tuple(RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+                            /*origin_rounded_display_mask_radius=*/0,
+                            /*other_rounded_display_mask_radius=*/0,
+                            /*is_horizontally_positioned=*/false),
+                        /*expected_origin_mask_bounds=*/gfx::RectF(),
+                        /*expected_other_mask_bounds=*/gfx::RectF())));
 
 }  // namespace
 }  // namespace viz

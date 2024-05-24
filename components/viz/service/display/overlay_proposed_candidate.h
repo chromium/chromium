@@ -61,14 +61,6 @@ class VIZ_SERVICE_EXPORT OverlayProposedCandidate {
 
   ~OverlayProposedCandidate();
 
-  // Returns the bounds of rounded display masks in target space that are
-  // associated with the `proposed_candidate`.
-  static std::array<
-      gfx::Rect,
-      TextureDrawQuad::RoundedDisplayMasksInfo::kMaxRoundedDisplayMasksCount>
-  GetRoundedDisplayMasksBounds(
-      const OverlayProposedCandidate& proposed_candidate);
-
   static ProposedCandidateKey ToProposeKey(
       const OverlayProposedCandidate& proposed);
 

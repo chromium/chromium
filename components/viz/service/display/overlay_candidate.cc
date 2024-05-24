@@ -42,6 +42,15 @@ bool OverlayCandidate::IsInvisibleQuad(const DrawQuad* quad) {
 }
 
 // static
+bool OverlayCandidate::QuadHasRoundedDisplayMasks(const DrawQuad* quad) {
+  if (const auto* texture_quad = quad->DynamicCast<TextureDrawQuad>()) {
+    return !texture_quad->rounded_display_masks_info.IsEmpty();
+  }
+
+  return false;
+}
+
+// static
 void OverlayCandidate::ApplyClip(OverlayCandidate& candidate,
                                  const gfx::RectF& clip_rect) {
   DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));

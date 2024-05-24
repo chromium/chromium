@@ -617,7 +617,6 @@ viz_source_set("unit_tests") {
     sources += [
       "display/overlay_combination_cache_unittest.cc",
       "display/overlay_processor_ozone_unittest.cc",
-      "display/overlay_proposed_candidate_unittest.cc",
       "display/overlay_unittest.cc",
       "display_embedder/software_output_device_ozone_unittest.cc",
     ]
@@ -658,7 +657,6 @@ viz_source_set("unit_tests") {
     sources += [
       "display/overlay_combination_cache_unittest.cc",
       "display/overlay_processor_surface_control_unittest.cc",
-      "display/overlay_proposed_candidate_unittest.cc",
       "display/overlay_unittest.cc",
       "frame_sinks/external_begin_frame_source_android_unittest.cc",
     ]

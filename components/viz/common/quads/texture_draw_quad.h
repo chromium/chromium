@@ -106,6 +106,11 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
         int other_rounded_display_mask_radius,
         bool is_horizontally_positioned = true);
 
+    // Returns the bounds of rounded display masks in target space that are
+    // associated with the `quad`.
+    static std::array<gfx::RectF, kMaxRoundedDisplayMasksCount>
+    GetRoundedDisplayMasksBounds(const DrawQuad* quad);
+
     RoundedDisplayMasksInfo();
 
     bool IsEmpty() const;

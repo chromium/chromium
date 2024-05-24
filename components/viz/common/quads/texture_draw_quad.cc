@@ -5,12 +5,13 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 
 #include <stddef.h>
-#include <algorithm>
 
 #include "base/check.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/quads/draw_quad.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace viz {
 
@@ -140,6 +141,55 @@ TextureDrawQuad::RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
   info.is_horizontally_positioned = is_horizontally_positioned;
 
   return info;
+}
+
+// static
+std::array<
+    gfx::RectF,
+    TextureDrawQuad::RoundedDisplayMasksInfo::kMaxRoundedDisplayMasksCount>
+TextureDrawQuad::RoundedDisplayMasksInfo::GetRoundedDisplayMasksBounds(
+    const DrawQuad* quad) {
+  std::array<gfx::RectF, RoundedDisplayMasksInfo::kMaxRoundedDisplayMasksCount>
+      mask_rects;
+
+  const TextureDrawQuad* texture_quad = quad->DynamicCast<TextureDrawQuad>();
+  if (!texture_quad) {
+    return mask_rects;
+  }
+
+  TextureDrawQuad::RoundedDisplayMasksInfo mask_info =
+      texture_quad->rounded_display_masks_info;
+
+  if (mask_info.IsEmpty()) {
+    return mask_rects;
+  }
+
+  const gfx::Transform& transform =
+      quad->shared_quad_state->quad_to_target_transform;
+  const gfx::RectF target_rect = transform.MapRect(gfx::RectF(quad->rect));
+
+  const int16_t origin_mask_radius =
+      mask_info.radii[TextureDrawQuad::RoundedDisplayMasksInfo::
+                          kOriginRoundedDisplayMaskIndex];
+  mask_rects[RoundedDisplayMasksInfo::kOriginRoundedDisplayMaskIndex] =
+      gfx::RectF(target_rect.x(), target_rect.y(), origin_mask_radius,
+                 origin_mask_radius);
+
+  const int16_t other_mask_radius =
+      mask_info.radii[TextureDrawQuad::RoundedDisplayMasksInfo::
+                          kOtherRoundedDisplayMaskIndex];
+  if (mask_info.is_horizontally_positioned) {
+    mask_rects[RoundedDisplayMasksInfo::kOtherRoundedDisplayMaskIndex] =
+        gfx::RectF(target_rect.x() + target_rect.width() - other_mask_radius,
+                   target_rect.y(), other_mask_radius, other_mask_radius);
+  } else {
+    mask_rects[RoundedDisplayMasksInfo::kOtherRoundedDisplayMaskIndex] =
+        gfx::RectF(target_rect.x(),
+                   target_rect.y() + target_rect.height() - other_mask_radius,
+                   other_mask_radius, other_mask_radius);
+  }
+
+  return mask_rects;
 }
 
 bool TextureDrawQuad::RoundedDisplayMasksInfo::IsEmpty() const {
