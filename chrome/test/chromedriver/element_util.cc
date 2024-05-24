@@ -373,9 +373,10 @@ Status FindElementCommon(int interval_ms,
         session->GetCurrentFrameId(), script, arguments, &temp);
 
     // If navigation is detected during the WebView::CallFunction call the error
-    // code will be kNoSuchExecutionContext. We will wait and retry again until
-    // the timout.
-    if (status.IsError() && status.code() != kNoSuchExecutionContext) {
+    // code will be kNoSuchExecutionContext or kNavigationDetectedByRemoteEnd.
+    // We will wait and retry again until the timeout.
+    if (status.IsError() && status.code() != kNoSuchExecutionContext &&
+        status.code() != kNavigationDetectedByRemoteEnd) {
       if (status.code() == kJavaScriptError) {
         status = Status{kInvalidSelector, status};
       }
