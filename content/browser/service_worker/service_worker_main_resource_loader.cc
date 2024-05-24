@@ -99,6 +99,11 @@ std::string GetContainerHostClientId(int frame_tree_node_id) {
   return client_uuid;
 }
 
+bool IsStaticRouterRaceRequestFixEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kServiceWorkerStaticRouterRaceRequestFix);
+}
+
 }  // namespace
 
 // This class waits for completion of a stream response from the service worker.
@@ -705,11 +710,14 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
   // When kRaceNetworkRequest preload is triggered, it's possible that the
   // response is already committed without waiting for the fetch event result.
   // Invalidate and destruct if the class already detached from the request.
-  has_fetch_event_finished_ = true;
-  if (dispatched_preload_type() == DispatchedPreloadType::kRaceNetworkRequest &&
-      is_detached_ && status_ == Status::kCompleted) {
-    InvalidateAndDeleteIfNeeded();
-    return;
+  if (IsStaticRouterRaceRequestFixEnabled()) {
+    has_fetch_event_finished_ = true;
+    if (dispatched_preload_type() ==
+            DispatchedPreloadType::kRaceNetworkRequest &&
+        is_detached_ && status_ == Status::kCompleted) {
+      InvalidateAndDeleteIfNeeded();
+      return;
+    }
   }
 
   bool is_fallback =
@@ -1098,11 +1106,14 @@ void ServiceWorkerMainResourceLoader::InvalidateAndDeleteIfNeeded() {
   // 1) RaceNetworkRequest is dispatched and the network wins the race.
   // 2) The fetch event result is not received yet.
   // The postponed things will be done in DidDispatchFetchEvent().
-  if (dispatched_preload_type() == DispatchedPreloadType::kRaceNetworkRequest &&
-      race_network_request_url_loader_client_.has_value() &&
-      !has_fetch_event_finished_) {
-    CHECK(fetch_dispatcher_);
-    return;
+  if (IsStaticRouterRaceRequestFixEnabled()) {
+    if (dispatched_preload_type() ==
+            DispatchedPreloadType::kRaceNetworkRequest &&
+        race_network_request_url_loader_client_.has_value() &&
+        !has_fetch_event_finished_) {
+      CHECK(fetch_dispatcher_);
+      return;
+    }
   }
 
   // The fetch dispatcher or stream waiter may still be running. Don't let them
