@@ -70,7 +70,9 @@
           <template is="dom-if" if="[[showParentalControlsSetupPinDialog_]]"
               restamp>
             <app-setup-pin-dialog id="setupPin"
-                on-close="onSetupPinDialogClose_" prefs="{{prefs}}">
+                on-close="onSetupPinDialogClose_"
+                on-success="onSetupPinSuccess_"
+                prefs="{{prefs}}">
             </app-setup-pin-dialog>
           </template>
           <template is="dom-if" if="[[showParentalControlsVerifyPinDialog_]]"

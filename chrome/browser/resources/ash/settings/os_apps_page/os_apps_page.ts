@@ -382,7 +382,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     this.showParentalControlsVerifyPinDialog_ = false;
     // TODO(b/332936481): Only navigate to the subpage on successful PIN
     // verification.
-    Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
+    this.navigateToParentalControls_();
   }
 
   private onDisablePinDialogClose_(): void {
@@ -394,6 +394,10 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
   private onSetupPinDialogClose_(): void {
     this.showParentalControlsSetupPinDialog_ = false;
+  }
+
+  private onSetupPinSuccess_(): void {
+    this.navigateToParentalControls_();
   }
 
   private onClickManageIsolatedWebApps_(): void {
@@ -458,6 +462,10 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         this.i18n(
             'appNotificationsCountDescription',
             this.appsWithNotifications_.length);
+  }
+
+  private navigateToParentalControls_(): void {
+    Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
   }
 }
 
