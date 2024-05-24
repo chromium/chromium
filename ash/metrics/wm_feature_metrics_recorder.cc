@@ -126,7 +126,7 @@ std::string WMFeatureMetricsRecorder::GetFeatureMetricsPrefix(
     const WMFeatureType& wm_feature_type) {
   switch (wm_feature_type) {
     case WMFeatureType::kWindowLayoutState:
-      return base::StrCat({kWMFeatureMetricPrefix, "WindowLayoutState"});
+      return base::StrCat({kWMFeatureMetricPrefix, "WindowLayoutState."});
   }
 }
 

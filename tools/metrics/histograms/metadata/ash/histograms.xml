@@ -9449,6 +9449,93 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wm.WindowLayoutStateActiveWindowAppType"
+    enum="WindowAppType" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window states type of the active
+    application windows. This metrics should be removed after M127 stable is
+    released.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutStateActiveWindowSize"
+    enum="WindowSizeRange" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window bounds type of the active
+    application windows. This metrics should be removed after M127 stable is
+    released.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutStateActiveWindowState"
+    enum="WindowStateType" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window states type of the active
+    application windows. This metrics should be removed after M127 stable is
+    released.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutStateAllAppTypes" enum="WindowAppType"
+    expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window states type of all opened
+    application windows. This metrics should be removed after M127 stable is
+    released.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutStateAllWindowSizes" enum="WindowSizeRange"
+    expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window bounds type of all opened
+    application windows. This metrics should be removed after M127 stable is
+    released.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutStateAllWindowStates"
+    enum="WindowStateType" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window states type of all opened
+    application windows. This metrics should be removed after M127 stable is
+    released.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutStateFreeformedWindowSizes"
+    enum="WindowSizeRange" expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the window bounds type of freeformed
+    application windows. This metrics should be removed after M127 stable is
+    released.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowLayoutStateWindowNumbers" units="int"
+    expires_after="2025-02-26">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emits every 30 minutes to report the number of opened application windows.
+    This metrics should be removed after M127 stable is released.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Wm.WindowSnapActionSource2" enum="WindowSnapActionSource"
     expires_after="2025-03-11">
   <owner>xdai@chromium.org</owner>
