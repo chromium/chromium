@@ -69,7 +69,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.AppHooks;
@@ -109,6 +108,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -252,22 +252,37 @@ public class ManageSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    // Disabling explicitly since it's included in fieldtrial_testing_config.json
-    @DisableFeatures({SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE})
     public void testSyncAccountDataTypes() {
+        // The types that should be default-enabled in transport mode depend on various flags.
+        Set<String> expectedEnabledTypes =
+                new HashSet<>(
+                        Arrays.asList(
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE,
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE));
+        if (SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
+            expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE);
+        }
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.READING_LIST_ENABLE_SYNC_TRANSPORT_MODE_UPON_SIGNIN)) {
+            expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE);
+        }
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)) {
+            expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
+        }
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
+            expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE);
+        }
+
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
         Collection<ChromeSwitchPreference> dataTypes = getAccountDataTypes(fragment).values();
-
         for (ChromeSwitchPreference dataType : dataTypes) {
-            // Only settings and payments are available upon sign in without toggling more flags.
-            if (dataType.getKey().equals(ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE)
-                    || dataType.getKey()
-                            .equals(ManageSyncSettings.PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE)) {
-                Assert.assertTrue(dataType.isChecked());
-            } else {
-                Assert.assertFalse(dataType.isChecked());
-            }
+            Assert.assertEquals(
+                    "Wrong checked state for toggle " + dataType.getKey(),
+                    expectedEnabledTypes.contains(dataType.getKey()),
+                    dataType.isChecked());
             Assert.assertTrue(dataType.isEnabled());
         }
     }
