@@ -91,13 +91,16 @@ closest to `origin/main`):
       of the criteria are already covered by `audits.toml` imported from other
       projects).
     - Also note that `cargo vet` will list the _minimum_ required criteria
-      (and `audits.toml` can and should record stricter certification if
-      possible).
+      and `audits.toml` can and should record stricter certification if
+      possible. In particular:
+         - Record `does-not-implement-crypto` instead of `crypto-safe` if the
+           crate does not implement crypto.
+         - Record a lower-numbered `ub-risk-N` if appropriate.
 1. Follow the cargo vet instructions to inspect diffs and certify the results
     - Note that special guidelines may apply to delta audits
       (TODO: Land the [PR here](https://github.com/google/rust-crate-audits/pull/16)).
 1. `git add third_party/rust/chromium_crates_io/supply-chain`.
-   `git commit -m 'cargo vet'`
+1. `git commit -m 'cargo vet'`
 1. `git cl upload -m 'cargo vet'`
 
 ## Potential additional steps
