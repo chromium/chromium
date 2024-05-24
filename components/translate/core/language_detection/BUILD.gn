@@ -43,6 +43,7 @@ static_library("language_detection") {
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/flatbuffers",
     "//third_party/icu",
+    "//third_party/libphonenumber:libphonenumber_without_metadata",
     "//third_party/smhasher:murmurhash2",
     "//third_party/tflite",
     "//third_party/tflite:tflite_public_headers",
