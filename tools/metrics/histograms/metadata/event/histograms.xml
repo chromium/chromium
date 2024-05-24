@@ -387,67 +387,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.ScrollJank" enum="Boolean"
-    expires_after="2024-11-03">
-  <owner>ddrone@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Tracks janky frames while processing scroll events, which are defined as
-    frames taking longer than half of vsync interval compared to previous or
-    next frame.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.JankyDuration" units="ms"
-    expires_after="2024-11-03">
-  <owner>ddrone@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Total duration (wall time in milliseconds of potentially concurrent events)
-    of LatencyInfo::GestureScrollUpdate events that are detected as janky during
-    a particular scroll.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.JankyDurationPercentage" units="%"
-    expires_after="2024-11-03">
-  <owner>ddrone@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Percentage of duration of scroll events that are detected as janky during a
-    particular scroll.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.JankyEvents" units="counts"
-    expires_after="2024-11-03">
-  <owner>ddrone@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Count of LatencyInfo::GestureScrollUpdate events that are detected as janky
-    during a particular scroll.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.TotalDuration" units="ms"
-    expires_after="2024-11-03">
-  <owner>ddrone@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Total duration (wall time in milliseconds of potentially concurrent events)
-    of LatencyInfo::GestureScrollUpdate events during a particular scroll.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.TotalEvents" units="counts"
-    expires_after="2024-09-22">
-  <owner>ddrone@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Count of LatencyInfo::GestureScrollUpdate events during a particular scroll.
-  </summary>
-</histogram>
-
 <histogram name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"
     units="pixels" expires_after="2024-10-28">
   <owner>flackr@chromium.org</owner>

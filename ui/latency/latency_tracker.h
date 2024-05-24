@@ -24,7 +24,7 @@ class LatencyTracker {
   ~LatencyTracker();
 
   // Terminates latency tracking for events that triggered rendering, also
-  // performing relevant UMA latency reporting.
+  // performing relevant UKM latency reporting.
   // Called when GPU buffers swap completes.
   void OnGpuSwapBuffersCompleted(std::vector<LatencyInfo> latency_info);
 
@@ -38,48 +38,6 @@ class LatencyTracker {
     INPUT_METRIC_EVENT_MAX = SCROLL_UPDATE_WHEEL
   };
 
-  enum class ScrollInputModality {
-    kWheel,
-    kTouch,
-    kScrollbar,
-    kLastValue = kScrollbar,
-  };
-
-  enum class ScrollType {
-    kBegin,
-    kUpdate,
-    kInertial,
-    kLastValue = kInertial,
-  };
-
-  // Data holder for all intermediate state for jank tracking.
-  struct JankTrackerState {
-    int total_update_events_ = 0;
-    int janky_update_events_ = 0;
-    bool prev_scroll_update_reported_ = false;
-    base::TimeDelta prev_duration_;
-    base::TimeDelta total_update_duration_;
-    base::TimeDelta janky_update_duration_;
-  };
-
-  // Index to be used for STATIC_HISTOGRAM_POINTER_GROUP. We have one histogram
-  // in the group per (ScrollInputModality, ScrollType) combination.
-  static constexpr int kMaxHistogramIndex =
-      (static_cast<int>(ScrollInputModality::kLastValue) + 1) *
-      (static_cast<int>(ScrollType::kLastValue) + 1);
-  static int GetHistogramIndex(ScrollType scroll_type,
-                               ScrollInputModality input_modality);
-
-  static std::string_view ToString(ScrollInputModality modality);
-  static std::string_view ToString(ScrollType type);
-
-  // Returns Event.Latency.<scroll_type>.<input_modality>.<suffix>
-  static std::string GetHistogramName(std::string_view suffix,
-                                      ScrollType scroll_type,
-                                      ScrollInputModality input_modality);
-
-  static ScrollInputModality ToScrollInputModality(ui::SourceEventType type);
-
   void ReportUkmScrollLatency(
       const InputMetricEvent& metric_event,
       base::TimeTicks start_timestamp,
@@ -87,25 +45,6 @@ class LatencyTracker {
       base::TimeTicks time_to_handled_timestamp,
       bool is_main_thread,
       const ukm::SourceId ukm_source_id);
-
-  void ComputeEndToEndLatencyHistograms(
-      base::TimeTicks gpu_swap_begin_timestamp,
-      base::TimeTicks gpu_swap_end_timestamp,
-      const LatencyInfo& latency);
-
-  void EmitLatencyHistograms(base::TimeTicks gpu_swap_begin_timestamp,
-                             base::TimeTicks gpu_swap_end_timestamp,
-                             base::TimeTicks original_timestamp,
-                             const ui::LatencyInfo& latency,
-                             ScrollType scroll_type,
-                             ScrollInputModality input_modality);
-
-  void ReportJankyFrame(base::TimeTicks gpu_swap_begin_timestamp,
-                        base::TimeTicks gpu_swap_end_timestamp,
-                        const LatencyInfo& latency,
-                        bool first_frame);
-
-  JankTrackerState jank_state_;
 };
 
 }  // namespace ui
