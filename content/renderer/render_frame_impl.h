@@ -423,8 +423,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void SetRenderFrameMediaPlaybackOptions(
       const RenderFrameMediaPlaybackOptions& opts) override;
   void SetAllowsCrossBrowsingInstanceFrameLookup() override;
-  gfx::RectF ElementBoundsInWindow(const blink::WebElement& element) override;
-  void ConvertViewportToWindow(gfx::Rect* rect) override;
+  [[nodiscard]] gfx::Rect ConvertViewportToWindow(
+      const gfx::Rect& rect) override;
   float GetDeviceScaleFactor() override;
   blink::scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override;
 

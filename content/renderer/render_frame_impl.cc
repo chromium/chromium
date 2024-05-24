@@ -6576,14 +6576,8 @@ base::WeakPtr<media::DecoderFactory> RenderFrameImpl::GetMediaDecoderFactory() {
   return media_factory_.GetDecoderFactory();
 }
 
-gfx::RectF RenderFrameImpl::ElementBoundsInWindow(
-    const blink::WebElement& element) {
-  return gfx::RectF(GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(
-      element.BoundsInWidget()));
-}
-
-void RenderFrameImpl::ConvertViewportToWindow(gfx::Rect* rect) {
-  *rect = GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(*rect);
+gfx::Rect RenderFrameImpl::ConvertViewportToWindow(const gfx::Rect& rect) {
+  return GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(rect);
 }
 
 float RenderFrameImpl::GetDeviceScaleFactor() {

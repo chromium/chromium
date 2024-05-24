@@ -121,13 +121,13 @@ gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
   if (!base::FeatureList::IsEnabled(features::kAutofillCaretExtraction)) {
     return gfx::Rect();
   }
-  gfx::Rect anchor;
-  gfx::Rect focus;
   if (auto* frame_widget = frame.GetWebFrame()->LocalRoot()->FrameWidget()) {
+    gfx::Rect anchor;
+    gfx::Rect focus;
     frame_widget->CalculateSelectionBounds(anchor, focus);
-    frame.ConvertViewportToWindow(&focus);
+    return frame.ConvertViewportToWindow(focus);
   }
-  return focus;
+  return gfx::Rect();
 }
 
 }  // namespace

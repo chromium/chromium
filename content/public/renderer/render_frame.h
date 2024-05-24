@@ -38,7 +38,6 @@ struct WebPreferences;
 class AssociatedInterfaceProvider;
 class AssociatedInterfaceRegistry;
 class BrowserInterfaceBrokerProxy;
-class WebElement;
 class WebFrame;
 class WebLocalFrame;
 class WebPlugin;
@@ -49,7 +48,6 @@ class WebView;
 namespace gfx {
 class Range;
 class Rect;
-class RectF;
 }  // namespace gfx
 
 namespace content {
@@ -230,16 +228,11 @@ class CONTENT_EXPORT RenderFrame :
   // Sets that cross browsing instance frame lookup is allowed.
   virtual void SetAllowsCrossBrowsingInstanceFrameLookup() = 0;
 
-  // Returns the bounds of |element| in Window coordinates which are device
-  // scale independent. The bounds have been adjusted to include any
-  // transformations, including page scale. This function will update the layout
-  // if required.
-  virtual gfx::RectF ElementBoundsInWindow(
-      const blink::WebElement& element) = 0;
-
   // Converts the |rect| to Window coordinates which are device scale
-  // independent.
-  virtual void ConvertViewportToWindow(gfx::Rect* rect) = 0;
+  // independent. The bounds have been adjusted to include any transformations,
+  // including page scale.
+  [[nodiscard]] virtual gfx::Rect ConvertViewportToWindow(
+      const gfx::Rect& rect) = 0;
 
   // Returns the device scale factor of the display the render frame is in.
   virtual float GetDeviceScaleFactor() = 0;

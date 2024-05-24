@@ -1806,7 +1806,8 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
       field.renderer_id(), form, trigger_source, username_element_index,
       password_element_index, field.text_direction(), typed_username,
       show_webauthn_credentials,
-      render_frame()->ElementBoundsInWindow(user_input)));
+      gfx::RectF(render_frame()->ConvertViewportToWindow(
+          user_input.BoundsInWidget()))));
 }
 
 void PasswordAutofillAgent::CleanupOnDocumentShutdown() {

@@ -2044,7 +2044,8 @@ void WebFormControlElementToFormField(
     if (auto* local_frame = element.GetDocument().GetFrame()) {
       if (auto* render_frame =
               content::RenderFrame::FromWebFrame(local_frame)) {
-        field->set_bounds(render_frame->ElementBoundsInWindow(element));
+        field->set_bounds(gfx::RectF(
+            render_frame->ConvertViewportToWindow(element.BoundsInWidget())));
       }
     }
   }
@@ -2203,7 +2204,8 @@ std::optional<FormData> FindFormForContentEditable(
       ParseAutocompleteAttribute(field.autocomplete_attribute()));
   if (auto* local_frame = document.GetFrame()) {
     if (auto* render_frame = content::RenderFrame::FromWebFrame(local_frame)) {
-      field.set_bounds(render_frame->ElementBoundsInWindow(content_editable));
+      field.set_bounds(gfx::RectF(render_frame->ConvertViewportToWindow(
+          content_editable.BoundsInWidget())));
     }
   }
   if (base::EqualsCaseInsensitiveASCII(
