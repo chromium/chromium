@@ -21,12 +21,10 @@ class DeviceDisabledScreenView {
   // Sets some properties of the `DeviceDisabledScreen`, then shows the screen,
   // by calling `ShowInWebUI()`. Receives the following data, respectively:
   // serial number of the device, domain that owns the device (can be empty),
-  // message from the admin, and a flag indicating if the device was disabled
-  // because it's in AD mode (which is no longer supported).
+  // and a message from the admin.
   virtual void Show(const std::string& serial,
                     const std::string& domain,
-                    const std::string& message,
-                    bool is_disabled_ad_device) = 0;
+                    const std::string& message) = 0;
   virtual void UpdateMessage(const std::string& message) = 0;
 
   // Gets a WeakPtr to the instance.
@@ -50,8 +48,7 @@ class DeviceDisabledScreenHandler final : public DeviceDisabledScreenView,
   // DeviceDisabledScreenView:
   void Show(const std::string& serial,
             const std::string& domain,
-            const std::string& message,
-            bool is_disabled_ad_device) override;
+            const std::string& message) override;
   void UpdateMessage(const std::string& message) override;
   base::WeakPtr<DeviceDisabledScreenView> AsWeakPtr() override;
 

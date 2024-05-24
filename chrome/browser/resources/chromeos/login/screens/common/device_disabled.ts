@@ -35,7 +35,6 @@ interface DeviceDisabledScreenData {
   serial: string;
   domain: string;
   message: string;
-  isDisabledAdDevice: boolean;
 }
 
 export class DeviceDisabled extends DeviceDisabledElementBase {
@@ -72,22 +71,12 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
         type: String,
         value: '',
       },
-
-      /**
-       * Flag indicating if the device was disabled because it's in AD mode,
-       * which is no longer supported.
-       */
-      isDisabledAdDevice: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   private serial: string;
   private enrollmentDomain: string;
   private message: string;
-  private isDisabledAdDevice: boolean;
 
   override ready(): void {
     super.ready();
@@ -123,9 +112,6 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
     if ('message' in data) {
       this.message = data.message;
     }
-    if ('isDisabledAdDevice' in data) {
-      this.isDisabledAdDevice = data.isDisabledAdDevice;
-    }
   }
 
   /**
@@ -138,22 +124,14 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
   /**
    * Updates the explanation shown to the user. The explanation contains the
    * device serial number and may contain the domain the device is enrolled to,
-   * if that information is available. However, if `isDisabledAdDevice` is true,
-   * a custom explanation about Chromad disabling will be used.
+   * if that information is available.
    * locale The i18n locale.
    * serial The device serial number.
    * domain The enrollment domain.
-   * isDisabledAdDevice Flag indicating if the device was
-   * disabled because it's in AD mode.
    * return The internationalized explanation.
    */
-  private disabledText(
-      locale: string, serial: string, domain: string,
-      isDisabledAdDevice: boolean): TrustedHTML {
-    if (isDisabledAdDevice) {
-      return this.i18nAdvancedDynamic(
-          locale, 'deviceDisabledAdModeExplanation', {substitutions: [serial]});
-    }
+  private disabledText(locale: string, serial: string, domain: string):
+      TrustedHTML {
     if (domain) {
       return this.i18nAdvancedDynamic(
           locale, 'deviceDisabledExplanationWithDomain',

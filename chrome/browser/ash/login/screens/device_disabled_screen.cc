@@ -6,13 +6,11 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
 
 namespace ash {
 namespace {
@@ -38,10 +36,7 @@ void DeviceDisabledScreen::ShowImpl() {
 
   view_->Show(DeviceDisablingManager()->serial_number(),
               DeviceDisablingManager()->enrollment_domain(),
-              DeviceDisablingManager()->disabled_message(),
-              // TODO() remove this parameter from
-              // DeviceDisabledScreenHandler::Show.
-              /*is_disabled_ad_device=*/false);
+              DeviceDisablingManager()->disabled_message());
   DeviceDisablingManager()->AddObserver(this);
 }
 

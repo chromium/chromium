@@ -637,7 +637,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
         std::make_unique<MockDeviceDisabledScreenView>();
     MockScreen(std::make_unique<DeviceDisabledScreen>(
         device_disabled_screen_view_->AsWeakPtr()));
-    EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, _, _)).Times(0);
+    EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, _)).Times(0);
 
     mock_network_screen_view_ = std::make_unique<MockNetworkScreenView>();
     mock_network_screen_ =
@@ -1338,8 +1338,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceLegacyTest,
                    base::Value(kDisabledMessage));
   g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
                                             std::move(device_state));
-  EXPECT_CALL(*device_disabled_screen_view_,
-              Show(_, _, kDisabledMessage, false))
+  EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, kDisabledMessage))
       .Times(1);
   mock_auto_enrollment_check_screen_->ExitScreen();
 
@@ -1716,8 +1715,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Disabled) {
   fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
 
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl());
-  EXPECT_CALL(*device_disabled_screen_view_,
-              Show(_, _, kDisabledMessage, false));
+  EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, kDisabledMessage));
   base::Value::Dict device_state;
   device_state.Set(policy::kDeviceStateMode,
                    base::Value(policy::kDeviceStateModeDisabled));
@@ -1798,8 +1796,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest,
                                             std::move(device_state));
 
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl());
-  EXPECT_CALL(*device_disabled_screen_view_,
-              Show(_, _, kDisabledMessage, false));
+  EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, kDisabledMessage));
 
   fetcher_factory.ReportEnrollmentState(
       policy::AutoEnrollmentResult::kDisabled);
@@ -2943,8 +2940,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
                                             std::move(device_state));
 
-  EXPECT_CALL(*device_disabled_screen_view_,
-              Show(_, _, kDisabledMessage, false))
+  EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, kDisabledMessage))
       .Times(1);
   mock_auto_enrollment_check_screen_->ExitScreen();
 

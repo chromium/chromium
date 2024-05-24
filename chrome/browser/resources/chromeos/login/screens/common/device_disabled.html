@@ -13,13 +13,12 @@ found in the LICENSE file.
 </style>
 
 <oobe-adaptive-dialog title-key="deviceDisabledHeading" id="dialog"
-  role="dialog" aria-label$="[[i18nDynamic(locale, 'deviceDisabledHeading')]]"
->
+    role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'deviceDisabledHeading')]]">
   <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
   <h1 slot="title">[[i18nDynamic(locale, 'deviceDisabledHeading')]]</h1>
-  <div inner-h-t-m-l=
-      "[[disabledText(locale, serial, enrollmentDomain, isDisabledAdDevice)]]"
-    slot="subtitle">
+  <div inner-h-t-m-l="[[disabledText(locale, serial, enrollmentDomain)]]"
+      slot="subtitle">
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
     <div id="message">[[message]]</div>
