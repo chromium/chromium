@@ -293,33 +293,36 @@ public class ReadAloudController
     private static class TranslationObserverImpl implements TranslationObserver {
         private Tab mTab;
         private long mHandle;
+        private WebContents mWebContents;
 
         void observeTab(Tab tab) {
-            if (mTab != null) {
-                stopObservingTab(mTab);
-            }
+            stopObservingTab(mTab);
 
+            // A tab's WebContents can change and we'll only find out later, so keep track of the
+            // WebContents we registered the observer on.
             WebContents webContents = tab.getWebContents();
-            if (webContents == null) {
+            if (webContents == null || webContents.isDestroyed()) {
                 return;
             }
 
-            mHandle = TranslateBridge.addTranslationObserver(webContents, this);
+            mWebContents = webContents;
+            mHandle = TranslateBridge.addTranslationObserver(mWebContents, this);
             mTab = tab;
         }
 
+        // If `tab` isn't null, only stop observing if it matches the tab being observed.
         void stopObservingTab(Tab tab) {
-            if (mTab == null || mTab != tab) {
+            if (tab != null && mTab != tab) {
                 return;
             }
 
-            WebContents webContents = tab.getWebContents();
-            if (webContents != null && mHandle != 0L) {
-                TranslateBridge.removeTranslationObserver(webContents, mHandle);
+            if (mWebContents != null && !mWebContents.isDestroyed() && mHandle != 0L) {
+                TranslateBridge.removeTranslationObserver(mWebContents, mHandle);
             }
 
             mTab = null;
             mHandle = 0L;
+            mWebContents = null;
         }
     }
 
@@ -495,6 +498,8 @@ public class ReadAloudController
 
                         @Override
                         public void onTabSelected(Tab tab) {
+                            mCurrentTabTranslationObserver.stopObservingTab(null);
+
                             // This method is called when a tab is manually selected by user or
                             // other reason, for example opening a new tab.
                             // For redirects, it will be called multiple times - for the original
@@ -527,7 +532,7 @@ public class ReadAloudController
                                     updatedRestored.restore();
                                     tab.getUserDataHost().removeUserData(USER_DATA_KEY);
                                 }
-                                addTranslationObserver(tab);
+                                maybeAddTranslationObserver(tab);
                             }
                         }
 
@@ -550,7 +555,12 @@ public class ReadAloudController
                         public void onContentChanged(Tab tab) {
                             // Required to register the observer on navigation and reload, since it
                             // isn't safe to do in onPageLoadStarted().
-                            addTranslationObserver(tab);
+                            mCurrentTabTranslationObserver.stopObservingTab(tab);
+                            maybeAddTranslationObserver(tab);
+
+                            if (tab == mCurrentlyPlayingTab) {
+                                mPlayingTabTranslationObserver.stopObservingTab(tab);
+                            }
                         }
 
                         @Override
@@ -561,15 +571,10 @@ public class ReadAloudController
                             removeTranslationObservers(tab);
                         }
 
-                        private void addTranslationObserver(Tab tab) {
+                        private void maybeAddTranslationObserver(Tab tab) {
                             if (isURLReadAloudSupported(tab.getUrl())) {
                                 mCurrentTabTranslationObserver.observeTab(tab);
                             }
-                        }
-
-                        private void removeTranslationObservers(Tab tab) {
-                            mPlayingTabTranslationObserver.stopObservingTab(tab);
-                            mCurrentTabTranslationObserver.stopObservingTab(tab);
                         }
                     };
 
@@ -893,7 +898,7 @@ public class ReadAloudController
             mPlayback = null;
             mPlayerCoordinator.recordPlaybackDuration();
         }
-        mPlayingTabTranslationObserver.stopObservingTab(mCurrentlyPlayingTab);
+        mPlayingTabTranslationObserver.stopObservingTab(null);
         mCurrentlyPlayingTab = null;
         mGlobalRenderFrameId = null;
         mCurrentPlaybackData = null;
@@ -915,6 +920,9 @@ public class ReadAloudController
         if (mTabObserver != null) {
             mTabObserver.destroy();
         }
+
+        removeTranslationObservers(null);
+
         mHighlightingEnabled.removeObserver(ReadAloudController.this::onHighlightingEnabledChanged);
         ApplicationStatus.unregisterApplicationStateListener(this);
         resetCurrentPlayback();
@@ -1406,6 +1414,11 @@ public class ReadAloudController
         for (Runnable observer : mReadabilityUpdateObserverList) {
             observer.run();
         }
+    }
+
+    private void removeTranslationObservers(Tab tab) {
+        mPlayingTabTranslationObserver.stopObservingTab(tab);
+        mCurrentTabTranslationObserver.stopObservingTab(tab);
     }
 
     // Tests.
