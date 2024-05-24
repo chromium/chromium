@@ -19,7 +19,7 @@ class WebStateID;
 
 // The fake consumer only keeps the identifiers of items for simplicity.
 @property(nonatomic, readonly) const std::vector<web::WebStateID>& items;
-@property(nonatomic, assign) web::WebStateID selectedItemID;
+@property(nonatomic, strong) GridItemIdentifier* selectedItem;
 
 @end
 

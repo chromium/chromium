@@ -24,7 +24,7 @@
 
 - (void)populateItems:(NSArray<GridItemIdentifier*>*)items
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
-  _selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
+  _selectedItem = selectedItemIdentifier;
   _items.clear();
   for (GridItemIdentifier* item in items) {
     CHECK(item.type == GridItemType::Tab);
@@ -38,7 +38,7 @@
   _items.insert(std::find(std::begin(_items), std::end(_items),
                           nextItemIdentifier.tabSwitcherItem.identifier),
                 item.tabSwitcherItem.identifier);
-  _selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
+  _selectedItem = selectedItemIdentifier;
 }
 
 - (void)removeItemWithIdentifier:(GridItemIdentifier*)removedItem
@@ -46,11 +46,11 @@
   auto it = std::remove(_items.begin(), _items.end(),
                         removedItem.tabSwitcherItem.identifier);
   _items.erase(it, _items.end());
-  _selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
+  _selectedItem = selectedItemIdentifier;
 }
 
 - (void)selectItemWithIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
-  _selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
+  _selectedItem = selectedItemIdentifier;
 }
 
 - (void)replaceItem:(GridItemIdentifier*)item

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
@@ -124,7 +126,8 @@ TEST_P(BaseGridMediatorTest, DragAndDropClosedItem) {
 // mediator.
 TEST_P(BaseGridMediatorTest, ConsumerPopulateItems) {
   EXPECT_EQ(3UL, consumer_.items.size());
-  EXPECT_EQ(original_selected_identifier_, consumer_.selectedItemID);
+  EXPECT_EQ(original_selected_identifier_,
+            consumer_.selectedItem.tabSwitcherItem.identifier);
 }
 
 // Tests that the consumer is notified when a web state is inserted.
@@ -138,7 +141,8 @@ TEST_P(BaseGridMediatorTest, ConsumerInsertItem) {
   EXPECT_EQ(4UL, consumer_.items.size());
   // The same ID should be selected after the insertion, since the new web state
   // wasn't selected.
-  EXPECT_EQ(original_selected_identifier_, consumer_.selectedItemID);
+  EXPECT_EQ(original_selected_identifier_,
+            consumer_.selectedItem.tabSwitcherItem.identifier);
   EXPECT_EQ(item_identifier, consumer_.items[1]);
   EXPECT_FALSE(base::Contains(original_identifiers_, item_identifier));
 }
@@ -150,16 +154,18 @@ TEST_P(BaseGridMediatorTest, ConsumerRemoveItem) {
   browser_->GetWebStateList()->CloseWebStateAt(1, WebStateList::CLOSE_NO_FLAGS);
   EXPECT_EQ(2UL, consumer_.items.size());
   // Expect that a different web state is selected now.
-  EXPECT_NE(original_selected_identifier_, consumer_.selectedItemID);
+  EXPECT_NE(original_selected_identifier_,
+            consumer_.selectedItem.tabSwitcherItem.identifier);
 }
 
 // Tests that the consumer is notified when the active web state is changed.
 TEST_P(BaseGridMediatorTest, ConsumerUpdateSelectedItem) {
-  EXPECT_EQ(original_selected_identifier_, consumer_.selectedItemID);
+  EXPECT_EQ(original_selected_identifier_,
+            consumer_.selectedItem.tabSwitcherItem.identifier);
   browser_->GetWebStateList()->ActivateWebStateAt(2);
   EXPECT_EQ(
       browser_->GetWebStateList()->GetWebStateAt(2)->GetUniqueIdentifier(),
-      consumer_.selectedItemID);
+      consumer_.selectedItem.tabSwitcherItem.identifier);
 }
 
 // Tests that the consumer is notified when a web state is replaced.
@@ -173,7 +179,8 @@ TEST_P(BaseGridMediatorTest, ConsumerReplaceItem) {
     browser_->GetWebStateList()->ReplaceWebStateAt(1, std::move(new_web_state));
   }
   EXPECT_EQ(3UL, consumer_.items.size());
-  EXPECT_EQ(new_item_identifier, consumer_.selectedItemID);
+  EXPECT_EQ(new_item_identifier,
+            consumer_.selectedItem.tabSwitcherItem.identifier);
   EXPECT_EQ(new_item_identifier, consumer_.items[1]);
   EXPECT_FALSE(base::Contains(original_identifiers_, new_item_identifier));
 }
@@ -197,7 +204,7 @@ TEST_P(BaseGridMediatorTest, SelectItemCommand) {
       browser_->GetWebStateList()->GetWebStateAt(2)->GetUniqueIdentifier();
   [mediator_ selectItemWithID:identifier pinned:NO isFirstActionOnTabGrid:NO];
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
-  EXPECT_EQ(identifier, consumer_.selectedItemID);
+  EXPECT_EQ(identifier, consumer_.selectedItem.tabSwitcherItem.identifier);
 }
 
 // Tests that the active index is updated when `-selectItemWithID:` is called.
@@ -216,25 +223,25 @@ TEST_P(BaseGridMediatorTest, SelectPinnedItemCommand) {
       web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
   [mediator_ setPinState:YES forItemWithID:identifier_0];
   ASSERT_EQ(1, browser_->GetWebStateList()->active_index());
-  ASSERT_EQ(identifier_1, consumer_.selectedItemID);
+  ASSERT_EQ(identifier_1, consumer_.selectedItem.tabSwitcherItem.identifier);
 
   [mediator_ selectItemWithID:identifier_0
                        pinned:YES
        isFirstActionOnTabGrid:NO];
 
   EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
-  EXPECT_EQ(identifier_0, consumer_.selectedItemID);
+  EXPECT_EQ(identifier_0, consumer_.selectedItem.tabSwitcherItem.identifier);
 
   [mediator_ selectItemWithID:identifier_2 pinned:NO isFirstActionOnTabGrid:NO];
 
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
-  EXPECT_EQ(identifier_2, consumer_.selectedItemID);
+  EXPECT_EQ(identifier_2, consumer_.selectedItem.tabSwitcherItem.identifier);
 
   // Selecting the pinned one with pinned = NO fails.
   [mediator_ selectItemWithID:identifier_0 pinned:NO isFirstActionOnTabGrid:NO];
 
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
-  EXPECT_EQ(identifier_2, consumer_.selectedItemID);
+  EXPECT_EQ(identifier_2, consumer_.selectedItem.tabSwitcherItem.identifier);
 }
 
 // Tests the pinned tab command.
@@ -258,14 +265,16 @@ TEST_P(BaseGridMediatorTest, PinItemCommand) {
   // The pinned web state moved to the first position, moving the others.
   EXPECT_EQ(1, web_state_list->pinned_tabs_count());
   EXPECT_EQ(2, web_state_list->active_index());
-  EXPECT_EQ(selected_identifier, consumer_.selectedItemID);
+  EXPECT_EQ(selected_identifier,
+            consumer_.selectedItem.tabSwitcherItem.identifier);
 
   [mediator_ setPinState:NO forItemWithID:identifier];
 
   // The pinned web state moves back to the end of the WebStateList.
   EXPECT_EQ(0, web_state_list->pinned_tabs_count());
   EXPECT_EQ(1, web_state_list->active_index());
-  EXPECT_EQ(selected_identifier, consumer_.selectedItemID);
+  EXPECT_EQ(selected_identifier,
+            consumer_.selectedItem.tabSwitcherItem.identifier);
 }
 
 // Tests that the WebStateList count is decremented when
@@ -302,7 +311,7 @@ TEST_P(BaseGridMediatorTest, AddNewItemAtEndCommand) {
   EXPECT_FALSE(base::Contains(original_identifiers_, identifier));
   // Consumer checks.
   EXPECT_EQ(4UL, consumer_.items.size());
-  EXPECT_EQ(identifier, consumer_.selectedItemID);
+  EXPECT_EQ(identifier, consumer_.selectedItem.tabSwitcherItem.identifier);
   EXPECT_EQ(identifier, consumer_.items[3]);
 }
 
@@ -362,7 +371,8 @@ TEST_P(BaseGridMediatorTest, resetToAllItems) {
   // consumer should revert back to have the items from the webstate list.
   ASSERT_TRUE(WaitForConsumerUpdates(3UL));
   // Active index should not change.
-  EXPECT_EQ(original_selected_identifier_, consumer_.selectedItemID);
+  EXPECT_EQ(original_selected_identifier_,
+            consumer_.selectedItem.tabSwitcherItem.identifier);
 
   // The order of the items on the consumer be the exact same order as the in
   // WebStateList.
@@ -744,6 +754,36 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroupInBatch) {
   }
 
   EXPECT_EQ(0UL, [mediator_ allSelectedDragItems].count);
+}
+
+// Tests that moving the selected tab from one group to another correctly
+// updates the selected element of the Grid, whether the tab itself is moving in
+// the web state list or not.
+TEST_P(BaseGridMediatorTest, SelectionAfterChangingGroup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip}, {});
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| [ 1 a* b ] [ 2 c ]", browser_->GetBrowserState()));
+  const TabGroup* group1 = builder.GetTabGroupForIdentifier('1');
+  const TabGroup* group2 = builder.GetTabGroupForIdentifier('2');
+
+  ASSERT_EQ(group1, consumer_.selectedItem.tabGroupItem.tabGroup);
+
+  // Check after a move.
+  web_state_list->MoveToGroup({0}, group2);
+  ASSERT_EQ("| [ 1 b ] [ 2 c a* ]", builder.GetWebStateListDescription());
+  EXPECT_EQ(group2, consumer_.selectedItem.tabGroupItem.tabGroup);
+
+  // Check after a status-only change.
+  web_state_list->ActivateWebStateAt(1);
+  web_state_list->MoveToGroup({1}, group1);
+  ASSERT_EQ("| [ 1 b c* ] [ 2 a ]", builder.GetWebStateListDescription());
+  EXPECT_EQ(group1, consumer_.selectedItem.tabGroupItem.tabGroup);
 }
 
 INSTANTIATE_TEST_SUITE_P(

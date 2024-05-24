@@ -511,6 +511,12 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
           [self insertItem:[GridItemIdentifier tabIdentifier:currentWebState]
               beforeWebStateIndex:webStateIndex + 1];
         }
+
+        // If the web state is the active one, the new group needs to be
+        // highlighted.
+        if (selectionOnlyChange.index() == webStateList->active_index()) {
+          [self.consumer selectItemWithIdentifier:[self activeIdentifier]];
+        }
         break;
       }
       // The activation is handled after this switch statement.
@@ -571,6 +577,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
             web::WebState* movedWebState = moveChange.moved_web_state();
             [self insertItem:[GridItemIdentifier tabIdentifier:movedWebState]
                 beforeWebStateIndex:moveChange.moved_to_index() + 1];
+          }
+          // If the web state is the active one, the new group needs to be
+          // highlighted.
+          if (moveChange.moved_to_index() == webStateList->active_index()) {
+            [self.consumer selectItemWithIdentifier:[self activeIdentifier]];
           }
         }
       }
