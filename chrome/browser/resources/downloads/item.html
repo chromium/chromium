@@ -290,11 +290,23 @@
     align-items: center;
   }
 
-  cr-icon-button {
+  #remove-old {
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-margin-end: 12px;
     --cr-icon-button-margin-start: 12px;
     margin-top: 12px;
+  }
+
+  #action-icon-buttons {
+    display: flex;
+    flex-direction: row;
+    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-margin-end: 0;
+    --cr-icon-button-margin-start: 0;
+    gap: 12px;
+    margin-top: 12px;
+    margin-inline-start: 12px;
+    margin-inline-end: 12px;
   }
 
   #incognito {
@@ -533,12 +545,33 @@
           </cr-icon-button>
         </div>
       </template>
-      <!-- In improvedDownloadWarnings, show a menu with all the actions. -->
+      <!-- In improvedDownloadWarnings, show menu and/or quick action(s). -->
       <template is="dom-if" if="[[improvedDownloadWarningsUx_]]">
-        <div role="gridcell">
+        <div role="gridcell" id="action-icon-buttons">
           <cr-icon-button id="more-actions" iron-icon="cr:more-vert"
+              hidden="[[!computeShowActionMenu_(pauseOrResumeText_,
+                  isDangerous_, isReviewable_, showDeepScan_, showCancel_,
+                  showOpenAnyway_, data.state, data.retry, data.dangerType)]]"
               class="dropdown-trigger" title="$i18n{moreActions}"
-              on-click="onMoreActionsClick_" aria-haspopup="menu">
+              on-click="onMoreActionsClick_" aria-haspopup="menu"
+              focus-row-control focus-type="actionMenuButton">
+          </cr-icon-button>
+          <cr-icon-button id="quick-show-in-folder" class="icon-folder-open"
+              hidden="[[!computeShowQuickShow_(hasShowInFolderLink_,
+                  pauseOrResumeText_, isDangerous_, isReviewable_,
+                  showDeepScan_, showCancel_, showOpenAnyway_, data.state,
+                  data.retry, data.dangerType)]]"
+              title="[[data.showInFolderText]]"
+              aria-label$="[[data.showInFolderText]]" on-click="onShowClick_"
+              focus-row-control focus-type="quickShow">
+          </cr-icon-button>
+          <cr-icon-button id="quick-remove" class="icon-clear"
+              hidden="[[!computeShowQuickRemove_(isDangerous_, showCancel_,
+                  isReviewable_)]]"
+              title="$i18n{controlDeleteFromHistory}"
+              aria-label$="$i18n{controlDeleteFromHistory}"
+              on-click="onQuickRemoveClick_"
+              focus-row-control focus-type="quickRemove">
           </cr-icon-button>
         </div>
         <cr-action-menu id="more-actions-menu"
@@ -590,8 +623,6 @@
               hidden="[[!isReviewable_]]" id="review-dangerous">
             $i18n{dangerReview}
           </button>
-          <!-- TODO(crbug.com/40067647): Learn more for dangerous downloads goes
-          here. -->
           <button class="dropdown-item" on-click="onSaveDangerousClick_"
               hidden="[[!computeShowControlsForDangerous_(isDangerous_,
                       isReviewable_)]]"

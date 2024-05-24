@@ -126,6 +126,7 @@ suite('item tests', function() {
                hideDate: false,
                dangerType: DangerType.kSensitiveContentBlock,
              }));
+    flush();
 
     assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
     assertTrue(item.$['file-icon'].hidden);
@@ -135,6 +136,7 @@ suite('item tests', function() {
                hideDate: false,
                dangerType: DangerType.kBlockedTooLarge,
              }));
+    flush();
 
     assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
     assertTrue(item.$['file-icon'].hidden);
@@ -144,6 +146,7 @@ suite('item tests', function() {
                hideDate: false,
                dangerType: DangerType.kBlockedPasswordProtected,
              }));
+    flush();
 
     assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
     assertTrue(item.$['file-icon'].hidden);
@@ -153,6 +156,7 @@ suite('item tests', function() {
                hideDate: false,
                dangerType: DangerType.kDeepScannedFailed,
              }));
+    flush();
 
     assertEquals('cr:info', item.shadowRoot!.querySelector('iron-icon')!.icon);
     assertTrue(item.$['file-icon'].hidden);
@@ -472,7 +476,10 @@ suite('item tests', function() {
              }));
     flush();
     const whenFired = eventToPromise('save-dangerous-click', item);
-    item.getMoreActionsButton().click();
+    const moreActionsButton = item.getMoreActionsButton();
+    assertTrue(!!moreActionsButton);
+    assertTrue(isVisible(moreActionsButton));
+    moreActionsButton.click();
     const saveDangerousButton =
         item.shadowRoot!.querySelector<HTMLElement>('#save-dangerous');
     assertTrue(!!saveDangerousButton);
@@ -503,7 +510,10 @@ suite('item tests', function() {
       assertNotReached('Unexpected event fired');
     });
 
-    item.getMoreActionsButton().click();
+    const moreActionsButton = item.getMoreActionsButton();
+    assertTrue(!!moreActionsButton);
+    assertTrue(isVisible(moreActionsButton));
+    moreActionsButton.click();
     const saveDangerousButton =
         item.shadowRoot!.querySelector<HTMLElement>('#save-dangerous');
     assertTrue(!!saveDangerousButton);
@@ -527,7 +537,10 @@ suite('item tests', function() {
                state: State.kPromptForScanning,
              }));
     flush();
-    item.getMoreActionsButton().click();
+    const moreActionsButton = item.getMoreActionsButton();
+    assertTrue(!!moreActionsButton);
+    assertTrue(isVisible(moreActionsButton));
+    moreActionsButton.click();
     assertTrue(
         isVisible(item.shadowRoot!.querySelector<HTMLElement>('#deep-scan')));
     assertTrue(isVisible(
@@ -568,7 +581,10 @@ suite('item tests', function() {
                dangerType: DangerType.kDeepScannedFailed,
              }));
     flush();
-    item.getMoreActionsButton().click();
+    const moreActionsButton = item.getMoreActionsButton();
+    assertTrue(!!moreActionsButton);
+    assertTrue(isVisible(moreActionsButton));
+    moreActionsButton.click();
     assertTrue(
         isVisible(item.shadowRoot!.querySelector<HTMLElement>('#open-anyway')));
   });
@@ -584,10 +600,15 @@ suite('item tests', function() {
     document.body.appendChild(toastManager);
     toastManager.show('', /* hideSlotted= */ true);
     assertTrue(toastManager.slottedHidden);
-    item.getMoreActionsButton().click();
-    const removeButton = item.shadowRoot!.querySelector<HTMLElement>('#remove');
-    assertTrue(!!removeButton);
-    removeButton!.click();
+    // There's no menu button when the item is normal (not dangerous) and
+    // completed.
+    const moreActionsButton = item.getMoreActionsButton();
+    assertFalse(isVisible(moreActionsButton));
+    const quickRemoveButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#quick-remove');
+    assertTrue(!!quickRemoveButton);
+    assertTrue(isVisible(quickRemoveButton));
+    quickRemoveButton.click();
     assertFalse(toastManager.slottedHidden);
     assertFalse(item.getMoreActionsMenu().open);
   });
@@ -597,13 +618,20 @@ suite('item tests', function() {
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
-    item.set('data', createDownload({hideDate: false, isDangerous: true}));
+    item.set('data', createDownload({
+               hideDate: false,
+               isDangerous: true,
+               state: State.kDangerous,
+             }));
     flush();
     toastManager = document.createElement('cr-toast-manager');
     document.body.appendChild(toastManager);
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
-    item.getMoreActionsButton().click();
+    const moreActionsButton = item.getMoreActionsButton();
+    assertTrue(!!moreActionsButton);
+    assertTrue(isVisible(moreActionsButton));
+    moreActionsButton.click();
     const removeButton =
         item.shadowRoot!.querySelector<HTMLElement>('#discard-dangerous');
     assertTrue(!!removeButton);
@@ -617,19 +645,76 @@ suite('item tests', function() {
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
-    item.set('data', createDownload({hideDate: false, isInsecure: true}));
+    item.set('data', createDownload({
+               hideDate: false,
+               isInsecure: true,
+               state: State.kInsecure,
+             }));
     flush();
     toastManager = document.createElement('cr-toast-manager');
     document.body.appendChild(toastManager);
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
-    item.getMoreActionsButton().click();
+    const moreActionsButton = item.getMoreActionsButton();
+    assertTrue(!!moreActionsButton);
+    assertTrue(isVisible(moreActionsButton));
+    moreActionsButton.click();
     const removeButton =
         item.shadowRoot!.querySelector<HTMLElement>('#discard-dangerous');
     assertTrue(!!removeButton);
     removeButton.click();
     assertTrue(toastManager.slottedHidden);
     assertFalse(item.getMoreActionsMenu().open);
+  });
+
+  test('quick remove button discards dangerous item', async function() {
+    // TODO(chlily): cleanup/refactor test setup to account for the launch of
+    // improved download warnings.
+    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({
+               id: 'itemId',
+               filePath: 'unique1',
+               hideDate: false,
+               isDangerous: true,
+               state: State.kDangerous,
+             }));
+    flush();
+    toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
+    const quickRemoveButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#quick-remove');
+    assertTrue(!!quickRemoveButton);
+    assertTrue(isVisible(quickRemoveButton));
+    quickRemoveButton.click();
+    flush();
+    const id = await testDownloadsProxy.handler.whenCalled('discardDangerous');
+    assertEquals('itemId', id);
+  });
+
+  test('quick remove button removes normal item', async function() {
+    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({
+               id: 'itemId',
+               filePath: 'unique1',
+               hideDate: false,
+             }));
+    flush();
+    toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
+    const quickRemoveButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#quick-remove');
+    assertTrue(!!quickRemoveButton);
+    assertTrue(isVisible(quickRemoveButton));
+    quickRemoveButton.click();
+    flush();
+    const id = await testDownloadsProxy.handler.whenCalled('remove');
+    assertEquals('itemId', id);
   });
 
   // <if expr="_google_chrome">

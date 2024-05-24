@@ -120,10 +120,10 @@ suite('manager tests', function() {
     flush();
     const item = manager.shadowRoot!.querySelector('downloads-item')!;
 
-    item.getMoreActionsButton().click();
-    const removeButton = item.shadowRoot!.querySelector<HTMLElement>('#remove');
-    assertTrue(!!removeButton);
-    removeButton.click();
+    const quickRemoveButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#quick-remove');
+    assertTrue(!!quickRemoveButton);
+    quickRemoveButton.click();
     await testBrowserProxy.handler.whenCalled('remove');
     flush();
     const list = manager.shadowRoot!.querySelector('iron-list')!;

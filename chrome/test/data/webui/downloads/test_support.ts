@@ -26,6 +26,7 @@ class FakePageHandler implements PageHandlerInterface {
   private eligibleForEsbPromo_: boolean = false;
   private callbackRouterRemote_: PageRemote;
   private callTracker_: TestBrowserProxy = new TestBrowserProxy([
+    'discardDangerous',
     'isEligibleForEsbPromo',
     'logEsbPromotionRowViewed',
     'openEsbSettings',
@@ -59,6 +60,10 @@ class FakePageHandler implements PageHandlerInterface {
     this.callTracker_.methodCalled('remove', id);
   }
 
+  discardDangerous(id: string) {
+    this.callTracker_.methodCalled('discardDangerous', id);
+  }
+
   saveDangerousFromPromptRequiringGesture(id: string) {
     this.callTracker_.methodCalled(
         'saveDangerousFromPromptRequiringGesture', id);
@@ -83,8 +88,6 @@ class FakePageHandler implements PageHandlerInterface {
   getDownloads(_searchTerms: string[]) {}
   openFileRequiringGesture(_id: string) {}
   drag(_id: string) {}
-  acceptIncognitoWarning(_id: string) {}
-  discardDangerous(_id: string) {}
   retryDownload(_id: string) {}
   show(_id: string) {}
   pause(_id: string) {}
