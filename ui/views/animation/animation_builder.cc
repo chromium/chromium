@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/debug/alias.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -47,9 +49,11 @@ void AnimationBuilder::Observer::SetOnStarted(base::OnceClosure callback) {
   on_started_ = std::move(callback);
 }
 
-void AnimationBuilder::Observer::SetOnEnded(base::OnceClosure callback) {
+void AnimationBuilder::Observer::SetOnEnded(base::OnceClosure callback,
+                                            base::Location location) {
   DCHECK(!on_ended_);
   on_ended_ = std::move(callback);
+  on_ended_location_ = location;
 }
 
 void AnimationBuilder::Observer::SetOnWillRepeat(
@@ -58,9 +62,11 @@ void AnimationBuilder::Observer::SetOnWillRepeat(
   on_will_repeat_ = std::move(callback);
 }
 
-void AnimationBuilder::Observer::SetOnAborted(base::OnceClosure callback) {
+void AnimationBuilder::Observer::SetOnAborted(base::OnceClosure callback,
+                                              base::Location location) {
   DCHECK(!on_aborted_);
   on_aborted_ = std::move(callback);
+  on_aborted_location_ = location;
 }
 
 void AnimationBuilder::Observer::SetOnScheduled(base::OnceClosure callback) {
@@ -86,8 +92,15 @@ void AnimationBuilder::Observer::SetAbortHandle(
 void AnimationBuilder::Observer::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
   if (--sequences_to_run_ == 0) {
-    if (on_ended_)
+    if (on_ended_) {
+      // Ensure that the stack contains information about which on_ended_
+      // callback this is. Needed to debug a bad callback crash
+      // (https://g-issues.chromium.org/issues/335902543).
+      // TODO(b/335902543): Remove on_ended_location.
+      base::Location on_ended_location = on_ended_location_;
+      base::debug::Alias(&on_ended_location);
       std::move(on_ended_).Run();
+    }
     if (abort_handle_ && abort_handle_->animation_state() ==
                              AnimationAbortHandle::AnimationState::kRunning)
       abort_handle_->OnAnimationEnded();
@@ -116,8 +129,15 @@ void AnimationBuilder::Observer::OnLayerAnimationWillRepeat(
 
 void AnimationBuilder::Observer::OnLayerAnimationAborted(
     ui::LayerAnimationSequence* sequence) {
-  if (on_aborted_)
+  if (on_aborted_) {
+    // Ensure that the stack contains information about which on_aborted_
+    // callback this is. Needed to debug a bad callback crash
+    // (https://g-issues.chromium.org/issues/335902543).
+    // TODO(b/335902543): Remove on_aborted_location_.
+    base::Location on_aborted_location = on_aborted_location_;
+    base::debug::Alias(&on_aborted_location);
     std::move(on_aborted_).Run();
+  }
   if (abort_handle_ && abort_handle_->animation_state() ==
                            AnimationAbortHandle::AnimationState::kRunning)
     abort_handle_->OnAnimationEnded();
@@ -215,8 +235,9 @@ AnimationBuilder& AnimationBuilder::OnStarted(base::OnceClosure callback) {
   return *this;
 }
 
-AnimationBuilder& AnimationBuilder::OnEnded(base::OnceClosure callback) {
-  GetObserver()->SetOnEnded(std::move(callback));
+AnimationBuilder& AnimationBuilder::OnEnded(base::OnceClosure callback,
+                                            base::Location location) {
+  GetObserver()->SetOnEnded(std::move(callback), location);
   return *this;
 }
 
@@ -226,8 +247,9 @@ AnimationBuilder& AnimationBuilder::OnWillRepeat(
   return *this;
 }
 
-AnimationBuilder& AnimationBuilder::OnAborted(base::OnceClosure callback) {
-  GetObserver()->SetOnAborted(std::move(callback));
+AnimationBuilder& AnimationBuilder::OnAborted(base::OnceClosure callback,
+                                              base::Location location) {
+  GetObserver()->SetOnAborted(std::move(callback), location);
   return *this;
 }
 
