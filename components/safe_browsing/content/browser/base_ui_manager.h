@@ -213,6 +213,11 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // most of the time it will be empty or contain a single element.
   std::vector<std::pair<GURL, security_interstitials::UnsafeResource>>
       unsafe_resources_;
+
+  // Tracks the navigation IDs that have already had Safe Browsing telemetry
+  // reports sent. Used to ensure duplicate reports aren't sent for the same
+  // navigation.
+  std::set<int64_t> report_sent_navigation_ids_;
 };
 
 }  // namespace safe_browsing

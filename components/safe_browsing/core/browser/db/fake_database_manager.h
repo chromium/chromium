@@ -25,6 +25,8 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   void AddDangerousUrlPattern(const GURL& dangerous_url,
                               ThreatPatternType pattern_type);
   void ClearDangerousUrl(const GURL& dangerous_url);
+  void SetHighConfidenceAllowlistMatchResult(const GURL& url,
+                                             bool match_allowlist);
 
   // TestSafeBrowsingDatabaseManager implementation:
   // These are implemented as needed to return stubbed values.
@@ -39,6 +41,10 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
                         Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
+  void CheckUrlForHighConfidenceAllowlist(
+      const GURL& url,
+      const std::string& metric_variation,
+      base::OnceCallback<void(bool)> callback) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   safe_browsing::ThreatSource GetBrowseUrlThreatSource(
       CheckBrowseUrlType check_type) const override;
@@ -57,6 +63,7 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 
   base::flat_map<GURL, SBThreatType> dangerous_urls_;
   base::flat_map<GURL, ThreatPatternType> dangerous_patterns_;
+  base::flat_map<GURL, bool> high_confidence_allowlist_match_urls_;
 };
 
 }  // namespace safe_browsing

@@ -212,7 +212,6 @@ TEST_F(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
   EXPECT_EQ(resource.url, url_);
   EXPECT_EQ(resource.render_process_id, main_rfh()->GetGlobalId().child_id);
   EXPECT_EQ(resource.render_frame_token, main_rfh()->GetFrameToken().value());
-  EXPECT_FALSE(resource.should_send_reports);
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.AsyncCheck.HasPostCommitInterstitialSkipped",
@@ -238,7 +237,6 @@ TEST_F(AsyncCheckTrackerTest,
   EXPECT_EQ(resource.url, url_);
   EXPECT_EQ(resource.render_process_id, main_rfh()->GetGlobalId().child_id);
   EXPECT_EQ(resource.render_frame_token, main_rfh()->GetFrameToken().value());
-  EXPECT_FALSE(resource.should_send_reports);
 }
 
 TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending) {

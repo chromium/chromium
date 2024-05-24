@@ -339,17 +339,30 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
     return;
   }
 
+  // We don't want to send reports for the same navigation_id. Without this
+  // check, duplicate reports can happen for sync and async checks that both
+  // call into DisplayBlockingPage. This can happen if:
+  // 1. Both checks finish at around the same time and post a task to display a
+  //    blocking page at the same time, or
+  // 2. The async check finishes between WillProcessResponse and
+  //    DidFinishNavigation.
+  bool already_reported = resource.navigation_id.has_value() &&
+                          base::Contains(report_sent_navigation_ids_,
+                                         resource.navigation_id.value());
   if (resource.threat_type != SB_THREAT_TYPE_SAFE &&
       resource.threat_type != SB_THREAT_TYPE_BILLING &&
       resource.threat_type != SB_THREAT_TYPE_MANAGED_POLICY_BLOCK &&
       resource.threat_type != SB_THREAT_TYPE_MANAGED_POLICY_WARN &&
-      resource.should_send_reports) {
+      !already_reported) {
     // TODO(vakh): crbug/883462: The reports for SB_THREAT_TYPE_BILLING should
     // be disabled for M70 but enabled for a later release (M71?).
     CreateAndSendHitReport(resource);
     if (base::FeatureList::IsEnabled(
             safe_browsing::kCreateWarningShownClientSafeBrowsingReports)) {
       CreateAndSendClientSafeBrowsingWarningShownReport(resource);
+    }
+    if (resource.navigation_id.has_value()) {
+      report_sent_navigation_ids_.insert(resource.navigation_id.value());
     }
   }
 

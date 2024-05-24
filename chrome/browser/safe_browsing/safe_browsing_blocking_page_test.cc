@@ -3437,6 +3437,16 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
         ->AddDangerousUrl(url, threat_type);
   }
 
+  void SetURLHighConfidenceAllowlistMatch(const GURL& url,
+                                          bool match_allowlist) {
+    TestSafeBrowsingService* service = factory_.test_safe_browsing_service();
+    ASSERT_TRUE(service);
+
+    static_cast<FakeSafeBrowsingDatabaseManager*>(
+        service->database_manager().get())
+        ->SetHighConfidenceAllowlistMatchResult(url, match_allowlist);
+  }
+
   void ReturnUrlRealTimeVerdictInUrlLoader(GURL url, bool is_unsafe) {
     constexpr char kRealTimeLookupUrl[] =
         "https://safebrowsing.google.com/safebrowsing/clientreport/realtime";
@@ -3752,6 +3762,74 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
       "interstitial.phishing.decision.after_page_shown",
       /*sample=*/security_interstitials::MetricsHelper::SHOW,
       /*expected_bucket_count=*/1);
+}
+
+// Confirm that duplicate hit reports aren't sent in the case where URT falls
+// back to HPD due to a high-confidence allowlist match.
+IN_PROC_BROWSER_TEST_P(
+    SafeBrowsingBlockingPageAsyncChecksTimingTest,
+    NoDuplicateHitReports_FallbackFromHighConfidenceAllowlistMatch) {
+  EnableAsyncCheck();
+  // Call SetupUrlRealTimeVerdictInCacheManager with a random URL to ensure
+  // RealTimeUrlLookupServiceBase::CanCheckUrl returns true so the real time
+  // check is performed.
+  SetupUrlRealTimeVerdictInCacheManager(
+      GURL("https://random.url"), browser()->profile(), /*is_unsafe=*/false);
+  GURL url = embedded_test_server()->GetURL(kEmptyPage);
+  SetURLHighConfidenceAllowlistMatch(url, true);
+  SetURLThreatType(url, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+  NavigateToURLAndWaitForAsyncChecks(url);
+
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+
+  int hit_report_count =
+      static_cast<FakeSafeBrowsingUIManager*>(
+          factory_.test_safe_browsing_service()->ui_manager().get())
+          ->hit_report_count();
+  ASSERT_EQ(hit_report_count, 1);
+  EXPECT_FALSE(shown_report_sent_is_async_check().value());
+}
+
+// Confirm that duplicate hit reports aren't sent in the case where URT is
+// not eligible and HPD is used instead for the async check.
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
+                       NoDuplicateHitReports_UrlRealTimeUncheckable) {
+  EnableAsyncCheck();
+  // Do not call |SetupUrlRealTimeVerdictInCacheManager| with a random URL,
+  // that way the real-time URL lookup will instead fall back to hash database
+  // checks instead, since the URL is not eligible for real-time lookups.
+  GURL url = embedded_test_server()->GetURL(kEmptyPage);
+  SetURLThreatType(url, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+  NavigateToURLAndWaitForAsyncChecks(url);
+
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+
+  int hit_report_count =
+      static_cast<FakeSafeBrowsingUIManager*>(
+          factory_.test_safe_browsing_service()->ui_manager().get())
+          ->hit_report_count();
+  ASSERT_EQ(hit_report_count, 1);
+  EXPECT_FALSE(shown_report_sent_is_async_check().value());
+}
+
+// Confirm that duplicate hit reports aren't sent for web UI URLs.
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
+                       NoDuplicateHitReports_WebUiUrl) {
+  EnableAsyncCheck();
+  NavigateToURLAndWaitForAsyncChecks(
+      GURL(kChromeUISafeBrowsingMatchPhishingUrl));
+
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+
+  int hit_report_count =
+      static_cast<FakeSafeBrowsingUIManager*>(
+          factory_.test_safe_browsing_service()->ui_manager().get())
+          ->hit_report_count();
+  ASSERT_EQ(hit_report_count, 1);
+  EXPECT_FALSE(shown_report_sent_is_async_check().value());
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
