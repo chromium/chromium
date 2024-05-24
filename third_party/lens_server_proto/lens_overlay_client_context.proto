@@ -8,6 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_filters.proto";
 import "lens_overlay_platform.proto";
 import "lens_overlay_surface.proto";
 
@@ -25,13 +26,16 @@ message LensOverlayClientContext {
   // Required. Name of the package which sends the request to Lens Frontend.
   string app_id = 6;
 
+  // Filters that are enabled on the client side.
+  AppliedFilters client_filters = 17;
+
   // The rendering context info.
   RenderingContext rendering_context = 20;
 
   // Logging data.
   ClientLoggingData client_logging_data = 23;
 
-  reserved 3, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22;
+  reserved 3, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 21, 22;
 }
 
 // Describes locale context.

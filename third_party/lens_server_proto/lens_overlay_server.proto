@@ -8,8 +8,6 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
-import "lens_overlay_entry_point.proto";
-import "lens_overlay_phase_latencies_metadata.proto";
 import "lens_overlay_service_deps.proto";
 
 // An error encountered while handling a request.
@@ -24,30 +22,13 @@ message LensOverlayServerError {
   ErrorType error_type = 1;
 }
 
-// Client logs for a Lens Overlay request.
-// Next ID: 4
-message LensOverlayClientLogs {
-  // The phase latency metadata for any image preprocessing required for the
-  // request.
-  LensOverlayPhaseLatenciesMetadata phase_latencies_metadata = 1;
-
-  // The page url for the request, if available.
-  string page_url = 2;
-
-  // The entry point for the request.
-  LensOverlayEntryPoint entry_point = 3;
-}
-
-// Next ID: 6
+// Next ID: 3
 message LensOverlayServerRequest {
   // Options for fetching objects.
   LensOverlayObjectsRequest objects_request = 1;
 
   // Options for fetching interactions.
   LensOverlayInteractionRequest interaction_request = 2;
-
-  // Client logs for the request.
-  LensOverlayClientLogs client_logs = 3;
 }
 
 // Response details for an LensOverlay request.

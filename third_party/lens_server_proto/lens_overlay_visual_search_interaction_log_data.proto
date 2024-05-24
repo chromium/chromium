@@ -8,6 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_client_platform.proto";
 import "lens_overlay_filters.proto";
 import "lens_overlay_selection_type.proto";
 
@@ -21,6 +22,9 @@ message LensOverlayVisualSearchInteractionLogData {
 
   // Whether the query is a parent query.
   optional bool is_parent_query = 3;
+
+  // The client platform this query was originated from.
+  optional ClientPlatform client_platform = 4;
 }
 
 // Filter data.

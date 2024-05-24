@@ -13,3 +13,13 @@ enum LensOverlayFilterType {
   UNKNOWN_FILTER_TYPE = 0;
   AUTO_FILTER = 7;
 }
+
+// Supported filter types.
+message AppliedFilter {
+  optional LensOverlayFilterType filter_type = 1;
+}
+
+// Supported filter types.
+message AppliedFilters {
+  repeated AppliedFilter filter = 1;
+}
