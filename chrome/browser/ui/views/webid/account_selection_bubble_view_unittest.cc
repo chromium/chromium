@@ -416,6 +416,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     ChromeViewsTestBase::TearDown();
   }
 
+  void ResetWebContents() { test_web_contents_.reset(); }
+
   AccountSelectionBubbleView* dialog() { return dialog_; }
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
@@ -1308,4 +1310,18 @@ TEST_F(AccountSelectionBubbleViewTest, WebContentsTooSmallToFitDialog) {
   web_contents()->Resize(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/10,
                                    /*height=*/10));
   EXPECT_FALSE(dialog()->CanFitInWebContents());
+}
+
+// Tests crash scenario from crbug.com/341240034.
+TEST_F(AccountSelectionBubbleViewTest, BoundsChangedAfterWebContentsDestroyed) {
+  TestSingleAccount(kTitleSignIn, /*expected_subtitle=*/std::nullopt,
+                    /*expect_idp_brand_icon_in_header=*/true);
+
+  // Reset the web contents associated with the dialog.
+  ResetWebContents();
+  EXPECT_FALSE(web_contents());
+
+  // Dialog is somehow still alive and receives OnAnchorBoundsChanged calls.
+  // This should not crash.
+  dialog()->OnAnchorBoundsChanged();
 }

@@ -597,8 +597,9 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
 
   // Reject the API if the browser is not found or its tab strip model does not
-  // exist, as we require those to show UI. It is unclear why there are callers
-  // attempting FedCM when some of these checks fail.
+  // exist, as we require those to show UI.
+  // TODO(crbug.com/342216390): It is unclear why there are callers attempting
+  // FedCM when some of these checks fail.
   if (!browser || !browser->tab_strip_model()) {
     return nullptr;
   }

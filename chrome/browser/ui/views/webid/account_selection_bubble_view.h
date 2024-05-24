@@ -89,6 +89,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   void UpdateDialogPosition() override;
 
+  void OnAnchorBoundsChanged() override;
+
   std::string GetDialogTitle() const override;
   std::optional<std::string> GetDialogSubtitle() const override;
 

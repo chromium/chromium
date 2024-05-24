@@ -14,6 +14,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
@@ -36,6 +37,7 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -583,6 +585,24 @@ void AccountSelectionBubbleView::UpdateDialogPosition() {
   dialog_widget_->SetBounds(GetBubbleBounds());
 }
 
+void AccountSelectionBubbleView::OnAnchorBoundsChanged() {
+  // TODO(crbug.com/342216390): It is unclear why there are callers where some
+  // of these checks fail.
+  if (!web_contents_) {
+    return;
+  }
+
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
+  if (!browser || !browser->tab_strip_model()) {
+    return;
+  }
+
+  // This method is called only if we didn't early return because there is a
+  // crash (crbug.com/341240034) that is caused by calling this method and
+  // subsequently, calling GetBubbleBounds() when the web contents is invalid.
+  views::BubbleDialogDelegateView::OnAnchorBoundsChanged();
+}
+
 gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   // Since the top right corner of the bubble is set as the arrow in the ctor,
   // the top right corner of the bubble will be anchored to the origin, which we
@@ -612,6 +632,8 @@ gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   //       |-------------------------|
   // In the RTL case, the bubble is aligned towards the left side of the screen
   // and the horizontal inset would apply to the left of the bubble.
+  CHECK(web_contents_);
+
   gfx::Rect bubble_bounds = views::BubbleDialogDelegateView::GetBubbleBounds();
   gfx::Rect web_contents_bounds = web_contents_->GetViewBounds();
   if (base::i18n::IsRTL()) {

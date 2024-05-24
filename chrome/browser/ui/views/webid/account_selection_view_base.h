@@ -350,7 +350,7 @@ class AccountSelectionViewBase {
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
   // Web contents which the dialog is rendered on.
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // The images for the brand icons. Stored so that they can be reused upon
   // pressing the back button after choosing an account.
