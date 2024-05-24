@@ -112,7 +112,8 @@ void UrlMatcherWithBypass::AddMaskedDomainListRules(
   for (const auto& [partition_key, partitioned_domains] :
        PartitionDomains(domains)) {
     net::SchemeHostPortMatcher matcher;
-    for (auto domain : domains) {
+    for (auto domain : partitioned_domains) {
+      DCHECK(domain.ends_with(partition_key));
       AddRulesToMatcher(&matcher, domain, !HasSubdomainCoverage(domain));
     }
 
