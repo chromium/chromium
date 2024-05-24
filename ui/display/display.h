@@ -287,6 +287,7 @@ class DISPLAY_EXPORT Display final {
 
   bool operator==(const Display& rhs) const;
   bool operator!=(const Display& rhs) const { return !(*this == rhs); }
+  static bool EqualExceptForHdrHeadroom(const Display& lhs, const Display& rhs);
 
  private:
   friend struct mojo::StructTraits<mojom::DisplayDataView, Display>;
