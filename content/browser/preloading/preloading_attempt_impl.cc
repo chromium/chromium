@@ -218,14 +218,8 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
     // instance does not have the opportunity to set the
     // `is_accurate_triggering_` flag to true in this case.
     if (preloading_type_ != PreloadingType::kPrefetch) {
-      if (!base::FeatureList::IsEnabled(
-              blink::features::kPrerender2NoVarySearch)) {
-        // TODO(crbug.com/41494389): is_accurate_triggering_ needs to be updated
-        // accordingly in the case when prerender is matched via No-Vary-Search
-        // matching.
-        CHECK(is_accurate_triggering_)
-            << "TriggeringOutcome set to kSuccess without correct prediction\n";
-      }
+      CHECK(is_accurate_triggering_)
+          << "TriggeringOutcome set to kSuccess without correct prediction\n";
     }
   }
 
@@ -357,6 +351,12 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptUMA() {
   }
 }
 
+void PreloadingAttemptImpl::SetNoVarySearchMatchPredicate(
+    PreloadingURLMatchCallback no_vary_search_match_predicate) {
+  CHECK(!no_vary_search_match_predicate_);
+  no_vary_search_match_predicate_ = std::move(no_vary_search_match_predicate);
+}
+
 void PreloadingAttemptImpl::SetIsAccurateTriggering(const GURL& navigated_url) {
   CHECK(url_match_predicate_);
 
@@ -369,6 +369,10 @@ void PreloadingAttemptImpl::SetIsAccurateTriggering(const GURL& navigated_url) {
   // Use the predicate to match the URLs as the matching logic varies for each
   // predictor.
   is_accurate_triggering_ |= url_match_predicate_.Run(navigated_url);
+  if (no_vary_search_match_predicate_) {
+    is_accurate_triggering_ |=
+        no_vary_search_match_predicate_.Run(navigated_url);
+  }
 }
 
 void PreloadingAttemptImpl::SetSpeculationEagerness(

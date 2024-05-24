@@ -858,6 +858,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, ExactUrlMatch) {
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
+  NavigationHandleObserver activation_observer(web_contents(), kNavigationUrl);
   NavigatePrimaryPage(kNavigationUrl);
   // Ensure the state has been propagated to renderer processes.
   ASSERT_EQ(false, EvalJs(web_contents(), "document.prerendering"));
@@ -869,6 +870,16 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, ExactUrlMatch) {
   EXPECT_EQ(GetRequestCount(kNavigationUrl), 1);
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), kNavigationUrl);
+
+  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+      ukm_source_id, PreloadingType::kPrerender,
+      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+      PreloadingTriggeringOutcome::kSuccess,
+      PreloadingFailureReason::kUnspecified,
+      /*accurate=*/true,
+      /*ready_time=*/kMockElapsedTime,
+      blink::mojom::SpeculationEagerness::kEager)});
 }
 
 // Tests that the speculationrules trigger works in the presence of
@@ -888,6 +899,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, InexactUrlMatch) {
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
+  NavigationHandleObserver activation_observer(web_contents(), kNavigationUrl);
   NavigatePrimaryPage(kNavigationUrl);
   // Ensure the state has been propagated to renderer processes.
   ASSERT_EQ(false, EvalJs(web_contents(), "document.prerendering"));
@@ -902,6 +914,17 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, InexactUrlMatch) {
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), kNavigationUrl);
   ASSERT_EQ(kNavigationUrl, EvalJs(web_contents(), "window.location.href"));
+
+  // URL match was inexact but should be recorded as accurate.
+  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+      ukm_source_id, PreloadingType::kPrerender,
+      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+      PreloadingTriggeringOutcome::kSuccess,
+      PreloadingFailureReason::kUnspecified,
+      /*accurate=*/true,
+      /*ready_time=*/kMockElapsedTime,
+      blink::mojom::SpeculationEagerness::kEager)});
 }
 
 // Tests that the speculationrules trigger works in the presence of
@@ -926,6 +949,8 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
   EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
 
+  NavigationHandleObserver activation_observer(web_contents(),
+                                               kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
   // Ensure the state has been propagated to renderer processes.
   ASSERT_EQ(false, EvalJs(web_contents(), "document.prerendering"));
@@ -939,6 +964,16 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), kRedirectedUrl);
+
+  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+      ukm_source_id, PreloadingType::kPrerender,
+      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+      PreloadingTriggeringOutcome::kSuccess,
+      PreloadingFailureReason::kUnspecified,
+      /*accurate=*/true,
+      /*ready_time=*/kMockElapsedTime,
+      blink::mojom::SpeculationEagerness::kEager)});
 }
 
 // Tests that the speculationrules trigger works in the presence of
@@ -967,6 +1002,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
   EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
 
+  NavigationHandleObserver activation_observer(web_contents(), kNavigationUrl);
   NavigatePrimaryPage(kNavigationUrl);
   // Ensure the state has been propagated to renderer processes.
   ASSERT_EQ(false, EvalJs(web_contents(), "document.prerendering"));
@@ -986,6 +1022,17 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
   // the already redirected prerender renderer.
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), kRedirectedUrl);
   ASSERT_EQ(kRedirectedUrl, EvalJs(web_contents(), "window.location.href"));
+
+  // URL match was inexact but should be recorded as accurate.
+  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+      ukm_source_id, PreloadingType::kPrerender,
+      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+      PreloadingTriggeringOutcome::kSuccess,
+      PreloadingFailureReason::kUnspecified,
+      /*accurate=*/true,
+      /*ready_time=*/kMockElapsedTime,
+      blink::mojom::SpeculationEagerness::kEager)});
 }
 
 // Tests that the speculationrules trigger works.

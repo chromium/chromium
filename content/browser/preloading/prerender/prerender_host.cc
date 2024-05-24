@@ -17,6 +17,7 @@
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/devtools_prerender_attempt.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -1235,6 +1236,13 @@ void PrerenderHost::Cancel(PrerenderFinalStatus status) {
 
 void PrerenderHost::SetNoVarySearch(net::HttpNoVarySearchData no_vary_search) {
   CHECK(!no_vary_search_);
+  if (attempt_) {
+    static_cast<PreloadingAttemptImpl*>(attempt_.get())
+        ->SetNoVarySearchMatchPredicate(base::BindRepeating(
+            [](net::HttpNoVarySearchData no_vary_search, const GURL& a,
+               const GURL& b) { return no_vary_search.AreEquivalent(a, b); },
+            no_vary_search, GetInitialUrl()));
+  }
   no_vary_search_ = std::move(no_vary_search);
 }
 
