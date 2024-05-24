@@ -206,10 +206,9 @@ TEST_F(GlanceablesTasksAndClassroomTest, TimeManagementExpandStates) {
   auto* const tasks_view = GetTasksView();
   auto* const classroom_view = GetClassroomView();
 
-  // Initially both views are expanded.
-  // TODO(b/338917100): Consider having a half folded state.
+  // Initially `tasks_view` is expanded and `classroom_view` is collapsed.
   EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
 
   // Expanding/Collapsing `tasks_view` will collapse/expand `classroom_view`.
   auto* const tasks_expand_button = GetTasksExpandButtonView();
@@ -241,13 +240,6 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 
   auto* const tasks_view = GetTasksView();
   auto* const classroom_view = GetClassroomView();
-
-  // Expand `tasks_view`.
-  // TODO(b/338917100): Fix the behavior that clicking on the tasks expand
-  // button should expand tasks.
-  auto* const classroom_expand_button = GetClassroomExpandButtonView();
-  ASSERT_TRUE(classroom_expand_button);
-  LeftClickOn(classroom_expand_button);
   EXPECT_TRUE(tasks_view->is_expanded());
   EXPECT_FALSE(classroom_view->is_expanded());
 
@@ -295,13 +287,6 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 
   auto* const tasks_view = GetTasksView();
   auto* const classroom_view = GetClassroomView();
-
-  // Expand `tasks_view`.
-  // TODO(b/338917100): Fix the behavior that clicking on the tasks expand
-  // button should expand tasks.
-  auto* const classroom_expand_button = GetClassroomExpandButtonView();
-  ASSERT_TRUE(classroom_expand_button);
-  LeftClickOn(classroom_expand_button);
   EXPECT_TRUE(tasks_view->is_expanded());
   EXPECT_FALSE(classroom_view->is_expanded());
 
@@ -352,13 +337,6 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 
   auto* const tasks_view = GetTasksView();
   auto* const classroom_view = GetClassroomView();
-
-  // Expand `tasks_view`.
-  // TODO(b/338917100): Fix the behavior that clicking on the tasks expand
-  // button should expand tasks.
-  auto* const classroom_expand_button = GetClassroomExpandButtonView();
-  ASSERT_TRUE(classroom_expand_button);
-  LeftClickOn(classroom_expand_button);
   EXPECT_TRUE(tasks_view->is_expanded());
   EXPECT_FALSE(classroom_view->is_expanded());
 

@@ -261,6 +261,11 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
             std::make_unique<GlanceablesClassroomStudentView>());
     time_management_view_observation_.AddObservation(
         classroom_bubble_student_view_);
+    // Collapse `classroom_bubble_student_view_` if `tasks_bubble_view_` exists.
+    if (tasks_bubble_view_) {
+      classroom_bubble_student_view_->SetExpandState(false);
+    }
+
     UpdateTimeManagementContainerLayout();
     UpdateBubble();
 
@@ -288,6 +293,11 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
   tasks_bubble_view_ = time_management_container_view_->AddChildViewAt(
       std::make_unique<GlanceablesTasksView>(task_lists), 0);
   time_management_view_observation_.AddObservation(tasks_bubble_view_);
+  // Collapse `classroom_bubble_student_view_` if it exists.
+  if (classroom_bubble_student_view_) {
+    classroom_bubble_student_view_->SetExpandState(false);
+  }
+
   UpdateTimeManagementContainerLayout();
   UpdateBubble();
 
