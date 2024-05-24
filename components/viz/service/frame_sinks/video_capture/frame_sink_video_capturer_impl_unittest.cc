@@ -282,12 +282,12 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
           GetBufferSizeInPixelsForVideoPixelFormat(info->pixel_format,
                                                    info->coded_size),
           VideoPixelFormatToGfxBufferFormat(info->pixel_format).value());
-      scoped_refptr<gpu::ClientSharedImage> dummy_shared_images[4];
+      scoped_refptr<gpu::ClientSharedImage> dummy_shared_image;
 
       // The frame is only gonna tell Letterbox to skip the test.
       frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
           info->visible_rect, info->visible_rect.size(), std::move(gmb_dummy),
-          dummy_shared_images, gpu::SyncToken(), /*texture_target=*/0,
+          dummy_shared_image, gpu::SyncToken(), /*texture_target=*/0,
           base::NullCallback(), info->timestamp);
       ASSERT_TRUE(frame);
     } else {

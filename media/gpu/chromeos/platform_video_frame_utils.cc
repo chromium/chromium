@@ -373,11 +373,10 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
   } else {
     // The empty shared image array is ok because this VideoFrame is not
     // rendered.
-    scoped_refptr<gpu::ClientSharedImage>
-        empty_shared_images[VideoFrame::kMaxPlanes];
+    scoped_refptr<gpu::ClientSharedImage> empty_shared_image;
     frame = VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer),
-        empty_shared_images, gpu::SyncToken(), /*texture_target=*/0,
+        empty_shared_image, gpu::SyncToken(), /*texture_target=*/0,
         base::NullCallback(), timestamp);
   }
 

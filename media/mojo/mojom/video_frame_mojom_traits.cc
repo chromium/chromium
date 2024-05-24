@@ -409,9 +409,17 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        visible_rect, natural_size, std::move(gpu_memory_buffer), shared_images,
-        sync_token, texture_target, base::NullCallback(), timestamp);
+    if (exported_shared_images.size() == 1) {
+      frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
+          visible_rect, natural_size, std::move(gpu_memory_buffer),
+          shared_images[0], sync_token, texture_target, base::NullCallback(),
+          timestamp);
+    } else {
+      frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
+          visible_rect, natural_size, std::move(gpu_memory_buffer),
+          shared_images, sync_token, texture_target, base::NullCallback(),
+          timestamp);
+    }
   } else if (data.is_mailbox_data()) {
     media::mojom::MailboxVideoFrameDataDataView mailbox_data;
     data.GetMailboxDataDataView(&mailbox_data);
