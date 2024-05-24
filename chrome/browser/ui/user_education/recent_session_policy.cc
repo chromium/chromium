@@ -160,6 +160,8 @@ RecentSessionPolicyImpl::GetDefaultConstraints() {
       kAllowRecentSessionTracking, "max_active_days", 3);
   const int super_active_days = base::GetFieldTrialParamByFeatureAsInt(
       kAllowRecentSessionTracking, "super_active_days", 4);
+  const int max_monthly_active_days = base::GetFieldTrialParamByFeatureAsInt(
+      kAllowRecentSessionTracking, "max_monthly_active_days", 0);
   const int max_super_active_weeks = base::GetFieldTrialParamByFeatureAsInt(
       kAllowRecentSessionTracking, "max_super_active_weeks", 0);
   const int max_weekly_sessions = base::GetFieldTrialParamByFeatureAsInt(
@@ -170,6 +172,9 @@ RecentSessionPolicyImpl::GetDefaultConstraints() {
   result.emplace_back(std::make_unique<ActiveDaysConstraint>(kShortTermDays),
                       "UserEducation.Session.RecentActiveDays", kShortTermDays,
                       ValueOrNull(max_active_days));
+  result.emplace_back(std::make_unique<ActiveDaysConstraint>(kLongTermDays),
+                      "UserEducation.Session.MonthlyActiveDays", kLongTermDays,
+                      ValueOrNull(max_monthly_active_days));
   result.emplace_back(
       std::make_unique<ActiveWeeksConstraint>(kLongTermWeeks, 1),
       "UserEducation.Session.RecentActiveWeeks", kLongTermWeeks,
