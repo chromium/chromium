@@ -1,4 +1,8 @@
 <style>
+  :host {
+    --color-scrim-rgb: 24, 28, 34;
+  }
+
   .app-container {
     height: 100%;
     width: 100%;
@@ -9,9 +13,8 @@
   }
 
   #backgroundScrim {
-    background-color: #5b5e66;
+    background-color: rgba(var(--color-scrim-rgb), 0.2);
     inset: 0;
-    opacity: 60%;
     position: absolute;
   }
 
@@ -27,7 +30,7 @@
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-size: 36px;
     --cr-icon-button-fill-color: white;
-    background-color: #181C2299;
+    background-color: rgba(var(--color-scrim-rgb), 0.6);
   }
 
   #closeButton {

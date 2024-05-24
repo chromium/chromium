@@ -35,6 +35,9 @@ const RESIZE_THRESHOLD = 8;
 // The size of our custom cursor.
 export const CURSOR_SIZE_PIXEL = 32;
 
+// The cursor image url css variable name.
+export const CURSOR_IMG_URL = '--cursor-img-url';
+
 export interface CursorData {
   cursor: CursorType;
 }
@@ -105,7 +108,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       contextMenuX: Number,
       contextMenuY: Number,
       screenshotDataUri: String,
-      cursorImgUri: String,
       isPointerInside: Boolean,
       currentGesture: emptyGestureEvent(),
       disableShimmer: {
@@ -116,7 +118,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
-      darkenDefaultScrim: {
+      darkenExtraScrim: {
         type: Boolean,
         reflectToAttribute: true,
       },
@@ -135,7 +137,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private textSelectionEndIndex: number = -1;
   // The data URI of the current overlay screenshot.
   private screenshotDataUri: string;
-  private cursorImgUri: string = 'lens.svg';
   private isPointerInside = false;
   private isPointerInsideContextMenu = false;
   // The current gesture event. The coordinate values are only accurate if a
@@ -145,7 +146,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
   // Whether the default background scrim is currently being darkened.
-  private darkenDefaultScrim: boolean = false;
+  private darkenExtraScrim: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
@@ -206,11 +207,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       this.textSelectionStartIndex = -1;
       this.textSelectionEndIndex = -1;
     });
-    this.eventTracker_.add(document, 'darken-default-scrim-opacity', () => {
-      this.darkenDefaultScrim = true;
+    this.eventTracker_.add(document, 'darken-extra-scrim-opacity', () => {
+      this.darkenExtraScrim = true;
     });
-    this.eventTracker_.add(document, 'lighten-default-scrim-opacity', () => {
-      this.darkenDefaultScrim = false;
+    this.eventTracker_.add(document, 'lighten-extra-scrim-opacity', () => {
+      this.darkenExtraScrim = false;
     });
   }
 
@@ -294,9 +295,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private setCursorToText() {
     // Set body cursor style to handle dragging.
     document.body.style.cursor = 'text';
-    this.cursorImgUri = 'text.svg';
     this.cursorOffsetX = 3;
     this.cursorOffsetY = 8;
+    this.style.setProperty(CURSOR_IMG_URL, 'url("text.svg")');
   }
 
   // Called on region selection drag.
@@ -305,7 +306,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     document.body.style.cursor = 'crosshair';
     this.cursorOffsetX = 3;
     this.cursorOffsetY = 6;
-    this.cursorImgUri = 'lens.svg';
+    this.style.setProperty(CURSOR_IMG_URL, 'url("lens.svg")');
   }
 
   // Called on object hover.
@@ -313,14 +314,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     // No dragging for objects, so no need to set body cursor style.
     this.cursorOffsetX = 4;
     this.cursorOffsetY = 8;
-    this.cursorImgUri = 'lens.svg';
+    this.style.setProperty(CURSOR_IMG_URL, 'url("lens.svg")');
   }
 
   private resetCursor() {
     document.body.style.cursor = 'unset';
-    this.cursorImgUri = 'lens.svg';
     this.cursorOffsetX = 3;
     this.cursorOffsetY = 6;
+    this.style.setProperty(CURSOR_IMG_URL, 'url("lens.svg")');
   }
   // LINT.ThenChange(//chrome/browser/resources/lens/overlay/cursor_tooltip.ts:CursorOffsetValues)
 

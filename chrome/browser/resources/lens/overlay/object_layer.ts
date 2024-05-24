@@ -189,7 +189,7 @@ export class ObjectLayerElement extends PolymerElement {
           composed: true,
           detail: {tooltipType: CursorTooltipType.CLICK_SEARCH},
         }));
-    this.dispatchEvent(new CustomEvent('darken-default-scrim-opacity', {
+    this.dispatchEvent(new CustomEvent('darken-extra-scrim-opacity', {
       bubbles: true,
       composed: true,
     }));
@@ -209,7 +209,7 @@ export class ObjectLayerElement extends PolymerElement {
           composed: true,
           detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
         }));
-    this.dispatchEvent(new CustomEvent('lighten-default-scrim-opacity', {
+    this.dispatchEvent(new CustomEvent('lighten-extra-scrim-opacity', {
       bubbles: true,
       composed: true,
     }));

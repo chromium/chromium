@@ -6,11 +6,12 @@
     --post-selection-corner-radius: 12px;
     --post-selection-corner-width: 4px;
     --post-selection-corner-hitbox-max-size: 40px;
+    --color-scrim: #181C22;
     position: relative;
   }
 
   #postSelectionScrim {
-    background-color: #151C26;
+    background-color: var(--color-scrim);
     height: 100%;
     opacity: 20%;
     transition: opacity cubic-bezier(0.2, 0.0, 0, 1.0) 400ms;
@@ -32,7 +33,9 @@
   }
 
   #postSelection {
-    background-color: #151C26;
+    /* Scrim is rendered here too, so that the rendered screenshot is dark
+     * as if it were under the scrim as well. */
+    background-color: var(--color-scrim);
     height: var(--selection-height);
     left: var(--selection-left);
     margin: auto;
