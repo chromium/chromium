@@ -34,7 +34,7 @@ namespace {
 constexpr char kWidgetName[] = "MagicBoostDisclaimerViewWidget";
 
 // Paddings, sizes and insets.
-constexpr int kImageWidth = 360;
+constexpr int kImageWidth = 512;
 constexpr int kContainerPadding = 32;
 constexpr int kTextContainerBetweenChildSpacing = 16;
 constexpr int kContainerBottomPadding = 28;
@@ -48,7 +48,7 @@ constexpr gfx::Insets kButtonContainerInsets =
                       kContainerBottomPadding,
                       kContainerPadding);
 constexpr gfx::Insets kTextContainerInsets = gfx::Insets(kContainerPadding);
-constexpr gfx::Size kImagePreferredSize(/*width=*/kImageWidth, /*height=*/216);
+constexpr gfx::Size kImagePreferredSize(/*width=*/kImageWidth, /*height=*/236);
 
 // Placeholder texts
 // TODO(b/339528642): Replace with real strings.
