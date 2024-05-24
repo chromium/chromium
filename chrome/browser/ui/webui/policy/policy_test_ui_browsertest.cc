@@ -672,11 +672,11 @@ class PolicyTestUITest : public PlatformBrowserTest {
 
     // Add a fake "extension" to the SchemaRegistry.
     auto* registry = GetProfile()->GetPolicySchemaRegistryService()->registry();
-    std::string error;
+    const auto schema = policy::Schema::Parse(kExtensionSchemaJson);
+    ASSERT_TRUE(schema.has_value()) << schema.error();
     registry->RegisterComponent(
         policy::PolicyNamespace(policy::POLICY_DOMAIN_EXTENSIONS, kExtensionId),
-        policy::Schema::Parse(kExtensionSchemaJson, &error));
-    ASSERT_THAT(error, testing::IsEmpty());
+        *schema);
 
     // Enable kPolicyTestPageEnabled policy.
     policy::PolicyMap policy_map;
