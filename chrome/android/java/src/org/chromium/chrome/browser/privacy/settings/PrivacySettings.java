@@ -9,9 +9,6 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.SuperscriptSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -48,7 +45,6 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -356,40 +352,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     ContentSettingsResources.getThirdPartyCookieListSummary(
                             UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE)));
         }
-
-        updatePrivacyGuidePreferenceTitle();
-    }
-
-    // TODO(crbug.com/40263380): This will be removed when the Privacy Guide is rolled out and no
-    //  longer a new feature.
-    private void updatePrivacyGuidePreferenceTitle() {
-        Preference privacyGuide = findPreference(PREF_PRIVACY_GUIDE);
-        if (privacyGuide == null) {
-            return;
-        }
-
-        final CharSequence privacyGuidePrefTitle;
-        if (!UserPrefs.get(getProfile()).getBoolean(Pref.PRIVACY_GUIDE_VIEWED)) {
-            privacyGuidePrefTitle =
-                    SpanApplier.applySpans(
-                            getString(R.string.privacy_guide_pref_title),
-                            new SpanApplier.SpanInfo(
-                                    "<new>",
-                                    "</new>",
-                                    new SuperscriptSpan(),
-                                    new RelativeSizeSpan(0.75f),
-                                    new ForegroundColorSpan(
-                                            SemanticColorUtils.getDefaultTextColorAccent1(
-                                                    getContext()))));
-        } else {
-            privacyGuidePrefTitle =
-                    (CharSequence)
-                            (SpanApplier.removeSpanText(
-                                            getString(R.string.privacy_guide_pref_title),
-                                            new SpanApplier.SpanInfo("<new>", "</new>"))
-                                    .trim());
-        }
-        privacyGuide.setTitle(privacyGuidePrefTitle);
     }
 
     private boolean showTrackingProtectionUI() {
