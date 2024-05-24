@@ -401,8 +401,6 @@ void WorkerThread::RunWorker() {
     std::optional<WatchHangsInScope> hang_watch_scope;
 
     TRACE_EVENT_END0("base", "WorkerThread active");
-    // TODO(crbug.com/40657156): Remove this once fixed.
-    PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
     hang_watch_scope.reset();
     delegate()->WaitForWork();
     TRACE_EVENT_BEGIN("base", "WorkerThread active",
@@ -475,8 +473,6 @@ void WorkerThread::RunWorker() {
 
   TRACE_EVENT_END0("base", "WorkerThread active");
   TRACE_EVENT_INSTANT0("base", "WorkerThread dead", TRACE_EVENT_SCOPE_THREAD);
-  // TODO(crbug.com/40657156): Remove this once fixed.
-  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 
 }  // namespace base::internal

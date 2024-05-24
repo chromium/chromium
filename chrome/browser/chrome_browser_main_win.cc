@@ -874,10 +874,6 @@ void ChromeBrowserMainPartsWin::OnModuleEvent(
       }
     }
   }
-  // Since OnModuleEvent can be invoked from any thread, the above trace event's
-  // END might be the last event on this thread, emit an empty event to force
-  // the END to be flushed. TODO(crbug.com/40657156): Remove this once fixed.
-  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 
 // Helper function for initializing the module database subsystem and populating

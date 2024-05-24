@@ -296,7 +296,6 @@ struct IgnoredValue {
 #define TRACE_EVENT(category, name, ...) INTERNAL_TRACE_IGNORE(category, name)
 #define TRACE_EVENT_INSTANT(category, name, ...) \
   INTERNAL_TRACE_IGNORE(category, name)
-#define PERFETTO_INTERNAL_ADD_EMPTY_EVENT() INTERNAL_TRACE_IGNORE()
 
 namespace base {
 namespace trace_event {

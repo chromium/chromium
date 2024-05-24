@@ -308,11 +308,6 @@ void CategorizedWorkerPoolImpl::Run(
       // start running. Signal other worker threads.
       SignalHasReadyToRunTasksWithLockAcquired();
 
-      // Make sure the END of the last trace event emitted before going idle
-      // is flushed to perfetto.
-      // TODO(crbug.com/40657156): Remove this once fixed.
-      PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
-
       // Exit when shutdown is set and no more tasks are pending.
       if (shutdown_) {
         break;

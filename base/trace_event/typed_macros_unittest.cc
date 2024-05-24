@@ -369,7 +369,6 @@ TEST_F(TypedTraceEventTest, MAYBE_EmptyEvent) {
   EnableTrace();
 
   EXPECT_FALSE(g_test_trace_packet->emit_empty_called);
-  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
   EXPECT_TRUE(g_test_trace_packet->emit_empty_called);
 
   CancelTrace();
