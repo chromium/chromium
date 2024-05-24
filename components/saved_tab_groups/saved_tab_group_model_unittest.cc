@@ -19,6 +19,7 @@
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
+#include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
@@ -486,16 +487,10 @@ TEST_P(SavedTabGroupModelTest, LoadStoredEntriesPopulatesModel) {
   std::unique_ptr<SavedTabGroup> group =
       std::make_unique<SavedTabGroup>(*saved_tab_group_model_->Get(id_3_));
 
-  std::vector<sync_pb::SavedTabGroupSpecifics> specifics;
-  specifics.emplace_back(*group->ToSpecifics());
-
-  for (SavedTabGroupTab tab : group->saved_tabs())
-    specifics.emplace_back(*tab.ToSpecifics());
-
-  EXPECT_EQ(specifics.size(), size_t(4));
   saved_tab_group_model_->Remove(id_3_);
+  ASSERT_FALSE(saved_tab_group_model_->Contains(id_3_));
 
-  saved_tab_group_model_->LoadStoredEntries(specifics);
+  saved_tab_group_model_->LoadStoredEntries({*group}, group->saved_tabs());
 
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_3_));
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_3_), IsV2UIEnabled() ? 0 : 2);
@@ -515,7 +510,8 @@ TEST_P(SavedTabGroupModelTest, LoadStoredEntriesPopulatesModel) {
 // object correctly.
 TEST_P(SavedTabGroupModelTest, MergeGroupsFromModel) {
   const SavedTabGroup* group1 = saved_tab_group_model_->Get(id_1_);
-  SavedTabGroup group2 = SavedTabGroup::FromSpecifics(*group1->ToSpecifics());
+
+  SavedTabGroup group2(*group1);
   group2.SetColor(tab_groups::TabGroupColorId::kPink);
   group2.SetTitle(u"Updated title");
   const SavedTabGroup* merged_group =
@@ -553,12 +549,10 @@ TEST_P(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
   } else {
     ASSERT_THAT(GetSavedTabGroupIds(),
                 testing::ElementsAre(guid2, guid1, id_1_, id_2_, id_3_));
-    ;
   }
 
   // Change group 2 position from 0 to 1.
-  SavedTabGroup updated_group2 =
-      SavedTabGroup::FromSpecifics(*group2->ToSpecifics());
+  SavedTabGroup updated_group2(*group2);
   EXPECT_EQ(0, updated_group2.position());
   updated_group2.SetPosition(1);
   EXPECT_EQ(1, updated_group2.position());
@@ -604,8 +598,7 @@ TEST_P(SavedTabGroupModelTest, MergeUnpinnedGroupRetainUnpinned) {
               testing::ElementsAre(guid2, guid1, id_3_, id_2_, id_1_));
 
   // Unpin group 2.
-  SavedTabGroup updated_group2 =
-      SavedTabGroup::FromSpecifics(*group2->ToSpecifics());
+  SavedTabGroup updated_group2(*group2);
   EXPECT_EQ(0, updated_group2.position());
   updated_group2.SetPinned(false);
   EXPECT_EQ(std::nullopt, updated_group2.position());
@@ -627,7 +620,7 @@ TEST_P(SavedTabGroupModelTest, MergeUnpinnedGroupRetainUnpinned) {
 // correctly.
 TEST_P(SavedTabGroupModelTest, MergeTabsFromModel) {
   SavedTabGroupTab tab1 = saved_tab_group_model_->Get(id_1_)->saved_tabs()[0];
-  SavedTabGroupTab tab2 = SavedTabGroupTab::FromSpecifics(*tab1.ToSpecifics());
+  SavedTabGroupTab tab2(tab1);
   tab2.SetTitle(u"Updated Title");
   tab2.SetURL(GURL("chrome://updated_url"));
 

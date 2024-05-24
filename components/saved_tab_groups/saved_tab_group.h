@@ -13,7 +13,6 @@
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/types.h"
-#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/image/image.h"
@@ -134,25 +133,8 @@ class SavedTabGroup {
   // Returns whether the remote group has more recent updates.
   bool RemoteGroupHasMoreRecentUpdates(base::Time remote_update_time) const;
 
-  // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
-  // `SavedTabGroupTab`.
-  static SavedTabGroup FromSpecifics(
-      const sync_pb::SavedTabGroupSpecifics& specific);
-
-  // Converts a `SavedTabGroupTab` into a `SavedTabGroupSpecifics` for sync.
-  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics() const;
-
   // Returns true iff syncable data fields in `this` and `other` are equivalent.
   bool IsSyncEquivalent(const SavedTabGroup& other) const;
-
-  // Converts tab group color ids into the sync data type for saved tab group
-  // colors.
-  static ::sync_pb::SavedTabGroup_SavedTabGroupColor TabGroupColorToSyncColor(
-      const tab_groups::TabGroupColorId color);
-
-  // Converts sync group colors into tab group colors ids.
-  static tab_groups::TabGroupColorId SyncColorToTabGroupColor(
-      const sync_pb::SavedTabGroup::SavedTabGroupColor color);
 
  private:
   // Moves the tab denoted by `saved_tab_guid` to the position `new_index`.

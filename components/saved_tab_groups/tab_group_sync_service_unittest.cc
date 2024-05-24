@@ -454,13 +454,13 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabId) {
 TEST_F(TabGroupSyncServiceTest, AddObserverBeforeInitialize) {
   SetupTabGroupStore(true);
   EXPECT_CALL(*observer_, OnInitialized()).Times(1);
-  model_->LoadStoredEntries(std::vector<sync_pb::SavedTabGroupSpecifics>());
+  model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 }
 
 TEST_F(TabGroupSyncServiceTest, AddObserverAfterInitialize) {
   SetupTabGroupStore(true);
   EXPECT_CALL(*observer_, OnInitialized()).Times(1);
-  model_->LoadStoredEntries(std::vector<sync_pb::SavedTabGroupSpecifics>());
+  model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
   auto observer2 = std::make_unique<MockTabGroupSyncServiceObserver>();
   EXPECT_CALL(*observer2, OnInitialized()).Times(1);
@@ -470,13 +470,13 @@ TEST_F(TabGroupSyncServiceTest, AddObserverAfterInitialize) {
 TEST_F(TabGroupSyncServiceTest, InitIsNotCompleteUntilMappingsAreRead) {
   SetupTabGroupStore(false);
   EXPECT_CALL(*observer_, OnInitialized()).Times(0);
-  model_->LoadStoredEntries(std::vector<sync_pb::SavedTabGroupSpecifics>());
+  model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 }
 
 TEST_F(TabGroupSyncServiceTest, MappingsAreFixedOnStartup) {
   SetupTabGroupStore(true);
   EXPECT_CALL(*observer_, OnInitialized()).Times(1);
-  model_->LoadStoredEntries(std::vector<sync_pb::SavedTabGroupSpecifics>());
+  model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
   // Group 2 is an open group that has mapping persisted.
   auto group2 = tab_group_sync_service_->GetGroup(group_2_.saved_guid());
@@ -490,7 +490,7 @@ TEST_F(TabGroupSyncServiceTest, MappingsAreFixedOnStartup) {
 TEST_F(TabGroupSyncServiceTest, MappingsAreNotFixedIfSetupNotComplete) {
   SetupTabGroupStore(false);
   EXPECT_CALL(*observer_, OnInitialized()).Times(0);
-  model_->LoadStoredEntries(std::vector<sync_pb::SavedTabGroupSpecifics>());
+  model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
   auto group = tab_group_sync_service_->GetGroup(group_2_.saved_guid());
   EXPECT_FALSE(group->local_group_id());

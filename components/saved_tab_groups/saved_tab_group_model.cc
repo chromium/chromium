@@ -520,41 +520,27 @@ void SavedTabGroupModel::ReorderGroupFromSync(const base::Uuid& id,
   }
 }
 
-std::vector<sync_pb::SavedTabGroupSpecifics>
-SavedTabGroupModel::LoadStoredEntries(
-    std::vector<sync_pb::SavedTabGroupSpecifics> entries) {
-  std::vector<SavedTabGroupTab> tabs;
-  std::vector<sync_pb::SavedTabGroupSpecifics> tabs_missing_groups;
-
+void SavedTabGroupModel::LoadStoredEntries(std::vector<SavedTabGroup> groups,
+                                           std::vector<SavedTabGroupTab> tabs) {
   // `entries` is not ordered such that groups are guaranteed to be
   // at the front of the vector. As such, we can run into the case where we
   // try to add a tab to a group that does not exist for us yet.
-  for (sync_pb::SavedTabGroupSpecifics proto : entries) {
-    if (proto.has_group()) {
-      Add(SavedTabGroup::FromSpecifics(proto));
-    } else {
-      tabs.emplace_back(SavedTabGroupTab::FromSpecifics(proto));
-    }
+  for (SavedTabGroup& group : groups) {
+    Add(group);
   }
-
   UpdateGroupPositionsImpl();
 
-  for (const SavedTabGroupTab& tab : tabs) {
-    std::optional<int> index = GetIndexOf(tab.saved_group_guid());
-    if (!index.has_value()) {
-      tabs_missing_groups.emplace_back(std::move(*tab.ToSpecifics()));
-    } else {
-      base::Uuid group_id = tab.saved_group_guid();
-      AddTabToGroupFromSync(group_id, std::move(tab));
-    }
+  for (SavedTabGroupTab& tab : tabs) {
+    base::Uuid group_id = tab.saved_group_guid();
+    // The caller must guarantee that all `tabs` have a corresponding group.
+    CHECK(Contains(group_id));
+    AddTabToGroupFromSync(group_id, std::move(tab));
   }
 
   is_loaded_ = true;
   for (auto& observer : observers_) {
     observer.SavedTabGroupModelLoaded();
   }
-
-  return tabs_missing_groups;
 }
 
 void SavedTabGroupModel::OnGroupClosedInTabStrip(

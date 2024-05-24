@@ -275,7 +275,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AlreadyOpenedGroupIsFocused) {
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
-  service()->model()->LoadStoredEntries({});
+  service()->model()->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
   // Activate the second tab.
   browser_1->tab_strip_model()->ActivateTabAt(1);
@@ -324,7 +324,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
-  service()->model()->LoadStoredEntries({});
+  service()->model()->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
   // Activate the second tab.
   browser_1->tab_strip_model()->ActivateTabAt(1);
@@ -369,7 +369,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
-  service()->model()->LoadStoredEntries({});
+  service()->model()->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
   // Expect calling StoreLocalToSavedId before the model is loaded does not link
   // non-existent saved groups.
@@ -430,7 +430,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
-  service()->model()->LoadStoredEntries({});
+  service()->model()->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
   // Retrieve the 2 saved groups from the model.
   SavedTabGroupModel* model = service()->model();
@@ -480,7 +480,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
-  service()->model()->LoadStoredEntries({});
+  service()->model()->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
   // Retrieve the saved group from the SavedTabGroupModel.
   SavedTabGroupModel* model = service()->model();
@@ -546,7 +546,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
-  service()->model()->LoadStoredEntries({});
+  service()->model()->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
   // Retrieve the saved group from the SavedTabGroupModel.
   SavedTabGroupModel* model = service()->model();
@@ -612,7 +612,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
-  service()->model()->LoadStoredEntries({});
+  service()->model()->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
   // Retrieve the saved group from the SavedTabGroupModel.
   SavedTabGroupModel* model = service()->model();

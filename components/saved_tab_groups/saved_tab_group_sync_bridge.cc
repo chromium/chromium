@@ -42,16 +42,19 @@ namespace {
 constexpr base::TimeDelta kDiscardOrphanedTabsThreshold = base::Days(30);
 
 std::unique_ptr<syncer::EntityData> CreateEntityData(
-    std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specific) {
+    sync_pb::SavedTabGroupSpecifics specific) {
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
-  entity_data->name = specific->guid();
-  entity_data->specifics.set_allocated_saved_tab_group(specific.release());
+  entity_data->name = specific.guid();
+  entity_data->specifics.mutable_saved_tab_group()->Swap(&specific);
   return entity_data;
 }
 
 std::optional<size_t> GroupPositionFromSpecifics(
     const sync_pb::SavedTabGroupSpecifics& specifics) {
+  // In v1 we always set tab group position even if the proto is not set, which
+  // gives a default position of 0. In v2 we leave the position unset if the
+  // proto is not set for unpinned tab groups.
   if (!IsTabGroupsSaveUIUpdateEnabled()) {
     return specifics.group().position();
   }
@@ -64,6 +67,183 @@ std::optional<size_t> GroupPositionFromSpecifics(
 base::Time TimeFromWindowsEpochMicros(int64_t time_windows_epoch_micros) {
   return base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(time_windows_epoch_micros));
+}
+
+tab_groups::TabGroupColorId SyncColorToTabGroupColor(
+    const sync_pb::SavedTabGroup::SavedTabGroupColor color) {
+  switch (color) {
+    case sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_GREY:
+      return tab_groups::TabGroupColorId::kGrey;
+    case sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_BLUE:
+      return tab_groups::TabGroupColorId::kBlue;
+    case sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_RED:
+      return tab_groups::TabGroupColorId::kRed;
+    case sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_YELLOW:
+      return tab_groups::TabGroupColorId::kYellow;
+    case sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_GREEN:
+      return tab_groups::TabGroupColorId::kGreen;
+    case sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_PINK:
+      return tab_groups::TabGroupColorId::kPink;
+    case sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_PURPLE:
+      return tab_groups::TabGroupColorId::kPurple;
+    case sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_CYAN:
+      return tab_groups::TabGroupColorId::kCyan;
+    case sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_ORANGE:
+      return tab_groups::TabGroupColorId::kOrange;
+    case sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_UNSPECIFIED:
+      return tab_groups::TabGroupColorId::kGrey;
+  }
+}
+
+sync_pb::SavedTabGroup_SavedTabGroupColor TabGroupColorToSyncColor(
+    const tab_groups::TabGroupColorId color) {
+  switch (color) {
+    case tab_groups::TabGroupColorId::kGrey:
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_GREY;
+    case tab_groups::TabGroupColorId::kBlue:
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_BLUE;
+    case tab_groups::TabGroupColorId::kRed:
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_RED;
+    case tab_groups::TabGroupColorId::kYellow:
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_YELLOW;
+    case tab_groups::TabGroupColorId::kGreen:
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_GREEN;
+    case tab_groups::TabGroupColorId::kPink:
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_PINK;
+    case tab_groups::TabGroupColorId::kPurple:
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_PURPLE;
+    case tab_groups::TabGroupColorId::kCyan:
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_CYAN;
+    case tab_groups::TabGroupColorId::kOrange:
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_ORANGE;
+    case tab_groups::TabGroupColorId::kNumEntries:
+      NOTREACHED_IN_MIGRATION() << "kNumEntries is not a supported color enum.";
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_GREY;
+  }
+
+  NOTREACHED_IN_MIGRATION() << "No known conversion for the supplied color.";
+}
+
+SavedTabGroup SpecificsToSavedTabGroup(
+    const sync_pb::SavedTabGroupSpecifics& specific) {
+  CHECK(specific.has_group());
+
+  const tab_groups::TabGroupColorId color =
+      SyncColorToTabGroupColor(specific.group().color());
+  const std::u16string& title = base::UTF8ToUTF16(specific.group().title());
+  std::optional<size_t> position = GroupPositionFromSpecifics(specific);
+  const base::Uuid guid = base::Uuid::ParseLowercase(specific.guid());
+  const base::Time creation_time =
+      TimeFromWindowsEpochMicros(specific.creation_time_windows_epoch_micros());
+  const base::Time update_time =
+      TimeFromWindowsEpochMicros(specific.update_time_windows_epoch_micros());
+  SavedTabGroup group = SavedTabGroup(title, color, {}, position, guid,
+                                      std::nullopt, creation_time);
+  group.SetUpdateTimeWindowsEpochMicros(update_time);
+
+  return group;
+}
+
+sync_pb::SavedTabGroupSpecifics SavedTabGroupToSpecifics(
+    const SavedTabGroup& group) {
+  sync_pb::SavedTabGroupSpecifics pb_specific;
+  pb_specific.set_guid(group.saved_guid().AsLowercaseString());
+  pb_specific.set_creation_time_windows_epoch_micros(
+      group.creation_time_windows_epoch_micros()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+  pb_specific.set_update_time_windows_epoch_micros(
+      group.update_time_windows_epoch_micros()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+
+  sync_pb::SavedTabGroup* pb_group = pb_specific.mutable_group();
+  pb_group->set_color(TabGroupColorToSyncColor(group.color()));
+  pb_group->set_title(base::UTF16ToUTF8(group.title()));
+
+  if (group.position().has_value()) {
+    if (IsTabGroupsSaveUIUpdateEnabled()) {
+      pb_group->set_pinned_position(group.position().value());
+    } else {
+      pb_group->set_position(group.position().value());
+    }
+  }
+  // Note: When adding a new syncable field, also update IsSyncEquivalent().
+
+  return pb_specific;
+}
+
+SavedTabGroupTab SpecificsToSavedTabGroupTab(
+    const sync_pb::SavedTabGroupSpecifics& specific) {
+  CHECK(specific.has_tab());
+
+  const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(specific.creation_time_windows_epoch_micros()));
+  const base::Time update_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(specific.update_time_windows_epoch_micros()));
+
+  return SavedTabGroupTab(
+      GURL(specific.tab().url()), base::UTF8ToUTF16(specific.tab().title()),
+      base::Uuid::ParseLowercase(specific.tab().group_guid()),
+      specific.tab().position(), base::Uuid::ParseLowercase(specific.guid()),
+      std::nullopt, creation_time, update_time);
+}
+
+sync_pb::SavedTabGroupSpecifics SavedTabGroupTabToSpecifics(
+    const SavedTabGroupTab& tab) {
+  sync_pb::SavedTabGroupSpecifics pb_specific;
+  pb_specific.set_guid(tab.saved_tab_guid().AsLowercaseString());
+  pb_specific.set_creation_time_windows_epoch_micros(
+      tab.creation_time_windows_epoch_micros()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+  pb_specific.set_update_time_windows_epoch_micros(
+      tab.update_time_windows_epoch_micros()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+
+  sync_pb::SavedTabGroupTab* pb_tab = pb_specific.mutable_tab();
+  pb_tab->set_url(tab.url().spec());
+  pb_tab->set_group_guid(tab.saved_group_guid().AsLowercaseString());
+  pb_tab->set_title(base::UTF16ToUTF8(tab.title()));
+  pb_tab->set_position(tab.position().value());
+  // Note: When adding a new syncable field, also update IsSyncEquivalent().
+
+  return pb_specific;
+}
+
+std::vector<sync_pb::SavedTabGroupSpecifics> LoadStoredEntries(
+    std::vector<sync_pb::SavedTabGroupSpecifics> stored_entries,
+    SavedTabGroupModel* model) {
+  std::vector<SavedTabGroup> groups;
+  std::unordered_set<std::string> group_guids;
+
+  // `stored_entries` is not ordered such that groups are guaranteed to be
+  // at the front of the vector. As such, we can run into the case where we
+  // try to add a tab to a group that does not exist for us yet.
+  for (const sync_pb::SavedTabGroupSpecifics& proto : stored_entries) {
+    if (proto.has_group()) {
+      groups.emplace_back(SpecificsToSavedTabGroup(proto));
+      group_guids.emplace(proto.guid());
+    }
+  }
+
+  // Parse tabs and find tabs missing groups.
+  std::vector<sync_pb::SavedTabGroupSpecifics> tabs_missing_groups;
+  std::vector<SavedTabGroupTab> tabs;
+  for (sync_pb::SavedTabGroupSpecifics& proto : stored_entries) {
+    if (proto.has_group()) {
+      continue;
+    }
+    if (group_guids.contains(proto.tab().group_guid())) {
+      tabs.emplace_back(SpecificsToSavedTabGroupTab(proto));
+      continue;
+    }
+    tabs_missing_groups.push_back(std::move(proto));
+  }
+
+  model->LoadStoredEntries(std::move(groups), std::move(tabs));
+  return tabs_missing_groups;
 }
 
 }  // anonymous namespace
@@ -109,12 +289,12 @@ std::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeFullSyncData(
     for (const SavedTabGroupTab& tab : group.saved_tabs()) {
       if (synced_items.count(tab.saved_tab_guid().AsLowercaseString()))
         continue;
-      SendToSync(tab.ToSpecifics(), metadata_change_list.get());
+      SendToSync(SavedTabGroupTabToSpecifics(tab), metadata_change_list.get());
     }
 
     if (synced_items.count(group.saved_guid().AsLowercaseString()))
       continue;
-    SendToSync(group.ToSpecifics(), metadata_change_list.get());
+    SendToSync(SavedTabGroupToSpecifics(group), metadata_change_list.get());
   }
 
   write_batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
@@ -201,14 +381,14 @@ void SavedTabGroupSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
     base::Uuid parsed_guid = base::Uuid::ParseLowercase(guid);
     for (const SavedTabGroup& group : model_->saved_tab_groups()) {
       if (group.saved_guid() == parsed_guid) {
-        AddEntryToBatch(batch.get(), group.ToSpecifics());
+        AddEntryToBatch(batch.get(), SavedTabGroupToSpecifics(group));
         break;
       }
 
       if (group.ContainsTab(parsed_guid)) {
         const SavedTabGroupTab& tab =
             group.saved_tabs()[group.GetIndexOfTab(parsed_guid).value()];
-        AddEntryToBatch(batch.get(), tab.ToSpecifics());
+        AddEntryToBatch(batch.get(), SavedTabGroupTabToSpecifics(tab));
         break;
       }
     }
@@ -220,9 +400,9 @@ void SavedTabGroupSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
 void SavedTabGroupSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
-    AddEntryToBatch(batch.get(), group.ToSpecifics());
+    AddEntryToBatch(batch.get(), SavedTabGroupToSpecifics(group));
     for (const SavedTabGroupTab& tab : group.saved_tabs()) {
-      AddEntryToBatch(batch.get(), tab.ToSpecifics());
+      AddEntryToBatch(batch.get(), SavedTabGroupTabToSpecifics(tab));
     }
   }
 
@@ -239,15 +419,15 @@ void SavedTabGroupSyncBridge::SavedTabGroupAddedLocally(
   DCHECK(group);
 
   int index = model_->GetIndexOf(guid).value();
-  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> group_specific =
-      group->ToSpecifics();
-  group_specific->mutable_group()->set_position(index);
+  sync_pb::SavedTabGroupSpecifics group_specific =
+      SavedTabGroupToSpecifics(*group);
+  group_specific.mutable_group()->set_position(index);
 
   UpsertEntitySpecific(std::move(group_specific), write_batch.get());
   for (size_t i = 0; i < group->saved_tabs().size(); ++i) {
-    std::unique_ptr<sync_pb::SavedTabGroupSpecifics> tab_specific =
-        group->saved_tabs()[i].ToSpecifics();
-    tab_specific->mutable_tab()->set_position(i);
+    sync_pb::SavedTabGroupSpecifics tab_specific =
+        SavedTabGroupTabToSpecifics(group->saved_tabs()[i]);
+    tab_specific.mutable_tab()->set_position(i);
     UpsertEntitySpecific(std::move(tab_specific), write_batch.get());
   }
 
@@ -270,7 +450,7 @@ void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
 
   // Keep track of the newly orphaned tabs since their group no longer exists.
   for (const SavedTabGroupTab& tab : removed_group->saved_tabs()) {
-    tabs_missing_groups_.emplace_back(*tab.ToSpecifics());
+    tabs_missing_groups_.emplace_back(SavedTabGroupTabToSpecifics(tab));
   }
 
   store_->CommitWriteBatch(
@@ -298,11 +478,12 @@ void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
       RemoveEntitySpecific(tab_guid.value(), write_batch.get());
     } else {
       int tab_index = group->GetIndexOfTab(tab_guid.value()).value();
-      UpsertEntitySpecific(group->saved_tabs()[tab_index].ToSpecifics(),
-                           write_batch.get());
+      UpsertEntitySpecific(
+          SavedTabGroupTabToSpecifics(group->saved_tabs()[tab_index]),
+          write_batch.get());
     }
   } else {
-    UpsertEntitySpecific(group->ToSpecifics(), write_batch.get());
+    UpsertEntitySpecific(SavedTabGroupToSpecifics(*group), write_batch.get());
   }
 
   store_->CommitWriteBatch(
@@ -320,7 +501,7 @@ void SavedTabGroupSyncBridge::SavedTabGroupTabsReorderedLocally(
   DCHECK(group);
 
   for (const SavedTabGroupTab& tab : group->saved_tabs()) {
-    UpsertEntitySpecific(tab.ToSpecifics(), write_batch.get());
+    UpsertEntitySpecific(SavedTabGroupTabToSpecifics(tab), write_batch.get());
   }
 
   store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
@@ -331,16 +512,42 @@ void SavedTabGroupSyncBridge::SavedTabGroupReorderedLocally() {
       store_->CreateWriteBatch();
 
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
-    UpsertEntitySpecific(group.ToSpecifics(), write_batch.get());
+    UpsertEntitySpecific(SavedTabGroupToSpecifics(group), write_batch.get());
   }
 
   store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
 }
 
+// static
+SavedTabGroup SavedTabGroupSyncBridge::SpecificsToSavedTabGroupForTest(
+    const sync_pb::SavedTabGroupSpecifics& specifics) {
+  return SpecificsToSavedTabGroup(specifics);
+}
+
+// static
+sync_pb::SavedTabGroupSpecifics
+SavedTabGroupSyncBridge::SavedTabGroupToSpecificsForTest(
+    const SavedTabGroup& group) {
+  return SavedTabGroupToSpecifics(group);
+}
+
+// static
+SavedTabGroupTab SavedTabGroupSyncBridge::SpecificsToSavedTabGroupTabForTest(
+    const sync_pb::SavedTabGroupSpecifics& specifics) {
+  return SpecificsToSavedTabGroupTab(specifics);
+}
+
+// static
+sync_pb::SavedTabGroupSpecifics
+SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(
+    const SavedTabGroupTab& tab) {
+  return SavedTabGroupTabToSpecifics(tab);
+}
+
 void SavedTabGroupSyncBridge::UpsertEntitySpecific(
-    std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specific,
+    const sync_pb::SavedTabGroupSpecifics& specific,
     syncer::ModelTypeStore::WriteBatch* write_batch) {
-  write_batch->WriteData(specific->guid(), specific->SerializeAsString());
+  write_batch->WriteData(specific.guid(), specific.SerializeAsString());
   SendToSync(std::move(specific), write_batch->GetMetadataChangeList());
 }
 
@@ -374,16 +581,16 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
       // merged result if appropriate.
       existing_group = model_->MergeRemoteGroupMetadata(
           group_guid, base::UTF8ToUTF16(specifics.group().title()),
-          SavedTabGroup::SyncColorToTabGroupColor(specifics.group().color()),
+          SyncColorToTabGroupColor(specifics.group().color()),
           GroupPositionFromSpecifics(specifics),
           TimeFromWindowsEpochMicros(
               specifics.update_time_windows_epoch_micros()));
-      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> updated_specifics =
-          existing_group->ToSpecifics();
+      sync_pb::SavedTabGroupSpecifics updated_specifics =
+          SavedTabGroupToSpecifics(*existing_group);
 
       // Write result to the store.
-      write_batch->WriteData(updated_specifics->guid(),
-                             updated_specifics->SerializeAsString());
+      write_batch->WriteData(updated_specifics.guid(),
+                             updated_specifics.SerializeAsString());
 
       // Update sync with the new merged result.
       if (notify_sync)
@@ -391,7 +598,7 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
     } else {
       // We do not have this group. Add the group from sync into local storage.
       write_batch->WriteData(specifics.guid(), specifics.SerializeAsString());
-      model_->AddedFromSync(SavedTabGroup::FromSpecifics(specifics));
+      model_->AddedFromSync(SpecificsToSavedTabGroup(specifics));
     }
 
     return;
@@ -405,13 +612,13 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
       // write the result to the store and update sync with the new merged
       // result if appropriate.
       const SavedTabGroupTab* merged_tab =
-          model_->MergeRemoteTab(SavedTabGroupTab::FromSpecifics(specifics));
-      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> merged_entry =
-          merged_tab->ToSpecifics();
+          model_->MergeRemoteTab(SpecificsToSavedTabGroupTab(specifics));
+      sync_pb::SavedTabGroupSpecifics merged_entry =
+          SavedTabGroupTabToSpecifics(*merged_tab);
 
       // Write result to the store.
-      write_batch->WriteData(merged_entry->guid(),
-                             merged_entry->SerializeAsString());
+      write_batch->WriteData(merged_entry.guid(),
+                             merged_entry.SerializeAsString());
 
       // Update sync with the new merged result.
       if (notify_sync)
@@ -428,7 +635,7 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
     if (existing_group) {
       // We do not have this tab. Add the tab from sync into local storage.
       model_->AddTabToGroupFromSync(existing_group->saved_guid(),
-                                    SavedTabGroupTab::FromSpecifics(specifics));
+                                    SpecificsToSavedTabGroupTab(specifics));
     } else {
       // We reach this case if we were unable to find a group for this tab. This
       // can happen when sync sends the tab data before the group data. In this
@@ -482,8 +689,8 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
     } else {
       write_batch->WriteData(tab_iterator->guid(),
                              tab_iterator->SerializeAsString());
-      model_->AddTabToGroupFromSync(
-          group->saved_guid(), SavedTabGroupTab::FromSpecifics(*tab_iterator));
+      model_->AddTabToGroupFromSync(group->saved_guid(),
+                                    SpecificsToSavedTabGroupTab(*tab_iterator));
       tab_iterator = tabs_missing_groups_.erase(tab_iterator);
     }
   }
@@ -491,7 +698,7 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
 
 void SavedTabGroupSyncBridge::AddEntryToBatch(
     syncer::MutableDataBatch* batch,
-    std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specific) {
+    sync_pb::SavedTabGroupSpecifics specific) {
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityData(std::move(specific));
 
@@ -502,7 +709,7 @@ void SavedTabGroupSyncBridge::AddEntryToBatch(
 }
 
 void SavedTabGroupSyncBridge::SendToSync(
-    std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specific,
+    sync_pb::SavedTabGroupSpecifics specific,
     syncer::MetadataChangeList* metadata_change_list) {
   DCHECK(metadata_change_list);
   if (!change_processor()->IsTrackingMetadata())
@@ -566,7 +773,8 @@ void SavedTabGroupSyncBridge::OnReadAllMetadata(
   // Update `model_` with any data stored in local storage except for orphaned
   // tabs. Orphaned tabs will be returned and added to `tabs_missing_groups_` in
   // case their missing group ever arrives.
-  tabs_missing_groups_ = model_->LoadStoredEntries(std::move(stored_entries));
+  tabs_missing_groups_ =
+      LoadStoredEntries(std::move(stored_entries), model_.get());
   observation_.Observe(model_);
 }
 

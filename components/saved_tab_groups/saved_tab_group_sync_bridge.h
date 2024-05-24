@@ -15,9 +15,11 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 
 namespace syncer {
 class MutableDataBatch;
@@ -76,11 +78,19 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
     return tabs_missing_groups_;
   }
 
+  static SavedTabGroup SpecificsToSavedTabGroupForTest(
+      const sync_pb::SavedTabGroupSpecifics& specifics);
+  static sync_pb::SavedTabGroupSpecifics SavedTabGroupToSpecificsForTest(
+      const SavedTabGroup& group);
+  static SavedTabGroupTab SpecificsToSavedTabGroupTabForTest(
+      const sync_pb::SavedTabGroupSpecifics& specifics);
+  static sync_pb::SavedTabGroupSpecifics SavedTabGroupTabToSpecificsForTest(
+      const SavedTabGroupTab& tab);
+
  private:
   // Updates and/or adds the specifics into the ModelTypeStore.
-  void UpsertEntitySpecific(
-      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specifics,
-      syncer::ModelTypeStore::WriteBatch* write_batch);
+  void UpsertEntitySpecific(const sync_pb::SavedTabGroupSpecifics& specifics,
+                            syncer::ModelTypeStore::WriteBatch* write_batch);
 
   // Removes the specifics pointed to by `guid` from the ModelTypeStore.
   void RemoveEntitySpecific(const base::Uuid& guid,
@@ -113,13 +123,12 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
       syncer::ModelTypeStore::WriteBatch* write_batch);
 
   // Adds the entry into `batch`.
-  void AddEntryToBatch(
-      syncer::MutableDataBatch* batch,
-      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specifics);
+  void AddEntryToBatch(syncer::MutableDataBatch* batch,
+                       sync_pb::SavedTabGroupSpecifics specifics);
 
   // Inform the processor of a new or updated SavedTabGroupSpecifics and add the
   // necessary metadata changes into `metadata_change_list`.
-  void SendToSync(std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specifics,
+  void SendToSync(sync_pb::SavedTabGroupSpecifics specifics,
                   syncer::MetadataChangeList* metadata_change_list);
 
   // Loads the data already stored in the ModelTypeStore.

@@ -10,6 +10,9 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
@@ -78,6 +81,16 @@ class SingleClientSavedTabGroupsSyncTest
             /*last_modified_time=*/update_time));
   }
 
+  void AddGroupToFakeServer(const SavedTabGroup& group) {
+    AddDataToFakeServer(
+        SavedTabGroupSyncBridge::SavedTabGroupToSpecificsForTest(group));
+  }
+
+  void AddTabToFakeServer(const SavedTabGroupTab& tab) {
+    AddDataToFakeServer(
+        SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(tab));
+  }
+
   void RemoveDataFromFakeServer(base::Uuid uuid) {
     std::vector<sync_pb::SyncEntity> server_tabs_and_groups =
         GetFakeServer()->GetSyncEntitiesByModelType(syncer::SAVED_TAB_GROUP);
@@ -127,9 +140,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
                         group1.saved_guid(), /*position=*/1);
 
   // Add a group with two tabs to sync.
-  AddDataToFakeServer(*group1.ToSpecifics());
-  AddDataToFakeServer(*tab1.ToSpecifics());
-  AddDataToFakeServer(*tab2.ToSpecifics());
+  AddGroupToFakeServer(group1);
+  AddTabToFakeServer(tab1);
+  AddTabToFakeServer(tab2);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(
@@ -161,7 +174,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
                         group1.saved_guid(), /*position=*/0);
 
   // Add a group with no tabs from sync.
-  AddDataToFakeServer(*group1.ToSpecifics());
+  AddGroupToFakeServer(group1);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(
@@ -188,7 +201,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
                         group1.saved_guid(), /*position=*/0);
 
   // Add a group with no tabs from sync.
-  AddDataToFakeServer(*tab1.ToSpecifics());
+  AddTabToFakeServer(tab1);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(
@@ -201,7 +214,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
   // linked to any group.
 
   // Verify adding the corresponding group adds the orphaned tab to the model.
-  AddDataToFakeServer(*group1.ToSpecifics());
+  AddGroupToFakeServer(group1);
 
   EXPECT_TRUE(
       tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
@@ -222,9 +235,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
                         group1.saved_guid(), /*position=*/1);
 
   // Add a group with two tabs to sync.
-  AddDataToFakeServer(*group1.ToSpecifics());
-  AddDataToFakeServer(*tab1.ToSpecifics());
-  AddDataToFakeServer(*tab2.ToSpecifics());
+  AddGroupToFakeServer(group1);
+  AddTabToFakeServer(tab1);
+  AddTabToFakeServer(tab2);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(
@@ -247,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
   // Add another tab to `group1`.
   SavedTabGroupTab tab3(GURL("about:blank"), u"about:blank",
                         group1.saved_guid(), /*position=*/2);
-  AddDataToFakeServer(*tab3.ToSpecifics());
+  AddTabToFakeServer(tab3);
 
   // Verify the group is updated with the additional tab.
   EXPECT_TRUE(
@@ -265,9 +278,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, RemoveTabFromGroup) {
                         group1.saved_guid(), /*position=*/1);
 
   // Add a group with two tabs to sync.
-  AddDataToFakeServer(*group1.ToSpecifics());
-  AddDataToFakeServer(*tab1.ToSpecifics());
-  AddDataToFakeServer(*tab2.ToSpecifics());
+  AddGroupToFakeServer(group1);
+  AddTabToFakeServer(tab1);
+  AddTabToFakeServer(tab2);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(
@@ -308,9 +321,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
                         group1.saved_guid(), /*position=*/1);
 
   // Add a group with two tabs to sync.
-  AddDataToFakeServer(*group1.ToSpecifics());
-  AddDataToFakeServer(*tab1.ToSpecifics());
-  AddDataToFakeServer(*tab2.ToSpecifics());
+  AddGroupToFakeServer(group1);
+  AddTabToFakeServer(tab1);
+  AddTabToFakeServer(tab2);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(
@@ -359,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
                        /*position=*/0);
 
   // Add a group with two tabs to sync.
-  AddDataToFakeServer(*group1.ToSpecifics());
+  AddGroupToFakeServer(group1);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(
@@ -376,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
   // Update metadata for group1in the server.
   group1.SetTitle(u"Updated Title");
   group1.SetColor(tab_groups::TabGroupColorId::kOrange);
-  AddDataToFakeServer(*group1.ToSpecifics());
+  AddGroupToFakeServer(group1);
 
   // Verify the group's metadata is updated locally.
   EXPECT_TRUE(tab_groups::SavedTabGroupMatchesChecker(service, group1).Wait());
@@ -391,8 +404,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
                         group1.saved_guid(), /*position=*/0);
 
   // Add a group with a tab to sync.
-  AddDataToFakeServer(*group1.ToSpecifics());
-  AddDataToFakeServer(*tab1.ToSpecifics());
+  AddGroupToFakeServer(group1);
+  AddTabToFakeServer(tab1);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(
@@ -412,7 +425,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
   // Update url and title for tab1 in the server.
   tab1.SetURL(GURL("https://new.url"));
   tab1.SetTitle(u"Updated Title");
-  AddDataToFakeServer(*tab1.ToSpecifics());
+  AddTabToFakeServer(tab1);
 
   // Verify the tab is updated locally to match.
   EXPECT_TRUE(tab_groups::SavedTabMatchesChecker(service, tab1).Wait());
@@ -428,8 +441,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
                        /*position=*/1);
 
   // Add a group with a tab to sync.
-  AddDataToFakeServer(*group1.ToSpecifics());
-  AddDataToFakeServer(*group2.ToSpecifics());
+  AddGroupToFakeServer(group1);
+  AddGroupToFakeServer(group2);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(
@@ -449,8 +462,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
   // Update the positions of the groups in the server.
   group1.SetPosition(1);
   group2.SetPosition(0);
-  AddDataToFakeServer(*group1.ToSpecifics());
-  AddDataToFakeServer(*group2.ToSpecifics());
+  AddGroupToFakeServer(group1);
+  AddGroupToFakeServer(group2);
 
   // Verify the group positions are updated in the local model as well.
   EXPECT_TRUE(tab_groups::GroupOrderChecker(
@@ -467,9 +480,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
                         group1.saved_guid(), /*position=*/1);
 
   // Add a group with two tabs to sync.
-  AddDataToFakeServer(*group1.ToSpecifics());
-  AddDataToFakeServer(*tab1.ToSpecifics());
-  AddDataToFakeServer(*tab2.ToSpecifics());
+  AddGroupToFakeServer(group1);
+  AddTabToFakeServer(tab1);
+  AddTabToFakeServer(tab2);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(
@@ -492,8 +505,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
   // Reorder the tabs in group 1 on the server.
   tab1.SetPosition(1);
   tab2.SetPosition(0);
-  AddDataToFakeServer(*tab1.ToSpecifics());
-  AddDataToFakeServer(*tab2.ToSpecifics());
+  AddTabToFakeServer(tab1);
+  AddTabToFakeServer(tab2);
 
   // Verify the tab order was updated in the model.
   EXPECT_TRUE(tab_groups::TabOrderChecker(

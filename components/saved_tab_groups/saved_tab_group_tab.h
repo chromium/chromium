@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/types.h"
-#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/image/image.h"
@@ -89,18 +88,8 @@ class SavedTabGroupTab {
   // merged specific. Side effect: Updates the values in the tab.
   void MergeRemoteTab(const SavedTabGroupTab& remote_tab);
 
-  // We should merge a tab if one of the following is true:
-  // 1. The data from `sync_specific` has the most recent (larger) update time.
-  // 2. The `sync_specific` has the oldest (smallest) creation time.
+  // Returns whether the `remote_tab` should be merged into the current one.
   bool ShouldMergeTab(const SavedTabGroupTab& remote_tab) const;
-
-  // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
-  // `SavedTabGroupTab`.
-  static SavedTabGroupTab FromSpecifics(
-      const sync_pb::SavedTabGroupSpecifics& specific);
-
-  // Converts this `SavedTabGroupTab` into a `SavedTabGroupSpecifics` for sync.
-  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics() const;
 
   // Returns true iff syncable data fields in `this` and `other` are equivalent.
   bool IsSyncEquivalent(const SavedTabGroupTab& other) const;

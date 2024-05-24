@@ -143,13 +143,10 @@ class SavedTabGroupModel {
   void ReorderGroupLocally(const base::Uuid& id, int new_index);
   void ReorderGroupFromSync(const base::Uuid& id, int new_index);
 
-  // Loads the entries (a sync_pb::SavedTabGroupSpecifics can be a group or a
-  // tab) saved locally in the model type store (local storage) and attempts to
-  // reconstruct the model by matching groups with their tabs using their
-  // `group_id`'s. Note: Any tabs that do not have a matching group, will be
-  // returned to the bridge to keep track of.
-  std::vector<sync_pb::SavedTabGroupSpecifics> LoadStoredEntries(
-      std::vector<sync_pb::SavedTabGroupSpecifics> entries);
+  // Loads the model from the storage. `tabs` must have a corresponding group in
+  // `groups`.
+  void LoadStoredEntries(std::vector<SavedTabGroup> groups,
+                         std::vector<SavedTabGroupTab> tabs);
 
   // Functions that should be called when a SavedTabGroup's corresponding
   // TabGroup is closed or opened.

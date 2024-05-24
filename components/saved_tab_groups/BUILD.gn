@@ -189,6 +189,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":core",
+    ":saved_tab_group_bridge",
     ":saved_tab_group_bridge_unittests",
     ":shared_tab_group_bridge_unittests",
     "//base",
@@ -219,6 +220,7 @@ source_set("saved_tab_group_bridge") {
     # This is allowed until usage of SavedTabGroupKeyedService has been migrated
     # to TabGroupSyncService.
     "//chrome/browser/ui",
+    "//chrome/test:sync_integration_tests",
   ]
 
   sources = [
