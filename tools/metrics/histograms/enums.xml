@@ -11589,6 +11589,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4973" label="V8ModelGenericSession_Destroy_Method"/>
   <int value="4974" label="UsedDeviceScaleAdjustment"/>
   <int value="4975" label="DisableThirdPartyStoragePartitioning2"/>
+  <int value="4976" label="LinkRelPayment"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

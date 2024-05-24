@@ -36,16 +36,16 @@
 namespace blink {
 
 // TODO(dcheng): This is a bit gross. Refactor this to not take so many bools...
-static inline void TestLinkRelAttribute(
-    const String& value,
-    bool is_style_sheet,
-    mojom::blink::FaviconIconType icon_type,
-    bool is_alternate,
-    bool is_dns_prefetch,
-    bool is_link_prerender,
-    bool is_preconnect = false,
-    bool is_canonical = false,
-    bool is_compression_dictionary = false) {
+static inline void TestLinkRelAttribute(const String& value,
+                                        bool is_style_sheet,
+                                        mojom::blink::FaviconIconType icon_type,
+                                        bool is_alternate,
+                                        bool is_dns_prefetch,
+                                        bool is_link_prerender,
+                                        bool is_preconnect = false,
+                                        bool is_canonical = false,
+                                        bool is_compression_dictionary = false,
+                                        bool is_payment = false) {
   SCOPED_TRACE(value.Utf8());
   LinkRelAttribute link_rel_attribute(value);
   ASSERT_EQ(is_style_sheet, link_rel_attribute.IsStyleSheet());
@@ -57,6 +57,7 @@ static inline void TestLinkRelAttribute(
   ASSERT_EQ(is_canonical, link_rel_attribute.IsCanonical());
   ASSERT_EQ(is_compression_dictionary,
             link_rel_attribute.IsCompressionDictionary());
+  ASSERT_EQ(is_payment, link_rel_attribute.IsPayment());
 }
 
 TEST(LinkRelAttributeTest, Constructor) {
@@ -155,6 +156,14 @@ TEST(LinkRelAttributeTest, Constructor) {
                        mojom::blink::FaviconIconType::kInvalid, false, false,
                        false, /*is_preconnect=*/false, /*is_canonical=*/false,
                        /*is_compression_dictionary=*/false);
+  TestLinkRelAttribute(
+      "payment", false, mojom::blink::FaviconIconType::kInvalid, false, false,
+      false, /*is_preconnect=*/false, /*is_canonical=*/false,
+      /*is_compression_dictionary=*/false, /*is_payment=*/true);
+  TestLinkRelAttribute(
+      "pAymENt", false, mojom::blink::FaviconIconType::kInvalid, false, false,
+      false, /*is_preconnect=*/false, /*is_canonical=*/false,
+      /*is_compression_dictionary=*/false, /*is_payment=*/true);
 }
 
 }  // namespace blink

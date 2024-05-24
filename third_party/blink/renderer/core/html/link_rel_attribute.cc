@@ -86,6 +86,8 @@ LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
     } else if (RuntimeEnabledFeatures::DocumentRenderBlockingEnabled() &&
                EqualIgnoringASCIICase(link_type, "expect")) {
       is_expect_ = true;
+    } else if (EqualIgnoringASCIICase(link_type, "payment")) {
+      is_payment_ = true;
     }
 
     // Adding or removing a value here whose processing model is web-visible
