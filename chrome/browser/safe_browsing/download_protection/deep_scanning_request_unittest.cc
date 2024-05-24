@@ -578,13 +578,22 @@ class DeepScanningAPPRequestTest : public DeepScanningRequestTest {};
 TEST_F(DeepScanningAPPRequestTest, GeneratesCorrectRequestForConsumer) {
   enterprise_connectors::AnalysisSettings settings;
   settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
+  base::RunLoop run_loop;
   DeepScanningRequest request(
       &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
-      DownloadCheckResult::SAFE, base::DoNothing(),
+      DownloadCheckResult::SAFE,
+      base::BindRepeating(
+          [](base::RepeatingClosure closure, DownloadCheckResult result) {
+            if (result != DownloadCheckResult::ASYNC_SCANNING) {
+              closure.Run();
+            }
+          },
+          run_loop.QuitClosure()),
       &download_protection_service_, std::move(settings),
       /*password=*/std::nullopt);
 
   request.Start();
+  run_loop.Run();
 
   EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
                    ->last_request()

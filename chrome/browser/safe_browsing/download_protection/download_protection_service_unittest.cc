@@ -3554,23 +3554,24 @@ TEST_F(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
 }
 
 TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
-  base::FilePath test_zip;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
-  test_zip = test_zip.AppendASCII("safe_browsing")
-                 .AppendASCII("download_protection")
-                 .AppendASCII("encrypted.zip");
+  constexpr int64_t kLargeSize = 51 * 1024 * 1024;
+  std::string file_contents = std::string(kLargeSize, 'a');
+  base::FilePath file_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
+  file_path = temp_dir_.GetPath().AppendASCII("foo.doc");
+
+  // Create the file.
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItemWithFullPaths(
-      &item, {"http://www.evil.com/encrypted.zip"},  // url_chain
-      "http://www.google.com/",                      // referrer
-      test_zip,                                      // tmp_path
-      temp_dir_.GetPath().Append(
-          FILE_PATH_LITERAL("encrypted.zip")));  // final_path
+      &item, {"http://www.evil.com/foo.doc"},                     // url_chain
+      "http://www.google.com/",                                   // referrer
+      file_path,                                                  // tmp_path
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("foo.doc")));  // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
-  EXPECT_CALL(item, GetReceivedBytes())
-      .WillRepeatedly(Return(100 * 1024 * 1024));
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
       .WillRepeatedly(
@@ -3586,6 +3587,10 @@ TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
       enterprise_connectors::ContentAnalysisResponse());
 
   {
+    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
+    EXPECT_CALL(*binary_feature_extractor_.get(),
+                ExtractImageFeatures(
+                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
     enterprise_connectors::test::SetAnalysisConnector(
         profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
@@ -3609,6 +3614,10 @@ TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
   }
 
   {
+    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
+    EXPECT_CALL(*binary_feature_extractor_.get(),
+                ExtractImageFeatures(
+                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
     enterprise_connectors::test::SetAnalysisConnector(
         profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
@@ -4426,11 +4435,21 @@ TEST_F(DownloadProtectionServiceTest,
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 TEST_F(DeepScanningDownloadTest, PolicyEnabled) {
+  std::string file_contents = "Normal file contents";
+  base::FilePath file_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
+  file_path = temp_dir_.GetPath().AppendASCII("foo.doc");
+
+  // Create the file.
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+
   NiceMockDownloadItem item;
-  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
-                           "http://www.google.com/",              // referrer
-                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
-                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  PrepareBasicDownloadItemWithFullPaths(
+      &item, {"http://www.evil.com/foo.doc"},                     // url_chain
+      "http://www.google.com/",                                   // referrer
+      file_path,                                                  // tmp_path
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("foo.doc")));  // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
@@ -4480,11 +4499,21 @@ TEST_F(DeepScanningDownloadTest, PolicyEnabled) {
 }
 
 TEST_F(DeepScanningDownloadTest, PolicyDisabled) {
+  std::string file_contents = "Normal file contents";
+  base::FilePath file_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
+  file_path = temp_dir_.GetPath().AppendASCII("foo.doc");
+
+  // Create the file.
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+
   NiceMockDownloadItem item;
-  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
-                           "http://www.google.com/",              // referrer
-                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
-                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  PrepareBasicDownloadItemWithFullPaths(
+      &item, {"http://www.evil.com/foo.doc"},                     // url_chain
+      "http://www.google.com/",                                   // referrer
+      file_path,                                                  // tmp_path
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("foo.doc")));  // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
@@ -4533,11 +4562,25 @@ TEST_F(DeepScanningDownloadTest, SafeVerdictPrecedence) {
            DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE},
       };
   for (const auto& response : responses) {
+    std::string file_contents = "Normal file contents";
+    base::ScopedTempDir temporary_directory;
+    ASSERT_TRUE(temporary_directory.CreateUniqueTempDir());
+    base::FilePath file_path;
+    EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
+    file_path = temporary_directory.GetPath().AppendASCII("foo.doc");
+
+    // Create the file.
+    base::File file(file_path,
+                    base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+
     NiceMockDownloadItem item;
-    PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
-                             "http://www.google.com/",              // referrer
-                             FILE_PATH_LITERAL("a.tmp"),            // tmp_path
-                             FILE_PATH_LITERAL("a.exe"));  // final_path
+    PrepareBasicDownloadItemWithFullPaths(
+        &item, {"http://www.evil.com/foo.doc"},  // url_chain
+        "http://www.google.com/",                // referrer
+        file_path,                               // tmp_path
+        temporary_directory.GetPath().Append(
+            FILE_PATH_LITERAL("foo.doc")));  // final_path
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
     EXPECT_CALL(*sb_service_->mock_database_manager(),
                 MatchDownloadAllowlistUrl(_, _))
@@ -4934,11 +4977,21 @@ class EnterpriseCsdDownloadTest : public DownloadProtectionServiceTestBase {
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
+  std::string file_contents = "Normal file contents";
+  base::FilePath file_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
+  file_path = temp_dir_.GetPath().AppendASCII("foo.doc");
+
+  // Create the file.
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+
   NiceMockDownloadItem item;
-  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
-                           "http://www.google.com/",              // referrer
-                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
-                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  PrepareBasicDownloadItemWithFullPaths(
+      &item, {"http://www.evil.com/foo.doc"},                     // url_chain
+      "http://www.google.com/",                                   // referrer
+      file_path,                                                  // tmp_path
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("foo.doc")));  // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
   enterprise_connectors::test::SetAnalysisConnector(
@@ -4972,11 +5025,21 @@ TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
 }
 
 TEST_F(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
+  std::string file_contents = "Normal file contents";
+  base::FilePath file_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
+  file_path = temp_dir_.GetPath().AppendASCII("foo.doc");
+
+  // Create the file.
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+
   NiceMockDownloadItem item;
-  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
-                           "http://www.google.com/",              // referrer
-                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
-                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  PrepareBasicDownloadItemWithFullPaths(
+      &item, {"http://www.evil.com/foo.doc"},                     // url_chain
+      "http://www.google.com/",                                   // referrer
+      file_path,                                                  // tmp_path
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("foo.doc")));  // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
   enterprise_connectors::test::SetAnalysisConnector(
@@ -5010,11 +5073,21 @@ TEST_F(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
 }
 
 TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
+  std::string file_contents = "Normal file contents";
+  base::FilePath file_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
+  file_path = temp_dir_.GetPath().AppendASCII("foo.doc");
+
+  // Create the file.
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+
   NiceMockDownloadItem item;
-  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
-                           "http://www.google.com/",              // referrer
-                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
-                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  PrepareBasicDownloadItemWithFullPaths(
+      &item, {"http://www.evil.com/foo.doc"},                     // url_chain
+      "http://www.google.com/",                                   // referrer
+      file_path,                                                  // tmp_path
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("foo.doc")));  // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
