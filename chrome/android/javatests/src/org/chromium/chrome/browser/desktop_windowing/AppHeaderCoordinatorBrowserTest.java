@@ -237,6 +237,7 @@ public class AppHeaderCoordinatorBrowserTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_HUB)
+    @DisabledTest(message = "Flaky, crbug.com/339854841")
     public void testEnterTabSwitcherInDesktopWindow_HubLayout() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
@@ -279,6 +280,7 @@ public class AppHeaderCoordinatorBrowserTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_HUB)
+    @DisabledTest(message = "Flaky, crbug.com/339854841")
     public void testEnterDesktopWindowWithTabSwitcherActive_HubLayout() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
