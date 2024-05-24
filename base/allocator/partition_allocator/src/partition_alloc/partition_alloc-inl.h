@@ -19,9 +19,15 @@
 
 // Prefetch *x into memory.
 #if defined(__clang__) || defined(COMPILER_GCC)
-#define PA_PREFETCH(x) __builtin_prefetch(x)
+#define PA_PREFETCH(x) __builtin_prefetch(x, 0)
 #else
 #define PA_PREFETCH(x)
+#endif
+
+#if defined(__clang__) || defined(COMPILER_GCC)
+#define PA_PREFETCH_FOR_WRITE(x) __builtin_prefetch(x, 1)
+#else
+#define PA_PREFETCH_FOR_WRITE(x)
 #endif
 
 namespace partition_alloc::internal {

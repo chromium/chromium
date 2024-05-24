@@ -1450,7 +1450,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   // Almost all calls to FreeNoNooks() will end up writing to |*object|, the
   // only cases where we don't would be delayed free() in PCScan, but |*object|
   // can be cold in cache.
-  PA_PREFETCH(object);
+  PA_PREFETCH_FOR_WRITE(object);
 
   // On Android, malloc() interception is more fragile than on other
   // platforms, as we use wrapped symbols. However, the pools allow us to
