@@ -167,30 +167,29 @@ ServiceWorkerContainerHostForServiceWorker::
 }
 
 ServiceWorkerClient::ServiceWorkerClient(
-    base::WeakPtr<ServiceWorkerContextCore> context,
+    base::PassKey<ServiceWorkerContextCore>,
+    ServiceWorkerContextCore& context,
     bool is_parent_frame_secure,
     int frame_tree_node_id)
-    : context_(std::move(context)),
+    : context_(context),
       create_time_(base::TimeTicks::Now()),
       client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       is_parent_frame_secure_(is_parent_frame_secure),
       client_info_(ServiceWorkerClientInfo()),
       process_id_for_worker_client_(ChildProcessHost::kInvalidUniqueID),
-      ongoing_navigation_frame_tree_node_id_(frame_tree_node_id) {
-  DCHECK(context_);
-}
+      ongoing_navigation_frame_tree_node_id_(frame_tree_node_id) {}
 
 ServiceWorkerClient::ServiceWorkerClient(
-    base::WeakPtr<ServiceWorkerContextCore> context,
+    base::PassKey<ServiceWorkerContextCore>,
+    ServiceWorkerContextCore& context,
     int process_id,
     ServiceWorkerClientInfo client_info)
-    : context_(std::move(context)),
+    : context_(context),
       create_time_(base::TimeTicks::Now()),
       client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       is_parent_frame_secure_(true),
       client_info_(client_info),
       process_id_for_worker_client_(process_id) {
-  DCHECK(context_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(process_id_for_worker_client_, ChildProcessHost::kInvalidUniqueID);
@@ -344,7 +343,7 @@ void ServiceWorkerContainerHostForClient::Register(
       service_worker_security_utils::GetCorrectStorageKeyForWebSecurityState(
           service_worker_client().key(), options->scope);
 
-  context()->RegisterServiceWorker(
+  service_worker_client().context().RegisterServiceWorker(
       script_url, key, *options,
       std::move(outside_fetch_client_settings_object),
       base::BindOnce(&ServiceWorkerContainerHostForClient::RegistrationComplete,
@@ -390,7 +389,7 @@ void ServiceWorkerContainerHostForClient::GetRegistration(
       service_worker_security_utils::GetCorrectStorageKeyForWebSecurityState(
           service_worker_client().key(), client_url);
 
-  context()->registry()->FindRegistrationForClientUrl(
+  service_worker_client().context().registry()->FindRegistrationForClientUrl(
       ServiceWorkerRegistry::Purpose::kNotForNavigation, client_url, key,
       base::BindOnce(
           &ServiceWorkerContainerHostForClient::GetRegistrationComplete,
@@ -423,7 +422,7 @@ void ServiceWorkerContainerHostForClient::GetRegistrations(
       "ServiceWorker", "ServiceWorkerContainerHost::GetRegistrations",
       TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::GetRegistrations",
                           trace_id));
-  context()->registry()->GetRegistrationsForStorageKey(
+  service_worker_client().context().registry()->GetRegistrationsForStorageKey(
       service_worker_client().key(),
       base::BindOnce(
           &ServiceWorkerContainerHostForClient::GetRegistrationsComplete,
@@ -465,8 +464,9 @@ void ServiceWorkerClient::EnsureControllerServiceWorker(
     mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
     blink::mojom::ControllerServiceWorkerPurpose purpose) {
   // TODO(kinuko): Log the reasons we drop the request.
-  if (!context_ || !controller_)
+  if (!controller_) {
     return;
+  }
 
   controller_->RunAfterStartWorker(
       PurposeToEventType(purpose),
@@ -872,20 +872,12 @@ void ServiceWorkerClient::SendSetControllerServiceWorker(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_container_ready());
 
-  if (!controller_ || !context_) {
+  if (!controller_) {
     // Do not set |fetch_request_window_id| when |controller_| is not available.
     // Setting |fetch_request_window_id| should not affect correctness, however,
     // we have the extensions bug, https://crbug.com/963748, which we don't yet
     // understand.  That is why we don't set |fetch_request_window_id| if there
     // is no controller, at least, until we can fix the extension bug.
-    //
-    // Also check if |context_| is not null. This is a speculative fix for
-    // crbug.com/324559079. When |controller_info->fetch_request_window_id|
-    // is set, the renderer expects that |controller_info->object_info| is also
-    // set as a controller. |controller_info->object_info| is set in
-    // `version_object_manager().GetOrCreateHost()`, but that may return null if
-    // |context_| does not exist. To avoid the potential inconsistency with the
-    // renderer side, setController as no-controller.
     auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
     controller_info->client_id = client_uuid();
     container_host().SendSetController(std::move(controller_info),
@@ -1219,9 +1211,8 @@ void ServiceWorkerClient::UpdateUrls(
     // Set UUID to the new one.
     std::string previous_client_uuid = client_uuid_;
     client_uuid_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
-    if (context_)
-      context_->UpdateServiceWorkerClientClientID(previous_client_uuid,
-                                                  client_uuid_);
+    context_->UpdateServiceWorkerClientClientID(previous_client_uuid,
+                                                client_uuid_);
   }
 
   SyncMatchingRegistrations();
@@ -1288,8 +1279,8 @@ bool ServiceWorkerContainerHostForClient::AllowServiceWorker(
     const GURL& scope,
     const GURL& script_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(context());
-  auto* browser_context = context()->wrapper()->browser_context();
+  auto* browser_context =
+      service_worker_client().context().wrapper()->browser_context();
   // Check that the browser context is not nullptr.  It becomes nullptr
   // when the service worker process manager is being shutdown.
   if (!browser_context) {
@@ -1457,10 +1448,10 @@ ServiceWorkerRegistration* ServiceWorkerClient::controller_registration()
   return controller_registration_.get();
 }
 
-const base::WeakPtr<ServiceWorkerContextCore>&
-ServiceWorkerContainerHostForClient::context() const {
+base::WeakPtr<ServiceWorkerContextCore>
+ServiceWorkerContainerHostForClient::context() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return service_worker_client().context();
+  return service_worker_client().context().AsWeakPtr();
 }
 
 const GURL& ServiceWorkerContainerHostForClient::url() const {
@@ -1468,8 +1459,8 @@ const GURL& ServiceWorkerContainerHostForClient::url() const {
   return service_worker_client().url();
 }
 
-const base::WeakPtr<ServiceWorkerContextCore>&
-ServiceWorkerContainerHostForServiceWorker::context() const {
+base::WeakPtr<ServiceWorkerContextCore>
+ServiceWorkerContainerHostForServiceWorker::context() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return context_;
 }
@@ -1548,8 +1539,6 @@ void ServiceWorkerClient::SyncMatchingRegistrations() {
   DCHECK(!controller_registration_);
 
   RemoveAllMatchingRegistrations();
-  if (!context_)
-    return;
   const auto& registrations = context_->GetLiveRegistrations();
   for (const auto& key_registration : registrations) {
     ServiceWorkerRegistration* registration = key_registration.second;
@@ -1598,12 +1587,6 @@ void ServiceWorkerContainerHostForClient::ReturnRegistrationForReadyIfNeeded() {
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "ServiceWorker", "ServiceWorkerContainerHost::GetRegistrationForReady",
       TRACE_ID_LOCAL(this), "Registration ID", registration->id());
-  if (!context()) {
-    // Here no need to run or destroy |get_ready_callback_|, which will destroy
-    // together with |receiver_| when |this| destroys.
-    return;
-  }
-
   std::move(*get_ready_callback_)
       .Run(registration_object_manager().CreateInfo(
           scoped_refptr<ServiceWorkerRegistration>(registration)));
@@ -1628,9 +1611,7 @@ void ServiceWorkerClient::SetExecutionReady() {
       TransitionToClientPhase(ClientPhase::kExecutionReady);
       RunExecutionReadyCallbacks();
 
-      if (context_) {
-        context_->NotifyClientIsExecutionReady(*this);
-      }
+      context_->NotifyClientIsExecutionReady(*this);
 
       FlushFeatures();
       break;
@@ -1823,17 +1804,6 @@ void ServiceWorkerContainerHostForClient::RegistrationComplete(
     return;
   }
 
-  if (!context()) {
-    std::move(callback).Run(
-        blink::mojom::ServiceWorkerErrorType::kAbort,
-        base::StringPrintf(
-            ServiceWorkerConsts::kServiceWorkerRegisterErrorPrefix,
-            scope.spec().c_str(), script_url.spec().c_str()) +
-            std::string(ServiceWorkerConsts::kShutdownErrorMessage),
-        nullptr);
-    return;
-  }
-
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::string error_message;
     blink::mojom::ServiceWorkerErrorType error_type;
@@ -1850,7 +1820,7 @@ void ServiceWorkerContainerHostForClient::RegistrationComplete(
   }
 
   scoped_refptr<ServiceWorkerRegistration> registration =
-      context()->GetLiveRegistration(registration_id);
+      service_worker_client().context().GetLiveRegistration(registration_id);
   // ServiceWorkerRegisterJob calls its completion callback, which results in
   // this function being called, while the registration is live.
   DCHECK(registration);
@@ -1875,16 +1845,6 @@ void ServiceWorkerContainerHostForClient::GetRegistrationComplete(
       "Status", blink::ServiceWorkerStatusToString(status), "Registration ID",
       registration ? registration->id()
                    : blink::mojom::kInvalidServiceWorkerRegistrationId);
-
-  if (!context()) {
-    std::move(callback).Run(
-        blink::mojom::ServiceWorkerErrorType::kAbort,
-        std::string(
-            ServiceWorkerConsts::kServiceWorkerGetRegistrationErrorPrefix) +
-            std::string(ServiceWorkerConsts::kShutdownErrorMessage),
-        nullptr);
-    return;
-  }
 
   if (status != blink::ServiceWorkerStatusCode::kOk &&
       status != blink::ServiceWorkerStatusCode::kErrorNotFound) {
@@ -1924,16 +1884,6 @@ void ServiceWorkerContainerHostForClient::GetRegistrationsComplete(
       TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::GetRegistrations",
                           trace_id),
       "Status", blink::ServiceWorkerStatusToString(status));
-
-  if (!context()) {
-    std::move(callback).Run(
-        blink::mojom::ServiceWorkerErrorType::kAbort,
-        std::string(
-            ServiceWorkerConsts::kServiceWorkerGetRegistrationsErrorPrefix) +
-            std::string(ServiceWorkerConsts::kShutdownErrorMessage),
-        std::nullopt);
-    return;
-  }
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::string error_message;
@@ -2034,14 +1984,6 @@ bool ServiceWorkerContainerHostForClient::CanServeContainerHostMethods(
     const char* error_prefix,
     Args... args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!context()) {
-    std::move(*callback).Run(
-        blink::mojom::ServiceWorkerErrorType::kAbort,
-        std::string(error_prefix) +
-            std::string(ServiceWorkerConsts::kShutdownErrorMessage),
-        args...);
-    return false;
-  }
 
   // TODO(falken): This check can be removed once crbug.com/439697 is fixed.
   // (Also see crbug.com/776408)
@@ -2370,7 +2312,8 @@ void ServiceWorkerContainerHostForClient::DispatchExtendableMessageEvent(
   if (service_worker_client().IsContainerForWindowClient()) {
     service_worker_client_utils::GetClient(
         &service_worker_client(),
-        base::BindOnce(&DispatchExtendableMessageEventFromClient, context(),
+        base::BindOnce(&DispatchExtendableMessageEventFromClient,
+                       service_worker_client().context().AsWeakPtr(),
                        std::move(version), std::move(message),
                        url::Origin::Create(url()), std::move(callback)));
   } else {

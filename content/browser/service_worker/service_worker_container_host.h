@@ -163,12 +163,14 @@ class CONTENT_EXPORT ServiceWorkerClient final
   using ExecutionReadyCallback = base::OnceClosure;
 
   // Constructor for window clients.
-  ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
+  ServiceWorkerClient(base::PassKey<ServiceWorkerContextCore>,
+                      ServiceWorkerContextCore& context,
                       bool is_parent_frame_secure,
                       int frame_tree_node_id);
 
   // Constructor for worker clients.
-  ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
+  ServiceWorkerClient(base::PassKey<ServiceWorkerContextCore>,
+                      ServiceWorkerContextCore& context,
                       int process_id,
                       ServiceWorkerClientInfo client_info);
 
@@ -467,9 +469,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   bool is_inherited() const { return is_inherited_; }
   void SetInherited() { is_inherited_ = true; }
 
-  const base::WeakPtr<ServiceWorkerContextCore>& context() const {
-    return context_;
-  }
+  ServiceWorkerContextCore& context() { return context_.get(); }
 
   // Implements blink::mojom::ServiceWorkerContainerHost and called from
   // ServiceWorkerContainerHostForClient.
@@ -580,7 +580,9 @@ class CONTENT_EXPORT ServiceWorkerClient final
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
       blink::ServiceWorkerStatusCode status);
 
-  base::WeakPtr<ServiceWorkerContextCore> context_;
+  // Because `ServiceWorkerClient` is owned by `ServiceWorkerContextCore`,
+  // `context_` must be always valid.
+  const raw_ref<ServiceWorkerContextCore> context_;
 
   // The corresponding container host.
   // Always valid and non-null except for initialization/destruction.
@@ -761,7 +763,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
       mojo::PendingReceiver<blink::mojom::ServiceWorkerContainerHost> receiver)
       override;
 
-  virtual const base::WeakPtr<ServiceWorkerContextCore>& context() const = 0;
+  virtual base::WeakPtr<ServiceWorkerContextCore> context() = 0;
 
   // The URL of this context.
   virtual const GURL& url() const = 0;
@@ -878,7 +880,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   void OnExecutionReady() override;
 
   // Implements ServiceWorkerContainerHost.
-  const base::WeakPtr<ServiceWorkerContextCore>& context() const override;
+  base::WeakPtr<ServiceWorkerContextCore> context() override;
   const GURL& url() const override;
   bool AllowServiceWorker(const GURL& scope, const GURL& script_url) override;
   void DispatchExtendableMessageEvent(
@@ -986,7 +988,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
   void OnExecutionReady() override;
 
   // Implements ServiceWorkerContainerHost.
-  const base::WeakPtr<ServiceWorkerContextCore>& context() const override;
+  base::WeakPtr<ServiceWorkerContextCore> context() override;
   const GURL& url() const override;
   bool AllowServiceWorker(const GURL& scope, const GURL& script_url) override;
   void DispatchExtendableMessageEvent(
