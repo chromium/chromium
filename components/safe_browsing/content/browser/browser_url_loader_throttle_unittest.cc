@@ -147,7 +147,6 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       bool is_async_check)
       : SafeBrowsingUrlCheckerImpl(headers,
                                    load_flags,
-                                   request_destination,
                                    has_user_gesture,
                                    url_checker_delegate,
                                    web_contents_getter,

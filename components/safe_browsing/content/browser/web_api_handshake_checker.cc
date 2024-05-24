@@ -67,8 +67,7 @@ class WebApiHandshakeChecker::CheckerOnSB {
     base::UmaHistogramBoolean("SafeBrowsing.WebApiHandshakeCheck.Skipped",
                               false);
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
-        net::HttpRequestHeaders(), /*load_flags=*/0,
-        network::mojom::RequestDestination::kEmpty, /*has_user_gesture=*/false,
+        net::HttpRequestHeaders(), /*load_flags=*/0, /*has_user_gesture=*/false,
         url_checker_delegate, web_contents_getter_, /*weak_web_state=*/nullptr,
         /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
         /*render_frame_token=*/std::nullopt, frame_tree_node_id_,

@@ -83,8 +83,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 
   bool CanCheckRequestDestination(
       network::mojom::RequestDestination request_destination) const override {
-    // Chosen to match specific test case CheckUrl_InvalidRequestDestination.
-    return request_destination != network::mojom::RequestDestination::kAudio;
+    return true;
   }
 
   ThreatSource GetBrowseUrlThreatSource(
@@ -355,8 +354,6 @@ class MockHashRealTimeService : public HashRealTimeService {
 };
 
 struct CreateSafeBrowsingUrlCheckerOptionalArgs {
-  network::mojom::RequestDestination request_destination =
-      network::mojom::RequestDestination::kDocument;
   std::string url_lookup_service_metric_suffix = ".Enterprise";
 };
 
@@ -384,7 +381,6 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         mock_web_contents_getter;
     return std::make_unique<SafeBrowsingUrlCheckerImpl>(
         net::HttpRequestHeaders(), /*load_flags=*/0,
-        optional_args.request_destination,
         /*has_user_gesture=*/false, url_checker_delegate_,
         mock_web_contents_getter.Get(), /*weak_web_state=*/nullptr,
         UnsafeResource::kNoRenderProcessId, std::nullopt,
@@ -696,38 +692,6 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
       /*expect_url_lookup_service_metric_suffix=*/true);
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
                                    /*expected_urt_log_count=*/1,
-                                   /*expected_hpd_log_count=*/0);
-}
-
-TEST_F(SafeBrowsingUrlCheckerTest,
-       CheckUrl_UrlRealTimeEnabledSafeBrowsingDisabled_NonMainframe) {
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*url_real_time_lookup_enabled=*/true,
-      /*can_check_safe_browsing_db=*/false,
-      /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*optional_args=*/
-      {.request_destination = network::mojom::RequestDestination::kFrame});
-
-  GURL url("https://example.test/");
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      callback;
-  EXPECT_CALL(callback,
-              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*has_post_commit_interstitial_skipped=*/false,
-                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kCheckSkipped));
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
-      .Times(0);
-  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
-
-  task_environment_.RunUntilIdle();
-  CheckUrlRealTimeLocalMatchMetrics(
-      /*expected_local_match_result=*/std::nullopt,
-      /*expect_url_lookup_service_metric_suffix=*/std::nullopt);
-  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
-                                   /*expected_urt_log_count=*/0,
                                    /*expected_hpd_log_count=*/0);
 }
 
@@ -1490,38 +1454,6 @@ TEST_F(SafeBrowsingUrlCheckerTest,
                            /*expected_is_service_found=*/std::nullopt,
                            /*expected_can_check_reputation=*/true);
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
-                                   /*expected_urt_log_count=*/0,
-                                   /*expected_hpd_log_count=*/0);
-}
-
-TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_InvalidRequestDestination) {
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*url_real_time_lookup_enabled=*/false,
-      /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*optional_args=*/
-      {.request_destination = network::mojom::RequestDestination::kAudio});
-  GURL url("https://example.test/");
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      callback;
-  EXPECT_CALL(callback,
-              Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*has_post_commit_interstitial_skipped=*/false,
-                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kCheckSkipped));
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
-      .Times(0);
-
-  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
-  task_environment_.RunUntilIdle();
-
-  histogram_tester_.ExpectUniqueSample(
-      /*name=*/"SB2.RequestDestination.Skipped",
-      /*sample=*/network::mojom::RequestDestination::kAudio,
-      /*expected_bucket_count=*/1);
-  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
                                    /*expected_urt_log_count=*/0,
                                    /*expected_hpd_log_count=*/0);
 }

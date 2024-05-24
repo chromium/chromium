@@ -171,7 +171,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
-      request_destination, /*has_user_gesture=*/false, url_checker_delegate,
+      /*has_user_gesture=*/false, url_checker_delegate,
       /*web_contents_getter=*/
       base::RepeatingCallback<content::WebContents*()>(),
       web_state->GetWeakPtr(),
@@ -215,7 +215,7 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
-      request_destination, /*has_user_gesture=*/false, url_checker_delegate,
+      /*has_user_gesture=*/false, url_checker_delegate,
       /*web_contents_getter=*/
       base::RepeatingCallback<content::WebContents*()>(),
       web_state->GetWeakPtr(),
@@ -244,7 +244,7 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
-      request_destination, /*has_user_gesture=*/false, url_checker_delegate,
+      /*has_user_gesture=*/false, url_checker_delegate,
       /*web_contents_getter=*/
       base::RepeatingCallback<content::WebContents*()>(),
       web_state->GetWeakPtr(),

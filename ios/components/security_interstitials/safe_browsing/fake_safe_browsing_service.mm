@@ -24,7 +24,6 @@ class FakeSafeBrowsingUrlCheckerImpl
       : SafeBrowsingUrlCheckerImpl(
             /*headers=*/net::HttpRequestHeaders(),
             /*load_flags=*/0,
-            request_destination,
             /*has_user_gesture=*/false,
             base::MakeRefCounted<UrlCheckerDelegateImpl>(
                 /*database_manager=*/nullptr,

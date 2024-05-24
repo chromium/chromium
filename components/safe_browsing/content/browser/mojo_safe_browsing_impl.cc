@@ -134,8 +134,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
   // hash-prefix real-time checks to support non-main frames, we will need to
   // provide the hash_realtime_service_on_ui here.
   auto checker_impl = std::make_unique<SafeBrowsingUrlCheckerImpl>(
-      headers, static_cast<int>(load_flags), request_destination,
-      has_user_gesture, delegate_,
+      headers, static_cast<int>(load_flags), has_user_gesture, delegate_,
       base::BindRepeating(&GetWebContentsFromToken, render_process_id_,
                           frame_token),
       /*weak_web_state=*/nullptr, render_process_id_, sb_frame_token,

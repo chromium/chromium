@@ -104,7 +104,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   SafeBrowsingUrlCheckerImpl(
       const net::HttpRequestHeaders& headers,
       int load_flags,
-      network::mojom::RequestDestination request_destination,
       bool has_user_gesture,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<content::WebContents*()>&
@@ -275,7 +274,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   SEQUENCE_CHECKER(sequence_checker_);
   const net::HttpRequestHeaders headers_;
   const int load_flags_;
-  const network::mojom::RequestDestination request_destination_;
   const bool has_user_gesture_;
   // TODO(crbug.com/40683815): |weak_web_state_| is only used on iOS, and
   // |web_contents_getter_|, |render_process_id_|, |render_frame_token_|, and

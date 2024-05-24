@@ -101,9 +101,9 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
     url_checker_ = std::move(url_checker_for_testing_);
   } else {
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
-        params.headers, params.load_flags, params.request_destination,
-        params.has_user_gesture, url_checker_delegate, web_contents_getter_,
-        nullptr, content::ChildProcessHost::kInvalidUniqueID, std::nullopt,
+        params.headers, params.load_flags, params.has_user_gesture,
+        url_checker_delegate, web_contents_getter_, nullptr,
+        content::ChildProcessHost::kInvalidUniqueID, std::nullopt,
         frame_tree_node_id_, navigation_id_, url_real_time_lookup_enabled_,
         can_check_db_, can_check_high_confidence_allowlist_,
         url_lookup_service_metric_suffix_, content::GetUIThreadTaskRunner({}),
