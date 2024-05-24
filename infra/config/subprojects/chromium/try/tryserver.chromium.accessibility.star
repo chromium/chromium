@@ -60,6 +60,7 @@ try_.builder(
             "content/renderer/accessibility/.+",
             "content/browser/accessibility/.+",
             "ui/accessibility/.+",
+            "ui/views/accessibility/.+",
         ],
     ),
 )
