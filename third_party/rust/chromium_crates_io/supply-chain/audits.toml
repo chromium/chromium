@@ -1392,7 +1392,7 @@ published https://crates.io/crates/libc/0.2.154
 
 [[trusted.libc]]
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-user-id = 5820
+user-id = 5820 # the8472
 start = "2020-03-17"
 end = "2025-05-23"
 notes = """

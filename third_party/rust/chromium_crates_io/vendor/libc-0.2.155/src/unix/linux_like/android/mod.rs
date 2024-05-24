@@ -48,6 +48,10 @@ pub type Elf64_Xword = u64;
 
 pub type eventfd_t = u64;
 
+// these structs sit behind a heap allocation on Android
+pub type posix_spawn_file_actions_t = *mut ::c_void;
+pub type posix_spawnattr_t = *mut ::c_void;
+
 s! {
     pub struct stack_t {
         pub ss_sp: *mut ::c_void,
@@ -3017,6 +3021,7 @@ pub const FUTEX_WAIT_BITSET: ::c_int = 9;
 pub const FUTEX_WAKE_BITSET: ::c_int = 10;
 pub const FUTEX_WAIT_REQUEUE_PI: ::c_int = 11;
 pub const FUTEX_CMP_REQUEUE_PI: ::c_int = 12;
+pub const FUTEX_LOCK_PI2: ::c_int = 13;
 
 pub const FUTEX_PRIVATE_FLAG: ::c_int = 128;
 pub const FUTEX_CLOCK_REALTIME: ::c_int = 256;

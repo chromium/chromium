@@ -8,6 +8,12 @@ user-id = 51017
 user-login = "JohnTitor"
 user-name = "Yuki Okushi"
 
+[[publisher.libc]]
+version = "0.2.155"
+when = "2024-05-17"
+user-id = 5820
+user-login = "the8472"
+
 [audits.chromeos.criteria.crypto-safe]
 description = """
 All crypto algorithms in this crate have been reviewed by a relevant expert.
