@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.70"
 name = "prost-derive"
-version = "0.12.5"
+version = "0.12.6"
 authors = [
     "Dan Burkert <dan@danburkert.com>",
     "Lucio Franco <luciofranco14@gmail.com>",

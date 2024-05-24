@@ -775,6 +775,12 @@ who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.12.3 -> 0.12.5"
 
+[[audits.prost-derive]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.12.5 -> 0.12.6"
+notes = "No changes here; presumably a bump of the `prost` crate."
+
 [[audits.qr_code]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
