@@ -6,12 +6,15 @@ source_set("model") {
   sources = [
     "plus_address_service_factory.h",
     "plus_address_service_factory.mm",
+    "plus_address_setting_service_factory.h",
+    "plus_address_setting_service_factory.mm",
   ]
   deps = [
     "//base",
     "//components/affiliations/core/browser:affiliations",
     "//components/keyed_service/ios",
     "//components/plus_addresses",
+    "//components/plus_addresses/settings",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
