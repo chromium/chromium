@@ -1225,7 +1225,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
 
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_subtitle)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_subtitle_legacy)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -1291,7 +1291,7 @@ public class SigninFirstRunFragmentTest {
                 new DisplayableProfileData(email, mock(Drawable.class), fullName, givenName, true);
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
         if (shouldShowSubtitle) {
-            onView(withText(R.string.signin_fre_subtitle)).check(matches(isDisplayed()));
+            onView(withText(R.string.signin_fre_subtitle_legacy)).check(matches(isDisplayed()));
         } else {
             onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
         }
@@ -1391,7 +1391,7 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.fre_signin_progress_spinner)).check(matches(isDisplayed()));
         onView(withText(R.string.fre_signing_in)).check(matches(isDisplayed()));
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_subtitle)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_subtitle_legacy)).check(matches(isDisplayed()));
         onView(withText(email)).check(matches(not(isDisplayed())));
         if (fullName != null) {
             onView(withText(fullName)).check(matches(not(isDisplayed())));

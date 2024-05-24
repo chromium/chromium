@@ -17,7 +17,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -115,7 +114,6 @@ public class FullscreenSigninMediator
                         this::onDismissClicked,
                         ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                                 && !disableSignInForAutomotiveDevice(),
-                        R.string.fre_welcome,
                         getFooterString(false));
 
         mDelegate
@@ -238,12 +236,6 @@ public class FullscreenSigninMediator
                         && !isSigninDisabledByPolicy
                         && !disableSignInForAutomotiveDevice();
         mModel.set(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            mModel.set(
-                    FullscreenSigninProperties.TITLE_STRING_ID,
-                    isSigninSupported ? R.string.signin_fre_title : R.string.fre_welcome);
-        }
         mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
