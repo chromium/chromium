@@ -303,6 +303,17 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         if (DEBUG) Log.i(TAG, "onSelectionChanged [%d,%d]", selStart, selEnd);
         if (mCurrentState.getSelStart() == selStart && mCurrentState.getSelEnd() == selEnd) return;
 
+        // Do not users to select the space between additional texts.
+        int maxLength =
+                mCurrentState.getUserText().length()
+                        + mCurrentState.getAutocompleteText().map(t -> t.length()).orElse(0);
+        if (selStart > maxLength || selEnd > maxLength) {
+            int newStart = selStart > maxLength ? maxLength : selStart;
+            int newEnd = selEnd > maxLength ? maxLength : selEnd;
+            mDelegate.setSelection(newStart, newEnd);
+            return;
+        }
+
         mCurrentState.setSelection(selStart, selEnd);
         if (mBatchEditNestCount > 0) return;
         int len = mCurrentState.getUserText().length();

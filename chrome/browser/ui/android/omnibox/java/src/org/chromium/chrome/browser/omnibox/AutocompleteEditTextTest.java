@@ -602,6 +602,64 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
+    public void testAppendWithAdditionalText_onSelectionChanged() {
+        // User types "h".
+        assertTrue(mInputConnection.commitText("h", 1));
+        mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "h", "", -1, 0, -1, 0, 1);
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "h", "", 1, 1, 1, -1, -1);
+        mInOrder.verify(mVerifier).onAutocompleteTextStateChanged(false);
+        assertVerifierCallCounts(2, 2);
+
+        mInOrder.verifyNoMoreInteractions();
+        assertTrue(mAutocomplete.shouldAutocomplete());
+
+        // The controller kicks in.
+        mAutocomplete.setAutocompleteText("h", "ello world", Optional.of("www.foo.com"));
+        assertFalse(mAutocomplete.isCursorVisible());
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED,
+                "hello world - www.foo.com",
+                "h",
+                -1,
+                1,
+                -1,
+                0,
+                10);
+        assertVerifierCallCounts(0, 1);
+        mInOrder.verifyNoMoreInteractions();
+        assertTrue(mAutocomplete.shouldAutocomplete());
+
+        // User taps on "hello world - www.fo[|]o.com".
+        mAutocomplete.onSelectionChanged(20, 20);
+        mInOrder.verify(mVerifier).onUpdateSelection(11, 11);
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
+                "hello world - www.foo.com",
+                "",
+                25,
+                11,
+                11,
+                -1,
+                -1);
+
+        // User selects on "[hello world - www.fo]o.com".
+        mAutocomplete.onSelectionChanged(0, 20);
+        mInOrder.verify(mVerifier).onUpdateSelection(0, 11);
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
+                "hello world - www.foo.com",
+                "",
+                25,
+                0,
+                11,
+                -1,
+                -1);
+    }
+
+    @Test
     public void testAppend_SetComposingText() {
         // User types "h".
         assertTrue(mInputConnection.setComposingText("h", 1));
