@@ -1,2 +1,9 @@
 # https://crbug.com/1241502
--PaintCanvasVideoRendererWithGLTest.*
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTextureI420
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTextureNV12
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture_FlipY
+-PaintCanvasVideoRendererWithGLTest.PaintI420
+-PaintCanvasVideoRendererWithGLTest.PaintI420NotSubset
+-PaintCanvasVideoRendererWithGLTest.PaintNV12
+-PaintCanvasVideoRendererWithGLTest.PaintRGBA
