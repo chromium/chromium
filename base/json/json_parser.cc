@@ -638,7 +638,7 @@ JSONParser::ConsumeStringPart() {
       }
 
       // Valid UTF-8 will be copied as-is into the output, so keep processing.
-      DCHECK_GT(next_char, kExtendedASCIIStart);
+      DCHECK_GE(next_char, kExtendedASCIIStart);
       ConsumeChar();
       continue;
     }
