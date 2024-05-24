@@ -207,8 +207,8 @@ PasskeySyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void PasskeySyncBridge::GetData(StorageKeyList storage_keys,
-                                DataCallback callback) {
+void PasskeySyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                         DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& sync_id : storage_keys) {
     if (auto it = data_.find(sync_id); it != data_.end()) {
