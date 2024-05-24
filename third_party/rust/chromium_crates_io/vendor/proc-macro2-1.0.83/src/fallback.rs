@@ -781,7 +781,7 @@ impl Debug for Group {
 
 #[derive(Clone)]
 pub(crate) struct Ident {
-    sym: String,
+    sym: Box<str>,
     span: Span,
     raw: bool,
 }
@@ -795,7 +795,7 @@ impl Ident {
 
     pub fn new_unchecked(string: &str, span: Span) -> Self {
         Ident {
-            sym: string.to_owned(),
+            sym: Box::from(string),
             span,
             raw: false,
         }
@@ -809,7 +809,7 @@ impl Ident {
 
     pub fn new_raw_unchecked(string: &str, span: Span) -> Self {
         Ident {
-            sym: string.to_owned(),
+            sym: Box::from(string),
             span,
             raw: true,
         }
@@ -886,9 +886,9 @@ where
     fn eq(&self, other: &T) -> bool {
         let other = other.as_ref();
         if self.raw {
-            other.starts_with("r#") && self.sym == other[2..]
+            other.starts_with("r#") && *self.sym == other[2..]
         } else {
-            self.sym == other
+            *self.sym == *other
         }
     }
 }

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56"
 name = "proc-macro2"
-version = "1.0.82"
+version = "1.0.83"
 authors = [
     "David Tolnay <dtolnay@gmail.com>",
     "Alex Crichton <alex@alexcrichton.com>",
@@ -42,8 +42,6 @@ rustc-args = [
 rustdoc-args = [
     "--cfg",
     "procmacro2_semver_exempt",
-    "--cfg",
-    "doc_cfg",
     "--generate-link-to-definition",
 ]
 targets = ["x86_64-unknown-linux-gnu"]

@@ -48,7 +48,6 @@ fn main() {
     let rustc = rustc_minor_version().unwrap_or(u32::MAX);
 
     if rustc >= 80 {
-        println!("cargo:rustc-check-cfg=cfg(doc_cfg)");
         println!("cargo:rustc-check-cfg=cfg(fuzzing)");
         println!("cargo:rustc-check-cfg=cfg(no_is_available)");
         println!("cargo:rustc-check-cfg=cfg(no_literal_byte_character)");
@@ -58,6 +57,7 @@ fn main() {
         println!("cargo:rustc-check-cfg=cfg(procmacro2_backtrace)");
         println!("cargo:rustc-check-cfg=cfg(procmacro2_nightly_testing)");
         println!("cargo:rustc-check-cfg=cfg(procmacro2_semver_exempt)");
+        println!("cargo:rustc-check-cfg=cfg(randomize_layout)");
         println!("cargo:rustc-check-cfg=cfg(span_locations)");
         println!("cargo:rustc-check-cfg=cfg(super_unstable)");
         println!("cargo:rustc-check-cfg=cfg(wrap_proc_macro)");

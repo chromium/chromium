@@ -69,7 +69,7 @@ use core::fmt::{self, Debug};
 /// This function is not applicable to and will panic if called from a
 /// procedural macro.
 #[cfg(span_locations)]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "span-locations")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "span-locations")))]
 pub fn invalidate_current_thread_spans() {
     crate::imp::invalidate_current_thread_spans();
 }

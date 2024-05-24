@@ -3,7 +3,7 @@ use core::cmp::Ordering;
 /// A line-column pair representing the start or end of a `Span`.
 ///
 /// This type is semver exempt and not exposed by default.
-#[cfg_attr(doc_cfg, doc(cfg(feature = "span-locations")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "span-locations")))]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct LineColumn {
     /// The 1-indexed line in the source file on which the span starts or ends

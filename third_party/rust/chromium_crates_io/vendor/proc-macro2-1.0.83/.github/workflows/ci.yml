@@ -56,7 +56,7 @@ jobs:
         with:
           components: rust-src
       - name: Enable type layout randomization
-        run: echo RUSTFLAGS=${RUSTFLAGS}\ -Zrandomize-layout >> $GITHUB_ENV
+        run: echo RUSTFLAGS=${RUSTFLAGS}\ -Zrandomize-layout\ --cfg=randomize_layout >> $GITHUB_ENV
       - run: cargo check
         env:
           RUSTFLAGS: --cfg procmacro2_nightly_testing ${{env.RUSTFLAGS}}
@@ -77,6 +77,22 @@ jobs:
         run: cargo test
         env:
           RUSTFLAGS: -Z allow-features= --cfg procmacro2_backtrace ${{env.RUSTFLAGS}}
+
+  layout:
+    name: Layout
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rust-src
+      - run: cargo test --test test_size
+      - run: cargo test --test test_size --features span-locations
+      - run: cargo test --test test_size --no-default-features
+      - run: cargo test --test test_size --no-default-features --features span-locations
 
   msrv:
     name: Rust 1.56.0

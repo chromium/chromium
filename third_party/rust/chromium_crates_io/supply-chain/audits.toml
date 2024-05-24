@@ -749,6 +749,12 @@ who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.81 -> 1.0.82"
 
+[[audits.proc-macro2]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.82 -> 1.0.83"
+notes = "Substantive change is replacing String with Box<str>, saving memory."
+
 [[audits.prost]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
