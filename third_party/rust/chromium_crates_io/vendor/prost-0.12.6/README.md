@@ -1,4 +1,4 @@
-![continuous integration](https://github.com/tokio-rs/prost/workflows/continuous%20integration/badge.svg)
+[![continuous integration](https://github.com/tokio-rs/prost/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/tokio-rs/prost/actions/workflows/ci.yml?query=branch%3Amaster)
 [![Documentation](https://docs.rs/prost/badge.svg)](https://docs.rs/prost/)
 [![Crate](https://img.shields.io/crates/v/prost.svg)](https://crates.io/crates/prost)
 [![Dependency Status](https://deps.rs/repo/github/tokio-rs/prost/status.svg)](https://deps.rs/repo/github/tokio-rs/prost)

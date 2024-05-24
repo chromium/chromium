@@ -9,7 +9,6 @@ use alloc::format;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::cmp::min;
-use core::convert::TryFrom;
 use core::mem;
 use core::str;
 use core::u32;
@@ -1423,15 +1422,16 @@ pub mod btree_map {
 
 #[cfg(test)]
 mod test {
+    #[cfg(not(feature = "std"))]
     use alloc::string::ToString;
     use core::borrow::Borrow;
     use core::fmt::Debug;
     use core::u64;
 
-    use ::bytes::{Bytes, BytesMut};
+    use ::bytes::BytesMut;
     use proptest::{prelude::*, test_runner::TestCaseResult};
 
-    use crate::encoding::*;
+    use super::*;
 
     pub fn check_type<T, B>(
         value: T,
@@ -1616,11 +1616,14 @@ mod test {
 
             assert_eq!(encoded_len_varint(value), encoded.len());
 
-            let roundtrip_value = decode_varint(&mut encoded.clone()).expect("decoding failed");
+            // See: https://github.com/tokio-rs/prost/pull/1008 for copying reasoning.
+            let mut encoded_copy = encoded;
+            let roundtrip_value = decode_varint(&mut encoded_copy).expect("decoding failed");
             assert_eq!(value, roundtrip_value);
 
+            let mut encoded_copy = encoded;
             let roundtrip_value =
-                decode_varint_slow(&mut encoded.clone()).expect("slow decoding failed");
+                decode_varint_slow(&mut encoded_copy).expect("slow decoding failed");
             assert_eq!(value, roundtrip_value);
         }
 
@@ -1679,13 +1682,18 @@ mod test {
         );
     }
 
+    const U64_MAX_PLUS_ONE: &[u8] = &[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x02];
+
     #[test]
     fn varint_overflow() {
-        let u64_max_plus_one: &[u8] = &[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x02];
+        let mut copy = U64_MAX_PLUS_ONE;
+        decode_varint(&mut copy).expect_err("decoding u64::MAX + 1 succeeded");
+    }
 
-        decode_varint(&mut u64_max_plus_one.clone()).expect_err("decoding u64::MAX + 1 succeeded");
-        decode_varint_slow(&mut u64_max_plus_one.clone())
-            .expect_err("slow decoding u64::MAX + 1 succeeded");
+    #[test]
+    fn variant_slow_overflow() {
+        let mut copy = U64_MAX_PLUS_ONE;
+        decode_varint_slow(&mut copy).expect_err("slow decoding u64::MAX + 1 succeeded");
     }
 
     /// This big bowl o' macro soup generates an encoding property test for each combination of map

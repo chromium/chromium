@@ -13,10 +13,11 @@
 edition = "2021"
 rust-version = "1.70"
 name = "prost"
-version = "0.12.4"
+version = "0.12.6"
 authors = [
     "Dan Burkert <dan@danburkert.com>",
-    "Lucio Franco <luciofranco14@gmail.com",
+    "Lucio Franco <luciofranco14@gmail.com>",
+    "Casper Meijn <casper@meijn.net>",
     "Tokio Contributors <team@tokio.rs>",
 ]
 description = "A Protocol Buffers implementation for the Rust Language."
@@ -30,9 +31,6 @@ categories = ["encoding"]
 license = "Apache-2.0"
 repository = "https://github.com/tokio-rs/prost"
 
-[profile.bench]
-debug = 2
-
 [lib]
 bench = false
 
@@ -45,19 +43,12 @@ version = "1"
 default-features = false
 
 [dependencies.prost-derive]
-version = "0.12.4"
+version = "0.12.6"
 optional = true
 
 [dev-dependencies.criterion]
 version = "0.4"
 default-features = false
-
-[dev-dependencies.env_logger]
-version = "0.10"
-default-features = false
-
-[dev-dependencies.log]
-version = "0.4"
 
 [dev-dependencies.proptest]
 version = "1"

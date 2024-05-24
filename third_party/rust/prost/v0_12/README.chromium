@@ -1,9 +1,9 @@
 Name: prost
 URL: https://crates.io/crates/prost
 Description: A Protocol Buffers implementation for the Rust Language.
-Version: 0.12.4
+Version: 0.12.6
 Security Critical: no
 Shipped: no
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/prost-0.12.4/LICENSE
-Revision: 38a00d89527728b6d50736d2ede49b5963abc2fd
+License File:
+Revision: d42c85e790263f78f6c626ceb0dac5fda0edcb41
