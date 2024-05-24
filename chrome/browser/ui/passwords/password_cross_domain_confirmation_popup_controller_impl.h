@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/password_manager/core/browser/password_cross_domain_confirmation_popup_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -51,6 +52,7 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
+  autofill::PopupAnchorType anchor_type() const override;
   base::i18n::TextDirection GetElementTextDirection() const override;
 
   // content::WebContentsObserver:

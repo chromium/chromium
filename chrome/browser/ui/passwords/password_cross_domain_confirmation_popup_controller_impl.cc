@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -88,6 +89,11 @@ PasswordCrossDomainConfirmationPopupControllerImpl::GetWebContents() const {
 const gfx::RectF&
 PasswordCrossDomainConfirmationPopupControllerImpl::element_bounds() const {
   return element_bounds_;
+}
+
+autofill::PopupAnchorType
+PasswordCrossDomainConfirmationPopupControllerImpl::anchor_type() const {
+  return autofill::PopupAnchorType::kField;
 }
 
 base::i18n::TextDirection

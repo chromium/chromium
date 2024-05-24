@@ -381,7 +381,6 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   if (suggestion.acceptance_a11y_announcement && view_) {
     view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);
   }
-
   delegate_->DidAcceptSuggestion(
       suggestion, AutofillSuggestionDelegate::SuggestionPosition{
                       .row = index, .sub_popup_level = GetPopupLevel()});
@@ -397,6 +396,10 @@ content::WebContents* AutofillPopupControllerImpl::GetWebContents() const {
 
 const gfx::RectF& AutofillPopupControllerImpl::element_bounds() const {
   return controller_common_.element_bounds;
+}
+
+PopupAnchorType AutofillPopupControllerImpl::anchor_type() const {
+  return controller_common_.anchor_type;
 }
 
 base::i18n::TextDirection AutofillPopupControllerImpl::GetElementTextDirection()

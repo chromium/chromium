@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,6 +45,7 @@ class MockAutofillPopupController : public AutofillPopupController {
   MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
   const gfx::RectF& element_bounds() const override { return element_bounds_; }
+  PopupAnchorType anchor_type() const override { return anchor_type_; }
   void set_element_bounds(const gfx::RectF& bounds) {
     element_bounds_ = bounds;
   }
@@ -139,6 +141,7 @@ class MockAutofillPopupController : public AutofillPopupController {
   gfx::ScopedDefaultFontDescription default_font_desc_setter_{
       "Arial, Times New Roman, 15px"};
   gfx::RectF element_bounds_ = {100, 100, 250, 50};
+  PopupAnchorType anchor_type_ = PopupAnchorType::kField;
 
   base::WeakPtrFactory<MockAutofillPopupController> weak_ptr_factory_{this};
 };

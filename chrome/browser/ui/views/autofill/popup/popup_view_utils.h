@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
 
 #include "base/containers/span.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -78,11 +79,16 @@ bool IsPopupPlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
 // a `popup_preferred_size` fits on the side of the `element_bounds` in
 // the `content_area_bounds` taking the arrow length into account.
 // If neither side bits, the function returns kBottom.
+// `anchor_type` is used to define whether the `element_bounds` width
+// is taken into account to decide if vertical positioning is allowed.
+// In the case of `PopupAnchorType::kCaret`, this width
+// check does not apply. Since carets are narrow by design.
 views::BubbleArrowSide GetOptimalArrowSide(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
     const gfx::Size& popup_preferred_size,
-    base::span<const views::BubbleArrowSide> popup_preferred_sides);
+    base::span<const views::BubbleArrowSide> popup_preferred_sides,
+    PopupAnchorType anchor_type);
 
 // Determines the optimal position of a popup with `popup_preferred_size` next
 // to an UI element with `element_bounds`. The arrow pointer dimensions are
@@ -104,7 +110,8 @@ views::BubbleBorder::Arrow GetOptimalPopupPlacement(
     int maximum_pixel_offset_to_center,
     int maximum_width_percentage_to_center,
     gfx::Rect& popup_bounds,
-    base::span<const views::BubbleArrowSide> popup_preferred_sides);
+    base::span<const views::BubbleArrowSide> popup_preferred_sides,
+    PopupAnchorType anchor_type);
 
 // Returns whether there is an open permissions prompt in `web_contents` with
 // bounds that overlap `screen_bounds`.

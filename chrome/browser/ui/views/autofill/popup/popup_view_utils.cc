@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
@@ -312,14 +313,23 @@ views::BubbleArrowSide GetOptimalArrowSide(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
     const gfx::Size& popup_preferred_size,
-    base::span<const views::BubbleArrowSide> popup_preferred_sides) {
+    base::span<const views::BubbleArrowSide> popup_preferred_sides,
+    PopupAnchorType anchor_type) {
   // Probe for a side of the element on which the popup can be shown entirely.
   for (views::BubbleArrowSide possible_side : popup_preferred_sides) {
+    // For caret elements, do not check whether the bounds are sufficiently
+    // large to place a vertical arrow.
+    const bool
+        skip_element_bounds_sufficiently_visible_for_vertical_arrow_check =
+            anchor_type == PopupAnchorType::kCaret;
+    const bool can_arrow_side_be_vertical =
+        skip_element_bounds_sufficiently_visible_for_vertical_arrow_check ||
+        IsElementSufficientlyVisibleForAVerticalArrow(
+            content_area_bounds, element_bounds, possible_side);
     if (IsPopupPlaceableOnSideOfElement(
             content_area_bounds, element_bounds, popup_preferred_size,
             BubbleBorder::kVisibleArrowLength, possible_side) &&
-        IsElementSufficientlyVisibleForAVerticalArrow(
-            content_area_bounds, element_bounds, possible_side)) {
+        can_arrow_side_be_vertical) {
       return possible_side;
     }
   }
@@ -343,12 +353,13 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
     int maximum_pixel_offset_to_center,
     int maximum_width_percentage_to_center,
     gfx::Rect& popup_bounds,
-    base::span<const views::BubbleArrowSide> popup_preferred_sides) {
+    base::span<const views::BubbleArrowSide> popup_preferred_sides,
+    PopupAnchorType anchor_type) {
   // Determine the best side of the element to put the popup and get a
   // corresponding arrow.
-  views::BubbleArrowSide side =
-      GetOptimalArrowSide(content_area_bounds, element_bounds,
-                          popup_preferred_size, popup_preferred_sides);
+  views::BubbleArrowSide side = GetOptimalArrowSide(
+      content_area_bounds, element_bounds, popup_preferred_size,
+      popup_preferred_sides, anchor_type);
   BubbleBorder::Arrow arrow =
       GetBubbleArrowForBubbleArrowSide(side, right_to_left);
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_VIEW_DELEGATE_H_
 
 #include "base/i18n/rtl.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -37,8 +38,12 @@ class AutofillPopupViewDelegate {
   // The web contents the form field element sits in.
   virtual content::WebContents* GetWebContents() const = 0;
 
-  // The bounds of the form field element (screen coordinates).
+  // The bounds of the form field element or caret (screen coordinates).
   virtual const gfx::RectF& element_bounds() const = 0;
+
+  // Whether the element to anchor the popup on is a field/text area, the
+  // caret or the keyboard accessory.
+  virtual PopupAnchorType anchor_type() const = 0;
 
   // Returns the text direction of the focused field at the time of creating
   // this popup. This does not govern whether the popup UI is RTL (that is

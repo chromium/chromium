@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/version_info/channel.h"
 
@@ -25,12 +26,14 @@ AutofillClient::PopupOpenArgs::PopupOpenArgs(
     base::i18n::TextDirection text_direction,
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
-    int32_t form_control_ax_id)
+    int32_t form_control_ax_id,
+    PopupAnchorType anchor_type)
     : element_bounds(element_bounds),
       text_direction(text_direction),
       suggestions(std::move(suggestions)),
       trigger_source(trigger_source),
-      form_control_ax_id(form_control_ax_id) {}
+      form_control_ax_id(form_control_ax_id),
+      anchor_type(anchor_type) {}
 AutofillClient::PopupOpenArgs::PopupOpenArgs(
     const AutofillClient::PopupOpenArgs&) = default;
 AutofillClient::PopupOpenArgs::PopupOpenArgs(AutofillClient::PopupOpenArgs&&) =
