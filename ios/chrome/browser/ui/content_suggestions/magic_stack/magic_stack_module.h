@@ -8,6 +8,16 @@
 #import <UIKit/UIKit.h>
 
 enum class ContentSuggestionsModuleType;
+@class MagicStackModule;
+
+// A protocol for the MagicStackModule delegate.
+@protocol MagicStackModuleDelegate
+
+// Called when the module is added to the displayed list.
+- (void)magicStackModule:(MagicStackModule*)magicStackModule
+     wasDisplayedAtIndex:(NSUInteger)index;
+
+@end
 
 // Base object for all Magic Stack modules configs. Subclass this class when
 // creating a new module config.
@@ -18,6 +28,9 @@ enum class ContentSuggestionsModuleType;
 
 // YES if the "See More" button should be shown for this module.
 @property(nonatomic, assign) BOOL shouldShowSeeMore;
+
+// The delegate of the module.
+@property(nonatomic, weak) id<MagicStackModuleDelegate> delegate;
 
 @end
 

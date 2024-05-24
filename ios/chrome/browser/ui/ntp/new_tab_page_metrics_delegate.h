@@ -9,10 +9,16 @@
 @protocol NewTabPageMetricsDelegate
 
 // The recent tab tile has been tapped.
-- (void)recentTabTileOpened;
+- (void)recentTabTileOpenedAtIndex:(NSUInteger)index;
 
 // A distant tab resumption tile has been tapped.
-- (void)distantTabResumptionOpened;
+- (void)distantTabResumptionOpenedAtIndex:(NSUInteger)index;
+
+// The recent tab tile has been displayed.
+- (void)recentTabTileDisplayedAtIndex:(NSUInteger)index;
+
+// A distant tab resumption tile has been displayed.
+- (void)distantTabResumptionDisplayedAtIndex:(NSUInteger)index;
 
 // A feed article has been tapped.
 - (void)feedArticleOpened;

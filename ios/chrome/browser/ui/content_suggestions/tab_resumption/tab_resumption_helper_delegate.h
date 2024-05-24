@@ -25,6 +25,9 @@ enum class ContentSuggestionsModuleType;
 // Logs a user Magic Stack engagement for module `type`.
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
 
+// Returns the index rank of `moduleType` or NSNotFound if not found.
+- (NSUInteger)indexForMagicStackModule:(ContentSuggestionsModuleType)moduleType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_TAB_RESUMPTION_TAB_RESUMPTION_HELPER_DELEGATE_H_
