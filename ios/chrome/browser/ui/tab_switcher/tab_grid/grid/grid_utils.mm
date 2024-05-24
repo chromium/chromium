@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -64,6 +65,8 @@ int WebStateIndexFromGridDropItemIndex(WebStateList* web_state_list,
   // Shift `web_state_index` by the number of WebStates in the
   // groups before it.
   for (NSUInteger i = 0; i < drop_item_index; ++i) {
+    CHECK(web_state_list->ContainsIndex(web_state_index),
+          base::NotFatalUntil::M128);
     const TabGroup* tabGroup =
         web_state_list->GetGroupOfWebStateAt(web_state_index);
     if (tabGroup) {
