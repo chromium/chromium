@@ -13,10 +13,6 @@ using gfx::Size;
 
 namespace recordreplay {
 
-typedef void (*ResetPaintSurfaceCallback)();
-void SetResetPaintSurfaceCallback(ResetPaintSurfaceCallback reset_paint_surface);
-void DoResetPaintSurface();
-
 typedef gfx::Size (*GetCurrentViewportPixelSizeCallback)();
 // This callback is set when the first render surface is created.
 void SetGetCurrentViewportPixelSizeCallback(GetCurrentViewportPixelSizeCallback cb);

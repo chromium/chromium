@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/record_replay.h"
-#include "base/record_replay_render_interface.h"
+#include "base/record_replay_paint_surface.h"
 
 // We use this file to allow depending on record_replay_render from blink.
 // We cannot access the render code directly since, during V8 snapshotting,
@@ -11,17 +11,15 @@
 
 namespace recordreplay {
 
-static GetCurrentViewportPixelSizeCallback gGetCurrentViewportPixelSize = nullptr;
-void SetGetCurrentViewportPixelSizeCallback(GetCurrentViewportPixelSizeCallback cb) {
-  gGetCurrentViewportPixelSize = cb;
+// Callback to reset the paint surface.
+static ResetPaintSurfaceCallback gResetPaintSurfaceCallback = nullptr;
+void SetResetPaintSurfaceCallback(ResetPaintSurfaceCallback reset_paint_surface) {
+  gResetPaintSurfaceCallback = reset_paint_surface;
 }
-
-const gfx::Size gDefaultSize; // {0,0}
-gfx::Size GetCurrentViewportPixelSize() {
-  if (gGetCurrentViewportPixelSize) {
-    return gGetCurrentViewportPixelSize();
+void DoResetPaintSurface() {
+  if (gResetPaintSurfaceCallback) {
+    gResetPaintSurfaceCallback();
   }
-  return gDefaultSize;
 }
 
 }  // namespace recordreplay

@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/record_replay.h"
+#include "base/record_replay_paint_surface.h"
 #include "base/record_replay_render_interface.h"
 #include "base/strings/stringprintf.h"
 #include "cc/animation/animation_events.h"

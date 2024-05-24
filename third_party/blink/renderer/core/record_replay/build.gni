@@ -1,0 +1,5 @@
+
+blink_core_sources_record_replay = [
+    "lifecycle.cc",
+    "lifecycle.h",
+]

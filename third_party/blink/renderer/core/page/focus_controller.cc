@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/slot_scoped_traversal.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
+#include "third_party/blink/renderer/core/record_replay/lifecycle.h"
 
 namespace blink {
 
@@ -1376,6 +1377,7 @@ bool FocusController::SetFocusedElement(Element* element,
 }
 
 void FocusController::ActiveHasChanged() {
+  recordreplay::NotifyPageFocusControllerActiveChanged(page_);
   Frame* frame = FocusedOrMainFrame();
   if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     Document* const document = local_frame->LocalFrameRoot().GetDocument();

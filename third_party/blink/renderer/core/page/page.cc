@@ -24,6 +24,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/record_replay.h"
+#include "base/record_replay_paint_surface.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -82,6 +83,7 @@
 #include "third_party/blink/renderer/core/page/validation_message_client_impl.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/record_replay/lifecycle.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
@@ -539,6 +541,11 @@ void Page::SetVisibilityState(
   if (lifecycle_state_->visibility == visibility_state)
     return;
   lifecycle_state_->visibility = visibility_state;
+
+  // ideally we could use an observer for this (and we might eventually find that we can),
+  // but in the interest of always getting paints, we need do this even if
+  // is_initial_state == true.
+  recordreplay::NotifyPageVisibilityStateChanged(this);
 
   if (is_initial_state)
     return;
@@ -1034,6 +1041,8 @@ void Page::WillBeDestroyed() {
     // https://linear.app/replay/issue/RUN-2733
     s->BreakLinkages();
   }
+
+  recordreplay::NotifyPageWillBeDestroyed(this);
 
   page_scheduler_ = nullptr;
 }
