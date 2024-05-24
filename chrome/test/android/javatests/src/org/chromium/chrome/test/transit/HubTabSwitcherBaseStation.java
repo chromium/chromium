@@ -62,7 +62,6 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
 
     private final boolean mIsIncognito;
 
-    /** */
     public HubTabSwitcherBaseStation(boolean isIncognito) {
         super();
         mIsIncognito = isIncognito;
@@ -74,6 +73,10 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
 
         elements.declareView(TOOLBAR_NEW_TAB_BUTTON);
         elements.declareView(TAB_LIST_RECYCLER_VIEW);
+    }
+
+    public boolean isIncognito() {
+        return mIsIncognito;
     }
 
     /**

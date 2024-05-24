@@ -336,7 +336,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
             return mPresence;
         }
 
-        protected ViewElement getViewElement() {
+        public ViewElement getViewElement() {
             return mViewElement;
         }
 

@@ -7,6 +7,8 @@ package org.chromium.chrome.test.transit;
 import org.chromium.chrome.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.Collections;
+
 /** The app menu shown when pressing ("...") in the Hub on a tab switcher pane. */
 public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitcherBaseStation> {
     public static final int CLOSE_ALL_TABS_ID = R.id.close_all_tabs_menu_id;
@@ -97,6 +99,6 @@ public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitche
     }
 
     private HubTabSwitcherListEditorFacility createListEditorFacility() {
-        return new HubTabSwitcherListEditorFacility(mHostStation);
+        return new HubTabSwitcherListEditorFacility(mHostStation, Collections.EMPTY_LIST);
     }
 }

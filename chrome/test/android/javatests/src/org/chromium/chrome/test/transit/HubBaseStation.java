@@ -22,6 +22,7 @@ import androidx.annotation.StringRes;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.R;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation extends Station {
@@ -96,9 +98,12 @@ public abstract class HubBaseStation extends Station {
         elements.declareEnterCondition(new HubLayoutNotInTransition());
     }
 
-    /**
-     * @return the {@link ChromeTabbedActivity} for this station.
-     */
+    /** Returns the {@link Condition} that acts as {@link Supplier<TabModelSelector>}. */
+    public Supplier<TabModelSelector> getTabModelSelectorSupplier() {
+        return mTabModelSelectorCondition;
+    }
+
+    /** Returns the {@link ChromeTabbedActivity} for this station. */
     protected ChromeTabbedActivity getActivity() {
         assertSuppliersCanBeUsed();
         return mActivityElement.get();

@@ -7,6 +7,7 @@ package org.chromium.chrome.test.transit;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
@@ -161,15 +162,19 @@ public abstract class AppMenuFacility<HostStationT extends Station>
         return new SettingsStation();
     }
 
-    private static Matcher<View> itemViewMatcher(@IdRes int id) {
+    protected static Matcher<View> itemViewMatcher(@IdRes int id) {
         return allOf(withId(id), isDescendantOfA(MENU_LIST));
     }
 
-    private static Matcher<ListItem> itemDataMatcher(@IdRes int id) {
+    protected static Matcher<View> itemViewMatcher(String text) {
+        return allOf(withText(text), isDescendantOfA(MENU_LIST));
+    }
+
+    protected static Matcher<ListItem> itemDataMatcher(@IdRes int id) {
         return withMenuItemId(id);
     }
 
-    private static Matcher<MVCListAdapter.ListItem> withMenuItemId(@IdRes int id) {
+    protected static Matcher<MVCListAdapter.ListItem> withMenuItemId(@IdRes int id) {
         return new TypeSafeMatcher<>() {
             @Override
             public void describeTo(Description description) {
