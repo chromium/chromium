@@ -109,8 +109,14 @@ a[href] {
   background-color: var(--cr-card-background-color);
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
-  padding: 12px 20px;
+  padding: 0px var(--cr-section-padding);
   container-type: inline-size;
+}
+
+.panel-header {
+  align-items: center;
+  display: flex;
+  padding: var(--cr-section-padding) 0px;
 }
 
 .panel-header-text {
@@ -118,7 +124,7 @@ a[href] {
 }
 
 .panel-header-text h3 {
-  margin: 5px 0 3px 0;
+  margin: 0;
   font-weight: 400;
 }
 
@@ -129,10 +135,9 @@ a[href] {
 
 .panel-extensions {
   border-top: var(--cr-separator-line);
-  padding-top: 0px;
-  padding-bottom: 0px;
-  padding-inline-end: 0px;
-  padding-inline-start: 3px;
+  /* Extension rows have a min height that adds extra padding. Thus, we
+     subtract an adjustment to account for it */
+  padding: calc(var(--cr-section-padding) - 6px) 0px;
 }
 
 .panel-extension-row {
