@@ -2519,7 +2519,26 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
       trigger_autofill_field ? trigger_autofill_field->Type().GetStorableType()
                              : UNKNOWN_TYPE;
 
+  // Given the current `trigger_field` and previous suggestions shown (if any),
+  // compute what type of address suggestions granularity shall be currently
+  // offered.
   SuggestionType current_suggestion_type = [&] {
+    if (!IsAddressType(trigger_field_type)) {
+      // If Autofill was triggered from a field that is not classified as
+      // address, `current_suggestion_type is irrelevant and we just use
+      // `SuggestionType::kAddressEntry` as a placeholder.
+      return SuggestionType::kAddressEntry;
+    }
+    if (trigger_field.is_autofilled() &&
+        trigger_autofill_field->autofilled_type() ==
+            trigger_autofill_field->Type().GetStorableType() &&
+        base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping)) {
+      // If the user triggers suggestions on an autofilled field filled
+      // traditionally with data matching its classification, field-by-field
+      // filling suggestions should be shown so that the user could easily
+      // correct values to something present in different stored addresses.
+      return SuggestionType::kAddressFieldByFieldFilling;
+    }
     switch (external_delegate_->GetLastAcceptedSuggestionToFillForSection(
         trigger_autofill_field->section())) {
       case SuggestionType::kAddressEntry:
@@ -2546,18 +2565,11 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
           case FieldTypeGroup::kUnfillable:
           case FieldTypeGroup::kIban:
           case FieldTypeGroup::kNoGroup:
-            // If Autofill was triggered from a field that is not classified as
-            // address, `current_suggestion_type` is irrelevant and we just use
-            // `SuggestionType::kAddressEntry` as a placeholder.
-            return SuggestionType::kAddressEntry;
+            // Since we early return on non-address types.
+            NOTREACHED_NORETURN();
         }
         NOTREACHED_NORETURN();
       case SuggestionType::kAddressFieldByFieldFilling:
-        if (!IsAddressType(trigger_field_type)) {
-          // TODO(crbug.com/339543182): Is this special case reasonable?
-          // Shouldn't we continue with field-by-field filling?
-          return SuggestionType::kAddressEntry;
-        }
         return SuggestionType::kAddressFieldByFieldFilling;
       default:
         // `last_suggestion_type` is only one of the address filling suggestion

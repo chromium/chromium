@@ -315,6 +315,14 @@ BASE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_xhr_submission_detection_ios)
 
+// When enabled, focusing on an autofilled field that was traditionally filled
+// with address data (meaning filled with the value of their classified type)
+// will yield field-by-field filling suggestions without prefix matching.
+// TODO(b/339543182): Remove when launched.
+BASE_FEATURE(kAutofillAddressFieldSwapping,
+             "AutofillAddressFieldSwapping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Resets the autofill state of a field when JavaScript modifies its value.
 // Also resets the AutofillState of the blink element to kAutofilled if the
 // change was only a reformatting (inserting whitespaces and special

@@ -31,7 +31,8 @@ class AutofillSuggestionGeneratorTestApi {
     return suggestion_generator_->GetProfilesToSuggest(
         trigger_field_type, field_contents, field_is_autofilled, field_types,
         suggestion_generator_->GetProfilesToSuggestOptions(
-            trigger_field_type, field_contents, trigger_source));
+            trigger_field_type, field_contents, field_is_autofilled,
+            trigger_source));
   }
 
   std::vector<CreditCard> GetOrderedCardsToSuggest(

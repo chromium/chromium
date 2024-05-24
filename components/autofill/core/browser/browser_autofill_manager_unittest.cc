@@ -3479,6 +3479,39 @@ TEST_F(BrowserAutofillManagerTest,
        AutofillSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
+// Tests that when focusing on an autofilled field, the user gets field-by-field
+// filling suggestions without prefix matching, if AutofillAddressFieldSwapping
+// is enabled.
+TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAddressFieldSwapping};
+  FormData form =
+      test::GetFormData({.fields = {{.role = NAME_FULL,
+                                     .value = u"Full Name",
+                                     .autocomplete_attribute = "name",
+                                     .is_autofilled = true},
+                                    {.role = ADDRESS_HOME_COUNTRY,
+                                     .value = u"Country",
+                                     .autocomplete_attribute = "country",
+                                     .is_autofilled = true}}});
+  FormsSeen({form});
+  browser_autofill_manager_->GetAutofillField(form, form.fields[0])
+      ->set_autofilled_type(NAME_FULL);
+  personal_data().test_address_data_manager().ClearProfiles();
+  personal_data().test_address_data_manager().AddProfile(
+      test::GetFullProfile());
+
+  GetAutofillSuggestions(form, form.fields[0]);
+  external_delegate()->CheckSuggestions(
+      form.fields[0].global_id(),
+      {Suggestion("John H. Doe", std::vector<std::vector<Suggestion::Text>>{{}},
+                  Suggestion::Icon::kNoIcon,
+                  SuggestionType::kAddressFieldByFieldFilling),
+       AutofillSuggestionGenerator::CreateSeparator(),
+       AutofillSuggestionGenerator::CreateClearFormSuggestion(),
+       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+}
+
 // Tests that fields with unrecognized autocomplete attribute don't contribute
 // to key metrics.
 TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {

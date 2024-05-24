@@ -131,6 +131,7 @@ class AutofillSuggestionGenerator {
   ProfilesToSuggestOptions GetProfilesToSuggestOptions(
       FieldType trigger_field_type,
       const std::u16string& trigger_field_contents,
+      bool trigger_field_is_autofilled,
       AutofillSuggestionTriggerSource trigger_source) const;
 
   // Returns a list of profiles that will be displayed as suggestions to the

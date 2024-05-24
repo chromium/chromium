@@ -766,8 +766,9 @@ CreateSuggestionLabelsWithGranularFillingDetails(
   // the first-level suggestion is not clickable. The first-level suggestion
   // needs to give plenty of info about the profile.
   if (field_types.size() == 1 && IsAddressType(trigger_field_type) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillGranularFillingAvailable)) {
+      (base::FeatureList::IsEnabled(
+           features::kAutofillGranularFillingAvailable) ||
+       base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping))) {
     return std::vector<std::vector<Suggestion::Text>>(profiles.size());
   }
 
@@ -959,6 +960,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
           trigger_field_type, trigger_field.value(),
           trigger_field.is_autofilled(), field_types,
           GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
+                                      trigger_field.is_autofilled(),
                                       trigger_source));
   // If autofill for addresses is triggered from the context menu on an address
   // field and no suggestions can be shown (i.e. if a user has only addresses
@@ -995,6 +997,7 @@ AutofillSuggestionGenerator::ProfilesToSuggestOptions
 AutofillSuggestionGenerator::GetProfilesToSuggestOptions(
     FieldType trigger_field_type,
     const std::u16string& trigger_field_contents,
+    bool trigger_field_is_autofilled,
     AutofillSuggestionTriggerSource trigger_source) const {
   // By default, disused profiles are excluded only if the normalized field
   // value is empty. However, triggering suggestions via manual fallback should
@@ -1016,8 +1019,15 @@ AutofillSuggestionGenerator::GetProfilesToSuggestOptions(
   // all their profiles, which is why this option is disabled there. Moreover,
   // prefix matching in that case could result in poor UX, since the user
   // explicitly asked for Autofill address suggestions.
+  // Additionally, if AutofillAddressFieldSwapping is enabled, prefix matching
+  // is disabled because we want to offer the user suggestions to swap the
+  // current value of the field with something else, making the prefix matching
+  // not useful.
   bool should_prefix_match_suggestions =
-      trigger_source != AutofillSuggestionTriggerSource::kManualFallbackAddress;
+      trigger_source !=
+          AutofillSuggestionTriggerSource::kManualFallbackAddress &&
+      (!trigger_field_is_autofilled ||
+       !base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping));
   // By default, suggestions should be deduplicated in order to not offer
   // redundant suggestions. However, triggering suggestions via manual fallback
   // should allow the user to access all their profiles, which is why this
