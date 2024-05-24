@@ -263,6 +263,8 @@ static_library("safe_browsing") {
         "extension_telemetry/declarative_net_request_signal.h",
         "extension_telemetry/declarative_net_request_signal_processor.cc",
         "extension_telemetry/declarative_net_request_signal_processor.h",
+        "extension_telemetry/extension_js_callstacks.cc",
+        "extension_telemetry/extension_js_callstacks.h",
         "extension_telemetry/extension_signal.h",
         "extension_telemetry/extension_signal_processor.h",
         "extension_telemetry/extension_signal_util.cc",
