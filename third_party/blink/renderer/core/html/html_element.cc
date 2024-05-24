@@ -2038,7 +2038,6 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
     CHECK_NE(new_popover->PopoverType(), PopoverValueType::kManual);
     CHECK(!new_popover->popoverOpen());
   } else {
-    CHECK(RuntimeEnabledFeatures::NestedTopLayerSupportEnabled());
     CHECK(!new_popover);
     CHECK(!new_popovers_invoker);
   }
@@ -2095,9 +2094,6 @@ const HTMLElement* HTMLElement::TopLayerElementPopoverAncestor(
     Element& top_layer_element,
     TopLayerElementType top_layer_element_type) {
   CHECK(top_layer_element_type != TopLayerElementType::kPopover);
-  if (!RuntimeEnabledFeatures::NestedTopLayerSupportEnabled()) {
-    return nullptr;
-  }
   Document& document = top_layer_element.GetDocument();
   // Check the hint stack first.
   if (auto* ancestor = FindTopmostPopoverAncestor(

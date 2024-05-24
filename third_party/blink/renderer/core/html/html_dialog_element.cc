@@ -281,7 +281,6 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   // element should hide all open popovers.
   auto* hide_until = HTMLElement::TopLayerElementPopoverAncestor(
       *this, TopLayerElementType::kDialog);
-  DCHECK(RuntimeEnabledFeatures::NestedTopLayerSupportEnabled() || !hide_until);
   HTMLElement::HideAllPopoversUntil(
       hide_until, GetDocument(), HidePopoverFocusBehavior::kNone,
       HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
@@ -385,7 +384,6 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   // element should hide all open popovers.
   auto* hide_until = HTMLElement::TopLayerElementPopoverAncestor(
       *this, TopLayerElementType::kDialog);
-  DCHECK(RuntimeEnabledFeatures::NestedTopLayerSupportEnabled() || !hide_until);
   HTMLElement::HideAllPopoversUntil(
       hide_until, document, HidePopoverFocusBehavior::kNone,
       HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);

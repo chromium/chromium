@@ -232,7 +232,6 @@ void GoFullscreen(Element& element,
   // element should hide all open popovers.
   auto* hide_until = HTMLElement::TopLayerElementPopoverAncestor(
       element, TopLayerElementType::kFullscreen);
-  DCHECK(RuntimeEnabledFeatures::NestedTopLayerSupportEnabled() || !hide_until);
   HTMLElement::HideAllPopoversUntil(
       hide_until, document, HidePopoverFocusBehavior::kNone,
       HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
