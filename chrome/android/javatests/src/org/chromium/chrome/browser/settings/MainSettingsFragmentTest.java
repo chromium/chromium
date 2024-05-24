@@ -656,7 +656,7 @@ public class MainSettingsFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
         onView(allOf(withText(accountInfo.getFullName()), isDisplayed()))
                 .check(matches(isDisplayed()));
-        onView(withText(accountInfo.getEmail())).check(matches(not(isDisplayed())));
+        onView(withText(accountInfo.getEmail())).check(doesNotExist());
     }
 
     @Test
@@ -691,7 +691,7 @@ public class MainSettingsFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        onView(withText(accountInfo.getEmail())).check(matches(not(isDisplayed())));
+        onView(withText(accountInfo.getEmail())).check(doesNotExist());
         onView(allOf(withText(R.string.default_google_account_username), isDisplayed()))
                 .check(matches(isDisplayed()));
     }
