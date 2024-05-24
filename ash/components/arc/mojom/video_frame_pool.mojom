@@ -1,6 +1,8 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// Next MinVersion: 2
 
 module arc.mojom;
 
@@ -33,10 +35,23 @@ interface VideoFramePool {
 };
 
 // Video frame pool client, needs to provide video frames to the pool.
-// Next Method ID: 1
+// Next Method ID: 2
 interface VideoFramePoolClient {
   // Request a set of video frames from the client with specified properties.
   // The pool client needs to add frames to the pool using AddVideoFrame().
-  RequestVideoFrames@0(VideoPixelFormat format, Size coded_size,
+  DEPRECATED_RequestVideoFrames@0(VideoPixelFormat format, Size coded_size,
                        Rect visible_rect, uint32 num_frames);
+
+  // Request a set of video frames from the client with specified properties.
+  // The pool client needs to add frames to the pool using AddVideoFrame().
+  // The pool client should call the response callback before making any
+  // AddVideoFrame() calls in order to acknowledge the receipt of the request.
+  // After the pool receives the acknowledgement, it will assume that all
+  // subsequent AddVideoFrame() calls correspond to the acknowledged
+  // RequestVideoFrames() request. Any AddVideoFrame() calls received by the
+  // pool prior to the receipt of an acknowledgment response are immediately
+  // replied with |result| = true and without using the corresponding
+  // |video_frame|.
+  [MinVersion=1] RequestVideoFrames@1(VideoPixelFormat format, Size coded_size,
+                       Rect visible_rect, uint32 num_frames) => ();
 };

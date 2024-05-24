@@ -97,7 +97,14 @@ void GpuArcVideoFramePool::Initialize(
     mojo::PendingAssociatedRemote<mojom::VideoFramePoolClient> client) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!pool_client_);
+
+  if (pool_client_) {
+    DVLOGF(3) << "Attempting to call GpuArcVideoFramePool::Initialize() when "
+                 "it is already initialized";
+    return;
+  }
+
+  pool_client_version_ = client.version();
 
   pool_client_.Bind(std::move(client));
 }
@@ -106,6 +113,23 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
                                          AddVideoFrameCallback callback) {
   DVLOGF(3) << "id: " << video_frame->id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!pool_client_version_) {
+    DVLOGF(3) << "Unknown pool client version. Discarding video frame.";
+    std::move(callback).Run(true);
+    return;
+  }
+
+  // Discard frame because ACK from the client for the last RequestVideoFrames()
+  // has not been received yet.
+  if (awaiting_request_frames_ack_) {
+    CHECK_GE(pool_client_version_.value(), kMinVersionForRequestFramesAck);
+    DVLOGF(3) << "ACK from client not received after calling "
+                 "Client::RequestVideoFrames(). "
+              << "Discarding video frame.";
+    std::move(callback).Run(true);
+    return;
+  }
 
   // Frames with the old coded size can still be added after resolution changes.
   if (video_frame->coded_size != coded_size_) {
@@ -222,6 +246,12 @@ void GpuArcVideoFramePool::RequestFrames(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!notify_layout_changed_cb_);
 
+  if (!pool_client_version_) {
+    std::move(notify_layout_changed_cb)
+        .Run(media::CroStatus::Codes::kFailedToGetFrameLayout);
+    return;
+  }
+
   coded_size_ = coded_size;
 
   notify_layout_changed_cb_ = std::move(notify_layout_changed_cb);
@@ -229,11 +259,34 @@ void GpuArcVideoFramePool::RequestFrames(
 
   // Send a request for new video frames to our mojo client.
   media::VideoPixelFormat format = fourcc.ToVideoPixelFormat();
-  pool_client_->RequestVideoFrames(format, coded_size, visible_rect,
-                                   max_num_frames);
+
+  if (pool_client_version_.value() >= kMinVersionForRequestFramesAck) {
+    CHECK(!awaiting_request_frames_ack_);
+    awaiting_request_frames_ack_ = true;
+
+    pool_client_->RequestVideoFrames(
+        format, coded_size, visible_rect, max_num_frames,
+        base::BindOnce(&GpuArcVideoFramePool::OnRequestVideoFramesDone,
+                       weak_this_));
+  } else {
+    // TODO(b/321171964): remove once new RequestVideoFrames() change for all
+    // endpoints (chromium, ARC++, libvda) has reached all channels.
+    pool_client_->DEPRECATED_RequestVideoFrames(format, coded_size,
+                                                visible_rect, max_num_frames);
+  }
 
   // Let the owner of the video frame pool know new frames were requested.
   request_frames_cb_.Run();
+}
+
+void GpuArcVideoFramePool::OnRequestVideoFramesDone() {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(pool_client_version_.has_value());
+  CHECK_GE(pool_client_version_.value(), kMinVersionForRequestFramesAck);
+
+  CHECK(awaiting_request_frames_ack_);
+  awaiting_request_frames_ack_ = false;
 }
 
 media::VideoFrame::StorageType GpuArcVideoFramePool::GetFrameStorageType()

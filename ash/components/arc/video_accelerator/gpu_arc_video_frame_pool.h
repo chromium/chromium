@@ -89,10 +89,13 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
       gfx::GpuMemoryBufferHandle gmb_handle,
       media::VideoPixelFormat pixel_format) const;
 
+  void OnRequestVideoFramesDone();
+
   // The local video frame pool mojo service.
   mojo::AssociatedReceiver<mojom::VideoFramePool> video_frame_pool_receiver_;
   // The remote video frame pool mojo client.
   mojo::AssociatedRemote<mojom::VideoFramePoolClient> pool_client_;
+  std::optional<uint32_t> pool_client_version_;
 
   // callback used to notify the video frame pool of new video frame formats,
   // used when the pool requests new frames using RequestFrames().
@@ -114,6 +117,11 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
   scoped_refptr<ProtectedBufferManager> protected_buffer_manager_;
   // Whether we're decoding an encrypted video.
   std::optional<bool> secure_mode_;
+
+  // If true, this pool is waiting from ACK message from the client after
+  // calling mojom::VideoFramePoolClient::RequestVideoFrames().
+  bool awaiting_request_frames_ack_ = false;
+  static constexpr uint32_t kMinVersionForRequestFramesAck = 1;
 
   // The client task runner and its sequence checker. All methods should be run
   // on this task runner.
