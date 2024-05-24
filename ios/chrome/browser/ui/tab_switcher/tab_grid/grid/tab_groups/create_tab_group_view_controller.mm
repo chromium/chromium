@@ -53,15 +53,19 @@ const CGFloat kSingleSnapshotRatio = 0.7;
 const CGFloat kMultipleSnapshotsRatio = 0.90;
 const CGFloat kSnapshotViewAnimationTime = 0.3;
 
-// Group title constants
+// Group title constants.
 const CGFloat kTitleHorizontalMargin = 16;
 const CGFloat kTitleVerticalMargin = 10;
 const CGFloat kTitleBackgroundCornerRadius = 17;
 
-// Button constants
+// Button constants.
 const CGFloat kButtonsHeight = 50;
 const CGFloat kButtonsMargin = 8;
 const CGFloat kButtonBackgroundCornerRadius = 15;
+
+// Threshold for considering whether the displayed keyboard is a toolbar or the
+// virtual keyboard.
+const CGFloat kKeyboardToolbarHeightThreshold = 70;
 
 }  // namespace
 
@@ -153,14 +157,22 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
   }
   [[NSNotificationCenter defaultCenter]
       addObserver:self
-         selector:@selector(keyboardDidShow)
+         selector:@selector(keyboardDidShow:)
              name:UIKeyboardDidShowNotification
            object:nil];
   [[NSNotificationCenter defaultCenter]
       addObserver:self
-         selector:@selector(keyboardDidHide)
+         selector:@selector(keyboardDidHide:)
              name:UIKeyboardDidHideNotification
            object:nil];
+
+  // Force-hide the snapshots on iPad by simulating a visible virtual keyboard.
+  // The keyboard will appear when the view controller is presented, so this
+  // avoids having the snapshots visible by default.
+  _keyboardDisplayed = YES;
+  [self hideSnapshotsIfNeeded:NO];
+  _keyboardDisplayed = NO;
+
   // To force display the keyboard when the view is shown.
   [_tabGroupTextField becomeFirstResponder];
 }
@@ -521,38 +533,50 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
   }
 
   [self.view layoutIfNeeded];
-  [self hideSnapshotsIfNeeded];
+  [self hideSnapshotsIfNeeded:YES];
   // To force display the keyboard.
   [_tabGroupTextField becomeFirstResponder];
 }
 
 // Hides the snapshots container depending on some conditions.
-- (void)hideSnapshotsIfNeeded {
+- (void)hideSnapshotsIfNeeded:(BOOL)animated {
   BOOL tooSmall = _snapshotsContainer.frame.size.height < 60;
   BOOL isVerticallyCompacted =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-  CGFloat updatedAlpha = (tooSmall || isVerticallyCompacted) ? 0 : 1;
+  BOOL isIpadConfiguration =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
+      _keyboardDisplayed;
+  CGFloat updatedAlpha =
+      (tooSmall || isVerticallyCompacted || isIpadConfiguration) ? 0 : 1;
   if (_snapshotsContainer.alpha == updatedAlpha) {
     return;
   }
 
   __weak UIView* weakSnapshotsContainer = _snapshotsContainer;
-  [UIView animateWithDuration:kSnapshotViewAnimationTime
+  [UIView animateWithDuration:animated ? kSnapshotViewAnimationTime : 0
                    animations:^{
                      [weakSnapshotsContainer setAlpha:updatedAlpha];
                    }];
 }
 
 // Called when the virtual keyboard is shown.
-- (void)keyboardDidShow {
+- (void)keyboardDidShow:(NSNotification*)notification {
+  CGRect keyboardFrameEnd = [[[notification userInfo]
+      objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  // If the `keyboardFrameEnd` height is below the threshold, that means we are
+  // only displaying the keyboard toolbar, so there is no need to hide the
+  // snapshots.
+  if (keyboardFrameEnd.size.height < kKeyboardToolbarHeightThreshold) {
+    return;
+  }
   _keyboardDisplayed = YES;
-  [self hideSnapshotsIfNeeded];
+  [self hideSnapshotsIfNeeded:YES];
 }
 
 // Called when the virtual keyboard is hidden.
-- (void)keyboardDidHide {
+- (void)keyboardDidHide:(NSNotification*)notification {
   _keyboardDisplayed = NO;
-  [self hideSnapshotsIfNeeded];
+  [self hideSnapshotsIfNeeded:YES];
 }
 
 // Configures the view and all subviews when there is enough space.
