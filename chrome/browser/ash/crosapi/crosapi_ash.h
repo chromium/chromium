@@ -360,7 +360,7 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindOneDriveIntegrationService(
       mojo::PendingReceiver<mojom::OneDriveIntegrationService> receiver)
       override;
-  void BindPasskeyAuthenticator(
+  void BindPasskeyAuthenticatorDeprecated(
       mojo::PendingReceiver<mojom::PasskeyAuthenticator> receiver) override;
   void BindParentAccess(
       mojo::PendingReceiver<mojom::ParentAccess> receiver) override;

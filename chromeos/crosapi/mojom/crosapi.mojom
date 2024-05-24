@@ -607,8 +607,9 @@ interface Crosapi {
   BindParentAccess@101(pending_receiver<ParentAccess> receiver);
 
   // Binds an interface for creating and asserting user passkeys.
+  // Deprecated in M127. Never enabled.
   [MinVersion=124]
-  BindPasskeyAuthenticator@126(
+  BindPasskeyAuthenticatorDeprecated@126(
       pending_receiver<PasskeyAuthenticator> receiver);
 
   // Binds the PaymentAppInstance to allow Playstore payment to be made for

@@ -124,8 +124,6 @@
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
-#include "chrome/browser/ash/passkeys/passkey_authenticator_service_ash.h"
-#include "chrome/browser/ash/passkeys/passkey_authenticator_service_factory_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
@@ -903,15 +901,9 @@ void CrosapiAsh::BindParentAccess(
   parent_access_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindPasskeyAuthenticator(
+void CrosapiAsh::BindPasskeyAuthenticatorDeprecated(
     mojo::PendingReceiver<mojom::PasskeyAuthenticator> receiver) {
-  auto* passkey_authenticator =
-      ash::PasskeyAuthenticatorServiceFactoryAsh::GetForProfile(
-          GetAshProfile());
-  if (!passkey_authenticator) {
-    return;
-  }
-  passkey_authenticator->BindReceiver(std::move(receiver));
+  NOTIMPLEMENTED();
 }
 
 void CrosapiAsh::BindPaymentAppInstance(
