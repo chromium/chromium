@@ -19,7 +19,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, AmbientTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
-import {isAmbientModeAllowed, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
+import {isAmbientModeAllowed} from '../load_time_booleans.js';
 import {Paths, ScrollableTarget} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -72,12 +72,6 @@ export class AmbientSubpageElement extends WithPersonalizationStore {
             'computeLoading_(ambientModeEnabled_, albums_, temperatureUnit_, topicSource_, isOnline_)',
         observer: 'onLoadingChanged_',
       },
-      isPersonalizationJellyEnabled_: {
-        type: Boolean,
-        value() {
-          return isPersonalizationJellyEnabled();
-        },
-      },
       isOnline_: {
         type: Boolean,
         value() {
@@ -95,7 +89,6 @@ export class AmbientSubpageElement extends WithPersonalizationStore {
   private duration_: number|null;
   private temperatureUnit_: TemperatureUnit|null;
   private topicSource_: TopicSource|null;
-  private isPersonalizationJellyEnabled_: boolean;
   private isOnline_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses

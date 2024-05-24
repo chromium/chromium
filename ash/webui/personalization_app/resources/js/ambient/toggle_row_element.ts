@@ -11,7 +11,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 
 import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 
-import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {setAmbientModeEnabled} from './ambient_controller.js';
@@ -33,17 +32,10 @@ export class ToggleRowElement extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      isPersonalizationJellyEnabled_: {
-        type: Boolean,
-        value() {
-          return isPersonalizationJellyEnabled();
-        },
-      },
       ambientModeEnabled_: Boolean,
     };
   }
 
-  private isPersonalizationJellyEnabled_: boolean;
   private ambientModeEnabled_: boolean|null;
   override ariaLabel: string;
 

@@ -40,10 +40,7 @@ suite('AmbientSubpageElementTest', function() {
   }
 
   setup(() => {
-    loadTimeData.overrideValues({
-      isAmbientModeAllowed: true,
-      isPersonalizationJellyEnabled: true,
-    });
+    loadTimeData.overrideValues({isAmbientModeAllowed: true});
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
     personalizationStore = mocks.personalizationStore;
@@ -938,37 +935,6 @@ suite('AmbientSubpageElementTest', function() {
 
     const zeroState =
         ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
-    assertTrue(!!zeroState, 'zero state should be present');
-  });
-
-  test('displays old zero state when ambient mode is disabled', async () => {
-    // Disables `isPersonalizationJellyEnabled` to show the previous UI.
-    loadTimeData.overrideValues({['isPersonalizationJellyEnabled']: false});
-
-    ambientSubpageElement = await displayMainSettings(
-        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
-        /*ambientModeEnabled=*/ false);
-
-    const mainSettings =
-        ambientSubpageElement.shadowRoot!.querySelector('#mainSettings');
-    assertTrue(!!mainSettings, 'main settings should be present');
-
-    assertEquals(
-        null, mainSettings.querySelector('ambient-preview-small'),
-        'preview image should be absent');
-
-    assertEquals(
-        null,
-        ambientSubpageElement.shadowRoot!.querySelector('topic-source-list'),
-        'topic source list should be absent');
-
-    assertEquals(
-        null,
-        ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit'),
-        'weather unit should be absent');
-
-    const zeroState =
-        ambientSubpageElement.shadowRoot!.querySelector('ambient-zero-state');
     assertTrue(!!zeroState, 'zero state should be present');
   });
 
