@@ -320,10 +320,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
   // Return the amount to trim the block size by the `text-box-trim` property.
   std::optional<LayoutUnit> TrimBlockEndBy() const {
-    if (!rare_data_) {
-      return std::nullopt;
-    }
-    return rare_data_->TrimBlockEndBy();
+    return UNLIKELY(rare_data_) ? rare_data_->TrimBlockEndBy() : std::nullopt;
   }
 
   std::optional<LayoutUnit> MinimalSpaceShortage() const {
@@ -676,10 +673,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     // `LineSmallData` can save allocations When only fields in it are needed.
     struct LineSmallData {
       std::optional<LayoutUnit> TrimBlockEndBy() const {
-        if (trim_block_end_by == LayoutUnit::Min()) {
-          return std::nullopt;
-        }
-        return trim_block_end_by;
+        return trim_block_end_by.NullOptIfMin();
       }
 
       LayoutUnit clearance_after_line;

@@ -302,6 +302,10 @@ class LayoutUnit {
   // regular operations (i.e the result of the divide is rounded towards zero).
   LayoutUnit MulDiv(LayoutUnit m, LayoutUnit d) const;
 
+  // Return `std::nullopt` if `this` is the specified value.
+  std::optional<LayoutUnit> NullOptIf(LayoutUnit null_value) const;
+  std::optional<LayoutUnit> NullOptIfMin() const { return NullOptIf(Min()); }
+
   WTF::String ToString() const;
 
  private:
@@ -822,6 +826,14 @@ inline LayoutUnit AbsoluteValue(const LayoutUnit& value) {
 
 inline bool IsIntegerValue(const LayoutUnit value) {
   return value.ToInt() == value;
+}
+
+inline std::optional<LayoutUnit> LayoutUnit::NullOptIf(
+    LayoutUnit null_value) const {
+  if (*this == null_value) {
+    return std::nullopt;
+  }
+  return *this;
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const LayoutUnit&);
