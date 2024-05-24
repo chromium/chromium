@@ -1587,6 +1587,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.FocusChanged.FocusOwningWebContents" enum="Boolean"
+    expires_after="2025-05-22">
+  <owner>amanvr@google.com</owner>
+  <owner>nuskos@chromium.org</owner>
+  <summary>
+    Records whether the WebContents associated with the RenderWidgetHost
+    responsible for handling input is focused specifically on TouchStart or
+    GestureTap or MouseDown events. This histogram is recorded for each input
+    event sequence on TouchStart/GestureTap/MouseDown input events. This would
+    help us in understanding if focus changes on input events need to be handled
+    by Viz once it starts receiving transferred input events after InputVizard
+    (go/chrome-inputvizard).
+  </summary>
+</histogram>
+
 <histogram name="Android.FocusChanged.RenderWidgetHostViewChildFrame"
     enum="Boolean" expires_after="2025-05-22">
   <owner>amanvr@google.com</owner>
