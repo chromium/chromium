@@ -180,6 +180,8 @@ void AddTabAtIndexToGroupWithTitle(int tab_cell_index, NSString* title) {
 
 // Opens the tab group at `group_cell_index`.
 void OpenTabGroupAtIndex(int group_cell_index) {
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(
+                                                          group_cell_index)];
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabCellMatcherAtIndex(0)];
@@ -296,6 +298,23 @@ void DeleteGroupAtIndex(int group_cell_index) {
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
   return config;
+}
+
+// Verifies that the tab grid has exactly `expectedCount` tabs.
+- (void)verifyVisibleTabsCount:(NSUInteger)expectedCount {
+  // Verify that the cell # `expectedCount` exist.
+  if (expectedCount == 0) {
+    [[EarlGrey selectElementWithMatcher:TabGridCell()]
+        assertWithMatcher:grey_nil()];
+  } else {
+    [[[EarlGrey selectElementWithMatcher:TabGridCell()]
+        atIndex:expectedCount - 1] assertWithMatcher:grey_notNil()];
+  }
+  // Then verify that there is no more cells after that.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(TabGridCell(),
+                                          TabGridCellAtIndex(expectedCount),
+                                          nil)] assertWithMatcher:grey_nil()];
 }
 
 // Tests that creates a tab group and opens the grouped tab.
@@ -838,6 +857,47 @@ void DeleteGroupAtIndex(int group_cell_index) {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
+
+// Tests that the group view is correctly updated after backgrounding and
+// foregrounding the app.
+- (void)testBackgroundingGroupViewWithMultipleNTPs {
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Open a second NTP.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Move it to the group.
+  AddTabAtIndexToGroupWithTitle(
+      1, l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1));
+
+  // Open a third NTP.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Move it to the group.
+  AddTabAtIndexToGroupWithTitle(
+      1, l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 2));
+
+  OpenTabGroupAtIndex(0);
+
+  // Check the UI before backgrounding the app.
+  [self verifyVisibleTabsCount:3];
+  [[EarlGrey
+      selectElementWithMatcher:GroupViewTitle(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_TAB_GROUP_TABS_NUMBER, 3))]
+      assertWithMatcher:grey_notNil()];
+
+  // Background then foreground the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [self verifyVisibleTabsCount:1];
+  [[EarlGrey
+      selectElementWithMatcher:GroupViewTitle(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

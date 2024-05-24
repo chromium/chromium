@@ -362,6 +362,15 @@
   }
 }
 
+- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
+  DCHECK_EQ(self.webStateList, webStateList);
+  [self populateConsumerItems];
+  if (_tabGroup) {
+    [_groupConsumer setGroupTitle:_tabGroup->GetTitle()];
+    [_groupConsumer setGroupColor:_tabGroup->GetColor()];
+  }
+}
+
 #pragma mark - Private
 
 // Adds a tab to the `group`. Returns whether it succeed.
