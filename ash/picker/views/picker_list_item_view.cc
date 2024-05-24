@@ -12,8 +12,10 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/picker/views/picker_badge_view.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -82,6 +84,8 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
   // Trailing badge should always be preferred size and centered vertically.
   trailing_badge_ = item_contents->AddChildView(
       views::Builder<PickerBadgeView>()
+          .SetText(
+              l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_INSERT))
           .SetProperty(views::kCrossAxisAlignmentKey,
                        views::LayoutAlignment::kCenter)
           .SetProperty(views::kMarginsKey, kBadgeLeftPadding)
