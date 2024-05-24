@@ -5820,8 +5820,8 @@
   },
   {
     "name": "modern-tab-strip",
-    "owners": [ "bling-flags@google.com" ],
-    "expiry_milestone": 125
+    "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 128
   },
   {
     "name": "mojo-linux-sharedmem",
