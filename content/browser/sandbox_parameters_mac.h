@@ -30,7 +30,7 @@ namespace content {
 
 // This populates the sandbox parameters in the client for the given
 // |sandbox_type|. Some parameters may be extracted from the |command_line|.
-CONTENT_EXPORT void SetupSandboxParameters(
+CONTENT_EXPORT bool SetupSandboxParameters(
     sandbox::mojom::Sandbox sandbox_type,
     const base::CommandLine& command_line,
 #if BUILDFLAG(ENABLE_PPAPI)

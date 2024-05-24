@@ -203,7 +203,7 @@ void SetupPPAPISandboxParameters(
 }
 #endif
 
-void SetupGpuSandboxParameters(sandbox::SandboxCompiler* compiler,
+bool SetupGpuSandboxParameters(sandbox::SandboxCompiler* compiler,
                                const base::CommandLine& command_line) {
   SetupCommonSandboxParameters(compiler, command_line);
   AddDarwinDirs(compiler);
@@ -221,18 +221,22 @@ void SetupGpuSandboxParameters(sandbox::SandboxCompiler* compiler,
     @autoreleasepool {
       NSBundle* helper_bundle = [NSBundle
           bundleWithPath:base::SysUTF8ToNSString(helper_bundle_path.value())];
-      CHECK(helper_bundle);
+      if (!helper_bundle) {
+        return false;
+      }
 
-      CHECK(compiler->SetParameter(
+      return compiler->SetParameter(
           sandbox::policy::kParamHelperBundleId,
-          base::SysNSStringToUTF8(helper_bundle.bundleIdentifier)));
+          base::SysNSStringToUTF8(helper_bundle.bundleIdentifier));
     }
   }
+
+  return true;
 }
 
 }  // namespace
 
-void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
+bool SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
                             const base::CommandLine& command_line,
 #if BUILDFLAG(ENABLE_PPAPI)
                             const std::vector<content::WebPluginInfo>& plugins,
@@ -254,10 +258,8 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
       SetupCommonSandboxParameters(compiler, command_line);
       break;
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
-    case sandbox::mojom::Sandbox::kGpu: {
-      SetupGpuSandboxParameters(compiler, command_line);
-      break;
-    }
+    case sandbox::mojom::Sandbox::kGpu:
+      return SetupGpuSandboxParameters(compiler, command_line);
     case sandbox::mojom::Sandbox::kNetwork:
       SetupNetworkSandboxParameters(compiler, command_line);
       break;
@@ -279,6 +281,7 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
       CHECK(GetContentClient()->browser()->SetupEmbedderSandboxParameters(
           sandbox_type, compiler));
   }
+  return true;
 }
 
 void SetNetworkTestCertsDirectoryForTesting(const base::FilePath& path) {
