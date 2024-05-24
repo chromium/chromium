@@ -3456,6 +3456,27 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PHONE_CALL_BUTTON" desc="Text in the confirmation dialog button that will initiate a phone call for the presented number. [Length: 10em] [iOS only]">
         Call
       </message>
+      <message name="IDS_IOS_PHONE_NUMBER_ADD" desc="Title for the button to add a country code to a phone number">
+        Add
+      </message>
+      <message name="IDS_IOS_PHONE_NUMBER_ADD_TO_CONTACTS" desc="Title for the action prompting the user to a phone number to their contacts">
+        Add To Contacts
+      </message>
+      <message name="IDS_IOS_PHONE_NUMBER_CANCEL" desc="Title for the button to dismiss the country code view controller">
+        Cancel
+      </message>
+      <message name="IDS_IOS_PHONE_NUMBER_CALL" desc="Title for the action prompting the user to call a phone number">
+        Call
+      </message>
+      <message name="IDS_IOS_PHONE_NUMBER_COUNTRY_CODE" desc="Title of the country code view controller, this view will provide the user with a list of country codes that the user can choose one to add as a prefix of a phone number" meaning="Title of the country code view controller, this view will provide the user with a list of country codes that the user can choose one to add as a prefix of a phone number">
+        Country Code
+      </message>
+      <message name="IDS_IOS_PHONE_NUMBER_FACETIME" desc="Title for the action prompting the user to facetime a phone number">
+        Facetime
+      </message>
+      <message name="IDS_IOS_PHONE_NUMBER_SEND_MESSAGE" desc="Title for the action prompting the user to send a message to a phone number">
+        Send Message
+      </message>
       <message name="IDS_IOS_PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION" desc="Specifies the reason for writing to the user's photo library while the app is in use [Length: unlimited] [iOS only].">
         This lets you save photos to your photo library.
       </message>

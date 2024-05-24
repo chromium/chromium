@@ -11,7 +11,7 @@
 @interface CountryCodePickerCoordinator : ChromeCoordinator
 
 // The phone number where the country code is added.
-@property(nonatomic, assign) NSString* phoneNumber;
+@property(nonatomic, copy) NSString* phoneNumber;
 
 @end
 

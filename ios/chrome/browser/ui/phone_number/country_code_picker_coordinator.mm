@@ -5,15 +5,31 @@
 #import "ios/chrome/browser/ui/phone_number/country_code_picker_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/add_contacts_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/phone_number/country_code_picker_view_controller.h"
 
-@implementation CountryCodePickerCoordinator
+@implementation CountryCodePickerCoordinator {
+  CountryCodePickerViewController* _viewController;
+}
 
 - (void)start {
-  // TODO(crbug.com/40941135): Present the country code view controller.
+  _viewController = [[CountryCodePickerViewController alloc]
+      initWithPhoneNumber:self.phoneNumber];
+  _viewController.addContactsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), AddContactsCommands);
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)stop {
-  // TODO(crbug.com/40941135): Dismiss the country code view controller.
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+  _viewController = nil;
 }
 
 @end
