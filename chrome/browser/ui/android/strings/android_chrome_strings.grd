@@ -1666,6 +1666,15 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_PERMISSIONS_WARNING_TITLE" translateable="false">
         {NUM_SITES, plural, =1 {Permissions removed from 1 site} other {Permissions removed from # sites}}
       </message>
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_TITLE" translateable="false">
+        Review permissions
+      </message>
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_HEADER" translateable="false">
+        To protect your data, permissions were removed from sites you haven’t visited recently
+      </message>
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_LIST_HEADER" translateable="false">
+        Permissions
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">
