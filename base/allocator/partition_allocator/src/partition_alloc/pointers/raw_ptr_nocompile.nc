@@ -81,15 +81,15 @@ void PointerArithmetic() {
   PtrCanDoArithmetic ptr2 = ptr1 + s;  // expected-error@*:* {{no matching function for call to 'Advance'}}
   ptr2 = ptr1 - s;                     // expected-error@*:* {{no matching function for call to 'Retreat'}}
 
-#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+#if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   ptr1 += uint64_t{2};        // expected-error@*:* {{no viable overloaded '+='}}
   ptr1 -= uint64_t{2};        // expected-error@*:* {{no viable overloaded '-='}}
   ptr2 = ptr1 + uint64_t{2};  // expected-error@*:* {{no matching function for call to 'Advance'}}
   ptr2 = ptr1 - uint64_t{2};  // expected-error@*:* {{no matching function for call to 'Retreat'}}
-#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 }
 
-#if BUILDFLAG(ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK)
+#if PA_BUILDFLAG(ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK)
 void PointerArithmeticDisabled() {
   raw_ptr<TypeA> ptr_a1 = new TypeA();
   ptr_a1++;                            // expected-error@*:* {{cannot increment raw_ptr unless AllowPtrArithmetic trait is present.}}
