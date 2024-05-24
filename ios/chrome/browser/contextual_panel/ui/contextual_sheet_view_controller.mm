@@ -40,7 +40,6 @@ const int kCloseBottomThreshold = 250;
 
 - (void)viewDidLoad {
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   _panGestureRecognizer = [[UIPanGestureRecognizer alloc]
       initWithTarget:self
