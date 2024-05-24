@@ -107,6 +107,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   static const char kTriggerWebContentUpload[];
   static const char kTriggerPagePrint[];
   static const char kTriggerFileTransfer[];
+  static const char kTriggerClipboardCopy[];
 
   explicit SafeBrowsingPrivateEventRouter(content::BrowserContext* context);
 

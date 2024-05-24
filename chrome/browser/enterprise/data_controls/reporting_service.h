@@ -36,6 +36,12 @@ class ReportingService : public KeyedService {
                                   const content::ClipboardEndpoint& destination,
                                   const content::ClipboardMetadata& metadata,
                                   const Verdict& verdict);
+  void ReportCopy(const content::ClipboardEndpoint& source,
+                  const content::ClipboardMetadata& metadata,
+                  const Verdict& verdict);
+  void ReportCopyWarningBypassed(const content::ClipboardEndpoint& source,
+                                 const content::ClipboardMetadata& metadata,
+                                 const Verdict& verdict);
 
  protected:
   friend class ReportingServiceFactory;
@@ -43,12 +49,13 @@ class ReportingService : public KeyedService {
   explicit ReportingService(content::BrowserContext& browser_context);
 
  private:
-  void ReportPaste(const content::ClipboardEndpoint& source,
-                   const content::ClipboardEndpoint& destination,
-                   const content::ClipboardMetadata& metadata,
-                   const Verdict& verdict,
-                   const std::string& trigger,
-                   safe_browsing::EventResult event_result);
+  void ReportCopyOrPaste(
+      const content::ClipboardEndpoint& source,
+      const std::optional<content::ClipboardEndpoint>& destination,
+      const content::ClipboardMetadata& metadata,
+      const Verdict& verdict,
+      const std::string& trigger,
+      safe_browsing::EventResult event_result);
 
   // Returns true if information from `source` can be included in reported
   // events.

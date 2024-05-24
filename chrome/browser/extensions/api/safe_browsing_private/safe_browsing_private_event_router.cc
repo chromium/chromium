@@ -287,6 +287,8 @@ const char SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload[] =
 const char SafeBrowsingPrivateEventRouter::kTriggerPagePrint[] = "PAGE_PRINT";
 const char SafeBrowsingPrivateEventRouter::kTriggerFileTransfer[] =
     "FILE_TRANSFER";
+const char SafeBrowsingPrivateEventRouter::kTriggerClipboardCopy[] =
+    "CLIPBOARD_COPY";
 
 SafeBrowsingPrivateEventRouter::SafeBrowsingPrivateEventRouter(
     content::BrowserContext* context)

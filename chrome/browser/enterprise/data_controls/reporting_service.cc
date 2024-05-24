@@ -76,7 +76,7 @@ void ReportingService::ReportPaste(
     const content::ClipboardEndpoint& destination,
     const content::ClipboardMetadata& metadata,
     const Verdict& verdict) {
-  ReportPaste(
+  ReportCopyOrPaste(
       source, destination, metadata, verdict,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       GetEventResult(verdict.level()));
@@ -87,15 +87,34 @@ void ReportingService::ReportPasteWarningBypassed(
     const content::ClipboardEndpoint& destination,
     const content::ClipboardMetadata& metadata,
     const Verdict& verdict) {
-  ReportPaste(
+  ReportCopyOrPaste(
       source, destination, metadata, verdict,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       safe_browsing::EventResult::BYPASSED);
 }
 
-void ReportingService::ReportPaste(
+void ReportingService::ReportCopy(const content::ClipboardEndpoint& source,
+                                  const content::ClipboardMetadata& metadata,
+                                  const Verdict& verdict) {
+  ReportCopyOrPaste(
+      source, /*destination=*/std::nullopt, metadata, verdict,
+      extensions::SafeBrowsingPrivateEventRouter::kTriggerClipboardCopy,
+      GetEventResult(verdict.level()));
+}
+
+void ReportingService::ReportCopyWarningBypassed(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardEndpoint& destination,
+    const content::ClipboardMetadata& metadata,
+    const Verdict& verdict) {
+  ReportCopyOrPaste(
+      source, /*destination=*/std::nullopt, metadata, verdict,
+      extensions::SafeBrowsingPrivateEventRouter::kTriggerClipboardCopy,
+      safe_browsing::EventResult::BYPASSED);
+}
+
+void ReportingService::ReportCopyOrPaste(
+    const content::ClipboardEndpoint& source,
+    const std::optional<content::ClipboardEndpoint>& destination,
     const content::ClipboardMetadata& metadata,
     const Verdict& verdict,
     const std::string& trigger,
@@ -108,15 +127,34 @@ void ReportingService::ReportPaste(
     return;
   }
 
-  GURL source_url =
-      IncludeSourceInformation(source, destination) ? GetURL(source) : GURL();
-  GURL paste_url = GetURL(destination);
+  GURL url;
+  std::string destination_string;
+  std::string source_string;
+  if (trigger ==
+      extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload) {
+    DCHECK(destination.has_value());
+
+    url = GetURL(*destination);
+    destination_string = url.spec();
+    source_string =
+        (IncludeSourceInformation(source, *destination) ? GetURL(source)
+                                                        : GURL())
+            .spec();
+  } else {
+    DCHECK_EQ(
+        trigger,
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerClipboardCopy);
+    DCHECK(!destination.has_value());
+
+    url = GetURL(source);
+    source_string = GetURL(source).spec();
+  }
 
   router->OnDataControlsSensitiveDataEvent(
-      /*url=*/paste_url,
-      /*tab_url=*/paste_url,
-      /*source=*/source_url.spec(),
-      /*destination=*/paste_url.spec(),
+      /*url=*/url,
+      /*tab_url=*/url,
+      /*source=*/source_string,
+      /*destination=*/destination_string,
       /*mime_type=*/GetMimeType(metadata.format_type),
       /*trigger=*/trigger,
       /*triggered_rules=*/verdict.triggered_rules(),
