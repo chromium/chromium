@@ -215,9 +215,21 @@ class SystemIdentityManager {
   // Asynchronously handles a potential MDM (Mobile Device Management) event.
   // The callback is invoked on the calling sequence when the operation
   // completes.
+  // Returns YES if the device status is blocked.
+  virtual bool HandleMDMNotification(
+      id<SystemIdentity> identity,
+      NSArray<id<SystemIdentity>>* active_identities,
+      id<RefreshAccessTokenError> error,
+      HandleMDMCallback callback);
+
+  // DEPRECATED, see:
+  // HandleMDMNotification(id<SystemIdentity>,
+  //                       id<SystemIdentity>,
+  //                       NSArray<id<SystemIdentity>>*,
+  //                       id<RefreshAccessTokenError>, HandleMDMCallback)
   virtual bool HandleMDMNotification(id<SystemIdentity> identity,
                                      id<RefreshAccessTokenError> error,
-                                     HandleMDMCallback callback) = 0;
+                                     HandleMDMCallback callback);
 
   // Returns whether the `error` associated with `identity` is due to MDM
   // (Mobile Device Management) or not.

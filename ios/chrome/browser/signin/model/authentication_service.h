@@ -219,6 +219,9 @@ class AuthenticationService : public KeyedService,
   // Clears the account settings prefs of all removed accounts from device.
   void ClearAccountSettingsPrefsOfRemovedAccounts();
 
+  // Returns the active identities for MDM.
+  NSArray<id<SystemIdentity>>* ActiveIdentities();
+
   // The delegate for this AuthenticationService. It is invalid to call any
   // method on this object except Initialize() or Shutdown() if this pointer
   // is null.

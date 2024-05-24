@@ -317,6 +317,7 @@ void FakeSystemIdentityManager::FetchCapabilities(
 
 bool FakeSystemIdentityManager::HandleMDMNotification(
     id<SystemIdentity> identity,
+    NSArray<id<SystemIdentity>>* active_identities,
     id<RefreshAccessTokenError> error,
     HandleMDMCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -121,6 +121,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
                          const std::set<std::string>& names,
                          FetchCapabilitiesCallback callback) final;
   bool HandleMDMNotification(id<SystemIdentity> identity,
+                             NSArray<id<SystemIdentity>>* active_identities,
                              id<RefreshAccessTokenError> error,
                              HandleMDMCallback callback) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;

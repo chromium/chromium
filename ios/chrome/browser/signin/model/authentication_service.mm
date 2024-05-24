@@ -455,7 +455,7 @@ bool AuthenticationService::ShowMDMErrorDialogForIdentity(
   }
 
   GetApplicationContext()->GetSystemIdentityManager()->HandleMDMNotification(
-      identity, cached_error, base::DoNothing());
+      identity, ActiveIdentities(), cached_error, base::DoNothing());
 
   return true;
 }
@@ -506,7 +506,7 @@ bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,
       GetApplicationContext()->GetSystemIdentityManager();
 
   if (system_identity_manager->HandleMDMNotification(
-          identity, error,
+          identity, ActiveIdentities(), error,
           base::BindOnce(&AuthenticationService::MDMErrorHandled,
                          weak_pointer_factory_.GetWeakPtr(), identity))) {
     CoreAccountId account_id =
@@ -695,4 +695,10 @@ void AuthenticationService::ClearAccountSettingsPrefsOfRemovedAccounts() {
   }
   sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
       available_gaia_ids);
+}
+
+NSArray<id<SystemIdentity>>* AuthenticationService::ActiveIdentities() {
+  return GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+             ? account_manager_service_->GetAllIdentities()
+             : @[];
 }
