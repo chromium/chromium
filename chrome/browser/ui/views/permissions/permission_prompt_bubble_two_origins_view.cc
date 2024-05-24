@@ -127,6 +127,8 @@ PermissionPromptBubbleTwoOriginsView::~PermissionPromptBubbleTwoOriginsView() {
 }
 
 void PermissionPromptBubbleTwoOriginsView::AddedToWidget() {
+  StartTrackingPictureInPictureOcclusion();
+
   if (GetUrlIdentityObject().type != UrlIdentity::Type::kDefault) {
     return;
   }

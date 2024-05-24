@@ -63,6 +63,11 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
       const std::vector<raw_ptr<permissions::PermissionRequest,
                                 VectorExperimental>>& visible_requests);
 
+  // Starts observing our widget for occlusion by a picture-in-picture window.
+  // Subclasses must manually call this if they override `AddedToWidget()`
+  // without calling `PermissionPromptBaseView::AddedToWidget()`.
+  void StartTrackingPictureInPictureOcclusion();
+
  private:
   const UrlIdentity url_identity_;
 

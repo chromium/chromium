@@ -51,19 +51,7 @@ void PermissionPromptBaseView::AddedToWidget() {
         CreateTitleOriginLabel(GetWindowTitle()));
   }
 
-  // If we're for a picture-in-picture window, then we are in an always-on-top
-  // widget that should be tracked by the PictureInPictureOcclusionTracker.
-  if (is_for_picture_in_picture_window_) {
-    PictureInPictureOcclusionTracker* tracker =
-        PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
-    if (tracker) {
-      tracker->OnPictureInPictureWidgetOpened(GetWidget());
-    }
-  }
-
-  // Either way, we want to know if we're ever occluded by an always-on-top
-  // window.
-  occlusion_observation_.Observe(GetWidget());
+  StartTrackingPictureInPictureOcclusion();
 }
 
 bool PermissionPromptBaseView::ShouldIgnoreButtonPressedEventHandling(
@@ -131,6 +119,22 @@ std::u16string PermissionPromptBaseView::GetAllowAlwaysText(
       permissions::feature_params::kUseWhileVisitingLanguage.Get()
           ? IDS_PERMISSION_ALLOW_WHILE_VISITING
           : IDS_PERMISSION_ALLOW_EVERY_VISIT);
+}
+
+void PermissionPromptBaseView::StartTrackingPictureInPictureOcclusion() {
+  // If we're for a picture-in-picture window, then we are in an always-on-top
+  // widget that should be tracked by the PictureInPictureOcclusionTracker.
+  if (is_for_picture_in_picture_window_) {
+    PictureInPictureOcclusionTracker* tracker =
+        PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+    if (tracker) {
+      tracker->OnPictureInPictureWidgetOpened(GetWidget());
+    }
+  }
+
+  // Either way, we want to know if we're ever occluded by an always-on-top
+  // window.
+  occlusion_observation_.Observe(GetWidget());
 }
 
 BEGIN_METADATA(PermissionPromptBaseView)

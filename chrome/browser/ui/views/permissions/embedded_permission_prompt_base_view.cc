@@ -131,6 +131,8 @@ EmbeddedPermissionPromptBaseView::CreateLoadingIcon() {
 }
 
 void EmbeddedPermissionPromptBaseView::AddedToWidget() {
+  StartTrackingPictureInPictureOcclusion();
+
   if (!GetRequestLinesConfiguration().empty()) {
     return;
   }
