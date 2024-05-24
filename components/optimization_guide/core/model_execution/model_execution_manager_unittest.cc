@@ -175,6 +175,8 @@ class ModelExecutionManagerTest : public testing::Test {
 
   PrefService* local_state() { return local_state_.get(); }
 
+  void Reset() { model_execution_manager_ = nullptr; }
+
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -709,6 +711,9 @@ TEST_F(ModelExecutionManagerSafetyEnabledTest,
               kDisallowed));
   CreateModelExecutionManager();
   EXPECT_FALSE(model_provider()->was_registered());
+
+  // Reset manager to make sure removing observer doesn't crash.
+  Reset();
 }
 
 }  // namespace
