@@ -1019,17 +1019,11 @@ using DeclarativeNetRequestBrowserTest_Packed =
 using DeclarativeNetRequestBrowserTest_Unpacked =
     DeclarativeNetRequestBrowserTest;
 
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_MAC) && !defined(NDEBUG))
-// TODO: test times out on win. http://crbug.com/900447.
-// Also times out on mac-debug: https://crbug.com/900447
-#define MAYBE_BlockRequests_UrlFilter DISABLED_BlockRequests_UrlFilter
-#else
-#define MAYBE_BlockRequests_UrlFilter BlockRequests_UrlFilter
-#endif
 // Tests the "urlFilter" and "regexFilter" property of a declarative rule
 // condition.
+// TODO: test times out on win, mac and linux. http://crbug.com/900447.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       MAYBE_BlockRequests_UrlFilter) {
+                       DISABLED_BlockRequests_UrlFilter) {
   struct {
     std::string filter;
     int id;
