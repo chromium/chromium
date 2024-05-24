@@ -3004,11 +3004,7 @@
         'browser_config': 'web-engine-shell',
         'os_type': 'fuchsia',
         'test_suites': {
-          # Ignore the gpu_telemetry_tests to make it slightly faster. But may
-          # need revise if gpu tests slow things down so dramatically.
-          # TODO(crbug.com/41481724): Revise the time consumption of this
-          # builder and fuchsia-fyi-arm64-dbg to decide if later one can be
-          # removed.
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
           'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
         },
