@@ -216,6 +216,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky, crbug.com/342644856")
     public void testAddBookmark() throws Exception {
         mActivityTestRule.loadUrl(mTestPage);
         // Check partner bookmarks are lazily loaded.
