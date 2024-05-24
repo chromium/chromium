@@ -11,7 +11,6 @@
 <translation id="1005333234656240382">ADB-foutopsporing aanzetten?</translation>
 <translation id="1005671386794704751">Roze</translation>
 <translation id="1006033052970139968">Microfoontoegang is toegestaan voor apps, websites met microfoonrechten en systeemservices</translation>
-<translation id="1006557561787696884">Toegangssleutels gebruiken op je Apple-apparaten</translation>
 <translation id="1006873397406093306">Deze extensie kan je gegevens op sites lezen en wijzigen. Je bepaalt tot welke sites de extensie toegang heeft.</translation>
 <translation id="1007057452468855774">Google Play Store aanzetten</translation>
 <translation id="1008186147501209563">Bookmarks exporteren</translation>
@@ -1598,6 +1597,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2156877321344104010">Veiligheidscheck opnieuw uitvoeren</translation>
 <translation id="2157474325782140681">Gebruik voor aanvullende functies een Dell-dockingstation dat is bedoeld voor gebruik met deze Chromebook.</translation>
 <translation id="215753907730220065">Volledig scherm sluiten</translation>
+<translation id="2157779167749714207">Je <ph name="DEVICE_TYPE" /> wordt geleverd met Gemini</translation>
 <translation id="2158249272743343757">Personalisatiegegevens verwijderen…</translation>
 <translation id="2158475082070321257">Link naar markering kopiëren</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2245,7 +2245,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kan niet beveiligd worden gedownload.</translation>
 <translation id="2620245777360407679">Apparaten die momenteel zijn verbonden met een hotspot</translation>
 <translation id="2620436844016719705">Systeem</translation>
-<translation id="262087792756666314">Je kunt deze functie vastzetten voor snelle toegang. Klik op de knop Vastzetten bovenaan het zijvenster.</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="262154978979441594">Spraakmodel van de Google Assistent trainen</translation>
 <translation id="2622280935687585828"><ph name="SITE_NAME" /> verwijderen van uitgezette sites</translation>
@@ -4125,7 +4124,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4010036441048359843">Markeren aanzetten</translation>
 <translation id="4010746393007464819">Er is een upgrade beschikbaar voor Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> om je bookmarks te bekijken op je mobiele apparaat.</translation>
-<translation id="4012268176861210196">Je kunt deze functie vastzetten voor snelle toegang</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" repareren?</translation>
 <translation id="4015163439792426608">Heb je extensies? <ph name="BEGIN_LINK" />Beheer ze<ph name="END_LINK" /> overzichtelijk op één plaats.</translation>
 <translation id="4016762287427926315">Rechten die je toestaat voor <ph name="APP_NAME" />, zijn ook toegestaan voor deze app. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
@@ -6007,7 +6005,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5481941284378890518">Printers in de buurt toevoegen</translation>
 <translation id="5482417738572414119">Log in om Chrome tabbladgroepen te laten voorstellen en je tabbladen overzichtelijk te houden</translation>
 <translation id="5483005706243021437">Hier blijven</translation>
-<translation id="5484181871714116891">Als deze optie aanstaat, worden toegangssleutels gemaakt in iCloud Sleutelhanger en zijn deze beschikbaar op je Apple-apparaten. Staat de optie uit, dan worden toegangssleutels gemaakt in je Chrome-profiel op dit apparaat.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> binnen {NUM_DAYS} dagen terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">App toevoegen</translation>
 <translation id="5485435764083510385">Voorkeurstaal voor ondertiteling</translation>
@@ -10013,7 +10010,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8482077254400484047">Beheer hier het uiterlijk van inactieve tabbladen</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8486666913807228950">Reden: De omgekeerde regel <ph name="REVERT_RULE" /> is gevonden in de lijst Gedwongen openen in.</translation>
-<translation id="8487303289354211861">Vastgezet. Je kunt weer toegang tot deze functie krijgen via de nieuwe knop op de werkbalk.</translation>
 <translation id="8487678622945914333">Groter</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Persoonlijke suggesties zie je alleen in je account</translation>
@@ -10337,6 +10333,8 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <ph name="LINE_BREAK" />
 (je gegevens voor automatisch invullen worden niet gedeeld)</translation>
 <translation id="8729133765463465108">Camera gebruiken om QR-code te scannen</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Chat met Gemini om te beginnen met bijvoorbeeld schrijven, plannen of leren met hulp van de AI van Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gebruik Gemini na het instellen door onderaan het scherm de Gemini-app te selecteren op de plank.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8731029916209785242">Rechten (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Beveiligingscode</translation>
@@ -10730,7 +10728,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9014674417732091912">Verplaatst naar rij <ph name="ROW_NUMBER" /></translation>
 <translation id="901668144954885282">Back-up maken in Google Drive</translation>
 <translation id="9016827136585652292">privacyscherm schakelen</translation>
-<translation id="9017055559700464094">Vastgezet. Gebruik deze functie opnieuw via de werkbalk.</translation>
 <translation id="90181708067259747">Vervaldatum: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">De installatie is voltooid</translation>
 <translation id="901876615920222131">Klik op de groep om de groep opnieuw te openen</translation>

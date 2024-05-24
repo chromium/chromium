@@ -358,6 +358,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2441427462554639370">Xotirada juda kam joy qolgani uchun yozib olish tugatildi</translation>
 <translation id="2449089818483227734">Batareya quvvati kam</translation>
 <translation id="2450205753526923158">Skrinshot rejimi</translation>
+<translation id="2453860139492968684">Tamom</translation>
 <translation id="2455994958736234930">Saytni ochish uchun manzillar qatoridagi soʻrovga www. va .com kabi domen kiriting</translation>
 <translation id="2456008742792828469">Taqvim, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Batareya holati: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, davrlar soni: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2726420622004325180">Telefon mobil internetsiz hotspot tarqata olmaydi</translation>
 <translation id="2727175239389218057">Javob berish</translation>
 <translation id="2727977024730340865">Kam quvvatli zaryadlash vositasi ulanildi. Quvvatlantirishda muammolar bo‘lishi mumkin.</translation>
+<translation id="2743301740238894839">Boshlash</translation>
 <translation id="2743387203779672305">Vaqtincha xotiraga nusxalash</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">“Oʻchirish”</translation>
@@ -1836,6 +1838,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8042893070933512245">Qulayliklar sozlamalari menyusini ochish</translation>
 <translation id="8044457332620420407">Klaviatura orqa chirogʻi oʻchiq</translation>
 <translation id="8048123526339889627">Bluetooth sozlamalari</translation>
+<translation id="8049189770492311300">Taymer</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> nomli andoza bor</translation>
 <translation id="8052898407431791827">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="8054466585765276473">Batareyadan ishlash mumkin bo‘lgan vaqt hisoblanmoqda.</translation>

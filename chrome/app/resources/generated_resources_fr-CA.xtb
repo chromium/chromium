@@ -11,7 +11,6 @@
 <translation id="1005333234656240382">Activer le débogage PDA?</translation>
 <translation id="1005671386794704751">Rose</translation>
 <translation id="1006033052970139968">L'accès au microphone est autorisé pour les applications, les sites Web disposant de l'autorisation d'accéder au microphone et les services système</translation>
-<translation id="1006557561787696884">Utiliser des clés d'accès sur vos appareils Apple</translation>
 <translation id="1006873397406093306">Cette extension peut lire et modifier vos données sur des sites. Vous pouvez contrôler à quels sites l'extension peut accéder.</translation>
 <translation id="1007057452468855774">Activer Google Play Store</translation>
 <translation id="1008186147501209563">Exporter les favoris</translation>
@@ -117,6 +116,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Impossible de télécharger le dictionnaire du correcteur orthographique pour la langue suivante : <ph name="LANGUAGE" />. Réessayez.</translation>
 <translation id="1078037449555275327">Paramètres ChromeVox</translation>
+<translation id="1079242569060319448">Vous avez oublié votre NIP?</translation>
 <translation id="1079285777677001938">Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
 <translation id="1079766198702302550">Toujours bloquer l'accès à la caméra</translation>
 <translation id="1080365971383768617">Mots de passe sur tous vos appareils</translation>
@@ -1597,6 +1597,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2156877321344104010">Relancer la vérification de sécurité</translation>
 <translation id="2157474325782140681">Pour obtenir des fonctionnalités supplémentaires, servez-vous d'une station d'accueil Dell conçue pour être utilisée avec ce Chromebook.</translation>
 <translation id="215753907730220065">Quitter le mode plein écran</translation>
+<translation id="2157779167749714207">Votre <ph name="DEVICE_TYPE" /> est doté de Gemini</translation>
 <translation id="2158249272743343757">Supprimer les données personnelles…</translation>
 <translation id="2158475082070321257">Copier le lien vers l'élément en surbrillance</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2243,7 +2244,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ne peut pas être téléchargé de manière sécuritaire.</translation>
 <translation id="2620245777360407679">Appareils actuellement connectés au point d'accès sans fil</translation>
 <translation id="2620436844016719705">Système</translation>
-<translation id="262087792756666314">Vous pouvez épingler cette fonctionnalité pour un accès facile; cliquez sur le bouton Épingler en haut du panneau latéral</translation>
 <translation id="2620900772667816510">Super résolution Bluetooth</translation>
 <translation id="262154978979441594">Former le modèle vocal pour l'Assistant Google</translation>
 <translation id="2622280935687585828">Retirer <ph name="SITE_NAME" /> des sites désactivés</translation>
@@ -2306,6 +2306,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2666247341166669829">Niveau de la pile gauche : <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">D'autres applications sont configurées pour ouvrir les mêmes liens que ceux de l'application <ph name="APP_NAME" />. Cette option désactivera l'ouverture des liens compatibles par les applications <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gérer le correcteur orthographique</translation>
+<translation id="2668094785979141847">Cliquer pour quitter Lentille Google</translation>
 <translation id="2669241540496514785">Impossible d'ouvrir <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> partage un onglet Chrome.</translation>
@@ -2426,6 +2427,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2749881179542288782">Vérifier la grammaire et l'orthographe</translation>
 <translation id="2750020734439919571">Plus de paramètres et d'autorisations pour l'application Chrome</translation>
 <translation id="2750602041558385535">Téléchargement non vérifié bloqué</translation>
+<translation id="2753623023919742414">Cliquer pour rechercher</translation>
 <translation id="2754226775788136540">Recherche d'appareils à association rapide enregistrés avec <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">De la productivité au divertissement, trouvez les applications dont vous avez besoin dans la boutique Google Play Store. Vous pouvez installer des applications à tout moment.</translation>
 <translation id="2755349111255270002">Réinitialiser ce <ph name="DEVICE_TYPE" /></translation>
@@ -2441,6 +2443,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2765100602267695013">Veuillez communiquer avec votre fournisseur de services mobiles</translation>
 <translation id="2765217105034171413">Petit</translation>
 <translation id="2765820627968019645">Clair</translation>
+<translation id="276582196519778359">Entrer votre NIP pour les contrôles parentaux</translation>
 <translation id="2766006623206032690">Coller l'adre&amp;sse URL et y accéder</translation>
 <translation id="2766161002040448006">Demande à un parent</translation>
 <translation id="2767077837043621282">Impossible de mettre à jour votre Chromebook. Veuillez réessayer plus tard.</translation>
@@ -2934,6 +2937,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
 <translation id="3133184011320864289">Activez la synchronisation pour permettre à Chrome de suggérer des groupes d'onglets et de maintenir l'organisation de vos onglets</translation>
 <translation id="3134393957315651797">Sélectionner l'état de la fonctionnalité expérimentale <ph name="EXPERIMENT_NAME" />. Description de la fonctionnalité expérimentale : <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Faire glisser pour rechercher</translation>
 <translation id="3139925690611372679">Avatar jaune par défaut</translation>
 <translation id="3141093262818886744">Ouvrir quand même</translation>
 <translation id="3141318088920353606">Écoute en cours…</translation>
@@ -2983,6 +2987,8 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3183700187146209259">Impossible d'installer le logiciel du numériseur</translation>
 <translation id="3183944777708523606">Position des moniteurs</translation>
 <translation id="3184536091884214176">Configurez ou gérez les imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="3184591616546256659">Utilisez ce NIP pour modifier les paramètres de contrôles parentaux.
+    Si vous oubliez le NIP, effectuez un Powerwash sur cet appareil et configurez-le à nouveau.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Cette application est bloquée}one{Cette application est bloquée}other{Certaines applications sont bloquées}}</translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
@@ -4113,7 +4119,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4010036441048359843">Activer la mise en surbrillance</translation>
 <translation id="4010746393007464819">Une mise à niveau vers Debian 12 (Bookworm) est offerte</translation>
 <translation id="4010917659463429001">Pour obtenir vos favoris sur votre appareil mobile, <ph name="GET_IOS_APP_LINK" />.</translation>
-<translation id="4012268176861210196">Vous pouvez épingler cette fonctionnalité pour un accès facile</translation>
 <translation id="4014432863917027322">Réparer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="4015163439792426608">Vous avez des extensions? <ph name="BEGIN_LINK" />Gérez vos extensions<ph name="END_LINK" /> à un seul et même endroit.</translation>
 <translation id="4016762287427926315">Les autorisations que vous accordez à <ph name="APP_NAME" /> seront également accordées à cette application. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
@@ -5994,7 +5999,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
 <translation id="5482417738572414119">Connectez-vous pour permettre à Chrome de suggérer des groupes d'onglets et de maintenir l'organisation de vos onglets</translation>
 <translation id="5483005706243021437">Rester ici</translation>
-<translation id="5484181871714116891">Lorsque cette option est activée, les clés d'accès sont créées dans le trousseau iCloud et sont accessibles sur vos appareils Apple. Lorsqu'elle est désactivée, les clés d'accès sont créées dans votre profil Chrome sur cet appareil.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> aujourd'hui. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}one{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}other{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Ajouter une application</translation>
 <translation id="5485435764083510385">Langue préférée des légendes</translation>
@@ -8520,6 +8524,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="741906494724992817">Cette application fonctionne sans autorisation spéciale.</translation>
 <translation id="7419142833919893307">Aucun nom d'utilisateur ajouté</translation>
 <translation id="7419565702166471774">Toujours utiliser des connexions sécurisées</translation>
+<translation id="7419819959108735624">Sélectionner n'importe quel élément pour effectuer une recherche avec Lentille Google</translation>
 <translation id="742130257665691897">Favoris supprimés</translation>
 <translation id="7421925624202799674">Affic&amp;her le code source de la page</translation>
 <translation id="7422192691352527311">Préférences...</translation>
@@ -10000,7 +10005,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8482077254400484047">Gérer l'apparence des onglets inactifs ici</translation>
 <translation id="8483248364096924578">Adresse IP</translation>
 <translation id="8486666913807228950">Motif : la règle inversée <ph name="REVERT_RULE" /> a été trouvée dans la liste « Forcer l'ouverture dans ».</translation>
-<translation id="8487303289354211861">Le panneau a été épinglé! Vous pouvez à nouveau accéder à cette fonctionnalité à partir du nouveau bouton de la barre d'outils</translation>
 <translation id="8487678622945914333">Zoom avant</translation>
 <translation id="8487699605742506766">Point d'accès sans fil</translation>
 <translation id="8489156414266187072">Les suggestions personnelles s'affichent seulement sur votre compte</translation>
@@ -10260,6 +10264,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8685540043423825702">Votre profil Chrome</translation>
 <translation id="8686142379631285985">Connecté en tant que <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Annuler <ph name="FILE_NAME" /></translation>
+<translation id="8687527282898211955">Configurer votre NIP</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="8689811383248488428">Refuser et fermer le profil</translation>
 <translation id="8689998525144040851">100</translation>
@@ -10320,6 +10325,8 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8727751378406387165">Envoyez des <ph name="BEGIN_LINK1" />métadonnées de remplissage automatique<ph name="END_LINK1" />
           <ph name="LINE_BREAK" /> (vos données de remplissage automatique ne seront pas partagées)</translation>
 <translation id="8729133765463465108">Utiliser l'appareil photo pour numériser le code QR</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Clavardez avec Gemini pour commencer à écrire, à planifier, à apprendre et bien plus encore avec l'IA de Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Après la configuration, commencez à utiliser Gemini en sélectionnant l'appli Gemini sur votre étagère, au bas de votre écran.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8731029916209785242">Autorisations (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
@@ -10712,7 +10719,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9014674417732091912">Déplacé vers la ligne <ph name="ROW_NUMBER" /></translation>
 <translation id="901668144954885282">Sauvegarder sur Google Disque</translation>
 <translation id="9016827136585652292">basculer l'écran de confidentialité</translation>
-<translation id="9017055559700464094">Le panneau a été épinglé! Utilisez à nouveau cette fonctionnalité à partir de la barre d'outils</translation>
 <translation id="90181708067259747">Date d'expiration : <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installation terminée</translation>
 <translation id="901876615920222131">Pour rouvrir le groupe, cliquez sur le groupe</translation>
@@ -10839,6 +10845,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9102610709270966160">Activer l'extension</translation>
 <translation id="9102864637938129124">Les sites et les annonceurs peuvent mieux comprendre la performance des annonces. Ce paramètre est activé.</translation>
 <translation id="9103868373786083162">Appuyez pour revenir en arrière, menu contextuel pour voir l'historique</translation>
+<translation id="9106236359747881194">Sélectionner le texte à rechercher</translation>
 <translation id="9107096627210171112">Traduire…</translation>
 <translation id="9108035152087032312">Nommer la &amp;fenêtre…</translation>
 <translation id="9108072915170399168">Le paramètre actuel d'utilisation de données est Sans Internet</translation>

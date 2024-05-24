@@ -96,6 +96,7 @@
 <translation id="1436784010935106834">Olib tashlangan</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> ilovasida ochilgan</translation>
 <translation id="1448440926884431741">Kuzatiladigan mahsulotlarni bukmarklarda tartiblang</translation>
+<translation id="1460751212339734034">Vaqtni tejang, kamroq yozing</translation>
 <translation id="1466383950273130737">Chrome tilini tanlang</translation>
 <translation id="1477626028522505441">Serverdagi turli muammolar tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="1480287803138246127">Ayrim ochilgan sahifalar tarixi bu yerda chiqmaydi. Chromeda ochilgan barcha sahifalarni koʻrish uchun Chrome butun tarixini oching.</translation>
@@ -843,6 +844,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5264813352784073502">Oxirgi 24 soat</translation>
 <translation id="5271967389191913893">Yuklab olingan kontent ma’lumotlarini ochib bo‘lmadi.</translation>
 <translation id="5292796745632149097">Bunga yuborish:</translation>
+<translation id="5301876394151419436"><ph name="EMAIL" /> nomidan kirgansiz. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="5304593522240415983">Bu maydon kiritilishi shart</translation>
 <translation id="5308380583665731573">Ulanish</translation>
 <translation id="5316947901395241499">Parol saqlashni administrator taqiqlagan</translation>
@@ -1542,6 +1544,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8526855376374973824">Bildirishnomalarga ruxsat zanjiri</translation>
 <translation id="8540136935098276800">URL manzilni xatosiz kiriting</translation>
 <translation id="854522910157234410">Shu sahifani ochish</translation>
+<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Nofaol varaq (1)}other{Nofaol varaqlar (#)}}</translation>
 <translation id="8551513938758868521">Chrome yopilganda, Inkognito varaqlar qulflansin</translation>
 <translation id="8551524210492420949">Haqoratomuz yoki xavfli</translation>
 <translation id="8559961053328923750">Reklamalarning unumdorligini oʻlchash uchun Chrome brauzeri orqali saytlar yuboradigan maʼlumotlarning umumiy miqdorini cheklaydi.</translation>
@@ -1645,6 +1648,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="9102803872260866941">Razm solish sahifasi ochildi</translation>
 <translation id="9102864637938129124">Saytlar va reklama beruvchilar reklamalar qanday chiqishini oʻrganishi mumkin. Bu sozlama yoniq.</translation>
 <translation id="9104217018994036254">Varaq ulashiladigan qurilmalar roʻyxati.</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Kamida 1 kun ishlatilmagan}other{Kamida # kun ishlatilmagan}}</translation>
 <translation id="9106148373857059373">Oqimni saqlash uchun xatchoʻp yopiq</translation>
 <translation id="9108312223223904744">Telefonni elektron kalit sifatida ishlatish</translation>
 <translation id="9108808586816295166">Xavfsiz DNS xizmati har doim ham ishlamasligi mumkin</translation>

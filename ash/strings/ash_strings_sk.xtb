@@ -358,6 +358,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2441427462554639370">Nahrávanie bolo ukončené, pretože sa takmer úplne minul voľný priestor</translation>
 <translation id="2449089818483227734">Nízky stav batérie</translation>
 <translation id="2450205753526923158">Režim snímky obrazovky</translation>
+<translation id="2453860139492968684">Dokončiť</translation>
 <translation id="2455994958736234930">Pridanie reťazcov www. a .com do panela s adresou a následné otvorenie webu</translation>
 <translation id="2456008742792828469">Kalendár, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Stav batérie: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %, počet cyklov: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2726420622004325180">Ak chcete aktivovať hotspot, musíte v telefóne používať mobilné dáta</translation>
 <translation id="2727175239389218057">Odpovedať</translation>
 <translation id="2727977024730340865">Batéria je zapojená do nabíjačky s nízkym výkonom. Nabíjanie batérie nemusí byť spoľahlivé.</translation>
+<translation id="2743301740238894839">Spustiť</translation>
 <translation id="2743387203779672305">Kopírovať do schránky</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">Odstrániť</translation>
@@ -1836,6 +1838,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8042893070933512245">Otvoriť ponuku nastavení dostupnosti</translation>
 <translation id="8044457332620420407">Podsvietenie klávesnice je vypnuté</translation>
 <translation id="8048123526339889627">Nastavenia Bluetooth</translation>
+<translation id="8049189770492311300">Časovač</translation>
 <translation id="8051716679295756675">Šablóna s názvom <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
 <translation id="8052898407431791827">Skopírované do schránky</translation>
 <translation id="8054466585765276473">Výpočet času výdrže batérie.</translation>

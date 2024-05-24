@@ -360,6 +360,7 @@
 <translation id="1641976391427233992">මේ දක්වා දෛනික ප්‍රතිදානය</translation>
 <translation id="1643651787397909318">Chrome ආරක්ෂක පරීක්ෂා බොත්තම වෙත යන්න, සැකසීම් තුළ Chrome ආරක්ෂක පරීක්ෂා පිටුවට පිවිසීමට සක්‍රිය කරන්න</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
+<translation id="1645004815457365098">නොදන්නා මුලාශ්‍රයකි</translation>
 <translation id="1645368109819982629">සහාය නොදක්වන ප්‍රොටොකෝලය</translation>
 <translation id="1650602712345345441">ඔබගේ Chrome සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@
 <translation id="2056658168519009885">ඔබ දකින දැන්වීම් පෞද්ගලීකරණය කිරීමට උදවු කිරීමට අඩවිවලට තොරතුරු සඳහා Chrome වෙතින් විමසිය හැක.</translation>
 <translation id="2059166748188874810">නගර සභාව</translation>
 <translation id="2059202684901022309">අඟ 22 x 34</translation>
-<translation id="206275378685759380">මිල දී ගැනීමට රැඳී සිටින්න</translation>
 <translation id="2064568741209980952">හර සහ ණයට දීම</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{යෝජනා 1}one{යෝජනා #}other{යෝජනා #}}</translation>
 <translation id="2066915425250589881">මැකීමට ඉල්ලීම</translation>
@@ -1335,6 +1335,7 @@
 <translation id="353816159217417898">තිරය (පිටු සහිත)</translation>
 <translation id="3542628208405253498">කාඩ්පත් රූපය</translation>
 <translation id="3542768452570884558">සබැඳිය නව කවුළුවක විවෘත කරන්න</translation>
+<translation id="3547442767634383572">කාර්යාල පැතිකඩ දළ විශ්ලේෂණය</translation>
 <translation id="3547746132308051926">අඟ 20 x 24</translation>
 <translation id="3552155506104542239">අවවාදයයි: මෙම ප්‍රතිපත්තිය <ph name="POLICY_NAME" />ට පටහැනි වන අතර Android යෙදුම්වලට කිසිදු බලපෑමක් සිදු නොවේ. එසේ නොමැති නම්, මෙම ප්‍රතිපත්තිය අපේක්ෂිත පරිදි ක්‍රියාත්මක වේ.</translation>
 <translation id="3552297013052089404">Sans-serif ෆොන්ට</translation>
@@ -2199,6 +2200,7 @@
 <translation id="5230733896359313003">නැව්ගත කිරීමේ ලිපිනය</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 අමතර</translation>
+<translation id="5233071178832586743">කළමනාකරණය කළ පැතිකඩ, බ්‍රවුසරය සහ සමහර උපාංග තොරතුරු වෙත ඔබේ පරිපාලකයාට ප්‍රවේශ විය හැකි ය. ඔවුන්ට පහත සඳහන් තොරතුරු දැකිය හැකි ය:</translation>
 <translation id="5234764350956374838">ඉවත් කරන්න</translation>
 <translation id="5238301240406177137">ගිණුමේ සුරකින්න</translation>
 <translation id="5239119062986868403">නියමානුකූල මිල</translation>
@@ -2212,6 +2214,7 @@
 <translation id="52517543715119994">Chrome විශේෂාංග ගැන දැන ගන්න</translation>
 <translation id="5251803541071282808">වලාකුළ</translation>
 <translation id="5254043433801397071">මුද්‍රණ අන්තර්ගතය ප්‍රශස්ත කරන්න</translation>
+<translation id="5255583962255635076">ඔබේ කාර්යාල පැතිකඩෙහි බ්‍රවුසර ප්‍රතිපත්ති යොදන ලදි</translation>
 <translation id="5255690596502591079">කෙසේ වෙතත් ග්‍රහණය කර ගන්න</translation>
 <translation id="5255833070095767006">මිමි 350 x 460</translation>
 <translation id="5257739419779698609">{0,plural, =1{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනුව <ph name="DESTINATION_NAME" /> වෙත පිටපත් කිරීම නිර්දේශ නොකරයි}one{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත පිටපත් කිරීම නිර්දේශ නොකරයි}other{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත පිටපත් කිරීම නිර්දේශ නොකරයි}}</translation>
@@ -3332,6 +3335,7 @@
 <translation id="7421067045979951561">ප්‍රොටොකෝල හසුරුවන්නන්</translation>
 <translation id="7422347648202898039">ලේබල් (ආරක්ෂක)</translation>
 <translation id="7423283032694727565">කුකීස් කළමනාකරණය කරන්න බොත්තම, Chrome සැකසීම් තුළ ඔබේ කුකී මනාප කළමනාකරණය කිරීමට සක්‍රිය කරන්න</translation>
+<translation id="742435751935045381">ඔබේ කාර්යාල පැතිකඩෙහි ස්ථාපිත යෙදුම් සහ දිගු</translation>
 <translation id="7424421098814895617">ලිපිනය මකා දැමීමේ විකල්පය තෝරා ගන්නා ලදි</translation>
 <translation id="7425037327577270384">මට ලිවීමට උදවු කරන්න</translation>
 <translation id="7425878584435172632">දෘශ්‍ය කලාව සහ නිර්මාණය</translation>
@@ -3878,6 +3882,7 @@
 අමතර විස්තර:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">මෙම අවස්ථාවේ දී මයික්‍රෆෝනයට ඉඩ දී ඇත</translation>
+<translation id="8421158157346464398">කාර්යාල පැතිකඩ තොරතුරු (ඔබේ කාර්යාල පැතිකඩ පරිශීලක නාමය වැනි)</translation>
 <translation id="8422228580902424274">ඔබ පිවිසීමට උත්සාහ කරන අඩවියේ සිටින ප්‍රහාරකයන් මෘදුකාංග ස්ථාපනය කිරීමට හෝ ඔබේ මුරපදය, දුරකථනය, හෝ ණය කාඩ්පත් අංකය වැනි දේවල් හෙළි කිරීමට ඔබව රවටා ගත හැක.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">වෙනස් කරන්න</translation>
@@ -4245,6 +4250,7 @@
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">ඔබ පිවිසෙන අඩවිවලට ද අඩවියේ ඔබේ ක්‍රියාකාරකම් මත පදනම්ව ඔබ කැමති දේ තීරණය කළ හැක. උදාහරණයක් ලෙස, ඔබ දිගු දුර ධාවන සපත්තු අලෙවි කරන අඩවියකට පිවිසෙන්නේ නම්, ඔබ මැරතන් ධාවනය කිරීමට කැමති බව අඩවිය තීරණය කළ හැක.</translation>
 <translation id="9166851138617700776">අඩවි-යෝජිත දැන්වීම් සහ දැන්වීම් මැනීම පිළිබඳ වැඩිදුර</translation>
+<translation id="9167054383925257837">බ්‍රව්සරය සහ උපාංග OS තොරතුරු (බ්‍රවුසරය සහ OS අනුවාද වැනි)</translation>
 <translation id="9167594211215946097">ඔබේ මුද්‍රක වෙත සෘජු ප්‍රවේශය ඇත</translation>
 <translation id="9168814207360376865">ඔබ ගෙවීමේ ක්‍රම සුරැක තිබේ දැයි පරීක්ෂා කිරීමට අඩවිවලට ඉඩ දෙන්න</translation>
 <translation id="9169664750068251925">සැමවිටම මෙම අඩවිය බාධා කරන්න</translation>

@@ -360,6 +360,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1641976391427233992">Retrasar la salida hasta</translation>
 <translation id="1643651787397909318">Botón para ir a la verificación de seguridad de Chrome; actívalo para visitar la página verificación de seguridad de Chrome en la configuración</translation>
 <translation id="1644574205037202324">Historial</translation>
+<translation id="1645004815457365098">Origen desconocido.</translation>
 <translation id="1645368109819982629">Protocolo no compatible</translation>
 <translation id="1650602712345345441">Administra tu configuración de Chrome</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2056658168519009885">Los sitios pueden solicitar información a Chrome para personalizar los anuncios que ves.</translation>
 <translation id="2059166748188874810">Municipalidad</translation>
 <translation id="2059202684901022309">55.88 × 86.36 cm</translation>
-<translation id="206275378685759380">Espera para comprar</translation>
 <translation id="2064568741209980952">Créditos y préstamos</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugerencia}other{# sugerencias}}</translation>
 <translation id="2066915425250589881">solicitar que se borre</translation>
@@ -1336,6 +1336,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="353816159217417898">Pantalla (paginada)</translation>
 <translation id="3542628208405253498">Imagen de la tarjeta</translation>
 <translation id="3542768452570884558">Abrir el vínculo en una ventana nueva</translation>
+<translation id="3547442767634383572">Descripción general del perfil de trabajo</translation>
 <translation id="3547746132308051926">50.8 × 61 cm (20 × 24 in)</translation>
 <translation id="3552155506104542239">Advertencia: Esta política entra en conflicto con <ph name="POLICY_NAME" /> y no tendrá efecto en las apps para Android. De lo contrario, esta política funciona según lo previsto.</translation>
 <translation id="3552297013052089404">Fuente Sans Serif</translation>
@@ -2200,6 +2201,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5230733896359313003">Dirección de envío</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Tu administrador puede acceder al perfil administrado, el navegador y cierta información del dispositivo. Puede ver información como la siguiente:</translation>
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="5238301240406177137">Guardar en la cuenta</translation>
 <translation id="5239119062986868403">Precio habitual</translation>
@@ -2213,6 +2215,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="52517543715119994">Más información sobre las funciones de Chrome</translation>
 <translation id="5251803541071282808">Nube</translation>
 <translation id="5254043433801397071">Optimizar el contenido de impresión</translation>
+<translation id="5255583962255635076">Políticas del navegador aplicadas en tu perfil de trabajo</translation>
 <translation id="5255690596502591079">Capturar de todos modos</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política del administrador no recomienda copiar este archivo a <ph name="DESTINATION_NAME" />.}other{La política del administrador no recomienda copiar estos archivos a <ph name="DESTINATION_NAME" />.}}</translation>
@@ -3333,6 +3336,7 @@ Detalles adicionales:
 <translation id="7421067045979951561">controladores de protocolos</translation>
 <translation id="7422347648202898039">Etiquetas (seguridad)</translation>
 <translation id="7423283032694727565">Botón Administrar cookies: actívalo para administrar tus preferencias de cookies en la configuración de Chrome</translation>
+<translation id="742435751935045381">Apps y extensiones instaladas en tu perfil de trabajo</translation>
 <translation id="7424421098814895617">Se seleccionó la opción para borrar la dirección</translation>
 <translation id="7425037327577270384">Ayúdame a escribir</translation>
 <translation id="7425878584435172632">Artes visuales y diseño</translation>
@@ -3879,6 +3883,7 @@ Detalles adicionales:
 Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Se permite el micrófono esta vez</translation>
+<translation id="8421158157346464398">Información del perfil de trabajo (como el nombre de usuario del perfil de trabajo)</translation>
 <translation id="8422228580902424274">Los atacantes del sitio que intentas visitar podrían engañarte para que instales software o reveles información como tu contraseña, teléfono o número de tarjeta de crédito.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Cambiar</translation>
@@ -4248,6 +4253,7 @@ Detalles adicionales:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Los sitios que visitas también pueden determinar lo que te gusta en función de tu actividad en el sitio. Por ejemplo, si visitas un sitio que vende calzado para correr largas distancias, el sitio podría inferir que te interesa correr maratones.</translation>
 <translation id="9166851138617700776">Obtén más información sobre los anuncios sugeridos por sitios y la medición de anuncios</translation>
+<translation id="9167054383925257837">Información del navegador y el SO del dispositivo (como las versiones del navegador y el SO)</translation>
 <translation id="9167594211215946097">Tener acceso directo a tus impresoras</translation>
 <translation id="9168814207360376865">Permitir que los sitios comprueben si tienes formas de pago guardadas</translation>
 <translation id="9169664750068251925">Bloquear siempre en este sitio</translation>

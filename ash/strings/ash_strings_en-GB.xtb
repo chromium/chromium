@@ -358,6 +358,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2441427462554639370">Recording ended due to critically low storage space</translation>
 <translation id="2449089818483227734">Low battery</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
+<translation id="2453860139492968684">Finish</translation>
 <translation id="2455994958736234930">Add www. and .com to the address bar, then open website</translation>
 <translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Battery health <ph name="BATTERY_HEALTH_PERCENTAGE" />%, cycle count <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2726420622004325180">Your phone must have mobile data to provide a hotspot</translation>
 <translation id="2727175239389218057">Reply</translation>
 <translation id="2727977024730340865">Plugged in to a low-power charger. Battery charging may not be reliable.</translation>
+<translation id="2743301740238894839">Start</translation>
 <translation id="2743387203779672305">Copy to clipboard</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">'Delete'</translation>
@@ -1836,6 +1838,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8042893070933512245">Open accessibility settings menu</translation>
 <translation id="8044457332620420407">Keyboard backlight is off</translation>
 <translation id="8048123526339889627">Bluetooth settings</translation>
+<translation id="8049189770492311300">Timer</translation>
 <translation id="8051716679295756675">Template named <ph name="DESK_TEMPLATE_NAME" /> already exists</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>

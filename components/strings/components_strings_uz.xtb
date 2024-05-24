@@ -359,6 +359,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1641976391427233992">Natijalar chiqishini kechiktirish</translation>
 <translation id="1643651787397909318">Chrome xavfsizlik tekshiruvi tugmasi sozlamalarda Chrome xavfsizlik tekshiruviga kirish imkonini beradi</translation>
 <translation id="1644574205037202324">Tarix</translation>
+<translation id="1645004815457365098">Notanish manba</translation>
 <translation id="1645368109819982629">Protokol qo‘llab-quvvatlanmaydi</translation>
 <translation id="1650602712345345441">Chrome sozlamalari orqali boshqarish</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -574,7 +575,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2056658168519009885">Saytlar sizga aloqador reklamalarni chiqarish uchun Chrome brauzeridan maʼlumot olishi mumkin.</translation>
 <translation id="2059166748188874810">Munitsipalitet</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
-<translation id="206275378685759380">Keyinroq xarid qiling</translation>
 <translation id="2064568741209980952">Kredit va ssuda</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ta tavsiya}other{# ta tavsiya}}</translation>
 <translation id="2066915425250589881">oʻchirilishini talab qilish mumkin</translation>
@@ -1331,6 +1331,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="353816159217417898">Ekran shakli (sahifali)</translation>
 <translation id="3542628208405253498">Karta rasmi</translation>
 <translation id="3542768452570884558">Havolani yangi oynada ochish</translation>
+<translation id="3547442767634383572">Ish profili umumiy haqida umumiy maʼlumot</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
 <translation id="3552155506104542239">Ogohlantirish: Bu qoida <ph name="POLICY_NAME" /> bilan ziddiyatda va Android ilovalarida samarasiz. Bunday boʻlmasa, bu siyosat maqsadga muvofiq ishlaydi.</translation>
 <translation id="3552297013052089404">Sans-serif shrifti</translation>
@@ -2194,6 +2195,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5230733896359313003">Yetkazib berish manzili</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Ekstra</translation>
+<translation id="5233071178832586743">Boshqariladigan profil, brauzer va ayrim qurilma maʼlumotlariga administratoringiz kira oladi. U quyidagi kabi maʼlumotlarni koʻra oladi:</translation>
 <translation id="5234764350956374838">Yopish</translation>
 <translation id="5238301240406177137">Hisobda saqlash</translation>
 <translation id="5239119062986868403">Odatiy narxi</translation>
@@ -2207,6 +2209,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="52517543715119994">Chrome funksiyalari bilan tanishuv</translation>
 <translation id="5251803541071282808">Bulut</translation>
 <translation id="5254043433801397071">Bosma kontentni takomillashtirish</translation>
+<translation id="5255583962255635076">Brauzer qoidalari ishchi profilingizga tatbiq qilinadi</translation>
 <translation id="5255690596502591079">Baribir yozib olish</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administrator bu faylni <ph name="DESTINATION_NAME" />ga nusxalashni tavsiya qilmaydi}other{Administrator bu fayllarni <ph name="DESTINATION_NAME" />ga nusxalashni tavsiya qilmaydi}}</translation>
@@ -3326,6 +3329,7 @@ Batafsil axborot:
 <translation id="7421067045979951561">protokollarga ishlov beruvchilar</translation>
 <translation id="7422347648202898039">Yorliqlar (himoyalangan)</translation>
 <translation id="7423283032694727565">Cookie fayllarni boshqarish tugmasi, Chrome sozlamalari orqali cookie parametrlarini boshqarish uchun faollashtiring</translation>
+<translation id="742435751935045381">Ish profilingizda oʻrnatilgan ilova va kengaytmalar</translation>
 <translation id="7424421098814895617">Manzilni oʻchirish tanlandi</translation>
 <translation id="7425037327577270384">Yozishda yordam ber</translation>
 <translation id="7425878584435172632">Vizual sanʼat va dizayn</translation>
@@ -3872,6 +3876,7 @@ Batafsil axborot:
 Batafsil axborot:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofonga shu safar ruxsat berildi</translation>
+<translation id="8421158157346464398">Ish profili maʼlumotlari (masalan, ishchi profilingiz foydalanuvchi nomi)</translation>
 <translation id="8422228580902424274">Siz ochayotgan saytda firibgarlar sizni aldab, parolingiz, telefon yoki kredit karta raqamingizni oʻgʻirlashi mumkin dasurni oʻrnatishi mumkin.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">O‘zgartirish</translation>
@@ -4240,6 +4245,7 @@ Batafsil axborot:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Shuningdek, saytlar ham ularga qilingan tashriflar asosida qiziqishlarni aniqlashi mumkin. Masalan, uzoq masofalarga yugurish oyoq kiyimlarini sotadigan saytga kirsangiz, ushbu sayt sizni marafonlarda yugurishga qiziqadi, deb hisoblashi mumkin.</translation>
 <translation id="9166851138617700776">Saytlar taklif qiladigan reklamalar va reklamalarni baholash haqida batafsil</translation>
+<translation id="9167054383925257837">Brauzer va qurilma OT maʼlumotlari (brauzer va OT versiyalari kabi)</translation>
 <translation id="9167594211215946097">Printerlarga bevosita ruxsat oling</translation>
 <translation id="9168814207360376865">Saytlarga saqlangan to‘lov usullari mavjudligini tekshirishga ruxsat berish</translation>
 <translation id="9169664750068251925">Bu saytda doim bloklansin</translation>

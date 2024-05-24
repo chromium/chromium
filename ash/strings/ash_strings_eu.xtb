@@ -358,6 +358,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2441427462554639370">Utzi egin zaio grabatzeari biltegiratzeko oso toki gutxi dagoelako</translation>
 <translation id="2449089818483227734">Bateria gutxi</translation>
 <translation id="2450205753526923158">Pantaila-argazkiak ateratzeko modua</translation>
+<translation id="2453860139492968684">Amaitu</translation>
 <translation id="2455994958736234930">Gehitu www. eta .com helbide-barran eta, gero, ireki webgunea</translation>
 <translation id="2456008742792828469">Egutegia, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Bateriaren egoera: % <ph name="BATTERY_HEALTH_PERCENTAGE" />. Ziklo kopurua: <ph name="CYCLE_COUNT" />.</translation>
@@ -429,6 +430,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2726420622004325180">Telefonoak datu-konexioa erabili behar du wifi-gune bat sortzeko</translation>
 <translation id="2727175239389218057">Erantzun</translation>
 <translation id="2727977024730340865">Potentzia txikiko kargagailu bat entxufatu duzu. Agian bateria kargatzeko prozesua ez da fidagarria izango.</translation>
+<translation id="2743301740238894839">Hasi</translation>
 <translation id="2743387203779672305">Kopiatu arbelean</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" /> (<ph name="PRICE" />)</translation>
 <translation id="2750932254614666392">"Ezabatu"</translation>
@@ -1837,6 +1839,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8042893070933512245">Ireki Erabilerraztasun-ezarpenak menua</translation>
 <translation id="8044457332620420407">Teklatuaren ondoko argia itzalita dago</translation>
 <translation id="8048123526339889627">Bluetootharen ezarpenak</translation>
+<translation id="8049189770492311300">Tenporizadorea</translation>
 <translation id="8051716679295756675">Badago "<ph name="DESK_TEMPLATE_NAME" />" izeneko txantiloi bat</translation>
 <translation id="8052898407431791827">Kopiatu da arbelean</translation>
 <translation id="8054466585765276473">Bateria-denbora kalkulatzen.</translation>

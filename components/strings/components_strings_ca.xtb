@@ -360,6 +360,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1641976391427233992">Retarda la sortida fins a</translation>
 <translation id="1643651787397909318">Botó Ves a la comprovació de seguretat de Chrome. Activa'l per visitar la pàgina de comprovació de seguretat de Chrome a la configuració.</translation>
 <translation id="1644574205037202324">Historial</translation>
+<translation id="1645004815457365098">Font desconeguda</translation>
 <translation id="1645368109819982629">Protocol no admès</translation>
 <translation id="1650602712345345441">Gestiona la configuració de Chrome</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2056658168519009885">Els llocs web poden demanar informació a Chrome per personalitzar els anuncis que veus.</translation>
 <translation id="2059166748188874810">Municipi</translation>
 <translation id="2059202684901022309">22 x 34 polzades</translation>
-<translation id="206275378685759380">Espera per comprar</translation>
 <translation id="2064568741209980952">Crèdit i préstec</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggeriment}other{# suggeriments}}</translation>
 <translation id="2066915425250589881">sol·licitar que se suprimeixi</translation>
@@ -1335,6 +1335,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="353816159217417898">Pantalla (paginada)</translation>
 <translation id="3542628208405253498">Imatge de la targeta</translation>
 <translation id="3542768452570884558">Obre l'enllaç en una finestra nova</translation>
+<translation id="3547442767634383572">Informació general del perfil de treball</translation>
 <translation id="3547746132308051926">20 x 24 polzades</translation>
 <translation id="3552155506104542239">Advertiment: aquesta política entra en conflicte amb <ph name="POLICY_NAME" /> i no tindrà efecte en les aplicacions d'Android. Si no és així, la política funciona de la manera prevista.</translation>
 <translation id="3552297013052089404">Tipus de lletra Sans Serif</translation>
@@ -2199,6 +2200,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5230733896359313003">Adreça d'enviament</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">L'administrador pot accedir al perfil gestionat, al navegador i a part de la informació del dispositiu. Pot veure informació com ara la següent:</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5238301240406177137">Desa al compte</translation>
 <translation id="5239119062986868403">Preu habitual</translation>
@@ -2212,6 +2214,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="52517543715119994">Més informació sobre les funcions de Chrome</translation>
 <translation id="5251803541071282808">Núvol</translation>
 <translation id="5254043433801397071">Optimitza el contingut d'impressió</translation>
+<translation id="5255583962255635076">Polítiques del navegador aplicades al teu perfil de treball</translation>
 <translation id="5255690596502591079">Captura igualment</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política de l'administrador no recomana copiar aquest fitxer a <ph name="DESTINATION_NAME" />}other{La política de l'administrador no recomana copiar aquests fitxers a <ph name="DESTINATION_NAME" />}}</translation>
@@ -3332,6 +3335,7 @@ Detalls addicionals:
 <translation id="7421067045979951561">gestors de protocol</translation>
 <translation id="7422347648202898039">Etiquetes (seguretat)</translation>
 <translation id="7423283032694727565">Botó Gestiona les galetes: activa'l per gestionar les preferències de galetes a la configuració de Chrome</translation>
+<translation id="742435751935045381">Aplicacions i extensions instal·lades al teu perfil de treball</translation>
 <translation id="7424421098814895617">S'ha seleccionat l'opció de suprimir l'adreça</translation>
 <translation id="7425037327577270384">Ajuda'm a escriure</translation>
 <translation id="7425878584435172632">Art visual i disseny</translation>
@@ -3878,6 +3882,7 @@ Detalls addicionals:
 Detalls addicionals:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">S'ha permès l'ús del micròfon aquesta vegada</translation>
+<translation id="8421158157346464398">Informació del perfil de treball (com ara el nom d'usuari del perfil de treball)</translation>
 <translation id="8422228580902424274">Els atacants del lloc que proves de visitar poden enganyar-te perquè instal·lis programari o perquè revelis dades com ara la contrasenya, el telèfon o el número de la targeta de crèdit.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Canvia</translation>
@@ -4245,6 +4250,7 @@ Detalls addicionals:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Els llocs web que visites també poden determinar què t'agrada a partir de l'activitat que hi duus a terme. Per exemple, si visites un lloc web que ven sabatilles per córrer llargues distàncies, el lloc web pot decidir que t'interessa córrer maratons.</translation>
 <translation id="9166851138617700776">Més informació sobre els anuncis suggerits per llocs web i el mesurament d'anuncis</translation>
+<translation id="9167054383925257837">Informació del navegador i del sistema operatiu del dispositiu (com ara les versions del navegador i del sistema operatiu)</translation>
 <translation id="9167594211215946097">Tenir accés directe a les teves impressores</translation>
 <translation id="9168814207360376865">Permet que els llocs web comprovin si tens formes de pagament desades</translation>
 <translation id="9169664750068251925">Bloqueja sempre en aquest lloc</translation>

@@ -408,6 +408,7 @@ Esto reemplaza la política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NA
 <translation id="1305400589435476516">Si habilitas la política, se permitirá el roaming de datos para el dispositivo.
 
       Si inhabilitas la política o no la estableces, el roaming de datos no estará disponible.</translation>
+<translation id="1306041796676461437">Inhabilitar la compatibilidad con Extensible Enterprise SSO</translation>
 <translation id="1308526987406924874">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedir permiso a los usuarios para acceder a un puerto en serie.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
@@ -3435,6 +3436,15 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 <translation id="3606571057705314194">Selector de perfiles inhabilitado en el inicio</translation>
 <translation id="3608206578291537084">Habilitar la canalización de informes encriptados</translation>
 <translation id="3608281460204780443">Mostrar el ícono de Chrome Web Store en el selector <ph name="PRODUCT_OS_NAME" /> y en la página de la nueva pestaña</translation>
+<translation id="3608411984079625468">Configura el acceso automático de los usuarios a las cuentas con proveedores de autenticación por medio de una extensión de SSO empresarial.
+
+Si estableces esta política en 1 (<ph name="POLICY_VALUE_ENABLED" />) o no la estableces, los proveedores de autenticación con una extensión de SSO en el dispositivo la usarán para autenticar a los usuarios que intenten acceder.
+
+Si estableces esta política en 0 (<ph name="POLICY_VALUE_DISABLED" />), se inhabilitará el acceso automático, tal como se describió anteriormente.
+
+Esta función está disponible a partir de MacOS Catalina.
+
+Nota: Esta política no se aplica al modo Incógnito ni de invitado.</translation>
 <translation id="3612482251405108708">Iniciar la reautenticación en línea de forma automática en la pantalla de bloqueo</translation>
 <translation id="3616490235694929053">Esta política controla si se muestra la pantalla de configuración del tamaño de visualización al usuario durante el primer acceso.
       Si la estableces como falsa, no se mostrará la pantalla de configuración del tamaño de visualización.
@@ -4415,6 +4425,15 @@ Si la inhabilitas, los usuarios no podrán realizar un seguimiento de sus paquet
 <translation id="439661169333921592">Inhabilitar la función para destacar el cursor del teclado en la pantalla de acceso</translation>
 <translation id="4397045637922200204">Desactivar la recuperación de la cuenta</translation>
 <translation id="4397464099112037398">Configuración predeterminada del permiso de Ubicación de ventanas</translation>
+<translation id="4398803806072237638">La sintaxis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> de la función de estado personalizado de CSS se cambiará a <ph name="CUSTOM_STATE_NEW_SYNTAX" /> en <ph name="PRODUCT_NAME" /> para cumplir con los cambios que se realizaron en <ph name="FIREFOX_PRODUCT_NAME" /> y <ph name="SAFARI_PRODUCT_NAME" />. Esta política permite habilitar la sintaxis obsoleta anterior hasta la versión M133.
+
+La baja puede provocar fallas en algunos sitios web exclusivos para <ph name="PRODUCT_NAME" /> que usan la sintaxis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> obsoleta.
+
+Si habilitas esta política, se habilitará la sintaxis obsoleta anterior.
+
+Si inhabilitas esta política, se inhabilitará la sintaxis obsoleta anterior.
+
+Si no la estableces, se inhabilitará la sintaxis obsoleta anterior.</translation>
 <translation id="4401196752827224189">Se quitará WebSQL en contextos no seguros a partir de M110. Esta política vuelve a habilitar la API.
           Si la estableces como verdadera, WebSQL en contextos no seguros estará disponible.
           Si estableces esta política como falsa o no la estableces, WebSQL en contextos no seguros seguirá disponible hasta la versión M109 y, luego, no estará disponible a partir de M110.
@@ -4767,6 +4786,7 @@ Si no estableces la política, los usuarios podrán cambiar la lista de apps fij
 
 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falsa.</translation>
 <translation id="4638906910792947645">Habilitar las encuestas dentro del producto</translation>
+<translation id="4641557638919545432">Habilitar la sintaxis obsoleta anterior.</translation>
 <translation id="4646626362889216307">Si estableces la política, se podrán combinar las políticas seleccionadas cuando provienen de diferentes fuentes, con los mismos alcances y niveles. Esta acción combina las claves de primer nivel del diccionario de cada fuente. Prevalecerá la clave que provenga de la fuente de mayor prioridad.
 
       Usa el carácter comodín "*" para permitir la combinación de todas las políticas del diccionario compatibles.
@@ -5434,6 +5454,7 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
       Si estableces la política de fondo de pantalla del dispositivo, el dispositivo con ChromeOS descargará y usará la imagen de fondo de pantalla en la pantalla de acceso si aún ningún usuario accedió a su cuenta en el dispositivo. Una vez que el usuario acceda a su cuenta, se habilitará la política de fondo de pantalla del usuario.
 
       Si no estableces la política de fondo de pantalla del dispositivo, la política de fondo de pantalla del usuario, en caso de que la establezcas, decidirá lo que se muestra.</translation>
+<translation id="5217106427763720473">Habilitar la compatibilidad con Extensible Enterprise SSO</translation>
 <translation id="5219844027738217407">Para las apps de Android, esta política solo afecta al micrófono. Cuando esta política se establece como falsa, se silencia el micrófono para todas las apps de Android, sin excepciones.</translation>
 <translation id="5222325605346216869">Forzar la limitación de los cronómetros de JavaScript en segundo plano</translation>
 <translation id="5223606242837275233">No permitir que los sitios se desplacen a fragmentos de texto específicos mediante la URL</translation>
@@ -5484,6 +5505,7 @@ Nota: Esta función aún no está disponible de forma general, por lo que habili
       Aquí la "versión" puede ser exacta, como "61.0.3163.120", o el prefijo de una versión, como "61.0".  </translation>
 <translation id="5247584184349816217">Habilitar el protector de pantalla en la pantalla de bloqueo</translation>
 <translation id="5247973380763021389">Impedir que las políticas de nube destinadas a los usuarios anulen las políticas de nube de la máquina</translation>
+<translation id="5249006530384016395">Controlar si se habilita la sintaxis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> obsoleta para el estado personalizado de CSS</translation>
 <translation id="5249453807420671499">Los usuarios pueden agregar cuentas de Kerberos</translation>
 <translation id="5249555581286638799">Habilitar el modo de alta eficiencia</translation>
 <translation id="5252210248395576403">Esta política le otorga permiso a Respuestas rápidas para acceder al contenido seleccionado y enviar información al servidor, a fin de obtener resultados de traducción.
@@ -9982,6 +10004,7 @@ Esto incluye los informes habilitados por<ph name="CLOUD_REPORTING_ENABLED_POLIC
 
 Si no se establece la política, los informes se suben cada 24 horas.
 Si se establece la política, definirá la cantidad de horas entre dos cargas de informes sucesivas.</translation>
+<translation id="8613622696148230463">Inhabilitar la sintaxis obsoleta anterior.</translation>
 <translation id="8618037841203431360">Esta política controla el envío de los datos sobre la política y su hora de recuperación.
 
 Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará.

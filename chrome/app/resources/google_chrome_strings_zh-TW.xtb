@@ -124,6 +124,7 @@
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
 <translation id="2775140325783767197">Chrome 無法檢查你的密碼，請查看你的網際網路連線狀態。</translation>
 <translation id="2799223571221894425">重新啟動</translation>
+<translation id="2825024317344269723">危險網站。Chrome 已移除通知權限。</translation>
 <translation id="2846251086934905009">安裝錯誤：安裝程式未完整執行。安裝作業已取消。</translation>
 <translation id="2847461019998147611">將 Google Chrome 的介面文字設為這種語言</translation>
 <translation id="2853415089995957805">Chrome 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入</translation>
@@ -185,6 +186,7 @@
 <translation id="3583751698304738917">你已經以另一個 Chrome 設定檔的 <ph name="USER_EMAIL_ADDRESS" /> 身分登入</translation>
 <translation id="3595784445906693824">要在新設定檔中登入 Chrome 嗎？</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{系統管理員要求你重新啟動 Chrome，以套用更新}=1{系統管理員要求你重新啟動 Chrome，以套用更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
+<translation id="3609788354808247807">由於近期沒有造訪記錄，Chrome 已移除「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和「<ph name="PERMISSION_3" />」權限</translation>
 <translation id="3622797965165704966">無論是登入 Google 帳戶使用 Chrome，還是以 Google 帳戶使用共用電腦，現在都變得更容易了。</translation>
 <translation id="3635073343384702370">Chrome 可以檢查你儲存的密碼</translation>
 <translation id="3667616615096815454">伺服器無法辨識應用程式，因此無法安裝。</translation>
@@ -332,6 +334,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">使用 Google Chrome 做為我的預設瀏覽器</translation>
 <translation id="5947104538377036631">Chrome 捷徑</translation>
+<translation id="5953954252731207958">由於近期沒有造訪記錄，Chrome 已移除「<ph name="PERMISSION" />」權限</translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6014316319780893079">Chrome 提供<ph name="BEGIN_LINK" />各種實用工具<ph name="END_LINK" />，你可以放心瀏覽網路，掌控一切設定</translation>
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
@@ -346,6 +349,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta 版</translation>
 <translation id="6182736845697986886">更新伺服器發生內部錯誤，因此安裝失敗。</translation>
+<translation id="6200139057479872438">由於近期沒有造訪記錄，Chrome 已移除「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」權限</translation>
 <translation id="6235018212288296708">允許 mDNS 流量的 Google Chrome 輸入規則。</translation>
 <translation id="624230925347970731">Chrome 即將關閉</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
@@ -444,6 +448,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7651907282515937834">Chrome Enterprise 標誌</translation>
 <translation id="76531479118467370">安全瀏覽功能已關閉，系統無法驗證這個檔案，因此 Chrome 已禁止下載</translation>
 <translation id="7655455401911432608">你的瀏覽記錄，以及在這部裝置上透過 Chrome 造訪的網站記錄。</translation>
+<translation id="7661924425853052955">由於近期沒有造訪記錄，Chrome 已移除「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="COUNT" /> 項權限</translation>
 <translation id="7668816516367091728">使用網址列就能翻譯、計算及執行其他工作</translation>
 <translation id="769538538642757151">如有任何需要檢查的事項，Chrome 會通知你</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟體。</translation>

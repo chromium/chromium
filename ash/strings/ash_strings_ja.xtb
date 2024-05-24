@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">保存容量が非常に少なくなっているため、録画を終了しました</translation>
 <translation id="2449089818483227734">バッテリー残量が少なくなっています</translation>
 <translation id="2450205753526923158">スクリーンショット モード</translation>
+<translation id="2453860139492968684">終了</translation>
 <translation id="2455994958736234930">アドレスバーに「www.」と「.com」を追加してからウェブサイトを開く</translation>
 <translation id="2456008742792828469">カレンダー、<ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">バッテリーの状態 <ph name="BATTERY_HEALTH_PERCENTAGE" />%、サイクル数 <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">ホットスポットを提供するにはスマートフォンにモバイルデータが必要です</translation>
 <translation id="2727175239389218057">返信</translation>
 <translation id="2727977024730340865">低電力の充電器に接続しています。バッテリーが充電されない可能性があります。</translation>
+<translation id="2743301740238894839">開始</translation>
 <translation id="2743387203779672305">クリップボードにコピー</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />、<ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"削除"</translation>
@@ -1837,6 +1839,7 @@
 <translation id="8042893070933512245">ユーザー補助機能の設定メニューを開く</translation>
 <translation id="8044457332620420407">キーボードのバックライトはオフです</translation>
 <translation id="8048123526339889627">Bluetooth 設定</translation>
+<translation id="8049189770492311300">タイマー</translation>
 <translation id="8051716679295756675">「<ph name="DESK_TEMPLATE_NAME" />」という名前のテンプレートはすでに存在しています</translation>
 <translation id="8052898407431791827">クリップボードにコピーしました</translation>
 <translation id="8054466585765276473">バッテリーの残り時間を計算しています。</translation>

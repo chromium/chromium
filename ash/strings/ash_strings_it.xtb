@@ -358,6 +358,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2441427462554639370">Registrazione terminata a causa dell'esaurimento dello spazio di archiviazione</translation>
 <translation id="2449089818483227734">Batteria in esaurimento</translation>
 <translation id="2450205753526923158">Modalità screenshot</translation>
+<translation id="2453860139492968684">Termina</translation>
 <translation id="2455994958736234930">Aggiungi www. e .com alla barra degli indirizzi, quindi apri il sito web</translation>
 <translation id="2456008742792828469">Calendario, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Integrità della batteria: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, numero di cicli: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2726420622004325180">Il telefono deve avere i dati mobili per poter fornire un hotspot</translation>
 <translation id="2727175239389218057">Rispondi</translation>
 <translation id="2727977024730340865">Collegato a un caricabatterie a basso consumo. La carica della batteria potrebbe non essere affidabile.</translation>
+<translation id="2743301740238894839">Inizia</translation>
 <translation id="2743387203779672305">Copia negli appunti</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Elimina"</translation>
@@ -1833,6 +1835,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8042893070933512245">Apri il menu Impostazioni di accessibilità</translation>
 <translation id="8044457332620420407">La retroilluminazione della tastiera non è attiva</translation>
 <translation id="8048123526339889627">Impostazioni Bluetooth</translation>
+<translation id="8049189770492311300">Timer</translation>
 <translation id="8051716679295756675">Esiste già un modello con il nome <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8054466585765276473">Calcolo della durata della batteria.</translation>

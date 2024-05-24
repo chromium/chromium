@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">သိုလှောင်ခန်းနေရာ အလွန်နည်းနေသဖြင့် ရိုက်ကူးမှု ရပ်သွားသည်</translation>
 <translation id="2449089818483227734">ဘက်ထရီ အားနည်းနေသည်</translation>
 <translation id="2450205753526923158">ဖန်သားပြင်ဓာတ်ပုံမုဒ်</translation>
+<translation id="2453860139492968684">ပြီးပြီ</translation>
 <translation id="2455994958736234930">လိပ်စာဘားတွင် www. နှင့် .com ထည့်ပြီး ဝဘ်ဆိုက်ကို ဖွင့်ရန်</translation>
 <translation id="2456008742792828469">ပြက္ခဒိန်၊ <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">ဘက်ထရီအခြေအနေ <ph name="BATTERY_HEALTH_PERCENTAGE" />%၊ သုံးစွဲမှု အကြိမ်ရေ <ph name="CYCLE_COUNT" /> ကြိမ်</translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">ဟော့စပေါ့ပေးရန် သင့်ဖုန်းတွင် မိုဘိုင်းဒေတာရှိရပါမည်</translation>
 <translation id="2727175239389218057">စာပြန်ရန်</translation>
 <translation id="2727977024730340865">ပါဝါနည်းသည့် အားသွင်းကိရိယာသို့ ချိတ်ဆက်ထားသည်။ ဘတ်ထရီအားသွင်းခြင်း အားကိုး၍ရမည် မဟုတ်ပါ။</translation>
+<translation id="2743301740238894839">စတင်ရန်</translation>
 <translation id="2743387203779672305">ကလစ်ဘုဒ်သို့ ကူးယူရန်</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />၊ <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"ဖျက်ရန်"</translation>
@@ -1836,6 +1838,7 @@
 <translation id="8042893070933512245">အများသုံးနိုင်မှုဆက်တင်များ မီနူးကို ဖွင့်ရန်</translation>
 <translation id="8044457332620420407">ကီးဘုတ်နောက်ခံမီး ပိတ်ပြီးပြီ</translation>
 <translation id="8048123526339889627">ဘလူးတုသ် ဆက်တင်များ</translation>
+<translation id="8049189770492311300">တိုင်မား</translation>
 <translation id="8051716679295756675">နမူနာ ပုံစံအမည် <ph name="DESK_TEMPLATE_NAME" /> က ရှိပြီးသားဖြစ်သည်</translation>
 <translation id="8052898407431791827">ကလစ်ဘုတ်သို့ မိတ္တူကူးပြီးပြီ</translation>
 <translation id="8054466585765276473">ဘက်ထရီ အချိန်တွက်နေ</translation>

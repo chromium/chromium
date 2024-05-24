@@ -191,6 +191,7 @@ Se a política não for definida, nenhuma exceção a <ph name="DEVICE_AUTHENTIC
 <translation id="1107538157073168076">Desativar extensão de insights</translation>
 <translation id="1110426799149444997">Desativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Não mostrar a tela de configuração do tamanho de exibição durante o login</translation>
+<translation id="1111824532252882775">Ativada: os controles de rolagem podem ser focalizados por padrão.</translation>
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configurações de notificação</translation>
@@ -403,6 +404,7 @@ Isso substitui a política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAM
 <translation id="1305400589435476516">Se a política for definida como "Ativada", o roaming de dados será permitido no dispositivo.
 
       Se ela for definida como "Desativada" ou não for definida, o roaming de dados ficará indisponível.</translation>
+<translation id="1306041796676461437">Desativar suporte ao SSO empresarial extensível</translation>
 <translation id="1308526987406924874">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário conceda permissão de acesso a uma porta serial.
 
       Se a política não tiver definição, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -3430,6 +3432,15 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3606571057705314194">Seletor de perfil desativado na inicialização</translation>
 <translation id="3608206578291537084">Ativar o pipeline de geração de relatórios criptografados</translation>
 <translation id="3608281460204780443">Mostrar o ícone da Chrome Web Store no acesso rápido do <ph name="PRODUCT_OS_NAME" /> e na página "Nova guia"</translation>
+<translation id="3608411984079625468">Configura o login automático de usuários em contas com provedores de autenticação por uma extensão SSO empresarial.
+
+Se a política for definida como 1 (<ph name="POLICY_VALUE_ENABLED" />) ou deixada sem definição, os provedores de autenticação com uma extensão SSO no dispositivo vão usar essa extensão para autenticar os usuários que tentam fazer login.
+
+Se ela for definida como 0 (<ph name="POLICY_VALUE_DISABLED" />), o login automático descrito acima será desativado.
+
+Esse recurso está disponível no MacOS Catalina e em versões mais recentes.
+
+Observação: esta política não se aplica ao modo convidado ou de navegação anônima.</translation>
 <translation id="3612482251405108708">Início automático da reautenticação on-line na tela de bloqueio</translation>
 <translation id="3616490235694929053">Esta política controla se a tela de configuração do tamanho de exibição é mostrada ao usuário durante o primeiro login.
       Se ela for definida como falsa, a tela não será mostrada.
@@ -5429,6 +5440,7 @@ Se a política não for definida ou se a lista não tiver referências de imagem
       Se esta política de plano de fundo for definida, o dispositivo ChromeOS vai fazer o download da imagem de plano de fundo, que será usada na tela de login caso nenhum usuário tenha feito login no dispositivo. Depois que o usuário faz login, a política de plano de fundo dele entra em ação.
 
       Se a política de plano de fundo do dispositivo não for definida, a política de plano de fundo do usuário vai definir o que exibir, caso ela tenha sido configurada.</translation>
+<translation id="5217106427763720473">Ativar suporte ao SSO empresarial extensível</translation>
 <translation id="5219844027738217407">Em apps Android, esta política afeta somente o microfone. Quando esta política é definida como true, o microfone é silenciado para todos os apps Android, sem exceções.</translation>
 <translation id="5222325605346216869">Forçar a limitação de timers do JavaScript em segundo plano.</translation>
 <translation id="5223606242837275233">Não permitir que os sites rolem até fragmentos de texto específicos via URL</translation>
@@ -7108,6 +7120,7 @@ Se a política for deixada sem definição, os usuários poderão ativar ou desa
 <translation id="6452882999388592166">Quando a política está ativada, a extensão do componente do CryptoToken integrada é carregada na inicialização. Se ela for desativada ou deixada sem definição, o CryptoToken não vai ser carregado na inicialização do navegador. Esta política é apenas uma solução temporária para sites corrompidos por chrome.runtime indefinido como um efeito colateral da remoção de CryptoToken no M106. Os sites não podem depender da definição incondicional de chrome.runtime.</translation>
 <translation id="6453641799812499182">Ativar as mitigações de verificação de <ph name="CORS" /> na nova implementação de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Ativar login forçado no <ph name="PRODUCT_NAME" /></translation>
+<translation id="6454450724849956537">Ativar controles de rolagens focalizáveis do teclado</translation>
 <translation id="645467061280066516">Se a política for definida como "Ativada", a página "Nova guia" será a página inicial do usuário. Qualquer local de URL de página inicial será ignorado. Se a política for definida como "Desativada", a página "Nova guia" não será a página inicial, a não ser que o URL dela seja definido como chrome://newtab.
 
 Se você definir a política, os usuários não poderão mudar a página inicial no <ph name="PRODUCT_NAME" />. Se a política não for definida, o usuário poderá escolher se a página "Nova guia será" a inicial ou não.
@@ -9219,6 +9232,13 @@ também é seguro.</translation>
 <translation id="802776363472387903">Hash SHA-256 da imagem do <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Ativar o provedor de pesquisa padrão e permitir que os usuários modifiquem a lista de provedores de pesquisa</translation>
 <translation id="8029201909194194377">Duração máxima da seção permitida por conexões de acesso remoto</translation>
+<translation id="8033450879690820321">Esta política oferece uma recusa temporária para o novo comportamento de rolagem focalizável do teclado.
+
+Quando ela está ativada ou sem definição, os botões de rolagem que não têm filhos focalizáveis podem ser focalizados pelo teclado por padrão. Além disso, os controles de rolagem podem ser focalizados por clique e programaticamente por padrão.
+
+Quando esta política está desativada, os controles de rolagem não podem ser focalizados por padrão.
+
+Esta política é uma solução temporária e vai ser removida na versão M135.</translation>
 <translation id="8035570672225663428">Permitir que o modelo de carregamento adaptável controle o processo de carregamento para prolongar a duração da bateria</translation>
 <translation id="8036284429246268475">Se a política for ativada, os usuários poderão permitir que o <ph name="PRODUCT_NAME" /> verifique se os nomes de usuário e as senhas usados foram comprometidos em um vazamento.
 
@@ -9774,6 +9794,7 @@ O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade míni
           Se esta política não estiver definida, o renderizador padrão será usado para todos os sites, conforme especificado pela política "ChromeFrameRendererSettings".
 
           Para acessar exemplos de padrões, acesse http://www.chromium.org/developers/how-tos/chrome-frame-getting-started (link em inglês).</translation>
+<translation id="8489169564515126823">Desativada: os controles de rolagem não são focalizados por padrão.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Desativar o salvamento do histórico do navegador</translation>
 <translation id="8499172469244085141">Configurações padrão (podem ser substituídas pelos usuários)</translation>

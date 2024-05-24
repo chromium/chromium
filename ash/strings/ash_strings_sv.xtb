@@ -358,6 +358,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2441427462554639370">Inspelningen avslutades eftersom det är mycket ont om lagringsutrymme</translation>
 <translation id="2449089818483227734">Låg batterinivå</translation>
 <translation id="2450205753526923158">Skärmbildsläge</translation>
+<translation id="2453860139492968684">Slutför</translation>
 <translation id="2455994958736234930">Lägg till www. och .com i adressfältet och öppna sedan webbplatsen</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Batterihälsa: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %, antal cykler: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2726420622004325180">Telefonen måste ha mobildata för att användas som surfzon</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
+<translation id="2743301740238894839">Börja</translation>
 <translation id="2743387203779672305">Kopiera till Urklipp</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">”Radera”</translation>
@@ -1836,6 +1838,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8042893070933512245">Öppna menyn med tillgänglighetsinställningar</translation>
 <translation id="8044457332620420407">Tangentbordets bakgrundsbelysning är av</translation>
 <translation id="8048123526339889627">Bluetooth-inställningar</translation>
+<translation id="8049189770492311300">Timer</translation>
 <translation id="8051716679295756675">Det finns redan en mall som heter <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopierat till urklipp</translation>
 <translation id="8054466585765276473">Batteritiden beräknas.</translation>

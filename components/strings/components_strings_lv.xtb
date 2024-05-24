@@ -360,6 +360,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1641976391427233992">Aizkavēt izvadi līdz šādam laika periodam:</translation>
 <translation id="1643651787397909318">Poga “Pāriet uz Chrome drošības pārbaudi”, ko varat aktivizēt, lai iestatījumos apmeklētu Chrome drošības pārbaudes lapu</translation>
 <translation id="1644574205037202324">Vēsture</translation>
+<translation id="1645004815457365098">Nezināms avots</translation>
 <translation id="1645368109819982629">Neatbalstīts protokols</translation>
 <translation id="1650602712345345441">Pārvaldīt Chrome iestatījumus</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2056658168519009885">Vietnes var pieprasīt pārlūkam Chrome informāciju, lai palīdzētu personalizēt jums rādītās reklāmas.</translation>
 <translation id="2059166748188874810">Pašvaldība</translation>
 <translation id="2059202684901022309">22 x 34 collas</translation>
-<translation id="206275378685759380">Gaidīt iegādi</translation>
 <translation id="2064568741209980952">Kredīti un aizdevumi</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ieteikums}zero{# ieteikumi}one{# ieteikums}other{# ieteikumi}}</translation>
 <translation id="2066915425250589881">pieprasīt tās dzēšanu</translation>
@@ -1335,6 +1335,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="353816159217417898">Ekrāns (sadalīts lapās)</translation>
 <translation id="3542628208405253498">Kartes attēls</translation>
 <translation id="3542768452570884558">Atvērt saiti jaunā logā</translation>
+<translation id="3547442767634383572">Kopsavilkums par darba profilu</translation>
 <translation id="3547746132308051926">20 x 24 collas</translation>
 <translation id="3552155506104542239">Brīdinājums! Šī politika ir pretrunā ar politiku <ph name="POLICY_NAME" /> un neietekmēs Android lietotnes. Citos gadījumos šī politika darbojas, kā paredzēts.</translation>
 <translation id="3552297013052089404">Sans Serif fonts</translation>
@@ -2198,6 +2199,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5230733896359313003">Piegādes adrese</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Administratoram ir pieejama informācija par pārvaldīto profilu un pārlūku, kā arī noteikta ierīces informācija. Administrators var skatīt, piemēram, tālāk norādīto informāciju:</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
 <translation id="5238301240406177137">Saglabāt kontā</translation>
 <translation id="5239119062986868403">Parastā cena</translation>
@@ -2211,6 +2213,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="52517543715119994">Uzzināt vairāk par Chrome funkcijām</translation>
 <translation id="5251803541071282808">Mākonis</translation>
 <translation id="5254043433801397071">Drukājamā satura optimizācija</translation>
+<translation id="5255583962255635076">darba profilā lietotās pārlūka politikas.</translation>
 <translation id="5255690596502591079">Tomēr tvert</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administratora politika nosaka, ka nav ieteicams kopēt šo failu šeit: <ph name="DESTINATION_NAME" />}zero{Administratora politika nosaka, ka nav ieteicams kopēt šos failus šeit: <ph name="DESTINATION_NAME" />}one{Administratora politika nosaka, ka nav ieteicams kopēt šos failus šeit: <ph name="DESTINATION_NAME" />}other{Administratora politika nosaka, ka nav ieteicams kopēt šos failus šeit: <ph name="DESTINATION_NAME" />}}</translation>
@@ -3331,6 +3334,7 @@ Papildu informācija:
 <translation id="7421067045979951561">protokolu apdarinātāji</translation>
 <translation id="7422347648202898039">Etiķešu papīrs (ar aizsardzības elementiem)</translation>
 <translation id="7423283032694727565">Poga “Pārvaldīt sīkfailus”. Aktivizējiet, lai Chrome iestatījumos pārvaldītu sīkfailu preferences.</translation>
+<translation id="742435751935045381">darba profilā instalētās lietotnes un paplašinājumus;</translation>
 <translation id="7424421098814895617">Tika atlasīta opcija Dzēst adresi</translation>
 <translation id="7425037327577270384">Palīdzība rakstīšanā</translation>
 <translation id="7425878584435172632">Vizuālā māksla un dizains</translation>
@@ -3877,6 +3881,7 @@ Papildu informācija:
 Papildu informācija:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Ir atļauts šoreiz izmantot mikrofonu</translation>
+<translation id="8421158157346464398">darba profila informāciju (piemēram, darba profila lietotājvārdu);</translation>
 <translation id="8422228580902424274">Vietnē, kuru mēģināt apmeklēt, uzbrucēji var jūs maldināt un pamudināt instalēt programmatūru vai atklāt kādu informāciju, piemēram, jūsu paroli, tālruņa numuru vai kredītkartes numuru.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Mainīt</translation>
@@ -4245,6 +4250,7 @@ Papildu informācija:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Apmeklētās vietnes var arī noteikt to, kas jums patīk, ņemot vērā jūsu darbības vietnē. Piemēram, ja apmeklējat vietni, kurā tiek tirgoti garo distanču skriešanas apavi, vietne var izsecināt, ka interesējaties par maratonu skriešanu.</translation>
 <translation id="9166851138617700776">Plašāka informācija par vietnēs ieteiktajām reklāmām un reklāmu izvērtēšanu</translation>
+<translation id="9167054383925257837">pārlūka un ierīces OS informāciju (piemēram, pārlūka un operētājsistēmas versijas);</translation>
 <translation id="9167594211215946097">Tieša piekļuve jūsu printeriem</translation>
 <translation id="9168814207360376865">Atļaut vietnēm pārbaudīt, vai jums ir saglabāti maksājumu veidi</translation>
 <translation id="9169664750068251925">Vienmēr bloķēt šajā vietnē</translation>

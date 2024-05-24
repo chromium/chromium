@@ -11,7 +11,6 @@
 <translation id="1005333234656240382">ADB デバッグを有効にしますか？</translation>
 <translation id="1005671386794704751">ローズ</translation>
 <translation id="1006033052970139968">マイクへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、マイクへのアクセスが許可されています</translation>
-<translation id="1006557561787696884">Apple デバイスでパスキーを使用する</translation>
 <translation id="1006873397406093306">この拡張機能は、サイト上でユーザー自身のデータを読み取りおよび変更できます。ユーザーは、拡張機能がアクセスできるサイトを管理することができます。</translation>
 <translation id="1007057452468855774">Google Play ストアを有効にする</translation>
 <translation id="1008186147501209563">ブックマークをエクスポート</translation>
@@ -1595,6 +1594,7 @@
 <translation id="2156877321344104010">安全チェックを再実行</translation>
 <translation id="2157474325782140681">すべての機能を利用できるようにするには、この Chromebook に対応した Dell のドッキング ステーションを使用してください。</translation>
 <translation id="215753907730220065">全画面表示を終了</translation>
+<translation id="2157779167749714207">この <ph name="DEVICE_TYPE" /> には Gemini が搭載されています</translation>
 <translation id="2158249272743343757">入力履歴を削除...</translation>
 <translation id="2158475082070321257">選択箇所へのリンクをコピー</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2239,7 +2239,6 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> は安全にダウンロードできません。</translation>
 <translation id="2620245777360407679">アクセス ポイントに現在接続中のデバイス</translation>
 <translation id="2620436844016719705">システム</translation>
-<translation id="262087792756666314">この機能を固定して簡単にアクセスできます。固定するには、サイドパネルの上部にある [固定] ボタンをクリックします</translation>
 <translation id="2620900772667816510">Bluetooth 超解像</translation>
 <translation id="262154978979441594">Google アシスタントの音声モデルのトレーニング</translation>
 <translation id="2622280935687585828">無効にしたサイトから <ph name="SITE_NAME" /> を削除します</translation>
@@ -4117,7 +4116,6 @@
 <translation id="4010036441048359843">ハイライト表示をオンにする</translation>
 <translation id="4010746393007464819">Debian 12（Bookworm）へのアップグレードが利用可能です</translation>
 <translation id="4010917659463429001">ブックマークをモバイル デバイスで使用できるようにするには、<ph name="GET_IOS_APP_LINK" />してください。</translation>
-<translation id="4012268176861210196">この機能を固定して簡単にアクセスできます</translation>
 <translation id="4014432863917027322">「<ph name="EXTENSION_NAME" />」を修復しますか？</translation>
 <translation id="4015163439792426608">拡張機能はご利用ですか？<ph name="BEGIN_LINK" />拡張機能の管理<ph name="END_LINK" />は 1 か所で簡単に行うことができます。</translation>
 <translation id="4016762287427926315"><ph name="APP_NAME" /> に許可した権限は、このアプリにも適用されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
@@ -5997,7 +5995,6 @@
 <translation id="5481941284378890518">近くのプリンタを追加</translation>
 <translation id="5482417738572414119">タブグループの提案機能を使ってタブを整理するには、ログインしてください</translation>
 <translation id="5483005706243021437">このまま続行</translation>
-<translation id="5484181871714116891">オンにした場合、パスキーが iCloud キーチェーンで作成され、Apple デバイスで使用できるようになります。オフにした場合、パスキーはこのデバイスの Chrome プロフィールで作成されます。</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、データをバックアップして、今日中にこの <ph name="DEVICE_TYPE" /> を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}other{<ph name="MANAGER" /> が、データをバックアップして、{NUM_DAYS} 日以内にこの <ph name="DEVICE_TYPE" /> を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">アプリを追加</translation>
 <translation id="5485435764083510385">優先する字幕の言語</translation>
@@ -10006,7 +10003,6 @@
 <translation id="8482077254400484047">ここでアクティブでないタブのデザインを管理します</translation>
 <translation id="8483248364096924578">IP アドレス</translation>
 <translation id="8486666913807228950">理由: 反転ルール <ph name="REVERT_RULE" /> が「次で強制的に開く」のリストに含まれています。</translation>
-<translation id="8487303289354211861">固定しました。ツールバーの新しいボタンから、この機能にアクセスできます</translation>
 <translation id="8487678622945914333">拡大</translation>
 <translation id="8487699605742506766">アクセス ポイント</translation>
 <translation id="8489156414266187072">候補はお客様のアカウントにのみ表示されます</translation>
@@ -10330,6 +10326,8 @@
           <ph name="LINE_BREAK" />
           （自動入力データは共有されません）</translation>
 <translation id="8729133765463465108">カメラを使用して QR コードをスキャンする</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Gemini と話しながら、文章作成、計画、学習など、Google AI を活用したさまざまな作業を行うことができます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />セットアップが完了したら、画面下部のシェルフで Gemini アプリを選択してご利用を開始できます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731029916209785242">権限（<ph name="FORMATTED_ORIGIN" />）</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>
@@ -10722,7 +10720,6 @@
 <translation id="9014674417732091912">行 <ph name="ROW_NUMBER" /> に移動しました</translation>
 <translation id="901668144954885282">Google ドライブへのバックアップ</translation>
 <translation id="9016827136585652292">プライバシー画面の切り替え</translation>
-<translation id="9017055559700464094">固定しました。ツールバーからこの機能を使用できます</translation>
 <translation id="90181708067259747">有効期限: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">インストールが完了しました</translation>
 <translation id="901876615920222131">グループをもう一度開くには、グループをクリックします</translation>

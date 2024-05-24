@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">ডিস্কে স্টোরেজের জায়গা খুবই কম থাকায় রেকর্ডিং বন্ধ হয়ে গেছে</translation>
 <translation id="2449089818483227734">ব্যাটারিতে চার্জ কম আছে</translation>
 <translation id="2450205753526923158">স্ক্রিনশট মোড</translation>
+<translation id="2453860139492968684">সমাপ্ত করুন</translation>
 <translation id="2455994958736234930">অ্যাড্রেসবারে www. এবং .com যোগ করুন তারপরে ওয়েবসাইট খুলুন</translation>
 <translation id="2456008742792828469">ক্যালেন্ডার, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561"><ph name="BATTERY_HEALTH_PERCENTAGE" />% ব্যাটারি আছে, সাইকেল কাউন্ট <ph name="CYCLE_COUNT" />টি</translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">হটস্পট দেওয়ার জন্য আপনার ফোনে মোবাইল ডেটার অ্যাক্সেস থাকতে হবে</translation>
 <translation id="2727175239389218057">উত্তর দিন</translation>
 <translation id="2727977024730340865">একটি নিম্ন শক্তির চার্জার প্লাগইন করা হয়েছে৷ বিশ্বস্ত ব্যাটারি চার্জ নাও হতে পারে৷</translation>
+<translation id="2743301740238894839">শুরু করুন</translation>
 <translation id="2743387203779672305">ক্লিপবোর্ডে কপি করুন</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"মুছে ফেলুন"</translation>
@@ -1837,6 +1839,7 @@
 <translation id="8042893070933512245">অ্যাক্সেসিবিলিটি সেটিংস মেনু খুলুন</translation>
 <translation id="8044457332620420407">কীবোর্ড ব্যাকলাইট বন্ধ আছে</translation>
 <translation id="8048123526339889627">ব্লুটুথ সেটিংস</translation>
+<translation id="8049189770492311300">টাইমার</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> নামের টেমপ্লেট আগে থেকেই আছে</translation>
 <translation id="8052898407431791827">ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="8054466585765276473">ব্যাটারি সময় গণনা করা হচ্ছে।</translation>

@@ -358,6 +358,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2441427462554639370">Optagelsen blev afsluttet på grund af kritisk mangel på ledig lagerplads</translation>
 <translation id="2449089818483227734">Lavt batteriniveau</translation>
 <translation id="2450205753526923158">Screenshottilstand</translation>
+<translation id="2453860139492968684">Udfør</translation>
 <translation id="2455994958736234930">Føj www. og .com til adresselinjen, og åbn derefter websitet</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Batteritilstand:<ph name="BATTERY_HEALTH_PERCENTAGE" /> %, antal cyklusser <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2726420622004325180">Din telefon skal have mobildata for at fungere som hotspot</translation>
 <translation id="2727175239389218057">Svar</translation>
 <translation id="2727977024730340865">Tilsluttet en oplader med lav kraft. Batteriopladningen er muligvis ikke pålidelig.</translation>
+<translation id="2743301740238894839">Start</translation>
 <translation id="2743387203779672305">Kopiér til udklipsholderen</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Slet"</translation>
@@ -1836,6 +1838,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8042893070933512245">Åbn menuen med indstillinger for hjælpefunktioner</translation>
 <translation id="8044457332620420407">Baggrundslyset på tastaturet er slukket</translation>
 <translation id="8048123526339889627">Bluetooth-indstillinger</translation>
+<translation id="8049189770492311300">Timer</translation>
 <translation id="8051716679295756675">Der findes allerede en skabelon med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopieret til udklipsholder</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>

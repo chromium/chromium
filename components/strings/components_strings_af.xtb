@@ -360,6 +360,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1641976391427233992">Vertraag uitvoer tot</translation>
 <translation id="1643651787397909318">Gaan na Chrome-veiligheidskontrole-knoppie, aktiveer om Chrome se veiligheidskontrolebladsy in instellings te besoek</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
+<translation id="1645004815457365098">Onbekende bron</translation>
 <translation id="1645368109819982629">Ongesteunde protokol</translation>
 <translation id="1650602712345345441">Bestuur jou Chrome-instellings</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2056658168519009885">Werwe kan Chrome vir inligting vra om te help om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="2059166748188874810">Munisipaliteit</translation>
 <translation id="2059202684901022309">22x34 dm.</translation>
-<translation id="206275378685759380">Wag om te koop</translation>
 <translation id="2064568741209980952">Krediet en lenings</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 voorstel}other{# voorstelle}}</translation>
 <translation id="2066915425250589881">versoek om uit te vee</translation>
@@ -1335,6 +1335,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="353816159217417898">Skerm (gepagineerd)</translation>
 <translation id="3542628208405253498">Kaartprent</translation>
 <translation id="3542768452570884558">Maak skakel in nuwe venster oop</translation>
+<translation id="3547442767634383572">Werkprofieloorsig</translation>
 <translation id="3547746132308051926">20x24 dm.</translation>
 <translation id="3552155506104542239">Waarskuwing: Hierdie beleid bots met die <ph name="POLICY_NAME" /> en sal geen uitwerking op Android-apps hê nie. Andersins werk hierdie beleid soos dit moet.</translation>
 <translation id="3552297013052089404">Sans Serif-lettertipe</translation>
@@ -2199,6 +2200,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5230733896359313003">Versendingadres</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Bestuurde profiel-, blaaier- en sekere toestelinligting is toeganklik vir jou admin. Hulle kan inligting soos die volgende sien:</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5238301240406177137">Stoor in rekening</translation>
 <translation id="5239119062986868403">Tipiese prys</translation>
@@ -2212,6 +2214,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="52517543715119994">Leer meer oor Chrome-kenmerke</translation>
 <translation id="5251803541071282808">Wolk</translation>
 <translation id="5254043433801397071">Optimeer drukinhoud</translation>
+<translation id="5255583962255635076">Toegepaste blaaierbeleide in jou werkprofiel</translation>
 <translation id="5255690596502591079">Vang nogtans vas</translation>
 <translation id="5255833070095767006">350x460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Adminbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe kopieer nie}other{Adminbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe kopieer nie}}</translation>
@@ -3332,6 +3335,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7421067045979951561">protokolhanteerders</translation>
 <translation id="7422347648202898039">Etikette (sekuriteit)</translation>
 <translation id="7423283032694727565">Knoppie om webkoekies te bestuur; aktiveer om jou webkoekievoorkeure in Chrome-instellings te bestuur</translation>
+<translation id="742435751935045381">Geïnstalleerde apps en uitbreidings in jou werkprofiel</translation>
 <translation id="7424421098814895617">Die opsie om die adres uit te vee, is gekies</translation>
 <translation id="7425037327577270384">Help my skryf</translation>
 <translation id="7425878584435172632">Visuele kuns en ontwerp</translation>
@@ -3878,6 +3882,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 Bykomende besonderhede:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofoon hierdie keer toegelaat</translation>
+<translation id="8421158157346464398">Werkprofielinligting (soos jou werkprofielgebruikernaam)</translation>
 <translation id="8422228580902424274">Aanvallers op die werf wat jy probeer besoek, kan jou dalk mislei om sagteware te installeer of dinge soos jou wagwoord, foon- of kredietkaartnommer te openbaar.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Verander</translation>
@@ -4246,6 +4251,7 @@ Bykomende besonderhede:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Werwe wat jy besoek, kan ook bepaal waarvan jy hou gegrond op jou aktiwiteit op die werf. As jy byvoorbeeld ’n werf besoek wat langafstandhardloopskoene verkoop, kan die werf dalk besluit dat jy belangstel om marathons te hardloop.</translation>
 <translation id="9166851138617700776">Meer oor werfvoorgestelde advertensies en advertensiemeting</translation>
+<translation id="9167054383925257837">Inligting oor blaaier- en toestelbedryfstelsel (soos die blaaier- en bedryfstelselweergawes)</translation>
 <translation id="9167594211215946097">Kry direkte toegang tot jou drukkers</translation>
 <translation id="9168814207360376865">Laat werwe toe om te kontroleer of jy betaalmetodes gestoor het</translation>
 <translation id="9169664750068251925">Blokkeer altyd op hierdie werf</translation>

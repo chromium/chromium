@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">已停止录制，因为存储空间严重不足</translation>
 <translation id="2449089818483227734">电池电量低</translation>
 <translation id="2450205753526923158">截屏模式</translation>
+<translation id="2453860139492968684">完成</translation>
 <translation id="2455994958736234930">在地址栏中添加 www. 和 .com，然后打开网站</translation>
 <translation id="2456008742792828469">日历，<ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">电池健康度为 <ph name="BATTERY_HEALTH_PERCENTAGE" />%，充电循环次数为 <ph name="CYCLE_COUNT" /> 次</translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">您的手机必须有移动数据网络，才能提供热点</translation>
 <translation id="2727175239389218057">回复</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
+<translation id="2743301740238894839">开始</translation>
 <translation id="2743387203779672305">复制到剪贴板</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />，<ph name="PRICE" /></translation>
 <translation id="2750932254614666392">“删除”</translation>
@@ -1834,6 +1836,7 @@
 <translation id="8042893070933512245">打开无障碍功能设置菜单</translation>
 <translation id="8044457332620420407">键盘背光已关闭</translation>
 <translation id="8048123526339889627">蓝牙设置</translation>
+<translation id="8049189770492311300">定时器</translation>
 <translation id="8051716679295756675">名为“<ph name="DESK_TEMPLATE_NAME" />”的模板已存在</translation>
 <translation id="8052898407431791827">已复制到剪贴板</translation>
 <translation id="8054466585765276473">正在计算续航时间。</translation>

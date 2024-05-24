@@ -58,6 +58,7 @@
 <translation id="1873233029667955273">Google Chrome 不是您的默认浏览器</translation>
 <translation id="1874309113135274312">Google Chrome 测试版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本太旧</translation>
+<translation id="1907925560334657849">若要共享窗口，请在“系统偏好设置”中为 Chrome 启用屏幕录制功能</translation>
 <translation id="1919130412786645364">允许登录 Chrome</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
 <translation id="1982647487457769627">Chrome 支持多种平台，无论您使用哪种设备，都能获得熟悉的体验</translation>
@@ -409,6 +410,7 @@
 <translation id="7088681679121566888">Chrome 已是最新版本</translation>
 <translation id="7098166902387133879">Google Chrome 正在使用您的麦克风。</translation>
 <translation id="7099479769133613710">重新启动以更新 Chrome 操作系统(&amp;C)</translation>
+<translation id="7100085796996987445">若要共享屏幕，请在“系统偏好设置”中为 Chrome 启用屏幕录制功能</translation>
 <translation id="7106741999175697885">任务管理器 - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="7155997830309522122">如果是的话，请修改您在 Chrome 中保存的密码，使它与您的新密码保持一致。</translation>

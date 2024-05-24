@@ -395,6 +395,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="DEFAULT_WINDOW_PLACEMENT_SETT
 <translation id="1305400589435476516">Wenn die Richtlinie aktiviert ist, wird Daten-Roaming für das Gerät zugelassen.
 
       Ist sie deaktiviert oder nicht konfiguriert, ist Daten-Roaming nicht verfügbar.</translation>
+<translation id="1306041796676461437">Unterstützung für erweiterbare Enterprise‑SSO deaktivieren</translation>
 <translation id="1308526987406924874">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Zugriff auf einen seriellen Port bitten dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
@@ -3332,6 +3333,15 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3606571057705314194">Profil-Picker beim Start deaktiviert</translation>
 <translation id="3608206578291537084">Verschlüsselte Pipeline für die Berichterstellung aktivieren</translation>
 <translation id="3608281460204780443">Chrome Web Store-Symbol im <ph name="PRODUCT_OS_NAME" />-Launcher und auf der Seite „Neuer Tab“ anzeigen</translation>
+<translation id="3608411984079625468">Mit dieser Richtlinie wird die automatische Nutzeranmeldung für Konten mit Authentifizierungsanbietern über eine Enterprise‑SSO‑Erweiterung konfiguriert.
+
+Wenn diese Richtlinie auf 1 (<ph name="POLICY_VALUE_ENABLED" />) gesetzt oder nicht konfiguriert ist, verwenden Authentifizierungsanbieter mit einer SSO‑Erweiterung auf dem Gerät diese Erweiterung, um Nutzer zu authentifizieren, die sich anmelden möchten.
+
+Ist die Richtlinie auf 0 (<ph name="POLICY_VALUE_DISABLED" />) gesetzt, wird die automatische Anmeldung, wie oben beschrieben, deaktiviert.
+
+Diese Funktion ist ab macOS Catalina verfügbar.
+
+Hinweis: Diese Richtlinie gilt nicht für den Inkognito- oder Gastmodus.</translation>
 <translation id="3612482251405108708">Automatischer Start der erneuten Onlineauthentifizierung auf dem Sperrbildschirm</translation>
 <translation id="3616490235694929053">Mit dieser Richtlinie wird festgelegt, ob dem Nutzer bei der ersten Anmeldung der Bildschirm mit der Einstellung für die Anzeigegröße angezeigt wird.
       Wenn die Richtlinie auf „false“ gesetzt ist, wird der Bildschirm mit der Einstellung für die Anzeigegröße nicht angezeigt.
@@ -4258,6 +4268,15 @@ Ist die Richtlinie deaktiviert, können Nutzer ihre Pakete in <ph name="PRODUCT_
 <translation id="439661169333921592">„Objekt mit Tastaturfokus hervorheben“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="4397045637922200204">Kontowiederherstellung deaktivieren</translation>
 <translation id="4397464099112037398">Standardeinstellung für die Berechtigung für die Fensterpositionierung</translation>
+<translation id="4398803806072237638">Die Syntax „<ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />“ für die Funktion „CSS custom state“ wird in <ph name="PRODUCT_NAME" /> in „<ph name="CUSTOM_STATE_NEW_SYNTAX" />“ geändert, damit sie den in <ph name="FIREFOX_PRODUCT_NAME" /> und <ph name="SAFARI_PRODUCT_NAME" /> vorgenommenen Änderungen entspricht. Mit dieser Richtlinie kann die alte, eingestellte Syntax bis M133 aktiviert werden.
+
+Durch die Einstellung können Websites beeinträchtigt werden, die nur in <ph name="PRODUCT_NAME" /> geöffnet werden und die eingestellte Syntax „<ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />“ nutzen.
+
+Wenn diese Richtlinie aktiviert ist, wird die alte, eingestellte Syntax aktiviert.
+
+Wenn diese Richtlinie deaktiviert ist, wird die alte, eingestellte Syntax deaktiviert.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird die alte, eingestellte Syntax deaktiviert.</translation>
 <translation id="4401196752827224189">WebSQL wird in unsicheren Kontexten ab M110 entfernt. Durch diese Richtlinie wird die API wieder aktiviert.
           Wenn diese Richtlinie auf „true“ gesetzt ist, ist WebSQL in unsicheren Kontexten verfügbar.
           Ist sie auf „false“ gesetzt oder nicht konfiguriert, bleibt WebSQL in unsicheren Kontexten bis M109 verfügbar. Ab M110 ist sie dann nicht mehr verfügbar.
@@ -4572,6 +4591,7 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
 
 Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirksam, wenn <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> auf „False“ gesetzt ist.</translation>
 <translation id="4638906910792947645">Produktinterne Umfragen aktivieren</translation>
+<translation id="4641557638919545432">Die alte, eingestellte Syntax wird aktiviert.</translation>
 <translation id="4646626362889216307">Wenn die Richtlinie konfiguriert ist, ermöglicht sie das Zusammenführen der ausgewählten Richtlinien, wenn diese aus unterschiedlichen Quellen stammen, mit gleichem Bereich und gleicher Ebene. Dabei werden die Schlüssel des Wörterbuchs auf der ersten Ebene aus jeder Quelle zusammengeführt. Der Schlüssel aus der Quelle mit der höchsten Priorität hat Vorrang.
 
       Mit dem Platzhalterzeichen * kann das Zusammenführen aller unterstützten Wörterbuchrichtlinien erlaubt werden.
@@ -5228,6 +5248,7 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
       Ist die Richtlinie für den Gerätehintergrund konfiguriert, lädt das Chrome OS-Gerät das Hintergrundbild herunter und zeigt es auf dem Anmeldebildschirm an, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Sobald sich der Nutzer anmeldet, wird seine Hintergrundrichtlinie wirksam.
 
       Wenn die Richtlinie für den Gerätehintergrund nicht konfiguriert ist, wird über die Hintergrundrichtlinie des Nutzers bestimmt, was angezeigt werden soll, sofern diese konfiguriert ist.</translation>
+<translation id="5217106427763720473">Unterstützung für erweiterbare Enterprise‑SSO aktivieren</translation>
 <translation id="5219844027738217407">Bei Android-Apps betrifft diese Richtlinie nur das Mikrofon. Wenn diese Richtlinie auf "true" gesetzt ist, wird das Mikrofon ohne Ausnahme für alle Android-Apps stummgeschaltet.</translation>
 <translation id="5222325605346216869">Erzwingen, dass JavaScript-Timer im Hintergrund gedrosselt werden.</translation>
 <translation id="5223606242837275233">Nicht zulassen, dass auf Websites per URL zu bestimmten Textfragmenten gescrollt wird</translation>
@@ -5278,6 +5299,7 @@ Hinweis: Diese Funktion ist noch nicht allgemein verfügbar. Wenn du sie aktivie
       Mit "Version" ist entweder eine exakte Versionsangabe wie "61.0.3163.120" oder ein Versionspräfix wie "61.0" gemeint.  </translation>
 <translation id="5247584184349816217">Bildschirmschoner auf dem Sperrbildschirm aktivieren.</translation>
 <translation id="5247973380763021389">Verhindert, dass Cloud-Richtlinien auf Nutzerebene Cloud-Richtlinien auf Maschinenebene überschreiben.</translation>
+<translation id="5249006530384016395">Mit der Richtlinie wird festgelegt, ob die eingestellte Syntax „<ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />“ für die Funktion „CSS custom state“ aktiviert ist</translation>
 <translation id="5249453807420671499">Nutzer können Kerberos-Konten hinzufügen</translation>
 <translation id="5249555581286638799">Modus für hohe Effizienz aktivieren</translation>
 <translation id="5252210248395576403">Mit dieser Richtlinie erhält die Funktion „Schnellinfo“ die Berechtigung, auf ausgewählte Inhalte zuzugreifen und die Informationen an den Server zu senden, um Übersetzungsergebnisse zu erhalten.
@@ -9561,6 +9583,7 @@ Dazu zählen auch Berichte, die durch „<ph name="CLOUD_REPORTING_ENABLED_POLIC
 
 Ist diese Richtlinie nicht konfiguriert, werden Berichte alle 24 Stunden hochgeladen.
 Wenn die Richtlinie konfiguriert ist, wird durch sie die Anzahl der Stunden zwischen den Uploads von Berichten festgelegt.</translation>
+<translation id="8613622696148230463">Die alte, eingestellte Syntax wird deaktiviert.</translation>
 <translation id="8618037841203431360">Mit dieser Richtlinie wird festgelegt, ob Daten zu Richtlinien und zur Zeit des Richtlinienabrufs gesendet werden.
 
 Wenn die Richtlinie <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> deaktiviert oder nicht konfiguriert ist, wird diese Richtlinie ignoriert.

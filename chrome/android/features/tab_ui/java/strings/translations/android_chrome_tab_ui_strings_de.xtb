@@ -8,6 +8,7 @@
 <translation id="1173894706177603556">Umbenennen</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="125153950246128346">Tippen, um einen anderen Tab zu sehen</translation>
+<translation id="1273910660700874265">Optionen für Tapgruppe „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="1322824555808364080">Andere einladen</translation>
 <translation id="1419023007528516122">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vor <ph name="NUM_MINS_ONE" /> Minute erstellt}other{Vor <ph name="NUM_MINS_MANY" /> Minuten erstellt}}</translation>
@@ -52,6 +53,7 @@
 <translation id="3882834874697329510">Falls du benachrichtigt werden möchtest, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist, aktiviere Benachrichtigungen in den Einstellungen.</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Tab gruppieren}other{Tabs gruppieren}}</translation>
+<translation id="3969565576924904454">„<ph name="TITLE_OF_GROUP" />“ öffnen</translation>
 <translation id="3996880007329611795">Benachrichtigungen erhalten</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Vor <ph name="NUM_DAYS_ONE" /> Tag erstellt}other{Vor <ph name="NUM_DAYS_MANY" /> Tagen erstellt}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
@@ -104,7 +106,6 @@
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
 <translation id="6615455863669487791">Zeigen</translation>
-<translation id="661742612106409204">Deine geschlossenen Tabs findest du im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“.</translation>
 <translation id="6744956528665271406">Gruppenfarbe bearbeiten</translation>
 <translation id="6840760312327750441">Wenn du Tabs gruppieren möchtest, berühre und halte einen Tab. Ziehe ihn dann auf einen anderen Tab.</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>

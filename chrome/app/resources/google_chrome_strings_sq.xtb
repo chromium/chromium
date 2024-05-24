@@ -62,6 +62,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1873233029667955273">Google Chrome nuk është shfletuesi i parazgjedhur</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome nuk është i përditësuar</translation>
+<translation id="1907925560334657849">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chrome te "Preferencat e sistemit"</translation>
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
 <translation id="1953553007165777902">Po shkarkohet... Kanë mbetur edhe <ph name="MINUTE" /> minuta</translation>
 <translation id="1982647487457769627">Chrome funksionon në të gjitha platformat për të të dhënë një përvojë të njohur, pavarësisht pajisjes</translation>
@@ -126,6 +127,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2770231113462710648">Ndrysho shfletuesin me parazgjedhje në:</translation>
 <translation id="2775140325783767197">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2799223571221894425">Nis sërish</translation>
+<translation id="2825024317344269723">Sajt i rrezikshëm. Chrome ka hequr njoftimet.</translation>
 <translation id="2846251086934905009">Gabim gjatë instalimit: Instaluesi nuk përfundoi. Instalimi është ndërprerë.</translation>
 <translation id="2847461019998147611">Shfaq Google Chrome në këtë gjuhë</translation>
 <translation id="2853415089995957805">Chrome ngarkon paraprakisht faqet që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh</translation>
@@ -187,6 +189,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3583751698304738917">Je identifikuar tashmë si <ph name="USER_EMAIL_ADDRESS" /> në një profil tjetër të Chrome</translation>
 <translation id="3595784445906693824">Do të identifikohesh në Chrome në një profil të ri?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
+<translation id="3609788354808247807">Nuk ke vizituar së fundi. Chrome ka hequr lejet (<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />)</translation>
 <translation id="3622797965165704966">Tani është më e lehtë të përdorësh Chrome me llogarinë tënde të Google dhe në kompjuterët e ndarë.</translation>
 <translation id="3635073343384702370">Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="3667616615096815454">Instalimi nuk mund të kryhej. Aplikacioni është i panjohur për serverin.</translation>
@@ -336,6 +339,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5941711191222866238">Minimizo</translation>
 <translation id="5941830788786076944">Bëje Google Chrome shfletuesin e parazgjedhur</translation>
 <translation id="5947104538377036631">Shkurtorja e Chrome</translation>
+<translation id="5953954252731207958">Nuk ke vizituar së fundi. Chrome ka hequr lejet (<ph name="PERMISSION" />)</translation>
 <translation id="6003112304606738118">Po shkarkohet... Kanë mbetur edhe <ph name="HOURS" /> orë</translation>
 <translation id="6014316319780893079">Me <ph name="BEGIN_LINK" />veglat nga Chrome<ph name="END_LINK" />, mund të shfletosh në mënyrë të sigurt dhe të qëndrosh në kontroll</translation>
 <translation id="6022659036123304283">Bëje Chrome shfletuesin tënd</translation>
@@ -350,6 +354,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Instalimi dështoi për shkak të një gabimi të brendshëm të serverit të përditësimit.</translation>
+<translation id="6200139057479872438">Nuk ke vizituar së fundi. Chrome ka hequr lejet (<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />)</translation>
 <translation id="6235018212288296708">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>
 <translation id="624230925347970731">Chrome do të mbyllet së shpejti</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
@@ -413,6 +418,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7088681679121566888">Chrome është i përditësuar</translation>
 <translation id="7098166902387133879">Google Chrome po përdor mikrofonin tënd.</translation>
 <translation id="7099479769133613710">Nise përsëri për të përditësuar ChromeOS</translation>
+<translation id="7100085796996987445">Për të ndarë ekranin, lejo regjistrimin e ekranit për Chrome te "Preferencat e sistemit"</translation>
 <translation id="7106741999175697885">Menaxheri i detyrave - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Ka një përditësim të ri për Chrome dhe do të zbatohet sapo ta rinisësh.}=1{Ka një përditësim të ri për Chrome dhe do të zbatohet sapo ta rinisësh. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Ka një përditësim të ri për Chrome dhe do të zbatohet sapo ta rinisësh. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="7155997830309522122">Nëse po, modifiko fjalëkalimin e ruajtur në Chrome që të përputhet me fjalëkalimin tënd të ri.</translation>
@@ -447,6 +453,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7651907282515937834">Logoja e Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome e bllokoi këtë shkarkim sepse ke çaktivizuar "Shfletimin e sigurt" dhe skedari nuk mund të verifikohet</translation>
 <translation id="7655455401911432608">Historiku yt i shfletimit, regjistri i sajteve që ke vizituar duke përdorur Chrome në këtë pajisje.</translation>
+<translation id="7661924425853052955">Nuk ke vizituar së fundi. Chrome ka hequr lejet (<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="COUNT" /> të tjera)</translation>
 <translation id="7668816516367091728">Kryej detyra, si p.sh. përkthimi, llogaritja etj., drejtpërdrejt nga shiriti i adresave</translation>
 <translation id="769538538642757151">Chrome do të të informojë nëse duhet të rishikosh diçka</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>

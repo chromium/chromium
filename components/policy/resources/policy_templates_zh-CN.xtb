@@ -394,6 +394,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1305400589435476516">如果此政策已启用，系统将允许设备使用数据漫游功能。
 
       如果此政策已停用或未设置，数据漫游功能将不可用。</translation>
+<translation id="1306041796676461437">停用可扩展的企业单点登录支持功能</translation>
 <translation id="1308526987406924874">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站无法请求用户授权其访问串行端口。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
@@ -3320,6 +3321,15 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3606571057705314194">在浏览器启动时停用个人资料选择器</translation>
 <translation id="3608206578291537084">启用加密报告管道</translation>
 <translation id="3608281460204780443">在 <ph name="PRODUCT_OS_NAME" /> 启动器和新标签页中显示 Chrome 应用商店的图标</translation>
+<translation id="3608411984079625468">通过企业单点登录扩展程序为使用身份验证提供方服务的账号配置自动用户登录。
+
+如果此政策设为 1 (<ph name="POLICY_VALUE_ENABLED" />) 或未设置，在设备上具有单点登录扩展程序的身份验证提供方将使用该扩展程序对尝试登录的用户进行身份验证。
+
+如果此政策设为 0 (<ph name="POLICY_VALUE_DISABLED" />)，系统会停用上述自动登录功能。
+
+此功能适用于 MacOS Catalina 及以上的系统。
+
+注意：此政策不适用于无痕模式或访客模式。</translation>
 <translation id="3612482251405108708">在锁屏上自动启动在线重新身份验证</translation>
 <translation id="3616490235694929053">此政策用于控制是否让系统在用户首次登录期间向其显示“显示大小”设置界面。
       如果此政策设为 false，系统将不会显示“显示大小”设置界面。
@@ -4244,6 +4254,15 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="439661169333921592">禁止在登录屏幕上使用键盘焦点突出显示</translation>
 <translation id="4397045637922200204">停用账号恢复服务</translation>
 <translation id="4397464099112037398">默认的窗口放置权限设置</translation>
+<translation id="4398803806072237638">我们正在将 <ph name="PRODUCT_NAME" /> 中 CSS 自定义状态功能的 <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> 语法更改为 <ph name="CUSTOM_STATE_NEW_SYNTAX" />，以使其符合 <ph name="FIREFOX_PRODUCT_NAME" /> 和 <ph name="SAFARI_PRODUCT_NAME" /> 中的相关更改。此政策允许启用已弃用的旧语法，直至 M133。
+
+此弃用可能会导致部分仅限 <ph name="PRODUCT_NAME" /> 的网站无法正常运作，这些网站使用了已弃用的 <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> 语法。
+
+如果此政策已启用，已弃用的旧语法将会启用。
+
+如果此政策已停用，已弃用的旧语法将会停用。
+
+如果此政策未设置，已弃用的旧语法将会停用。</translation>
 <translation id="4401196752827224189">从 M110 开始，不安全情境中的 WebSQL 将被移除。此政策用于重新启用该 API。
           如果此政策设为 true，不安全情境中的 WebSQL 将可用。
           如果此政策设为 false 或未设置，不安全情境中的 WebSQL 在 M109 之前将一直可用，然后从 M110 起将不再可用。
@@ -4558,6 +4577,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 仅当 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 设为 False 时，设置 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 才会产生影响。</translation>
 <translation id="4638906910792947645">启用产品内调查问卷</translation>
+<translation id="4641557638919545432">将启用已弃用的旧语法。</translation>
 <translation id="4646626362889216307">通过设置此政策，您可以允许合并来自多个不同来源并具有相同范围及级别的所选政策。这项合并操作会涵盖每个来源中的字典的第一级密钥。系统会优先应用来自优先级最高的来源的密钥。
 
       若要允许合并所有受支持的字典政策，请使用通配符“*”。
@@ -5214,6 +5234,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       设置设备壁纸政策后，如果还没有任何用户登录 Chrome 操作系统设备，该设备将下载相应壁纸图片并在登录屏幕上使用它。一旦用户登录设备，用户的壁纸政策就会生效。
 
       如果未设置此设备壁纸政策，则由用户的壁纸政策（如果已设置）来决定要显示的图片。</translation>
+<translation id="5217106427763720473">启用可扩展的企业单点登录支持功能</translation>
 <translation id="5219844027738217407">对于 Android 应用，此政策仅会影响麦克风。当此政策设为 true 时，系统会针对所有 Android 应用（无一例外）将麦克风设为静音。</translation>
 <translation id="5222325605346216869">强制执行后台 JavaScript 计时器节流</translation>
 <translation id="5223606242837275233">不允许网站根据网址将网页滚动到特定文本片段</translation>
@@ -5264,6 +5285,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       此处的“Version”既可以是确切版本（如“61.0.3163.120”），也可以是版本前缀（如“61.0”）。  </translation>
 <translation id="5247584184349816217">为锁定屏幕启用屏保。</translation>
 <translation id="5247973380763021389">禁止用户级云政策覆盖计算机级云政策。</translation>
+<translation id="5249006530384016395">控制是否为 CSS 自定义状态启用已弃用的 <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> 语法</translation>
 <translation id="5249453807420671499">用户可以添加 Kerberos 账号</translation>
 <translation id="5249555581286638799">启用高效模式</translation>
 <translation id="5252210248395576403">此政策旨在授权快速解答功能访问所选内容并将相关信息发送给服务器，以获得翻译结果。
@@ -9540,6 +9562,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
 如果此政策未设置，系统每 24 小时会上传一次此类报告。
 如果此政策已设置，所设值便决定了两次连续的报告上传操作之间应间隔的小时数。</translation>
+<translation id="8613622696148230463">已弃用的旧语法将会停用。</translation>
 <translation id="8618037841203431360">此政策旨在控制是否报告政策数据和政策提取时间。
 
 如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策；

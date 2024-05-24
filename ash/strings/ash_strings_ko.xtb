@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">저장공간이 매우 부족하여 녹화가 종료되었습니다.</translation>
 <translation id="2449089818483227734">배터리 부족</translation>
 <translation id="2450205753526923158">스크린샷 모드</translation>
+<translation id="2453860139492968684">완료</translation>
 <translation id="2455994958736234930">www.와 .com을 주소 표시줄에 추가한 다음 웹사이트 열기</translation>
 <translation id="2456008742792828469">캘린더, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">배터리 상태 <ph name="BATTERY_HEALTH_PERCENTAGE" />%, 사이클 수 <ph name="CYCLE_COUNT" />회</translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">핫스팟을 제공하려면 휴대전화에서 모바일 데이터를 이용할 수 있어야 합니다.</translation>
 <translation id="2727175239389218057">답장</translation>
 <translation id="2727977024730340865">저출력 충전기에 연결되었습니다. 배터리 충전 상태가 불안정합니다.</translation>
+<translation id="2743301740238894839">시작</translation>
 <translation id="2743387203779672305">클립보드로 복사</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"삭제"</translation>
@@ -1836,6 +1838,7 @@
 <translation id="8042893070933512245">접근성 설정 메뉴 열기</translation>
 <translation id="8044457332620420407">키보드 백라이트 꺼짐</translation>
 <translation id="8048123526339889627">블루투스 설정</translation>
+<translation id="8049189770492311300">타이머</translation>
 <translation id="8051716679295756675">이름이 <ph name="DESK_TEMPLATE_NAME" />인 템플릿이 이미 있습니다.</translation>
 <translation id="8052898407431791827">클립보드에 복사됨</translation>
 <translation id="8054466585765276473">배터리 시간 계산 중</translation>

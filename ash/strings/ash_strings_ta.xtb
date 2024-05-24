@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">சேமிப்பிடம் மிகக் குறைவாக இருப்பதால் ரெக்கார்டிங் முடிந்தது</translation>
 <translation id="2449089818483227734">பேட்டரி குறைவாக உள்ளது</translation>
 <translation id="2450205753526923158">ஸ்கிரீன்ஷாட் பயன்முறை</translation>
+<translation id="2453860139492968684">முடி</translation>
 <translation id="2455994958736234930">முகவரிப் பட்டியில் www. மற்றும் .comமைச் சேர்த்து, பின்னர் பக்கத்தைத் திற</translation>
 <translation id="2456008742792828469">கேலெண்டர், <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">பேட்டரி அளவு <ph name="BATTERY_HEALTH_PERCENTAGE" />%, சுழற்சி எண்ணிக்கை <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">ஹாட்ஸ்பாட் இணைப்பை வழங்க உங்கள் ஃபோனில் மொபைல் டேட்டா இருக்க வேண்டும்</translation>
 <translation id="2727175239389218057">பதிலளி</translation>
 <translation id="2727977024730340865">குறைந்த சக்தியிலான சார்ஜர் செருகப்பட்டுள்ளது. பேட்டரி சார்ஜிங் நம்பகமானதாக இல்லாமல் இருக்கலாம்.</translation>
+<translation id="2743301740238894839">தொடங்கு</translation>
 <translation id="2743387203779672305">கிளிப்போர்டுக்கு நகலெடு</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"நீக்கு"</translation>
@@ -1836,6 +1838,7 @@
 <translation id="8042893070933512245">அணுகல்தன்மை அமைப்புகள் மெனுவைத் திற</translation>
 <translation id="8044457332620420407">கீபோர்டின் பேக்லைட் ஆஃப் செய்யப்பட்டது</translation>
 <translation id="8048123526339889627">புளூடூத் அமைப்புகள்</translation>
+<translation id="8049189770492311300">டைமர்</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> என்ற பெயரில் ஏற்கெனவே ஒரு டெம்ப்ளேட் உள்ளது</translation>
 <translation id="8052898407431791827">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="8054466585765276473">பேட்டரி நேரத்தைக் கணக்கிடுகிறது.</translation>

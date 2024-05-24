@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">Запись приостановлена, потому что в хранилище почти нет свободного места.</translation>
 <translation id="2449089818483227734">Низкий заряд батареи</translation>
 <translation id="2450205753526923158">Режим создания скриншота</translation>
+<translation id="2453860139492968684">Завершить</translation>
 <translation id="2455994958736234930">Добавить "www." и ".com" к тексту в адресной строке и открыть сайт</translation>
 <translation id="2456008742792828469">Календарь, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Состояние батареи: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %. Количество циклов: <ph name="CYCLE_COUNT" />.</translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">Чтобы включить точку доступа на телефоне, требуется подключение к мобильному Интернету</translation>
 <translation id="2727175239389218057">Ответить</translation>
 <translation id="2727977024730340865">Подключено маломощное зарядное устройство. Возможны проблемы при зарядке.</translation>
+<translation id="2743301740238894839">Начать</translation>
 <translation id="2743387203779672305">Скопировать в буфер</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Удалить"</translation>
@@ -1836,6 +1838,7 @@
 <translation id="8042893070933512245">Открыть меню настроек специальных возможностей</translation>
 <translation id="8044457332620420407">Подсветка клавиатуры отключена.</translation>
 <translation id="8048123526339889627">Настройки Bluetooth</translation>
+<translation id="8049189770492311300">Таймер</translation>
 <translation id="8051716679295756675">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" уже существует.</translation>
 <translation id="8052898407431791827">Скопировано в буфер обмена</translation>
 <translation id="8054466585765276473">Подсчет оставшегося времени работы от батареи…</translation>

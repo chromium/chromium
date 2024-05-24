@@ -360,6 +360,7 @@
 <translation id="1641976391427233992">ውጽዓትን አዘግይ እስከ</translation>
 <translation id="1643651787397909318">ወደ Chrome የደህንነት ፍተሻ አዝራር ይሂዱ፣ ቅንብሮች ውስጥ የChrome የደህንነት ፍተሻ ገጽን ለመጎብኘት ያግብሩ</translation>
 <translation id="1644574205037202324">ታሪክ</translation>
+<translation id="1645004815457365098">ያልታወቀ ምንጭ</translation>
 <translation id="1645368109819982629">የማይደገፍ ፕሮቶኮል</translation>
 <translation id="1650602712345345441">የእርስዎን Chrome ቅንብሮች ያቀናብሩ</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@
 <translation id="2056658168519009885">ጣቢያዎች እርስዎ የሚያዩዋቸው ማስታወቂያዎች ግላዊነት እንዲላበሱ ለማገዝ Chromeን መረጃ ሊጠይቁ ይችላሉ።</translation>
 <translation id="2059166748188874810">ማዘጋጃ ቤት</translation>
 <translation id="2059202684901022309">22 x 34 ኢንች</translation>
-<translation id="206275378685759380">ለመግዛት ይጠብቁ</translation>
 <translation id="2064568741209980952">ክሬዲት እና ማበደር</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 የአስተያየት ጥቆማ}one{# የአስተያየት ጥቆማዎች}other{# የአስተያየት ጥቆማዎች}}</translation>
 <translation id="2066915425250589881">ለመሰረዝ መጠየቅ</translation>
@@ -1334,6 +1334,7 @@
 <translation id="353816159217417898">ማያ ገጽ (ገጽ ያለው)</translation>
 <translation id="3542628208405253498">የካርድ ምስል</translation>
 <translation id="3542768452570884558">አገናኙን በአዲስ መስኮት ይክፈቱ</translation>
+<translation id="3547442767634383572">የስራ መገለጫ አጠቃላይ እይታ</translation>
 <translation id="3547746132308051926">20 x 24 ኢንች</translation>
 <translation id="3552155506104542239">ማስጠንቀቂያ፦ ይህ መመሪያ ከ<ph name="POLICY_NAME" /> ጋር ይጋጫል እና በAndroid መተግበሪያዎች ላይ ምንም ተጽእኖ አይኖረውም። አለበለዚያ ይህ መመሪያ እንደታሰበው እየሰራ ነው።</translation>
 <translation id="3552297013052089404">Sans-Serif ቅርጸ ቁምፊ</translation>
@@ -2198,6 +2199,7 @@
 <translation id="5230733896359313003">የሚላክበት አድራሻ</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">የሚተዳደር መገለጫ፣ የአሳሽ እና አንዳንድ የመሣሪያ መረጃ ለአስተዳዳሪዎ ተደራሽ ነው። እንደሚከተሉት ያሉ መረጃዎችን ማየት ይችላሉ፦</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5238301240406177137">በመለያ ውስጥ አስቀምጥ</translation>
 <translation id="5239119062986868403">የተለመደ ዋጋ</translation>
@@ -2211,6 +2213,7 @@
 <translation id="52517543715119994">ስለChrome ባህሪዎች ይወቁ</translation>
 <translation id="5251803541071282808">ደመና</translation>
 <translation id="5254043433801397071">የህትመት ይዘትን አትባ</translation>
+<translation id="5255583962255635076">በስራ መገለጫዎ ውስጥ የተተገበሩ የአሳሽ መመሪያዎች</translation>
 <translation id="5255690596502591079">ለማንኛውም አንሳ</translation>
 <translation id="5255833070095767006">350 x 460 ሚሜ</translation>
 <translation id="5257739419779698609">{0,plural, =1{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> መቅዳትን አይመክርም}one{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> መቅዳትን አይመክርም}other{የአስተዳዳሪ መመሪያ እነዚህን ፋይሎች ወደ <ph name="DESTINATION_NAME" /> መቅዳትን አይመክርም}}</translation>
@@ -3331,6 +3334,7 @@
 <translation id="7421067045979951561">የፕሮቶኮል ተቆጣጣሪዎች</translation>
 <translation id="7422347648202898039">መሰየሚያዎች (ደህንነት)</translation>
 <translation id="7423283032694727565">የኩኪዎች አዝራርን ያስተዳድሩ፣ በChrome ቅንብሮች ውስጥ ኩኪዎችዎን ለማስተዳደር ያግብሩ</translation>
+<translation id="742435751935045381">በእርስዎ የስራ መገለጫ ውስጥ የተጫኑ መተግበሪያዎች እና ቅጥያዎች</translation>
 <translation id="7424421098814895617">የአድራሻ መሰረዝ አማራጭ ተመርጧል</translation>
 <translation id="7425037327577270384">ለመጻፍ አግዘኝ</translation>
 <translation id="7425878584435172632">ምስላዊ ሥነ ጥበብ እና ንድፍ</translation>
@@ -3877,6 +3881,7 @@
 ተጨማሪ ዝርዝሮች፦
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ማይክሮፎን ለዚህ ጊዜ ይፈቀዳል</translation>
+<translation id="8421158157346464398">የስራ መገለጫ መረጃ (እንደ የእርስዎ የስራ መገለጫ የተጠቃሚ ስም ያለ)</translation>
 <translation id="8422228580902424274">ለመጎብኘት እየሞከሩ ያሉት ጣቢያ ላይ ያሉ አጥቂዎች ሶፍትዌር እንዲጭኑ ወይም እንደ የእርስዎ የይለፍ ቃል፣ ስልክ ወይም የክሬዲት ካርድ ቁጥር ያሉ ነገሮችን እንዲገልጡ ሊያታልሉዎት ይችላሉ።</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ለውጥ</translation>
@@ -4246,6 +4251,7 @@
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">እንዲሁም እርስዎ የሚጎበኟቸው ጣቢያዎች በጣቢያው ላይ ባለዎት እንቅስቃሴ መሠረት ምን እንደሚወዱ መወሰን ይችላሉ። ለምሳሌ፣ የረጅም ርቀት ሩጫ ጫማዎችን የሚሸጥ ጣቢያ ከጎበኙ ጣቢያው ማራቶኖችን ለመሮጥ ፍላጎት እንዳለዎት ሊወስን ይችላል።</translation>
 <translation id="9166851138617700776">ስለ በጣቢያ የተጠቆሙ ማስታወቂያዎች እና የማስታወቂያ ልኬት ተጨማሪ</translation>
+<translation id="9167054383925257837">የአሳሽ እና የመሣሪያ ስርዓተ ክወና መረጃ (እንደ አሳሹ እና የስርዓተ ክወና ስሪቶች ያለ)</translation>
 <translation id="9167594211215946097">ወደ አታሚዎችዎ የሚወስድ ቀጥተኛ መዳረሻ ይኑርዎት</translation>
 <translation id="9168814207360376865">የተቀመጡ የመክፈያ ዘዴዎች ካልዎት ጣቢያዎች እንዲፈትሹ ይፍቀዱ</translation>
 <translation id="9169664750068251925">ሁልጊዜ በዚህ ጣቢያ ላይ አግድ</translation>

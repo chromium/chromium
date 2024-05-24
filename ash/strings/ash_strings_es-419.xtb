@@ -358,6 +358,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2441427462554639370">Finalizó la grabación porque hay muy poco espacio de almacenamiento disponible</translation>
 <translation id="2449089818483227734">Batería baja</translation>
 <translation id="2450205753526923158">Modo de captura de pantalla</translation>
+<translation id="2453860139492968684">Finalizar</translation>
 <translation id="2455994958736234930">Agregar www. y .com en la barra de direcciones y, luego, abrir el sitio web</translation>
 <translation id="2456008742792828469">Calendario: <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Estado de la batería <ph name="BATTERY_HEALTH_PERCENTAGE" />%, conteo de ciclos <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2726420622004325180">Tu teléfono debe tener los datos móviles activados para proporcionar un hotspot.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conexión a un cargador de baja potencia. Es posible que la carga de la batería no sea confiable.</translation>
+<translation id="2743301740238894839">Iniciar</translation>
 <translation id="2743387203779672305">Copiar al portapapeles</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Borrar"</translation>
@@ -1837,6 +1839,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8042893070933512245">Abrir el menú de configuración de accesibilidad</translation>
 <translation id="8044457332620420407">La retroiluminación del teclado está desactivada</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
+<translation id="8049189770492311300">Temporizador</translation>
 <translation id="8051716679295756675">Ya existe una plantilla con el nombre <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">Se copió el elemento en el portapapeles</translation>
 <translation id="8054466585765276473">Calculando duración de la batería...</translation>

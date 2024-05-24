@@ -48,6 +48,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1175572348579024023">Przewijanie</translation>
 <translation id="1175944128323889279">Aktualny poziom naładowania baterii: <ph name="BATTERY_PERCENTAGE" />%, pozostało: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
+<translation id="1179776263021875437">Przestań skupiać się na zadaniu</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1182225749592316782">Zezwala na dostęp wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu.</translation>
 <translation id="1182876754474670069">Home</translation>
@@ -119,6 +120,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1391102559483454063">Włączono</translation>
 <translation id="1394698770495054737">Pełne rozmycie</translation>
+<translation id="1404963891829069586">Dźwięki w trybie skupienia</translation>
 <translation id="1407069428457324124">Ciemny motyw</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Aby przechodzić między datami, użyj klawiszy strzałek.</translation>
 <translation id="141170878022560212">Przycisk środkowy</translation>
@@ -180,6 +182,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1651914502370159744">Otwórz stronę Historia</translation>
 <translation id="1654477262762802994">Rozpocznij zapytanie głosowe</translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
+<translation id="1673232940951031776">Zakończ tryb skupienia. Pozostały czas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="1675844249244994876">Zaktualizuj okno po prawej stronie</translation>
 <translation id="1677472565718498478">Pozostało <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Funkcja <ph name="FEATURE_NAME" /> nie ma połączenia.</translation>
@@ -223,6 +226,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1824922790784036530">Włącz dostęp do lokalizacji</translation>
 <translation id="1830308660060964064">Element <ph name="ITEM_TITLE" /> został odpięty</translation>
 <translation id="1831565490995294689">Kliknij, aby otworzyć: <ph name="APP_TO_OPEN" />.</translation>
+<translation id="1838011306813517425">Ustawienia trybu skupienia</translation>
 <translation id="1838895407229022812">Podświetlenie nocne jest wyłączone.</translation>
 <translation id="1854180393107901205">Zatrzymaj przesyłanie</translation>
 <translation id="1862077610023398675">Ukryj elementy sterujące</translation>
@@ -310,6 +314,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2277103315734023688">Przewiń do przodu</translation>
 <translation id="2282073721614284166">Otwórz link na karcie</translation>
 <translation id="2292698582925480719">Skala wyświetlania</translation>
+<translation id="2293443480080733021">Na czym chcesz się skupić? Aby dodać zadanie, naciśnij Enter.</translation>
 <translation id="229397294990920565">Wyłączam mobilną transmisję danych…</translation>
 <translation id="2295777434187870477">Mikrofon jest włączony. Przełączając go, wyciszysz odbierane dźwięki.</translation>
 <translation id="2298170939937364391">Lupa pełnego ekranu została włączona. Aby ją wyłączyć, naciśnij ponownie Ctrl+Search+M.</translation>
@@ -358,6 +363,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2441427462554639370">Nagrywanie zostało zakończone z powodu krytycznie małej ilości dostępnego miejsca</translation>
 <translation id="2449089818483227734">Słaba bateria</translation>
 <translation id="2450205753526923158">Tryb zrzutu ekranu</translation>
+<translation id="2453860139492968684">Zakończ</translation>
 <translation id="2455994958736234930">Dodaj na pasku adresu www. i .com, a następnie otwórz witrynę</translation>
 <translation id="2456008742792828469">Kalendarz, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Stan baterii: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, Liczba cykli: <ph name="CYCLE_COUNT" /></translation>
@@ -376,6 +382,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2509468283778169019">CAPS LOCK jest włączony.</translation>
 <translation id="2514415433888497495">Zatrzymaj: <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> – <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516416533263263796">Tryb skupienia jest włączony, zostało 10 minut</translation>
 <translation id="2516637483312286228">Edytuj elementy sterujące grą</translation>
 <translation id="2526581474998477112">Odblokuj okna</translation>
 <translation id="2528111225373402384">Ustawienia hotspota</translation>
@@ -429,6 +436,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2726420622004325180">Aby telefon mógł działać jako punkt dostępu, musi korzystać z mobilnej transmisji danych</translation>
 <translation id="2727175239389218057">Odpowiedz</translation>
 <translation id="2727977024730340865">Podłączono ładowarkę o małej mocy. Ładowanie baterii może być nieprawidłowe.</translation>
+<translation id="2743301740238894839">Rozpocznij</translation>
 <translation id="2743387203779672305">Skopiuj do schowka</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Usuń”</translation>
@@ -445,6 +453,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2798702144670138229">Włączony jest tryb tabletu. Panel gier jest niedostępny.</translation>
 <translation id="2801954693771979815">Rozmiar elementów na ekranie</translation>
 <translation id="2802938996245446490">Wybrano: <ph name="BUTTON_LABEL" /></translation>
+<translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2814448776515246190">Przechwytywanie części ekranu</translation>
 <translation id="2819276065543622893">Zostaniesz teraz wylogowany.</translation>
@@ -472,6 +481,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2914580577416829331">Zrzuty ekranu</translation>
 <translation id="2924416280450782352">Nie można wyświetlić elementów. Spróbuj ponownie otworzyć ten panel.</translation>
 <translation id="2931572158271115754">Na tej liście zadań nic nie ma.</translation>
+<translation id="2932487126591186298">Dodano 10 minut. Pozostały czas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Zarządzaj profilami</translation>
 <translation id="2941112035454246133">Niski</translation>
 <translation id="2942350706960889382">Lupa zadokowana</translation>
@@ -647,6 +657,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3576141592585647168">Zmień strefę czasową</translation>
 <translation id="3577473026931028326">Coś poszło nie tak. Spróbuj ponownie.</translation>
 <translation id="3580650856351781466">Pobieram pliki z mową</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{minuta}few{minuty}many{minut}other{minuty}}</translation>
 <translation id="3585296979871889131">Wyświetlaj najnowsze zdjęcia, pliki multimedialne, powiadomienia i aplikacje z telefonu</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Przycisk boczny</translation>
@@ -670,6 +681,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3631369015426612114">Zezwalaj na powiadomienia z tych źródeł</translation>
 <translation id="3633097874324966332">Otwórz ustawienia Bluetooth, aby sparować urządzenie</translation>
 <translation id="3633851487917460983">Otwórz schowek</translation>
+<translation id="363473492175527493">Zadanie, na którym chcesz się skupić: <ph name="TASK_NAME" />. Aby edytować zadanie, naciśnij Enter.</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimalizuj okno</translation>
 <translation id="3649505501900178324">Zaległa aktualizacja</translation>
@@ -705,6 +717,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3735740477244556633">Sortuj według</translation>
 <translation id="3738664582935948253">W nagraniach ekranu możesz teraz pokazywać kliknięcia i skróty klawiszowe</translation>
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
+<translation id="3743775386021959186">Tryb skupienia jest włączony, pozostały czas: <ph name="REMAINING_TIME" /></translation>
 <translation id="3756485814916578707">Przesyłam ekran</translation>
 <translation id="3765841382945324995">Skrót symulujący działanie klawisza <ph name="SIX_PACK_KEY_NAME" /> został zmieniony z <ph name="OLD_SHORTCUT" /> na <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Edytowane dzisiaj</translation>
@@ -894,6 +907,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4477751544736611934">Może to spowodować koszty związane z przesyłaniem danych.
 Połączono 1 urządzenie.</translation>
 <translation id="4477892968187500306">Na tym urządzeniu mogą być zainstalowane aplikacje niezweryfikowane przez Google.</translation>
+<translation id="4479130137987693286">W razie potrzeby możesz dodać trochę więcej czasu albo zakończyć sesję skupienia</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Niesparowane urządzenia</translation>
 <translation id="4485506555414638855">Zamknij konfigurację wyświetlania najnowszych zdjęć, plików multimedialnych, powiadomień i aplikacji z telefonu</translation>
@@ -1067,6 +1081,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="5095136268899496849">Jeśli chcesz spersonalizować swoje urządzenie <ph name="PRODUCT_NAME" />, otwórz Ustawienia. Możesz na przykład zmienić tapetę albo ustawić wygaszacz ekranu.</translation>
 <translation id="509790653408515442">Tutaj będą się pojawiać aplikacje przesyłane strumieniowo z telefonu</translation>
 <translation id="5098537242461068432">Biurko i okna ponownie otwarte</translation>
+<translation id="5103975065730779239">Do <ph name="END_TIME_EXPRESSION" /></translation>
 <translation id="5104236669533825617">Nie udało się utworzyć screencasta</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
@@ -1145,6 +1160,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5395308026110844773">Aplikacja <ph name="DRAGGED_APP_NAME" /> jest nad aplikacją <ph name="IN_PLACE_APP" /> – puść, by utworzyć folder.</translation>
 <translation id="5397578532367286026">Działania i historia tego użytkownika mogą być sprawdzane przez menedżera (<ph name="MANAGER_EMAIL" />) na chrome.com.</translation>
 <translation id="540713187982329711">Przełącz hotspota. Hotspot jest włączony. Żadne urządzenie nie jest połączone.</translation>
+<translation id="5409208741270395213">Oznacz zadanie jako ukończone</translation>
 <translation id="5413656666631274079">Strona ustawień</translation>
 <translation id="5414198321558177633">Odświeżam listę profili. Może to potrwać kilka minut.</translation>
 <translation id="5417965108047245734">Obejrzyj krótką prezentację, aby dowiedzieć się, jak korzystać z urządzenia <ph name="PRODUCT_NAME" />.</translation>
@@ -1176,6 +1192,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="553675580533261935">Zamykanie sesji</translation>
 <translation id="5537725057119320332">Przesyłaj</translation>
 <translation id="554017492391497564">Nie udało się oznaczyć jako ukończonego.</translation>
+<translation id="5543778275214926792">Włączyć funkcję Przeczytaj na głos?</translation>
 <translation id="5546397813406633847">Przywróć konto użytkownika</translation>
 <translation id="554893713779400387">Włącz lub wyłącz dyktowanie</translation>
 <translation id="5550417424894892620">Upuść pliki na pulpicie, aby dodać je do obszaru <ph name="HOLDING_SPACE_TITLE" />. Nie możesz dodać plików do pulpitu.</translation>
@@ -1199,6 +1216,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5599242528220103262">Skrót klawiszowy jest wyłączony</translation>
+<translation id="5600415762228455511">Tryb skupienia jest włączony, zostało <ph name="REMAINING_TIME" />. Zadanie: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Naciśnij Ctrl + Alt + Z, by wyłączyć komunikaty głosowe.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Przełączyliśmy Cię do lepszej sieci</translation>
@@ -1228,8 +1246,10 @@ Brak połączonych urządzeń.</translation>
 <translation id="5699366815052349604">Przypisz aktywne okno do wszystkich biurek</translation>
 <translation id="5701785125601597013">Korzystając z funkcji sterowania telefonem, możesz szybko wysyłać wiadomości i odpowiadać na nie na telefonie</translation>
 <translation id="570390244361237317">Wszystkie aplikacje; aby uzyskać dostęp do wszystkich aplikacji, poruszaj się za pomocą klawiszy strzałek</translation>
+<translation id="5705197514573687092">Pokaż ustawienia trybu skupienia. Licznik czasu został ustawiony na <ph name="FOCUS_DURATION" /></translation>
 <translation id="5707775774148071965">Twoje urządzenie obsługuje większą szybkość transmisji danych niż kabel. Wydajność urządzenia może być ograniczona.</translation>
 <translation id="5710450975648804523">Tryb Nie przeszkadzać włączony</translation>
+<translation id="5711984160978177607">Zostało <ph name="REMAINING_TIME" /></translation>
 <translation id="5712132663381964774">Dzięki aplikacjom możesz robić na urządzeniu <ph name="PRODUCT_NAME" /> wszystko, co chcesz. Aplikacje znajdziesz w Menu z aplikacjami.</translation>
 <translation id="571295407079589142">Mobilna transmisja danych jest wyłączona</translation>
 <translation id="5727460725221669831">Jeśli nie pamiętasz hasła lub od niedawna masz nowe hasło do konta Google, spróbuj przywrócić konto tego użytkownika.</translation>
@@ -1240,6 +1260,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5744083938413354016">Przeciąganie dotykiem</translation>
 <translation id="5745612484876805746">Podświetlenie nocne włącza się automatycznie o zachodzie słońca</translation>
 <translation id="5750765938512549687">Bluetooth jest wyłączony</translation>
+<translation id="5758114525425072423">Włącz tryb skupienia. Licznik czasu został ustawiony na <ph name="FOCUS_DURATION" /></translation>
 <translation id="5760866832697883462">Podłącz urządzenie <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Włącz lub wyłącz pisak. <ph name="STATE_TEXT" /> Aby rysować na ekranie, użyj trackpada, ekranu dotykowego lub rysika.</translation>
 <translation id="576341972084747908">Pobieranie niebezpiecznego pliku <ph name="FILENAME" /></translation>
@@ -1247,6 +1268,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5764569119212455782">Przełącz na ostatni wybrany język</translation>
 <translation id="5767730327234918501">Administrator wyłączył hotspota.</translation>
 <translation id="5769373120130404283">Ekran chroniący prywatność</translation>
+<translation id="5770004650349728202">Włącz funkcję Przeczytaj na głos</translation>
 <translation id="5773950591113557721">Zezwala na dostęp aplikacji <ph name="APP_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu</translation>
 <translation id="5774295353725270860">Otwórz aplikację Pliki</translation>
 <translation id="5775936059231769503">Przełącz hotspota. Hotspot jest wyłączony.</translation>
@@ -1341,8 +1363,10 @@ Brak połączonych urządzeń.</translation>
 <translation id="6119972796024789243">Korekcja kolorów</translation>
 <translation id="6121838516699723042">Potwierdź pobieranie pliku <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asystent Google jest niedostępny w sesji gościa.</translation>
+<translation id="6127370444807669747">Aby słuchać spersonalizowanych playlist i muzyki do skupienia, użyj YouTube Music Premium</translation>
 <translation id="6129953537138746214">Spacja</translation>
 <translation id="6137566720514957455">Otwórz okno usuwania konta <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141205840878048728">Na czym chcesz się skupić?</translation>
 <translation id="6141988275892716286">Potwierdź pobranie</translation>
 <translation id="6143578372829139382">Udostępnij w YouTube</translation>
 <translation id="6154006699632741460">Nieobsługiwane urządzenie peryferyjne</translation>
@@ -1403,11 +1427,13 @@ Brak połączonych urządzeń.</translation>
 <translation id="6381109794406942707">Aby odblokować urządzenie, wpisz kod PIN.</translation>
 <translation id="638716340450135524">Włącz dostęp do aparatu</translation>
 <translation id="639644700271529076">CAPS LOCK jest wyłączony</translation>
+<translation id="6406458002328242616">Edytuj czas. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asystent Google</translation>
 <translation id="641817663353603351">Page Up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Wyczyść wszystkie powiadomienia</translation>
+<translation id="6430225033895752525">Pokaż ustawienia trybu skupienia</translation>
 <translation id="643147933154517414">Wszystko gotowe</translation>
 <translation id="6431865393913628856">Nagrywanie ekranu</translation>
 <translation id="643593192654616063">Wykorzystano <ph name="STORAGE_IN_USE_SIZE" /> z <ph name="STORAGE_TOTAL_SIZE" /></translation>
@@ -1447,6 +1473,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" /> – nowa instalacja</translation>
 <translation id="6559158502366839560">Zobacz więcej aplikacji i gier</translation>
 <translation id="6559976592393364813">Poproś administratora</translation>
+<translation id="6562447480759345110">Zakończ tryb skupienia</translation>
 <translation id="6565007273808762236">Połączenie eSIM jest niedostępne</translation>
 <translation id="6570831796530454248">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu godziny}few{Aktualizacja urządzenia nastąpi w ciągu # godzin}many{Aktualizacja urządzenia nastąpi w ciągu # godzin}other{Aktualizacja urządzenia nastąpi w ciągu # godziny}}</translation>
 <translation id="6570902864550063460">Ładowanie przez USB</translation>
@@ -1456,6 +1483,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6585808820553845416">Sesja kończy się za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Podgląd z kamery został przyciągnięty do lewego dolnego rogu. Konflikt z obszarem systemowym.</translation>
+<translation id="6605415194043280389">Tryb skupienia jest włączony</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="6612802754306526077">Wybrano tryb nagrywania ekranu</translation>
 <translation id="6612889377159412215">zadanie podrzędne</translation>
@@ -1522,6 +1550,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6836499262298959512">Niebezpieczny plik</translation>
 <translation id="6837621009301897464">Aby zrobić zrzut ekranu, naciśnij</translation>
 <translation id="6852052252232534364">Kliknij, by włączyć</translation>
+<translation id="6852628153543175788">Dodaj 10 minut</translation>
 <translation id="6855029042976311970">Edytowane przed chwilą</translation>
 <translation id="6856708615407876657">Przełącz kategorie wyników wyszukiwania</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -1582,6 +1611,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7068360136237591149">Otwórz pliki</translation>
 <translation id="7076293881109082629">Loguję</translation>
 <translation id="7076878155205969899">Wycisz dźwięk</translation>
+<translation id="7083848064787091821">Skupienie</translation>
 <translation id="7084678090004350185">Przełącz hotspota. Hotspot jest włączony. Połączono z <ph name="DEVICECOUNT" /> urządzeniami.</translation>
 <translation id="7086931198345821656">Ta aktualizacja wymaga wykonania na urządzeniu <ph name="DEVICE_TYPE" /> procedury Powerwash. Wszystkie dane zostaną usunięte. Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
@@ -1609,6 +1639,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7188494361780961876">Menu zostało przeniesione w lewy górny róg ekranu.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
 <translation id="7198435252016571249">Podgląd z kamery został przyciągnięty do prawego dolnego rogu. Konflikt z obszarem systemowym.</translation>
+<translation id="720981139652840573">Umożliwia odsłuchanie określonego tekstu. Najpierw kliknij ikonę Przeczytaj na głos u dołu ekranu, a potem zaznacz tekst. Możesz też użyć skrótu klawiszowego: zaznaczyć tekst, a następnie nacisnąć klawisz wyszukiwania lub menu z aplikacjami + S.</translation>
 <translation id="7219573373513695352">Brak podłączonych urządzeń</translation>
 <translation id="7229029500464092426">Pamięć: <ph name="AVAILABLE_MEMORY" /> | Łącznie: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Bateria: pozostało <ph name="PERCENTAGE" />%. Podłącz urządzenie do zasilania.</translation>
@@ -1618,6 +1649,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7258828758145722155">Edytowane wczoraj</translation>
 <translation id="726276584504105859">Przeciągnij tutaj, by podzielić ekran</translation>
 <translation id="7262906531272962081">Utwórz przypomnienie</translation>
+<translation id="7264788308526527464">Skróć <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="7285232777292757180">Aby zrobić zrzut ekranu, użyj narzędzia zrzutu ekranu w Szybkich ustawieniach</translation>
 <translation id="7301826272005790482">Zamknij sugestie dotyczące okien</translation>
@@ -1628,6 +1660,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7313193732017069507">Otwórz aparat</translation>
 <translation id="7330397557116570022">Aby używać dyktowania, przejdź do pola tekstowego</translation>
 <translation id="7331646370422660166">Alt + strzałka w dół</translation>
+<translation id="7337660433630200387">+10 min</translation>
 <translation id="7340731148882810149">Menu automatycznego klikania</translation>
 <translation id="7346909386216857016">Rozumiem</translation>
 <translation id="7348093485538360975">Klawiatura ekranowa</translation>
@@ -1647,6 +1680,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7386767620098596324">Przełącz połączenie sieciowe. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">W każdej chwili możesz skonfigurować sterowanie telefonem w Ustawieniach.</translation>
 <translation id="7401222354741467707">Zrób zrzut lub nagranie całego ekranu</translation>
+<translation id="7401788553834047908">Nie przeszkadzać w trybie skupienia</translation>
 <translation id="7405710164030118432">Aby odblokować urządzenie, wpisz kod dostępu Family Link rodzica</translation>
 <translation id="7406608787870898861">Dokończ konfigurowanie sieci komórkowej</translation>
 <translation id="7406854842098869085">Naciśnij i przytrzymaj <ph name="MODIFIER_1" />, naciskaj <ph name="KEY" />, aż przejdziesz do okna, które chcesz otworzyć, i zwolnij klawisze</translation>
@@ -1681,6 +1715,8 @@ Brak połączonych urządzeń.</translation>
 <translation id="7519649142417630956">Po wyłączeniu urządzenia administrator zostanie wylogowany i nie będzie mógł nim sterować.
 
 Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk zasilania.</translation>
+<translation id="7523420897035067483">Włącz funkcję Nie przeszkadzać podczas korzystania z trybu skupienia</translation>
+<translation id="7524043547948122239">Lista zadań Google</translation>
 <translation id="7526573455193969409">Sieć może być monitorowana</translation>
 <translation id="7536035074519304529">Adres IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Zaktualizuj okno po lewej stronie</translation>
@@ -1813,6 +1849,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7963992254934562106">Źródło: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Wybierz folder...</translation>
 <translation id="7973756967040444713">Zamknij pasek narzędzi</translation>
+<translation id="797485111629834774">Oznacz zadanie jako ukończone: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Włącz lub wyłącz lupę pełnego ekranu</translation>
 <translation id="7977927628060636163">Szukam sieci komórkowych…</translation>
 <translation id="7982789257301363584">Sieć</translation>
@@ -1826,6 +1863,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8000066093800657092">Brak sieci</translation>
 <translation id="8001755249288974029">Zaznacz tekst od kursora do początku wiersza</translation>
 <translation id="8004512796067398576">Zwiększ</translation>
+<translation id="8005527720597583355">Rozpocznij sesję skupienia</translation>
 <translation id="8015361438441228492">Nie udało się edytować zadania.</translation>
 <translation id="802782383769312836">Poprzednie biurko: <ph name="DESK_NAME" />. Biurko <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Nie udało się nawiązać połączenia z hotspotem</translation>
@@ -1835,11 +1873,13 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8042893070933512245">Otwórz menu ustawień ułatwień dostępu</translation>
 <translation id="8044457332620420407">Podświetlenie klawiatury jest wyłączone</translation>
 <translation id="8048123526339889627">Ustawienia Bluetootha</translation>
+<translation id="8049189770492311300">Licznik czasu</translation>
 <translation id="8051716679295756675">Szablon o nazwie <ph name="DESK_TEMPLATE_NAME" /> już istnieje</translation>
 <translation id="8052898407431791827">Skopiowano do schowka</translation>
 <translation id="8054466585765276473">Obliczanie czasu pracy na baterii.</translation>
 <translation id="8079538659226626406">Udostępnianie ekranu</translation>
 <translation id="8083540854303889870">Zapisane na później</translation>
+<translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Aby wyświetlić więcej opcji, naciśnij Tab. Strzałki w lewo i w prawo umożliwiają dostęp do wszystkich biurek.</translation>
 <translation id="8091153018031979607">Rozpoczęcie o <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatyczne aktualizacje</translation>
@@ -1871,10 +1911,12 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8192727139462702395">Gdy wyłączysz Bluetooth, te urządzenia zewnętrzne rozłączą się z urządzeniem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Przesyłam kartę</translation>
 <translation id="8200772114523450471">Wznów</translation>
+<translation id="820256110035940528"><ph name="TITLE" /> Tryb skupienia był aktywny przez <ph name="FOCUSED_TIME" />. Aby ponownie go włączyć, otwórz Szybkie ustawienia.</translation>
 <translation id="8203795194971602413">Kliknięcie prawym przyciskiem</translation>
 <translation id="8209010265547628927">Resetuj</translation>
 <translation id="8214996719228530800">Wersja Canary</translation>
 <translation id="8219451629189078428">Chromebook musi być włączony i podłączony do zasilania. Upewnij się, że kable ładowarki lub zasilacza są prawidłowo podłączone do Chromebooka i do gniazdka. Nie wyłączaj Chromebooka.</translation>
+<translation id="8220076512072059941">Dodaj: <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8230305195727960608">Tryb odwrócenia kolorów</translation>
 <translation id="8236042855478648955">Czas na przerwę</translation>
 <translation id="8237964652943995219">Następne biurko: <ph name="DESK_NAME" />. Biurko <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
@@ -1982,6 +2024,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Aby zrobić częściowy zrzut ekranu, naciśnij Enter</translation>
 <translation id="8676770494376880701">Podłączono ładowarkę o małej mocy</translation>
+<translation id="8679158879996532670">Pokaż ustawienia trybu skupienia. Tryb skupienia jest włączony, zostało <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Śledzenie wydajności jest aktywne</translation>
 <translation id="8703634754197148428">Rozpocznij nagrywanie. Po rozpoczęciu nagrywania możesz za pomocą Alt + Shift + L przejść na półkę, na której znajdziesz przycisk zatrzymujący nagrywanie.</translation>
 <translation id="8704155109538237473">Zaznacz okno z obrazem w obrazie</translation>
@@ -2000,6 +2043,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktywuję…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749787185286745219">Czas minął. Brawo! 🎉</translation>
 <translation id="8755498163081687682">Weryfikacja tożsamości: strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
 <translation id="875593634123171288">Pokaż ustawienia VPN</translation>
 <translation id="8756799553341497810">Po zamknięciu tego widoku możesz zacząć dostosowywać układ aplikacji.</translation>
@@ -2038,6 +2082,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8877788021141246043">Ustaw przypomnienie</translation>
 <translation id="8878886163241303700">Rozszerzony ekran</translation>
 <translation id="888982883502837004">Dostępne są aktualizacje oprogramowania układowego urządzenia. Kliknij, aby je zobaczyć i zainstalować.</translation>
+<translation id="8893479486525393799">Mikrofon studyjny</translation>
 <translation id="8896630965521842259">Sablon <ph name="DESK_TEMPLATE_NAME" /> zostanie trwale usunięty</translation>
 <translation id="889790758758811533">Bateria: pozostało <ph name="PERCENTAGE" />% (około <ph name="TIME_LEFT" />). Podłącz urządzenie do zasilania.</translation>
 <translation id="88986195241502842">Strona w dół</translation>

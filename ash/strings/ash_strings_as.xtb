@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">ষ্ট’ৰেজৰ ঠাই একেবাৰে কমি যোৱাৰ কাৰণে ৰেকৰ্ডিং সমাপ্ত হৈছে</translation>
 <translation id="2449089818483227734">বেটাৰী কম আছে</translation>
 <translation id="2450205753526923158">স্ক্ৰীনশ্বট ম'ড</translation>
+<translation id="2453860139492968684">সম্পূর্ণ হ’ল</translation>
 <translation id="2455994958736234930">ঠিকনাৰ বাৰত www. আৰু .com যোগ দিয়ক, তাৰ পাছত ৱেবছাইট খোলক</translation>
 <translation id="2456008742792828469">কেলেণ্ডাৰ, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">বেটাৰীৰ স্বাস্থ্য <ph name="BATTERY_HEALTH_PERCENTAGE" />%, চক্ৰৰ গণনা <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">এটা হটস্পট প্ৰদান কৰিবলৈ আপোনাৰ ফ’নত ম’বাইল ডেটা থাকিবই লাগিব</translation>
 <translation id="2727175239389218057">প্ৰত্যুত্তৰ দিয়ক</translation>
 <translation id="2727977024730340865">কম পাৱাৰৰ এটা চাৰ্জাৰত প্লাগ ইন কৰা হৈছে। বেটাৰীৰ চাৰ্জিং বিশ্বাসযোগ্য নহ'বও পাৰে।</translation>
+<translation id="2743301740238894839">আৰম্ভ কৰক</translation>
 <translation id="2743387203779672305">ক্লিপব'ৰ্ডত প্ৰতিলিপি কৰক</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"মচক"</translation>
@@ -1836,6 +1838,7 @@
 <translation id="8042893070933512245">সাধ্য সুবিধাৰ ছেটিংসমূহৰ মেনু খোলক</translation>
 <translation id="8044457332620420407">কীব’ৰ্ডৰ নেপথ্যৰ পোহৰ অফ হৈ আছে</translation>
 <translation id="8048123526339889627">ব্লুটুথৰ ছেটিংসমূহ</translation>
+<translation id="8049189770492311300">টাইমাৰ</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> নামৰ টেমপ্লে’টটো ইতিমধ্যে আছে</translation>
 <translation id="8052898407431791827">প্ৰতিলিপি কৰি ক্লিপব’ৰ্ডত ৰখা হ’ল</translation>
 <translation id="8054466585765276473">বেটাৰীৰ বাকী থকা সময় গণনা কৰি থকা হৈছে</translation>

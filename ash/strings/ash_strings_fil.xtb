@@ -358,6 +358,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2441427462554639370">Natapos ang pag-record dahil sa sobrang kaunting storage space</translation>
 <translation id="2449089818483227734">Mahinang Baterya</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
+<translation id="2453860139492968684">Tapos na</translation>
 <translation id="2455994958736234930">Magdagdag ng www. at .com sa address bar, pagkatapos ay buksan ang website</translation>
 <translation id="2456008742792828469">Kalendaryo, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Tagal ng baterya <ph name="BATTERY_HEALTH_PERCENTAGE" />%, bilang ng cycle <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2726420622004325180">Dapat na mayroong mobile data ang iyong telepono para makapagbigay ito ng hotspot</translation>
 <translation id="2727175239389218057">Sumagot</translation>
 <translation id="2727977024730340865">Naka-saksak sa isang low-power charger. Maaaring hindi maging tiyak ang pag-charge ng baterya.</translation>
+<translation id="2743301740238894839">Simulan</translation>
 <translation id="2743387203779672305">Kopyahin sa clipboard</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"I-delete"</translation>
@@ -1835,6 +1837,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8042893070933512245">Buksan ang menu ng mga setting ng accessibility</translation>
 <translation id="8044457332620420407">Na-off ang backlight ng keyboard</translation>
 <translation id="8048123526339889627">Mga Setting ng Bluetooth</translation>
+<translation id="8049189770492311300">Timer</translation>
 <translation id="8051716679295756675">May template nang may pangalang <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kinopya sa clipboard</translation>
 <translation id="8054466585765276473">Kinakalkula ang oras ng baterya.</translation>

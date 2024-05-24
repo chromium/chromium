@@ -96,6 +96,7 @@
 <translation id="1436784010935106834">Rimosso</translation>
 <translation id="1437543266176261764">Esecuzione in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizza i tuoi prodotti monitorati in Segnalibri</translation>
+<translation id="1460751212339734034">Risparmia tempo e digita meno</translation>
 <translation id="1466383950273130737">Seleziona la lingua di Chrome</translation>
 <translation id="1477626028522505441">Download di <ph name="FILE_NAME" /> non riuscito a causa di problemi del server.</translation>
 <translation id="1480287803138246127">Parte della tua cronologia potrebbe non essere visualizzata qui. Per vedere tutta la cronologia di Chrome, apri la cronologia completa del browser.</translation>
@@ -843,6 +844,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5264813352784073502">ultime 24 ore</translation>
 <translation id="5271967389191913893">Non è possibile aprire i contenuti da scaricare sul dispositivo.</translation>
 <translation id="5292796745632149097">Invia a</translation>
+<translation id="5301876394151419436">Hai eseguito l'accesso come <ph name="EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle Impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="5304593522240415983">Questo campo non può essere vuoto</translation>
 <translation id="5308380583665731573">Connetti</translation>
 <translation id="5316947901395241499">Il salvataggio delle password è stato disattivato dall'amministratore</translation>
@@ -1522,7 +1524,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="84594714173170813">Continua a usare i dati di Chrome nel tuo Account Google</translation>
 <translation id="8460448946170646641">Esamina i controlli per la privacy e la sicurezza più importanti</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
-<translation id="8477178913400731244">Elimina i dati</translation>
+<translation id="8477178913400731244">Elimina dati</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Apri la pagina Cronologia</translation>
 <translation id="8493948351860045254">Libera spazio</translation>
@@ -1542,6 +1544,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8526855376374973824">Flusso di autorizzazione alle notifiche</translation>
 <translation id="8540136935098276800">Inserisci un URL nel formato corretto</translation>
 <translation id="854522910157234410">Apri questa pagina</translation>
+<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Scheda non attiva (1)}other{Schede non attive (#)}}</translation>
 <translation id="8551513938758868521">Blocca le schede di navigazione in incognito quando esci da Chrome</translation>
 <translation id="8551524210492420949">Contenuti offensivi o non sicuri</translation>
 <translation id="8559961053328923750">Chrome limita la quantità totale di dati che i siti possono condividere tramite il browser per misurare il rendimento dell'annuncio</translation>
@@ -1645,6 +1648,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9102803872260866941">La scheda di anteprima è aperta</translation>
 <translation id="9102864637938129124">Siti e inserzionisti possono conoscere il rendimento degli annunci. Questa impostazione è attiva.</translation>
 <translation id="9104217018994036254">Elenco di dispositivi con cui condividere una scheda.</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Non usate per almeno 1 giorno}other{Non usate per almeno # giorni}}</translation>
 <translation id="9106148373857059373">Flusso di salvataggio dei preferiti chiuso</translation>
 <translation id="9108312223223904744">Assistenza relativa a Telefono come token di sicurezza</translation>
 <translation id="9108808586816295166">Il sistema DNS sicuro potrebbe non essere sempre disponibile</translation>

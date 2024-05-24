@@ -69,6 +69,8 @@
 <translation id="2174917724755363426">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ. ನೀವು ಖಂಡಿತವಾಗಿಯೂ ರದ್ದುಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="2185166961232948079">Chromium - ನೆಟ್‌ವರ್ಕ್ ಸೈನ್ ಇನ್ - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">ಅಪ್‌ಡೇಟ್‌‌ ಪರಿಶೀಲನೆ ದೋಷ: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2210682093923538346">ಅಪಾಯಕಾರಿ ಸೈಟ್. Chromium ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ.</translation>
+<translation id="2240214816234246077">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಅನ್ನು Chromium ತೆಗೆದುಹಾಕಿದೆ</translation>
 <translation id="2241627712206172106">ನೀವು ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಹಂಚಿಕೊಂಡರೆ, ಸ್ನೇಹಿತರು ಮತ್ತು ಕುಟುಂಬದವರು ಪ್ರತ್ಯೇಕವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು ಮತ್ತು Chromium ಅನ್ನು ಅವರಿಗೆ ಬೇಕಾದಂತೆ ಹೊಂದಿಸಿಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="2313870531055795960">Chromium ನಲ್ಲಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ ಅಸುರಕ್ಷಿತ ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಬಳಸಿ, URL ಗಳನ್ನು ಪರಿಶೀಲಿಸುತ್ತದೆ. ಯಾವುದಾದರೂ ಸೈಟ್, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕದಿಯಲು ಪ್ರಯತ್ನಿಸಿದರೆ ಅಥವಾ ನೀವು ಹಾನಿಕಾರಕ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದಾಗ, ಪುಟದ ಕಂಟೆಂಟ್‌ನ ತುಣುಕುಗಳನ್ನು ಒಳಗೊಂಡ URL ಗಳನ್ನು ಸಹ Chromium, ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ಗೆ ಕಳುಹಿಸಬಹುದು.</translation>
 <translation id="2329088755516916767">ಆನ್ ಆಗಿರುವಾಗ, ಬ್ರೌಸಿಂಗ್ ಮತ್ತು ಹುಡುಕಾಟವನ್ನು ವೇಗಗೊಳಿಸುವ ಪುಟಗಳನ್ನು Chromium ಪ್ರಿಲೋಡ್ ಮಾಡುತ್ತದೆ.</translation>
@@ -266,6 +268,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">ಈ ಭಾಷೆಯಲ್ಲಿ Chromium ಪ್ರದರ್ಶಿಸು</translation>
 <translation id="569897634095159764">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗೆ ದೃಢೀಕರಣದ ಅಗತ್ಯವಿದೆ.</translation>
+<translation id="5761096224651992291">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ಅನ್ನು Chromium ತೆಗೆದುಹಾಕಿದೆ</translation>
 <translation id="5800158606660203929">Chromium ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಮತ್ತು ನಿಯಂತ್ರಿಸಿ. Chromium ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="5809516625706423866">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. HTTP 401 ಅನಧಿಕೃತವಾಗಿದೆ. ನಿಮ್ಮ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="5862307444128926510">Chromium ಗೆ ಸುಸ್ವಾಗತ</translation>
@@ -349,6 +352,7 @@
 <translation id="6729124504294600478">ವೈಯಕ್ತೀಕರಣ ಮತ್ತು ಇತರ ಫೀಚರ್‌ಗಳನ್ನು ಪಡೆಯಲು, ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ ಹಾಗೂ ಲಿಂಕ್ ಮಾಡಲಾದ Google ಸೇವೆಗಳಲ್ಲಿ Chromium ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6734291798041940871">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಎಲ್ಲ ಬಳಕೆದಾರರಿಗೆ ಈಗಾಗಲೇ Chromium ಸ್ಥಾಪಿತವಾಗಿದೆ.</translation>
 <translation id="673636774878526923">ನಿಮ್ಮ Chromium ವಿಷಯಗಳನ್ನು ಎಲ್ಲಾ ಸಾಧನಗಳಾದ್ಯಂತ ಪ್ರವೇಶಿಸಲು, ಸೈನ್ ಇನ್ ಮಾಡಿ, ನಂತರ ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ.</translation>
+<translation id="674245979920622322">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="COUNT" /> ಅನ್ನು Chromium ತೆಗೆದುಹಾಕಿದೆ</translation>
 <translation id="67706546131546258">ಈ ಫೈಲ್ ಅಪಾಯಕಾರಿಯಾಗಿರಬಹುದು, ಆದ್ದರಿಂದ ಇದನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೆಂದು Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="6779406956731413166">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromiumOS ಮಾಡಲು ಸಾಧ್ಯ.</translation>
 <translation id="6847869444787758381">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಎಂದಾದರೂ ಹ್ಯಾಕ್‌ ಆಗಿವೆಯೇ ಎಂಬುದನ್ನು Chromium ನಿಮಗೆ ತಿಳಿಸುತ್ತದೆ</translation>
@@ -399,6 +403,7 @@
 <translation id="7553334751796114046">ನಿಮ್ಮ ವಿಂಡೋ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು, ಸಿಸ್ಟಂ ಆದ್ಯತೆಗಳಲ್ಲಿ Chromium ಗೆ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="7582945390259497898">Chromium ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಅಂದಾಜು ಮಾಡಬಲ್ಲದು. ಆನಂತರ, ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್ ನಿಮಗೆ ಕಾಣಿಸುವ ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಲು ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ತೋರಿಸುವಂತೆ Chromium ಅನ್ನು ಕೇಳಬಹುದು.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ಇನ್‌ಸ್ಟಾಲರ್‌‌</translation>
+<translation id="7585391435984513350">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION" /> ಅನ್ನು Chromium ತೆಗೆದುಹಾಕಿದೆ</translation>
 <translation id="761356813943268536">Chromium ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೋಫೋನ್ ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="7617377681829253106">Chromium ಇದೀಗ ಉತ್ತಮಗೊಂಡಿದೆ</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>

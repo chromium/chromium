@@ -11,7 +11,6 @@
 <translation id="1005333234656240382">Enable ADB debugging?</translation>
 <translation id="1005671386794704751">Rose</translation>
 <translation id="1006033052970139968">Microphone access is allowed for apps, websites with the microphone permission and system services</translation>
-<translation id="1006557561787696884">Use passkeys across your Apple devices</translation>
 <translation id="1006873397406093306">This extension can read and change your data on sites. You can control which sites the extension can access.</translation>
 <translation id="1007057452468855774">Turn on Google Play Store</translation>
 <translation id="1008186147501209563">Export bookmarks</translation>
@@ -1608,6 +1607,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2156877321344104010">Run safety check again</translation>
 <translation id="2157474325782140681">To get additional features, use a Dell docking station designed to work with this Chromebook.</translation>
 <translation id="215753907730220065">Exit Full Screen</translation>
+<translation id="2157779167749714207">Your <ph name="DEVICE_TYPE" /> comes with Gemini</translation>
 <translation id="2158249272743343757">Delete personalisation data...</translation>
 <translation id="2158475082070321257">Copy link to highlight</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2258,7 +2258,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> can't be downloaded securely.</translation>
 <translation id="2620245777360407679">Devices currently connected to hotspot</translation>
 <translation id="2620436844016719705">System</translation>
-<translation id="262087792756666314">You can pin this feature for easy access; click the Pin button at the top of the side panel</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="262154978979441594">Train Google Assistant voice model</translation>
 <translation id="2622280935687585828">Remove <ph name="SITE_NAME" /> from disabled sites</translation>
@@ -4140,7 +4139,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4010036441048359843">Turn on highlight</translation>
 <translation id="4010746393007464819">An upgrade to Debian 12 (Bookworm) is available</translation>
 <translation id="4010917659463429001">To get your bookmarks on your mobile device, <ph name="GET_IOS_APP_LINK" />.</translation>
-<translation id="4012268176861210196">You can pin this feature for easy access</translation>
 <translation id="4014432863917027322">Repair "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Got extensions? <ph name="BEGIN_LINK" />Manage your extensions<ph name="END_LINK" /> in one easy place.</translation>
 <translation id="4016762287427926315">Permissions that you allow for <ph name="APP_NAME" /> will also be allowed for this app. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
@@ -6025,7 +6023,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5481941284378890518">Add Nearby Printers</translation>
 <translation id="5482417738572414119">Sign in to let Chrome suggest tab groups and keep your tabs organised</translation>
 <translation id="5483005706243021437">Stay here</translation>
-<translation id="5484181871714116891">When on, passkeys are created in iCloud Keychain and are available across your Apple devices. When off, passkeys are created in your Chrome profile on this device.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> today. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}other{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Add app</translation>
 <translation id="5485435764083510385">Preferred caption language</translation>
@@ -10039,7 +10036,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8482077254400484047">Manage the look of inactive tabs here</translation>
 <translation id="8483248364096924578">IP address</translation>
 <translation id="8486666913807228950">Reason: The inverted rule <ph name="REVERT_RULE" /> was found in the 'Force open in' list.</translation>
-<translation id="8487303289354211861">Pinned! You can access this feature again from the new button on the toolbar</translation>
 <translation id="8487678622945914333">Zoom In</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Personal suggestions are only shown on your account</translation>
@@ -10363,6 +10359,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <ph name="LINE_BREAK" />
           (your autofill data won't be shared)</translation>
 <translation id="8729133765463465108">Use camera to scan QR code</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Chat with Gemini to start writing, planning, learning and more with Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />After setup, start using Gemini by selecting the Gemini app on your shelf, at the bottom of your screen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731029916209785242">Permissions (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Security code</translation>
@@ -10755,7 +10753,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9014674417732091912">Moved to row <ph name="ROW_NUMBER" /></translation>
 <translation id="901668144954885282">Back up to Google Drive</translation>
 <translation id="9016827136585652292">Privacy screen toggle</translation>
-<translation id="9017055559700464094">Pinned! Use this feature again from the toolbar</translation>
 <translation id="90181708067259747">Expiry date: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installation complete</translation>
 <translation id="901876615920222131">To reopen the group, click on the group</translation>

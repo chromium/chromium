@@ -358,6 +358,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2441427462554639370">Opptaket ble avsluttet på grunn av kritisk lite lagringsplass</translation>
 <translation id="2449089818483227734">Lavt batteri</translation>
 <translation id="2450205753526923158">Skjermdumpmodus</translation>
+<translation id="2453860139492968684">Fullfør</translation>
 <translation id="2455994958736234930">Legg til www. og .com i adressefeltet, og åpne deretter nettstedet</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Batteritilstand: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %. Syklusantall: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2726420622004325180">Telefonen må ha mobildata for å kunne tilby en wifi-sone</translation>
 <translation id="2727175239389218057">Svar</translation>
 <translation id="2727977024730340865">Tilkoblet laveffektslader. Batteriladingen kan være upålitelig.</translation>
+<translation id="2743301740238894839">Start</translation>
 <translation id="2743387203779672305">Kopiér til utklippstavlen</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" /> – <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">«Slett»</translation>
@@ -1836,6 +1838,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8042893070933512245">Åpne menyen for tilgjengelighetsinnstillinger</translation>
 <translation id="8044457332620420407">Tastaturets bakgrunnsbelysning er av</translation>
 <translation id="8048123526339889627">Bluetooth-innstillinger</translation>
+<translation id="8049189770492311300">Nedtelling</translation>
 <translation id="8051716679295756675">Det finnes allerede en mal med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopiert til utklippstavlen</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>

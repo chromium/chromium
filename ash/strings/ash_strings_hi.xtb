@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">स्टोरेज के लिए बची जगह कम होने की वजह से रिकॉर्डिंग बंद हो गई है</translation>
 <translation id="2449089818483227734">बैटरी कम है</translation>
 <translation id="2450205753526923158">स्क्रीनशॉट मोड</translation>
+<translation id="2453860139492968684">खत्म करें</translation>
 <translation id="2455994958736234930">पता बार में www. और .com जोड़कर वेबसाइट खोलें</translation>
 <translation id="2456008742792828469">कैलेंडर, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">बैटरी की परफ़ॉर्मेंस <ph name="BATTERY_HEALTH_PERCENTAGE" />% है | साइकल काउंट <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">आपके फ़ोन में मोबाइल डेटा होना ज़रूरी है, ताकि हॉटस्पॉट की सुविधा दी जा सके</translation>
 <translation id="2727175239389218057">जवाब दें</translation>
 <translation id="2727977024730340865">कम-शक्ति वाले चार्जर में प्लग इन करें. बैटरी चार्ज करना संभवत: विश्वसनीय नहीं होगा.</translation>
+<translation id="2743301740238894839">शुरू करें</translation>
 <translation id="2743387203779672305">क्लिपबोर्ड में कॉपी करें</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"मिटाएं"</translation>
@@ -1837,6 +1839,7 @@
 <translation id="8042893070933512245">सुलभता सेटिंग मेन्यू खोलें</translation>
 <translation id="8044457332620420407">कीबोर्ड की बैकलाइट बंद है</translation>
 <translation id="8048123526339889627">ब्लूटूथ की सेटिंग</translation>
+<translation id="8049189770492311300">टाइमर</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नाम का टेंप्लेट पहले से मौजूद है</translation>
 <translation id="8052898407431791827">स्क्रीनशॉट को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="8054466585765276473">बैटरी समय की गणना की जा रही है.</translation>

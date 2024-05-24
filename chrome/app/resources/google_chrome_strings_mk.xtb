@@ -63,6 +63,7 @@
 <translation id="1873233029667955273">Google Chrome не е вашиот стандарден прелистувач</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome е застарен</translation>
+<translation id="1907925560334657849">За да го споделите прозорецot, дозволете снимање на екранот за Chrome во System Preferences</translation>
 <translation id="1919130412786645364">Дозволете најавување на Chrome</translation>
 <translation id="1953553007165777902">Се презема… Уште <ph name="MINUTE" /> мин.</translation>
 <translation id="1982647487457769627">Chrome функционира на различни платформи за да ви овозможи добро познато доживување независно од уредот</translation>
@@ -127,6 +128,7 @@
 <translation id="2770231113462710648">Променете го стандардниот прелистувач во:</translation>
 <translation id="2775140325783767197">Chrome не може да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
 <translation id="2799223571221894425">Рестартирај</translation>
+<translation id="2825024317344269723">Опасен сајт. Chrome ги отстрани известувањата.</translation>
 <translation id="2846251086934905009">Грешка при инсталирање: инсталаторот не заврши. Инсталацијата е прекината.</translation>
 <translation id="2847461019998147611">Прикажи го Google Chrome на овој јазик</translation>
 <translation id="2853415089995957805">Chrome вчитува страници однапред што е веројатно дека ќе ги отворите за да може да се вчитуваат побрзо кога ги отворате</translation>
@@ -188,6 +190,7 @@
 <translation id="3583751698304738917">Веќе сте најавени како <ph name="USER_EMAIL_ADDRESS" /> во друг профил на Chrome</translation>
 <translation id="3595784445906693824">Ќе се најавите на Chrome во нов профил?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Администраторот бара да го рестартирате Chrome за да се примени ажурирање}=1{Администраторот бара да го рестартирате Chrome за да се примени ажурирање. Прозорецот „Инкогнито“ нема да се отвори повторно.}one{Администраторот бара да го рестартирате Chrome за да се примени ажурирање. # прозорец „Инкогнито“ нема да се отвори повторно.}other{Администраторот бара да го рестартирате Chrome за да се примени ажурирање. # прозорци „Инкогнито“ нема да се отворат повторно.}}</translation>
+<translation id="3609788354808247807">Не сте отвориле одамна. Chrome ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Сега е полесно да го користите Chrome со вашата сметка на Google и на споделени компјутери.</translation>
 <translation id="3635073343384702370">Chrome може да ги проверува вашите лозинки кога ги зачувувате</translation>
 <translation id="3667616615096815454">Не можеше да се инсталира. Апликацијата е непозната за серверот.</translation>
@@ -337,6 +340,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5941711191222866238">Минимизирај</translation>
 <translation id="5941830788786076944">Постави го Google Chrome за стандарден прелистувач</translation>
 <translation id="5947104538377036631">Кратенка за Chrome</translation>
+<translation id="5953954252731207958">Не сте отвориле одамна. Chrome ја отстрани следнава дозвола: <ph name="PERMISSION" /></translation>
 <translation id="6003112304606738118">Се презема… Уште <ph name="HOURS" /> ч.</translation>
 <translation id="6014316319780893079">Со <ph name="BEGIN_LINK" />алатките од Chrome<ph name="END_LINK" />, може да прелистувате безбедно и да ја контролирате ситуацијата</translation>
 <translation id="6022659036123304283">Направете го Chrome свој</translation>
@@ -351,6 +355,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Инсталацијата не успеа поради внатрешна грешка на серверот за ажурирање.</translation>
+<translation id="6200139057479872438">Не сте отвориле одамна. Chrome ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6235018212288296708">Дојдовно правило за Google Chrome за да овозможи сообраќај mDNS.</translation>
 <translation id="624230925347970731">Chrome ќе се затвори наскоро</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -414,6 +419,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7088681679121566888">Chrome е ажуриран</translation>
 <translation id="7098166902387133879">Google Chrome го користи вашиот микрофон.</translation>
 <translation id="7099479769133613710">Рестартирајте за да се ажурира &amp;Chrome OS</translation>
+<translation id="7100085796996987445">За да го споделите екранот, дозволете снимање на екранот за Chrome во System Preferences</translation>
 <translation id="7106741999175697885">Управник со задачи - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Достапно е ново ажурирање за Chrome и ќе се примени штом рестартирате.}=1{Достапно е ново ажурирање за Chrome и ќе се примени штом рестартирате. Прозорецот „Инкогнито“ нема да се отвори повторно.}one{Достапно е ново ажурирање за Chrome и ќе се примени штом рестартирате. # прозорец „Инкогнито“ нема да се отвори повторно.}other{Достапно е ново ажурирање за Chrome и ќе се примени штом рестартирате. # прозорци „Инкогнито“ нема да се отворат повторно.}}</translation>
 <translation id="7155997830309522122">Ако е така, изменете ја зачуваната лозинка во Chrome за да се совпаѓа со новата лозинка.</translation>
@@ -448,6 +454,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7651907282515937834">Лого на Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome го блокираше преземањево затоа што исклучивте „Безбедно прелистување', па датотеката не може да се потврди</translation>
 <translation id="7655455401911432608">Вашата историја на прелистувањето, евиденција на сајтовите што сте ги посетиле со Chrome на овој уред.</translation>
+<translation id="7661924425853052955">Не сте отвориле одамна. Chrome ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="COUNT" /></translation>
 <translation id="7668816516367091728">Извршувајте задачи како преведување, пресметување и друго директно од лентата за адреси</translation>
 <translation id="769538538642757151">Chrome ќе ве извести ако треба да се прегледа нешто</translation>
 <translation id="7747138024166251722">Инсталаторот не може да создаде привремен директориум. Проверете дали има доволно празен простор и дозвола за инсталирање на софтверот.</translation>

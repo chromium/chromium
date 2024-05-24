@@ -358,6 +358,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2441427462554639370">Snemanje se je končalo, ker kritično primanjkuje prostora za shranjevanje.</translation>
 <translation id="2449089818483227734">Skoraj prazna baterija</translation>
 <translation id="2450205753526923158">Način posnetka zaslona</translation>
+<translation id="2453860139492968684">Dokončaj</translation>
 <translation id="2455994958736234930">Dodajanje www. in .com v naslovno vrstico, nato odpiranje spletnega mesta</translation>
 <translation id="2456008742792828469">Koledar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Stanje baterije: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %, število ciklov: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2726420622004325180">Če želite, da telefon da na voljo dostopno točko, mora imeti vklopljen prenos podatkov v mobilnem omrežju.</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Priključen je nizkoenergijski polnilnik. Polnjenje akumulatorja morda ne bo zanesljivo.</translation>
+<translation id="2743301740238894839">Začni</translation>
 <translation id="2743387203779672305">Kopiraj v odložišče</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">»Izbriši«</translation>
@@ -1836,6 +1838,7 @@ Nova namestitev</translation>
 <translation id="8042893070933512245">Odpiranje menija z nastavitvami funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="8044457332620420407">Osvetlitev tipkovnice je izklopljena</translation>
 <translation id="8048123526339889627">Nastavitve za Bluetooth</translation>
+<translation id="8049189770492311300">Časovnik</translation>
 <translation id="8051716679295756675">Predloga <ph name="DESK_TEMPLATE_NAME" /> že obstaja.</translation>
 <translation id="8052898407431791827">Kopirano v odložišče</translation>
 <translation id="8054466585765276473">Izračunavanje časa trajanja akumulatorja.</translation>

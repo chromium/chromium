@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">እጅግ አነስተኛ በሆነ የማከማቻ ቦታ ምክንያት ቀረጻ ጨርሷል</translation>
 <translation id="2449089818483227734">ዝቅተኛ ባትሪ</translation>
 <translation id="2450205753526923158">የቅጽበታዊ ገፅ ዕይታ ሁነታ</translation>
+<translation id="2453860139492968684">ጨርስ</translation>
 <translation id="2455994958736234930">ወደ አድራሻ አሞሌው www. እና .com ያክሉ፣ ከዚያ ድር ጣቢያን ይክፈቱ</translation>
 <translation id="2456008742792828469">ቀን መቁጠሪያ፣ <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">የባትሪ ጤና <ph name="BATTERY_HEALTH_PERCENTAGE" />%፣ የዑደት ቁጥር <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">የእርስዎ ስልክ ሆትስፖት ማቅረብ እንዲችል ሞባይል ውሂብ ሊኖረው ይገባል</translation>
 <translation id="2727175239389218057">ምላሽ ስጥ</translation>
 <translation id="2727977024730340865">አነስተኛ ኃይል ወዳለው ባትሪ መሙያ ተሰክቷል። የባትሪ መሙላት አስተማማኝ ላይሆን ይችላል።</translation>
+<translation id="2743301740238894839">ጀምር</translation>
 <translation id="2743387203779672305">ወደ ቅንጥብ ሰሌዳ ገልብጥ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />፣ <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">«ሰርዝ»</translation>
@@ -1837,6 +1839,7 @@
 <translation id="8042893070933512245">የተደራሽነት ቅንብሮች ምናሌን ክፈት</translation>
 <translation id="8044457332620420407">የቁልፍ ሰሌዳ የኋላ ብርሃን ጠፍቷል</translation>
 <translation id="8048123526339889627">የብሉቱዝ ቅንብሮች</translation>
+<translation id="8049189770492311300">ሰዓት ቆጣሪ</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ተብሎ የተሰየመ ቅንብር ደንብ አስቀድሞ አለ።</translation>
 <translation id="8052898407431791827">ወደ ቅንጥብ ሰሌዳ ተቀድቷል</translation>
 <translation id="8054466585765276473">የባትሪ ጊዜን በማስላት ላይ።</translation>

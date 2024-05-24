@@ -96,6 +96,7 @@
 <translation id="1436784010935106834">已删除</translation>
 <translation id="1437543266176261764">正在“<ph name="APP_NAME" />”应用内运行</translation>
 <translation id="1448440926884431741">在“书签”页面中整理您跟踪的商品</translation>
+<translation id="1460751212339734034">节省时间，减少输入操作</translation>
 <translation id="1466383950273130737">选择要让 Chrome 采用的语言</translation>
 <translation id="1477626028522505441">未能成功下载 <ph name="FILE_NAME" />，因为服务器出现了问题。</translation>
 <translation id="1480287803138246127">您的部分历史记录可能不会在此处显示。如需查看您的所有 Chrome 历史记录，请打开完整的 Chrome 历史记录。</translation>
@@ -843,6 +844,7 @@
 <translation id="5264813352784073502">过去 24 小时</translation>
 <translation id="5271967389191913893">设备无法打开要下载的内容。</translation>
 <translation id="5292796745632149097">发送到</translation>
+<translation id="5301876394151419436">您目前登录的账号是 <ph name="EMAIL" />。您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="5304593522240415983">此字段不能为空</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="5316947901395241499">您的管理员已关闭密码保存功能</translation>
@@ -1540,6 +1542,7 @@
 <translation id="8526855376374973824">通知权限流程</translation>
 <translation id="8540136935098276800">请输入格式正确的网址</translation>
 <translation id="854522910157234410">打开此网页</translation>
+<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{闲置标签页（1 个）}other{闲置标签页（# 个）}}</translation>
 <translation id="8551513938758868521">在您退出 Chrome 时锁定无痕式标签页</translation>
 <translation id="8551524210492420949">令人反感或不安全</translation>
 <translation id="8559961053328923750">Chrome 会限制网站为衡量广告效果而通过浏览器分享的数据总量</translation>
@@ -1643,6 +1646,7 @@
 <translation id="9102803872260866941">预览标签页已打开</translation>
 <translation id="9102864637938129124">网站和广告主可以了解广告效果。此设置已开启。</translation>
 <translation id="9104217018994036254">要与之分享标签页的设备的列表。</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{1 天或更长时间未使用}other{# 天或更长时间未使用}}</translation>
 <translation id="9106148373857059373">书签保存流程已关闭</translation>
 <translation id="9108312223223904744">支持使用手机作为安全密钥</translation>
 <translation id="9108808586816295166">安全 DNS 未必一直可用</translation>

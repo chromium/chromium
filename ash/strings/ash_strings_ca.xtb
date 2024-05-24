@@ -358,6 +358,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2441427462554639370">La gravació ha finalitzat perquè queda molt poc espai d'emmagatzematge.</translation>
 <translation id="2449089818483227734">Bateria baixa</translation>
 <translation id="2450205753526923158">Mode de captura de pantalla</translation>
+<translation id="2453860139492968684">Finalitza</translation>
 <translation id="2455994958736234930">Afegeix www. i .com a la barra d'adreces i, a continuació, obre el lloc web</translation>
 <translation id="2456008742792828469">Calendari, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Estat de la bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />%; recompte de cicles: <ph name="CYCLE_COUNT" />.</translation>
@@ -429,6 +430,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2726420622004325180">El telèfon ha de tenir dades mòbils per proporcionar un punt d'accés</translation>
 <translation id="2727175239389218057">Respon</translation>
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
+<translation id="2743301740238894839">Inicia</translation>
 <translation id="2743387203779672305">Copia al porta-retalls</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Suprimeix"</translation>
@@ -1836,6 +1838,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8042893070933512245">Obre el menú de configuració d'accessibilitat</translation>
 <translation id="8044457332620420407">La il·luminació a contrallum del teclat està desactivada</translation>
 <translation id="8048123526339889627">Configuració del Bluetooth</translation>
+<translation id="8049189770492311300">Temporitzador</translation>
 <translation id="8051716679295756675">La plantilla anomenada <ph name="DESK_TEMPLATE_NAME" /> ja existeix</translation>
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>

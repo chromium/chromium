@@ -360,6 +360,7 @@
 <translation id="1641976391427233992">Καθυστέρηση εξόδου έως</translation>
 <translation id="1643651787397909318">Κουμπί Μετάβαση στον έλεγχο ασφαλείας Chrome, ενεργοποιήστε το για να επισκεφτείτε τη σελίδα ελέγχου ασφαλείας του Chrome στις ρυθμίσεις</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
+<translation id="1645004815457365098">Άγνωστη πηγή</translation>
 <translation id="1645368109819982629">Μη υποστηριζόμενο πρωτόκολλο</translation>
 <translation id="1650602712345345441">Διαχείριση των ρυθμίσεων του Chrome</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@
 <translation id="2056658168519009885">Οι ιστότοποι μπορούν να ζητήσουν από το Chrome πληροφορίες για την εξατομίκευση των διαφημίσεων που βλέπετε.</translation>
 <translation id="2059166748188874810">Δήμος</translation>
 <translation id="2059202684901022309">22 x 34 ίντσες</translation>
-<translation id="206275378685759380">Αναμονή για αγορά</translation>
 <translation id="2064568741209980952">Πιστώσεις και δανεισμός</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 πρόταση}other{# προτάσεις}}</translation>
 <translation id="2066915425250589881">ζητήσετε να διαγραφούν</translation>

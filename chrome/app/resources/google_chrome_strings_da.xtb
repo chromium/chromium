@@ -59,6 +59,7 @@
 <translation id="1873233029667955273">Google Chrome er ikke din standardbrowser</translation>
 <translation id="1874309113135274312">Google Chrome beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
+<translation id="1907925560334657849">Tillad skærmoptagelse for Chrome i Systempræferencer for at dele dit vindue</translation>
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
 <translation id="1953553007165777902">Downloader… Der er <ph name="MINUTE" /> minutter tilbage</translation>
 <translation id="1982647487457769627">Chrome fungerer på tværs af platforme, så du får en ensrettet oplevelse, uanset hvilken enhed du bruger</translation>
@@ -123,6 +124,7 @@
 <translation id="2770231113462710648">Skift standardbrowser til:</translation>
 <translation id="2775140325783767197">Chrome kan ikke tjekke dine adgangskoder. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="2799223571221894425">Genstart</translation>
+<translation id="2825024317344269723">Farligt website. Chrome har fjernet notifikationer.</translation>
 <translation id="2846251086934905009">Installationsfejl: Installationen blev ikke gennemført. Installationen er blevet annulleret.</translation>
 <translation id="2847461019998147611">Vis Google Chrome på dette sprog</translation>
 <translation id="2853415089995957805">Chrome forudindlæser sider, du sandsynligvis vil besøge, så disse sider indlæses hurtigere, når du besøger dem</translation>
@@ -184,6 +186,7 @@
 <translation id="3583751698304738917">Du er allerede logget ind som <ph name="USER_EMAIL_ADDRESS" /> på en anden Chrome-profil</translation>
 <translation id="3595784445906693824">Vil du logge ind i Chrome på en ny profil?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
+<translation id="3609788354808247807">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Nu er det blevet nemmere at bruge Chrome med din Google-konto og på delte computere.</translation>
 <translation id="3635073343384702370">Chrome kan tjekke dine adgangskoder, når du gemmer dem</translation>
 <translation id="3667616615096815454">Appen kan ikke installeres. Serveren kender ikke appen.</translation>
@@ -329,6 +332,7 @@
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941830788786076944">Gør Google Chrome til din standardbrowser</translation>
 <translation id="5947104538377036631">Chrome-genvej</translation>
+<translation id="5953954252731207958">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION" /></translation>
 <translation id="6003112304606738118">Downloader… Der er <ph name="HOURS" /> timer tilbage</translation>
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />værktøjer fra Chrome<ph name="END_LINK" /> kan du søge sikkert på nettet og bevare styringen</translation>
 <translation id="6022659036123304283">Gør Chrome til din egen</translation>
@@ -343,6 +347,7 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
+<translation id="6200139057479872438">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
 <translation id="6235018212288296708">Indgående regel for Google Chrome om at tillade mDNS-trafik.</translation>
 <translation id="624230925347970731">Chrome lukkes snart</translation>
 <translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
@@ -406,6 +411,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7088681679121566888">Chrome er opdateret</translation>
 <translation id="7098166902387133879">Google Chrome bruger din mikrofon.</translation>
 <translation id="7099479769133613710">Genstart og opdater &amp;Chrome OS</translation>
+<translation id="7100085796996987445">Tillad skærmoptagelse for Chrome i Systempræferencer for at dele din skærm</translation>
 <translation id="7106741999175697885">Jobliste – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter.}=1{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Dit inkognitovindue åbnes ikke igen.}one{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. # inkognitovindue åbnes ikke igen.}other{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="7155997830309522122">Hvis ja, skal du redigere den gemte adgangskode i Chrome, så den matcher den nye adgangskode.</translation>
@@ -440,6 +446,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
 <translation id="76531479118467370">Chrome har blokeret denne download, fordi du har deaktiveret Beskyttet browsing, og filen ikke kan verificeres</translation>
 <translation id="7655455401911432608">Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chrome på denne enhed</translation>
+<translation id="7661924425853052955">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="COUNT" /> andre</translation>
 <translation id="7668816516367091728">Udfør opgaver såsom at oversætte, lave regnestykker og meget mere direkte i adresselinjen</translation>
 <translation id="769538538642757151">Chrome giver dig besked, hvis der er noget, du skal gennemgå</translation>
 <translation id="7747138024166251722">Installationsprogrammet kunne ikke oprette en midlertidig mappe. Tjek, om der er tilstrækkelig diskplads, og om der er tilladelse til at installere software.</translation>

@@ -358,6 +358,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2441427462554639370">Daeth y recordiad i ben oherwydd lle storio hynod o isel</translation>
 <translation id="2449089818483227734">Lefel batri isel</translation>
 <translation id="2450205753526923158">Modd tynnu sgrinlun</translation>
+<translation id="2453860139492968684">Gorffen</translation>
 <translation id="2455994958736234930">Ychwanegu www. a .com i'r bar cyfeiriad, yna agor y wefan</translation>
 <translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Iechyd batri <ph name="BATTERY_HEALTH_PERCENTAGE" />% | cyfrif seiclo <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2726420622004325180">Rhaid bod gan eich ffôn ddata symudol i ddarparu poethfan</translation>
 <translation id="2727175239389218057">Ateb</translation>
 <translation id="2727977024730340865">Wedi'i blygio i mewn i wefrydd pŵer isel. Mae'n bosib na fydd gwefru'r batri yn ddibynadwy.</translation>
+<translation id="2743301740238894839">Dechrau</translation>
 <translation id="2743387203779672305">Copïo i'r clipfwrdd</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Dileu"</translation>
@@ -1836,6 +1838,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8042893070933512245">Agor dewislen gosodiadau hygyrchedd</translation>
 <translation id="8044457332620420407">Mae ôl-olau'r bysellfwrdd wedi'i ddiffodd</translation>
 <translation id="8048123526339889627">Gosodiadau Bluetooth</translation>
+<translation id="8049189770492311300">Amserydd</translation>
 <translation id="8051716679295756675">Mae'r templed o'r enw <ph name="DESK_TEMPLATE_NAME" /> eisoes yn bodoli</translation>
 <translation id="8052898407431791827">Wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="8054466585765276473">Wrthi'n cyfrifo amser y batri.</translation>

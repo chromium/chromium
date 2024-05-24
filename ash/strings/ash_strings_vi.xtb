@@ -358,6 +358,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2441427462554639370">Quá trình ghi đã kết thúc do dung lượng lưu trữ còn quá thấp</translation>
 <translation id="2449089818483227734">Pin yếu</translation>
 <translation id="2450205753526923158">Chế độ chụp ảnh màn hình</translation>
+<translation id="2453860139492968684">Kết thúc</translation>
 <translation id="2455994958736234930">Thêm www. và .com vào thanh địa chỉ rồi mở trang web</translation>
 <translation id="2456008742792828469">Lịch, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Tình trạng pin: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, số chu kỳ: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2726420622004325180">Điện thoại của bạn phải có dữ liệu di động thì mới dùng làm điểm phát sóng được</translation>
 <translation id="2727175239389218057">Trả lời</translation>
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
+<translation id="2743301740238894839">Bắt đầu</translation>
 <translation id="2743387203779672305">Sao chép vào bảng nhớ tạm</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Xoá"</translation>
@@ -1836,6 +1838,7 @@ Mới cài đặt</translation>
 <translation id="8042893070933512245">Mở trình đơn cài đặt hỗ trợ tiếp cận</translation>
 <translation id="8044457332620420407">Đèn nền bàn phím đang tắt</translation>
 <translation id="8048123526339889627">Cài đặt Bluetooth</translation>
+<translation id="8049189770492311300">Bộ tính giờ</translation>
 <translation id="8051716679295756675">Mẫu có tên <ph name="DESK_TEMPLATE_NAME" /> đã tồn tại</translation>
 <translation id="8052898407431791827">Đã sao chép vào bảng nhớ tạm</translation>
 <translation id="8054466585765276473">Đang tính toán thời lượng pin.</translation>

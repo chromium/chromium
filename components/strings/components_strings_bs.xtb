@@ -360,6 +360,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1641976391427233992">Odloži izlaz do</translation>
 <translation id="1643651787397909318">Idite na dugme sigurnosne provjere Chromea i aktivirajte ga da posjetite stranicu sigurnosne provjere Chromea u postavkama</translation>
 <translation id="1644574205037202324">Historija</translation>
+<translation id="1645004815457365098">Nepoznat izvor</translation>
 <translation id="1645368109819982629">Protokol nije podržan</translation>
 <translation id="1650602712345345441">Upravljajte postavkama Chromea</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2056658168519009885">Web lokacije mogu zatražiti od Chromea informacije radi personalizacije oglasa koje vidite.</translation>
 <translation id="2059166748188874810">Općina</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
-<translation id="206275378685759380">Pričekajte s kupovinom</translation>
 <translation id="2064568741209980952">Kredit i zajam</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Jedan prijedlog}one{# prijedlog}few{# prijedloga}other{# prijedloga}}</translation>
 <translation id="2066915425250589881">zatražiti da se izbriše</translation>
@@ -1869,7 +1869,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="457875822857220463">Isporuka</translation>
 <translation id="4579699065574932398">Bankarstvo</translation>
 <translation id="4582204425268416675">Uklonite karticu</translation>
-<translation id="4582595824823167856">Primite tekstualnu poruku</translation>
+<translation id="4582595824823167856">Primite poruku</translation>
 <translation id="4586607503179159908">Način plaćanja je potvrđen</translation>
 <translation id="4587425331216688090">Ukloniti adresu iz Chromea?</translation>
 <translation id="459089498662672729">Administratorska pravila ne preporučuju lijepljenje s <ph name="ORIGIN_NAME" /> na ovu lokaciju</translation>

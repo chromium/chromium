@@ -358,6 +358,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2441427462554639370">A gravação terminou porque o espaço de armazenamento está criticamente baixo</translation>
 <translation id="2449089818483227734">Bateria fraca</translation>
 <translation id="2450205753526923158">Modo de captura de ecrã</translation>
+<translation id="2453860139492968684">Concluir</translation>
 <translation id="2455994958736234930">Adicionar www. e .com à barra de endereço e, de seguida, abrir o Website</translation>
 <translation id="2456008742792828469">Calendário, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Estado da bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, número de ciclos: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2726420622004325180">O seu telemóvel tem de ter dados móveis para fornecer uma zona Wi-Fi.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Ligado a um carregador de baixo consumo. O carregamento da bateria pode não ser fiável.</translation>
+<translation id="2743301740238894839">Iniciar</translation>
 <translation id="2743387203779672305">Copiar para a área de transferência</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Eliminar"</translation>
@@ -1836,6 +1838,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8042893070933512245">Abrir menu de definições de acessibilidade</translation>
 <translation id="8044457332620420407">A retroiluminação do teclado está desativada</translation>
 <translation id="8048123526339889627">Definições de Bluetooth</translation>
+<translation id="8049189770492311300">Temporizador</translation>
 <translation id="8051716679295756675">O modelo denominado <ph name="DESK_TEMPLATE_NAME" /> já existe</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">A calcular tempo da bateria.</translation>

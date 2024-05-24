@@ -8,6 +8,7 @@
 <translation id="1173894706177603556">Premenovať</translation>
 <translation id="1197088940767939838">Oranžová</translation>
 <translation id="125153950246128346">Klepnutím zobrazíte ďalšiu kartu</translation>
+<translation id="1273910660700874265">Možnosti skupiny kariet <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1322824555808364080">Pozvať ľudí</translation>
 <translation id="1419023007528516122">Týmto natrvalo odstránite skupinu zo svojho zariadenia</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vytvorená pred <ph name="NUM_MINS_ONE" /> minútou}few{Vytvorená pred <ph name="NUM_MINS_MANY" /> minútami}many{Vytvorená pred <ph name="NUM_MINS_MANY" /> minúty}other{Vytvorená pred <ph name="NUM_MINS_MANY" /> minútami}}</translation>
@@ -53,6 +54,7 @@
 <translation id="3882834874697329510">Ak chcete dostať upozornenie, keď sa na otvorenej karte zníži cena, zapnite upozornenia v Nastaveniach.</translation>
 <translation id="3940195383040445971">Sledovať ceny na kartách</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Zoskupiť kartu}few{Zoskupiť karty}many{Zoskupiť karty}other{Zoskupiť karty}}</translation>
+<translation id="3969565576924904454">Otvoriť <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3996880007329611795">Dostávať upozornenia</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Vytvorená pred <ph name="NUM_DAYS_ONE" /> dňom}few{Vytvorená pred <ph name="NUM_DAYS_MANY" /> dňami}many{Vytvorená pred <ph name="NUM_DAYS_MANY" /> dňa}other{Vytvorená pred <ph name="NUM_DAYS_MANY" /> dňami}}</translation>
 <translation id="4133493477912226187">Zdá sa, že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
@@ -105,7 +107,6 @@
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Presunúť kartu doľava</translation>
 <translation id="6615455863669487791">Ukázať</translation>
-<translation id="661742612106409204">Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne.</translation>
 <translation id="6744956528665271406">Upraviť farbu skupiny</translation>
 <translation id="6840760312327750441">Ak chcete zoskupiť karty, pridržte niektorú z nich. Potom ju presuňte na inú.</translation>
 <translation id="6856809498882026482">Skryť režim hromadného výberu</translation>

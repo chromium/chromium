@@ -8,6 +8,7 @@
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="125153950246128346">Appuyer pour afficher un autre onglet</translation>
+<translation id="1273910660700874265">Options du groupe d'onglets <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1322824555808364080">Inviter des personnes</translation>
 <translation id="1419023007528516122">Le groupe sera définitivement supprimé de votre appareil</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Créé il y a <ph name="NUM_MINS_ONE" /> minute}one{Créé il y a <ph name="NUM_MINS_MANY" /> minute}other{Créé il y a <ph name="NUM_MINS_MANY" /> minutes}}</translation>
@@ -39,6 +40,7 @@
 <translation id="2928243913527329289">Google | À propos de ce magasin</translation>
 <translation id="2977480621796371840">Retirer du groupe</translation>
 <translation id="3008554597174452548">Arrêter de suivre le produit</translation>
+<translation id="3026391124054406831">Créez des groupes pour organiser vos onglets.</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> : prix en baisse (-<ph name="PRICE_DROP" />)</translation>
 <translation id="3078350928901129212">Icône <ph name="COLOR_NAME" /> du groupe d'onglets</translation>
 <translation id="3194464645767632461">note</translation>
@@ -52,6 +54,7 @@
 <translation id="3882834874697329510">Pour être averti en cas de prix inférieur dans un onglet ouvert, accédez aux paramètres, puis activez les notifications.</translation>
 <translation id="3940195383040445971">Suivi des prix dans les onglets</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ajouter l'onglet au groupe}one{Ajouter l'onglet au groupe}other{Regrouper les onglets}}</translation>
+<translation id="3969565576924904454">Ouvrir <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3996880007329611795">Être averti</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Créé il y a <ph name="NUM_DAYS_ONE" /> jour}one{Créé il y a <ph name="NUM_DAYS_MANY" /> jour}other{Créé il y a <ph name="NUM_DAYS_MANY" /> jours}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>
@@ -104,7 +107,6 @@
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Déplacer l'onglet vers la gauche</translation>
 <translation id="6615455863669487791">Démonstration</translation>
-<translation id="661742612106409204">Vous trouverez les onglets fermés dans le menu principal de Chrome, sous "Onglets récents".</translation>
 <translation id="6744956528665271406">Modifier la couleur du groupe</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, appuyez de manière prolongée sur un onglet, puis faites-le glisser vers un autre.</translation>
 <translation id="6856809498882026482">Masquer le mode multi-sélection</translation>

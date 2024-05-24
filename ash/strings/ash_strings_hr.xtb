@@ -358,6 +358,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2441427462554639370">Snimanje je završilo zbog jako malo slobodnog prostora za pohranu</translation>
 <translation id="2449089818483227734">Slaba baterija</translation>
 <translation id="2450205753526923158">Način snimke zaslona</translation>
+<translation id="2453860139492968684">Završi</translation>
 <translation id="2455994958736234930">Dodavanje www. i .com u adresnu traku i otvaranje web-lokacije</translation>
 <translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Status baterije <ph name="BATTERY_HEALTH_PERCENTAGE" />%, broj ciklusa <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2726420622004325180">Telefon mora imati mobilne podatke da bi osigurao žarišnu točku</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Uređaj je priključen na punjač male snage. Punjenje baterije možda nije pouzdano.</translation>
+<translation id="2743301740238894839">Početak</translation>
 <translation id="2743387203779672305">Kopiraj u međuspremnik</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Izbriši"</translation>
@@ -1836,6 +1838,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8042893070933512245">Otvori izbornik postavki pristupačnosti</translation>
 <translation id="8044457332620420407">Pozadinsko svjetlo tipkovnice je isključeno</translation>
 <translation id="8048123526339889627">Postavke Bluetootha</translation>
+<translation id="8049189770492311300">Brojač vremena</translation>
 <translation id="8051716679295756675">Već postoji predložak s nazivom <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopirano u međuspremnik</translation>
 <translation id="8054466585765276473">Izračun vremena baterije.</translation>

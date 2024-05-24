@@ -360,6 +360,7 @@
 <translation id="1641976391427233992">ເລື່ອນເວລາການພິມຈົນເຖິງ</translation>
 <translation id="1643651787397909318">ເຂົ້າໄປປຸ່ມການກວດສອບຄວາມປອດໄພຂອງ Chrome, ເປີດນຳໃຊ້ເພື່ອເຂົ້າເບິ່ງໜ້າການກວດສອບຄວາມປອດໄພຂອງ Chrome ໃນການຕັ້ງຄ່າ</translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
+<translation id="1645004815457365098">ແຫຼ່ງຂໍ້ມູນທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="1645368109819982629">ໂປຣໂຕຄໍທີ່ບໍ່ຮອງຮັບ</translation>
 <translation id="1650602712345345441">ຈັດການການຕັ້ງຄ່າ Chrome ຂອງທ່ານ</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@
 <translation id="2056658168519009885">ເວັບໄຊສາມາດຂໍຂໍ້ມູນຈາກ Chrome ເພື່ອຊ່ວຍປັບແຕ່ງໂຄສະນາທີ່ທ່ານເຫັນໃຫ້ເປັນແບບສ່ວນຕົວ.</translation>
 <translation id="2059166748188874810">ເທດສະບານ</translation>
 <translation id="2059202684901022309">22 x 34 ນິ້ວ</translation>
-<translation id="206275378685759380">ລໍຖ້າຊື້</translation>
 <translation id="2064568741209980952">ສິນເຊື່ອ ແລະ ການກູ້ຢືມ</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ຄຳ​ແນະນຳ}other{# ຄຳ​ແນະນຳ}}</translation>
 <translation id="2066915425250589881">ຮ້ອງຂໍໃຫ້ຖືກລຶບອອກ</translation>

@@ -360,6 +360,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1641976391427233992">Ausgabe verzögern bis</translation>
 <translation id="1643651787397909318">Schaltfläche „Chrome-Sicherheitscheck aufrufen“ – aktivieren, um in den Einstellungen die Seite für den Chrome-Sicherheitscheck aufzurufen</translation>
 <translation id="1644574205037202324">Verlauf</translation>
+<translation id="1645004815457365098">Unbekannte Quelle</translation>
 <translation id="1645368109819982629">Nicht unterstütztes Protokoll</translation>
 <translation id="1650602712345345441">Chrome-Einstellungen verwalten</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2056658168519009885">Websites können Informationen von Chrome anfordern, um dir personalisierte Werbung anzuzeigen.</translation>
 <translation id="2059166748188874810">Gemeinde</translation>
 <translation id="2059202684901022309">22 x 34 Zoll</translation>
-<translation id="206275378685759380">Besseren Preis abwarten</translation>
 <translation id="2064568741209980952">Kredite und Darlehen</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 Vorschlag}other{# Vorschläge}}</translation>
 <translation id="2066915425250589881">Löschung beantragen</translation>
@@ -1334,6 +1334,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="353816159217417898">Leinwand (seitenweise)</translation>
 <translation id="3542628208405253498">Bild der Karte</translation>
 <translation id="3542768452570884558">Link in neuem Fenster öffnen</translation>
+<translation id="3547442767634383572">Übersicht des Arbeitsprofils</translation>
 <translation id="3547746132308051926">20 × 24 Zoll</translation>
 <translation id="3552155506104542239">Warnung: Diese Richtlinie steht mit der Richtlinie „<ph name="POLICY_NAME" />“ im Konflikt und hat deshalb keine Auswirkungen auf Android-Apps. Ansonsten funktioniert diese Richtlinie ordnungsgemäß.</translation>
 <translation id="3552297013052089404">Schriftart Sans-Serif</translation>
@@ -2197,6 +2198,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5230733896359313003">Versandadresse</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Dein Administrator hat Zugriff auf das verwaltete Profil, den Browser und einige Geräteinformationen. Dabei werden beispielsweise folgende Informationen angezeigt:</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5238301240406177137">Im Konto speichern</translation>
 <translation id="5239119062986868403">Normalpreis</translation>
@@ -2210,6 +2212,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="52517543715119994">Informationen zu Chrome-Funktionen</translation>
 <translation id="5251803541071282808">Cloud</translation>
 <translation id="5254043433801397071">Druckinhalte optimieren</translation>
+<translation id="5255583962255635076">Auf dein Arbeitsprofil angewandte Browserrichtlinien</translation>
 <translation id="5255690596502591079">Trotzdem aufnehmen</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei nach <ph name="DESTINATION_NAME" /> zu kopieren}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien nach <ph name="DESTINATION_NAME" /> zu kopieren}}</translation>
@@ -3330,6 +3333,7 @@ Weitere Details:
 <translation id="7421067045979951561">Protokoll-Handler</translation>
 <translation id="7422347648202898039">Etiketten (Sicherheit)</translation>
 <translation id="7423283032694727565">Schaltfläche „Cookies verwalten“ – aktivieren, um in den Chrome-Einstellungen deine Cookie-Einstellungen zu verwalten</translation>
+<translation id="742435751935045381">Installierte Apps und Erweiterungen im Arbeitsprofil</translation>
 <translation id="7424421098814895617">Die Option „Adresse löschen“ wurde ausgewählt</translation>
 <translation id="7425037327577270384">Formuliere für mich</translation>
 <translation id="7425878584435172632">Bildende Kunst und Design</translation>
@@ -3877,6 +3881,7 @@ Weitere Details:
 Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofonberechtigung einmal gewährt</translation>
+<translation id="8421158157346464398">Informationen aus dem Arbeitsprofil, z. B. dein Nutzername im Arbeitsprofil</translation>
 <translation id="8422228580902424274">Angreifer auf der Website, die du besuchen möchtest, werden möglicherweise versuchen, dich dazu zu verleiten, Software zu installieren oder Informationen wie dein Passwort, deine Telefonnummer oder deine Kreditkartennummer preiszugeben.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Ändern</translation>
@@ -4246,6 +4251,7 @@ Weitere Details:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Bei besuchten Websites kann auch anhand deiner Aktivitäten auf der Website ermittelt werden, was dir gefällt. Wenn du zum Beispiel eine Website besuchst, auf der Schuhe für den Langstreckenlauf verkauft werden, könnte daraus geschlossen werden, dass du an Marathonläufen interessiert bist.</translation>
 <translation id="9166851138617700776">Weitere Informationen zu von Websites vorgeschlagener Werbung und zur Erfolgsmessung von Anzeigen</translation>
+<translation id="9167054383925257837">Informationen zum Browser und Betriebssystem des Geräts, z. B. die Browser- und Betriebssystemversion</translation>
 <translation id="9167594211215946097">Direkten Zugriff auf deine Drucker erhalten</translation>
 <translation id="9168814207360376865">Websites die Abfrage gespeicherter Zahlungsmethoden erlauben</translation>
 <translation id="9169664750068251925">Auf dieser Website immer blockieren</translation>

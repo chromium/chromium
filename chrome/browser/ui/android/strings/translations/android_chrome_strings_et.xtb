@@ -96,6 +96,7 @@
 <translation id="1436784010935106834">Eemaldatud</translation>
 <translation id="1437543266176261764">Käitatakse rakenduses <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Korrastage jälgitavaid tooteid teenusega Bookmarks</translation>
+<translation id="1460751212339734034">Säästke aega, tippige vähem</translation>
 <translation id="1466383950273130737">Valige Chrome'i keel</translation>
 <translation id="1477626028522505441">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus serveriprobleemide tõttu.</translation>
 <translation id="1480287803138246127">Osa teie ajaloost ei pruugita siin kuvada. Chrome'i kogu ajaloo vaatamiseks avage Chrome'i täielik ajalugu.</translation>
@@ -843,6 +844,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5264813352784073502">viimase 24 tunni jooksul</translation>
 <translation id="5271967389191913893">Seade ei saa allalaaditavat sisu avada.</translation>
 <translation id="5292796745632149097">Saatmine</translation>
+<translation id="5301876394151419436">Olete logitud sisse e-posti aadressiga <ph name="EMAIL" />. Võite sünkroonimise seadete kaudu igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="5304593522240415983">See väli ei tohi olla tühi</translation>
 <translation id="5308380583665731573">Ühendamine</translation>
 <translation id="5316947901395241499">Administraator on paroolide salvestamise välja lülitanud</translation>
@@ -1542,6 +1544,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8526855376374973824">Märguandeloa voog</translation>
 <translation id="8540136935098276800">Sisestage õigesti vormindatud URL</translation>
 <translation id="854522910157234410">Ava leht</translation>
+<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Passiivne vaheleht (1)}other{Passiivsed vahelehed (#)}}</translation>
 <translation id="8551513938758868521">Lukusta Chrome'ist lahkumisel inkognito vahelehed</translation>
 <translation id="8551524210492420949">Solvav või ebaturvaline</translation>
 <translation id="8559961053328923750">Chrome piirab nende andmete hulka, mida saidid saavad reklaamide toimivuse mõõtmiseks brauseri kaudu jagada</translation>
@@ -1645,6 +1648,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="9102803872260866941">Eelvaate vaheleht on avatud</translation>
 <translation id="9102864637938129124">Saidid ja reklaamijad saavad hankida teavet reklaamide toimivuse kohta. See seade on sisse lülitatud.</translation>
 <translation id="9104217018994036254">Vahelehe jagamise seadmete loend.</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Pole kasutatud üle ühe päeva või rohkem}other{Pole kasutatud # päeva või rohkem}}</translation>
 <translation id="9106148373857059373">Järjehoidja salvestamise voog on suletud</translation>
 <translation id="9108312223223904744">Tugi telefoni kasutamiseks turvavõtmena</translation>
 <translation id="9108808586816295166">Turvaline DNS ei pruugi alati saadaval olla</translation>

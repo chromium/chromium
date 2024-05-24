@@ -358,6 +358,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2441427462554639370">Înregistrarea s-a oprit din cauza epuizării spațiului de stocare</translation>
 <translation id="2449089818483227734">Nivel scăzut al bateriei</translation>
 <translation id="2450205753526923158">Modul Captură de ecran</translation>
+<translation id="2453860139492968684">Terminați</translation>
 <translation id="2455994958736234930">Adaugă www. și .com în bara de adrese, apoi deschide site-ul</translation>
 <translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Starea bateriei: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %, numărul de cicluri: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2726420622004325180">Telefonul trebuie să aibă date mobile pentru a crea un hotspot</translation>
 <translation id="2727175239389218057">Răspunde</translation>
 <translation id="2727977024730340865">V-ați conectat la un încărcător de putere joasă. Încărcarea bateriei poate fi nesigură.</translation>
+<translation id="2743301740238894839">Începe</translation>
 <translation id="2743387203779672305">Copiați în clipboard</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">Șterge</translation>
@@ -1836,6 +1838,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8042893070933512245">Deschide meniul cu setări de accesibilitate</translation>
 <translation id="8044457332620420407">Retroiluminarea tastaturii este dezactivată</translation>
 <translation id="8048123526339889627">Setări Bluetooth</translation>
+<translation id="8049189770492311300">Temporizator</translation>
 <translation id="8051716679295756675">Șablonul numit <ph name="DESK_TEMPLATE_NAME" /> există deja</translation>
 <translation id="8052898407431791827">S-a copiat în clipboard</translation>
 <translation id="8054466585765276473">Se calculează durata bateriei.</translation>

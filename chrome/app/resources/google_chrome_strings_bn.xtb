@@ -61,6 +61,7 @@
 <translation id="1873233029667955273">Google Chrome আপনার ডিফল্ট ব্রাউজার নয়</translation>
 <translation id="1874309113135274312">Google Chrome বিটা (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome পুরানো হয়ে গেছে</translation>
+<translation id="1907925560334657849">আপনার উইন্ডো শেয়ার করতে, সিস্টেম প্রেফারেন্স থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন</translation>
 <translation id="1919130412786645364">Chrome-এ সাইন-ইন করতে দিন</translation>
 <translation id="1953553007165777902">ডাউনলোড হচ্ছে... <ph name="MINUTE" /> মিনিট বাকি আছে</translation>
 <translation id="1982647487457769627">Chrome বিভিন্ন প্ল্যাটফর্ম জুড়ে কাজ করে যাতে যেকোনও ডিভাইসেই আপনি একইরকমের অভিজ্ঞতা পেতে পারেন</translation>
@@ -125,6 +126,7 @@
 <translation id="2770231113462710648">ডিফল্ট ব্রাউজার এতে পরিবর্তন করুন:</translation>
 <translation id="2775140325783767197">আপনার পাসওয়ার্ড Chrome চেক করে দেখতে পারছে না। আপনার ইন্টারনেট কানেকশন চেক করে দেখে নিন।</translation>
 <translation id="2799223571221894425">পুনঃশুরু</translation>
+<translation id="2825024317344269723">বিপজ্জনক সাইট। Chrome বিজ্ঞপ্তি সরিয়ে দিয়েছে।</translation>
 <translation id="2846251086934905009">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার সম্পূর্ণ হয়নি। ইনস্টলেশন বাতিল করা হয়েছে।</translation>
 <translation id="2847461019998147611">এই ভাষায় Google Chrome প্রদর্শন করুন</translation>
 <translation id="2853415089995957805">আপনি দেখতে পারেন এমন পৃষ্ঠা Chrome প্রিলোড করে, যাতে আপনি দেখার সময় সেগুলি দ্রুত লোড হতে পারে</translation>
@@ -186,6 +188,7 @@
 <translation id="3583751698304738917">আপনি আগে থেকেই অন্য Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন</translation>
 <translation id="3595784445906693824">নতুন প্রোফাইলের মাধ্যমে Chrome-এ সাইন-ইন করবেন?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন}=1{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
+<translation id="3609788354808247807">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে</translation>
 <translation id="3622797965165704966">এখন আপনার Google অ্যাকাউন্ট ও শেয়ার করা কম্পিউটারগুলিতে Chrome ব্যবহার করা আরো সহজ৷</translation>
 <translation id="3635073343384702370">আপনি পাসওয়ার্ড সেভ করলে Chrome তা চেক করতে পারবে</translation>
 <translation id="3667616615096815454">ইনস্টল করা যায়নি, অ্যাপ্লিকেশনটি সার্ভারের ক্ষেত্রে অজানা।</translation>
@@ -333,6 +336,7 @@
 <translation id="5941711191222866238">ছোট করুন</translation>
 <translation id="5941830788786076944">Google Chrome-কে ডিফল্ট ব্রাউজার করুন</translation>
 <translation id="5947104538377036631">Chrome-এর শর্টকার্ট</translation>
+<translation id="5953954252731207958">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে</translation>
 <translation id="6003112304606738118">ডাউনলোড হচ্ছে... <ph name="HOURS" /> ঘণ্টা বাকি আছে</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-এর টুল<ph name="END_LINK" /> দিয়ে আপনি নিরাপদে ব্রাউজ ও কন্ট্রোল করতে পারবেন</translation>
 <translation id="6022659036123304283">Chrome-কে আপনার করে নিন</translation>
@@ -347,6 +351,7 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome বিটা</translation>
 <translation id="6182736845697986886">ইনস্টলেশন করা যায়নি, কারণ আপডেট সার্ভারের ইন্টার্নাল সমস্যা আছে।</translation>
+<translation id="6200139057479872438">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে</translation>
 <translation id="6235018212288296708">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome এর জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="624230925347970731">Chrome শীঘ্রই বন্ধ হয়ে যাবে</translation>
 <translation id="6247557882553405851">Google পাসওয়ার্ড ম্যানেজার</translation>
@@ -410,6 +415,7 @@
 <translation id="7088681679121566888">Chrome আপ-টু-ডেট আছে</translation>
 <translation id="7098166902387133879">Google Chrome আপনার মাইক্রোফোন ব্যবহার করছে৷</translation>
 <translation id="7099479769133613710">&amp;ChromeOS আপডেট করতে আবার লঞ্চ করুন</translation>
+<translation id="7100085796996987445">আপনার স্ক্রিন শেয়ার করতে, সিস্টেম প্রেফারেন্স থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন</translation>
 <translation id="7106741999175697885">কার্য পরিচালক - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে।}=1{Chrome-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{Chrome-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{Chrome-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
 <translation id="7155997830309522122">যদি তাই হয়, তাহলে Chrome-এ আপনার সেভ করা পাসওয়ার্ড এডিট করুন যাতে এটি আপনার নতুন পাসওয়ার্ডের সাথে ম্যাচ করে।</translation>
@@ -444,6 +450,7 @@
 <translation id="7651907282515937834">Chrome এন্টারপ্রাইজ লোগো</translation>
 <translation id="76531479118467370">আপনি Safe Browsing ফিচারটি বন্ধ করে দেওয়ার ফলে ফাইলটি যাচাই করা যাচ্ছে না, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="7655455401911432608">আপনার ব্রাউজিং ইতিহাস, এই ডিভাইসে Chrome ব্যবহার করে আপনি যে সাইটগুলি ভিজিট করেছেন তার একটি রেকর্ড।</translation>
+<translation id="7661924425853052955">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> এবং আরও <ph name="COUNT" />টি অনুমতি সরিয়ে দিয়েছে</translation>
 <translation id="7668816516367091728">অ্যাড্রেস বার থেকে সরাসরি অনুবাদ, গণনার মতো আরও অনেক টাস্ক পারফর্ম করুন</translation>
 <translation id="769538538642757151">আপনাকে কোনও কিছু পর্যালোচনা করতে হবে কিনা তা Chrome আপনাকে জানাবে</translation>
 <translation id="7747138024166251722">ইনস্টলারটি অস্থায়ী ডাইরেক্টরি তৈরি করতে পারে নি৷ অনুগ্রহ করে খালি ডিস্ক স্পেশ এবং সফটওয়্যারটি ইনস্টল করার অনুমতি যাচাই করে নিন৷</translation>

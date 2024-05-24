@@ -396,6 +396,7 @@ Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY
 <translation id="1305400589435476516">Se il criterio viene impostato su Attivato, il roaming dei dati è consentito per il dispositivo.
 
       Se viene impostato su Disattivato o se non viene configurato, il roaming dei dati non è disponibile.</translation>
+<translation id="1306041796676461437">Disattiva supporto per Extensible Enterprise SSO</translation>
 <translation id="1308526987406924874">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che non possono chiedere agli utenti l'autorizzazione di accesso a una porta seriale.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -3372,6 +3373,15 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3606571057705314194">Selettore profilo disattivato all'avvio</translation>
 <translation id="3608206578291537084">Abilita la Pipeline di reporting criptato</translation>
 <translation id="3608281460204780443">Visualizza l'icona di Chrome Web Store in Avvio app di <ph name="PRODUCT_OS_NAME" /> e nella pagina Nuova scheda</translation>
+<translation id="3608411984079625468">Consente di configurare l'accesso automatico degli utenti per gli account con fornitori di autenticazione tramite un'estensione SSO aziendale.
+
+Se questo criterio viene impostato su 1 (<ph name="POLICY_VALUE_ENABLED" />) o se non viene configurato, i fornitori di autenticazione con un'estensione SSO sul dispositivo utilizzeranno quell'estensione per autenticare gli utenti che provano ad accedere.
+
+Se questo criterio viene impostato su 0 (<ph name="POLICY_VALUE_DISABLED" />), l'accesso automatico come descritto sopra è disattivato.
+
+Questa funzionalità è disponibile a partire da macOS Catalina.
+
+Nota: questo criterio non viene applicato alle modalità Ospite o di navigazione in incognito.</translation>
 <translation id="3612482251405108708">Avvio automatico della riautenticazione online nella schermata di blocco</translation>
 <translation id="3616490235694929053">Questo criterio consente di stabilire se mostrare o meno la schermata di impostazione delle dimensioni di visualizzazione all'utente durante il primo accesso.
       Se viene impostato su false, la schermata di impostazione delle dimensioni di visualizzazione non verrà visualizzata.
@@ -4310,6 +4320,15 @@ Se viene disattivato, gli utenti non possono monitorare i loro pacchetti su <ph 
 <translation id="439661169333921592">Disattiva l'evidenziazione dell'elemento attivo tramite tastiera nella schermata di accesso</translation>
 <translation id="4397045637922200204">Disattiva recupero dell'account</translation>
 <translation id="4397464099112037398">Impostazione predefinita dell'autorizzazione per il posizionamento delle finestre</translation>
+<translation id="4398803806072237638">La sintassi <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> per la funzionalità di stato personalizzato CSS verrà sostituita da <ph name="CUSTOM_STATE_NEW_SYNTAX" /> in <ph name="PRODUCT_NAME" /> per conformarsi alle modifiche apportate in <ph name="FIREFOX_PRODUCT_NAME" /> e <ph name="SAFARI_PRODUCT_NAME" />. Questo criterio consente di attivare la sintassi deprecata precedente fino alla versione M133.
+
+Il ritiro potrebbe causare problemi ad alcuni siti web unicamente di <ph name="PRODUCT_NAME" /> che utilizzano la sintassi <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> deprecata.
+
+Se questo criterio viene attivato, verrà attivata la sintassi deprecata precedente.
+
+Se questo criterio viene disattivato, la sintassi deprecata precedente verrà disattivata.
+
+Se questo criterio non viene configurato, la sintassi deprecata precedente verrà disattivata.</translation>
 <translation id="4401196752827224189">WebSQL in contesti non sicuri verrà rimosso a partire dalla versione M110. Questo criterio consente di riattivare l'API.
           Se questo criterio viene impostato su true, WebSQL in contesti non sicuri sarà disponibile.
           Se il criterio viene impostato su false o se non viene configurato, WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.
@@ -4632,6 +4651,7 @@ Se il criterio non è configurato, gli utenti possono modificare l'elenco di app
 
 L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto solo se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> è impostato su False.</translation>
 <translation id="4638906910792947645">Abilita sondaggi all'interno del prodotto</translation>
+<translation id="4641557638919545432">Verrà attivata la sintassi deprecata precedente.</translation>
 <translation id="4646626362889216307">L'impostazione di questo criterio consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello. L'unione avviene tra le chiavi di primo livello del dizionario di ogni origine. Avrà la priorità la chiave proveniente dall'origine con la priorità massima.
 
       Usa il carattere jolly "*" per consentire l'unione di tutti i criteri dei dizionari supportati.
@@ -5294,6 +5314,7 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
       Se il criterio dello sfondo del dispositivo viene configurato, il dispositivo ChromeOS scarica e utilizza l'immagine di sfondo nella schermata di accesso se ancora nessun utente ha effettuato l'accesso al dispositivo. Quando un utente esegue l'accesso, si attiva il criterio dello sfondo dell'utente.
 
       Se il criterio dello sfondo del dispositivo non viene configurato, è il criterio dello sfondo dell'utente a definire cosa mostrare se viene configurato.</translation>
+<translation id="5217106427763720473">Attiva supporto per Extensible Enterprise SSO</translation>
 <translation id="5219844027738217407">Nell'ambito delle app Android, la norma influisce solo sul microfono. Se la norma viene impostata su true, il microfono viene disattivato per tutte le app Android, senza alcuna eccezione.</translation>
 <translation id="5222325605346216869">Forza la limitazione dei timer JavaScript in background</translation>
 <translation id="5223606242837275233">Non consentire ai siti di scorrere fino a specifici frammenti di testo tramite un URL</translation>
@@ -5344,6 +5365,7 @@ Nota: questa funzionalità non è ancora disponibile per tutti gli utenti, quind
       Per "versione" si intende sia una versione esatta, ad esempio "61.0.3163.120", sia un prefisso di versione, ad esempio "61.0".  </translation>
 <translation id="5247584184349816217">Attiva il salvaschermo nella schermata di blocco.</translation>
 <translation id="5247973380763021389">Impedisci ai criteri relativi al cloud degli utenti di eseguire l'override dei criteri relativi al cloud delle macchine.</translation>
+<translation id="5249006530384016395">Consente di stabilire se la sintassi <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> deprecata per lo stato personalizzato CSS è attiva</translation>
 <translation id="5249453807420671499">Gli utenti possono aggiungere account Kerberos</translation>
 <translation id="5249555581286638799">Attiva la modalità ad alta efficienza</translation>
 <translation id="5252210248395576403">Questo criterio consente di autorizzare Risposte rapide ad accedere ai contenuti selezionati e a inviare le informazioni al server per ricevere i risultati della traduzione.
@@ -9697,6 +9719,7 @@ Sono inclusi i report attivati da <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME"
 
 Quando il criterio non è configurato, i report vengono caricati ogni 24 ore.
 Quando il criterio è configurato, il numero di ore tra due caricamenti di report consecutivi viene definito da questo criterio.</translation>
+<translation id="8613622696148230463">La sintassi deprecata precedente verrà disattivata.</translation>
 <translation id="8618037841203431360">Questo criterio consente di stabilire se segnalare o meno i dati del criterio e data e ora del relativo recupero.
 
 Se il criterio <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o viene disattivato, verrà ignorato.

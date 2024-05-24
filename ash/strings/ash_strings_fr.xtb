@@ -358,6 +358,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2441427462554639370">Enregistrement interrompu, car l'espace de stockage est presque saturé</translation>
 <translation id="2449089818483227734">Batterie faible</translation>
 <translation id="2450205753526923158">Mode de capture d'écran</translation>
+<translation id="2453860139492968684">Terminer</translation>
 <translation id="2455994958736234930">Ajouter www. et .com à la barre d'adresse, puis ouvrir le site</translation>
 <translation id="2456008742792828469">Agenda, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">État de la batterie : <ph name="BATTERY_HEALTH_PERCENTAGE" /> %. Nombre de cycles : <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2726420622004325180">Les données mobiles doivent être activées sur votre téléphone pour qu'il puisse fournir un point d'accès</translation>
 <translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la charge ne soit pas fiable.</translation>
+<translation id="2743301740238894839">Démarrer</translation>
 <translation id="2743387203779672305">Copier dans le presse-papiers</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Supprimer"</translation>
@@ -1489,7 +1491,7 @@ Nouvelle installation</translation>
 <translation id="6700713906295497288">Bouton de menu IME</translation>
 <translation id="6707693040195709527">Délai de rétablissement d'une version antérieure de l'appareil expiré</translation>
 <translation id="6710213216561001401">Précédent</translation>
-<translation id="6723839937902243910">Alimentation</translation>
+<translation id="6723839937902243910">Marche/Arrêt</translation>
 <translation id="6727969043791803658">Connecté, batterie à <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732087373923685049">la caméra</translation>
 <translation id="6732800389263199929">et <ph name="COUNT" /> autre(s)</translation>
@@ -1837,6 +1839,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
 <translation id="8044457332620420407">Le rétroéclairage du clavier est désactivé</translation>
 <translation id="8048123526339889627">Paramètres Bluetooth</translation>
+<translation id="8049189770492311300">Horloge</translation>
 <translation id="8051716679295756675">Le modèle "<ph name="DESK_TEMPLATE_NAME" />" existe déjà</translation>
 <translation id="8052898407431791827">Copié dans le presse-papiers</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>

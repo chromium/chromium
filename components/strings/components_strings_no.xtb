@@ -360,6 +360,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1641976391427233992">Forsink utskrift til</translation>
 <translation id="1643651787397909318">Knappen «Gå til Chrome-sikkerhetssjekken» – aktiver for å gå til siden for Chrome-sikkerhetssjekk i innstillingene</translation>
 <translation id="1644574205037202324">Logg</translation>
+<translation id="1645004815457365098">Ukjent kilde</translation>
 <translation id="1645368109819982629">Protokollen støttes ikke</translation>
 <translation id="1650602712345345441">Administrer Chrome-innstillingene dine</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2056658168519009885">Nettsteder kan be Chrome om informasjon for å tilpasse annonsene du ser.</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2059202684901022309">22 x 34 tommer</translation>
-<translation id="206275378685759380">Vent med å kjøpe</translation>
 <translation id="2064568741209980952">Kreditt og lån</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 forslag}other{# forslag}}</translation>
 <translation id="2066915425250589881">be om å få slettet</translation>

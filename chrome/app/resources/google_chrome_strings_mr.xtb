@@ -127,6 +127,7 @@
 <translation id="2770231113462710648">डीफॉल्ट ब्राउझर यावर बदला:</translation>
 <translation id="2775140325783767197">Chrome तुमचे पासवर्ड तपासू शकत नाही. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="2799223571221894425">पुन्हा लाँच करा</translation>
+<translation id="2825024317344269723">धोकादायक साइट. Chrome ने नोटिफिकेशन काढून टाकली आहेत.</translation>
 <translation id="2846251086934905009">इंस्टॉलसंबंधित एरर: इंस्टॉलर पूर्ण झाले नाही. इंस्टॉलेशन रद्द केले गेले आहे.</translation>
 <translation id="2847461019998147611">Google Chrome या भाषेत डिस्प्ले करा</translation>
 <translation id="2853415089995957805">Chrome तुम्ही भेट देण्याची शक्यता असलेली पेज प्रीलोड करते, जेणेकरून तुम्ही त्यांना भेट देता, तेव्हा ती अधिक जलद लोड होतात</translation>
@@ -188,6 +189,7 @@
 <translation id="3583751698304738917">तुम्ही दुसऱ्या Chrome प्रोफाइलमध्ये आधीच <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन केले आहे</translation>
 <translation id="3595784445906693824">नवीन प्रोफाइलमध्ये Chrome मध्ये साइन इन करायचे आहे का?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे}=1{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
+<translation id="3609788354808247807">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> परवानग्या काढून टाकल्या</translation>
 <translation id="3622797965165704966">आता आपल्या Google खात्यावर आणि शेअर केलेल्या संगणकांवर Chrome वापरणे अधिक सुलभ आहे.</translation>
 <translation id="3635073343384702370">तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chrome ते तपासू शकते</translation>
 <translation id="3667616615096815454">इंस्टॉल करता आले नाही, सर्व्हरला अ‍ॅप्लिकेशन माहीत नाही.</translation>
@@ -336,6 +338,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5941711191222866238">कमी करा</translation>
 <translation id="5941830788786076944">Google Chromeला डीफॉल्ट ब्राउझर बनवा</translation>
 <translation id="5947104538377036631">Chrome शॉर्टकट</translation>
+<translation id="5953954252731207958">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION" /> परवानगी काढून टाकली</translation>
 <translation id="6003112304606738118">डाउनलोड करत आहे... <ph name="HOURS" /> तास शिल्लक आहे(आहेत)</translation>
 <translation id="6014316319780893079">तुम्ही <ph name="BEGIN_LINK" />Chrome ची टूल<ph name="END_LINK" /> वापरून सुरक्षितरीत्या ब्राउझ करू शकता आणि तुमचा डेटा नियंत्रित करू शकता</translation>
 <translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>
@@ -350,6 +353,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome बीटा</translation>
 <translation id="6182736845697986886">अपडेट सर्व्हरच्या अंतर्गत एररमुळे इंस्टॉलेशन यशस्वी झाले नाही.</translation>
+<translation id="6200139057479872438">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> परवानग्या काढून टाकल्या</translation>
 <translation id="6235018212288296708">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome साठी अंतर्गामी नियम.</translation>
 <translation id="624230925347970731">Chrome लवकरच बंद होईल</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -448,6 +452,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7651907282515937834">Chrome एंटरप्राइझ लोगो</translation>
 <translation id="76531479118467370">तुम्ही सुरक्षित ब्राउझिंग बंद केल्याने Chrome ने हे डाउनलोड ब्लॉक केले असून फाइलची पडताळणी केली जाऊ शकत नाही</translation>
 <translation id="7655455401911432608">तुमचा ब्राउझिंग इतिहास, ज्यामध्ये या डिव्हाइसवर तुम्ही Chrome वापरून भेट दिलेल्या साइटची नोंद असते.</translation>
+<translation id="7661924425853052955">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="COUNT" /> परवानग्या काढून टाकल्या</translation>
 <translation id="7668816516367091728">अ‍ॅड्रेस बारमधून थेट भाषांतर, गणना आणि यांसारख्या आणखी बऱ्याच गोष्टी करा</translation>
 <translation id="769538538642757151">तुम्ही एखाद्या गोष्टीचे पुनरावलोकन करणे आवश्यक असल्यास, Chrome तुम्हाला कळवेल</translation>
 <translation id="7747138024166251722">इन्स्टॉलर तात्पुरती डिरेक्टरी तयार करू शकत नाही. कृपया सॉफ्टवेअर इंस्टॉल करण्यासाठी रिक्त डिस्क स्थान आणि परवानगी पहा.</translation>

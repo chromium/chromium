@@ -360,6 +360,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1641976391427233992">Şu saate kadar çıkışı geciktir:</translation>
 <translation id="1643651787397909318">Chrome güvenlik kontrolüne git düğmesi, ayarlarda Chrome güvenlik kontrolü sayfasını ziyaret etmek için etkinleştirin</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
+<translation id="1645004815457365098">Bilinmeyen kaynak</translation>
 <translation id="1645368109819982629">Desteklenmeyen protokol</translation>
 <translation id="1650602712345345441">Chrome ayarlarınızı yönetin</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2056658168519009885">Siteler, gördüğünüz reklamların kişiselleştirilmesi için Chrome'dan bilgi isteyebilir.</translation>
 <translation id="2059166748188874810">Belediye</translation>
 <translation id="2059202684901022309">22 x 34 inç</translation>
-<translation id="206275378685759380">Satın Almayı Bekleyin</translation>
 <translation id="2064568741209980952">Kredi ve Borç</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 öneri}other{# öneri}}</translation>
 <translation id="2066915425250589881">silinmesini isteyebilirsiniz</translation>
@@ -1335,6 +1335,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="353816159217417898">Şablon (Sayfalandırılmış)</translation>
 <translation id="3542628208405253498">Kart resmi</translation>
 <translation id="3542768452570884558">Bağlantıyı Yeni Pencerede Aç</translation>
+<translation id="3547442767634383572">İş profiline genel bakış</translation>
 <translation id="3547746132308051926">20 x 24 inç</translation>
 <translation id="3552155506104542239">Uyarı: Bu politika <ph name="POLICY_NAME" /> ile çakıştığından Android uygulamalarını etkilemeyecektir. Bunun dışında politika beklendiği şekilde çalışmaktadır.</translation>
 <translation id="3552297013052089404">Sans-Serif Yazı Tipi</translation>
@@ -2199,6 +2200,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5230733896359313003">Gönderim Adresi</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Yöneticiniz; yönetilen profil, tarayıcı ve bazı cihaz bilgilerine erişebilir. Aşağıdakiler gibi bilgileri görebilir:</translation>
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="5238301240406177137">Hesaba Kaydet</translation>
 <translation id="5239119062986868403">Normal Fiyat</translation>
@@ -2212,6 +2214,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="52517543715119994">Chrome özellikleri hakkında bilgi edinin</translation>
 <translation id="5251803541071282808">Bulut</translation>
 <translation id="5254043433801397071">Yazdırma içeriğini optimize et</translation>
+<translation id="5255583962255635076">İş profilinizde uygulanan tarayıcı politikaları</translation>
 <translation id="5255690596502591079">Yine de görüntü al</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Yönetici politikası bu dosyayı <ph name="DESTINATION_NAME" /> hedefine kopyalamanızı önermiyor}other{Yönetici politikası bu dosyaları <ph name="DESTINATION_NAME" /> hedefine kopyalamanızı önermiyor}}</translation>
@@ -3332,6 +3335,7 @@ Ek ayrıntılar:
 <translation id="7421067045979951561">protokol işleyicileri</translation>
 <translation id="7422347648202898039">Etiketler (Emniyet)</translation>
 <translation id="7423283032694727565">Çerezleri yönet düğmesi, Chrome ayarlarında çerez tercihlerinizi yönetmek için etkinleştirin</translation>
+<translation id="742435751935045381">İş profilinizde yüklü uygulamalar ve uzantılar</translation>
 <translation id="7424421098814895617">Adresi sil seçeneği belirlendi</translation>
 <translation id="7425037327577270384">Yazmama yardım et</translation>
 <translation id="7425878584435172632">Görsel Sanatlar ve Tasarım</translation>
@@ -3878,6 +3882,7 @@ Ek ayrıntılar:
 Ek ayrıntılar:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Şu anda mikrofona izin veriliyor</translation>
+<translation id="8421158157346464398">İş profili bilgileri (ör. iş profili kullanıcı adınız)</translation>
 <translation id="8422228580902424274">Ziyaret etmeye çalıştığınız sitedeki saldırganlar, yazılım yüklemeniz veya şifreniz, telefon ya da kredi kartı numaranız gibi bilgileri vermeniz için sizi kandırabilir.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Değiştir</translation>
@@ -4246,6 +4251,7 @@ Ek ayrıntılar:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Ziyaret ettiğiniz siteler, sitedeki etkinliğinize bağlı olarak da nelerden hoşlandığınızı belirleyebilir. Örneğin, uzun mesafe koşu ayakkabıları satan bir siteyi ziyaret ederseniz bu site maraton koşularıyla ilgilendiğinize karar verebilir.</translation>
 <translation id="9166851138617700776">Site tarafından önerilen reklamlar ve reklam ölçümleriyle ilgili daha fazla bilgi</translation>
+<translation id="9167054383925257837">Tarayıcı ve cihaz işletim sistemi bilgileri (ör. tarayıcı ve işletim sistemi sürümleri)</translation>
 <translation id="9167594211215946097">Yazıcılarınıza doğrudan erişme</translation>
 <translation id="9168814207360376865">Sitelerin, kayıtlı ödeme yöntemlerim olup olmadığını kontrol etmesine izin ver</translation>
 <translation id="9169664750068251925">Bu sitede her zaman engelle</translation>

@@ -360,6 +360,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1641976391427233992">Forsink output indtil</translation>
 <translation id="1643651787397909318">Knappen Gå til Chromes sikkerhedstjek, aktivér for at gå til siden for Chromes sikkerhedstjek i indstillingerne</translation>
 <translation id="1644574205037202324">Historik</translation>
+<translation id="1645004815457365098">Ukendt kilde</translation>
 <translation id="1645368109819982629">Ikke-understøttet protokol</translation>
 <translation id="1650602712345345441">Administrer dine Chrome-indstillinger</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2056658168519009885">Websites kan anmode Chrome om oplysninger med henblik på at personligt tilpasse de annoncer, du ser.</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2059202684901022309">22 x 34 tommer</translation>
-<translation id="206275378685759380">Vent med at købe</translation>
 <translation id="2064568741209980952">Kredit og udlån</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 forslag}one{# forslag}other{# forslag}}</translation>
 <translation id="2066915425250589881">anmode om sletning</translation>
@@ -1335,6 +1335,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="353816159217417898">Skærm (side)</translation>
 <translation id="3542628208405253498">Kortbillede</translation>
 <translation id="3542768452570884558">Åbn link i nyt vindue</translation>
+<translation id="3547442767634383572">Oversigt over arbejdsprofilen</translation>
 <translation id="3547746132308051926">20 x 24 tommer</translation>
 <translation id="3552155506104542239">Advarsel! Denne politik er i konflikt med <ph name="POLICY_NAME" /> og har ingen indflydelse på Android-apps. Ud over dette fungerer denne politik efter hensigten.</translation>
 <translation id="3552297013052089404">Sans Serif-skrifttype</translation>
@@ -2199,6 +2200,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5230733896359313003">Leveringsadresse</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">Din administrator har adgang til den administrerede profil, browseren og visse enhedsoplysninger. Administratoren kan f.eks. se følgende oplysninger:</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5238301240406177137">Gem på din konto</translation>
 <translation id="5239119062986868403">Normalpris</translation>
@@ -2212,6 +2214,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="52517543715119994">Få flere oplysninger om Chrome-funktioner</translation>
 <translation id="5251803541071282808">Skyen</translation>
 <translation id="5254043433801397071">Optimer udskriftsindhold</translation>
+<translation id="5255583962255635076">Browserpolitikker, der er anvendt på din arbejdsprofil</translation>
 <translation id="5255690596502591079">Tag screenshot alligevel</translation>
 <translation id="5255833070095767006">350 x 460 tommer</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administratorpolitikken fraråder at flytte denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at flytte denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at flytte disse filer til <ph name="DESTINATION_NAME" />}}</translation>
@@ -3332,6 +3335,7 @@ Yderligere oplysninger:
 <translation id="7421067045979951561">protokolhåndtering</translation>
 <translation id="7422347648202898039">Etiketter (sikkerhed)</translation>
 <translation id="7423283032694727565">Knappen Administrer cookies, aktivér for at administrere dine cookiepræferencer i Chrome-indstillingerne</translation>
+<translation id="742435751935045381">Installerede apps og udvidelser på din arbejdsprofil</translation>
 <translation id="7424421098814895617">Valgmuligheden for sletning af adresse blev valgt</translation>
 <translation id="7425037327577270384">Hjælp mig med at skrive</translation>
 <translation id="7425878584435172632">Visuel kunst og design</translation>
@@ -3878,6 +3882,7 @@ Yderligere oplysninger:
 Yderligere oplysninger:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Der er givet adgang til mikrofonen denne gang</translation>
+<translation id="8421158157346464398">Oplysninger om din arbejdsprofil (f.eks. brugernavnet for din arbejdsprofil)</translation>
 <translation id="8422228580902424274">Hackere på det website, du forsøger at besøge, kan narre dig til at installere software eller afsløre ting såsom din adgangskode, dit telefonnummer eller dit kreditkortnummer.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Skift</translation>
@@ -4247,6 +4252,7 @@ Yderligere oplysninger:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">De websites, du besøger, kan også skønne hvad du kan lide, baseret på din aktivitet på websitet. Hvis du f.eks. besøger et website, der sælger løbesko til langdistanceløb, kan websitet vurdere, at du er interesseret i at løbe maraton.</translation>
 <translation id="9166851138617700776">Flere oplysninger om foreslåede annoncer fra websites og annoncemåling</translation>
+<translation id="9167054383925257837">Oplysninger om browseren og enhedens OS (f.eks. browser- og OS-versioner)</translation>
 <translation id="9167594211215946097">Have direkte adgang til dine printere</translation>
 <translation id="9168814207360376865">Tillad, at websites kan tjekke, om du har gemte betalingsmetoder</translation>
 <translation id="9169664750068251925">Bloker altid på dette website</translation>

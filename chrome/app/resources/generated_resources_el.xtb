@@ -11,7 +11,6 @@
 <translation id="1005333234656240382">Θέλετε να ενεργοποιήσετε τον εντοπισμό και τη διόρθωση σφαλμάτων ADB;</translation>
 <translation id="1005671386794704751">Μπεζ ροζ</translation>
 <translation id="1006033052970139968">Η πρόσβαση στο μικρόφωνο επιτρέπεται για εφαρμογές, ιστοτόπους με άδεια μικροφώνου και υπηρεσίες συστήματος</translation>
-<translation id="1006557561787696884">Χρήση κλειδιών πρόσβασης στις συσκευές σας Apple</translation>
 <translation id="1006873397406093306">Αυτή η επέκταση μπορεί να διαβάσει και να αλλάξει τα δεδομένα σας στους ιστότοπους. Μπορείτε να ελέγξετε σε ποιους ιστότοπους αποκτά πρόσβαση η επέκταση.</translation>
 <translation id="1007057452468855774">Ενεργοποίηση του Google Play Store</translation>
 <translation id="1008186147501209563">Εξαγωγή σελιδοδεικτών</translation>
@@ -117,6 +116,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Δεν ήταν δυνατή η λήψη του λεξικού ορθογραφικού ελέγχου για τα <ph name="LANGUAGE" />. Δοκιμάστε ξανά.</translation>
 <translation id="1078037449555275327">Ρυθμίσεις ChromeVox</translation>
+<translation id="1079242569060319448">Ξεχάσατε το PIN;</translation>
 <translation id="1079285777677001938">Ορισμένες λειτουργίες κάποιων ιστοτόπων μπορεί να μην είναι διαθέσιμες.</translation>
 <translation id="1079766198702302550">Να μην επιτρέπεται ποτέ η πρόσβαση στην κάμερα</translation>
 <translation id="1080365971383768617">Κωδικοί πρόσβασης σε όλες τις συσκευές σας</translation>
@@ -1607,6 +1607,7 @@
 <translation id="2156877321344104010">Επανάληψη εκτέλεσης ελέγχου ασφαλείας</translation>
 <translation id="2157474325782140681">Για επιπλέον λειτουργίες, χρησιμοποιήστε μια βάση σύνδεσης Dell που έχει σχεδιαστεί για χρήση με αυτό το Chromebook.</translation>
 <translation id="215753907730220065">Έξοδος από πλήρη οθόνη</translation>
+<translation id="2157779167749714207">Η συσκευή <ph name="DEVICE_TYPE" /> διαθέτει το Gemini</translation>
 <translation id="2158249272743343757">Διαγραφή δεδομένων εξατομίκευσης…</translation>
 <translation id="2158475082070321257">Αντιγραφή συνδέσμου προς την επισήμανση</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2257,7 +2258,6 @@
 <translation id="2620215283731032047">Δεν είναι δυνατή η λήψη του αρχείου <ph name="FILE_NAME" /> με ασφάλεια.</translation>
 <translation id="2620245777360407679">Συσκευές που είναι συνδεδεμένες αυτήν τη στιγμή στο σημείο πρόσβασης Wi-Fi</translation>
 <translation id="2620436844016719705">Σύστημα</translation>
-<translation id="262087792756666314">Μπορείτε να καρφιτσώσετε αυτή τη λειτουργία για εύκολη πρόσβαση. Κάντε κλικ στο κουμπί Καρφίτσωμα στο επάνω μέρος του πλαϊνού πλαισίου</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="262154978979441594">Εκπαίδευση φωνητικού μοντέλου Βοηθού Google</translation>
 <translation id="2622280935687585828">Κατάργηση <ph name="SITE_NAME" /> από τους απενεργοποιημένους ιστοτόπους</translation>
@@ -2320,6 +2320,7 @@
 <translation id="2666247341166669829">Επίπεδο μπαταρίας αριστερού ακουστικού <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Άλλες εφαρμογές έχουν ρυθμιστεί να ανοίγουν τους ίδιους συνδέσμους με την εφαρμογή <ph name="APP_NAME" />. Με αυτή την ενέργεια, οι εφαρμογές <ph name="APP_NAME_2" /> και <ph name="APP_NAME_3" /> δεν θα μπορούν να ανοίγουν τους υποστηριζόμενους συνδέσμους.</translation>
 <translation id="2667463864537187133">Διαχείριση ορθογραφικού ελέγχου</translation>
+<translation id="2668094785979141847">Κάντε κλικ για έξοδο από το Google Lens</translation>
 <translation id="2669241540496514785">Δεν ήταν δυνατό το άνοιγμα της εφαρμογής <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Όλοι όσοι χρησιμοποιούν αυτήν τη συσκευή θα μπορούν να βλέπουν τα αρχεία που έχετε κατεβάσει</translation>
 <translation id="2670102641511624474">Η εφαρμογή <ph name="APP_NAME" /> μοιράζεται μια καρτέλα Chrome.</translation>
@@ -2441,6 +2442,7 @@
 <translation id="2749881179542288782">Γραμματικός Έλεγχος Μαζί με τον Ορθογραφικό</translation>
 <translation id="2750020734439919571">Περισσότερες ρυθμίσεις και άδειες εφαρμογών Chrome</translation>
 <translation id="2750602041558385535">Αποκλείστηκε μη επαληθευμένη λήψη</translation>
+<translation id="2753623023919742414">Κάντε κλικ για αναζήτηση</translation>
 <translation id="2754226775788136540">Αναζήτηση συσκευών Γρήγορης σύζευξης που είναι αποθηκευμένες στη διεύθυνση <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Βρείτε τις εφαρμογές που χρειάζεστε, τόσο για παραγωγικότητα όσο και ψυχαγωγία, στο Google Play Store. Μπορείτε να εγκαταστήσετε εφαρμογές ανά πάσα στιγμή.</translation>
 <translation id="2755349111255270002">Επαναφορά της συσκευής <ph name="DEVICE_TYPE" /></translation>
@@ -2456,6 +2458,7 @@
 <translation id="2765100602267695013">Επικοινωνήστε με τον πάροχο κινητής τηλεφωνίας σας.</translation>
 <translation id="2765217105034171413">Μικρό</translation>
 <translation id="2765820627968019645">Φωτεινό</translation>
+<translation id="276582196519778359">Εισαγάγετε το PIN για γονικούς ελέγχους</translation>
 <translation id="2766006623206032690">Επικό&amp;λληση και μετάβαση</translation>
 <translation id="2766161002040448006">Άδεια γονέα</translation>
 <translation id="2767077837043621282">Δεν ήταν δυνατή η ενημέρωση του Chromebook. Δοκιμάστε ξανά αργότερα.</translation>
@@ -2950,6 +2953,7 @@
 <translation id="3132996321662585180">Ανανέωση καθημερινά</translation>
 <translation id="3133184011320864289">Ενεργοποιήστε τον συγχρονισμό για να επιτρέψετε στο Chrome να προτείνει ομάδες καρτελών και να διατηρεί τις καρτέλες σας οργανωμένες</translation>
 <translation id="3134393957315651797">Επιλέξτε κατάσταση πειράματος για το πείραμα <ph name="EXPERIMENT_NAME" />. Περιγραφή πειράματος: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Σύρετε για αναζήτηση</translation>
 <translation id="3139925690611372679">Προεπιλεγμένο κίτρινο avatar</translation>
 <translation id="3141093262818886744">Άνοιγμα ούτως ή άλλως</translation>
 <translation id="3141318088920353606">Ακρόαση…</translation>
@@ -2999,6 +3003,8 @@
 <translation id="3183700187146209259">Δεν είναι δυνατή η εγκατάσταση του λογισμικού σαρωτή</translation>
 <translation id="3183944777708523606">Διάταξη οθόνης</translation>
 <translation id="3184536091884214176">Ρυθμίστε ή διαχειριστείτε εκτυπωτές CUPS. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
+<translation id="3184591616546256659">Χρησιμοποιήστε αυτό το PIN για να αλλάξετε τις ρυθμίσεις των γονικών ελέγχων.
+    Εάν ξεχάσετε το PIN, εκτελέστε powerwash σε αυτή τη συσκευή και ρυθμίστε την εκ νέου.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Αυτή η εφαρμογή έχει αποκλειστεί}other{Ορισμένες εφαρμογές έχουν αποκλειστεί}}</translation>
 <translation id="3187472288455401631">Μέτρηση διαφημίσεων</translation>
 <translation id="3187556136478864255">Μπορείτε να δείτε τη συσκευή μετάδοσης στην
@@ -4133,7 +4139,6 @@
 <translation id="4010036441048359843">Ενεργοποίηση επισήμανσης</translation>
 <translation id="4010746393007464819">Υπάρχει διαθέσιμη αναβάθμιση σε Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Για να μεταφέρετε τους σελιδοδείκτες σας στην κινητή συσκευή σας, <ph name="GET_IOS_APP_LINK" />.</translation>
-<translation id="4012268176861210196">Μπορείτε να καρφιτσώσετε αυτή τη λειτουργία για εύκολη πρόσβαση</translation>
 <translation id="4014432863917027322">Να γίνει επιδιόρθωση του "<ph name="EXTENSION_NAME" />";</translation>
 <translation id="4015163439792426608">Έχετε επεκτάσεις; <ph name="BEGIN_LINK" />Διαχειριστείτε τις επεκτάσεις σας<ph name="END_LINK" /> σε ένα βολικό μέρος.</translation>
 <translation id="4016762287427926315">Οι άδειες που επιτρέπετε για την εφαρμογή <ph name="APP_NAME" /> θα επιτρέπονται επίσης και για αυτή την εφαρμογή. <ph name="BEGIN_LINK" />Διαχείριση<ph name="END_LINK" /></translation>
@@ -6018,7 +6023,6 @@
 <translation id="5481941284378890518">Προσθήκη εκτυπωτών σε κοντινή απόσταση</translation>
 <translation id="5482417738572414119">Συνδεθείτε για να επιτρέψετε στο Chrome να προτείνει ομάδες καρτελών και να διατηρεί τις καρτέλες σας οργανωμένες</translation>
 <translation id="5483005706243021437">Παραμονή εδώ</translation>
-<translation id="5484181871714116891">Όταν είναι ενεργοποιημένα, τα κλειδιά πρόσβασης δημιουργούνται στο iCloud Keychain και είναι διαθέσιμα σε όλες τις συσκευές σας Apple. Όταν είναι απενεργοποιημένα, τα κλειδιά πρόσβασης δημιουργούνται στο προφίλ σας Chrome σε αυτήν τη συσκευή.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Ο τομέας <ph name="MANAGER" /> απαιτεί τη δημιουργία αντιγράφων ασφαλείας για τα δεδομένα σας και την επιστροφή της συσκευής <ph name="DEVICE_TYPE" /> σήμερα. <ph name="LINK_BEGIN" />Εμφάνιση λεπτομερειών<ph name="LINK_END" />}other{Ο τομέας <ph name="MANAGER" /> απαιτεί τη δημιουργία αντιγράφων ασφαλείας για τα δεδομένα σας και την επιστροφή της συσκευής <ph name="DEVICE_TYPE" /> εντός {NUM_DAYS} ημερών. <ph name="LINK_BEGIN" />Εμφάνιση λεπτομερειών<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Προσθήκη εφαρμογής</translation>
 <translation id="5485435764083510385">Προτιμώμενη γλώσσα υποτίτλων</translation>
@@ -8551,6 +8555,7 @@
 <translation id="741906494724992817">Αυτή η εφαρμογή δεν απαιτεί ειδικές άδειες.</translation>
 <translation id="7419142833919893307">Δεν προστέθηκε όνομα χρήστη</translation>
 <translation id="7419565702166471774">Να χρησιμοποιούνται πάντα ασφαλείς συνδέσεις</translation>
+<translation id="7419819959108735624">Επιλέξτε οτιδήποτε για αναζήτηση με το Google Lens</translation>
 <translation id="742130257665691897">Καταργήθηκαν σελιδοδείκτες</translation>
 <translation id="7421925624202799674">&amp;Προβολή Πηγαίου Κώδικα Σελίδας</translation>
 <translation id="7422192691352527311">Προτιμήσεις</translation>
@@ -10032,7 +10037,6 @@
 <translation id="8482077254400484047">Διαχειριστείτε εδώ την εμφάνιση των ανενεργών καρτελών</translation>
 <translation id="8483248364096924578">Διεύθυνση IP</translation>
 <translation id="8486666913807228950">Λόγος: Ο αντεστραμμένος κανόνας <ph name="REVERT_RULE" /> βρέθηκε στη λίστα Επιβολή ανοίγματος σε.</translation>
-<translation id="8487303289354211861">Καρφιτσώθηκε! Μπορείτε να αποκτήσετε ξανά πρόσβαση σε αυτή τη λειτουργία από το νέο κουμπί στη γραμμή εργαλείων</translation>
 <translation id="8487678622945914333">Μεγέθυνση</translation>
 <translation id="8487699605742506766">Σημείο πρόσβασης Wi-Fi</translation>
 <translation id="8489156414266187072">Οι προσωπικές προτάσεις εμφανίζονται μόνο στον λογαριασμό σας.</translation>
@@ -10292,6 +10296,7 @@
 <translation id="8685540043423825702">Το προφίλ σας στο Chrome</translation>
 <translation id="8686142379631285985">Έχετε συνδεθεί ως <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Ακύρωση <ph name="FILE_NAME" /></translation>
+<translation id="8687527282898211955">Ρυθμίστε το PIN σας</translation>
 <translation id="8688672835843460752">Διαθέσιμο</translation>
 <translation id="8689811383248488428">Απόρριψη και κλείσιμο προφίλ</translation>
 <translation id="8689998525144040851">100</translation>
@@ -10355,6 +10360,8 @@
           <ph name="LINE_BREAK" />
           (τα δεδομένα αυτόματης συμπλήρωσης δεν θα κοινοποιηθούν)</translation>
 <translation id="8729133765463465108">Χρήση της κάμερας για σάρωση κωδικών QR</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Συνομιλήστε με το Gemini για να ξεκινήσετε να γράφετε, να προγραμματίζετε, να μαθαίνετε και πολλά άλλα με το Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Μετά τη ρύθμιση, ξεκινήστε να χρησιμοποιείτε το Gemini επιλέγοντας την εφαρμογή Gemini στο ράφι, στο κάτω μέρος της οθόνης.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8731029916209785242">Άδειες (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Κωδικός ασφαλείας</translation>
@@ -10745,7 +10752,6 @@
 <translation id="9014674417732091912">Μετακινήθηκε στη σειρά <ph name="ROW_NUMBER" /></translation>
 <translation id="901668144954885282">Δημιουργία αντιγράφου ασφαλείας στο Google Drive</translation>
 <translation id="9016827136585652292">εναλλαγή οθόνης απορρήτου</translation>
-<translation id="9017055559700464094">Καρφιτσώθηκε! Χρησιμοποιήστε ξανά αυτή τη λειτουργία από τη γραμμή εργαλείων</translation>
 <translation id="90181708067259747">Ημερομηνία λήξης: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Η εγκατάσταση ολοκληρώθηκε</translation>
 <translation id="901876615920222131">Για να ανοίξετε ξανά την ομάδα, κάντε κλικ σε αυτήν</translation>
@@ -10872,6 +10878,7 @@
 <translation id="9102610709270966160">Ενεργοποίηση επέκτασης</translation>
 <translation id="9102864637938129124">Οι ιστότοποι και οι διαφημιζόμενοι μπορούν να κατανοούν την απόδοση των διαφημίσεων. Αυτή η ρύθμιση είναι ενεργοποιημένη.</translation>
 <translation id="9103868373786083162">Πατήστε για να επιστρέψετε στο μενού περιβάλλοντος για να δείτε το ιστορικό</translation>
+<translation id="9106236359747881194">Επιλογή κειμένου για αναζήτηση</translation>
 <translation id="9107096627210171112">Μ&amp;ετάφραση…</translation>
 <translation id="9108035152087032312">Όνομα και παράθυρο…</translation>
 <translation id="9108072915170399168">Η τρέχουσα ρύθμιση χρήσης δεδομένων είναι Χωρίς διαδίκτυο.</translation>

@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">ჩაწერა დასრულდა მეხსიერებაში კრიტიკულად არასაკმარისი სივრცის გამო</translation>
 <translation id="2449089818483227734">ბატარეის დაბალი მუხტი</translation>
 <translation id="2450205753526923158">ეკრანის ანაბეჭდის რეჟიმი</translation>
+<translation id="2453860139492968684">დასრულება</translation>
 <translation id="2455994958736234930">მისამართთა ზოლში www.-სა და .com-ის დამატება, შემდეგ კი ვებსაიტის გახსნა</translation>
 <translation id="2456008742792828469">კალენდარი, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">ბატარეის მდგომარეობა: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, ციკლების რაოდენობა: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">უსადენო ქსელის უზრუნველსაყოფად თქვენს ტელეფონს უნდ ჰქონდეს მობილური ინტერნეტი</translation>
 <translation id="2727175239389218057">პასუხი</translation>
 <translation id="2727977024730340865">შეერთებულია დაბალი სიმძლავრის დამტენთან. ბატარეის დატენვა შეიძლება არ იყოს სანდო.</translation>
+<translation id="2743301740238894839">დაწყება</translation>
 <translation id="2743387203779672305">კოპირება გაცვლის ბუფერში</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"წაშლა"</translation>
@@ -1836,6 +1838,7 @@
 <translation id="8042893070933512245">მარტივი წვდომის პარამეტრების მენიუს გახსნა</translation>
 <translation id="8044457332620420407">კლავიატურის შენათება გამორთულია</translation>
 <translation id="8048123526339889627">Bluetooth-ის პარამეტრები</translation>
+<translation id="8049189770492311300">ტაიმერი</translation>
 <translation id="8051716679295756675">შაბლონი სახელად „<ph name="DESK_TEMPLATE_NAME" />“ უკვე არსებობს</translation>
 <translation id="8052898407431791827">დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="8054466585765276473">ბატარეის დროის გამოთვლა.</translation>

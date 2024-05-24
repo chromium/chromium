@@ -4263,6 +4263,15 @@ Als je het beleid niet toepast, kunnen gebruikers hun pakketten op <ph name="PRO
 <translation id="439661169333921592">Toetsenbordfocusmarking op het inlogscherm uitzetten</translation>
 <translation id="4397045637922200204">Accountherstel deactiveren</translation>
 <translation id="4397464099112037398">Standaardinstelling voor het recht voor vensterplaatsing</translation>
+<translation id="4398803806072237638">De <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />-syntaxis voor de functie voor de aangepaste css-status wordt in <ph name="PRODUCT_NAME" /> gewijzigd in <ph name="CUSTOM_STATE_NEW_SYNTAX" /> om te voldoen aan wijzigingen die zijn aangebracht in <ph name="FIREFOX_PRODUCT_NAME" /> en <ph name="SAFARI_PRODUCT_NAME" />. Met dit beleid kan de oude beëindigde syntaxis worden aangezet tot M133.
+
+De beëindiging kan ertoe leiden dat sommige websites die alleen <ph name="PRODUCT_NAME" /> gebruiken, niet meer werken. Deze websites gebruiken de beëindigde <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />-syntaxis.
+
+Als je dit beleid toepast, wordt de oude beëindigde syntaxis aangezet.
+
+Als je dit beleid niet toepast, wordt de oude beëindigde syntaxis uitgezet.
+
+Als je dit beleid niet instelt, wordt de oude beëindigde syntaxis uitgezet.</translation>
 <translation id="4401196752827224189">WebSQL in niet-beveiligde contexten wordt verwijderd vanaf M110. Dit beleid zet de API opnieuw aan.
           Als je dit beleid instelt op True, is WebSQL in niet-beveiligde contexten beschikbaar.
           Als je dit beleid instelt op False of niet instelt, blijft WebSQL in niet-beveiligde contexten beschikbaar tot M109 en is dit niet meer beschikbaar vanaf M110.
@@ -4576,6 +4585,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
 Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alleen effect als je <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> hebt ingesteld op False.</translation>
 <translation id="4638906910792947645">Enquêtes in het product aanzetten</translation>
+<translation id="4641557638919545432">De oude beëindigde syntaxis wordt aangezet.</translation>
 <translation id="4646626362889216307">Als je het beleid instelt, kunnen de geselecteerde beleidsregels worden samengevoegd als ze afkomstig zijn van verschillende bronnen en hetzelfde bereik en niveau hebben. Dit samenvoegen vindt plaats in de sleutels op het eerste niveau van het woordenboek uit elke bron. De waarde die afkomstig is van de bron met de hoogste prioriteit, krijgt voorrang.
 
       Gebruik het jokerteken '*' om samenvoeging van alle ondersteunde woordenboekbeleidsregels toe te staan.
@@ -5283,6 +5293,7 @@ Opmerking: Deze functie is nog niet algemeen beschikbaar, dus als je deze aanzet
       'Versie' kan in dit geval een exacte versie zijn (zoals '61.0.3163.120') of een versievoorvoegsel (zoals '61.0').  </translation>
 <translation id="5247584184349816217">De screensaver op het vergrendelscherm aanzetten.</translation>
 <translation id="5247973380763021389">Voorkomen dat cloudbeleidsregels voor gebruikers cloudbeleidsregels voor machines overschrijven.</translation>
+<translation id="5249006530384016395">Bepaalt of de beëindigde <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />-syntaxis voor de aangepaste css-status aanstaat</translation>
 <translation id="5249453807420671499">Gebruikers kunnen Kerberos-accounts toevoegen</translation>
 <translation id="5249555581286638799">Modus voor hoge efficiëntie aanzetten</translation>
 <translation id="5252210248395576403">Dit beleid geeft Snelle antwoorden toegang tot geselecteerde content en toestemming om de informatie naar de server te sturen om vertaalresultaten te krijgen.
@@ -9572,6 +9583,7 @@ Hieronder vallen rapporten die zijn aangezet door <ph name="CLOUD_REPORTING_ENAB
 
 Als het beleid niet is ingesteld, worden rapporten elke 24 uur geüpload.
 Als het beleid is ingesteld, wordt het aantal uren tussen 2 opeenvolgende rapportuploads gedefinieerd door dit beleid.</translation>
+<translation id="8613622696148230463">De oude beëindigde syntaxis wordt uitgezet.</translation>
 <translation id="8618037841203431360">Met dit beleid wordt bepaald of beleidsgegevens en het tijdstip van de beleidsfetch worden gerapporteerd.
 
 Als je het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet instelt of niet toepast, wordt dit beleid genegeerd.

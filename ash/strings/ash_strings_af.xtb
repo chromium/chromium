@@ -358,6 +358,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2441427462554639370">Opname het geëindig omdat skyfspasie gevaarlik min was</translation>
 <translation id="2449089818483227734">Battery is byna pap</translation>
 <translation id="2450205753526923158">Skermkiekiemodus</translation>
+<translation id="2453860139492968684">Voltooi</translation>
 <translation id="2455994958736234930">Voeg www. en .com by die adresbalk en maak dan die bladsy oop</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Batterygesondheid <ph name="BATTERY_HEALTH_PERCENTAGE" />%, siklustelling <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2726420622004325180">Jou foon moet mobiele data hê om 'n warmkol te verskaf</translation>
 <translation id="2727175239389218057">Antwoord</translation>
 <translation id="2727977024730340865">By 'n laekrag-laaier ingeprop. Laai van battery is dalk nie betroubaar nie.</translation>
+<translation id="2743301740238894839">Begin</translation>
 <translation id="2743387203779672305">Kopieer na knipbord</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Vee uit"</translation>
@@ -1837,6 +1839,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8042893070933512245">Maak toeganklikheidinstellingskieslys oop</translation>
 <translation id="8044457332620420407">Sleutelbord se agterlig is af</translation>
 <translation id="8048123526339889627">Bluetooth-instellings</translation>
+<translation id="8049189770492311300">Tydhouer</translation>
 <translation id="8051716679295756675">Templaat genaamd <ph name="DESK_TEMPLATE_NAME" /> bestaan reeds</translation>
 <translation id="8052898407431791827">Gekopieer na knipbord</translation>
 <translation id="8054466585765276473">Bereken tans batterytyd.</translation>

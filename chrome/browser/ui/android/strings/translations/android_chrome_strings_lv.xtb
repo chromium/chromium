@@ -96,6 +96,7 @@
 <translation id="1436784010935106834">Noņemts</translation>
 <translation id="1437543266176261764">Darbojas pārlūkā <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Kārtojiet savus izsekotos produktus grāmatzīmēs</translation>
+<translation id="1460751212339734034">Ietaupiet laiku — rakstiet mazāk</translation>
 <translation id="1466383950273130737">Izvēlieties pārlūka Chrome valodu</translation>
 <translation id="1477626028522505441">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās servera problēmas.</translation>
 <translation id="1480287803138246127">Šeit var nebūt redzama daļa jūsu vēstures. Lai skatītu visu savu Chrome vēsturi, atveriet pilno Chrome vēsturi.</translation>
@@ -843,6 +844,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5264813352784073502">pēdējās 24 stundas</translation>
 <translation id="5271967389191913893">Ierīcē nevar atvērt lejupielādējamo saturu.</translation>
 <translation id="5292796745632149097">Sūtīt uz:</translation>
+<translation id="5301876394151419436">Jūs esat pierakstījies ar kontu <ph name="EMAIL" />. Jebkurā brīdī iestatījumos varat apturēt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="5304593522240415983">Šis lauks nevar būt tukšs.</translation>
 <translation id="5308380583665731573">Pievienot</translation>
 <translation id="5316947901395241499">Jūsu administrators ir izslēdzis paroļu saglabāšanu.</translation>
@@ -1542,6 +1544,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8526855376374973824">Paziņojumu atļaujas plūsma</translation>
 <translation id="8540136935098276800">Ievadiet pareizi formatētu URL.</translation>
 <translation id="854522910157234410">Atvērt šo lapu</translation>
+<translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Neaktīva cilne (1)}zero{Neaktīvas cilnes (#)}one{Neaktīvas cilnes (#)}other{Neaktīvas cilnes (#)}}</translation>
 <translation id="8551513938758868521">Bloķēt inkognito cilnes, aizverot pārlūku Chrome</translation>
 <translation id="8551524210492420949">Aizvainojošs vai nedrošs</translation>
 <translation id="8559961053328923750">Pārlūkā Chrome tiek ierobežots kopējais to datu apjoms, ko vietnes pārlūkā var kopīgot reklāmu veiktspējas izvērtēšanai</translation>
@@ -1645,6 +1648,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="9102803872260866941">Priekšskatījuma cilne ir atvērta</translation>
 <translation id="9102864637938129124">Vietnes un reklāmdevēji var izprast reklāmu veiktspēju. Šis iestatījums ir ieslēgts.</translation>
 <translation id="9104217018994036254">Ierīču saraksts, ar ko kopīgot cilni.</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Neesat izmantojis vismaz vienu dienu.}zero{Neesat izmantojis vismaz # dienas.}one{Neesat izmantojis vismaz # dienu.}other{Neesat izmantojis vismaz # dienas.}}</translation>
 <translation id="9106148373857059373">Grāmatzīmes saglabāšanas plūsma ir aizvērta</translation>
 <translation id="9108312223223904744">Atbalsts, kas var palīdzēt izmantot tālruni kā drošības atslēgu</translation>
 <translation id="9108808586816295166">Drošs DNS serveris var nebūt pieejams visu laiku.</translation>

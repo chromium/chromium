@@ -360,6 +360,7 @@
 <translation id="1641976391427233992">ডিলে আউটপুট</translation>
 <translation id="1643651787397909318">Chrome নিরাপত্তা সংক্রান্ত পরীক্ষা পেজে ভিজিট করতে, সেটিংসের মধ্যে Chrome 'নিরাপত্তা সংক্রান্ত পরীক্ষা' বোতামে গিয়ে সেটি চালু করুন</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
+<translation id="1645004815457365098">অজানা সোর্স</translation>
 <translation id="1645368109819982629">অসমর্থিত প্রোটোকল</translation>
 <translation id="1650602712345345441">আপনার Chrome সেটিংস ম্যানেজ করুন</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -576,7 +577,6 @@
 <translation id="2056658168519009885">আপনি যে বিজ্ঞাপনগুলি দেখেন তা পছন্দমতো করতে সাইটগুলি Chrome এর কাছে তথ্য চাইতে পারে।</translation>
 <translation id="2059166748188874810">মিউনিসিপ্যালিটি</translation>
 <translation id="2059202684901022309">২২ x ৩৪ ইঞ্চি</translation>
-<translation id="206275378685759380">কেনার জন্য অপেক্ষা করুন</translation>
 <translation id="2064568741209980952">ক্রেডিট ও ধার দেওয়া</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{১টি প্রস্তাব}one{#টি প্রস্তাব}other{#টি প্রস্তাব}}</translation>
 <translation id="2066915425250589881">মুছে ফেলার অনুরোধ</translation>
@@ -1336,6 +1336,7 @@
 <translation id="353816159217417898">স্ক্রিন (পেজেড)</translation>
 <translation id="3542628208405253498">কার্ডের ছবি</translation>
 <translation id="3542768452570884558">নতুন উইন্ডোতে লিঙ্ক খুলুন</translation>
+<translation id="3547442767634383572">এক নজরে অফিস প্রোফাইল</translation>
 <translation id="3547746132308051926">২০ x ২৪ ইঞ্চি</translation>
 <translation id="3552155506104542239">সতর্কতা: এই নীতি <ph name="POLICY_NAME" />-এর বিরোধী এবং Android অ্যাপের উপর কোনও প্রভাব ফেলবে না। তবে, এই নীতি প্রত্যাশা অনুযআয়ী কাজ করছে।</translation>
 <translation id="3552297013052089404">Sans-Serif ফন্ট</translation>
@@ -2200,6 +2201,7 @@
 <translation id="5230733896359313003">শিপিংয়ের ঠিকানা</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করা প্রোফাইল, ব্রাউজার ও কিছু ডিভাইসের তথ্য অ্যাক্সেস করতে পারবেন। তারা নিম্নলিখিতগুলির মতো তথ্য দেখতে পেতে পারবেন:</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5238301240406177137">অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="5239119062986868403">সাধারণ দাম</translation>
@@ -2213,6 +2215,7 @@
 <translation id="52517543715119994">Chrome-এর ফিচার সম্পর্কে জানুন</translation>
 <translation id="5251803541071282808">ক্লাউড</translation>
 <translation id="5254043433801397071">প্রিন্ট কন্টেন্ট অপ্টিমাইজ করুন</translation>
+<translation id="5255583962255635076">আপনার অফিস প্রোফাইলে প্রয়োগ করা ব্রাউজার নীতি</translation>
 <translation id="5255690596502591079">তবুও ক্যাপচার করুন</translation>
 <translation id="5255833070095767006">৩৫০ x ৪৬০ মিমি</translation>
 <translation id="5257739419779698609">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল কপি করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল কপি করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল কপি করা যাবে না}}</translation>
@@ -3332,6 +3335,7 @@
 <translation id="7421067045979951561">প্রোটোকল হ্যান্ডলার</translation>
 <translation id="7422347648202898039">লেবেল (সিকিউরিটি)</translation>
 <translation id="7423283032694727565">'কুকি ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনার কুকি সংক্রান্ত পছন্দ ম্যানেজ করতে এটি চালু করুন</translation>
+<translation id="742435751935045381">আপনার অফিস প্রোফাইলে অ্যাপ ও এক্সটেনশন ইনস্টল করা হয়েছে</translation>
 <translation id="7424421098814895617">ঠিকানা মুছে দেওয়ার বিকল্প বেছে নেওয়া হয়েছে</translation>
 <translation id="7425037327577270384">আমাকে লিখতে সাহায্য করো</translation>
 <translation id="7425878584435172632">ভিজ্যুয়াল আর্ট ও ডিজাইন</translation>
@@ -3878,6 +3882,7 @@
 অতিরিক্ত বিবরণ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">এই সময় মাইক্রোফোনের অনুমতি দেওয়া হয়েছে</translation>
+<translation id="8421158157346464398">অফিস প্রোফাইল সম্পর্কিত তথ্য (যেমন আপনার অফিস প্রোফাইলের ইউজারনেম)</translation>
 <translation id="8422228580902424274">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত আক্রমণকারীরা আপনাকে দিয়ে কৌশলে সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। এর সাহায্যে আপনার পাসওয়ার্ড, ফোন অথবা ক্রেডিট কার্ড নম্বরের মতো তথ্য প্রকাশ করিয়ে দিতে পারে।</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
@@ -4246,6 +4251,7 @@
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">আপনি যে সাইটগুলি ভিজিট করেন সেগুলি সাইটে আপনার অ্যাক্টিভিটির উপর ভিত্তি করে আপনি কী পছন্দ করেন তা নির্ধারণ করতে পারে। যেমন, আপনি যদি দৌড়োনোর জুতো বিক্রি করে এমন একটি ওয়েবসাইট ভিজিট করেন, তাহলে সাইটগুলি অনুমান করতে পারে যে আপনি ম্যারাথনে দৌড়তে আগ্রহী।</translation>
 <translation id="9166851138617700776">সাইট-প্রস্তাবিত বিজ্ঞাপন এবং বিজ্ঞাপন পরিমাপ সম্পর্কে আরও অনেক কিছু</translation>
+<translation id="9167054383925257837">ব্রাউজার ও ডিভাইস OS সম্পর্কিত তথ্য (যেমন ব্রাউজার ও OS ভার্সন)</translation>
 <translation id="9167594211215946097">আপনার প্রিন্টারে সরাসরি অ্যাক্সেস পান</translation>
 <translation id="9168814207360376865">আপনি কোনও পেমেন্ট পদ্ধতি সেভ করেছেন কিনা তা সাইটগুলিকে যাচাই করতে দিন</translation>
 <translation id="9169664750068251925">এই সাইটে সর্বদা অবরোধ করুন</translation>

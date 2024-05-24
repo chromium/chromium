@@ -360,6 +360,7 @@
 <translation id="1641976391427233992">出力のタイミング</translation>
 <translation id="1643651787397909318">[Chrome の安全チェックに移動] ボタンです。ボタンを押すと、Chrome 設定の安全チェックページに移動します</translation>
 <translation id="1644574205037202324">履歴</translation>
+<translation id="1645004815457365098">不明な提供元</translation>
 <translation id="1645368109819982629">サポートされていないプロトコルです</translation>
 <translation id="1650602712345345441">Chrome の設定を管理します</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@
 <translation id="2056658168519009885">パーソナライズド広告を表示するため、ウェブサイトから Chrome に情報を要求することがあります。</translation>
 <translation id="2059166748188874810">市区町村</translation>
 <translation id="2059202684901022309">22x34 インチ</translation>
-<translation id="206275378685759380">買い時でない</translation>
 <translation id="2064568741209980952">クレジット、貸付</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 件の候補}other{# 件の候補}}</translation>
 <translation id="2066915425250589881">削除のリクエスト</translation>

@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">स्टोरेज जागा अतिशय कमी असल्यामुळे रेकॉर्डिंग संपले</translation>
 <translation id="2449089818483227734">बॅटरी कमी आहे</translation>
 <translation id="2450205753526923158">स्क्रीनशॉट मोड</translation>
+<translation id="2453860139492968684">समाप्त</translation>
 <translation id="2455994958736234930">अ‍ॅड्रेस बारमध्ये www. आणि .com जोडा, त्यानंतर वेबसाइट उघडा</translation>
 <translation id="2456008742792828469">कॅलेंडर, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">बॅटरीची स्थिती <ph name="BATTERY_HEALTH_PERCENTAGE" />%, चक्राची संख्या <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">हॉटस्पॉट पुरवण्यासाठी तुमच्या फोनमध्ये मोबाइल डेटा असणे आवश्यक आहे</translation>
 <translation id="2727175239389218057">उत्तर द्या</translation>
 <translation id="2727977024730340865">एका निम्न-उर्जेच्या चार्जरवर प्लग इन केले. बॅटरी चार्जिंग विश्वसनीय असू शकत नाही.</translation>
+<translation id="2743301740238894839">सुरू करा</translation>
 <translation id="2743387203779672305">क्लिपबोर्डवर कॉपी करा</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"हटवा"</translation>
@@ -1836,6 +1838,7 @@
 <translation id="8042893070933512245">अ‍ॅक्सेसिबिलिटी सेटिंग्ज मेनू उघडा</translation>
 <translation id="8044457332620420407">कीबोर्ड बॅकलाइट बंद आहे</translation>
 <translation id="8048123526339889627">ब्लूटूथ सेटिंग्ज</translation>
+<translation id="8049189770492311300">टायमर</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नावाचे टेंप्लेट आधीपासून अस्तित्वात आहे</translation>
 <translation id="8052898407431791827">क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="8054466585765276473">बॅटरी वेळ गणना करत आहे.</translation>

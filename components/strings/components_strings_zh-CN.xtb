@@ -360,6 +360,7 @@
 <translation id="1641976391427233992">将输出时间延迟至</translation>
 <translation id="1643651787397909318">“前往 Chrome 安全检查页面”按钮，激活它即可访问“设置”中的 Chrome“安全检查”页面</translation>
 <translation id="1644574205037202324">历史记录</translation>
+<translation id="1645004815457365098">来源不明</translation>
 <translation id="1645368109819982629">协议不受支持</translation>
 <translation id="1650602712345345441">管理您的 Google 设置</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -575,7 +576,6 @@
 <translation id="2056658168519009885">网站可请求 Chrome 提供相关信息，以便向您展示个性化广告。</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2059202684901022309">22 x 34 英寸</translation>
-<translation id="206275378685759380">等待购买</translation>
 <translation id="2064568741209980952">信贷</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 条建议}other{# 条建议}}</translation>
 <translation id="2066915425250589881">请求删除</translation>
@@ -1332,6 +1332,7 @@
 <translation id="353816159217417898">屏幕（分页）</translation>
 <translation id="3542628208405253498">虚拟卡图片</translation>
 <translation id="3542768452570884558">在新窗口中打开链接</translation>
+<translation id="3547442767634383572">工作资料概览</translation>
 <translation id="3547746132308051926">20 x 24 英寸</translation>
 <translation id="3552155506104542239">警告：此政策与 <ph name="POLICY_NAME" /> 冲突，不会影响 Android 应用。否则，此政策将会按预期运行。</translation>
 <translation id="3552297013052089404">Sans-Serif 字体</translation>
@@ -2195,6 +2196,7 @@
 <translation id="5230733896359313003">送货地址</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
+<translation id="5233071178832586743">您的管理员可以访问受管个人资料、浏览器和部分设备信息。他们可以查看如下信息：</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5238301240406177137">保存到账号</translation>
 <translation id="5239119062986868403">一般价格</translation>
@@ -2208,6 +2210,7 @@
 <translation id="52517543715119994">了解各项 Chrome 功能</translation>
 <translation id="5251803541071282808">云端</translation>
 <translation id="5254043433801397071">优化打印内容</translation>
+<translation id="5255583962255635076">您的工作资料中已应用的浏览器政策</translation>
 <translation id="5255690596502591079">仍然截取/录制</translation>
 <translation id="5255833070095767006">350 x 460 毫米</translation>
 <translation id="5257739419779698609">{0,plural, =1{管理员政策不建议将这个文件复制到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件复制到<ph name="DESTINATION_NAME" />}}</translation>
@@ -3327,6 +3330,7 @@
 <translation id="7421067045979951561">协议处理程序</translation>
 <translation id="7422347648202898039">标签（安全防伪标签）</translation>
 <translation id="7423283032694727565">“管理 Cookie”按钮，激活它即可在 Chrome 设置中管理您的 Cookie 偏好设置</translation>
+<translation id="742435751935045381">您的工作资料中已安装的应用和扩展程序</translation>
 <translation id="7424421098814895617">已选择“删除地址”选项</translation>
 <translation id="7425037327577270384">帮我写</translation>
 <translation id="7425878584435172632">视觉艺术与设计</translation>
@@ -3873,6 +3877,7 @@
 更多详情：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">这次可以使用麦克风</translation>
+<translation id="8421158157346464398">工作资料信息（例如工作资料用户名）</translation>
 <translation id="8422228580902424274">您正在尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> - <ph name="SECOND_LABEL" /> - <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">更改</translation>
@@ -4241,6 +4246,7 @@
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">您访问的网站也可根据您在网站上的活动来判断您的喜好。例如，如果您访问一个销售长跑鞋的网站，该网站可能会推测您对跑马拉松感兴趣。</translation>
 <translation id="9166851138617700776">详细了解网站建议的广告和广告衡量功能</translation>
+<translation id="9167054383925257837">浏览器和设备操作系统信息（例如浏览器和操作系统版本）</translation>
 <translation id="9167594211215946097">直接访问您的打印机</translation>
 <translation id="9168814207360376865">允许网站检查您是否已保存付款方式</translation>
 <translation id="9169664750068251925">在此网站上始终阻止</translation>

@@ -11,7 +11,6 @@
 <translation id="1005333234656240382">Vil du slå på ADB-feilsøking?</translation>
 <translation id="1005671386794704751">Rosa</translation>
 <translation id="1006033052970139968">Mikrofontilgang er tillatt for apper, nettsteder med mikrofontillatelsen og systemtjenester</translation>
-<translation id="1006557561787696884">Bruk passnøkler på alle Apple-enhetene dine</translation>
 <translation id="1006873397406093306">Denne utvidelsen kan lese og endre dataene dine på nettsteder. Du kan kontrollere hvilke nettsteder utvidelsen har tilgang til.</translation>
 <translation id="1007057452468855774">Slå på Google Play Butikk</translation>
 <translation id="1008186147501209563">Eksportér bokmerker</translation>
@@ -1602,6 +1601,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2156877321344104010">Kjør sikkerhetssjekken på nytt</translation>
 <translation id="2157474325782140681">For å få flere funksjoner, bruk en Dell-dokkingstasjon som er laget for å fungere sammen med denne Chromebooken.</translation>
 <translation id="215753907730220065">Avslutt fullskjermmodus</translation>
+<translation id="2157779167749714207">Gemini følger med <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">Slett data for personlig tilpassing…</translation>
 <translation id="2158475082070321257">Kopiér link til markert tekst</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2253,7 +2253,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kan ikke lastes ned sikkert.</translation>
 <translation id="2620245777360407679">Enheter som for øyeblikket er koblet til wifi-sonen</translation>
 <translation id="2620436844016719705">System</translation>
-<translation id="262087792756666314">Du kan feste denne funksjonen for enkel tilgang. Klikk på Fest-knappen øverst i sidepanelet.</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="262154978979441594">Tren stemmemodellen for Google-assistenten</translation>
 <translation id="2622280935687585828">Fjern <ph name="SITE_NAME" /> fra deaktiverte nettsteder</translation>
@@ -4133,7 +4132,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4010036441048359843">Slå på fremheving</translation>
 <translation id="4010746393007464819">En oppgradering til Debian 12 (Bookworm) er tilgjengelig</translation>
 <translation id="4010917659463429001">For å få bokmerker på mobilenheten din, <ph name="GET_IOS_APP_LINK" />.</translation>
-<translation id="4012268176861210196">Du kan feste denne funksjonen for enkel tilgang</translation>
 <translation id="4014432863917027322">Vil du reparere «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="4015163439792426608">Har du utvidelser? <ph name="BEGIN_LINK" />Administrer utvidelsene<ph name="END_LINK" /> på ett praktisk sted.</translation>
 <translation id="4016762287427926315">Tillatelser du gir <ph name="APP_NAME" />, blir også gitt til denne appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
@@ -6016,7 +6014,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5481941284378890518">Legg til skrivere i nærheten</translation>
 <translation id="5482417738572414119">Logg på for å la Chrome foreslå fanegrupper og organisere fanene dine</translation>
 <translation id="5483005706243021437">Jeg vil bli her</translation>
-<translation id="5484181871714116891">Når dette er på, opprettes passnøkler i iCloud-nøkkelringen og blir tilgjengelige på Apple-enhetene dine. Når dette er av, opprettes passnøkler i Chrome-profilen din på denne enheten.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}other{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen {NUM_DAYS} dager. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Legg til appen</translation>
 <translation id="5485435764083510385">Foretrukket språk for teksting</translation>
@@ -10030,7 +10027,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8482077254400484047">Administrer utseendet til inaktive faner her</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
 <translation id="8486666913807228950">Årsak: Fant den inverterte regelen <ph name="REVERT_RULE" /> på «Tving åpning i»-listen.</translation>
-<translation id="8487303289354211861">Festet. Du finner igjen denne funksjonen via den nye knappen på verktøylinjen</translation>
 <translation id="8487678622945914333">Zoom inn</translation>
 <translation id="8487699605742506766">Wifi-sone</translation>
 <translation id="8489156414266187072">Personlige forslag vises kun på kontoen din</translation>
@@ -10354,6 +10350,8 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
           <ph name="LINE_BREAK" />
           (autofyll-dataene dine deles ikke)</translation>
 <translation id="8729133765463465108">Bruk kameraet for å skanne QR-koden</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Chat med Gemini for å komme i gang med skriving, planlegging, læring med mer ved hjelp av AI fra Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Etter konfigureringen kan du begynne å bruke Gemini ved å velge Gemini-appen på hyllen nederst på skjermen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8731029916209785242">Tillatelser (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Sikkerhetskode</translation>
@@ -10746,7 +10744,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9014674417732091912">Flyttet til rad <ph name="ROW_NUMBER" /></translation>
 <translation id="901668144954885282">Sikkerhetskopiér til Google Disk</translation>
 <translation id="9016827136585652292">slå av/på personvernskjerm</translation>
-<translation id="9017055559700464094">Festet. Du kan bruke denne funksjonen igjen via verktøylinjen</translation>
 <translation id="90181708067259747">Utløpsdato: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installasjonen er fullført</translation>
 <translation id="901876615920222131">For å gjenåpne gruppen, klikk på gruppen</translation>

@@ -358,6 +358,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2441427462554639370">Regjistrimi u mbyll për shkak të nivelit jashtëzakonisht të ulët të hapësirës ruajtëse</translation>
 <translation id="2449089818483227734">Bateria në nivel të ulët</translation>
 <translation id="2450205753526923158">Modaliteti i pamjes së ekranit</translation>
+<translation id="2453860139492968684">Përfundo</translation>
 <translation id="2455994958736234930">Shto www. dhe .com në shiritin e adresës dhe më pas hap sajtin e uebit</translation>
 <translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Integriteti i baterisë: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, numri i cikleve: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2726420622004325180">Telefoni yt duhet të përdorë të dhënat celulare për të ofruar një zonë qasjeje për internet</translation>
 <translation id="2727175239389218057">Përgjigju</translation>
 <translation id="2727977024730340865">E lidhur me një karikues me fuqi të ulët. Ngarkimi i baterisë mund të mos jetë i sigurt.</translation>
+<translation id="2743301740238894839">Nis</translation>
 <translation id="2743387203779672305">Kopjo te kujtesa e fragmenteve</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Fshi"</translation>
@@ -1836,6 +1838,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8042893070933512245">Hap menynë e cilësimeve të qasshmërisë</translation>
 <translation id="8044457332620420407">Drita e pasme e tastierës është e fikur</translation>
 <translation id="8048123526339889627">Cilësimet e Bluetooth-it</translation>
+<translation id="8049189770492311300">Kohëmatësi</translation>
 <translation id="8051716679295756675">Shablloni me emrin "<ph name="DESK_TEMPLATE_NAME" />" ekziston tashmë</translation>
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>
 <translation id="8054466585765276473">Po llogarit kohën e baterisë.</translation>

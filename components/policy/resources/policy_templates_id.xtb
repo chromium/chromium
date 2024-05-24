@@ -191,6 +191,7 @@ Jika kebijakan ini tidak disetel, tidak akan ada pengecualian untuk <ph name="DE
 <translation id="1107538157073168076">Nonaktifkan ekstensi insight</translation>
 <translation id="1110426799149444997">Nonaktifkan penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Jangan tampilkan layar setelan ukuran tampilan selama login</translation>
+<translation id="1111824532252882775">Diaktifkan: Scroller dapat difokuskan secara default.</translation>
 <translation id="1117535567637097036">Penanganan protokol yang disetel melalui kebijakan ini tidak digunakan ketika menangani maksud Android.</translation>
 <translation id="1118093128235245168">Izinkan situs meminta pengguna memberikan akses ke perangkat USB yang terhubung</translation>
 <translation id="111910763555783249">Setelan notifikasi</translation>
@@ -4433,6 +4434,15 @@ Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat melacak paket mere
 <translation id="439661169333921592">Nonaktifkan sorotan fokus keyboard di layar login</translation>
 <translation id="4397045637922200204">Nonaktifkan pemulihan akun</translation>
 <translation id="4397464099112037398">Setelan default izin Penempatan Jendela</translation>
+<translation id="4398803806072237638">Fitur sintaksis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> untuk status kustom CSS diubah menjadi <ph name="CUSTOM_STATE_NEW_SYNTAX" /> di <ph name="PRODUCT_NAME" /> untuk mematuhi perubahan yang telah dibuat di <ph name="FIREFOX_PRODUCT_NAME" /> dan <ph name="SAFARI_PRODUCT_NAME" />. Kebijakan ini memungkinkan sintaksis lama yang sudah tidak digunakan lagi diaktifkan hingga M133.
+
+Penghentian penggunaan tersebut dapat merusak beberapa situs khusus <ph name="PRODUCT_NAME" /> yang menggunakan sintaksis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> yang sudah tidak digunakan lagi.
+
+Jika kebijakan ini disetel ke aktif, sintaksis lama yang sudah tidak digunakan lagi akan diaktifkan.
+
+Jika kebijakan ini disetel ke nonaktif, sintaksis lama yang sudah tidak digunakan lagi akan dinonaktifkan.
+
+Jika kebijakan ini tidak disetel, sintaksis lama yang sudah tidak digunakan lagi akan dinonaktifkan.</translation>
 <translation id="4401196752827224189">Mulai M110, WebSQL dalam konteks yang tidak aman akan dihapus. Kebijakan ini akan mengaktifkan kembali API tersebut.
           Jika kebijakan ini disetel ke benar (true), WebSQL dalam konteks yang tidak aman akan tersedia.
           Jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL dalam konteks yang tidak aman akan tetap tersedia hingga M109, lalu tidak tersedia mulai M110.
@@ -4783,6 +4793,7 @@ Jika kebijakan tidak disetel, pengguna akan diizinkan mengubah daftar aplikasi t
 
 Menyetel <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> hanya akan berpengaruh jika <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> disetel ke Salah (False).</translation>
 <translation id="4638906910792947645">Aktifkan survei dalam produk</translation>
+<translation id="4641557638919545432">Sintaksis lama yang sudah tidak digunakan lagi akan diaktifkan.</translation>
 <translation id="4646626362889216307">Jika kebijakan disetel, penggabungan kebijakan yang dipilih akan memungkinkan jika kebijakan tersebut berasal dari sumber yang berbeda, dengan cakupan dan level yang sama. Penggabungan ini ada di kunci level pertama kamus dari setiap sumber. Kunci yang berasal dari sumber prioritas tertinggi akan diutamakan.
 
       Gunakan karakter pengganti '*' untuk mengizinkan penggabungan semua kebijakan kamus yang didukung.
@@ -5504,6 +5515,7 @@ Catatan: Fitur ini belum tersedia secara umum, sehingga mengaktifkannya tidak be
       "Versi" di sini bisa merupakan versi yang tepat seperti '61.0.3163.120' atau awalan versi, seperti '61.0'  </translation>
 <translation id="5247584184349816217">Aktifkan screensaver di layar kunci.</translation>
 <translation id="5247973380763021389">Cegah kebijakan cloud pengguna mengabaikan kebijakan cloud perangkat.</translation>
+<translation id="5249006530384016395">Mengontrol apakah sintaksis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> yang sudah tidak digunakan lagi untuk status kustom CSS akan diaktifkan atau tidak</translation>
 <translation id="5249453807420671499">Pengguna dapat menambahkan akun Kerberos</translation>
 <translation id="5249555581286638799">Mengaktifkan Mode Efisiensi Tinggi</translation>
 <translation id="5252210248395576403">Kebijakan ini memberikan izin kepada fitur Jawaban Instan untuk mengakses konten yang dipilih dan mengirimkan info ke server untuk mendapatkan hasil terjemahan.
@@ -7140,6 +7152,7 @@ Jika kebijakan ini tidak disetel, pengguna akan dapat mengaktifkan atau menonakt
 <translation id="6452882999388592166">Jika disetel ke Aktif, ekstensi komponen CryptoToken bawaan akan dimuat saat browser dimulai. Jika disetel ke Nonaktif atau tidak disetel, CryptoToken tidak akan dimuat saat browser dimulai. Kebijakan ini dimaksudkan sebagai solusi sementara untuk situs yang rusak karena `chrome.runtime` tidak ditentukan sebagai efek samping penghapusan CryptoToken di M106. Situs tidak boleh bergantung pada `chrome.runtime` yang ditentukan tanpa syarat.</translation>
 <translation id="6453641799812499182">Mengaktifkan mitigasi pemeriksaan <ph name="CORS" /> dalam implementasi <ph name="CORS" /> yang baru</translation>
 <translation id="645425387487868471">Aktifkan login paksa untuk <ph name="PRODUCT_NAME" /></translation>
+<translation id="6454450724849956537">Mengaktifkan scroller yang dapat difokuskan keyboard</translation>
 <translation id="645467061280066516">Jika kebijakan disetel ke Aktif, halaman beranda pengguna akan menjadi halaman Tab Baru dan lokasi URL halaman beranda lain akan diabaikan. Jika kebijakan disetel ke Nonaktif, halaman beranda pengguna tidak akan pernah menjadi halaman Tab Baru, kecuali jika URL halaman beranda pengguna disetel ke chrome://newtab.
 
 Jika Anda menyetel kebijakan, pengguna tidak dapat mengubah jenis halaman berandanya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat memutuskan apakah halaman Tab Baru akan menjadi halaman berandanya atau tidak.
@@ -9247,6 +9260,13 @@ juga aman.</translation>
 <translation id="802776363472387903">Hash SHA-256 gambar <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Aktifkan penyedia penelusuran default dan izinkan pengguna mengubah daftar penyedia penelusuran</translation>
 <translation id="8029201909194194377">Durasi sesi maksimum yang diizinkan untuk koneksi akses jarak jauh</translation>
+<translation id="8033450879690820321">Kebijakan ini menyediakan pilihan penonaktifan sementara untuk perilaku scroller baru yang dapat difokuskan keyboard.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, scroller tanpa turunan yang dapat difokuskan secara default dapat difokuskan oleh keyboard. Selain itu, scroller dapat difokuskan dengan klik dan dapat difokuskan secara terprogram secara default.
+
+Jika kebijakan ini disetel ke Nonaktif, scroller tidak akan dapat difokuskan secara default.
+
+Kebijakan ini adalah solusi sementara, dan akan dihapus di M135.</translation>
 <translation id="8035570672225663428">Aktifkan model pengisian daya adaptif untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai</translation>
 <translation id="8036284429246268475">Jika kebijakan disetel ke Aktif, pengguna dapat membuat <ph name="PRODUCT_NAME" /> memeriksa apakah nama pengguna dan sandi yang dimasukkan adalah bagian dari kebocoran.
 
@@ -9799,6 +9819,7 @@ Kebijakan akan dihapus pada M75.</translation>
           Jika kebijakan ini tidak disetel, perender default akan digunakan untuk semua situs yang telah ditetapkan oleh kebijakan 'ChromeFrameRendererSettings'.
 
           Untuk melihat contoh pola, buka https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
+<translation id="8489169564515126823">Dinonaktifkan: Scroller tidak dapat difokuskan secara default.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Menonaktifkan penyimpanan histori browser</translation>
 <translation id="8499172469244085141">Setelan Default (pengguna dapat menggantinya)</translation>
@@ -9970,6 +9991,7 @@ Hal ini mencakup laporan yang diaktifkan oleh <ph name="CLOUD_REPORTING_ENABLED_
 
 Jika kebijakan ini tidak disetel, laporan akan diupload setiap 24 jam.
 Jika kebijakan disetel, jumlah jam antara dua upload laporan yang berurutan akan ditentukan oleh kebijakan ini.</translation>
+<translation id="8613622696148230463">Sintaksis lama yang sudah tidak digunakan lagi akan dinonaktifkan.</translation>
 <translation id="8618037841203431360">Kebijakan ini mengontrol apakah data kebijakan dan waktu pengambilan kebijakan akan dilaporkan atau tidak.
 
 Jika kebijakan <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> tidak disetel atau disetel ke nonaktif, kebijakan ini akan diabaikan.

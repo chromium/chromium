@@ -11,7 +11,6 @@
 <translation id="1005333234656240382">გსურთ ADB გამართვის ჩართვა?</translation>
 <translation id="1005671386794704751">ვარდისფერი</translation>
 <translation id="1006033052970139968">მიკროფონზე წვდომა დაშვებულია აპებისთვის, ვებსაიტებისთვის მიკროფონის გამოყენების ნებართვით, ასევე, სისტემის სერვისებისთვის</translation>
-<translation id="1006557561787696884">გამოიყენეთ წვდომის გასაღებები თქვენს Apple-მოწყობილობებზე</translation>
 <translation id="1006873397406093306">ამ გაფართოებას შეუძლია საიტებზე თქვენი მონაცემების წაკითხვა და შეცვლა. თქვენ შეგიძლიათ გააკონტროლოთ, თუ რომელ საიტებზე ექნება მას წვდომა.</translation>
 <translation id="1007057452468855774">Google Play Store-ის ჩართვა</translation>
 <translation id="1008186147501209563">სანიშნეების ექსპორტი</translation>
@@ -1598,6 +1597,7 @@
 <translation id="2156877321344104010">უსაფრთხოების შემოწმების ხელახლა გაშვება</translation>
 <translation id="2157474325782140681">დამატებითი ფუნქციებით სარგებლობისთვის გამოიყენეთ Dell-ის სამაგრი, რომელიც შექმნილია ამ Chromebook-თან მუშაობისთვის.</translation>
 <translation id="215753907730220065">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
+<translation id="2157779167749714207">თქვენს <ph name="DEVICE_TYPE" />-ს მოჰყვება Gemini</translation>
 <translation id="2158249272743343757">პერსონალიზების მონაცემების წაშლა...</translation>
 <translation id="2158475082070321257">გამოყოფილთან ბმულის კოპირება</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2245,7 +2245,6 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" />-ის უსაფრთხოდ ჩამოტვირთვა ვერ მოხერხდება.</translation>
 <translation id="2620245777360407679">უსადენო ქსელთან ამჟამად დაკავშირებული მოწყობილობები</translation>
 <translation id="2620436844016719705">სისტემა</translation>
-<translation id="262087792756666314">შეგიძლიათ, ჩაამაგროთ ეს ფუნქცია მასზე მარტივად წვდომისთვის; დააწკაპუნეთ ჩამაგრების ღილაკს გვერდითი ზოლის ზედა ნაწილში</translation>
 <translation id="2620900772667816510">Bluetooth-ის სუპერგარჩევადობა</translation>
 <translation id="262154978979441594">Google ასისენტის ხმის მოდელის მომზადება</translation>
 <translation id="2622280935687585828"><ph name="SITE_NAME" />-ის ამოშლა გათიშული საიტებიდან</translation>
@@ -4127,7 +4126,6 @@
 <translation id="4010036441048359843">გამოყოფის ჩართვა</translation>
 <translation id="4010746393007464819">შესაძლებელია Debian 12-მდე (Bookworm) განახლება</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> სანიშნეების ყველა თქვენს მობილურ მოწყობილობაზე მისაღებად.</translation>
-<translation id="4012268176861210196">შეგიძლიათ, ჩაამაგროთ ეს ფუნქცია მასზე მარტივად წვდომისთვის</translation>
 <translation id="4014432863917027322">აღვადგინოთ „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">სარგებლობთ გაფართოებებით? მარტივად <ph name="BEGIN_LINK" />მართეთ ყველა გაფართოება<ph name="END_LINK" /> ერთი სივრციდან.</translation>
 <translation id="4016762287427926315">ნებართვები, რომლებსაც „<ph name="APP_NAME" />“-ისთვის დაუშვებთ, დაშვებული იქნება ამ აპისთვისაც. <ph name="BEGIN_LINK" />მართვა<ph name="END_LINK" /></translation>
@@ -6012,7 +6010,6 @@
 <translation id="5481941284378890518">ახლომახლო პრინტერების დამატება</translation>
 <translation id="5482417738572414119">შედით სისტემაში, რომ საშუალება მისცეთ Chrome-ს, ჩანართების ორგანიზების მიზნით შემოგთავაზოთ მათი დაჯგუფება</translation>
 <translation id="5483005706243021437">აქ დარჩენა</translation>
-<translation id="5484181871714116891">ჩართვის შემთხვევაში, წვდომის გასაღებები შეიქმნება iCloud Keychain-ში და ხელმისაწვდომი იქნება თქვენს Apple მოწყობილობებში. გამორთვის შემთხვევაში, წვდომის გასაღებები შეიქმნება თქვენს Chrome პროფილში ამ მოწყობილობაზე.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ითხოვს თქვენი მონაცემების სარეზერვო ასლების შექმნას და ამ <ph name="DEVICE_TYPE" />-ის დაბრუნებას დღესვე. <ph name="LINK_BEGIN" />დეტალების ნახვა<ph name="LINK_END" />}other{<ph name="MANAGER" /> ითხოვს თქვენი მონაცემების სარეზერვო ასლების შექმნას და ამ <ph name="DEVICE_TYPE" />-ის დაბრუნებას {NUM_DAYS} დღის განმავლობაში. <ph name="LINK_BEGIN" />დეტალურად<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">აპის დამატება</translation>
 <translation id="5485435764083510385">სუბტიტრების სასურველი ენა</translation>
@@ -10023,7 +10020,6 @@
 <translation id="8482077254400484047">მართეთ არააქტიური ჩანართების იერსახე აქ</translation>
 <translation id="8483248364096924578">IP მისამართი</translation>
 <translation id="8486666913807228950">მიზეზი: „ბრაუზერში იძულებით გახსნის“ სიაში მოიძებნა შებრუნებული წესი <ph name="REVERT_RULE" />.</translation>
-<translation id="8487303289354211861">ჩამაგრებულია! ამ ფუნქციაზე წვდომა შეგიძლიათ ხელსაწყოთა ზოლში ღილაკით „ახალი“</translation>
 <translation id="8487678622945914333">მასშტაბის გადიდება</translation>
 <translation id="8487699605742506766">უსადენო ქსელი</translation>
 <translation id="8489156414266187072">პერსონალური შემოთავაზებები ნაჩვენებია მხოლოდ თქვენს ანგარიშში</translation>
@@ -10347,6 +10343,8 @@
           <ph name="LINE_BREAK" />
           (ავტომატური შევსების მონაცემები არ გაზიარდება)</translation>
 <translation id="8729133765463465108">QR კოდის სკანირება კამერით</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />ესაუბრეთ Gemini-ს, რომ დაიწყოთ წერა, დაგეგმვა, სწავლა და ა.შ. Google-ის ხელოვნურ ინტელექტთან ერთად.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />დაყენების დასრულების შემდეგ Gemini-ს გამოყენებას შეძლებთ Gemini აპის არჩევით თქვენი თაროდან, რომელიც ეკრანის ქვედა ნაწილშია მოცემული.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8731029916209785242">ნებართვები (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">უსაფრთხოების კოდი</translation>
@@ -10739,7 +10737,6 @@
 <translation id="9014674417732091912">გადატანილია მწკრივში <ph name="ROW_NUMBER" /></translation>
 <translation id="901668144954885282">სარეზერვო კოპირება Google Drive-ზე</translation>
 <translation id="9016827136585652292">კონფიდენციალური ეკრანის გადართვა</translation>
-<translation id="9017055559700464094">ჩამაგრებულია! გამოიყენეთ ეს ფუნქცია ისევ ხელსაწყოთა ზოლიდან</translation>
 <translation id="90181708067259747">მოქმედების ვადის გასვლის თარიღი: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">ინსტალაცია დასრულდა</translation>
 <translation id="901876615920222131">ჯგუფის ხელახლა გასახსნელად დააწკაპუნეთ ჯგუფზე</translation>

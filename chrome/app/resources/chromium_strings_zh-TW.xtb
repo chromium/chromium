@@ -69,6 +69,8 @@
 <translation id="2174917724755363426">安裝作業尚未完成，確定要取消安裝嗎？</translation>
 <translation id="2185166961232948079">Chromium - 網路登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">更新檢查錯誤：<ph name="UPDATE_CHECK_ERROR" />。</translation>
+<translation id="2210682093923538346">危險網站。Chromium 已移除通知權限。</translation>
+<translation id="2240214816234246077">由於近期沒有造訪記錄，Chromium 已移除「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」權限</translation>
 <translation id="2241627712206172106">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium。</translation>
 <translation id="2313870531055795960">可使用儲存在 Chromium 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能。</translation>
 <translation id="2329088755516916767">開啟後，Chromium 會預先載入網頁，加快瀏覽與搜尋速度。</translation>
@@ -268,6 +270,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">將 Chromium 的介面文字設為這種語言</translation>
 <translation id="569897634095159764">無法連線至網際網路。Proxy 伺服器需要驗證。</translation>
+<translation id="5761096224651992291">由於近期沒有造訪記錄，Chromium 已移除「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和「<ph name="PERMISSION_3" />」權限</translation>
 <translation id="5800158606660203929">自訂及管理 Chromium。將 Chromium 設為預設瀏覽器。</translation>
 <translation id="5809516625706423866">無法連線至網際網路。發生 HTTP 401 未授權錯誤，請檢查 Proxy 設定。</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
@@ -353,6 +356,7 @@
 <translation id="6729124504294600478">如要享有個人化服務和其他功能，請在「網路和應用程式活動」與「已連結的 Google 服務」中納入 Chromium</translation>
 <translation id="6734291798041940871">電腦上的所有使用者都已經安裝 Chromium 了。</translation>
 <translation id="673636774878526923">如要透過所有裝置存取你的 Chromium 資料，請登入並開啟同步處理功能。</translation>
+<translation id="674245979920622322">由於近期沒有造訪記錄，Chromium 已移除「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="COUNT" /> 項權限</translation>
 <translation id="67706546131546258">這個檔案可能有危險內容，因此 Chromium 建議掃描檔案。</translation>
 <translation id="6779406956731413166">Chromium OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
 <translation id="6847869444787758381">Chromium 會通知你密碼是否曾遭外洩</translation>
@@ -405,6 +409,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7553334751796114046">如要分享視窗內容，請前往「系統偏好設定」允許 Chromium 螢幕錄影</translation>
 <translation id="7582945390259497898">Chromium 可以推測你的興趣喜好。在此之後，你造訪的網站就可以要求 Chromium 查看你的興趣喜好，以便向你放送個人化廣告。</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>
+<translation id="7585391435984513350">由於近期沒有造訪記錄，Chromium 已移除「<ph name="PERMISSION" />」權限</translation>
 <translation id="761356813943268536">Chromium 正在使用你的攝影機和麥克風。</translation>
 <translation id="7617377681829253106">Chromium 變得更進步了</translation>
 <translation id="7649070708921625228">說明</translation>

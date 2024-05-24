@@ -358,6 +358,7 @@
 <translation id="2441427462554639370">Η εγγραφή ολοκληρώθηκε λόγω του εξαιρετικά περιορισμένου αποθηκευτικού χώρου.</translation>
 <translation id="2449089818483227734">Χαμηλή ισχύς μπαταρίας</translation>
 <translation id="2450205753526923158">Λειτουργία στιγμιότυπου οθόνης</translation>
+<translation id="2453860139492968684">Τέλος</translation>
 <translation id="2455994958736234930">Προσθέστε το www. και το .com στη γραμμή διευθύνσεων και έπειτα ανοίξτε τον ιστότοπο</translation>
 <translation id="2456008742792828469">Ημερολόγιο, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Υγεία μπαταρίας <ph name="BATTERY_HEALTH_PERCENTAGE" />%, πλήθος κύκλων <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@
 <translation id="2726420622004325180">Το τηλέφωνό σας πρέπει να διαθέτει σύνδεση δεδομένων κινητής τηλεφωνίας για να παρέχει σημείο πρόσβασης Wi-Fi</translation>
 <translation id="2727175239389218057">Απάντηση</translation>
 <translation id="2727977024730340865">Σύνδεση με φορτιστή χαμηλής ισχύος. Η φόρτιση της μπαταρίας ενδέχεται να μη γίνεται με αξιόπιστο τρόπο.</translation>
+<translation id="2743301740238894839">Έναρξη</translation>
 <translation id="2743387203779672305">Αντιγραφή στο πρόχειρο</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Διαγραφή"</translation>
@@ -1836,6 +1838,7 @@
 <translation id="8042893070933512245">Άνοιγμα μενού ρυθμίσεων προσβασιμότητας</translation>
 <translation id="8044457332620420407">Ο οπίσθιος φωτισμός πληκτρολογίου είναι ανενεργός.</translation>
 <translation id="8048123526339889627">Ρυθμίσεις Bluetooth</translation>
+<translation id="8049189770492311300">Χρονόμετρο</translation>
 <translation id="8051716679295756675">Το πρότυπο με την ονομασία <ph name="DESK_TEMPLATE_NAME" /> υπάρχει ήδη.</translation>
 <translation id="8052898407431791827">Αντιγράφηκε στο πρόχειρο</translation>
 <translation id="8054466585765276473">Υπολογισμός χρόνου μπαταρίας που απομένει.</translation>

@@ -359,6 +359,7 @@
 <translation id="2441427462554639370">تم إنهاء التسجيل نتيجة للانخفاض الكبير في مساحة التخزين.</translation>
 <translation id="2449089818483227734">انخفاض طاقة البطارية</translation>
 <translation id="2450205753526923158">وضع لقطة الشاشة</translation>
+<translation id="2453860139492968684">اكتمل</translation>
 <translation id="2455994958736234930">‏إضافة www.‎ و‎.com إلى شريط العناوين، ثم فتح الموقع الإلكتروني</translation>
 <translation id="2456008742792828469">التقويم، <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">حالة البطارية: %<ph name="BATTERY_HEALTH_PERCENTAGE" />. عدد الدورات: <ph name="CYCLE_COUNT" /></translation>
@@ -430,6 +431,7 @@
 <translation id="2726420622004325180">يجب أن يتوفّر في هاتفك اتصال بيانات الجوّال لتتمكّن من تفعيل ميزة "نقطة الاتصال".</translation>
 <translation id="2727175239389218057">الرّد</translation>
 <translation id="2727977024730340865">تمّ توصيل شاحن منخفض الطاقة. لذا قد لا تكون عملية شحن البطارية جديرة بالثقة.</translation>
+<translation id="2743301740238894839">البدء</translation>
 <translation id="2743387203779672305">نسخ إلى الحافظة</translation>
 <translation id="2749082172777216925">التطبيق <ph name="APP_NAME_INFO" />، <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"حذف"</translation>
@@ -1839,6 +1841,7 @@
 <translation id="8042893070933512245">فتح قائمة إعدادات "أدوات تمكين الوصول"</translation>
 <translation id="8044457332620420407">تم إيقاف الإضاءة الخلفية للوحة المفاتيح.</translation>
 <translation id="8048123526339889627">إعدادات البلوتوث</translation>
+<translation id="8049189770492311300">مؤقت</translation>
 <translation id="8051716679295756675">سبق وأن تم إدخال نموذج باسم <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">تمّ النسخ إلى الحافظة.</translation>
 <translation id="8054466585765276473">يجري حساب وقت البطارية.</translation>

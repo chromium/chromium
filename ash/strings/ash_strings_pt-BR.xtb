@@ -358,6 +358,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2441427462554639370">A gravação foi encerrada porque há pouco espaço de armazenamento</translation>
 <translation id="2449089818483227734">Pouca bateria</translation>
 <translation id="2450205753526923158">Modo de captura de tela</translation>
+<translation id="2453860139492968684">Concluir</translation>
 <translation id="2455994958736234930">Adicionar www. e .com à barra de endereço e abrir sites</translation>
 <translation id="2456008742792828469">Agenda, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">Integridade da bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, contagem de ciclos: <ph name="CYCLE_COUNT" /></translation>
@@ -429,6 +430,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2726420622004325180">Seu smartphone precisa usar dados móveis para fornecer um ponto de acesso</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a um carregador de baixa potência. O carregamento da bateria pode não ser confiável.</translation>
+<translation id="2743301740238894839">Iniciar</translation>
 <translation id="2743387203779672305">Copiar para área de transferência</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Excluir"</translation>
@@ -1836,6 +1838,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8042893070933512245">Abrir menu de configurações de acessibilidade</translation>
 <translation id="8044457332620420407">A luz de fundo do teclado está desligada</translation>
 <translation id="8048123526339889627">Configurações de Bluetooth</translation>
+<translation id="8049189770492311300">Timer</translation>
 <translation id="8051716679295756675">Já existe um modelo com o nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">Calculando duração da bateria.</translation>
