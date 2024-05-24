@@ -12,6 +12,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -33,33 +34,21 @@
   [super tearDown];
 }
 
-// Adds an incognito tabs, go back to non-incognito, enable the feature and
-// background/foreground the app to lock incognito tabs.
+// Enable the feature and background/foreground the app to lock incognito tabs.
 - (void)displayBlockingUI {
-  [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey setBoolValue:YES
              forLocalStatePref:prefs::kIncognitoAuthenticationSetting];
-  XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
-  // Tell the system to background the app.
-  [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
-  BOOL (^conditionBlock)(void) = ^BOOL {
-    return currentApplication.state == XCUIApplicationStateRunningBackground ||
-           currentApplication.state ==
-               XCUIApplicationStateRunningBackgroundSuspended;
-  };
-  GREYCondition* condition =
-      [GREYCondition conditionWithName:@"check if backgrounded"
-                                 block:conditionBlock];
-  GREYAssertTrue([condition waitWithTimeout:10.0 pollInterval:0.5],
-                 @"Failed to background application.");
-  [currentApplication activate];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 }
 
 // Tests that the TabGrid is correctly updated when the incognito reauth screen
 // is presented.
 - (void)testTabGridButton {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey openNewTab];
+
   [self displayBlockingUI];
+
   [ChromeEarlGreyUI openTabGrid];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
