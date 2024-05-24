@@ -1081,6 +1081,12 @@ who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.198 -> 1.0.201"
 
+[[audits.serde]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.201 -> 1.0.202"
+notes = "Trivial changes"
+
 [[audits.serde_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "ub-risk-0"
@@ -1109,6 +1115,11 @@ notes = "Grepped for \"unsafe\", \"crypt\", \"cipher\", \"fs\", \"net\" - there 
 who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.197 -> 1.0.201"
+
+[[audits.serde_derive]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.201 -> 1.0.202"
 
 [[audits.serde_json]]
 who = "danakj@chromium.org"

@@ -185,8 +185,8 @@ impl Name {
 
 #[derive(Copy, Clone)]
 pub struct RenameAllRules {
-    serialize: RenameRule,
-    deserialize: RenameRule,
+    pub serialize: RenameRule,
+    pub deserialize: RenameRule,
 }
 
 impl RenameAllRules {
