@@ -223,18 +223,6 @@ suite('LanguageChanged', () => {
           VoicePackStatus.NONE);
     });
 
-    test('but doesn\'t if the pack was removed by the user', () => {
-      const lang = 'ko';
-      chrome.readingMode.baseLanguageForSpeech = lang;
-      setInstallStatus(lang, VoicePackStatus.REMOVED_BY_USER);
-
-      app.languageChanged();
-
-      assertFalse(sentRequest);
-      assertEquals(
-          voicePackInstallStatus()[lang], VoicePackStatus.REMOVED_BY_USER);
-    });
-
     test('and refreshes voice list if already downloaded', () => {
       const lang = 'it';
       chrome.readingMode.baseLanguageForSpeech = lang;

@@ -15,11 +15,6 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 suite('UpdateVoicePack', () => {
   let app: ReadAnythingElement;
 
-  function setInstallStatus(lang: string, status: VoicePackStatus) {
-    // @ts-ignore
-    app.setVoicePackStatus_(lang, status);
-  }
-
   function getInstallStatus(lang: string) {
     const convertedLang: string|undefined =
         convertLangOrLocaleForVoicePackManager(lang);
@@ -44,16 +39,6 @@ suite('UpdateVoicePack', () => {
         chrome.readingMode.sendInstallVoicePackRequest = (lang) => {
           sentInstallRequestFor = lang;
         };
-      });
-
-      test('mark as removed if we think it\'s installed', () => {
-        const lang = 'en';
-        setInstallStatus(lang, VoicePackStatus.DOWNLOADED);
-
-        app.updateVoicePackStatus(lang, 'kNotInstalled');
-
-        assertEquals(getInstallStatus(lang), VoicePackStatus.REMOVED_BY_USER);
-        assertEquals(sentInstallRequestFor.length, 0);
       });
 
       test('request install if we need to', () => {

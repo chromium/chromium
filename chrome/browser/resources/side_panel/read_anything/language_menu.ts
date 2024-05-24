@@ -262,7 +262,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       case VoicePackStatus.NONE:
       case VoicePackStatus.EXISTS:
       case VoicePackStatus.INSTALLED:
-      case VoicePackStatus.REMOVED_BY_USER:
       default:
         return '';
     }

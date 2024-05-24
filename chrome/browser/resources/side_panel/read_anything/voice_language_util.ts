@@ -8,7 +8,6 @@ export enum VoicePackStatus {
   INSTALLING,       // we've requested a language pack installation
   DOWNLOADED,       // language pack downloaded, waiting for update to voices
   INSTALLED,        //  we have natural voices for this language
-  REMOVED_BY_USER,  // user removed this voice pack outside of reading mode
   INSTALL_ERROR,    // Catch-all status. Use more specific error status if
                     // possible.
   INSTALL_ERROR_ALLOCATION, // Install error due to no memory.

@@ -904,13 +904,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
     if (voicePackStatus === VoicePackStatus.EXISTS) {
-      if (this.voicePackInstallStatus[voicePackLangauge] ===
-          VoicePackStatus.DOWNLOADED) {
-        // If the language pack is uninstalled but we still think it is
-        // installed, then the user removed the language pack outside of reading
-        // mode and we don't want to reinstall.
-        this.setVoicePackStatus_(lang, VoicePackStatus.REMOVED_BY_USER);
-      } else if (this.languagesForVoiceDownloads.has(lang)) {
+      if (this.languagesForVoiceDownloads.has(lang)) {
         // We can't rely on the voice pack manager to reflect that a voice is
         // installing, so check our local state to see if we've already
         // triggered an install request.
