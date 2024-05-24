@@ -65,7 +65,8 @@ class AutofillWalletCredentialSyncBridge
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
+  void GetDataForCommit(StorageKeyList storage_keys,
+                        DataCallback callback) override;
   void GetAllDataForDebugging(DataCallback callback) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;

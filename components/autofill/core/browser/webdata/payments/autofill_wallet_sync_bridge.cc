@@ -230,8 +230,8 @@ AutofillWalletSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void AutofillWalletSyncBridge::GetData(StorageKeyList storage_keys,
-                                       DataCallback callback) {
+void AutofillWalletSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                                DataCallback callback) {
   // This data type is never synced "up" so we don't need to implement this.
   NOTIMPLEMENTED();
 }

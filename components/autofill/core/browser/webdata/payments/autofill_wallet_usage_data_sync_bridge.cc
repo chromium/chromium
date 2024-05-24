@@ -140,8 +140,9 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
   return change_processor()->GetError();
 }
 
-void AutofillWalletUsageDataSyncBridge::GetData(StorageKeyList storage_keys,
-                                                DataCallback callback) {
+void AutofillWalletUsageDataSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys,
+    DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ranges::sort(storage_keys);
   auto filter_by_keys = base::BindRepeating(

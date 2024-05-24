@@ -256,8 +256,8 @@ TEST_F(ContactInfoSyncBridgeTest,
   EXPECT_EQ(profiles[0].modification_date(), profile.modification_date());
 }
 
-// Tests that `GetData()` returns all local profiles of matching GUID.
-TEST_F(ContactInfoSyncBridgeTest, GetData) {
+// Tests that `GetDataForCommit()` returns all local profiles of matching GUID.
+TEST_F(ContactInfoSyncBridgeTest, GetDataForCommit) {
   const AutofillProfile profile1 = TestProfile(kGUID1);
   const AutofillProfile profile2 = TestProfile(kGUID2);
   AddAutofillProfilesToTable({profile1, profile2});
@@ -265,7 +265,7 @@ TEST_F(ContactInfoSyncBridgeTest, GetData) {
   // Synchronously get data the data of `kGUID1`.
   std::vector<AutofillProfile> profiles;
   base::RunLoop loop;
-  bridge().GetData(
+  bridge().GetDataForCommit(
       {kGUID1},
       base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
         profiles = ExtractAutofillProfilesFromDataBatch(std::move(batch));

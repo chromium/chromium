@@ -162,8 +162,8 @@ optional<ModelError> AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void AutofillProfileSyncBridge::GetData(StorageKeyList storage_keys,
-                                        DataCallback callback) {
+void AutofillProfileSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                                 DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<AutofillProfile>> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(

@@ -154,8 +154,9 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
   return change_processor()->GetError();
 }
 
-void AutofillWalletCredentialSyncBridge::GetData(StorageKeyList storage_keys,
-                                                 DataCallback callback) {
+void AutofillWalletCredentialSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys,
+    DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ranges::sort(storage_keys);
   std::vector<std::unique_ptr<ServerCvc>> filterd_server_cvc_list;

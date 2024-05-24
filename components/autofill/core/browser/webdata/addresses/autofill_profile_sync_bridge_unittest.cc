@@ -514,7 +514,7 @@ TEST_F(AutofillProfileSyncBridgeTest, GetAllDataForDebugging) {
   EXPECT_THAT(GetAllLocalData(), UnorderedElementsAre(local1, local2));
 }
 
-TEST_F(AutofillProfileSyncBridgeTest, GetData) {
+TEST_F(AutofillProfileSyncBridgeTest, GetDataForCommit) {
   AutofillProfile local1(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   local1.SetRawInfo(NAME_FIRST, u"John");
@@ -529,13 +529,13 @@ TEST_F(AutofillProfileSyncBridgeTest, GetData) {
 
   std::vector<AutofillProfile> data;
   base::RunLoop loop;
-  bridge()->GetData({kGuidA},
-                    base::BindLambdaForTesting(
-                        [&loop, &data](std::unique_ptr<DataBatch> batch) {
-                          ExtractAutofillProfilesFromDataBatch(std::move(batch),
-                                                               &data);
-                          loop.Quit();
-                        }));
+  bridge()->GetDataForCommit(
+      {kGuidA}, base::BindLambdaForTesting(
+                    [&loop, &data](std::unique_ptr<DataBatch> batch) {
+                      ExtractAutofillProfilesFromDataBatch(std::move(batch),
+                                                           &data);
+                      loop.Quit();
+                    }));
   loop.Run();
 
   EXPECT_THAT(data, ElementsAre(local1));

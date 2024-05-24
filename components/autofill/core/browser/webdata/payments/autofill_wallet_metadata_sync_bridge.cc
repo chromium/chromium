@@ -377,8 +377,9 @@ AutofillWalletMetadataSyncBridge::ApplyIncrementalSyncChanges(
                             std::move(entity_data));
 }
 
-void AutofillWalletMetadataSyncBridge::GetData(StorageKeyList storage_keys,
-                                               DataCallback callback) {
+void AutofillWalletMetadataSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys,
+    DataCallback callback) {
   // Build a set out of the list to allow quick lookup.
   std::unordered_set<std::string> storage_keys_set(storage_keys.begin(),
                                                    storage_keys.end());

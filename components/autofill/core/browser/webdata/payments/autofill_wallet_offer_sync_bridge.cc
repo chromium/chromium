@@ -107,8 +107,9 @@ AutofillWalletOfferSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void AutofillWalletOfferSyncBridge::GetData(StorageKeyList storage_keys,
-                                            DataCallback callback) {}
+void AutofillWalletOfferSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys,
+    DataCallback callback) {}
 
 void AutofillWalletOfferSyncBridge::GetAllDataForDebugging(
     DataCallback callback) {

@@ -434,8 +434,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     std::vector<WalletMetadataSpecifics> data;
     // Perform an async call synchronously for testing.
     base::RunLoop loop;
-    bridge()->GetData(storage_keys,
-                      base::BindLambdaForTesting(
+    bridge()->GetDataForCommit(
+        storage_keys, base::BindLambdaForTesting(
                           [&loop, &data](std::unique_ptr<DataBatch> batch) {
                             ExtractWalletMetadataSpecificsFromDataBatch(
                                 std::move(batch), &data);

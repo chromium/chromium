@@ -387,7 +387,7 @@ std::optional<ModelError> AutocompleteSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void AutocompleteSyncBridge::AutocompleteSyncBridge::GetData(
+void AutocompleteSyncBridge::AutocompleteSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys,
     DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

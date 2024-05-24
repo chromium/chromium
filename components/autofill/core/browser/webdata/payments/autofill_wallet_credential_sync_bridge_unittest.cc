@@ -437,7 +437,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
 
 // Test to get all the server cvc data for a user which is filtered on the list
 // of `instrument_id` provided.
-TEST_F(AutofillWalletCredentialSyncBridgeTest, GetData) {
+TEST_F(AutofillWalletCredentialSyncBridgeTest, GetDataForCommit) {
   const ServerCvc server_cvc1 =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
   const ServerCvc server_cvc2 =
@@ -448,7 +448,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, GetData) {
   // Synchronously get data of `server_cvc1`.
   std::vector<ServerCvc> server_cvc_from_get_data;
   base::RunLoop loop;
-  bridge()->GetData(
+  bridge()->GetDataForCommit(
       {base::NumberToString(server_cvc1.instrument_id)},
       base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
         server_cvc_from_get_data =
