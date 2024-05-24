@@ -100,11 +100,10 @@ void TabOrganizationRequest::StartRequest() {
 
 void TabOrganizationRequest::CompleteRequest(
     std::unique_ptr<TabOrganizationResponse> response) {
-  // Ignore cancelled state.
-  if (state_ == State::CANCELED) {
+  // Ignore non-started states.
+  if (state_ != State::STARTED) {
     return;
   }
-  CHECK(state_ == State::STARTED);
 
   request_end_time_ = base::Time::Now();
   state_ = State::COMPLETED;
