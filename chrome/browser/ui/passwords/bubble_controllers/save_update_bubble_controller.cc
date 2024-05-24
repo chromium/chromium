@@ -356,7 +356,20 @@ void SaveUpdateBubbleController::ReportInteractions() {
           ComputePasswordAccountStorageUserState(
               profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
     }
-    metrics_util::LogSaveUIDismissalReason(GetDismissalReason(), user_state);
+
+    // Log additional UMA for users who don't yet have any passwords saved in
+    // the password manager (in both profile and account stores) to measure
+    // saving adoption.
+    const bool log_adoption_metric =
+        profile &&
+        !profile->GetPrefs()->GetBoolean(
+            password_manager::prefs::
+                kAutofillableCredentialsProfileStoreLoginDatabase) &&
+        !profile->GetPrefs()->GetBoolean(
+            password_manager::prefs::
+                kAutofillableCredentialsAccountStoreLoginDatabase);
+    metrics_util::LogSaveUIDismissalReason(GetDismissalReason(), user_state,
+                                           log_adoption_metric);
   }
 
   // Update the delegate so that it can send votes to the server.

@@ -122,7 +122,8 @@ void RecordDismissalMetrics(
         infobar_response);
   } else {
     password_manager::metrics_util::LogSaveUIDismissalReason(
-        infobar_response, account_storage_user_state);
+        infobar_response, account_storage_user_state,
+        /*log_adoption_metric=*/false);
   }
 }
 

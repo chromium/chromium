@@ -3293,6 +3293,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordManager.SaveUIDismissalReason.UsersWithNoCredentials"
+    enum="PasswordManagerUIDismissalReason" expires_after="2024-11-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Why was the save password UI (bubble or infobar) closed? Recorded for users
+    who don't yet have any credentials stored in the password manager. Currently
+    only logged on desktop.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.SaveUIDismissalReason{UserSyncingType}"
     enum="PasswordManagerUIDismissalReason" expires_after="2024-11-03">
   <owner>vasilii@chromium.org</owner>

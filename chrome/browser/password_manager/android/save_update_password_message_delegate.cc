@@ -563,7 +563,8 @@ void SaveUpdatePasswordMessageDelegate::RecordDismissalReasonMetrics(
         ui_dismissal_reason);
   } else {
     password_manager::metrics_util::LogSaveUIDismissalReason(
-        ui_dismissal_reason, /*user_state=*/std::nullopt);
+        ui_dismissal_reason, /*user_state=*/std::nullopt,
+        /*log_adoption_metric=*/false);
   }
   if (auto* recorder = passwords_state_.form_manager()->GetMetricsRecorder()) {
     recorder->RecordUIDismissalReason(ui_dismissal_reason);

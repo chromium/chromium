@@ -738,12 +738,15 @@ class LeakDialogMetricsRecorder {
 // bubbles.
 void LogGeneralUIDismissalReason(UIDismissalReason reason);
 
-// Log the |reason| a user dismissed the save password bubble. If
-// |user_state| is set, the |reason| is also logged to a separate
+// Log the `reason` a user dismissed the save password bubble. If
+// `user_state` is set, the `reason` is also logged to a separate
 // user-state-specific histogram.
+// If `log_adoption_metric` is true, additional histogram is recorded to
+// measure adoption among new users of password manager.
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
-    std::optional<features_util::PasswordAccountStorageUserState> user_state);
+    std::optional<features_util::PasswordAccountStorageUserState> user_state,
+    bool log_adoption_metric);
 
 // Log the |reason| a user dismissed the update password bubble.
 void LogUpdateUIDismissalReason(UIDismissalReason reason);

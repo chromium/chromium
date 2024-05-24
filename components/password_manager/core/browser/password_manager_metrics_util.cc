@@ -113,7 +113,8 @@ void LogSaveUIDismissalReason(
     UIDismissalReason reason,
     std::optional<
         password_manager::features_util::PasswordAccountStorageUserState>
-        user_state) {
+        user_state,
+    bool log_adoption_metric) {
   base::UmaHistogramEnumeration("PasswordManager.SaveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
 
@@ -122,6 +123,12 @@ void LogSaveUIDismissalReason(
         GetPasswordAccountStorageUserStateHistogramSuffix(user_state.value());
     base::UmaHistogramEnumeration(
         "PasswordManager.SaveUIDismissalReason." + suffix, reason,
+        NUM_UI_RESPONSES);
+  }
+
+  if (log_adoption_metric) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.SaveUIDismissalReason.UsersWithNoCredentials", reason,
         NUM_UI_RESPONSES);
   }
 }

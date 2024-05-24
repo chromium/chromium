@@ -460,6 +460,40 @@ TEST_F(SaveUpdateBubbleControllerTest, GetInitialUsername_MatchedUsername) {
   EXPECT_EQ(kUsername, controller()->pending_password().username_value);
 }
 
+TEST_F(SaveUpdateBubbleControllerTest, ClickSaveWhenNoCredentialsExisted) {
+  ASSERT_FALSE(prefs()->GetBoolean(
+      password_manager::prefs::
+          kAutofillableCredentialsProfileStoreLoginDatabase));
+  ASSERT_FALSE(prefs()->GetBoolean(
+      password_manager::prefs::
+          kAutofillableCredentialsAccountStoreLoginDatabase));
+  base::HistogramTester histogram_tester;
+  PretendPasswordWaiting();
+
+  EXPECT_FALSE(controller()->IsCurrentStateUpdate());
+  controller()->OnSaveClicked();
+
+  DestroyModelAndVerifyControllerExpectations();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.UsersWithNoCredentials",
+      static_cast<int>(password_manager::metrics_util::CLICKED_ACCEPT), 1);
+}
+
+TEST_F(SaveUpdateBubbleControllerTest, ClickSaveWhenCredentialsExisted) {
+  prefs()->SetBoolean(password_manager::prefs::
+                          kAutofillableCredentialsProfileStoreLoginDatabase,
+                      true);
+  base::HistogramTester histogram_tester;
+  PretendPasswordWaiting();
+
+  EXPECT_FALSE(controller()->IsCurrentStateUpdate());
+  controller()->OnSaveClicked();
+
+  DestroyModelAndVerifyControllerExpectations();
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveUIDismissalReason.UsersWithNoCredentials", 0);
+}
+
 class SaveUpdateBubbleControllerUKMTest
     : public SaveUpdateBubbleControllerTest,
       public testing::WithParamInterface<
