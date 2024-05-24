@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -93,28 +94,30 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testTitle() {
-        onView(withText(R.string.signin_account_picker_dialog_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_account_picker_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
     public void testAddAccount() {
-        onView(withText(R.string.signin_add_account_to_device)).perform(click());
+        onView(withText(R.string.signin_add_account_to_device)).inRoot(isDialog()).perform(click());
         verify(mListenerMock).addAccount();
     }
 
     @Test
     @MediumTest
     public void testSelectDefaultAccount() {
-        onView(withText(mAccountName1)).check(matches(isDisplayed()));
-        onView(withText(mFullName1)).perform(click());
+        onView(withText(mAccountName1)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(mFullName1)).inRoot(isDialog()).perform(click());
         verify(mListenerMock).onAccountSelected(mAccountName1);
     }
 
     @Test
     @MediumTest
     public void testSelectNonDefaultAccount() {
-        onView(withText(mAccountName2)).perform(click());
+        onView(withText(mAccountName2)).inRoot(isDialog()).perform(click());
         verify(mListenerMock).onAccountSelected(mAccountName2);
     }
 
