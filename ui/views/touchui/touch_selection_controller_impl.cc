@@ -251,7 +251,9 @@ gfx::Rect BoundToRect(const gfx::SelectionBound& bound) {
 }
 
 views::UniqueWidgetPtr CreateHandleWidget(gfx::NativeView parent) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.parent = parent;

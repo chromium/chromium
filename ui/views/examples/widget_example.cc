@@ -89,7 +89,8 @@ void WidgetExample::CreateDialogWidget(View* sender, bool modal) {
 
 void WidgetExample::ShowWidget(View* sender, Widget::InitParams::Type type) {
   // Setup shared Widget hierarchy and bounds parameters.
-  Widget::InitParams params(type);
+  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                            type);
   params.parent = sender->GetWidget()->GetNativeView();
   params.bounds =
       gfx::Rect(sender->GetBoundsInScreen().CenterPoint(), gfx::Size(300, 200));

@@ -1060,7 +1060,9 @@ TEST_F(ViewTest, MouseEvent) {
   view2->SetBoundsRect(gfx::Rect(100, 100, 100, 100));
 
   UniqueWidgetPtr widget(std::make_unique<Widget>());
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 650, 650);
   widget->Init(std::move(params));
   auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
@@ -1119,7 +1121,9 @@ TEST_F(ViewTest, DeleteOnPressed) {
   view2->Reset();
 
   UniqueWidgetPtr widget(std::make_unique<Widget>());
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 650, 650);
   widget->Init(std::move(params));
   View* root = widget->GetRootView();
@@ -1145,7 +1149,9 @@ TEST_F(ViewTest, DetectReturnFormDrag) {
   view2->SetBoundsRect(gfx::Rect(100, 100, 100, 100));
 
   UniqueWidgetPtr widget(std::make_unique<Widget>());
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 650, 650);
   widget->Init(std::move(params));
   auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
@@ -1209,7 +1215,9 @@ class ScopedTestPaintWidget {
 }  // namespace
 
 TEST_F(ViewTest, PaintEmptyView) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   // |v1| is empty.
@@ -1242,7 +1250,9 @@ TEST_F(ViewTest, PaintEmptyView) {
 }
 
 TEST_F(ViewTest, PaintWithMovedViewUsesCache) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
   TestView* v1 = new TestView;
   v1->SetBounds(10, 11, 12, 13);
@@ -1319,7 +1329,9 @@ TEST_F(ViewTest, PaintWithMovedViewUsesCache) {
 
 TEST_F(ViewTest, PaintWithMovedViewUsesCacheInRTL) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
   TestView* v1 = new TestView;
   v1->SetBounds(10, 11, 12, 13);
@@ -1398,7 +1410,9 @@ TEST_F(ViewTest, PaintWithMovedViewUsesCacheInRTL) {
 }
 
 TEST_F(ViewTest, PaintWithUnknownInvalidation) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1439,7 +1453,9 @@ TEST_F(ViewTest, PaintWithUnknownInvalidation) {
 }
 
 TEST_F(ViewTest, PaintContainsChildren) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1474,7 +1490,9 @@ TEST_F(ViewTest, PaintContainsChildren) {
 
 TEST_F(ViewTest, PaintContainsChildrenInRTL) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1519,7 +1537,9 @@ TEST_F(ViewTest, PaintContainsChildrenInRTL) {
 }
 
 TEST_F(ViewTest, PaintIntersectsChildren) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1554,7 +1574,9 @@ TEST_F(ViewTest, PaintIntersectsChildren) {
 
 TEST_F(ViewTest, PaintIntersectsChildrenInRTL) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1599,7 +1621,9 @@ TEST_F(ViewTest, PaintIntersectsChildrenInRTL) {
 }
 
 TEST_F(ViewTest, PaintIntersectsChildButNotGrandChild) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1634,7 +1658,9 @@ TEST_F(ViewTest, PaintIntersectsChildButNotGrandChild) {
 
 TEST_F(ViewTest, PaintIntersectsChildButNotGrandChildInRTL) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1679,7 +1705,9 @@ TEST_F(ViewTest, PaintIntersectsChildButNotGrandChildInRTL) {
 }
 
 TEST_F(ViewTest, PaintIntersectsNoChildren) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1714,7 +1742,9 @@ TEST_F(ViewTest, PaintIntersectsNoChildren) {
 
 TEST_F(ViewTest, PaintIntersectsNoChildrenInRTL) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1759,7 +1789,9 @@ TEST_F(ViewTest, PaintIntersectsNoChildrenInRTL) {
 }
 
 TEST_F(ViewTest, PaintIntersectsOneChild) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1807,7 +1839,9 @@ TEST_F(ViewTest, PaintIntersectsOneChild) {
 
 TEST_F(ViewTest, PaintIntersectsOneChildInRTL) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1865,7 +1899,9 @@ TEST_F(ViewTest, PaintIntersectsOneChildInRTL) {
 }
 
 TEST_F(ViewTest, PaintInPromotedToLayer) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = new TestView;
@@ -1954,7 +1990,9 @@ BEGIN_METADATA(TestPaintView)
 END_METADATA
 
 TEST_F(ViewTest, PaintLocalBounds) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
   // Make |root_view|'s bounds larger so |v1|'s visible bounds is not clipped by
   // |root_view|.
@@ -1999,7 +2037,9 @@ gfx::Transform RotationClockwise() {
 // of rect-based targeting.
 TEST_F(ViewTest, GetEventHandlerForRect) {
   Widget* widget = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(params));
   View* root_view = widget->GetRootView();
   root_view->SetBoundsRect(gfx::Rect(0, 0, 500, 500));
@@ -2310,7 +2350,9 @@ TEST_F(ViewTest, GetEventHandlerForRect) {
 // when GetCanProcessEventsWithinSubtree() is called.
 TEST_F(ViewTest, GetCanProcessEventsWithinSubtree) {
   Widget* widget = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(params));
   View* root_view = widget->GetRootView();
   root_view->SetBoundsRect(gfx::Rect(0, 0, 500, 500));
@@ -2466,7 +2508,9 @@ TEST_F(ViewTest, GetCanProcessEventsWithinSubtree) {
 
 TEST_F(ViewTest, NotifyEnterExitOnChild) {
   Widget* widget = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(params));
   View* root_view = widget->GetRootView();
   root_view->SetBoundsRect(gfx::Rect(0, 0, 500, 500));
@@ -2603,7 +2647,9 @@ TEST_F(ViewTest, Textfield) {
   const std::u16string kExtraText = u"Pretty deep, Philip!";
 
   Widget* widget = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(0, 0, 100, 100);
   widget->Init(std::move(params));
   View* root_view = widget->GetRootView();
@@ -2639,7 +2685,9 @@ TEST_F(ViewTest, TextfieldCutCopyPaste) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
 
   Widget* widget = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(0, 0, 100, 100);
   widget->Init(std::move(params));
   View* root_view = widget->GetRootView();
@@ -2757,7 +2805,9 @@ class ViewPaintOptimizationTest : public ViewsTestBase {
 
 // Tests that only Views where SchedulePaint was invoked get repainted.
 TEST_F(ViewPaintOptimizationTest, PaintDirtyViewsOnly) {
-  ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
+  ScopedTestPaintWidget widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP));
   View* root_view = widget->GetRootView();
 
   TestView* v1 = root_view->AddChildView(std::make_unique<TestView>());
@@ -2855,8 +2905,10 @@ class TestViewWidget {
 // This test targets that extra logic, but should also work on other platforms.
 TEST_F(ViewTest, HandleAccelerator) {
   ui::Accelerator return_accelerator(ui::VKEY_RETURN, ui::EF_NONE);
-  TestViewWidget test_widget(CreateParams(Widget::InitParams::TYPE_POPUP),
-                             &return_accelerator);
+  TestViewWidget test_widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP),
+      &return_accelerator);
   TestView* view = test_widget.view();
   Widget* widget = test_widget.widget();
   FocusManager* focus_manager = widget->GetFocusManager();
@@ -2882,7 +2934,8 @@ TEST_F(ViewTest, HandleAccelerator) {
   // Add a child view associated with a child widget.
   Widget* child_widget = new Widget;
   Widget::InitParams child_params =
-      CreateParams(Widget::InitParams::TYPE_CONTROL);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_CONTROL);
   child_params.parent = widget->GetNativeView();
   child_widget->Init(std::move(child_params));
   TestView* child_view =
@@ -2924,8 +2977,10 @@ TEST_F(ViewTest, HandleAccelerator) {
 TEST_F(ViewTest, ActivateAcceleratorOnMac) {
   // Cmd+1 translates to "noop:" command by interpretKeyEvents.
   ui::Accelerator command_accelerator(ui::VKEY_1, ui::EF_COMMAND_DOWN);
-  TestViewWidget test_widget(CreateParams(Widget::InitParams::TYPE_POPUP),
-                             &command_accelerator);
+  TestViewWidget test_widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP),
+      &command_accelerator);
   TestView* view = test_widget.view();
 
   ui::test::EventGenerator event_generator(
@@ -2968,8 +3023,10 @@ TEST_F(ViewTest, ActivateAcceleratorOnMac) {
 #if BUILDFLAG(IS_MAC)
 TEST_F(ViewTest, ActivateAccelerator) {
   ui::Accelerator return_accelerator(ui::VKEY_RETURN, ui::EF_NONE);
-  TestViewWidget test_widget(CreateParams(Widget::InitParams::TYPE_POPUP),
-                             &return_accelerator);
+  TestViewWidget test_widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP),
+      &return_accelerator);
   TestView* view = test_widget.view();
   FocusManager* focus_manager = test_widget.widget()->GetFocusManager();
 
@@ -3016,8 +3073,10 @@ TEST_F(ViewTest, ActivateAccelerator) {
 
 TEST_F(ViewTest, HiddenViewWithAccelerator) {
   ui::Accelerator return_accelerator(ui::VKEY_RETURN, ui::EF_NONE);
-  TestViewWidget test_widget(CreateParams(Widget::InitParams::TYPE_POPUP),
-                             &return_accelerator);
+  TestViewWidget test_widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP),
+      &return_accelerator);
   TestView* view = test_widget.view();
   FocusManager* focus_manager = test_widget.widget()->GetFocusManager();
 
@@ -3030,8 +3089,10 @@ TEST_F(ViewTest, HiddenViewWithAccelerator) {
 
 TEST_F(ViewTest, ViewInHiddenWidgetWithAccelerator) {
   ui::Accelerator return_accelerator(ui::VKEY_RETURN, ui::EF_NONE);
-  TestViewWidget test_widget(CreateParams(Widget::InitParams::TYPE_POPUP),
-                             &return_accelerator, false);
+  TestViewWidget test_widget(
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP),
+      &return_accelerator, false);
   TestView* view = test_widget.view();
   Widget* widget = test_widget.widget();
   FocusManager* focus_manager = test_widget.widget()->GetFocusManager();
@@ -3093,16 +3154,19 @@ END_METADATA
 TEST_F(ViewTest, NativeViewHierarchyChanged) {
   UniqueWidgetPtr toplevel1 = std::make_unique<Widget>();
   Widget::InitParams toplevel1_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   toplevel1->Init(std::move(toplevel1_params));
 
   UniqueWidgetPtr toplevel2 = std::make_unique<Widget>();
   Widget::InitParams toplevel2_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   toplevel2->Init(std::move(toplevel2_params));
 
   UniqueWidgetPtr child = std::make_unique<Widget>();
-  Widget::InitParams child_params(Widget::InitParams::TYPE_CONTROL);
+  Widget::InitParams child_params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_CONTROL);
   child_params.parent = toplevel1->GetNativeView();
   child->Init(std::move(child_params));
   EXPECT_EQ(toplevel1.get(), child->parent());
@@ -3168,7 +3232,9 @@ TEST_F(ViewTest, TransformPaint) {
   view2->SetBoundsRect(gfx::Rect(100, 100, 200, 100));
 
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 650, 650);
   widget->Init(std::move(params));
   widget->Show();
@@ -3204,7 +3270,9 @@ TEST_F(ViewTest, TransformEvent) {
   view2->SetBoundsRect(gfx::Rect(100, 100, 200, 100));
 
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 650, 650);
   widget->Init(std::move(params));
   View* root = widget->GetRootView();
@@ -3336,7 +3404,9 @@ TEST_F(ViewTest, TransformVisibleBound) {
   gfx::Rect viewport_bounds(0, 0, 100, 100);
 
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = viewport_bounds;
   widget->Init(std::move(params));
   widget->GetRootView()->SetBoundsRect(viewport_bounds);
@@ -3393,7 +3463,9 @@ TEST_F(ViewTest, OnVisibleBoundsChanged) {
   gfx::Rect viewport_bounds(0, 0, 100, 100);
 
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = viewport_bounds;
   widget->Init(std::move(params));
   widget->GetRootView()->SetBoundsRect(viewport_bounds);
@@ -3490,7 +3562,9 @@ TEST_F(ViewTest, AddAndRemoveSchedulePaints) {
   // We have to put the View hierarchy into a Widget or no paints will be
   // scheduled.
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = viewport_bounds;
   widget->Init(std::move(params));
   widget->GetRootView()->SetBoundsRect(viewport_bounds);
@@ -3794,7 +3868,9 @@ TEST_F(ViewTest, ConversionsWithTransform) {
 // Tests conversion methods to and from screen coordinates.
 TEST_F(ViewTest, ConversionsToFromScreen) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 650, 650);
   widget->Init(std::move(params));
 
@@ -3824,7 +3900,9 @@ TEST_F(ViewTest, ConversionsToFromScreen) {
 // Tests conversion methods for rectangles.
 TEST_F(ViewTest, ConvertRectWithTransform) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 650, 650);
   widget->Init(std::move(params));
   View* root = widget->GetRootView();
@@ -4100,7 +4178,9 @@ END_METADATA
 // finally v1 is removed from root.
 TEST_F(ViewTest, AddedToRemovedFromWidget) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 650, 650);
   widget->Init(std::move(params));
 
@@ -4166,7 +4246,8 @@ TEST_F(ViewTest, AddedToRemovedFromWidget) {
 
   // Test move between widgets.
   UniqueWidgetPtr second_widget = std::make_unique<Widget>();
-  params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  params = CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                        Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(150, 150, 650, 650);
   second_widget->Init(std::move(params));
 
@@ -4487,7 +4568,9 @@ class ActiveWidget : public Widget {
 TEST_F(ViewTest, AdvanceFocusIfNecessaryForUnfocusableView) {
   // Create a widget with two views and give the first one focus.
   UniqueWidgetPtr widget = std::make_unique<ActiveWidget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(params));
 
   View* view1 = widget->GetRootView()->AddChildView(std::make_unique<View>());
@@ -4612,7 +4695,9 @@ class ViewLayerTest : public ViewsTestBase {
     SetUpPixelCanvas();
     ViewTest::SetUp();
     widget_ = new Widget;
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(50, 50, 200, 200);
     widget_->Init(std::move(params));
     widget_->Show();
@@ -5847,7 +5932,9 @@ TEST_F(ViewTest, OnThemeChanged) {
   EXPECT_FALSE(test_view_child->native_theme_);
 
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(params));
 
   TestView* test_view_ptr =
@@ -5882,7 +5969,9 @@ class TestEventHandler : public ui::EventHandler {
 
 TEST_F(ViewTest, ScopedTargetHandlerReceivesEvents) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 350, 350);
   widget->Init(std::move(params));
   View* root = widget->GetRootView();
@@ -5981,7 +6070,9 @@ TEST_F(ViewTest, CrashOnAddFromFromOnThemeChanged) {
   ui::TestNativeTheme theme;
   UniqueWidgetPtr widget = std::make_unique<WidgetWithCustomTheme>(&theme);
   test::WidgetDestroyedWaiter waiter(widget.get());
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 350, 350);
   widget->Init(std::move(params));
 
@@ -6037,7 +6128,9 @@ END_METADATA
 TEST_F(ViewTest, DestroyLayerInClose) {
   bool removed_from_widget = false;
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(params));
   widget->SetBounds(gfx::Rect(0, 0, 100, 100));
   auto* view = widget->GetContentsView()->AddChildView(
@@ -6210,7 +6303,9 @@ TEST_F(ViewTest, TestVisibleChangedCallback) {
 
 TEST_F(ViewTest, TooltipShowsForDisabledView) {
   UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(params));
   widget->SetBounds(gfx::Rect(0, 0, 100, 100));
 

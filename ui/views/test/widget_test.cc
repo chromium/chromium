@@ -72,7 +72,9 @@ WidgetTest::~WidgetTest() = default;
 
 Widget* WidgetTest::CreateTopLevelPlatformWidget() {
   Widget* widget = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.native_widget =
       CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
   widget->Init(std::move(params));
@@ -82,7 +84,9 @@ Widget* WidgetTest::CreateTopLevelPlatformWidget() {
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 Widget* WidgetTest::CreateTopLevelPlatformDesktopWidget() {
   Widget* widget = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   params.native_widget = CreatePlatformDesktopNativeWidgetImpl(
       widget, kStubCapture, base::DoNothing());
   widget->Init(std::move(params));
@@ -93,7 +97,8 @@ Widget* WidgetTest::CreateTopLevelPlatformDesktopWidget() {
 Widget* WidgetTest::CreateTopLevelFramelessPlatformWidget() {
   Widget* widget = new Widget;
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.native_widget =
       CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
   widget->Init(std::move(params));
@@ -102,7 +107,9 @@ Widget* WidgetTest::CreateTopLevelFramelessPlatformWidget() {
 
 Widget* WidgetTest::CreateChildPlatformWidget(
     gfx::NativeView parent_native_view) {
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_CONTROL);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_CONTROL);
   params.parent = parent_native_view;
   Widget* child = new Widget;
   params.native_widget =
@@ -114,14 +121,18 @@ Widget* WidgetTest::CreateChildPlatformWidget(
 
 Widget* WidgetTest::CreateTopLevelNativeWidget() {
   Widget* toplevel = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   toplevel->Init(std::move(params));
   return toplevel;
 }
 
 Widget* WidgetTest::CreateChildNativeWidgetWithParent(Widget* parent) {
   Widget* child = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_CONTROL);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_CONTROL);
   params.parent = parent->GetNativeView();
   child->Init(std::move(params));
   child->SetContentsView(std::make_unique<View>());
@@ -220,7 +231,8 @@ TestInitialFocusWidgetDelegate::TestInitialFocusWidgetDelegate(
     : view_(new View) {
   view_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
-  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
   params.context = context;
   params.delegate = this;
   GetWidget()->Init(std::move(params));

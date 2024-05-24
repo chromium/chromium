@@ -167,10 +167,11 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
   DCHECK(!widget_);
   DCHECK(tooltip_window_);
   widget_ = new TooltipWidget;
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_TOOLTIP);
   // For aura, since we set the type to TYPE_TOOLTIP, the widget will get
   // auto-parented to the right container.
-  params.type = views::Widget::InitParams::TYPE_TOOLTIP;
   params.context = tooltip_window_;
   DCHECK(params.context);
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;

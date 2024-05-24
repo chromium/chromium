@@ -23,7 +23,8 @@ namespace {
 // Creates a widget of TYPE_CONTROL.
 // The caller takes ownership of the returned widget.
 Widget* CreateControlWidget(aura::Window* parent, const gfx::Rect& bounds) {
-  Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
+  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_CONTROL);
   params.parent = parent;
   params.bounds = bounds;
   Widget* widget = new Widget();
