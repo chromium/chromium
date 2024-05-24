@@ -24,6 +24,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/browsing_data:constants",
     "//chrome/test:test_support",
+    "//components/site_engagement/content",
     "//components/ukm:test_support",
     "//content/test:test_support",
     "//sql:test_support",

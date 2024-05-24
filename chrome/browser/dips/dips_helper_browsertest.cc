@@ -62,14 +62,19 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
                                  public testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features = {
+        kDipsPrepopulation};
     if (IsPersistentStorageEnabled()) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kDIPS,
-          {{"persist_database", "true"}, {"triggering_action", "bounce"}});
+      enabled_features.push_back(
+          {features::kDIPS,
+           {{"persist_database", "true"}, {"triggering_action", "bounce"}}});
     } else {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kDIPS, {{"triggering_action", "bounce"}});
+      enabled_features.push_back(
+          {features::kDIPS, {{"triggering_action", "bounce"}}});
     }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
     PlatformBrowserTest::SetUp();
   }
 
@@ -86,9 +91,6 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
     host_resolver()->AddRule("d.test", "127.0.0.1");
     DIPSWebContentsObserver::FromWebContents(GetActiveWebContents())
         ->SetClockForTesting(&test_clock_);
-    DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
-        GetActiveWebContents()->GetBrowserContext());
-    dips_service->WaitForInitCompleteForTesting();
 
     // Initialize exceptions for 1P sites with embedded 3P cookies. Block 3PC by
     // default on a.test and d.test, since those are used as the initial and
@@ -463,8 +465,11 @@ class DIPSPrepopulateTest : public PlatformBrowserTest {
       // Only disable explicitly since the feature is on by default.
       feature_list_.InitAndDisableFeature(features::kDIPS);
     } else {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          features::kDIPS, {{"persist_database", "true"}});
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{features::kDIPS,
+                                 {{"persist_database", "true"}}},
+                                {kDipsPrepopulation, {}}},
+          /*disabled_features=*/{});
     }
 
     PlatformBrowserTest::SetUp();
@@ -482,7 +487,7 @@ class DIPSPrepopulateTest : public PlatformBrowserTest {
     host_resolver()->AddRule("c.test", "127.0.0.1");
     dips_service = GetDipsService(GetActiveWebContents());
     if (dips_service) {
-      dips_service->WaitForInitCompleteForTesting();
+      dips_service->WaitForInitCompleteForTesting(PassKey());
     }
   }
 
@@ -496,6 +501,8 @@ class DIPSPrepopulateTest : public PlatformBrowserTest {
         GetActiveWebContents()->GetBrowserContext())
         ->FlushLossyWebsiteSettings();
   }
+
+  base::PassKey<DIPSPrepopulateTest> PassKey() { return {}; }
 
   raw_ptr<DIPSService, DanglingUntriaged> dips_service;
 
@@ -541,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, PrepopulateOTRTest) {
       /*user_gesture=*/true));
 
   DIPSServiceFactory::GetForBrowserContext(incognito_browser->profile())
-      ->WaitForInitCompleteForTesting();
+      ->WaitForInitCompleteForTesting(PassKey());
   std::optional<StateValue> state = GetDIPSState(
       DIPSServiceFactory::GetForBrowserContext(incognito_browser->profile()),
       GURL("http://c.test"));

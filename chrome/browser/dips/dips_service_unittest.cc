@@ -17,6 +17,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_file_util.h"
 #include "base/time/default_clock.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -32,6 +33,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -50,6 +52,9 @@ using testing::IsEmpty;
 using testing::Pair;
 
 class DIPSServiceTest : public testing::Test {
+ protected:
+  base::PassKey<DIPSServiceTest> PassKey() { return {}; }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -66,6 +71,38 @@ TEST_F(DIPSServiceTest, DontCreateServiceIfFeatureDisabled) {
 
   TestingProfile profile;
   EXPECT_EQ(DIPSService::Get(&profile), nullptr);
+}
+
+TEST_F(DIPSServiceTest, EnablePrepopulation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDipsPrepopulation);
+
+  const GURL url("http://example.com/");
+  TestingProfile profile;
+  site_engagement::SiteEngagementService::Get(&profile)->AddPointsForTesting(
+      url, 42);
+
+  auto* dips_service = DIPSService::Get(&profile);
+  dips_service->WaitForInitCompleteForTesting(PassKey());
+  // Because there was engagement on example.com, prepopulation should have
+  // created a DIPS DB record for it:
+  ASSERT_TRUE(GetDIPSState(dips_service, url).has_value());
+}
+
+TEST_F(DIPSServiceTest, DisablePrepopulation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDipsPrepopulation);
+
+  const GURL url("http://example.com/");
+  TestingProfile profile;
+  site_engagement::SiteEngagementService::Get(&profile)->AddPointsForTesting(
+      url, 42);
+
+  auto* dips_service = DIPSService::Get(&profile);
+  dips_service->WaitForInitCompleteForTesting(PassKey());
+  // There was engagement on example.com, but database prepopulation was
+  // disabled, so there should NOT be a DIPS DB record for it:
+  ASSERT_FALSE(GetDIPSState(dips_service, url).has_value());
 }
 
 // Verifies that if database persistence is disabled via Finch, then when the

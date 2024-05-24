@@ -487,9 +487,11 @@ class DevToolsProtocolTest_BounceTrackingMitigations
     : public DevToolsProtocolTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDIPS,
-        {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kDIPS,
+                               {{"delete", "true"},
+                                {"triggering_action", "stateful_bounce"}}}},
+        /*disabled_features=*/{kDipsPrepopulation});
 
     DevToolsProtocolTest::SetUp();
   }
@@ -519,8 +521,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
 
   // Get DIPS Service
   DIPSService* dips_service = DIPSService::Get(browser()->profile());
-  dips_service->WaitForInitCompleteForTesting();
-
   // Record a stateful bounce for `bouncer`.
   dips_service->storage()
       ->AsyncCall(&DIPSStorage::RecordBounce)

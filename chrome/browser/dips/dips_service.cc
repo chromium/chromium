@@ -53,6 +53,11 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "url/origin.h"
 
+// Controls whether DIPS database prepopulation is performed.
+BASE_FEATURE(kDipsPrepopulation,
+             "DipsPrepopulation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // Controls whether UKM metrics are collected for DIPS.
@@ -290,7 +295,8 @@ DIPSService::DIPSService(content::BrowserContext* context)
 
   storage_ = base::SequenceBound<DIPSStorage>(CreateTaskRunner(), path_to_use);
 
-  if (browser_context_->IsOffTheRecord()) {
+  if (browser_context_->IsOffTheRecord() ||
+      !base::FeatureList::IsEnabled(kDipsPrepopulation)) {
     wait_for_prepopulating_.Quit();
   } else {
     storage_.AsyncCall(&DIPSStorage::IsPrepopulated)

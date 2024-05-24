@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_storage.h"
@@ -32,6 +33,11 @@ class CookieSettings;
 namespace dips {
 class PersistentRepeatingTimer;
 }
+
+class DIPSPrepopulateTest;
+class DIPSServiceTest;
+
+BASE_DECLARE_FEATURE(kDipsPrepopulation);
 
 class DIPSService : public KeyedService {
  public:
@@ -102,7 +108,14 @@ class DIPSService : public KeyedService {
   }
 
   void OnTimerFiredForTesting() { OnTimerFired(); }
-  void WaitForInitCompleteForTesting() { wait_for_prepopulating_.Run(); }
+  // Prepopulation is a major source of flakiness, but tests (unless they are
+  // specifically for prepopulation) should disable the kDipsPrepopulation
+  // feature, not call this function.
+  void WaitForInitCompleteForTesting(
+      absl::variant<base::PassKey<DIPSServiceTest>,
+                    base::PassKey<DIPSPrepopulateTest>>) {
+    wait_for_prepopulating_.Run();
+  }
   void WaitForFileDeletionCompleteForTesting() {
     wait_for_file_deletion_.Run();
   }
