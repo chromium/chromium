@@ -13,23 +13,6 @@
     margin-inline-start: auto;
   }
 
-  .extensions {
-    border-top: var(--cr-separator-line);
-  }
-
-  .extension-row {
-    border-top: none;
-  }
-
-  .extension-icon {
-    height: var(--cr-icon-size);
-    width: var(--cr-icon-size);
-  }
-
-  .extension-name {
-    padding-inline-start: 20px;
-  }
-
   .extension-buttons {
     margin-inline-start: auto;
   }
@@ -51,11 +34,12 @@
     </cr-button>
   </div>
 
-  <div class="extensions">
+  <div class="panel-extensions">
     <template is="dom-repeat" items="[[extensions]]">
-      <div class="extension-row cr-row">
-        <img class="extension-icon" src="[[item.iconUrl]]" role="presentation">
-        <div class="extension-name text-elide">[[item.name]]</div>
+      <div class="panel-extension-row cr-row">
+        <img class="panel-extension-icon" src="[[item.iconUrl]]"
+            role="presentation">
+        <div class="panel-extension-info text-elide">[[item.name]]</div>
         <div class="extension-buttons">
           <cr-button class="find-alternative-button"
               on-click="onFindAlternativeButtonClick_"

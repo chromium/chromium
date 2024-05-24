@@ -102,7 +102,7 @@ suite('ExtensionsReviewPanel', function() {
 
   test('ReviewPanelUnsafeExtensionRowsExist', async function() {
     const extensionNameContainers =
-        element.shadowRoot!.querySelectorAll('.extension-row');
+        element.shadowRoot!.querySelectorAll('.panel-extension-row');
     assertEquals(extensionNameContainers.length, 1);
     assertEquals(
         extensionNameContainers[0]
@@ -201,7 +201,7 @@ suite('ExtensionsReviewPanel', function() {
     element.delegate = new MockKeepItemDelegate();
     assertFalse(isVisible(completionTextContainer));
     const extensionRowContainers =
-        element.shadowRoot!.querySelectorAll('.extension-row');
+        element.shadowRoot!.querySelectorAll('.panel-extension-row');
     assertEquals(1, extensionRowContainers.length);
     const menuButton = extensionRowContainers[0]!.querySelector<HTMLElement>(
         '.icon-more-vert')!;
