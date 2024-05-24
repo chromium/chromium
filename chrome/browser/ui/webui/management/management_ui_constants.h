@@ -92,4 +92,11 @@ extern const char kReportingTypeUser[];
 extern const char kReportingTypeUserActivity[];
 extern const char kReportingTypeLegacyTech[];
 
+extern const char kProfileReportingExplanation[];
+extern const char kProfileReportingOverview[];
+extern const char kProfileReportingUsername[];
+extern const char kProfileReportingBrowser[];
+extern const char kProfileReportingExtension[];
+extern const char kProfileReportingPolicy[];
+
 #endif  // CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_CONSTANTS_H_
