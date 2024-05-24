@@ -35,8 +35,6 @@
 #include "services/on_device_model/on_device_model_service.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "services/tracing/public/cpp/trace_startup.h"
-#include "third_party/icu/source/common/unicode/unistr.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/file_descriptor_store.h"
@@ -224,13 +222,6 @@ int UtilityMain(MainFunctionParams parameters) {
   if (message_pump_type == base::MessagePumpType::DEFAULT)
     message_pump_type = base::MessagePumpType::IO;
 #endif  // BUILDFLAG(IS_FUCHSIA)
-
-  if (parameters.command_line->HasSwitch(switches::kTimeZoneForTesting)) {
-    std::string time_zone = parameters.command_line->GetSwitchValueASCII(
-        switches::kTimeZoneForTesting);
-    icu::TimeZone::adoptDefault(
-        icu::TimeZone::createTimeZone(icu::UnicodeString(time_zone.c_str())));
-  }
 
   // The main task executor of the utility process.
   base::SingleThreadTaskExecutor main_thread_task_executor(message_pump_type);

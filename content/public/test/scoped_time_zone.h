@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_TEST_SCOPED_TIME_ZONE_H_
 
 #include "base/test/icu_test_util.h"
-#include "base/test/scoped_command_line.h"
+#include "services/device/time_zone_monitor/fake_time_zone_monitor.h"
 
 namespace content {
 
@@ -20,8 +20,12 @@ class ScopedTimeZone {
   ~ScopedTimeZone();
 
  private:
-  base::test::ScopedCommandLine command_line_;
+  // Must be created before TimeZoneMonitor. ScopedRestoreDefaultTimezone sets
+  // the new time zone in ICU which is then picked by TimeZoneMonitor
+  // constructor.
   base::test::ScopedRestoreDefaultTimezone icu_time_zone_;
+
+  device::FakeTimeZoneMonitor time_zone_monitor_;
 };
 
 }  // namespace content

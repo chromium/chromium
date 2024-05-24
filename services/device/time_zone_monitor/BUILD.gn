@@ -11,7 +11,10 @@ if (is_android) {
 }
 
 source_set("time_zone_monitor") {
-  visibility = [ "//services/device:lib" ]
+  visibility = [
+    ":test_support",
+    "//services/device:lib",
+  ]
 
   sources = [
     "time_zone_monitor.cc",
@@ -72,6 +75,14 @@ source_set("time_zone_monitor") {
   if (is_fuchsia) {
     sources += [ "time_zone_monitor_fuchsia.cc" ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [ "fake_time_zone_monitor.h" ]
+
+  public_deps = [ ":time_zone_monitor" ]
 }
 
 if (is_android) {

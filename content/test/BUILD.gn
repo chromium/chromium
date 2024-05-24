@@ -585,8 +585,10 @@ static_library("test_support") {
     "//services/cert_verifier:lib",
     "//services/data_decoder/public/cpp:test_support",
     "//services/data_decoder/public/mojom",
+    "//services/device:lib",
     "//services/device/public/mojom",
     "//services/device/public/mojom:usb",
+    "//services/device/time_zone_monitor:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//storage/browser/quota:mojo_bindings",
 

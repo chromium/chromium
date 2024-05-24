@@ -137,6 +137,12 @@ class DeviceService : public mojom::DeviceService {
   static void OverridePressureManagerBinderForTesting(
       PressureManagerBinder binder);
 
+  // Supports global override of TimeZoneMonitor binding within the service.
+  using TimeZoneMonitorBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<mojom::TimeZoneMonitor>)>;
+  static void OverrideTimeZoneMonitorBinderForTesting(
+      TimeZoneMonitorBinder binder);
+
 #if BUILDFLAG(IS_ANDROID)
   // Allows tests to override how frame hosts bind NFCProvider receivers.
   using NFCProviderBinder = base::RepeatingCallback<void(

@@ -23,6 +23,7 @@ source_set("lib") {
     ":test_support",
     ":tests",
     "//content/browser",
+    "//content/test:test_support",
     "//services/device/public/cpp:test_support",
   ]
   sources = [

@@ -4,17 +4,20 @@
 
 #include "content/public/test/scoped_time_zone.h"
 
-#include "base/command_line.h"
-#include "content/public/common/content_switches.h"
+#include "services/device/device_service.h"
 
 namespace content {
 
 ScopedTimeZone::ScopedTimeZone(const char* new_zoneid)
     : icu_time_zone_(new_zoneid) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kTimeZoneForTesting, new_zoneid);
+  device::DeviceService::OverrideTimeZoneMonitorBinderForTesting(
+      base::BindRepeating(&device::FakeTimeZoneMonitor::Bind,
+                          base::Unretained(&time_zone_monitor_)));
 }
 
-ScopedTimeZone::~ScopedTimeZone() = default;
+ScopedTimeZone::~ScopedTimeZone() {
+  device::DeviceService::OverrideTimeZoneMonitorBinderForTesting(
+      base::NullCallback());
+}
 
 }  // namespace content
