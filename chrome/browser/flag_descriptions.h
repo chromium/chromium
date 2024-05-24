@@ -2856,6 +2856,12 @@ extern const char kReadAnythingWebUIToolbarDescription[];
 extern const char kReadAnythingReadAloudName[];
 extern const char kReadAnythingReadAloudDescription[];
 
+extern const char kReadAloudAutoVoiceSwitchingName[];
+extern const char kReadAloudAutoVoiceSwitchingDescription[];
+
+extern const char kReadAloudLanguagePackDownloadingName[];
+extern const char kReadAloudLanguagePackDownloadingDescription[];
+
 extern const char kReadAnythingOmniboxIconName[];
 extern const char kReadAnythingOmniboxIconDescription[];
 

@@ -7276,6 +7276,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingReadAloudDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingReadAloud)},
 
+    {"read-anything-read-aloud-auto-voice-switching",
+     flag_descriptions::kReadAloudAutoVoiceSwitchingName,
+     flag_descriptions::kReadAloudAutoVoiceSwitchingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAloudAutoVoiceSwitching)},
+
+    {"read-anything-read-aloud-language-pack-downloading",
+     flag_descriptions::kReadAloudLanguagePackDownloadingName,
+     flag_descriptions::kReadAloudLanguagePackDownloadingDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAloudLanguagePackDownloading)},
+
     {"read-anything-with-screen2x",
      flag_descriptions::kReadAnythingWithScreen2xName,
      flag_descriptions::kReadAnythingWithScreen2xDescription, kOsDesktop,
