@@ -110,8 +110,8 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
 
   // MessagePump:
   void Run(Delegate* delegate) override;
-  // Simplified version of the loop used under experiment (crbug.com/1200141)
-  void RunSimplified(Delegate* delegate);
+  // Batched version of the loop used under experiment (crbug.com/1200141)
+  void RunBatched(Delegate* delegate);
   void Quit() override;
   void ScheduleWork() override;
   void ScheduleDelayedWork(

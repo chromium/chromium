@@ -21396,22 +21396,6 @@
             ]
         }
     ],
-    "UseSimplifiedMessagePumpKqueueLoop": [
-        {
-            "platforms": [
-                "mac",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseSimplifiedMessagePumpKqueueLoop"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSmartRefForGPUFenceHandle": [
         {
             "platforms": [
