@@ -53,6 +53,7 @@ class CORE_EXPORT HTMLPermissionElement final
   bool SupportsFocus(UpdateBehavior) const override;
   int DefaultTabIndex() const override;
   CascadeFilter GetCascadeFilter() const override;
+  bool CanGeneratePseudoElement(PseudoId) const override;
 
   bool granted() const { return permissions_granted_; }
 
