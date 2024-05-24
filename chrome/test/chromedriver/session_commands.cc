@@ -841,8 +841,9 @@ Status ExecuteGetWindowHandles(Session* session,
   std::list<std::string> web_view_ids;
   Status status = session->chrome->GetWebViewIds(&web_view_ids,
                                                  session->w3c_compliant);
-  if (status.IsError())
+  if (status.IsError()) {
     return status;
+  }
 
   if (session->web_socket_url) {
     auto it =

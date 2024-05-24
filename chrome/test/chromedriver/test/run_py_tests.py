@@ -154,7 +154,7 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTest.testClickStaleElement',
         # Failing on macOS 14 due to https://crbug.com/40233722
     'ChromeDriverSecureContextTest.testAddVirtualAuthenticator',
-    'ChromeDriverSecureContextTest.testAddVirtualAuthenticatorDefaultBackupSettings',
+    'ChromeDriverSecureContextTest.testAddVirtualAuthDefaultBackupSettings',
     'ChromeDriverSecureContextTest.testAddVirtualAuthenticatorDefaultParams',
     'ChromeDriverSecureContextTest.testGetCredentials',
     'ChromeDriverSecureContextTest.testRemoveAllCredentials',
@@ -4263,7 +4263,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual('OK', result['status'])
     self.assertEqual(['usb'], result['credential']['transports'])
 
-  def testAddVirtualAuthenticatorDefaultBackupSettings(self):
+  def testAddVirtualAuthDefaultBackupSettings(self):
     registerCredentialScript = """
       let done = arguments[0];
       registerCredential().then(done);
@@ -5628,6 +5628,44 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       anchor.Click()
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
+
+  def testTransientWindows(self):
+    """Test that appearance and disappearance of tabs / windows does not lead
+    to failure of commands that internally update the list of the top level
+    WebView's.
+    """
+    url_for_child_window = self.GetHttpUrlForFile('/child.html')
+    self._http_server.SetDataForPath('/child.html',
+      bytes('''
+            <script>
+              setTimeout(() => {
+                close();
+              }, 100);
+            </script>
+            <p>Child Window</p>
+            ''', 'utf-8'))
+    self._http_server.SetDataForPath(
+        '/main.html',
+        bytes('''
+          <script>
+            const tab_count = 10;
+            for (let k = 0; k < tab_count; ++k) {
+              setTimeout(() => {
+                window.open('%s', 'opened-tabs', 'noopener');
+             }, 300 + 50*k);
+            }
+          </script>
+          ''' % (url_for_child_window),
+         'utf-8'))
+
+    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+    self.WaitForCondition(
+        lambda: len(self._driver.GetWindowHandles()) > 1,
+        timeout=1)
+    self.assertTrue(self.WaitForCondition(
+        lambda: len(self._driver.GetWindowHandles()) <= 1,
+        timeout=10))
+
 
 
 class ChromeDriverPageLoadTimeoutTest(ChromeDriverBaseTestWithWebServer):

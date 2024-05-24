@@ -100,7 +100,9 @@ Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
                                                 nullptr, views_info);
   if (status.IsError())
     return status;
-  status = UpdateWebViews(views_info, w3c_compliant);
+  do {
+    status = UpdateWebViews(views_info, w3c_compliant);
+  } while (status.code() == kTargetDetached);
   if (status.IsError())
     return status;
   for (int i = views_info.GetSize() - 1; i >= 0; --i) {
@@ -131,11 +133,15 @@ Status ChromeImpl::GetWebViewIds(std::list<std::string>* web_view_ids,
   WebViewsInfo views_info;
   Status status = target_utils::GetWebViewsInfo(*devtools_websocket_client_,
                                                 nullptr, views_info);
-  if (status.IsError())
+  if (status.IsError()) {
     return status;
-  status = UpdateWebViews(views_info, w3c_compliant);
-  if (status.IsError())
+  }
+  do {
+    status = UpdateWebViews(views_info, w3c_compliant);
+  } while (status.code() == kTargetDetached);
+  if (status.IsError()) {
     return status;
+  }
   std::list<std::string> web_view_ids_tmp;
   for (const auto& view : web_views_)
     web_view_ids_tmp.push_back(view->GetId());

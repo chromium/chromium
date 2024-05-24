@@ -1100,7 +1100,7 @@ Status DevToolsClientImpl::ProcessEvent(const InspectorEvent& event) {
   if (status.IsError())
     return status;
   if (event.method == "Inspector.detached")
-    return Status(kDisconnected, "received Inspector.detached event");
+    return Status(kTargetDetached, "received Inspector.detached event");
   if (event.method == "Inspector.targetCrashed") {
     crashed_ = true;
     return Status(kTabCrashed);
