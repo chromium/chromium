@@ -377,7 +377,8 @@ TEST_F(MerchantPromoCodeManagerTest, AutofillCreditCardDisabled) {
   AddPromoCodeFocusedFieldToSuggestionsContext(&context);
   SetUpPromoCodeOffer(last_committed_origin_url,
                       GURL("https://offer-details-url.com/"));
-  personal_data_manager_->SetAutofillPaymentMethodsEnabled(false);
+  personal_data_manager_->test_payments_data_manager()
+      .SetAutofillPaymentMethodsEnabled(false);
 
   // Autofill credit card is disabled, so check that we do not return
   // suggestions to the handler.

@@ -27,7 +27,7 @@ class SuggestionsListMetricsTest
  public:
   void SetUp() override {
     SetUpHelper();
-    personal_data().ClearProfiles();
+    personal_data().test_address_data_manager().ClearProfiles();
     personal_data().test_payments_data_manager().ClearCreditCards();
   }
   void TearDown() override { TearDownHelper(); }

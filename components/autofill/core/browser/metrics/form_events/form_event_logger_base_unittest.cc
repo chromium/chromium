@@ -72,7 +72,7 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
 
   if (!user_saw_suggestion) {
     // Remove the profile to prevent suggestion from being shown.
-    personal_data().ClearProfiles();
+    personal_data().test_address_data_manager().ClearProfiles();
   }
 
   // Simulate interacting with the form.
@@ -373,7 +373,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
   base::HistogramTester histogram_tester;
 
   // Simulate that no data is available.
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   SeeForm(form_);
   autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
 

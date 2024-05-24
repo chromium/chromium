@@ -709,8 +709,10 @@ class AddNewAddressBubbleTest : public UnclassifiedFieldsTest {
   void SetUpOnMainThread() override {
     UnclassifiedFieldsTest::SetUpOnMainThread();
 
-    autofill_client()->GetPersonalDataManager()->SetAutofillProfileEnabled(
-        true);
+    autofill_client()
+        ->GetPersonalDataManager()
+        ->test_address_data_manager()
+        .SetAutofillProfileEnabled(true);
 
     form_ = CreateAndAttachUnclassifiedForm();
     autofill_context_menu_manager()->set_params_for_testing(

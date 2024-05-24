@@ -71,8 +71,10 @@ class PaymentRequestStateTest : public testing::Test,
         address_(autofill::test::GetFullProfile()) {
     web_contents_ = web_contents_factory_.CreateWebContents(&context_);
 
-    test_personal_data_manager_.SetAutofillProfileEnabled(true);
-    test_personal_data_manager_.SetAutofillWalletImportEnabled(true);
+    test_personal_data_manager_.test_address_data_manager()
+        .SetAutofillProfileEnabled(true);
+    test_personal_data_manager_.test_payments_data_manager()
+        .SetAutofillWalletImportEnabled(true);
     test_personal_data_manager_.address_data_manager().AddProfile(address_);
   }
   ~PaymentRequestStateTest() override = default;

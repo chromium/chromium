@@ -84,7 +84,7 @@ class CardMetadataFormEventMetricsTest
       card_.set_card_art_url(GURL("https://www.example.com/cardart.png"));
     }
 
-    personal_data().AddServerCreditCard(card_);
+    personal_data().test_payments_data_manager().AddServerCreditCard(card_);
   }
 
   void TearDown() override { TearDownHelper(); }
@@ -211,7 +211,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
     card2.set_product_description(u"product description");
     card2.set_card_art_url(GURL("https://www.example.com/cardarturl.png"));
   }
-  personal_data().AddServerCreditCard(card2);
+  personal_data().test_payments_data_manager().AddServerCreditCard(card2);
 
   base::HistogramTester histogram_tester;
 
@@ -508,7 +508,8 @@ class CardMetadataLatencyMetricsTest
       masked_server_card.set_card_art_url(
           GURL("https://www.example.com/cardart.png"));
     }
-    personal_data().AddServerCreditCard(masked_server_card);
+    personal_data().test_payments_data_manager().AddServerCreditCard(
+        masked_server_card);
   }
 
   void TearDown() override { TearDownHelper(); }
@@ -643,7 +644,7 @@ class CardBenefitFormEventMetricsTest
     // Add a masked server card.
     card_ = test::GetMaskedServerCard();
     card_.set_issuer_id(issuer_id());
-    personal_data().AddServerCreditCard(card_);
+    personal_data().test_payments_data_manager().AddServerCreditCard(card_);
 
     // Initialize features based on test params.
     scoped_feature_list_.InitWithFeatureStates(
@@ -928,7 +929,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Add a second card which has no benefit available.
   CreditCard card2 = test::GetMaskedServerCard2();
-  personal_data().AddServerCreditCard(card2);
+  personal_data().test_payments_data_manager().AddServerCreditCard(card2);
 
   base::HistogramTester histogram_tester;
 
@@ -1097,7 +1098,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Add a second card which has no benefit available.
   CreditCard card2 = test::GetMaskedServerCard2();
-  personal_data().AddServerCreditCard(card2);
+  personal_data().test_payments_data_manager().AddServerCreditCard(card2);
 
   base::HistogramTester histogram_tester;
 
@@ -1256,7 +1257,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Add a second card which has no benefit available.
   CreditCard card2 = test::GetMaskedServerCard2();
-  personal_data().AddServerCreditCard(card2);
+  personal_data().test_payments_data_manager().AddServerCreditCard(card2);
 
   base::HistogramTester histogram_tester;
 

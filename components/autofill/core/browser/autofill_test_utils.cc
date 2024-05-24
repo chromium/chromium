@@ -689,7 +689,7 @@ void SetUpCreditCardAndBenefitData(
       benefit);
   personal_data.payments_data_manager().AddCreditCardBenefitForTest(benefit);
   card.set_issuer_id(issuer_id);
-  personal_data.AddServerCreditCard(card);
+  personal_data.test_payments_data_manager().AddServerCreditCard(card);
 }
 
 void SetProfileInfo(AutofillProfile* profile,

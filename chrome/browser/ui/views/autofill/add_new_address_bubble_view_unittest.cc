@@ -48,7 +48,8 @@ class AddNewAddressBubbleViewTest : public ChromeViewsTestBase {
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     autofill_client_injector_[test_web_contents_.get()]
         ->GetPersonalDataManager()
-        ->SetAutofillProfileEnabled(true);
+        ->test_address_data_manager()
+        .SetAutofillProfileEnabled(true);
   }
 
   void TearDown() override {

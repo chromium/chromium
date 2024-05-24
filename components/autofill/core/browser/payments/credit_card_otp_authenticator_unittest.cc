@@ -42,7 +42,9 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data().SetPrefService(autofill_client()->GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
-    personal_data().SetAutofillPaymentMethodsEnabled(true);
+    personal_data()
+        .test_payments_data_manager()
+        .SetAutofillPaymentMethodsEnabled(true);
 
     requester_ = std::make_unique<TestAuthenticationRequester>();
 

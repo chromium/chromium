@@ -59,36 +59,4 @@ void TestPersonalDataManager::SetPrefService(PrefService* pref_service) {
   test_payments_data_manager().SetPrefService(pref_service);
 }
 
-void TestPersonalDataManager::ClearProfiles() {
-  test_address_data_manager().ClearProfiles();
-}
-
-void TestPersonalDataManager::AddServerCreditCard(
-    const CreditCard& credit_card) {
-  test_payments_data_manager().AddServerCreditCard(credit_card);
-}
-
-void TestPersonalDataManager::AddAutofillOfferData(
-    const AutofillOfferData& offer_data) {
-  test_payments_data_manager().AddAutofillOfferData(offer_data);
-}
-
-void TestPersonalDataManager::SetAutofillPaymentMethodsEnabled(
-    bool autofill_payment_methods_enabled) {
-  test_payments_data_manager().SetAutofillPaymentMethodsEnabled(
-      autofill_payment_methods_enabled);
-}
-
-void TestPersonalDataManager::SetAutofillProfileEnabled(
-    bool autofill_profile_enabled) {
-  test_address_data_manager().SetAutofillProfileEnabled(
-      autofill_profile_enabled);
-}
-
-void TestPersonalDataManager::SetAutofillWalletImportEnabled(
-    bool autofill_wallet_import_enabled) {
-  test_payments_data_manager().SetAutofillWalletImportEnabled(
-      autofill_wallet_import_enabled);
-}
-
 }  // namespace autofill

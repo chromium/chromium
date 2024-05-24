@@ -103,8 +103,8 @@ class FastCheckoutTriggerValidatorTest
     ON_CALL(*autofill_client(), GetVariationConfigCountryCode)
         .WillByDefault(Return(GeoIpCountryCode("US")));
 
-    pdm().SetAutofillProfileEnabled(true);
-    pdm().SetAutofillPaymentMethodsEnabled(true);
+    pdm().test_address_data_manager().SetAutofillProfileEnabled(true);
+    pdm().test_payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
   }
 
   autofill::TestPersonalDataManager& pdm() { return pdm_; }
@@ -203,14 +203,14 @@ TEST_F(FastCheckoutTriggerValidatorTest,
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_AutofillProfileDisabled_ReturnsFalse) {
-  pdm().SetAutofillProfileEnabled(false);
+  pdm().test_address_data_manager().SetAutofillProfileEnabled(false);
   EXPECT_EQ(ShouldRun(),
             FastCheckoutTriggerOutcome::kFailureAutofillProfileDisabled);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_CreditCardDisabled_ReturnsFalse) {
-  pdm().SetAutofillPaymentMethodsEnabled(false);
+  pdm().test_payments_data_manager().SetAutofillPaymentMethodsEnabled(false);
   EXPECT_EQ(ShouldRun(),
             FastCheckoutTriggerOutcome::kFailureAutofillCreditCardDisabled);
 }

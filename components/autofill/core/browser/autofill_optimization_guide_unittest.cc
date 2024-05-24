@@ -84,7 +84,8 @@ class AutofillOptimizationGuideTest : public testing::Test {
         CreditCard::VirtualCardEnrollmentType::kNetwork);
     personal_data_manager_->SetPrefService(pref_service_.get());
     personal_data_manager_->SetSyncServiceForTest(&sync_service_);
-    personal_data_manager_->AddServerCreditCard(card);
+    personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+        card);
   }
 
   void MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
@@ -670,7 +671,8 @@ class BenefitOptimizationToBenefitCategoryTest
     AutofillOptimizationGuideTest::SetUp();
     card_ = test::GetMaskedServerCard();
     card_.set_issuer_id(GetParam().issuer_id);
-    personal_data_manager_->AddServerCreditCard(card_);
+    personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+        card_);
   }
 
  private:

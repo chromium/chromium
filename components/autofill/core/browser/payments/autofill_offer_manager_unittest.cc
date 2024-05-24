@@ -81,7 +81,8 @@ class AutofillOfferManagerTest : public testing::Test {
     card.set_instrument_id(instrument_id);
     card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
 
-    personal_data_manager_.AddServerCreditCard(card);
+    personal_data_manager_.test_payments_data_manager().AddServerCreditCard(
+        card);
     return card;
   }
 
@@ -157,7 +158,8 @@ class AutofillOfferManagerTest : public testing::Test {
 TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_EligibleCashback) {
   CreditCard card = CreateCreditCard(kTestGuid);
   AutofillOfferData offer = CreateCreditCardOfferForCard(card, "5%");
-  personal_data_manager_.AddAutofillOfferData(offer);
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      offer);
 
   auto card_linked_offer_map =
       autofill_offer_manager_->GetCardLinkedOffersMap(GURL(kTestUrlWithParam));
@@ -169,7 +171,7 @@ TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_EligibleCashback) {
 // Verify that not expired offers are returned.
 TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_ExpiredOffer) {
   CreditCard card = CreateCreditCard(kTestGuid);
-  personal_data_manager_.AddAutofillOfferData(
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
       CreateCreditCardOfferForCard(card, "5%", /*expired=*/true));
 
   auto card_linked_offer_map =
@@ -180,7 +182,7 @@ TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_ExpiredOffer) {
 // Verify that not offers are returned for a mismatching URL.
 TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_WrongUrl) {
   CreditCard card = CreateCreditCard(kTestGuid);
-  personal_data_manager_.AddAutofillOfferData(
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
       CreateCreditCardOfferForCard(card, "5%"));
 
   auto card_linked_offer_map = autofill_offer_manager_->GetCardLinkedOffersMap(
@@ -207,9 +209,12 @@ TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_OnlyCardLinkedOffers) {
       CreatePromoCodeOffer(/*merchant_origins=*/
                            {GURL("http://www.example.com"),
                             GURL("http://www.example2.com")});
-  personal_data_manager_.AddAutofillOfferData(offer1);
-  personal_data_manager_.AddAutofillOfferData(offer2);
-  personal_data_manager_.AddAutofillOfferData(offer3);
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      offer1);
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      offer2);
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      offer3);
 
   auto card_linked_offer_map = autofill_offer_manager_->GetCardLinkedOffersMap(
       GURL("http://www.example.com"));
@@ -221,11 +226,13 @@ TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_OnlyCardLinkedOffers) {
 TEST_F(AutofillOfferManagerTest, IsUrlEligible) {
   CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
   CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);
-  personal_data_manager_.AddAutofillOfferData(CreateCreditCardOfferForCard(
-      card1, "5%", /*expired=*/false,
-      {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
-  personal_data_manager_.AddAutofillOfferData(CreateCreditCardOfferForCard(
-      card2, "10%", /*expired=*/false, {GURL("http://maps.google.com")}));
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      CreateCreditCardOfferForCard(
+          card1, "5%", /*expired=*/false,
+          {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      CreateCreditCardOfferForCard(card2, "10%", /*expired=*/false,
+                                   {GURL("http://maps.google.com")}));
   autofill_offer_manager_->UpdateEligibleMerchantDomains();
 
   EXPECT_TRUE(
@@ -252,9 +259,10 @@ TEST_F(AutofillOfferManagerTest, IsUrlEligible_FromCouponDelegate) {
 // Verify no offer is returned given a mismatch URL.
 TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnNothingWhenFindNoMatch) {
   CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
-  personal_data_manager_.AddAutofillOfferData(CreateCreditCardOfferForCard(
-      card1, "5%", /*expired=*/false,
-      {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      CreateCreditCardOfferForCard(
+          card1, "5%", /*expired=*/false,
+          {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
 
   AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
@@ -275,8 +283,10 @@ TEST_F(AutofillOfferManagerTest,
       card2, "10%", /*expired=*/false,
       /*merchant_origins=*/
       {GURL("http://www.example.com"), GURL("http://www.example2.com")});
-  personal_data_manager_.AddAutofillOfferData(offer1);
-  personal_data_manager_.AddAutofillOfferData(offer2);
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      offer1);
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      offer2);
 
   AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
@@ -292,7 +302,8 @@ TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnOfferFromCouponDelegate) {
       card, "5%", /*expired=*/false,
       /*merchant_origins=*/
       {example_url, GURL("http://www.example2.com")});
-  personal_data_manager_.AddAutofillOfferData(offer1);
+  personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      offer1);
 
   // Add promo code offer to FreeListingCouponService.
   AutofillOfferData offer2 = CreatePromoCodeOffer(

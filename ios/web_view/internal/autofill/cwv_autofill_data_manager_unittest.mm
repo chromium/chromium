@@ -51,9 +51,12 @@ class CWVAutofillDataManagerTest : public PlatformTest {
         std::make_unique<autofill::TestPersonalDataManager>();
 
     // Set to stub out behavior inside PersonalDataManager.
-    personal_data_manager_->SetAutofillProfileEnabled(true);
-    personal_data_manager_->SetAutofillPaymentMethodsEnabled(true);
-    personal_data_manager_->SetAutofillWalletImportEnabled(true);
+    personal_data_manager_->test_address_data_manager()
+        .SetAutofillProfileEnabled(true);
+    personal_data_manager_->test_payments_data_manager()
+        .SetAutofillPaymentMethodsEnabled(true);
+    personal_data_manager_->test_payments_data_manager()
+        .SetAutofillWalletImportEnabled(true);
 
     password_store_ = new password_manager::TestPasswordStore(
         password_manager::IsAccountStore(true));

@@ -241,7 +241,9 @@ void TestBrowserAutofillManager::SetAutofillProfileEnabled(
   autofill_profile_enabled_ = autofill_profile_enabled;
   if (!autofill_profile_enabled_) {
     // Profile data is refreshed when this pref is changed.
-    client.GetPersonalDataManager()->ClearProfiles();
+    client.GetPersonalDataManager()
+        ->test_address_data_manager()
+        .ClearProfiles();
   }
 }
 

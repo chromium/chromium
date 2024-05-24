@@ -55,19 +55,6 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   // Unique to TestPersonalDataManager:
   void SetPrefService(PrefService* pref_service);
-
-  // All of the following functions simply forward the call to a function of the
-  // same name in the `test_address_data_manager()` or the
-  // `test_payments_data_manager().
-  // They should not be used anymore. Instead, callers should use the function
-  // in the test address/payments data manager instead.
-  // TODO(b/322170538): Migrate existing callers.
-  void ClearProfiles();
-  void AddServerCreditCard(const CreditCard& credit_card);
-  void AddAutofillOfferData(const AutofillOfferData& offer_data);
-  void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled);
-  void SetAutofillProfileEnabled(bool autofill_profile_enabled);
-  void SetAutofillWalletImportEnabled(bool autofill_wallet_import_enabled);
 };
 
 }  // namespace autofill

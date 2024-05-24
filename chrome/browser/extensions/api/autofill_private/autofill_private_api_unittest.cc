@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, BulkDeleteAllCvcs) {
   autofill::TestPersonalDataManager* personal_data =
       autofill_client()->GetPersonalDataManager();
   personal_data->payments_data_manager().AddCreditCard(local_card);
-  personal_data->AddServerCreditCard(server_card);
+  personal_data->test_payments_data_manager().AddServerCreditCard(server_card);
 
   // Verify that cards are same as above and the CVCs are present for both of
   // them.

@@ -2104,7 +2104,8 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "John Dillinger", "1111" /* Visa */,
                           "01", "2999", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -2134,7 +2135,8 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "");  // Imported cards have no billing info.
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -2658,7 +2660,8 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "Biggie Smalls", "1111" /* Visa */,
                           "01", "2999", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -2696,7 +2699,8 @@ TEST_F(
   test::SetCreditCardInfo(
       &server_card, kDefaultCreditCardName, kDefaultCreditCardNumber /* Visa */,
       kDefaultCreditCardExpMonth, kDefaultCreditCardExpYear, "");
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
 
   // Simulate a form submission with the same masked server card.
   std::unique_ptr<FormStructure> form_structure =
@@ -2720,7 +2724,8 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "Biggie Smalls",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -2861,7 +2866,8 @@ TEST_F(FormDataImporterTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "a123");
   test::SetCreditCardInfo(&server_card, "John Dillinger",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   ASSERT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -2891,7 +2897,8 @@ TEST_F(FormDataImporterTest,
   server_card.SetNetworkForMaskedCard(kVisaCard);
   test::SetCreditCardInfo(&server_card, "John Dillinger",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   ASSERT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -2921,7 +2928,8 @@ TEST_F(
   test::SetCreditCardInfo(&server_card, "John Dillinger", "1111" /* Visa */,
                           "01", "2999", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   ASSERT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -2962,12 +2970,14 @@ TEST_F(
   test::SetCreditCardInfo(&server_card1, "John Dillinger", "1111" /* Visa */,
                           "01", "2111", "");
   server_card1.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddServerCreditCard(server_card1);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card1);
   CreditCard server_card2(CreditCard::RecordType::kMaskedServerCard, "a124");
   test::SetCreditCardInfo(&server_card2, "John Dillinger", "1111" /* Visa */,
                           "02", "2112", "");
   server_card2.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddServerCreditCard(server_card2);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card2);
   EXPECT_EQ(
       2U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -3286,12 +3296,14 @@ TEST_F(FormDataImporterTest, DuplicateMaskedServerCard) {
   test::SetCreditCardInfo(&server_card1, "John Dillinger", "1881" /* Visa */,
                           "01", "2999", "");
   server_card1.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddServerCreditCard(server_card1);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card1);
   CreditCard server_card2(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card2, "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "");
-  personal_data_manager_->AddServerCreditCard(server_card2);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card2);
   EXPECT_EQ(
       2U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -3363,12 +3375,14 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card1, "John Dillinger", "1881" /* Visa */,
                           "01", "2999", "1");
   server_card1.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddServerCreditCard(server_card1);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card1);
   CreditCard server_card2(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card2, "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
-  personal_data_manager_->AddServerCreditCard(server_card2);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card2);
 
   // Add two local cards to the credit cards to ensure that in the case where we
   // have separate copies of a server card and a local card, we still only set
@@ -3431,7 +3445,8 @@ TEST_F(FormDataImporterTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -3470,7 +3485,8 @@ TEST_F(FormDataImporterTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -3505,7 +3521,8 @@ TEST_F(FormDataImporterTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -3541,7 +3558,8 @@ TEST_F(
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4111111111111111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -3574,7 +3592,8 @@ TEST_F(FormDataImporterTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -3613,7 +3632,8 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "John Dillinger", "1111" /* Visa */,
                           "01", "2111", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());
@@ -3651,7 +3671,8 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "John Dillinger", "1111" /* Visa */,
                           "01", "2111", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddServerCreditCard(server_card);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      server_card);
   EXPECT_EQ(
       1U,
       personal_data_manager_->payments_data_manager().GetCreditCards().size());

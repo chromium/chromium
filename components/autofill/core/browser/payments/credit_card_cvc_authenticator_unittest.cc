@@ -112,7 +112,8 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
         CreditCard::RecordType::kMaskedServerCard);
 
     personal_data_manager_.test_payments_data_manager().ClearCreditCards();
-    personal_data_manager_.AddServerCreditCard(masked_server_card);
+    personal_data_manager_.test_payments_data_manager().AddServerCreditCard(
+        masked_server_card);
 
     return masked_server_card;
   }

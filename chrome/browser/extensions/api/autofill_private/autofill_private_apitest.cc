@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(
   // Set up the personal data manager with 2 existing cards.
   personal_data_manager->payments_data_manager().AddCreditCard(
       autofill::test::GetCreditCard2());
-  personal_data_manager->AddServerCreditCard(
+  personal_data_manager->test_payments_data_manager().AddServerCreditCard(
       autofill::test::GetMaskedServerCard());
   EXPECT_EQ(
       personal_data_manager->payments_data_manager().GetCreditCards().size(),

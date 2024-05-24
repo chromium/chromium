@@ -109,9 +109,12 @@ std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
     content::BrowserContext* context) {
   auto personal_data_manager =
       std::make_unique<autofill::TestPersonalDataManager>();
-  personal_data_manager->SetAutofillProfileEnabled(true);
-  personal_data_manager->SetAutofillPaymentMethodsEnabled(true);
-  personal_data_manager->SetAutofillWalletImportEnabled(true);
+  personal_data_manager->test_address_data_manager().SetAutofillProfileEnabled(
+      true);
+  personal_data_manager->test_payments_data_manager()
+      .SetAutofillPaymentMethodsEnabled(true);
+  personal_data_manager->test_payments_data_manager()
+      .SetAutofillWalletImportEnabled(true);
   personal_data_manager->address_data_manager().AddProfile(kProfile1);
   personal_data_manager->address_data_manager().AddProfile(kProfile2);
   // Add incomplete autofill profile, should not be shown on the sheet.
@@ -361,7 +364,8 @@ class DISABLED_FastCheckoutClientImplTest
       personal_data_manager()->payments_data_manager().AddCreditCard(
           *credit_card_unique_ptr);
     } else {
-      personal_data_manager()->AddServerCreditCard(*credit_card_unique_ptr);
+      personal_data_manager()->test_payments_data_manager().AddServerCreditCard(
+          *credit_card_unique_ptr);
     }
 
     MockFastCheckoutCapabilitiesFetcher* fetcher =
@@ -594,7 +598,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
 
   // User removes all the profiles.
-  personal_data_manager()->ClearProfiles();
+  personal_data_manager()->test_address_data_manager().ClearProfiles();
   // User adds an incomplete profile only.
   personal_data_manager()->address_data_manager().AddProfile(
       autofill::test::GetIncompleteProfile1());

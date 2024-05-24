@@ -265,7 +265,8 @@ class LocalCardMigrationManagerTest : public testing::Test {
     test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                             test::NextYear().c_str(), "1");
     credit_card.SetNetworkForMaskedCard(kVisaCard);
-    personal_data().AddServerCreditCard(credit_card);
+    personal_data().test_payments_data_manager().AddServerCreditCard(
+        credit_card);
     // Add one valid local credit card, so it will trigger migration
     AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                        test::NextYear().c_str(), "1",
@@ -294,7 +295,8 @@ class LocalCardMigrationManagerTest : public testing::Test {
     test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                             test::NextYear().c_str(), "1");
     credit_card.SetNetworkForMaskedCard(kVisaCard);
-    personal_data().AddServerCreditCard(credit_card);
+    personal_data().test_payments_data_manager().AddServerCreditCard(
+        credit_card);
     // Add other invalid local credit cards (invalid card number or expired), so
     // it will not trigger migration.
     AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111112", "11",
@@ -461,7 +463,7 @@ TEST_F(LocalCardMigrationManagerTest,
   test::SetCreditCardInfo(&server_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data().AddServerCreditCard(server_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
   // Add a local card whose |TypeAndLastFourDigits| matches a masked server
   // card.
   AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
@@ -496,7 +498,7 @@ TEST_F(LocalCardMigrationManagerTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "a123");
   test::SetCreditCardInfo(&server_card, "Jane Doe", "4111111111111111", "11",
                           test::NextYear().c_str(), "1");
-  personal_data().AddServerCreditCard(server_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
   // Add a local credit card whose number matches a full server card.
   AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
@@ -1049,7 +1051,7 @@ TEST_F(
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data().AddServerCreditCard(credit_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(credit_card);
   // Add one valid local credit card, so it will trigger migration
   AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
@@ -1089,7 +1091,7 @@ TEST_F(
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data().AddServerCreditCard(credit_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(credit_card);
   // Add one valid local credit card, so it will trigger migration
   AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
@@ -1382,7 +1384,7 @@ TEST_F(LocalCardMigrationManagerTest,
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data().AddServerCreditCard(credit_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(credit_card);
   // Add one valid local credit card, so it will trigger migration
   AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
@@ -1425,7 +1427,7 @@ TEST_F(LocalCardMigrationManagerTest,
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data().AddServerCreditCard(credit_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(credit_card);
   // Add one valid local credit card, so it will trigger migration
   AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",

@@ -70,8 +70,10 @@ class AddNewAddressBubbleControllerTest : public ::testing::Test {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
 
-    autofill_client()->GetPersonalDataManager()->SetAutofillProfileEnabled(
-        true);
+    autofill_client()
+        ->GetPersonalDataManager()
+        ->test_address_data_manager()
+        .SetAutofillProfileEnabled(true);
   }
 
   std::unique_ptr<AddNewAddressBubbleController> CreateController() {

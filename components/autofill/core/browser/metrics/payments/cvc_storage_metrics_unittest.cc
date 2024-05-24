@@ -34,7 +34,7 @@ class CvcStorageMetricsTest : public AutofillMetricsBaseTest,
 
     // Add a masked server card.
     card_ = test::WithCvc(test::GetMaskedServerCard());
-    personal_data().AddServerCreditCard(card_);
+    personal_data().test_payments_data_manager().AddServerCreditCard(card_);
   }
 
   void TearDown() override { TearDownHelper(); }

@@ -212,9 +212,12 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
                   return std::make_unique<TestPersonalDataManager>();
                 }));
 
-    personal_data_manager_->SetAutofillProfileEnabled(true);
-    personal_data_manager_->SetAutofillPaymentMethodsEnabled(true);
-    personal_data_manager_->SetAutofillWalletImportEnabled(false);
+    personal_data_manager_->test_address_data_manager()
+        .SetAutofillProfileEnabled(true);
+    personal_data_manager_->test_payments_data_manager()
+        .SetAutofillPaymentMethodsEnabled(true);
+    personal_data_manager_->test_payments_data_manager()
+        .SetAutofillWalletImportEnabled(false);
 
     // Enable MSBB by default. If MSBB has been explicitly turned off, Fast
     // Checkout is not supported.

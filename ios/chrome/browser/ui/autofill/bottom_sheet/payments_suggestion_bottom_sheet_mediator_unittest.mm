@@ -39,8 +39,10 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   }
 
   void SetUp() override {
-    personal_data_manager_.SetAutofillProfileEnabled(true);
-    personal_data_manager_.SetAutofillPaymentMethodsEnabled(true);
+    personal_data_manager_.test_address_data_manager()
+        .SetAutofillProfileEnabled(true);
+    personal_data_manager_.test_payments_data_manager()
+        .SetAutofillPaymentMethodsEnabled(true);
   }
 
   void TearDown() override { [mediator_ disconnect]; }
@@ -71,7 +73,8 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
     card.set_guid(guid);
     card.set_instrument_id(instrument_id);
     card.set_record_type(record_type);
-    personal_data_manager_.AddServerCreditCard(card);
+    personal_data_manager_.test_payments_data_manager().AddServerCreditCard(
+        card);
     return card;
   }
 

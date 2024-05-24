@@ -120,7 +120,7 @@ void AutofillMetricsBaseTest::PurgeUKM() {
 }
 
 void AutofillMetricsBaseTest::CreateAmbiguousProfiles() {
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   CreateTestAutofillProfiles();
 
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -132,7 +132,7 @@ void AutofillMetricsBaseTest::CreateAmbiguousProfiles() {
 }
 
 void AutofillMetricsBaseTest::RecreateProfile() {
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   SetProfileTestData(&profile);
   personal_data().address_data_manager().AddProfile(profile);
@@ -247,14 +247,16 @@ void AutofillMetricsBaseTest::CreateCreditCards(
       masked_server_credit_card.set_virtual_card_enrollment_state(
           CreditCard::VirtualCardEnrollmentState::kEnrolled);
     }
-    personal_data().AddServerCreditCard(masked_server_credit_card);
+    personal_data().test_payments_data_manager().AddServerCreditCard(
+        masked_server_credit_card);
   }
   if (include_full_server_credit_card) {
     CreditCard full_server_credit_card(CreditCard::RecordType::kFullServerCard,
                                        "server_id_2");
     full_server_credit_card.set_guid("10000000-0000-0000-0000-000000000003");
     full_server_credit_card.set_instrument_id(2);
-    personal_data().AddServerCreditCard(full_server_credit_card);
+    personal_data().test_payments_data_manager().AddServerCreditCard(
+        full_server_credit_card);
   }
 }
 
@@ -276,7 +278,8 @@ void AutofillMetricsBaseTest::CreateLocalAndDuplicateServerCreditCard() {
   masked_server_credit_card.set_instrument_id(1);
   masked_server_credit_card.SetNetworkForMaskedCard(kMasterCard);
   masked_server_credit_card.SetNumber(u"5454");
-  personal_data().AddServerCreditCard(masked_server_credit_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      masked_server_credit_card);
 }
 
 void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
@@ -291,7 +294,8 @@ void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
   masked_server_credit_card.set_instrument_id(id);
   masked_server_credit_card.SetNetworkForMaskedCard(kDiscoverCard);
   masked_server_credit_card.SetNumber(u"9424");
-  personal_data().AddServerCreditCard(masked_server_credit_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      masked_server_credit_card);
 
   int64_t offer_id = id;
   base::Time expiry = offer_expired ? AutofillClock::Now() - base::Days(2)
@@ -309,7 +313,7 @@ void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
   AutofillOfferData offer_data = AutofillOfferData::GPayCardLinkedOffer(
       offer_id, expiry, merchant_origins, offer_details_url, display_strings,
       eligible_instrument_id, offer_reward_amount);
-  personal_data().AddAutofillOfferData(offer_data);
+  personal_data().test_payments_data_manager().AddAutofillOfferData(offer_data);
 }
 
 void AutofillMetricsBaseTest::CreateTestAutofillProfiles() {

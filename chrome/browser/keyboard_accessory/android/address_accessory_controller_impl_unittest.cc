@@ -59,7 +59,8 @@ AccessorySheetData::Builder AddressAccessorySheetDataBuilder(
 std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
     content::BrowserContext* context) {
   auto personal_data_manager = std::make_unique<TestPersonalDataManager>();
-  personal_data_manager->SetAutofillProfileEnabled(true);
+  personal_data_manager->test_address_data_manager().SetAutofillProfileEnabled(
+      true);
   return personal_data_manager;
 }
 
@@ -80,7 +81,7 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-    personal_data_manager()->ClearProfiles();
+    personal_data_manager()->test_address_data_manager().ClearProfiles();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 

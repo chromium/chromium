@@ -1673,7 +1673,7 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, form.fields[2]);
   check.Call(2);
 
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   personal_data().address_data_manager().AddProfile(
       test::GetIncompleteProfile2());
 
@@ -1826,7 +1826,8 @@ TEST_F(BrowserAutofillManagerTest, GetVirtualCreditCardsForStandaloneCvcField) {
   // Add credit card and usage data to personal data manager.
   personal_data().test_payments_data_manager().AddVirtualCardUsageData(
       virtual_card_usage_data);
-  personal_data().AddServerCreditCard(masked_server_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      masked_server_card);
 
   // Call GetCreditCardsForStandaloneCvcField, should return credit card.
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
@@ -1975,7 +1976,7 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_UnknownFields) {
 
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_DialogClosedByUser_NoData) {
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
@@ -1992,7 +1993,7 @@ TEST_F(BrowserAutofillManagerTest,
 // manually by the user.
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_ManualFallback_NoData) {
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
@@ -2180,7 +2181,7 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
       "plus@plus.plus", signin::ConsentLevel::kSignin);
   // Clear profiles to avoid that Autofill takes precedence.
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   FormData form_without_email =
       test::GetFormData({.fields = {{.role = NAME_FIRST}}});
   FormData form_with_email =
@@ -2232,7 +2233,7 @@ TEST_F(BrowserAutofillManagerTest,
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableEmailHeuristicOnlyAddressForms};
   // Clear profiles to avoid that Autofill takes precedence.
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
   FormsSeen({form});
   ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
@@ -2290,7 +2291,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteSuppressionFieldDisappears) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableEmailHeuristicOnlyAddressForms};
   // Clear profiles to avoid that Autofill takes precedence.
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
   FormsSeen({form});
   ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
@@ -2703,7 +2704,8 @@ TEST_F(BrowserAutofillManagerTest,
                           "04", "2999", "1");
   masked_server_card.set_guid(MakeGuid(7));
   masked_server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
-  personal_data().AddServerCreditCard(masked_server_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      masked_server_card);
   EXPECT_EQ(1U,
             personal_data().payments_data_manager().GetCreditCards().size());
 
@@ -3461,7 +3463,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   FormsSeen({form});
 
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.set_guid(MakeGuid(103));
   profile.SetRawInfo(NAME_FULL, u"Natty Bumppo");
@@ -5334,7 +5336,7 @@ TEST_F(BrowserAutofillManagerTest, RemoveLocalCreditCard) {
 
 TEST_F(BrowserAutofillManagerTest, RemoveServerCreditCard) {
   CreditCard server_card = test::GetMaskedServerCard();
-  personal_data().AddServerCreditCard(server_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
 
   EXPECT_FALSE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
       Suggestion::Guid(server_card.guid())));
@@ -5885,7 +5887,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   masked_server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   masked_server_card.SetNickname(u"nickname");
-  personal_data().AddServerCreditCard(masked_server_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      masked_server_card);
 
   // Set up our form data.
   FormData form =
@@ -7393,7 +7396,8 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
             personal_data().payments_data_manager().GetCreditCards().size());
   CreditCard local_card = GetLocalCard();
   personal_data().payments_data_manager().AddCreditCard(local_card);
-  personal_data().AddServerCreditCard(GetServerCard());
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      GetServerCard());
   ASSERT_EQ(2U,
             personal_data().payments_data_manager().GetCreditCards().size());
 
@@ -7425,7 +7429,7 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
   CreditCard server_card = GetServerCard();
   // Make sure the cards are different by giving a different card number.
   server_card.SetNumber(u"371449635320005");
-  personal_data().AddServerCreditCard(server_card);
+  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
 
   ASSERT_EQ(2U,
             personal_data().payments_data_manager().GetCreditCards().size());
@@ -7733,7 +7737,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
   FormsSeen({form});
 
   // Create a profile and add it to the PDM.
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   AutofillProfile profile = test::GetFullProfile();
   profile.set_use_date(AutofillClock::Now());
   profile.set_use_count(1u);
@@ -7753,7 +7757,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
 // Tests that `ProfileTokenQuality` is correctly integrated into
 // `AutofillProfile` and that on form submit, observations are collected.
 TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   AutofillProfile profile = test::GetFullProfile();
   // This is needed to not get an update prompt that would compromise the test.
   profile.set_source_for_testing(AutofillProfile::Source::kAccount);
