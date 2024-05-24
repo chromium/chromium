@@ -4,7 +4,6 @@
 
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/account_key_filter.h"

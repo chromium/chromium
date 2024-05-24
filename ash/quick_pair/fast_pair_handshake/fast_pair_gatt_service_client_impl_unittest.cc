@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/fake_bluetooth_adapter.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_data_encryptor.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"

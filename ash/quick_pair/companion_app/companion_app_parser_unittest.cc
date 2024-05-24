@@ -5,7 +5,6 @@
 #include "ash/quick_pair/companion_app/companion_app_parser.h"
 
 #include "ash/quick_pair/common/device.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"

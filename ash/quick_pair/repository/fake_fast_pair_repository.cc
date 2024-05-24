@@ -4,7 +4,6 @@
 
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"

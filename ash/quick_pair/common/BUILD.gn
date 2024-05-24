@@ -27,10 +27,6 @@ component("common") {
     "fast_pair/fast_pair_http_result.h",
     "fast_pair/fast_pair_metrics.cc",
     "fast_pair/fast_pair_metrics.h",
-    "log_buffer.cc",
-    "log_buffer.h",
-    "logging.cc",
-    "logging.h",
     "pair_failure.cc",
     "pair_failure.h",
     "protocol.cc",
@@ -93,8 +89,6 @@ source_set("unit_tests") {
     "device_unittest.cc",
     "fast_pair/fast_pair_decoder_unittest.cc",
     "fast_pair/fast_pair_feature_usage_metrics_logger_unittest.cc",
-    "log_buffer_unittest.cc",
-    "logging_unittest.cc",
   ]
 
   deps = [

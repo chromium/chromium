@@ -4,7 +4,6 @@
 
 #include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_gatt_service_client.h"
 
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "base/functional/callback_helpers.h"
 #include "device/bluetooth/bluetooth_adapter.h"

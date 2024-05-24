@@ -17,13 +17,6 @@
 #include "ui/message_center/message_center.h"
 
 namespace {
-// Keys in the JSON representation of a log message
-const char kLogMessageTextKey[] = "text";
-const char kLogMessageTimeKey[] = "time";
-const char kLogMessageFileKey[] = "file";
-const char kLogMessageLineKey[] = "line";
-const char kLogMessageSeverityKey[] = "severity";
-
 // Test device metadata for debug purposes
 const char16_t kTestDeviceName[] = u"Pixel Buds";
 const char16_t kTestAppName[] = u"JBLTools";
@@ -33,19 +26,6 @@ const char kImageUrl[] =
     "kGH7uF95EhgI0XBRJOGh3l7KvPWsNAFwaxPfksIJloqk-"
     "mh8cZYG9RITPS65UOtUNry9dnyYYMn5dQtFzVdagSE";
 
-// Converts |log_message| to a raw dictionary value used as a JSON argument to
-// JavaScript functions.
-base::Value::Dict LogMessageToDictionary(
-    const ash::quick_pair::LogBuffer::LogMessage& log_message) {
-  base::Value::Dict dictionary;
-  dictionary.Set(kLogMessageTextKey, log_message.text);
-  dictionary.Set(kLogMessageTimeKey,
-                 base::TimeFormatTimeOfDayWithMilliseconds(log_message.time));
-  dictionary.Set(kLogMessageFileKey, log_message.file);
-  dictionary.Set(kLogMessageLineKey, log_message.line);
-  dictionary.Set(kLogMessageSeverityKey, log_message.severity);
-  return dictionary;
-}
 }  // namespace
 
 QuickPairHandler::QuickPairHandler()
@@ -58,10 +38,6 @@ QuickPairHandler::QuickPairHandler()
 QuickPairHandler::~QuickPairHandler() = default;
 
 void QuickPairHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      "getQuickPairLogMessages",
-      base::BindRepeating(&QuickPairHandler::HandleGetLogMessages,
-                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "notifyFastPairError",
       base::BindRepeating(&QuickPairHandler::NotifyFastPairError,
@@ -88,33 +64,9 @@ void QuickPairHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void QuickPairHandler::OnJavascriptAllowed() {
-  observation_.Observe(ash::quick_pair::LogBuffer::GetInstance());
-}
+void QuickPairHandler::OnJavascriptAllowed() {}
 
-void QuickPairHandler::OnJavascriptDisallowed() {
-  observation_.Reset();
-}
-
-void QuickPairHandler::HandleGetLogMessages(const base::Value::List& args) {
-  AllowJavascript();
-  const base::Value& callback_id = args[0];
-  base::Value::List list;
-  for (const auto& log : *ash::quick_pair::LogBuffer::GetInstance()->logs()) {
-    list.Append(LogMessageToDictionary(log));
-  }
-  ResolveJavascriptCallback(callback_id, list);
-}
-
-void QuickPairHandler::OnLogBufferCleared() {
-  FireWebUIListener("quick-pair-log-buffer-cleared");
-}
-
-void QuickPairHandler::OnLogMessageAdded(
-    const ash::quick_pair::LogBuffer::LogMessage& log_message) {
-  FireWebUIListener("quick-pair-log-message-added",
-                    LogMessageToDictionary(log_message));
-}
+void QuickPairHandler::OnJavascriptDisallowed() {}
 
 void QuickPairHandler::NotifyFastPairError(const base::Value::List& args) {
   image_decoder_->DecodeImageFromUrl(

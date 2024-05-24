@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/quick_pair/common/fake_bluetooth_adapter.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/message_stream/fake_bluetooth_socket.h"
 #include "ash/quick_pair/message_stream/message_stream.h"
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"

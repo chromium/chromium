@@ -4,7 +4,6 @@
 
 #include "ash/quick_pair/repository/fast_pair/fake_footprints_fetcher.h"
 
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "base/strings/string_number_conversions.h"
