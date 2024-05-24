@@ -1,3 +1,7 @@
+# compute pressure api not enabled in webview, crbug.com/341537009
+interface PressureObserver
+interface PressureRecord
+
 # speech synthesis api not enabled in webview
 # but speech recognition is enabled, crbug.com/487255
 interface SpeechSynthesis : EventTarget

@@ -686,9 +686,11 @@
       status: "experimental",
     },
     {
-      // Shipping in M125. Should be removed after M127.
       name: "ComputePressure",
-      status: "stable",
+      status: {
+        "Android": "",
+        "default": "stable",
+      }
     },
     {
       name: "ConcurrentViewTransitionsSPA",
