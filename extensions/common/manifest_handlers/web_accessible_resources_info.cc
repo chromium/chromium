@@ -173,6 +173,7 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
     const Extension* extension,
     const std::string& relative_path,
     const url::Origin* initiator_origin) {
+  // Initialize `initiator_url`.
   GURL initiator_url;
   if (initiator_origin) {
     if (initiator_origin->opaque()) {
@@ -182,20 +183,25 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
       initiator_url = initiator_origin->GetURL();
     }
   }
+
   const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);
-  if (!info) {  // No web-accessible resources
+  if (!info) {
     return false;
   }
+
+  // Look for the first match in the array of web accessible resources.
   for (const auto& entry : info->web_accessible_resources) {
     if (extension->ResourceMatches(entry.resources, relative_path)) {
       // Prior to MV3, web-accessible resources were accessible by any
       // site. Preserve this behavior.
-      if (extension->manifest_version() < 3)
+      if (extension->manifest_version() < 3) {
         return true;
+      }
 
       // Match patterns.
-      if (entry.matches.MatchesURL(initiator_url))
+      if (entry.matches.MatchesURL(initiator_url)) {
         return true;
+      }
       if (initiator_url.SchemeIs(extensions::kExtensionScheme) &&
           (entry.allow_all_extensions ||
            extension->id() == initiator_url.host() ||
@@ -204,6 +210,8 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
       }
     }
   }
+
+  // No match found.
   return false;
 }
 
@@ -218,8 +226,9 @@ bool WebAccessibleResourcesInfo::HasWebAccessibleResources(
 bool WebAccessibleResourcesInfo::ShouldUseDynamicUrl(const Extension* extension,
                                                      const std::string& path) {
   const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);
-  if (!info)
+  if (!info) {
     return false;
+  }
   for (const auto& entry : info->web_accessible_resources) {
     if (extension->ResourceMatches(entry.resources, path) &&
         entry.use_dynamic_url) {
