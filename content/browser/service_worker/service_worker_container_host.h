@@ -229,7 +229,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // Dispatches message event to the client (document, dedicated worker when
   // PlzDedicatedWorker is enabled, or shared worker).
-  void PostMessageToClient(ServiceWorkerVersion* version,
+  void PostMessageToClient(ServiceWorkerVersion& version,
                            blink::TransferableMessage message);
 
   // Notifies the client that its controller used a feature, for UseCounter
@@ -674,7 +674,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   std::set<blink::mojom::WebFeature> buffered_used_features_;
 
   // Until |container_| gets associated, postMessage will be queued.
-  std::vector<std::tuple<base::WeakPtr<ServiceWorkerObjectHost>,
+  std::vector<std::tuple<scoped_refptr<ServiceWorkerVersion>,
                          blink::TransferableMessage>>
       buffered_messages_;
 
@@ -849,7 +849,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   }
 
   // Called from ServiceWorkerClient.
-  void PostMessageToClient(base::WeakPtr<ServiceWorkerObjectHost> object_host,
+  void PostMessageToClient(ServiceWorkerVersion& version,
                            blink::TransferableMessage message);
   void SendSetController(
       blink::mojom::ControllerServiceWorkerInfoPtr controller_info,

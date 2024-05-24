@@ -738,29 +738,29 @@ void ServiceWorkerClient::AddServiceWorkerToUpdate(
 }
 
 void ServiceWorkerClient::PostMessageToClient(
-    ServiceWorkerVersion* version,
+    ServiceWorkerVersion& version,
     blink::TransferableMessage message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::WeakPtr<ServiceWorkerObjectHost> object_host =
-      container_host().version_object_manager().GetOrCreateHost(version);
   if (!is_container_ready()) {
     if (buffered_messages_.size() < kMaxBufferedMessageSize) {
-      buffered_messages_.emplace_back(object_host, std::move(message));
+      buffered_messages_.emplace_back(base::WrapRefCounted(&version),
+                                      std::move(message));
     }
     return;
   }
 
-  container_host().PostMessageToClient(std::move(object_host),
-                                       std::move(message));
+  container_host().PostMessageToClient(version, std::move(message));
 }
 
 void ServiceWorkerContainerHostForClient::PostMessageToClient(
-    base::WeakPtr<ServiceWorkerObjectHost> object_host,
+    ServiceWorkerVersion& version,
     blink::TransferableMessage message) {
   blink::mojom::ServiceWorkerObjectInfoPtr info;
-  if (object_host)
+  if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
+          version_object_manager().GetOrCreateHost(&version)) {
     info = object_host->CreateCompleteObjectInfoToSend();
+  }
   container_->PostMessageToClient(std::move(info), std::move(message));
 }
 
@@ -2083,16 +2083,16 @@ SubresourceLoaderParams ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
 void ServiceWorkerClient::SetContainerReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TransitionToClientPhase(ClientPhase::kContainerReady);
-  std::vector<std::tuple<base::WeakPtr<ServiceWorkerObjectHost>,
+  std::vector<std::tuple<scoped_refptr<ServiceWorkerVersion>,
                          blink::TransferableMessage>>
       messages;
 
   messages.swap(buffered_messages_);
   base::UmaHistogramCounts1000("ServiceWorker.PostMessage.QueueSize",
                                messages.size());
-  for (auto& [object_host, message] : messages) {
-    container_host().PostMessageToClient(std::move(object_host),
-                                         std::move(message));
+  for (auto& [version, message] : messages) {
+    CHECK(version);
+    container_host().PostMessageToClient(*version, std::move(message));
   }
   CHECK(buffered_messages_.empty());
 
