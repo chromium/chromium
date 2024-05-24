@@ -15,6 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BLOCK_TOUCH_INPUT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
@@ -93,10 +94,12 @@ public class TabSwitcherPaneMediatorUnitTest {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mDialogBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mShowingOrAnimationSupplier =
+            new ObservableSupplierImpl<>(false);
     private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
-            new ObservableSupplierImpl<>();
+            new ObservableSupplierImpl<>(false);
     private final ObservableSupplierImpl<TabListEditorController> mTabListEditorControllerSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mTabListEditorBackPressChangedSupplier =
@@ -141,6 +144,8 @@ public class TabSwitcherPaneMediatorUnitTest {
 
         when(mTabGridDialogController.getHandleBackPressChangedSupplier())
                 .thenReturn(mDialogBackPressChangedSupplier);
+        when(mTabGridDialogController.getShowingOrAnimationSupplier())
+                .thenReturn(mShowingOrAnimationSupplier);
         when(mTabListEditorController.getHandleBackPressChangedSupplier())
                 .thenReturn(mTabListEditorBackPressChangedSupplier);
 
@@ -447,5 +452,15 @@ public class TabSwitcherPaneMediatorUnitTest {
         mMediator.removeCustomView(mCustomView);
         verify(mContainerView).removeView(mCustomView);
         assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    @SmallTest
+    public void testBlockTouchInput() {
+        assertFalse(mModel.get(BLOCK_TOUCH_INPUT));
+        mShowingOrAnimationSupplier.set(true);
+        assertTrue(mModel.get(BLOCK_TOUCH_INPUT));
+        mShowingOrAnimationSupplier.set(false);
+        assertFalse(mModel.get(BLOCK_TOUCH_INPUT));
     }
 }

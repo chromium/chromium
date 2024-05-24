@@ -69,6 +69,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final Supplier<TabModel> mRegularTabModelSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private ObservableSupplierImpl<Boolean> mShowingOrAnimationSupplier =
+            new ObservableSupplierImpl<>(false);
     private TabContentManager mTabContentManager;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private TabGridDialogView mDialogView;
@@ -450,6 +452,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     public void resetWithListOfTabs(@Nullable List<Tab> tabs) {
         mTabListCoordinator.resetWithListOfTabs(tabs, false);
         mMediator.onReset(tabs);
+        if (tabs != null) {
+            mShowingOrAnimationSupplier.set(true);
+        }
     }
 
     @Override
@@ -469,6 +474,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         // called.
         // Find out why this helps and fix upstream if possible.
         mTabListCoordinator.softCleanup();
+        mShowingOrAnimationSupplier.set(false);
     }
 
     @Override
@@ -476,6 +482,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         if (!isVisible()) return false;
         handleBackPress();
         return true;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getShowingOrAnimationSupplier() {
+        return mShowingOrAnimationSupplier;
     }
 
     @Override

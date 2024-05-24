@@ -55,6 +55,8 @@ public class TabSwitcherPaneMediator
     private final TabActionListener mTabGridDialogOpener = this::onTabGroupClicked;
     private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
             new ValueChangedCallback<>(this::onTabModelFilterChanged);
+    private final Callback<Boolean> mOnDialogShowingOrAnimatingCallback =
+            this::onDialogShowingOrAnimatingChanged;
 
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
@@ -153,6 +155,9 @@ public class TabSwitcherPaneMediator
                     tabGridDialogController
                             .getHandleBackPressChangedSupplier()
                             .addObserver(mNotifyBackPressedCallback);
+                    tabGridDialogController
+                            .getShowingOrAnimationSupplier()
+                            .addObserver(mOnDialogShowingOrAnimatingCallback);
                 });
 
         mContainerViewModel = containerViewModel;
@@ -183,6 +188,9 @@ public class TabSwitcherPaneMediator
             controller
                     .getHandleBackPressChangedSupplier()
                     .removeObserver(mNotifyBackPressedCallback);
+            controller
+                    .getShowingOrAnimationSupplier()
+                    .removeObserver(mOnDialogShowingOrAnimatingCallback);
         }
         if (mCurrentTabListEditorControllerBackSupplier != null) {
             mCurrentTabListEditorControllerBackSupplier.removeObserver(mNotifyBackPressedCallback);
@@ -421,13 +429,31 @@ public class TabSwitcherPaneMediator
     }
 
     private void onAnimatingChanged(boolean animating) {
-        mContainerViewModel.set(BLOCK_TOUCH_INPUT, animating);
+        updateBlockTouchInput();
         notifyBackPressStateChangedInternal();
     }
 
     private void onVisibilityChanged(boolean visible) {
         if (visible) mOnTabSwitcherShown.run();
         notifyBackPressStateChangedInternal();
+    }
+
+    private void onDialogShowingOrAnimatingChanged(boolean showingOrAnimation) {
+        updateBlockTouchInput();
+    }
+
+    private void updateBlockTouchInput() {
+        boolean blockTouchInput = mIsAnimatingSupplier.get() || isDialogShowingOrAnimating();
+        mContainerViewModel.set(BLOCK_TOUCH_INPUT, blockTouchInput);
+    }
+
+    private boolean isDialogShowingOrAnimating() {
+        @Nullable DialogController dialogController = getTabGridDialogController();
+        if (dialogController == null) {
+            return false;
+        }
+
+        return dialogController.getShowingOrAnimationSupplier().get();
     }
 
     private void showTabsIfVisible() {
