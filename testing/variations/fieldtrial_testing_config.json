@@ -18851,6 +18851,21 @@
             ]
         }
     ],
+    "SeaPenUseExptTemplate": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SeaPenUseExptTemplate"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchInCCT": [
         {
             "platforms": [
