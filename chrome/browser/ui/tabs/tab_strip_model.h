@@ -865,10 +865,6 @@ class TabStripModel : public TabGroupController {
                             bool pin,
                             bool active);
 
-  // Updates the `contents_data_` and sends out observer notifications for
-  // removing an existing tab in  the tabstrip.
-  std::unique_ptr<tabs::TabModel> RemoveTabFromIndexImpl(int index);
-
   // Sends group notifications for a tab at `index` based on its initial_group
   // and `final_group` and updates the `group_model_`.
   void TabGroupStateChanged(
