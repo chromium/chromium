@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -1106,17 +1107,13 @@ void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
 }
 
 void SidePanelCoordinator::MaybeQueuePinPromo() {
-  // Which feature is shown and on what delay depends on the specific side
-  // panel that is showing.
-  constexpr base::TimeDelta kImpressionSuccessDuration = base::Seconds(6);
+  // Which feature is shown and on depends on the specific side panel that is
+  // showing.
   const base::Feature* iph_feature = nullptr;
-  base::TimeDelta delay;
   if (current_entry_->key().id() == SidePanelEntryId::kLensOverlayResults) {
     iph_feature = &feature_engagement::kIPHSidePanelLensOverlayPinnableFeature;
-    delay = kImpressionSuccessDuration;
   } else {
     iph_feature = &feature_engagement::kIPHSidePanelGenericPinnableFeature;
-    // No delay (current behavior).
   }
 
   // If the desired promo hasn't changed, there's nothing to do.
@@ -1133,6 +1130,10 @@ void SidePanelCoordinator::MaybeQueuePinPromo() {
   pending_pin_promo_ = iph_feature;
   if (iph_feature && !browser_view_->CanShowFeaturePromo(*iph_feature)
                           .is_blocked_this_instance()) {
+    // Default to ten second delay, but allow setting a different parameter via
+    // field trial.
+    const base::TimeDelta delay = base::GetFieldTrialParamByFeatureAsTimeDelta(
+        *iph_feature, "x_custom_iph_delay", base::Seconds(10));
     pin_promo_timer_.Start(FROM_HERE, delay,
                            base::BindOnce(&SidePanelCoordinator::ShowPinPromo,
                                           base::Unretained(this)));
