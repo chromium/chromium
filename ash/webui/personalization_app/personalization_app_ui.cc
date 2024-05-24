@@ -514,6 +514,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isGooglePhotosIntegrationEnabled",
                      wallpaper_provider_->IsEligibleForGooglePhotos());
 
+  source->AddBoolean("isManagedSeaPenEnabled",
+                     wallpaper_provider_->IsManagedSeaPenEnabled());
+
   source->AddBoolean("isGooglePhotosSharedAlbumsEnabled",
                      features::IsWallpaperGooglePhotosSharedAlbumsEnabled());
 

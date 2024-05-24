@@ -19,7 +19,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from '../personalization_app.mojom-webui.js';
 
-import {isAmbientModeAllowed} from './load_time_booleans.js';
+import {isAmbientModeAllowed, isManagedSeaPenEnabled} from './load_time_booleans.js';
 import {logAmbientAlbumsPathUMA, logPersonalizationPathUMA} from './personalization_metrics_logger.js';
 import {getTemplate} from './personalization_router_element.html.js';
 import {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
@@ -66,12 +66,16 @@ export function isAmbientPathNotAllowed(path: string|null): boolean {
   return isAmbientPath(path) && !isAmbientModeAllowed();
 }
 
-export function isSeaPenPath(path: string|null): boolean {
+function isSeaPenPath(path: string|null): boolean {
   return !!path && path.startsWith(Paths.SEA_PEN_COLLECTION);
 }
 
-export function isSeaPenPathNotAllowed(path: string|null): boolean {
-  return isSeaPenPath(path) && !isSeaPenEnabled();
+function isSeaPenAllowed() {
+  return isSeaPenEnabled() && isManagedSeaPenEnabled();
+}
+
+function isSeaPenPathNotAllowed(path: string|null): boolean {
+  return isSeaPenPath(path) && !isSeaPenAllowed();
 }
 
 export class PersonalizationRouterElement extends PolymerElement {
@@ -197,7 +201,7 @@ export class PersonalizationRouterElement extends PolymerElement {
   }
 
   private shouldShowSeaPen_(path: string|null): boolean {
-    return isSeaPenEnabled() && isSeaPenPath(path);
+    return isSeaPenAllowed() && isSeaPenPath(path);
   }
 
   private shouldShowWallpaperSelected_(templateId: string|null): boolean {

@@ -1261,6 +1261,7 @@ policies:
   1260: CSSCustomStateDeprecatedSyntaxEnabled
   1261: MemorySaverModeSavings
   1262: KioskVisionTelemetryEnabled
+  1263: GenAIWallpaperSettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

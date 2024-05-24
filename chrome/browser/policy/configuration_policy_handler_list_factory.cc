@@ -1662,6 +1662,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kKioskVisionTelemetryEnabled,
     ash::prefs::kKioskVisionTelemetryEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kGenAIWallpaperSettings,
+    ash::prefs::kGenAIWallpaperSettings,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

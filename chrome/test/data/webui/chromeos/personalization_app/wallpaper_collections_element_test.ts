@@ -627,4 +627,36 @@ suite('WallpaperCollectionsElementTest', function() {
         wallpaperCollectionsElement.shadowRoot!.getElementById('experimentTag');
     assertFalse(!!experimentTag, 'no experiment tag displayed');
   });
+
+  test(
+      'disables Sea Pen promoted tile for managed users with policy disabled',
+      async () => {
+        loadTimeData.overrideValues({
+          isSeaPenEnabled: true,
+          isManagedSeaPenEnabled: false,
+          isTimeOfDayWallpaperEnabled: false,
+        });
+        wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
+        await waitAfterNextRender(wallpaperCollectionsElement);
+
+        const loadingTiles =
+            wallpaperCollectionsElement.shadowRoot!
+                .querySelectorAll<WallpaperGridItemElement>(
+                    `${WallpaperGridItemElement.is}[data-is-promoted-tile]`);
+        assertEquals(1, loadingTiles.length, 'expected single loading tile');
+
+        await loadWallpapers(/* isTimeOfDayWallpaperEnabled= */ false);
+
+        const promotedTiles =
+            wallpaperCollectionsElement.shadowRoot!
+                .querySelectorAll<WallpaperGridItemElement>(
+                    `${WallpaperGridItemElement.is}[data-is-promoted-tile]`);
+        assertEquals(1, promotedTiles.length, 'expected single promoted tile');
+        assertTrue(
+            promotedTiles[0]!.hasAttribute('data-sea-pen'),
+            'expected sea pen promoted tile');
+        assertEquals(
+            'true', promotedTiles[0]!.getAttribute('aria-disabled'),
+            'expected sea pen promoted tile is disabled');
+      });
 });

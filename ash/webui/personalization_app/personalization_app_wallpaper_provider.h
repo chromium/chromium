@@ -24,6 +24,11 @@ class PersonalizationAppWallpaperProvider : public mojom::WallpaperProvider {
   // Not all users that can view the personalization app can also see google
   // photos. Users without a gaia account cannot use the photos APIs.
   virtual bool IsEligibleForGooglePhotos() = 0;
+
+  // Managed users controlled by enterprise policy can see Sea Pen tile in
+  // wallpaper subpage. However, only the users with the policy enabled can
+  // access and use the Sea Pen feature.
+  virtual bool IsManagedSeaPenEnabled() = 0;
 };
 
 }  // namespace ash::personalization_app

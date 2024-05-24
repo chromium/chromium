@@ -299,7 +299,7 @@ void Preferences::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(prefs::kNextImeShortcutReminderDismissed,
                                 false);
-
+  registry->RegisterIntegerPref(prefs::kGenAIWallpaperSettings, /*enabled=*/1);
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapSearchKeyTo,
       static_cast<int>(ui::mojom::ModifierKey::kMeta),

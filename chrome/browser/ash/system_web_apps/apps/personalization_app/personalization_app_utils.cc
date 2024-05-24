@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "base/base64.h"
 #include "base/logging.h"
@@ -161,6 +162,11 @@ bool IsEligibleForSeaPen(Profile* profile) {
     case user_manager::UserType::kRegular:
       return true;
   }
+}
+
+bool IsManagedSeaPenWallpaperEnabled(Profile* profile) {
+  return profile->GetPrefs()->GetInteger(ash::prefs::kGenAIWallpaperSettings) ==
+         1;
 }
 
 GURL GetJpegDataUrl(const std::string_view encoded_jpg_data) {
