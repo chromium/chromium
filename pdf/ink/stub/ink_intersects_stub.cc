@@ -6,10 +6,12 @@
 
 namespace chrome_pdf {
 
-bool InkIntersectsPointWithShape(float point_x,
-                                 float point_y,
-                                 const InkModeledShape& shape,
-                                 const InkAffineTransform& transform) {
+bool InkIntersectsRectWithShape(float rect_x,
+                                float rect_y,
+                                float rect_width,
+                                float rect_height,
+                                const InkModeledShape& shape,
+                                const InkAffineTransform& transform) {
   return false;
 }
 
