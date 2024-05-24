@@ -106,6 +106,9 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
   CHECK(features::internal::IsOnDeviceModelAdaptationEnabled(feature_));
   component_state_manager_observation_.Observe(
       on_device_component_state_manager.get());
+  if (auto* state = on_device_component_state_manager->GetState()) {
+    StateChanged(state);
+  }
 }
 
 OnDeviceModelAdaptationLoader::~OnDeviceModelAdaptationLoader() {
