@@ -14,7 +14,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/base/ranges.h"
-#include "third_party/blink/public/platform/media/interval_map.h"
+#include "third_party/blink/renderer/platform/media/interval_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {

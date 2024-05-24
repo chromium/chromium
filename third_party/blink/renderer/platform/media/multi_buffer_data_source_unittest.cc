@@ -168,7 +168,8 @@ class TestUrlIndex : public UrlIndex {
 
   scoped_refptr<UrlData> NewUrlData(const GURL& url,
                                     UrlData::CorsMode cors_mode) override {
-    last_url_data_ = new TestUrlData(url, cors_mode, this, task_runner_);
+    last_url_data_ =
+        base::MakeRefCounted<TestUrlData>(url, cors_mode, this, task_runner_);
     return last_url_data_;
   }
 
@@ -176,8 +177,6 @@ class TestUrlIndex : public UrlIndex {
     EXPECT_TRUE(last_url_data_);
     return last_url_data_;
   }
-
-  size_t load_queue_size() { return loading_queue_.size(); }
 
  private:
   scoped_refptr<TestUrlData> last_url_data_;

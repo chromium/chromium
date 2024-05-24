@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/url_index.h"
+#include "third_party/blink/renderer/platform/media/url_index.h"
 
 #include <set>
 #include <utility>
@@ -232,7 +232,7 @@ UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
                    int block_shift,
                    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : fetch_context_(fetch_context),
-      lru_(new MultiBuffer::GlobalLRU(task_runner)),
+      lru_(base::MakeRefCounted<MultiBuffer::GlobalLRU>(task_runner)),
       block_shift_(block_shift),
       memory_pressure_listener_(FROM_HERE,
                                 base::BindRepeating(&UrlIndex::OnMemoryPressure,
@@ -272,7 +272,7 @@ scoped_refptr<UrlData> UrlIndex::GetByUrl(const GURL& gurl,
 
 scoped_refptr<UrlData> UrlIndex::NewUrlData(const GURL& url,
                                             UrlData::CorsMode cors_mode) {
-  return new UrlData(url, cors_mode, this, task_runner_);
+  return base::AdoptRef(new UrlData(url, cors_mode, this, task_runner_));
 }
 
 void UrlIndex::OnMemoryPressure(

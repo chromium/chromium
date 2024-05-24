@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_MULTI_BUFFER_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_MULTI_BUFFER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_MULTI_BUFFER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_MULTI_BUFFER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -20,13 +20,14 @@
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/data_buffer.h"
-#include "third_party/blink/public/platform/media/interval_map.h"
-#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/media/interval_map.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
 
@@ -84,7 +85,7 @@ const int kMaxWaitForReaderOffset = 50;
 //
 // Users should inherit this class and implement CreateWriter().
 // TODO(hubbe): Make the multibuffer respond to memory pressure.
-class BLINK_PLATFORM_EXPORT MultiBuffer {
+class PLATFORM_EXPORT MultiBuffer {
  public:
   // Interface for clients wishing to read data out of this cache.
   // Note: It might look tempting to replace this with a callback,
@@ -134,7 +135,7 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
   // MultiBuffers use a global shared LRU to free memory.
   // This effectively means that recently used multibuffers can
   // borrow memory from less recently used ones.
-  class BLINK_PLATFORM_EXPORT GlobalLRU : public base::RefCounted<GlobalLRU> {
+  class PLATFORM_EXPORT GlobalLRU : public RefCounted<GlobalLRU> {
    public:
     typedef MultiBufferGlobalBlockId GlobalBlockId;
     explicit GlobalLRU(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -175,7 +176,7 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
     int64_t Size() const;
 
    private:
-    friend class base::RefCounted<GlobalLRU>;
+    friend class RefCounted<GlobalLRU>;
     ~GlobalLRU();
 
     // Schedule background pruning, if needed.
@@ -352,7 +353,7 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
   bool is_client_audio_element_ = false;
 
   // Stores the actual data.
-  DataMap data_;
+  DataMap data_ ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
 
   // protects data_
   // Note that because data_ is only modified on the a single thread,
@@ -364,11 +365,12 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
 
   // Keeps track of readers waiting for data.
   std::map<MultiBufferBlockId, std::set<raw_ptr<Reader, SetExperimental>>>
-      readers_;
+      readers_ ALLOW_DISCOURAGED_TYPE("HashMap lacks key sorting");
 
   // Keeps track of writers by their position.
   // The writers are owned by this class.
-  std::map<BlockId, std::unique_ptr<DataProvider>> writer_index_;
+  std::map<BlockId, std::unique_ptr<DataProvider>> writer_index_
+      ALLOW_DISCOURAGED_TYPE("HashMap lacks key sorting");
 
   // Gloabally shared LRU, decides which block to free next.
   scoped_refptr<GlobalLRU> lru_;
@@ -386,4 +388,4 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_MULTI_BUFFER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_MULTI_BUFFER_H_

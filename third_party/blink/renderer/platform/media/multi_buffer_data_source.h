@@ -17,7 +17,7 @@
 #include "media/base/data_source.h"
 #include "media/base/ranges.h"
 #include "media/base/tuneable.h"
-#include "third_party/blink/public/platform/media/url_index.h"
+#include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "url/gurl.h"

@@ -39,6 +39,8 @@ class RasterContextProvider;
 }
 
 namespace blink {
+
+class ResourceFetchContext;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class UrlIndex;
 class VideoFrameCompositor;
@@ -67,13 +69,19 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
   // not the WebMediaPlayer!
   using AdjustAllocatedMemoryCB = base::RepeatingCallback<int64_t(int64_t)>;
 
-  static WebMediaPlayer* Build(
+  WebMediaPlayerBuilder(
+      WebLocalFrame& frame,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  WebMediaPlayerBuilder(const WebMediaPlayerBuilder&) = delete;
+  WebMediaPlayerBuilder& operator=(const WebMediaPlayerBuilder&) = delete;
+  ~WebMediaPlayerBuilder();
+
+  WebMediaPlayer* Build(
       WebLocalFrame* frame,
       WebMediaPlayerClient* client,
       WebMediaPlayerEncryptedMediaClient* encrypted_client,
       WebMediaPlayerDelegate* delegate,
       std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
-      UrlIndex* url_index,
       std::unique_ptr<VideoFrameCompositor> compositor,
       std::unique_ptr<media::MediaLog> media_log,
       media::MediaPlayerLoggingID player_id,
@@ -99,6 +107,11 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
       bool is_background_video_track_optimization_supported,
       std::unique_ptr<media::Demuxer> demuxer_override,
       scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces);
+
+ private:
+  // Media resource cache.
+  std::unique_ptr<ResourceFetchContext> fetch_context_;
+  std::unique_ptr<UrlIndex> url_index_;
 };
 
 }  // namespace blink

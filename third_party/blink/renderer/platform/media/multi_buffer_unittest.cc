@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/multi_buffer.h"
+#include "third_party/blink/renderer/platform/media/multi_buffer.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -229,8 +229,9 @@ class MultiBufferTest : public testing::Test {
  public:
   MultiBufferTest()
       : rnd_(42),
-        task_runner_(new media::FakeSingleThreadTaskRunner(&clock_)),
-        lru_(new MultiBuffer::GlobalLRU(task_runner_)),
+        task_runner_(
+            base::MakeRefCounted<media::FakeSingleThreadTaskRunner>(&clock_)),
+        lru_(base::MakeRefCounted<MultiBuffer::GlobalLRU>(task_runner_)),
         multibuffer_(kBlockSizeShift, lru_, &rnd_) {}
 
   void TearDown() override {

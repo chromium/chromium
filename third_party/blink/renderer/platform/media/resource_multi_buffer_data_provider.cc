@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -20,14 +21,14 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "third_party/blink/public/platform/media/resource_fetch_context.h"
-#include "third_party/blink/public/platform/media/url_index.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/renderer/platform/media/cache_util.h"
+#include "third_party/blink/renderer/platform/media/resource_fetch_context.h"
+#include "third_party/blink/renderer/platform/media/url_index.h"
 
 namespace blink {
 

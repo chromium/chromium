@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_URL_INDEX_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_URL_INDEX_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_URL_INDEX_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_URL_INDEX_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include <deque>
 #include <map>
 #include <string>
 #include <utility>
@@ -16,13 +15,14 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/platform/media/multi_buffer.h"
-#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/media/multi_buffer.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -40,7 +40,7 @@ class UrlIndexTest;
 // A multibuffer for loading media resources which knows
 // how to create MultiBufferDataProviders to load data
 // into the cache.
-class BLINK_PLATFORM_EXPORT ResourceMultiBuffer : public MultiBuffer {
+class PLATFORM_EXPORT ResourceMultiBuffer : public MultiBuffer {
  public:
   ResourceMultiBuffer(UrlData* url_data_,
                       int block_shift,
@@ -65,7 +65,7 @@ class UrlIndex;
 
 // All the data & metadata for a single resource.
 // Data is cached using a MultiBuffer instance.
-class BLINK_PLATFORM_EXPORT UrlData : public base::RefCounted<UrlData> {
+class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
  public:
   // Keep in sync with WebMediaPlayer::CorsMode.
   enum CorsMode { CORS_UNSPECIFIED, CORS_ANONYMOUS, CORS_USE_CREDENTIALS };
@@ -184,18 +184,18 @@ class BLINK_PLATFORM_EXPORT UrlData : public base::RefCounted<UrlData> {
   friend class ResourceMultiBuffer;
   friend class UrlIndex;
   friend class UrlIndexTest;
-  friend class base::RefCounted<UrlData>;
+  friend class RefCounted<UrlData>;
 
   void OnEmpty();
   void MergeFrom(const scoped_refptr<UrlData>& other);
 
   // Url we represent, note that there may be multiple UrlData for
   // the same url.
-  const GURL url_;
+  const GURL url_ ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
 
   // Origin of the data, should only be different from the
   // url_.DeprecatedGetOriginAsURL() when service workers are involved.
-  GURL data_origin_;
+  GURL data_origin_ ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
   bool have_data_origin_;
 
   // Cross-origin access mode.
@@ -244,13 +244,14 @@ class BLINK_PLATFORM_EXPORT UrlData : public base::RefCounted<UrlData> {
   std::string etag_;
 
   ResourceMultiBuffer multibuffer_;
-  std::vector<RedirectCB> redirect_callbacks_;
+  std::vector<RedirectCB> redirect_callbacks_
+      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
 
   THREAD_CHECKER(thread_checker_);
 };
 
 // The UrlIndex lets you look up UrlData instances by url.
-class BLINK_PLATFORM_EXPORT UrlIndex {
+class PLATFORM_EXPORT UrlIndex {
  public:
   UrlIndex(ResourceFetchContext* fetch_context,
            scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -311,14 +312,12 @@ class BLINK_PLATFORM_EXPORT UrlIndex {
 
   raw_ptr<ResourceFetchContext> fetch_context_;
   using UrlDataMap = std::map<UrlData::KeyType, scoped_refptr<UrlData>>;
-  UrlDataMap indexed_data_;
+  UrlDataMap indexed_data_ ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
   scoped_refptr<MultiBuffer::GlobalLRU> lru_;
 
   // log2 of block size in multibuffer cache. Defaults to kBlockSizeShift.
   // Currently only changed for testing purposes.
   const int block_shift_;
-
-  std::deque<scoped_refptr<UrlData>> loading_queue_;
 
   base::MemoryPressureListener memory_pressure_listener_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -326,4 +325,4 @@ class BLINK_PLATFORM_EXPORT UrlIndex {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_URL_INDEX_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_URL_INDEX_H_

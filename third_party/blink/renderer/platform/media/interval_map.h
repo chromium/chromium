@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_INTERVAL_MAP_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_INTERVAL_MAP_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_INTERVAL_MAP_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_INTERVAL_MAP_H_
 
 #include <algorithm>
 #include <limits>
@@ -11,7 +11,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 
 namespace blink {
 
@@ -57,7 +57,7 @@ namespace blink {
 // Interval ends are always non-inclusive.
 // Please note that end <= begin is a valid (but empty) interval.
 template <typename T>
-struct BLINK_PLATFORM_EXPORT Interval {
+struct Interval {
  public:
   Interval(const T& begin, const T& end) : begin(begin), end(end) {}
 
@@ -80,7 +80,7 @@ template <typename KeyType,
           typename ValueType,
           class Compare = std::less<KeyType>,
           class NumericLimits = std::numeric_limits<KeyType>>
-class BLINK_PLATFORM_EXPORT IntervalMapConstIterator {
+class IntervalMapConstIterator {
  public:
   typedef std::map<KeyType, ValueType, Compare> MapType;
   IntervalMapConstIterator() {}
@@ -161,7 +161,7 @@ template <typename KeyType,
           typename ValueType,
           class Compare = std::less<KeyType>,
           class NumericLimits = std::numeric_limits<KeyType>>
-class BLINK_PLATFORM_EXPORT IntervalMap {
+class IntervalMap {
  public:
   typedef std::map<KeyType, ValueType, Compare> MapType;
   typedef IntervalMapConstIterator<KeyType, ValueType, Compare, NumericLimits>
@@ -283,9 +283,9 @@ class BLINK_PLATFORM_EXPORT IntervalMap {
     }
   }
 
-  MapType map_;
+  MapType map_ ALLOW_DISCOURAGED_TYPE("HashMap lacks key sorting.");
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_INTERVAL_MAP_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_INTERVAL_MAP_H_

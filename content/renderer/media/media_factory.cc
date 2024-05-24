@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -58,8 +57,6 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/media/key_system_config_selector.h"
 #include "third_party/blink/public/platform/media/remote_playback_client_wrapper_impl.h"
-#include "third_party/blink/public/platform/media/resource_fetch_context.h"
-#include "third_party/blink/public/platform/media/url_index.h"
 #include "third_party/blink/public/platform/media/video_frame_compositor.h"
 #include "third_party/blink/public/platform/media/web_encrypted_media_client_impl.h"
 #include "third_party/blink/public/platform/media/web_media_player_builder.h"
@@ -161,29 +158,6 @@ size_t GetMaxWebMediaPlayers() {
   }();
   return kMaxWebMediaPlayers;
 }
-
-class FrameFetchContext : public blink::ResourceFetchContext {
- public:
-  explicit FrameFetchContext(blink::WebLocalFrame* frame) : frame_(frame) {
-    DCHECK(frame_);
-  }
-
-  FrameFetchContext(const FrameFetchContext&) = delete;
-  FrameFetchContext& operator=(const FrameFetchContext&) = delete;
-
-  ~FrameFetchContext() override = default;
-
-  blink::WebLocalFrame* frame() const { return frame_; }
-
-  // blink::ResourceFetchContext implementation.
-  std::unique_ptr<blink::WebAssociatedURLLoader> CreateUrlLoader(
-      const blink::WebAssociatedURLLoaderOptions& options) override {
-    return frame_->CreateAssociatedURLLoader(options);
-  }
-
- private:
-  raw_ptr<blink::WebLocalFrame> frame_;
-};
 
 // Obtains the media ContextProvider and calls the given callback on the same
 // thread this is called on. Obtaining the media ContextProvider requires
@@ -476,16 +450,6 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   DCHECK(media_observer);
 #endif
 
-  if (!fetch_context_) {
-    fetch_context_ = std::make_unique<FrameFetchContext>(web_frame);
-    DCHECK(!url_index_);
-    url_index_ = std::make_unique<blink::UrlIndex>(
-        fetch_context_.get(),
-        render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia));
-  }
-  DCHECK_EQ(static_cast<FrameFetchContext*>(fetch_context_.get())->frame(),
-            web_frame);
-
   mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider;
   interface_broker_->GetInterface(
       metrics_provider.InitWithNewPipeAndPassReceiver());
@@ -524,10 +488,16 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   }
 #endif
 
-  return blink::WebMediaPlayerBuilder::Build(
+  if (!media_player_builder_) {
+    media_player_builder_ = std::make_unique<blink::WebMediaPlayerBuilder>(
+        *web_frame,
+        render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia));
+  }
+
+  return media_player_builder_->Build(
       web_frame, client, encrypted_client, delegate,
-      std::move(factory_selector), url_index_.get(), std::move(vfc),
-      std::move(media_log), player_id,
+      std::move(factory_selector), std::move(vfc), std::move(media_log),
+      player_id,
       base::BindRepeating(&RenderFrameImpl::DeferMediaLoad,
                           base::Unretained(render_frame_),
                           delegate->has_played_media()),

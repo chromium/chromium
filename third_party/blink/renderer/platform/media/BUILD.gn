@@ -23,8 +23,10 @@ component("media") {
     "cdm_result_promise_helper.h",
     "cdm_session_adapter.cc",
     "cdm_session_adapter.h",
+    "interval_map.h",
     "key_system_config_selector.cc",
     "multi_buffer.cc",
+    "multi_buffer.h",
     "multi_buffer_reader.cc",
     "multi_buffer_reader.h",
     "new_session_cdm_result_promise.cc",
@@ -32,9 +34,11 @@ component("media") {
     "power_status_helper.cc",
     "power_status_helper.h",
     "remote_playback_client_wrapper_impl.cc",
+    "resource_fetch_context.h",
     "resource_multi_buffer_data_provider.cc",
     "resource_multi_buffer_data_provider.h",
     "url_index.cc",
+    "url_index.h",
     "video_decode_stats_reporter.cc",
     "video_decode_stats_reporter.h",
     "video_frame_compositor.cc",
@@ -181,10 +185,10 @@ source_set("test_support") {
     "testing/test_response_generator.h",
   ]
   public_deps = [
+    ":media",
     "//base",
     "//testing/gmock",
     "//third_party/blink/public:blink_headers",
-    "//third_party/blink/public/platform/media",
     "//url",
   ]
   deps = [ "//net" ]

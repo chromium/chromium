@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_MULTI_BUFFER_DATA_SOURCE_FACTORY_H_
 
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -14,7 +15,7 @@
 #include "media/base/data_source.h"
 #include "media/base/media_log.h"
 #include "media/filters/hls_data_source_provider_impl.h"
-#include "third_party/blink/public/platform/media/url_index.h"
+#include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
