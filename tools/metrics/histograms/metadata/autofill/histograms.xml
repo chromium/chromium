@@ -3891,6 +3891,7 @@ chromium-metrics-reviews@google.com.
     disappers or cannot be displayed. Recorded everytime an Autofill popup
     disappears or cannot be displayed.
   </summary>
+  <token key="FillingProduct" variants="FillingProduct"/>
 </histogram>
 
 <histogram name="Autofill.PreFilledFieldClassifications.{FormType}"
