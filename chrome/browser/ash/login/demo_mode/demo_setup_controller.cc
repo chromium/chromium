@@ -605,9 +605,10 @@ void DemoSetupController::OnDemoComponentsLoaded() {
   policy::EnrollmentConfig config;
   config.mode = policy::EnrollmentConfig::MODE_ATTESTATION;
   config.management_domain = policy::kDemoModeDomain;
+  config.license_type = policy::LicenseType::kEnterprise;
 
-  enrollment_launcher_ = EnrollmentLauncher::Create(
-      this, config, policy::kDemoModeDomain, policy::LicenseType::kEnterprise);
+  enrollment_launcher_ =
+      EnrollmentLauncher::Create(this, config, policy::kDemoModeDomain);
   enrollment_launcher_->EnrollUsingAttestation();
 }
 

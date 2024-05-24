@@ -185,7 +185,6 @@ EnrollmentHandler::EnrollmentHandler(
     std::unique_ptr<CloudPolicyClient> client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const EnrollmentConfig& enrollment_config,
-    LicenseType license_type,
     DMAuth dm_auth,
     const std::string& client_id,
     const std::string& requisition,
@@ -221,7 +220,7 @@ EnrollmentHandler::EnrollmentHandler(
       GetPsmDeterminationTimestamp(*g_browser_process->local_state());
   // License type is set only if terminal license is used. Unset field is
   // treated as enterprise license.
-  if (license_type == LicenseType::kTerminal) {
+  if (enrollment_config_.license_type == LicenseType::kTerminal) {
     register_params_->license_type =
         em::LicenseType_LicenseTypeEnum::LicenseType_LicenseTypeEnum_KIOSK;
   }

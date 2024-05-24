@@ -268,11 +268,11 @@ class EnrollmentScreenBaseTest : public testing::Test {
 
   void ExpectShowView() { EXPECT_CALL(mock_view_, Show()); }
 
-  void ExpectShowViewWithLogin() {
-    EXPECT_CALL(mock_view_, Show()).WillOnce([this]() {
+  void ExpectShowViewWithLogin(
+      policy::LicenseType license_type = policy::LicenseType::kEnterprise) {
+    EXPECT_CALL(mock_view_, Show()).WillOnce([this, license_type]() {
       enrollment_screen_->OnLoginDone(
-          kTestUserEmail, static_cast<int>(policy::LicenseType::kEnterprise),
-          kTestAuthCode);
+          kTestUserEmail, static_cast<int>(license_type), kTestAuthCode);
     });
   }
 
@@ -307,6 +307,10 @@ class EnrollmentScreenBaseTest : public testing::Test {
   }
 
   TestingPrefServiceSimple& local_state() { return fake_local_state_; }
+
+  MockEnrollmentLauncher& mock_enrollment_launcher() {
+    return mock_enrollment_launcher_;
+  }
 
  private:
   void HandleScreenExit(EnrollmentScreen::Result screen_result) {
@@ -864,6 +868,70 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
   UserCancel();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+class EnrollmentScreenLicenseTest : public EnrollmentScreenBaseTest {
+ protected:
+  void ExpectLicense(policy::LicenseType license_type) {
+    EXPECT_CALL(
+        mock_enrollment_launcher(),
+        Setup(testing::AllOf(testing::Field(
+                  &policy::EnrollmentConfig::license_type, license_type)),
+              _));
+  }
+};
+
+// Test that user can override prescribed license type on manual enrollment.
+TEST_F(EnrollmentScreenLicenseTest,
+       UserCanChooseLicenseTypeOnManualEnrollment) {
+  policy::EnrollmentConfig config;
+  config.mode = policy::EnrollmentConfig::MODE_MANUAL;
+  config.auth_mechanism = policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+  config.license_type = policy::LicenseType::kEducation;
+
+  ExpectShowViewWithLogin(policy::LicenseType::kTerminal);
+  ExpectLicense(policy::LicenseType::kTerminal);
+  ExpectManualEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
+  ExpectSuccessScreen();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+}
+
+TEST_F(EnrollmentScreenLicenseTest,
+       AttestationBasedEnrollmentPicksPrescribedLicense) {
+  policy::EnrollmentConfig config;
+  config.mode = policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
+  config.auth_mechanism =
+      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
+  config.license_type = policy::LicenseType::kTerminal;
+
+  ExpectLicense(policy::LicenseType::kTerminal);
+  ExpectAttestationBasedEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
+  ExpectSuccessScreen();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+}
+
+TEST_F(EnrollmentScreenLicenseTest, TokenEnrollmentPicksPrescribedLicense) {
+  policy::EnrollmentConfig config;
+  config.mode =
+      policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
+  config.auth_mechanism =
+      policy::EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
+  config.enrollment_token = policy::test::kEnrollmentToken;
+  config.license_type = policy::LicenseType::kEnterprise;
+
+  ExpectLicense(policy::LicenseType::kEnterprise);
+  ExpectTokenBasedEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
+  ExpectSuccessScreen();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
 }
 
 }  // namespace ash

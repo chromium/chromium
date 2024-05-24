@@ -14,7 +14,6 @@ class GoogleServiceAuthError;
 
 namespace policy {
 struct EnrollmentConfig;
-enum class LicenseType;
 class EnrollmentStatus;
 }  // namespace policy
 
@@ -38,8 +37,7 @@ class EnrollmentLauncher {
   using Factory = base::RepeatingCallback<std::unique_ptr<EnrollmentLauncher>(
       EnrollmentStatusConsumer*,
       const policy::EnrollmentConfig&,
-      const std::string&,
-      policy::LicenseType)>;
+      const std::string&)>;
 
   // Enumeration of the possible errors that can occur during enrollment which
   // are not covered by GoogleServiceAuthError or EnrollmentStatus.
@@ -79,8 +77,7 @@ class EnrollmentLauncher {
   static std::unique_ptr<EnrollmentLauncher> Create(
       EnrollmentStatusConsumer* status_consumer,
       const policy::EnrollmentConfig& enrollment_config,
-      const std::string& enrolling_user_domain,
-      policy::LicenseType license_type);
+      const std::string& enrolling_user_domain);
 
   EnrollmentLauncher(const EnrollmentLauncher&) = delete;
   EnrollmentLauncher& operator=(const EnrollmentLauncher&) = delete;
@@ -142,8 +139,7 @@ class EnrollmentLauncher {
 
   // This method is called once from Create method.
   virtual void Setup(const policy::EnrollmentConfig& enrollment_config,
-                     const std::string& enrolling_user_domain,
-                     policy::LicenseType license_type) = 0;
+                     const std::string& enrolling_user_domain) = 0;
 };
 
 class ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting {

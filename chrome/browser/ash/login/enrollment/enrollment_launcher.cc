@@ -126,8 +126,7 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
   void UpdateDeviceAttributes(const std::string& asset_id,
                               const std::string& location) override;
   void Setup(const policy::EnrollmentConfig& enrollment_config,
-             const std::string& enrolling_user_domain,
-             policy::LicenseType license_type) override;
+             const std::string& enrolling_user_domain) override;
   bool InProgress() const override;
 
  private:
@@ -206,11 +205,9 @@ EnrollmentLauncherImpl::~EnrollmentLauncherImpl() {
 
 void EnrollmentLauncherImpl::Setup(
     const policy::EnrollmentConfig& enrollment_config,
-    const std::string& enrolling_user_domain,
-    policy::LicenseType license_type) {
+    const std::string& enrolling_user_domain) {
   enrollment_config_ = enrollment_config;
   enrolling_user_domain_ = enrolling_user_domain;
-  license_type_ = license_type;
 }
 
 void EnrollmentLauncherImpl::EnrollUsingAuthCode(const std::string& auth_code) {
@@ -323,7 +320,7 @@ void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
       connector->GetStateKeysBroker(), attestation_flow_.get(),
       std::move(client),
       policy::BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner(),
-      enrollment_config_, license_type_, auth_data_.Clone(),
+      enrollment_config_, auth_data_.Clone(),
       InstallAttributes::Get()->GetDeviceId(),
       policy::EnrollmentRequisitionManager::GetDeviceRequisition(),
       policy::EnrollmentRequisitionManager::GetSubOrganization(),
@@ -688,16 +685,15 @@ EnrollmentLauncher::~EnrollmentLauncher() = default;
 std::unique_ptr<EnrollmentLauncher> EnrollmentLauncher::Create(
     EnrollmentStatusConsumer* status_consumer,
     const policy::EnrollmentConfig& enrollment_config,
-    const std::string& enrolling_user_domain,
-    policy::LicenseType license_type) {
+    const std::string& enrolling_user_domain) {
   if (!g_testing_factory->is_null()) {
     CHECK_IS_TEST();
     return g_testing_factory->Run(status_consumer, enrollment_config,
-                                  enrolling_user_domain, license_type);
+                                  enrolling_user_domain);
   }
 
   auto result = std::make_unique<EnrollmentLauncherImpl>(status_consumer);
-  result->Setup(enrollment_config, enrolling_user_domain, license_type);
+  result->Setup(enrollment_config, enrolling_user_domain);
   return result;
 }
 

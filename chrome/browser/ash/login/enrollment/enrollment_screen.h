@@ -261,7 +261,6 @@ class EnrollmentScreen
   base::RepeatingClosure tpm_updater_;
   policy::EnrollmentConfig prescribed_config_;
   policy::EnrollmentConfig effective_config_;
-  policy::LicenseType license_type_to_use_ = policy::LicenseType::kEnterprise;
   ErrorScreensHistogramHelper histogram_helper_;
 
   // 'Current' and 'Next' authentication mechanisms to be used.

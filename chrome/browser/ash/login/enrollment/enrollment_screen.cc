@@ -242,8 +242,8 @@ bool EnrollmentScreen::AdvanceToNextAuth() {
 
 void EnrollmentScreen::CreateEnrollmentLauncher() {
   if (!enrollment_launcher_) {
-    enrollment_launcher_ = EnrollmentLauncher::Create(
-        this, effective_config_, enrolling_user_domain_, license_type_to_use_);
+    enrollment_launcher_ = EnrollmentLauncher::Create(this, effective_config_,
+                                                      enrolling_user_domain_);
   }
 }
 
@@ -480,7 +480,6 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
   // in the logs.
   LOG(WARNING) << "Authenticating using attestation.";
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
-  license_type_to_use_ = effective_config_.license_type;
 
   if (view_) {
     view_->Show();
@@ -492,10 +491,6 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
 void EnrollmentScreen::AuthenticateUsingEnrollmentToken() {
   LOG(WARNING) << "Authenticating using enrollment token.";
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
-  // Although license type is copied over blindly here, later in
-  // enrollment_handler it's only propagated if the type is terminal (i.e.
-  // kiosk), as unset license type is treated as enterprise.
-  license_type_to_use_ = effective_config_.license_type;
 
   if (view_) {
     view_->Show();
@@ -511,7 +506,8 @@ void EnrollmentScreen::OnLoginDone(const std::string& user,
   scoped_network_observation_.Reset();
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   enrolling_user_domain_ = gaia::ExtractDomainName(user);
-  license_type_to_use_ = static_cast<policy::LicenseType>(license_type);
+  effective_config_.license_type =
+      static_cast<policy::LicenseType>(license_type);
   UMA(enrollment_failed_once_ ? policy::kMetricEnrollmentRestarted
                               : policy::kMetricEnrollmentStarted);
 

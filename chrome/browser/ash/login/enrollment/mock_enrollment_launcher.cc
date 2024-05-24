@@ -47,11 +47,10 @@ std::unique_ptr<EnrollmentLauncher> FakeEnrollmentLauncher::Create(
     MockEnrollmentLauncher* mock,
     EnrollmentStatusConsumer* status_consumer,
     const policy::EnrollmentConfig& enrollment_config,
-    const std::string& enrolling_user_domain,
-    policy::LicenseType license_type) {
+    const std::string& enrolling_user_domain) {
   auto result =
       base::WrapUnique(new FakeEnrollmentLauncher(mock, status_consumer));
-  result->Setup(enrollment_config, enrolling_user_domain, license_type);
+  result->Setup(enrollment_config, enrolling_user_domain);
   return result;
 }
 
@@ -98,9 +97,8 @@ void FakeEnrollmentLauncher::UpdateDeviceAttributes(
 
 void FakeEnrollmentLauncher::Setup(
     const policy::EnrollmentConfig& enrollment_config,
-    const std::string& enrolling_user_domain,
-    policy::LicenseType license_type) {
-  mock_->Setup(enrollment_config, enrolling_user_domain, license_type);
+    const std::string& enrolling_user_domain) {
+  mock_->Setup(enrollment_config, enrolling_user_domain);
 }
 
 bool FakeEnrollmentLauncher::InProgress() const {

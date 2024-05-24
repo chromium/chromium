@@ -737,8 +737,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
         store_, install_attributes_.get(), &state_keys_broker_,
         &mock_attestation_flow_, std::move(client),
         base::SingleThreadTaskRunner::GetCurrentDefault(), enrollment_config,
-        policy::LicenseType::kEnterprise, std::move(auth),
-        install_attributes_->GetDeviceId(),
+        std::move(auth), install_attributes_->GetDeviceId(),
         EnrollmentRequisitionManager::GetDeviceRequisition(),
         EnrollmentRequisitionManager::GetSubOrganization(),
 
