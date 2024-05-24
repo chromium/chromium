@@ -254,7 +254,82 @@ XML_WITH_COMMENTS_WRONG_INDENT_LINEBREAK = """
 """.strip()
 
 
+PRETTY_XML_WITH_IFTTT_COMMENTS = """
+<histogram-configuration>
+
+<enums>
+
+<!-- LINT.IfChange(Enum1) -->
+
+<enum name="Enum1">
+  <summary>Summary text</summary>
+  <int value="0" label="Label1"/>
+  <int value="1" label="Label2"/>
+</enum>
+
+<!-- LINT.ThenChange(//path/to/file.cpp:CppEnum1) -->
+
+<enum name="Enum2">
+<!-- LINT.IfChange(Enum2a) -->
+
+  <int value="0" label="Label1"/>
+  <int value="1" label="Label2"/>
+<!-- LINT.ThenChange(//path/to/file.cpp:CppEnum2a) -->
+
+<!-- LINT.IfChange(Enum2b) -->
+
+  <int value="1000" label="Label3"/>
+  <int value="1001" label="Label4"/>
+<!-- LINT.ThenChange(//path/to/file.cpp:CppEnum2b) -->
+
+</enum>
+
+<!-- LINT.IfChange(Enum3) -->
+
+<enum name="Enum3">
+  <int value="0" label="Label1"/>
+  <int value="1" label="Label2"/>
+</enum>
+
+<!-- LINT.ThenChange(//path/to/file.cpp:CppEnum3) -->
+
+</enums>
+
+</histogram-configuration>
+""".strip()
+
+PRETTY_XML_WITH_IFTTT_COMMENTS_MIDDLE = """
+<histogram-configuration>
+
+<enums>
+
+<enum name="Enum1">
+  <int value="0" label="Label1"/>
+  <int value="1" label="Label2"/>
+</enum>
+
+<!-- LINT.IfChange(Enum2) -->
+
+<enum name="Enum2">
+  <int value="0" label="Label1"/>
+  <int value="1" label="Label2"/>
+</enum>
+
+<!-- LINT.ThenChange(//path/to/file.cpp:CppEnum2) -->
+
+<enum name="Enum3">
+  <int value="0" label="Label1"/>
+  <int value="1" label="Label2"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
+""".strip()
+
+
 class EnumXmlTest(unittest.TestCase):
+
   @parameterized.expand([
       # Test prettify already pretty XML to verify the pretty-printed version
       # is the same.
@@ -282,6 +357,13 @@ class EnumXmlTest(unittest.TestCase):
        PRETTY_XML_WITH_COMMENTS),
       ('CommentsIndentsLineBreak', XML_WITH_COMMENTS_WRONG_INDENT_LINEBREAK,
        PRETTY_XML_WITH_COMMENTS),
+
+      # Tests that that LINT.IfChange / LINT.ThenChange comments are correctly
+      # preserved in an already-pretty XML.
+      ('AlreadyPrettyIfttt', PRETTY_XML_WITH_IFTTT_COMMENTS,
+       PRETTY_XML_WITH_IFTTT_COMMENTS),
+      ('AlreadyPrettyIftttMiddle', PRETTY_XML_WITH_IFTTT_COMMENTS_MIDDLE,
+       PRETTY_XML_WITH_IFTTT_COMMENTS_MIDDLE),
   ])
   def testPrettify(self, _, input_xml, expected_xml):
     result = histogram_configuration_model.PrettifyTree(
