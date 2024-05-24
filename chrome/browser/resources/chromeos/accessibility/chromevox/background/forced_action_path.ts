@@ -39,6 +39,10 @@ export class ForcedActionPath {
   private actions_: Action[] = [];
   private onFinishedCallback_: VoidFunction;
 
+  static instance?: ForcedActionPath|null;
+  static postGestureCallbackForTesting?: VoidFunction;
+  static postKeyDownEventCallbackForTesting?: VoidFunction;
+
   /**
    * @param actionInfos A queue of expected actions.
    * @param onFinishedCallback Runs once after all expected actions have been
@@ -65,11 +69,13 @@ export class ForcedActionPath {
     (new PanelCommand(PanelCommandType.CLOSE_CHROMEVOX)).send();
   }
 
-  static create(actions: ActionInfo[], callback: VoidFunction): void {
+  static create(actions: ActionInfo[]): Promise<void> {
     if (ForcedActionPath.instance) {
       throw 'Error: trying to create a second ForcedActionPath';
     }
-    ForcedActionPath.instance = new ForcedActionPath(actions, callback);
+    return new Promise<void>(
+        resolve => ForcedActionPath.instance =
+            new ForcedActionPath(actions, resolve));
   }
 
   /** Destroys the forced action path. */
@@ -176,22 +182,35 @@ export class ForcedActionPath {
   onGesture(actualGesture: string): boolean {
     const expectedAction = this.getExpectedAction_();
     if (expectedAction.type !== ActionType.GESTURE) {
+      if (ForcedActionPath.postGestureCallbackForTesting) {
+        ForcedActionPath.postGestureCallbackForTesting();
+      }
       return false;
     }
 
     const expectedGesture = expectedAction.value;
     if (expectedGesture !== actualGesture) {
+      if (ForcedActionPath.postGestureCallbackForTesting) {
+        ForcedActionPath.postGestureCallbackForTesting();
+      }
       return false;
     }
 
     this.expectedActionMatched_();
+    if (ForcedActionPath.postGestureCallbackForTesting) {
+      ForcedActionPath.postGestureCallbackForTesting();
+    }
     return expectedAction.shouldPropagate;
   }
 
   /** @return Whether the event should continue propagating. */
   onKeyDown(evt: KeyboardEvent): boolean {
     const keySequence = KeyUtil.keyEventToKeySequence(evt);
-    return this.onKeySequence(keySequence);
+    const result = this.onKeySequence(keySequence);
+    if (ForcedActionPath.postKeyDownEventCallbackForTesting) {
+      ForcedActionPath.postKeyDownEventCallbackForTesting();
+    }
+    return result;
   }
 
   // Private methods.
@@ -234,10 +253,6 @@ export class ForcedActionPath {
 
     throw new Error('ForcedActionPath: actionIndex_ is invalid.');
   }
-}
-
-export namespace ForcedActionPath {
-  export let instance: ForcedActionPath | null | undefined;
 }
 
 // Local to module.
@@ -342,8 +357,7 @@ class StringAction extends Action {
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
     BridgeConstants.ForcedActionPath.Action.CREATE,
-    (actions: ActionInfo[]) => new Promise<void>(
-        resolve => ForcedActionPath.create(actions, resolve)));
+    (actions: ActionInfo[]) => ForcedActionPath.create(actions));
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
     BridgeConstants.ForcedActionPath.Action.DESTROY,

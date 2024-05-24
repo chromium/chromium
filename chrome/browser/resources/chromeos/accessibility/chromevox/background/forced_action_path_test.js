@@ -225,15 +225,24 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'SingleKey', async function() {
       [{type: 'key_sequence', value: {'keys': {'keyCode': [KeyCode.SPACE]}}}];
   const onFinished = () => finished = true;
 
-  ForcedActionPath.create(actions, onFinished);
+  ForcedActionPath.create(actions).then(onFinished);
+  let keyPressReceived = new Promise(
+      resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.LEFT));
   keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.LEFT));
+  await keyPressReceived;
   assertFalse(finished);
+  keyPressReceived = new Promise(
+      resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.RIGHT));
   keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.RIGHT));
+  await keyPressReceived;
   assertFalse(finished);
+  keyPressReceived = new Promise(
+      resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.SPACE));
   keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.SPACE));
+  await keyPressReceived;
   assertTrue(finished);
 });
 
@@ -249,22 +258,44 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'MultipleKeys', async function() {
   }];
   const onFinished = () => finished = true;
 
-  ForcedActionPath.create(actions, onFinished);
+  ForcedActionPath.create(actions).then(onFinished);
+
+  // To ensure we're getting an accurate sense of whether it's finished, we need to make sure
+  // the key press has been processed before checking if onFinished was called.
+  let keyPressReceived = new Promise(
+      resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.O));
   keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.O));
+  await keyPressReceived;
   assertFalse(finished);
+
+  keyPressReceived = new Promise(
+      resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.B));
   keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.B));
+  await keyPressReceived;
   assertFalse(finished);
+
+  keyPressReceived = new Promise(
+      resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.SEARCH));
   keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.SEARCH));
+  await keyPressReceived;
   assertFalse(finished);
+
+  keyPressReceived = new Promise(
+      resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   keyboardHandler.onKeyDown(
       TestUtils.createMockKeyEvent(KeyCode.O, {searchKeyHeld: true}));
+  await keyPressReceived;
   assertFalse(finished);
+
+  keyPressReceived = new Promise(
+      resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   keyboardHandler.onKeyUp(
       TestUtils.createMockKeyEvent(KeyCode.O, {searchKeyHeld: true}));
   keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.B));
+  await keyPressReceived;
   assertTrue(finished);
 });
 
@@ -347,7 +378,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'BlockCommands', async function() {
   const previousLine =
       TestUtils.createMockKeyEvent(KeyCode.UP, {searchKeyHeld: true});
 
-  ForcedActionPath.create(actions, onFinished);
+  ForcedActionPath.create(actions).then(onFinished);
   mockFeedback.expectSpeech('Start')
       .call(() => {
         assertEquals('Start', this.getRangeStart().name);
@@ -391,7 +422,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'CloseChromeVox', async function() {
   const actions =
       [{type: 'key_sequence', value: {'keys': {'keyCode': [KeyCode.A]}}}];
   const onFinished = () => finished = true;
-  ForcedActionPath.create(actions, onFinished);
+  ForcedActionPath.create(actions).then(onFinished);
   // Swap in the below function so we don't actually close ChromeVox.
   ForcedActionPath.closeChromeVox_ = () => {
     closed = true;
@@ -430,12 +461,16 @@ AX_TEST_F(
         shouldPropagate: false,
       }];
       const onFinished = () => finished = true;
-      ForcedActionPath.create(actions, onFinished);
+      ForcedActionPath.create(actions).then(onFinished);
       ChromeVoxKbHandler.commandHandler = command => executedCommand = true;
       assertFalse(finished);
       assertFalse(executedCommand);
+      const keyPressReceived = new Promise(
+          resolve => ForcedActionPath.postKeyDownEventCallbackForTesting =
+              resolve);
       keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.CONTROL));
       keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.CONTROL));
+      await keyPressReceived;
       assertFalse(executedCommand);
       assertTrue(finished);
     });
@@ -447,12 +482,22 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'Gestures', async function() {
   const actions = [{type: 'gesture', value: Gesture.SWIPE_RIGHT1}];
   const onFinished = () => finished = true;
 
-  ForcedActionPath.create(actions, onFinished);
+  ForcedActionPath.create(actions).then(onFinished);
+
+  let gestureReceived = new Promise(
+      resolve => ForcedActionPath.postGestureCallbackForTesting = resolve);
   doGesture(Gesture.SWIPE_LEFT1)();
+  await gestureReceived;
   assertFalse(finished);
+
+  // SWIPE_LEFT2 is never sent to ForcedActionPath at all.
   doGesture(Gesture.SWIPE_LEFT2)();
   assertFalse(finished);
+
+  gestureReceived = new Promise(
+      resolve => ForcedActionPath.postGestureCallbackForTesting = resolve);
   doGesture(Gesture.SWIPE_RIGHT1)();
+  await gestureReceived;
   assertTrue(finished);
 });
 
@@ -461,20 +506,16 @@ AX_TEST_F(
     'ChromeVoxForcedActionPathTest', 'AfterActionCommand', async function() {
       const mockFeedback = this.createMockFeedback();
       await this.runWithLoadedTree(this.simpleDoc);
-      let finished = false;
       const actions = [{
         type: 'gesture',
         value: Gesture.SWIPE_RIGHT1,
         afterActionCmd: 'announceBatteryDescription',
       }];
-      const onFinished = () => finished = true;
+      // The test will not succeed until this callback is called.
+      const onFinished = this.newCallback();
 
-      ForcedActionPath.create(actions, onFinished);
-      mockFeedback
-          .call(() => {
-            doGesture(Gesture.SWIPE_RIGHT1)();
-            assertTrue(finished);
-          })
+      ForcedActionPath.create(actions).then(onFinished);
+      mockFeedback.call(doGesture(Gesture.SWIPE_RIGHT1))
           .expectSpeech(/Battery at [0-9]+ percent/);
       await mockFeedback.replay();
     });
