@@ -17,6 +17,8 @@ component("standalone_browser") {
     "lacros_availability.h",
     "lacros_selection.cc",
     "lacros_selection.h",
+    "migration_progress_tracker.cc",
+    "migration_progress_tracker.h",
     "migrator_util.cc",
     "migrator_util.h",
     "standalone_browser_features.cc",
@@ -65,6 +67,7 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "fake_migration_progress_tracker.h",
     "feature_refs.cc",
     "test_util.cc",
     "test_util.h",

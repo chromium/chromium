@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/common/chrome_constants.h"
+#include "chromeos/ash/components/standalone_browser/migration_progress_tracker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
@@ -214,10 +215,11 @@ TargetItems::~TargetItems() = default;
 
 // Copies `item` to location pointed by `dest`. Returns true on success and
 // false on failure.
-bool CopyTargetItem(const TargetItem& item,
-                    const base::FilePath& dest,
-                    CancelFlag* cancel_flag,
-                    MigrationProgressTracker* progress_tracker) {
+bool CopyTargetItem(
+    const TargetItem& item,
+    const base::FilePath& dest,
+    CancelFlag* cancel_flag,
+    standalone_browser::MigrationProgressTracker* progress_tracker) {
   if (cancel_flag->IsSet())
     return false;
 
@@ -352,10 +354,11 @@ ScopedExtraBytesRequiredToBeFreedForTesting::
   g_extra_bytes_required_to_be_freed_for_testing.reset();
 }
 
-bool CopyDirectory(const base::FilePath& from_path,
-                   const base::FilePath& to_path,
-                   CancelFlag* cancel_flag,
-                   MigrationProgressTracker* progress_tracker) {
+bool CopyDirectory(
+    const base::FilePath& from_path,
+    const base::FilePath& to_path,
+    CancelFlag* cancel_flag,
+    standalone_browser::MigrationProgressTracker* progress_tracker) {
   if (cancel_flag->IsSet())
     return false;
 
@@ -393,10 +396,11 @@ bool CopyDirectory(const base::FilePath& from_path,
   return true;
 }
 
-bool CopyTargetItems(const base::FilePath& to_dir,
-                     const TargetItems& target_items,
-                     CancelFlag* cancel_flag,
-                     MigrationProgressTracker* progress_tracker) {
+bool CopyTargetItems(
+    const base::FilePath& to_dir,
+    const TargetItems& target_items,
+    CancelFlag* cancel_flag,
+    standalone_browser::MigrationProgressTracker* progress_tracker) {
   for (const auto& item : target_items.items) {
     if (cancel_flag->IsSet())
       return false;

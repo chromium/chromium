@@ -18,12 +18,15 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
-#include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 
 class PrefService;
 class PrefRegistrySimple;
 
 namespace ash {
+
+namespace standalone_browser {
+class MigrationProgressTracker;
+}  // namespace standalone_browser
 
 using MigrationFinishedCallback =
     base::OnceCallback<void(BrowserDataMigratorImpl::MigrationResult)>;
@@ -108,7 +111,8 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   MoveMigrator(
       const base::FilePath& original_profile_dir,
       const std::string& user_id_hash,
-      std::unique_ptr<MigrationProgressTracker> progress_tracker,
+      std::unique_ptr<standalone_browser::MigrationProgressTracker>
+          progress_tracker,
       scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag,
       PrefService* local_state,
       MigrationFinishedCallback finished_callback);
@@ -249,7 +253,8 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // and also creating `First Run` file in Lacros user data dir.
   static TaskResult SetupLacrosDir(
       const base::FilePath& original_profile_dir,
-      std::unique_ptr<MigrationProgressTracker> progress_tracker,
+      std::unique_ptr<standalone_browser::MigrationProgressTracker>
+          progress_tracker,
       scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag);
 
   // Called as a reply to `SetupLacrosDir()`. Posts
@@ -334,7 +339,8 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   const std::string user_id_hash_;
 
   // `progress_tracker_` is used to report progress status to the screen.
-  std::unique_ptr<MigrationProgressTracker> progress_tracker_;
+  std::unique_ptr<standalone_browser::MigrationProgressTracker>
+      progress_tracker_;
 
   // `cancel_flag_` gets set by `BrowserDataMigratorImpl::Cancel()` and tasks
   // posted to worker threads can check if migration is cancelled or not.

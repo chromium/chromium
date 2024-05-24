@@ -21,13 +21,13 @@
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/standalone_browser/fake_migration_progress_tracker.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/prefs/testing_pref_service.h"
@@ -73,8 +73,9 @@ class BrowserDataMigratorImplTest : public ::testing::Test {
 
 TEST_F(BrowserDataMigratorImplTest, Migrate) {
   base::test::TaskEnvironment task_environment;
-  std::unique_ptr<MigrationProgressTracker> progress_tracker =
-      std::make_unique<FakeMigrationProgressTracker>();
+  std::unique_ptr<standalone_browser::MigrationProgressTracker>
+      progress_tracker =
+          std::make_unique<standalone_browser::FakeMigrationProgressTracker>();
   const std::string user_id_hash = "abcd";
   BrowserDataMigratorImpl::SetMigrationStep(
       &pref_service_, BrowserDataMigratorImpl::MigrationStep::kRestartCalled);
@@ -115,8 +116,9 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
 
 TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
   base::test::TaskEnvironment task_environment;
-  std::unique_ptr<MigrationProgressTracker> progress_tracker =
-      std::make_unique<FakeMigrationProgressTracker>();
+  std::unique_ptr<standalone_browser::MigrationProgressTracker>
+      progress_tracker =
+          std::make_unique<standalone_browser::FakeMigrationProgressTracker>();
   const std::string user_id_hash = "abcd";
   BrowserDataMigratorImpl::SetMigrationStep(
       &pref_service_, BrowserDataMigratorImpl::MigrationStep::kRestartCalled);

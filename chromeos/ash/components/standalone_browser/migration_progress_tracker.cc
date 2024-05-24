@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
+#include "chromeos/ash/components/standalone_browser/migration_progress_tracker.h"
 
 #include <algorithm>
 
 #include "base/logging.h"
 
-namespace ash {
+namespace ash::standalone_browser {
+
 MigrationProgressTrackerImpl::MigrationProgressTrackerImpl(
     const ProgressCallback& callback)
     : progress_callback_(callback) {}
@@ -41,4 +42,5 @@ void MigrationProgressTrackerImpl::SetTotalSizeToCopy(int64_t size) {
 
   total_size_to_copy_ = size;
 }
-}  // namespace ash
+
+}  // namespace ash::standalone_browser

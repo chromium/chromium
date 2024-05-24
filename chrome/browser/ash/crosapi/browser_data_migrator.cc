@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/standalone_browser/migration_progress_tracker.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -343,12 +344,13 @@ bool BrowserDataMigratorImpl::RestartToMigrate(
 BrowserDataMigratorImpl::BrowserDataMigratorImpl(
     const base::FilePath& original_profile_dir,
     const std::string& user_id_hash,
-    const ProgressCallback& progress_callback,
+    const standalone_browser::ProgressCallback& progress_callback,
     PrefService* local_state)
     : original_profile_dir_(original_profile_dir),
       user_id_hash_(user_id_hash),
       progress_tracker_(
-          std::make_unique<MigrationProgressTrackerImpl>(progress_callback)),
+          std::make_unique<standalone_browser::MigrationProgressTrackerImpl>(
+              progress_callback)),
       cancel_flag_(
           base::MakeRefCounted<browser_data_migrator_util::CancelFlag>()),
       local_state_(local_state) {

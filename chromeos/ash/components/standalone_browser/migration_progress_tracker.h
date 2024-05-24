@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CROSAPI_MIGRATION_PROGRESS_TRACKER_H_
-#define CHROME_BROWSER_ASH_CROSAPI_MIGRATION_PROGRESS_TRACKER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_MIGRATION_PROGRESS_TRACKER_H_
+#define CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_MIGRATION_PROGRESS_TRACKER_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 
-namespace ash {
+namespace ash::standalone_browser {
+
 using ProgressCallback = base::RepeatingCallback<void(int)>;
 
 // Interface to be inherited by `MigrationProgressTrackerImpl` and
 // `FakeMigrationProgressTrackerImpl`. It is passed to
 // `BrowserDataMigrator::MigrateInternal()` and called whenever there is an
 // update in progress of the migration.
-class MigrationProgressTracker {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+    MigrationProgressTracker {
  public:
   virtual ~MigrationProgressTracker() = default;
   virtual void SetTotalSizeToCopy(int64_t size) = 0;
@@ -23,7 +26,8 @@ class MigrationProgressTracker {
 
 // Used to send progress updates to the UI. `progress_callback_` is posted on
 // the UI thread.
-class MigrationProgressTrackerImpl : public MigrationProgressTracker {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+  MigrationProgressTrackerImpl : public MigrationProgressTracker {
  public:
   explicit MigrationProgressTrackerImpl(const ProgressCallback& callback);
   MigrationProgressTrackerImpl(const MigrationProgressTrackerImpl&) = delete;
@@ -49,6 +53,7 @@ class MigrationProgressTrackerImpl : public MigrationProgressTracker {
   // A callback passe
   ProgressCallback progress_callback_;
 };
-}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_CROSAPI_MIGRATION_PROGRESS_TRACKER_H_
+}  // namespace ash::standalone_browser
+
+#endif  // CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_MIGRATION_PROGRESS_TRACKER_H_

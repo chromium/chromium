@@ -25,9 +25,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
-#include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/common/chrome_constants.h"
+#include "chromeos/ash/components/standalone_browser/fake_migration_progress_tracker.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
@@ -477,8 +477,9 @@ TEST(MoveMigratorTest, SetupLacrosDir) {
   const base::FilePath original_profile_dir = scoped_temp_dir.GetPath();
   SetUpProfileDirectory(original_profile_dir);
 
-  std::unique_ptr<MigrationProgressTracker> progress_tracker =
-      std::make_unique<FakeMigrationProgressTracker>();
+  std::unique_ptr<standalone_browser::MigrationProgressTracker>
+      progress_tracker =
+          std::make_unique<standalone_browser::FakeMigrationProgressTracker>();
   scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag =
       base::MakeRefCounted<browser_data_migrator_util::CancelFlag>();
 
@@ -690,8 +691,9 @@ class MoveMigratorMigrateTest : public ::testing::Test {
 
     SetUpProfileDirectory(original_profile_dir_);
 
-    std::unique_ptr<MigrationProgressTracker> progress_tracker =
-        std::make_unique<FakeMigrationProgressTracker>();
+    std::unique_ptr<standalone_browser::MigrationProgressTracker>
+        progress_tracker = std::make_unique<
+            standalone_browser::FakeMigrationProgressTracker>();
     scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag =
         base::MakeRefCounted<browser_data_migrator_util::CancelFlag>();
 

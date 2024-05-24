@@ -17,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "components/account_id/account_id.h"
 
 class PrefService;
@@ -25,9 +24,14 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-namespace standalone_browser::migrator_util {
+namespace standalone_browser {
+class MigrationProgressTracker;
+
+namespace migrator_util {
 enum class PolicyInitState;
-}  // namespace standalone_browser::migrator_util
+}  // namespace migrator_util
+
+}  // namespace standalone_browser
 
 // Local state pref name, which is used to keep track of what step migration is
 // at. This ensures that ash does not get restarted repeatedly for migration.
@@ -125,10 +129,11 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // to update the progress bar on the screen. `completion_callback` passed as
   // an argument will be called on the UI thread where `Migrate()` is called
   // once migration has completed or failed.
-  BrowserDataMigratorImpl(const base::FilePath& original_profile_dir,
-                          const std::string& user_id_hash,
-                          const ProgressCallback& progress_callback,
-                          PrefService* local_state);
+  BrowserDataMigratorImpl(
+      const base::FilePath& original_profile_dir,
+      const std::string& user_id_hash,
+      const standalone_browser::ProgressCallback& progress_callback,
+      PrefService* local_state);
   BrowserDataMigratorImpl(const BrowserDataMigratorImpl&) = delete;
   BrowserDataMigratorImpl& operator=(const BrowserDataMigratorImpl&) = delete;
   ~BrowserDataMigratorImpl() override;
@@ -243,7 +248,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // A hash string of the profile user ID.
   const std::string user_id_hash_;
   // `progress_tracker_` is used to report progress status to the screen.
-  std::unique_ptr<MigrationProgressTracker> progress_tracker_;
+  std::unique_ptr<standalone_browser::MigrationProgressTracker>
+      progress_tracker_;
   // Callback to be called once migration is done. It is called regardless of
   // whether migration succeeded or not.
   MigrateCallback completion_callback_;
