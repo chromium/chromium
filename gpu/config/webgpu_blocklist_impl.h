@@ -5,6 +5,7 @@
 #ifndef GPU_CONFIG_WEBGPU_BLOCKLIST_IMPL_H_
 #define GPU_CONFIG_WEBGPU_BLOCKLIST_IMPL_H_
 
+#include <cstdint>
 #include <string>
 
 namespace wgpu {
