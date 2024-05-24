@@ -10716,33 +10716,6 @@
             ]
         }
     ],
-    "IdentifiabilityStudy": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableMetaExperiment",
-                    "params": {
-                        "AllowedRandomTypes": "0",
-                        "Gen": "10",
-                        "Rho": "1"
-                    },
-                    "enable_features": [
-                        "IdentifiabilityStudy"
-                    ]
-                }
-            ]
-        }
-    ],
     "ImageDescriptionsAlternativeRouting": [
         {
             "platforms": [
