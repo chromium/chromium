@@ -18,8 +18,10 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
+#include "extensions/renderer/extension_interaction_provider.h"
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/worker_thread_util.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -41,6 +43,7 @@ constexpr char kExtensionIdRequiredErrorTemplate[] =
 constexpr char kErrorCouldNotSerialize[] = "Could not serialize message.";
 
 std::unique_ptr<Message> MessageFromJSONString(v8::Isolate* isolate,
+                                               v8::Local<v8::Context> context,
                                                v8::Local<v8::String> json,
                                                std::string* error_out,
                                                blink::WebLocalFrame* web_frame,
@@ -68,12 +71,29 @@ std::unique_ptr<Message> MessageFromJSONString(v8::Isolate* isolate,
     return nullptr;
   }
 
-  // The message should carry user activation information only if the last
-  // activation in |web_frame| was triggered by a real user interaction.  See
-  // |UserActivationState::LastActivationWasRestricted()|.
-  bool has_unrestricted_user_activation =
-      web_frame && web_frame->HasTransientUserActivation() &&
-      !web_frame->LastActivationWasRestricted();
+  // Check if there's an active user gesture.
+  // For service workers, use the ExtensionInteractionProvider, since there is
+  // no associated render frame (and we synthesize user gestures). Otherwise,
+  // check the render frame.
+  // TODO(https://crbug.com/326889650): Ideally, we'd just check
+  // ExtensionInteractionProvider here, because that also knows how to look for
+  // user gestures on frame-based contexts. However, one additional check was
+  // added here, `LastActivationWasRestricted()`, that isn't in
+  // ExtensionInteractionProvider. We should move that check to
+  // ExtensionInteractionProvider and then just use that for all gestures
+  // checks.
+  bool has_unrestricted_user_activation = false;
+  if (worker_thread_util::IsWorkerThread()) {
+    has_unrestricted_user_activation =
+        ExtensionInteractionProvider::HasActiveExtensionInteraction(context);
+  } else {
+    // The message should carry user activation information only if the last
+    // activation in |web_frame| was triggered by a real user interaction.  See
+    // |UserActivationState::LastActivationWasRestricted()|.
+    has_unrestricted_user_activation =
+        web_frame && web_frame->HasTransientUserActivation() &&
+        !web_frame->LastActivationWasRestricted();
+  }
   return std::make_unique<Message>(message, mojom::SerializationFormat::kJson,
                                    has_unrestricted_user_activation,
                                    privileged_context);
@@ -137,8 +157,8 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
       script_context &&
       script_context->context_type() ==
           extensions::mojom::ContextType::kPrivilegedExtension;
-  return MessageFromJSONString(isolate, stringified, error_out, web_frame,
-                               privileged_context);
+  return MessageFromJSONString(isolate, context, stringified, error_out,
+                               web_frame, privileged_context);
 }
 
 v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,

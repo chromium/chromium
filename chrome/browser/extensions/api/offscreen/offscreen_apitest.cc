@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/offscreen/offscreen_api.h"
-
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -19,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/offscreen/audio_lifetime_enforcer.h"
+#include "extensions/browser/api/offscreen/offscreen_api.h"
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
@@ -31,6 +30,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_background_page_waiter.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -753,6 +753,68 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LongLoadOffscreenDocument) {
   test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.js"), kOffscreenJs);
 
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
+// Tests user gestures are curried from service workers into offscreen
+// documents.
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
+                       UserGesturesAreCurriedFromServiceWorkers) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["offscreen"],
+           "action": {},
+           "background": { "service_worker": "background.js" }
+         })";
+  static constexpr char kOffscreenHtml[] =
+      R"(<html><script src="offscreen.js"></script></html>)";
+  static constexpr char kOffscreenJs[] =
+      R"(chrome.runtime.onMessage.addListener((msg, sender, sendReply) => {
+           try {
+             const activeGesture = chrome.test.isProcessingUserGesture();
+             sendReply('active gesture: ' + activeGesture);
+           } catch (e) {
+             sendReply(`Error: ${e.toString()}`);
+           }
+         });)";
+  // The extension background script will:
+  // - Open a new offscreen document
+  // - Wait for an action click. This includes an active user action.
+  // - In the listener for the action click, dispatch a message to the
+  //   offscreen document. The active user gesture should be curried along.
+  static constexpr char kBackgroundJs[] =
+      R"((async () => {
+             await chrome.offscreen.createDocument(
+                       {
+                           url: 'offscreen.html',
+                           reasons: ['TESTING'],
+                           justification: 'testing'
+                       });
+             chrome.test.sendMessage('opened');
+         })();
+         chrome.action.onClicked.addListener(() => {
+           chrome.test.assertTrue(chrome.test.isProcessingUserGesture());
+           chrome.runtime.sendMessage('test message').then(response => {
+             chrome.test.assertEq('active gesture: true', response);
+             chrome.test.succeed();
+           });
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), kOffscreenHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.js"), kOffscreenJs);
+
+  ExtensionTestMessageListener test_listener("opened");
+  ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(test_listener.WaitUntilSatisfied());
+  ExtensionActionTestHelper::Create(browser())->Press(extension->id());
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 // Tests that the `TESTING` reason is disallowed without the appropriate
