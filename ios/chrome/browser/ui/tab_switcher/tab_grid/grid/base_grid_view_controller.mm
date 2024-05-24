@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_grid_cell.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/legacy_grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_view_controller.h"
@@ -135,7 +134,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The layout for the tab grid.
-@property(nonatomic, strong) UICollectionViewLayout* gridLayout;
+@property(nonatomic, strong) GridLayout* gridLayout;
 // The view controller that holds the view of the suggested search actions.
 @property(nonatomic, strong)
     SuggestedActionsViewController* suggestedActionsViewController;
@@ -191,11 +190,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - UIViewController
 
 - (void)loadView {
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    self.gridLayout = [[GridLayout alloc] initWithTabGridMode:_mode];
-  } else {
-    self.gridLayout = [[LegacyGridLayout alloc] init];
-  }
+  self.gridLayout = [[GridLayout alloc] initWithTabGridMode:_mode];
 
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
@@ -348,9 +343,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   TabGridMode previousMode = _mode;
   _mode = mode;
-  if (IsTabGridCompositionalLayoutEnabled() && self.gridLayout) {
-    ObjCCastStrict<GridLayout>(self.gridLayout).mode = _mode;
-  }
+  self.gridLayout.mode = _mode;
 
   self.collectionView.dragInteractionEnabled =
       [self shouldEnableDrapAndDropInteraction];
@@ -423,20 +416,15 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)setContentInsets:(UIEdgeInsets)contentInsets {
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    // Set the vertical insets on the collection view…
-    self.collectionView.contentInset =
-        UIEdgeInsetsMake(contentInsets.top, 0, contentInsets.bottom, 0);
-    // … and the horizontal insets on the layout sections.
-    // This is a workaround, as setting the horizontal insets on the collection
-    // view isn't honored by the layout when computing the item sizes (items are
-    // too big in landscape iPhones with a notch or Dynamic Island).
-    ObjCCastStrict<GridLayout>(self.gridLayout).sectionInsets =
-        NSDirectionalEdgeInsetsMake(0, contentInsets.left, 0,
-                                    contentInsets.right);
-  } else {
-    self.collectionView.contentInset = contentInsets;
-  }
+  // Set the vertical insets on the collection view…
+  self.collectionView.contentInset =
+      UIEdgeInsetsMake(contentInsets.top, 0, contentInsets.bottom, 0);
+  // … and the horizontal insets on the layout sections.
+  // This is a workaround, as setting the horizontal insets on the collection
+  // view isn't honored by the layout when computing the item sizes (items are
+  // too big in landscape iPhones with a notch or Dynamic Island).
+  self.gridLayout.sectionInsets = NSDirectionalEdgeInsetsMake(
+      0, contentInsets.left, 0, contentInsets.right);
   _contentInsets = contentInsets;
 }
 
@@ -529,11 +517,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    ObjCCastStrict<GridLayout>(self.gridLayout).animatesItemUpdates = YES;
-  } else {
-    ObjCCastStrict<LegacyGridLayout>(self.gridLayout).animatesItemUpdates = YES;
-  }
+  self.gridLayout.animatesItemUpdates = YES;
   // Selection is invalid if there are no items.
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
@@ -552,11 +536,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)prepareForDismissal {
   // Stop animating the collection view to prevent the insertion animation from
   // interfering with the tab presentation animation.
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    ObjCCastStrict<GridLayout>(self.gridLayout).animatesItemUpdates = NO;
-  } else {
-    ObjCCastStrict<LegacyGridLayout>(self.gridLayout).animatesItemUpdates = NO;
-  }
+  self.gridLayout.animatesItemUpdates = NO;
 }
 
 - (void)centerVisibleCellsToPoint:(CGPoint)center
@@ -741,68 +721,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // safe because the animation state of GridCells is set in
     // `configureCell:withItem:atIndex:` whenever a cell is used.
     [ObjCCastStrict<GridCell>(cell) hideActivityIndicator];
-  }
-}
-
-// TODO(crbug.com/40944622): Remove the entire code section when the
-// compositional layout is fully landed.
-#pragma mark - UICollectionViewDelegateFlowLayout
-
-- (CGSize)collectionView:(UICollectionView*)collectionView
-                    layout:(UICollectionViewLayout*)collectionViewLayout
-    sizeForItemAtIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/40944622): Remove the entire method when the compositional
-  // layout is fully landed.
-  CHECK(!IsTabGridCompositionalLayoutEnabled());
-  if (self.isClosingAllOrUndoRunning) {
-    return CGSizeZero;
-  }
-  // `collectionViewLayout` should always be a flow layout.
-  UICollectionViewFlowLayout* layout =
-      ObjCCastStrict<UICollectionViewFlowLayout>(collectionViewLayout);
-  CGSize itemSize = layout.itemSize;
-  // The SuggestedActions cell can't use the item size that is set in
-  // `prepareLayout` of the layout class. For that specific cell calculate the
-  // anticipated size from the layout section insets and the content view insets
-  // and return it.
-  if (indexPath.section ==
-      [self.diffableDataSource
-          indexForSectionIdentifier:kSuggestedActionsSectionIdentifier]) {
-    UIEdgeInsets sectionInset = layout.sectionInset;
-    UIEdgeInsets contentInset = layout.collectionView.adjustedContentInset;
-    CGFloat width = layout.collectionView.frame.size.width - sectionInset.left -
-                    sectionInset.right - contentInset.left - contentInset.right;
-    CGFloat height = self.suggestedActionsViewController.contentHeight;
-    return CGSizeMake(width, height);
-  }
-  return itemSize;
-}
-
-- (CGSize)collectionView:(UICollectionView*)collectionView
-                             layout:
-                                 (UICollectionViewLayout*)collectionViewLayout
-    referenceSizeForHeaderInSection:(NSInteger)section {
-  // TODO(crbug.com/40944622): Remove the entire method when the compositional
-  // layout is fully landed.
-  CHECK(!IsTabGridCompositionalLayoutEnabled());
-  switch (_mode) {
-    case TabGridModeNormal:
-    case TabGridModeSelection:
-    case TabGridModeGroup:
-      return CGSizeZero;
-    case TabGridModeSearch: {
-      if (_searchText.length == 0) {
-        return CGSizeZero;
-      }
-
-      CGFloat height = UIContentSizeCategoryIsAccessibilityCategory(
-                           self.traitCollection.preferredContentSizeCategory)
-                           ? kGridHeaderAccessibilityHeight
-                           : kGridHeaderHeight;
-      return CGSizeMake(collectionView.bounds.size.width, height);
-    }
-    case TabGridModeInactive:
-      NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
   }
 }
 
@@ -1644,15 +1562,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)updateTabsSectionHeaderType {
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    ObjCCastStrict<GridLayout>(self.gridLayout).tabsSectionHeaderType =
-        [self tabsSectionHeaderTypeForMode:_mode];
-    [self.gridLayout invalidateLayout];
-  }
+  self.gridLayout.tabsSectionHeaderType =
+      [self tabsSectionHeaderTypeForMode:_mode];
+  [self.gridLayout invalidateLayout];
 }
 
 - (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode {
-  CHECK(IsTabGridCompositionalLayoutEnabled());
   switch (mode) {
     case TabGridModeNormal:
     case TabGridModeSelection:

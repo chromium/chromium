@@ -46,43 +46,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   return _inactiveTabsCount == 0;
 }
 
-// TODO(crbug.com/40944622): Remove this method when the compositional layout is
-// fully landed.
-- (CGSize)collectionView:(UICollectionView*)collectionView
-                             layout:
-                                 (UICollectionViewLayout*)collectionViewLayout
-    referenceSizeForHeaderInSection:(NSInteger)section {
-  if (self.mode == TabGridModeNormal) {
-    if (!IsInactiveTabsAvailable()) {
-      return CGSizeZero;
-    }
-    if (self.isClosingAllOrUndoRunning) {
-      return CGSizeZero;
-    }
-    if (_inactiveTabsHeaderHideAnimationInProgress) {
-      // The header is animated out to a height of 0.1.
-      return CGSizeMake(collectionView.bounds.size.width, 0.1);
-    }
-    if (_inactiveTabsCount == 0) {
-      return CGSizeZero;
-    }
-    // The Regular Tabs grid has a button to inform about the hidden inactive
-    // tabs.
-    return [self inactiveTabsButtonHeaderSize];
-  } else if (self.mode == TabGridModeInactive) {
-    if (!IsInactiveTabsEnabled()) {
-      return CGSizeZero;
-    }
-    // The Inactive Tabs grid has a header to inform about the feature and a
-    // link to its settings.
-    return [self inactiveTabsPreambleHeaderSize];
-  }
-
-  return [super collectionView:collectionView
-                               layout:collectionViewLayout
-      referenceSizeForHeaderInSection:section];
-}
-
 // Returns a configured header for the given index path.
 - (UICollectionReusableView*)headerForSectionAtIndexPath:
     (NSIndexPath*)indexPath {
@@ -223,8 +186,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // Keep a sizing header.
   static InactiveTabsButtonHeader* gHeader =
       [[InactiveTabsButtonHeader alloc] init];
-  gHeader.tabGridCompositionalLayoutEnabled =
-      IsTabGridCompositionalLayoutEnabled();
 
   // Configure it.
   [gHeader configureWithDaysThreshold:_inactiveTabsDaysThreshold];
@@ -360,8 +321,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 // Configures the Inactive Tabs Button header according to the current state.
 - (void)configureInactiveTabsButtonHeader:(InactiveTabsButtonHeader*)header {
-  header.tabGridCompositionalLayoutEnabled =
-      IsTabGridCompositionalLayoutEnabled();
   header.parent = self;
   __weak __typeof(self) weakSelf = self;
   header.buttonAction = ^{

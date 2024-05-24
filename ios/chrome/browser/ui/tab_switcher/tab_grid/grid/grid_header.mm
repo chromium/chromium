@@ -54,7 +54,6 @@
     containerView.spacing = kGridHeaderContentSpacing;
     containerView.layoutMarginsRelativeArrangement = YES;
     _containerView = containerView;
-    [self updateContentInsets];
     [self addSubview:containerView];
 
     self.layer.masksToBounds = YES;
@@ -74,13 +73,6 @@
   return self;
 }
 
-#pragma mark - UIView
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  [self updateContentInsets];
-}
-
 #pragma mark - UICollectionViewCell
 
 - (void)prepareForReuse {
@@ -90,7 +82,6 @@
   self.titleLabel.text = nil;
   self.valueLabel.text = nil;
   self.valueLabel.hidden = YES;
-  [self updateContentInsets];
 }
 
 #pragma mark - Public
@@ -106,52 +97,6 @@
   self.valueLabel.hidden = !value.length;
   self.valueLabel.accessibilityLabel = value;
   _value = value;
-}
-
-#pragma mark - Private
-
-// The collection view header always stretch across the whole collection view
-// width. To work around that, this method adds a padding to the container view
-// based on the current layout and the size classes.
-// TODO(crbug.com/40944622): Remove this method when the compositional layout is
-// fully landed.
-- (void)updateContentInsets {
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    return;
-  }
-
-  UIEdgeInsets contentInsets;
-  CGFloat width = CGRectGetWidth(self.bounds);
-  UIUserInterfaceSizeClass horizontalSizeClass =
-      self.traitCollection.horizontalSizeClass;
-  UIUserInterfaceSizeClass verticalSizeClass =
-      self.traitCollection.verticalSizeClass;
-  if (UIContentSizeCategoryIsAccessibilityCategory(
-          UIApplication.sharedApplication.preferredContentSizeCategory)) {
-    contentInsets = kGridLayoutInsetsRegularCompact;
-  } else if (horizontalSizeClass == UIUserInterfaceSizeClassCompact &&
-             verticalSizeClass == UIUserInterfaceSizeClassCompact) {
-    if (width < kGridLayoutCompactCompactLimitedWidth) {
-      contentInsets = kGridLayoutInsetsCompactCompactLimitedWidth;
-    } else {
-      contentInsets = kGridLayoutInsetsCompactCompact;
-    }
-  } else if (horizontalSizeClass == UIUserInterfaceSizeClassCompact &&
-             verticalSizeClass == UIUserInterfaceSizeClassRegular) {
-    if (width < kGridLayoutCompactRegularLimitedWidth) {
-      contentInsets = kGridLayoutInsetsCompactRegularLimitedWidth;
-    } else {
-      contentInsets = kGridLayoutInsetsCompactRegular;
-    }
-  } else if (horizontalSizeClass == UIUserInterfaceSizeClassRegular &&
-             verticalSizeClass == UIUserInterfaceSizeClassCompact) {
-    contentInsets = kGridLayoutInsetsRegularCompact;
-  } else {
-    contentInsets = kGridLayoutInsetsRegularRegular;
-  }
-  self.containerView.layoutMargins =
-      UIEdgeInsetsMake(0, contentInsets.left, 0, contentInsets.right);
-  [self layoutIfNeeded];
 }
 
 @end

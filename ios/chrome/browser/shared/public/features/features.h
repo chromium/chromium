@@ -312,12 +312,6 @@ BASE_DECLARE_FEATURE(kTabGridAlwaysBounce);
 // Feature flag enabling tab grid refactoring.
 BASE_DECLARE_FEATURE(kTabGridRefactoring);
 
-// Feature flag enabling the tab grid new compositional layout.
-BASE_DECLARE_FEATURE(kTabGridCompositionalLayout);
-
-// Whether the Tab Grid should use its compositional layout.
-bool IsTabGridCompositionalLayoutEnabled();
-
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
 

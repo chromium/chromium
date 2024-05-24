@@ -309,14 +309,6 @@ BASE_FEATURE(kTabGridAlwaysBounce,
              "TabGridAlwaysBounce",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGridCompositionalLayout,
-             "TabGridCompositionalLayout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsTabGridCompositionalLayoutEnabled() {
-  return base::FeatureList::IsEnabled(kTabGridCompositionalLayout);
-}
-
 BASE_FEATURE(kTabGridRefactoring,
              "TabGridRefactoring",
              base::FEATURE_DISABLED_BY_DEFAULT);

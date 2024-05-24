@@ -18,13 +18,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*>
 typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
     GridDiffableDataSource;
 
-@interface BaseGridViewController (Subclassing) <
-    GridCellDelegate,
-    UICollectionViewDragDelegate,
-    UICollectionViewDelegate,
-    // TODO(crbug.com/40944622): Remove when the compositional layout is fully
-    // landed.
-    UICollectionViewDelegateFlowLayout>
+@interface BaseGridViewController (Subclassing) <GridCellDelegate,
+                                                 UICollectionViewDragDelegate,
+                                                 UICollectionViewDelegate>
 
 // A collection view of items in a grid format.
 @property(nonatomic, weak, readonly) UICollectionView* collectionView;

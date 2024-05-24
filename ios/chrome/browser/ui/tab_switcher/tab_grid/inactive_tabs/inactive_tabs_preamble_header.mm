@@ -20,10 +20,6 @@ namespace {
 
 // Layout constants.
 const CGFloat kTopPadding = 14;
-// TODO(crbug.com/40944622): Remove these when the compositional layout is fully
-// landed.
-const CGFloat kBottomPadding = 10;
-const CGFloat kHorizontalPadding = 16;
 
 }  // namespace
 
@@ -48,12 +44,7 @@ const CGFloat kHorizontalPadding = 16;
     _textView.adjustsFontForContentSizeCategory = YES;
     _textView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
     _textView.textContainer.lineFragmentPadding = 0;
-    if (IsTabGridCompositionalLayoutEnabled()) {
-      _textView.textContainerInset = UIEdgeInsets(kTopPadding, 0, 0, 0);
-    } else {
-      _textView.textContainerInset = UIEdgeInsets(
-          kTopPadding, kHorizontalPadding, kBottomPadding, kHorizontalPadding);
-    }
+    _textView.textContainerInset = UIEdgeInsets(kTopPadding, 0, 0, 0);
     _textView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_textView];
     AddSameConstraints(_textView, self);

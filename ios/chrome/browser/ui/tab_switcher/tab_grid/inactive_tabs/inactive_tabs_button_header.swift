@@ -12,16 +12,7 @@ public class InactiveTabsButtonHeader: UICollectionReusableView {
   private enum Dimensions {
     /// The margin at the top of the header.
     static let topMargin: CGFloat = 12
-    /// The margin on the other edges of the header.
-    /// TODO(crbug.com/40944622): Remove when the compositional layout is fully
-    /// landed.
-    static let margin: CGFloat = 16
   }
-
-  /// Whether the new compositional layout is enabled.
-  /// TODO(crbug.com/40944622): Remove when the compositional layout is fully
-  /// landed.
-  @objc public var tabGridCompositionalLayoutEnabled = false
 
   /// The state driving the SwiftUI button.
   private let buttonState = InactiveTabsButton.State()
@@ -35,22 +26,18 @@ public class InactiveTabsButtonHeader: UICollectionReusableView {
     didSet {
       guard hostingController.parent != parent else { return }
 
-      if let parent {
+      if let parent = parent {
         parent.addChild(hostingController)
         hostingController.view.backgroundColor = .clear
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hostingController.view)
         hostingController.didMove(toParent: parent)
-        let margin = tabGridCompositionalLayoutEnabled ? 0 : Dimensions.margin
         NSLayoutConstraint.activate([
           hostingController.view.topAnchor.constraint(
             equalTo: topAnchor, constant: Dimensions.topMargin),
-          hostingController.view.leadingAnchor.constraint(
-            equalTo: leadingAnchor, constant: margin),
-          hostingController.view.bottomAnchor.constraint(
-            equalTo: bottomAnchor, constant: -margin),
-          hostingController.view.trailingAnchor.constraint(
-            equalTo: trailingAnchor, constant: -margin),
+          hostingController.view.leadingAnchor.constraint(equalTo: leadingAnchor),
+          hostingController.view.bottomAnchor.constraint(equalTo: bottomAnchor),
+          hostingController.view.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
       } else {
         hostingController.willMove(toParent: nil)

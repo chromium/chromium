@@ -8106,11 +8106,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "tab-grid-compositional-layout",
-    "owners": [ "lpromero@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "tab-grid-new-transitions",
     "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 125

@@ -1082,12 +1082,6 @@ const char kTabGridAlwaysBounceDescription[] =
     "When enabled, the Tab Grid bounces (aka overscrolls) even if all tabs are "
     "fully visible on screen.";
 
-const char kTabGridCompositionalLayoutName[] =
-    "Enable tab grid with the new compositional layout";
-const char kTabGridCompositionalLayoutDescription[] =
-    "When enabled, the Tab Grid uses the new compositional layout. Items sizes "
-    "are different and more dynamic than before.";
-
 const char kTabGridRefactoringName[] = "Enable tab grid refactoring";
 const char kTabGridRefactoringDescription[] =
     "When enabled, the Tab Grid uses the refactored version, it should not "
