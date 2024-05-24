@@ -1864,6 +1864,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.NumUrlsDiscardedForLowScore" units="counts"
+    expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>orinj@chromium.org</owner>
+  <summary>
+    Number of URLs that were found but discarded for insufficient score (i.e.
+    not reaching the configured search score threshold). Logged each time a
+    query leveraging history embeddings is performed.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.NumUrlsMatched" units="counts"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>

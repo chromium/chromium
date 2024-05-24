@@ -452,6 +452,8 @@ void HistoryEmbeddingsService::OnSearchCompleted(
                });
   VLOG(3) << "Search found " << scored_urls.size() << " results and kept "
           << filtered.size() << " after score filtering";
+  base::UmaHistogramCounts100("History.Embeddings.NumUrlsDiscardedForLowScore",
+                              scored_urls.size() - filtered.size());
   DeterminePassageVisibility(std::move(callback), std::move(filtered));
 }
 
