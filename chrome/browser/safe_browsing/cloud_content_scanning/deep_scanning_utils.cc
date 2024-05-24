@@ -16,6 +16,11 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
+#include "components/prefs/pref_service.h"
+#endif
+
 namespace safe_browsing {
 
 namespace {
@@ -404,9 +409,21 @@ std::string BinaryUploadServiceResultToString(
 }
 
 std::string GetProfileEmail(Profile* profile) {
-  return profile
-             ? GetProfileEmail(IdentityManagerFactory::GetForProfile(profile))
-             : std::string();
+  if (!profile) {
+    return std::string();
+  }
+
+  std::string email =
+      GetProfileEmail(IdentityManagerFactory::GetForProfile(profile));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (email.empty()) {
+    email = profile->GetPrefs()->GetString(
+        enterprise_signin::prefs::kProfileUserEmail);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  return email;
 }
 
 std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
