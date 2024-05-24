@@ -326,6 +326,7 @@ after discussions on the right group.
       <annotation id="youtube_music_integration"/>
       <annotation id="personalized_recommended_apps_download"/>
       <annotation id="focus_sounds_configuration"/>
+      <annotation id="device_image_downloader"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

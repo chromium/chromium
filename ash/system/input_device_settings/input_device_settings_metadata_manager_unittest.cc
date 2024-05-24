@@ -6,9 +6,19 @@
 
 #include <memory>
 
+#include "ash/public/cpp/test/test_image_downloader.h"
+#include "ash/system/input_device_settings/device_image_downloader.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/string_util.h"
+#include "base/test/bind.h"
 
 namespace ash {
+
+namespace {
+
+const std::string test_device_key = "0000:0001";
+
+}  // namespace
 
 class InputDeviceSettingsMetadataManagerTest : public AshTestBase {
  public:
@@ -32,11 +42,23 @@ class InputDeviceSettingsMetadataManagerTest : public AshTestBase {
 
  protected:
   std::unique_ptr<InputDeviceSettingsMetadataManager> manager_;
+  TestImageDownloader image_downloader_;
+
+  InputDeviceSettingsMetadataManager* manager() { return manager_.get(); }
 };
 
-// TODO(b/329686601): Remove this stub test.
-TEST_F(InputDeviceSettingsMetadataManagerTest, Initialize) {
-  EXPECT_NE(manager_.get(), nullptr);
+TEST_F(InputDeviceSettingsMetadataManagerTest, GetDeviceImage) {
+  base::RunLoop run_loop;
+  manager()->GetDeviceImage(
+      test_device_key,
+      base::BindLambdaForTesting([&](const DeviceImage& device_image) {
+        // Confirm that the image was encoded as a base64 data URL.
+        EXPECT_TRUE(base::StartsWith(device_image.data_url(),
+                                     "data:image/png;base64,"));
+        EXPECT_EQ(test_device_key, device_image.device_key());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace ash

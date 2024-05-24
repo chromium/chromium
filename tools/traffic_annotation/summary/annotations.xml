@@ -469,4 +469,5 @@ Refer to README.md for content description and update process.
  <item id="youtube_music_integration" added_in_milestone="126" content_hash_code="05261103" os_list="chromeos" file_path="ash/system/focus_mode/youtube_music/youtube_music_client.cc" />
  <item id="personalized_recommended_apps_download" added_in_milestone="127" content_hash_code="0216d0f6" os_list="chromeos" file_path="chrome/browser/ash/login/oobe_apps_service/oobe_apps_almanac_endpoint.cc" />
  <item id="focus_sounds_configuration" added_in_milestone="127" content_hash_code="0143341e" os_list="chromeos" file_path="ash/system/focus_mode/sounds/soundscape/soundscapes_downloader.cc" />
+ <item id="device_image_downloader" added_in_milestone="127" content_hash_code="025a84c8" os_list="chromeos" file_path="ash/system/input_device_settings/device_image_downloader.cc" />
 </annotations>
