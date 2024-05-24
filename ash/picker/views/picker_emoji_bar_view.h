@@ -16,10 +16,8 @@
 namespace ash {
 
 class IconButton;
-class PickerAssetFetcher;
 class PickerSearchResult;
 class PickerSearchResultsViewDelegate;
-class PickerSectionView;
 class SystemShadow;
 
 // View for the Picker emoji bar, which is a small bar above the main Picker
@@ -29,11 +27,9 @@ class ASH_EXPORT PickerEmojiBarView : public views::View {
   METADATA_HEADER(PickerEmojiBarView, views::View)
 
  public:
-  // `delegate` and `asset_fetcher` must remain valid for the lifetime of this
-  // class.
+  // `delegate` must remain valid for the lifetime of this class.
   PickerEmojiBarView(PickerSearchResultsViewDelegate* delegate,
-                     int picker_view_width,
-                     PickerAssetFetcher* asset_fetcher);
+                     int picker_view_width);
   PickerEmojiBarView(const PickerEmojiBarView&) = delete;
   PickerEmojiBarView& operator=(const PickerEmojiBarView&) = delete;
   ~PickerEmojiBarView() override;
@@ -48,7 +44,7 @@ class ASH_EXPORT PickerEmojiBarView : public views::View {
   // Sets the results from `section` as the emoji bar's search results.
   void SetSearchResults(PickerSearchResultsSection section);
 
-  PickerSectionView* item_row_for_testing() { return item_row_; }
+  views::View* item_row_for_testing() { return item_row_; }
 
   IconButton* more_emojis_button_for_testing() { return more_emojis_button_; }
 
@@ -56,6 +52,8 @@ class ASH_EXPORT PickerEmojiBarView : public views::View {
   void SelectSearchResult(const PickerSearchResult& result);
 
   void OpenMoreEmojis();
+
+  int CalculateAvailableWidthForItemRow();
 
   std::unique_ptr<SystemShadow> shadow_;
 
@@ -66,7 +64,7 @@ class ASH_EXPORT PickerEmojiBarView : public views::View {
   int picker_view_width_ = 0;
 
   // Contains the item views corresponding to each search result.
-  raw_ptr<PickerSectionView> item_row_ = nullptr;
+  raw_ptr<views::View> item_row_ = nullptr;
 
   // The button for opening more emojis.
   raw_ptr<IconButton> more_emojis_button_ = nullptr;
