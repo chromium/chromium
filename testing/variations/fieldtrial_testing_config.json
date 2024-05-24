@@ -17137,7 +17137,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_RelatedSearchesIntegration",
+                    "name": "Enabled",
                     "enable_features": [
                         "ExtractRelatedSearchesFromPrefetchedZPSResponse"
                     ]
