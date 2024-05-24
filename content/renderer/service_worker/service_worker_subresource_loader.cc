@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
@@ -406,9 +407,11 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
         network::mojom::ServiceWorkerRouterInfo::New();
     auto* router_info = response_head_->service_worker_router_info.get();
 
+    base::ElapsedTimer router_evaluation_timer;
     response_head_->load_timing.service_worker_router_evaluation_start =
         base::TimeTicks::Now();
     const auto eval_result = EvaluateRouterConditions();
+    router_info->router_evaluation_time = router_evaluation_timer.Elapsed();
     if (eval_result) {  // matched the rule.
       const auto& sources = eval_result->sources;
       auto source_type = sources[0].type;

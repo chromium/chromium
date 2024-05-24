@@ -109,6 +109,7 @@
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1852,6 +1853,8 @@ void NavigationURLLoaderImpl::RecordServiceWorkerRouterEvaluationResults(
   builder
       .SetRouterRuleCount(ukm::GetExponentialBucketMinForCounts1000(
           router_info->route_rule_num))
+      .SetRouterEvaluationTime(
+          router_info->router_evaluation_time.InMicroseconds())
       .Record(ukm::UkmRecorder::Get());
 }
 

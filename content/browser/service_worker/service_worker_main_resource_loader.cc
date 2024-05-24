@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
@@ -275,10 +276,12 @@ void ServiceWorkerMainResourceLoader::StartRequest(
         active_worker->router_evaluator()->rules().rules.size();
     router_info->evaluation_worker_status = worker_status;
 
+    base::ElapsedTimer router_evaluation_timer;
     response_head_->load_timing.service_worker_router_evaluation_start =
         base::TimeTicks::Now();
     auto eval_result = active_worker->router_evaluator()->Evaluate(
         resource_request_, running_status);
+    router_info->router_evaluation_time = router_evaluation_timer.Elapsed();
     // ServiceWorkerStaticRouter_Evaluate is counted only here.
     // That is because when the static routing API is used, this code will
     // always be executed even for no fetch handler case and an empty fetch

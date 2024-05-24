@@ -24832,6 +24832,14 @@ be describing additional metrics about the same event.
       recorded only when the router has matched the incoming resource.
     </summary>
   </metric>
+  <metric name="RouterEvaluationTime">
+    <summary>
+      Time spent for the SW static routing API router evaluation to handle a
+      request. Recorded when the service worker has associated routing info, and
+      the browser or renderer is processing requests. Duration in units of micro
+      seconds.
+    </summary>
+  </metric>
   <metric name="RouterRuleCount">
     <summary>
       The sum of registered router rules with the Static Routing API in main
