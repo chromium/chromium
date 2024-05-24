@@ -490,6 +490,23 @@ TEST_F(RecentSessionPolicyTest, RecordRecentUsageMetrics_FullPeriod) {
   EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {{1, 1}});
 }
 
+TEST_F(RecentSessionPolicyTest,
+       RecordRecentUsageMetrics_SuperActiveCountsDaysNotSessions) {
+  policy_->RecordRecentUsageMetrics(CreateSessionData(
+      {// Initial week with four active days (counting day zero) and no
+       // additional sessions.
+       base::Days(1), base::Days(2), base::Days(6),
+       // Second week with three active days but four sessions.
+       base::Days(15), base::Days(15) + base::Minutes(5),
+       base::Days(15) + base::Minutes(10),
+       base::Days(15) + base::Minutes(15)}));
+  EnsureBucketCounts("UserEducation.Session.ShortTermCount", {{4, 1}});
+  EnsureBucketCounts("UserEducation.Session.LongTermCount", {{8, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentActiveDays", {{4, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentActiveWeeks", {{2, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {{1, 1}});
+}
+
 class RecentSessionPolicyFinchTest : public RecentSessionPolicyTest {
  public:
   RecentSessionPolicyFinchTest() = default;
