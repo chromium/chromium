@@ -182,11 +182,12 @@ void ThreadControllerWithMessagePumpImpl::ScheduleWork() {
   }
 }
 void ThreadControllerWithMessagePumpImpl::BeginNativeWorkBeforeDoWork() {
+  do_work_needed_before_wait_ = true;
+
   if (!g_avoid_schedule_calls_during_native_event_processing.load(
           std::memory_order_relaxed)) {
     return;
   }
-  in_native_work_batch_ = true;
 
   // Reuse the deduplicator facility to indicate that there is no need for
   // ScheduleWork() until the next time we look for work.
@@ -304,7 +305,7 @@ void ThreadControllerWithMessagePumpImpl::OnEndWorkItemImpl(
 void ThreadControllerWithMessagePumpImpl::BeforeWait() {
   // DoWork is guaranteed to be called after native work batches and before
   // wait.
-  CHECK(!in_native_work_batch_);
+  CHECK(!do_work_needed_before_wait_);
 
   // In most cases, DoIdleWork() will already have cleared the
   // `hang_watch_scope_` but in some cases where the native side of the
@@ -320,7 +321,6 @@ void ThreadControllerWithMessagePumpImpl::BeforeWait() {
 
 MessagePump::Delegate::NextWorkInfo
 ThreadControllerWithMessagePumpImpl::DoWork() {
-  in_native_work_batch_ = false;
 
 #if BUILDFLAG(IS_WIN)
   // We've been already in a wakeup here. Deactivate the high res timer of OS
@@ -350,6 +350,9 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
            main_thread_only().yield_to_native_after_batch)) {
     next_work_info.yield_to_native = true;
   }
+
+  do_work_needed_before_wait_ = false;
+
   // Schedule a continuation.
   WorkDeduplicator::NextTask next_task =
       (next_wake_up && next_wake_up->is_immediate())

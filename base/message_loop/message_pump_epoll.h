@@ -139,9 +139,6 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   // stack of the innermost nested Run() invocation.
   raw_ptr<RunState> run_state_ = nullptr;
 
-  // This flag is set if epoll has processed I/O events.
-  bool processed_io_events_ = false;
-
   // This flag is set when starting to process native work; reset after every
   // `DoWork()` call. See crbug.com/1500295.
   bool native_work_started_ = false;
