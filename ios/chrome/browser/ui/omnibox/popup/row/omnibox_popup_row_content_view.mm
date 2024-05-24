@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -101,6 +102,8 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
     [_primaryLabel setContentHuggingPriority:UILayoutPriorityRequired
                                      forAxis:UILayoutConstraintAxisVertical];
     _primaryLabel.lineSpacing = kMultilineLineSpacing;
+    _primaryLabel.accessibilityIdentifier =
+        kOmniboxPopupRowPrimaryTextAccessibilityIdentifier;
 
     // Secondary Label Fading.
     _secondaryLabelFading = [[FadeTruncatingLabel alloc] init];
@@ -314,7 +317,9 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
 
   // Secondary Label.
   _secondaryLabelFading.hidden = YES;
+  _secondaryLabelFading.accessibilityIdentifier = nil;
   _secondaryLabelTruncating.hidden = YES;
+  _secondaryLabelTruncating.accessibilityIdentifier = nil;
   if (configuration.secondaryText) {
     UILabel* secondaryLabel = configuration.secondaryTextFading
                                   ? _secondaryLabelFading
@@ -322,6 +327,8 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
     secondaryLabel.hidden = NO;
     secondaryLabel.attributedText = configuration.secondaryText;
     secondaryLabel.numberOfLines = configuration.secondaryTextNumberOfLines;
+    secondaryLabel.accessibilityIdentifier =
+        kOmniboxPopupRowSecondaryTextAccessibilityIdentifier;
     if (configuration.secondaryTextFading) {
       _secondaryLabelFading.displayAsURL =
           configuration.secondaryTextDisplayAsURL;

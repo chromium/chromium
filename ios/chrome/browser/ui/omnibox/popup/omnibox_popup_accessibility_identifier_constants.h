@@ -13,6 +13,12 @@ extern NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
 /// Accessibility identifier for the Append button.
 extern NSString* const kOmniboxPopupRowAppendAccessibilityIdentifier;
 
+/// Accessibility identifier for the primary text of a popup row cell.
+extern NSString* const kOmniboxPopupRowPrimaryTextAccessibilityIdentifier;
+
+/// Accessibility identifier for the secondary text of a popup row cell.
+extern NSString* const kOmniboxPopupRowSecondaryTextAccessibilityIdentifier;
+
 /// A11y identifier for the table view containing suggestions.
 extern NSString* const kOmniboxPopupTableViewAccessibilityIdentifier;
 

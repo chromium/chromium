@@ -244,12 +244,15 @@ source_set("eg_test_support+eg2") {
     "omnibox_app_interface_stub.mm",
     "omnibox_earl_grey.h",
     "omnibox_earl_grey.mm",
+    "omnibox_matchers.h",
+    "omnibox_matchers.mm",
     "omnibox_test_util.h",
     "omnibox_test_util.mm",
   ]
   deps = [
     "//base/test:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:launch_configuration",

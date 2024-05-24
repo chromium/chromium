@@ -55,14 +55,6 @@ void DisableAutocompleteProviders(AppLaunchConfiguration& configuration,
 std::unique_ptr<net::test_server::HttpResponse> OmniboxHTTPResponses(
     const net::test_server::HttpRequest& request);
 
-#pragma mark - Matchers
-
-/// Matcher for OmniboxPopupRow with `url`.
-id<GREYMatcher> PopupRowWithUrlMatcher(GURL url);
-
-/// Matcher for the clear button in the omnibox.
-id<GREYMatcher> ClearButtonMatcher();
-
 }  // namespace omnibox
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_TEST_UTIL_H_

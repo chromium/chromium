@@ -121,6 +121,8 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                         forAxis:UILayoutConstraintAxisVertical];
     _textTruncatingLabel.lineSpacing = kMultilineLineSpacing;
+    _textTruncatingLabel.accessibilityIdentifier =
+        kOmniboxPopupRowPrimaryTextAccessibilityIdentifier;
 
     _textStackView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _textTruncatingLabel ]];
@@ -513,6 +515,8 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   self.detailTruncatingLabel.displayAsURL = suggestion.isURL;
   UILabel* detailLabel = suggestion.hasAnswer ? self.detailAnswerLabel
                                               : self.detailTruncatingLabel;
+  detailLabel.accessibilityIdentifier =
+      kOmniboxPopupRowSecondaryTextAccessibilityIdentifier;
   if (suggestion.detailText.length) {
     [self.textStackView addArrangedSubview:detailLabel];
     detailLabel.attributedText =
