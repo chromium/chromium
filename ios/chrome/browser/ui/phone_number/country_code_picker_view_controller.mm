@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/phone_number/phone_number_actions_view_controller.h"
+#import "ios/chrome/browser/ui/phone_number/phone_number_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -33,9 +34,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCountryCode = kItemTypeEnumZero,
 };
-
-NSString* const kCountryCodePickerTableViewIdentifier =
-    @"CountryCodePickerTableViewIdentifier";
 
 }  // namespace
 

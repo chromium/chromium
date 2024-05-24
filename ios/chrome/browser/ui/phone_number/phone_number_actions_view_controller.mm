@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/shared/public/commands/add_contacts_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
+#import "ios/chrome/browser/ui/phone_number/phone_number_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -26,9 +27,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeActionFacetime,
 
 };
-
-NSString* const kLegacyPhoneNumberActionsViewIdentifier =
-    @"PhoneNumberActionsViewIdentifier";
 
 }  // namespace
 
@@ -84,8 +82,7 @@ NSString* const kLegacyPhoneNumberActionsViewIdentifier =
              target:self
              action:@selector(cancelButtonTapped:)];
   self.navigationItem.rightBarButtonItem = _cancelButton;
-  self.tableView.accessibilityIdentifier =
-      kLegacyPhoneNumberActionsViewIdentifier;
+  self.tableView.accessibilityIdentifier = kPhoneNumberActionsViewIdentifier;
 
   [self loadModel];
 }

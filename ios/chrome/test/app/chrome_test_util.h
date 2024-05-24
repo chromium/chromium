@@ -10,7 +10,9 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 
 @protocol ApplicationCommands;
+@protocol CountryCodePickerCommands;
 @protocol UnitConversionCommands;
+
 class Browser;
 class ChromeBrowserState;
 @class MainController;
@@ -54,7 +56,8 @@ UIViewController* GetActiveViewController();
 id<ApplicationCommands,
    BrowserCommands,
    BrowserCoordinatorCommands,
-   UnitConversionCommands>
+   UnitConversionCommands,
+   CountryCodePickerCommands>
 HandlerForActiveBrowser();
 
 // Removes all presented infobars.
