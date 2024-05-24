@@ -26,7 +26,7 @@ struct MockFastCheckoutView : FastCheckoutView {
 
   MOCK_METHOD(void,
               Show,
-              (const std::vector<AutofillProfile*>&,
+              (const std::vector<const AutofillProfile*>&,
                const std::vector<CreditCard*>&),
               (override));
 };
@@ -81,7 +81,8 @@ class FastCheckoutControllerImplTest : public ChromeRenderViewHostTestHarness {
 TEST_F(FastCheckoutControllerImplTest, Show) {
   AutofillProfile profile1 = autofill::test::GetFullProfile();
   AutofillProfile profile2 = autofill::test::GetFullProfile2();
-  std::vector<autofill::AutofillProfile*> profiles = {&profile1, &profile2};
+  std::vector<const autofill::AutofillProfile*> profiles = {&profile1,
+                                                            &profile2};
 
   CreditCard credit_card1 = autofill::test::GetCreditCard();
   CreditCard credit_card2 = autofill::test::GetCreditCard2();

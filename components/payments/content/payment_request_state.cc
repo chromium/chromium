@@ -595,7 +595,7 @@ base::WeakPtr<PaymentRequestState> PaymentRequestState::AsWeakPtr() {
 }
 
 void PaymentRequestState::PopulateProfileCache() {
-  std::vector<autofill::AutofillProfile*> profiles =
+  std::vector<const autofill::AutofillProfile*> profiles =
       personal_data_manager_->address_data_manager().GetProfilesToSuggest();
 
   std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>

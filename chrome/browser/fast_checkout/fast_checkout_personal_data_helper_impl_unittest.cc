@@ -170,7 +170,7 @@ TEST_F(FastCheckoutPersonalDataHelperTest,
       ->address_data_manager()
       .AddProfile(kIncompleteProfile);
 
-  std::vector<autofill::AutofillProfile*> profiles =
+  std::vector<const autofill::AutofillProfile*> profiles =
       personal_data_helper()->GetProfilesToSuggest();
 
   EXPECT_EQ(profiles.size(), 2UL);

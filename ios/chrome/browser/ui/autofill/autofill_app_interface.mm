@@ -163,7 +163,7 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   // If the test profile is already in the store, adding it will be a no-op.
   // In that case, early return.
-  for (autofill::AutofillProfile* p :
+  for (const autofill::AutofillProfile* p :
        personalDataManager->address_data_manager().GetProfiles()) {
     if (p->Compare(profile) == 0) {
       return;

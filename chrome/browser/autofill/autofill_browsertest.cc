@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, UsePlusSignForInternationalNumber) {
   for (size_t i = 0;
        i < personal_data_manager()->address_data_manager().GetProfiles().size();
        ++i) {
-    AutofillProfile* profile =
+    const AutofillProfile* profile =
         personal_data_manager()->address_data_manager().GetProfiles()[i];
     std::string expectation;
     std::string name = UTF16ToASCII(profile->GetRawInfo(NAME_FIRST));

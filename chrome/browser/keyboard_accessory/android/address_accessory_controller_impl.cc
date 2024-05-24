@@ -64,7 +64,7 @@ UserInfo TranslateProfile(const AutofillProfile* profile) {
 }
 
 std::vector<UserInfo> UserInfosForProfiles(
-    const std::vector<AutofillProfile*>& profiles) {
+    const std::vector<const AutofillProfile*>& profiles) {
   std::vector<UserInfo> infos(profiles.size());
   base::ranges::transform(profiles, infos.begin(), TranslateProfile);
   return infos;
@@ -100,7 +100,7 @@ AddressAccessoryControllerImpl::GetSheetData() const {
   if (!personal_data_manager_) {
     return std::nullopt;
   }
-  std::vector<AutofillProfile*> profiles =
+  std::vector<const AutofillProfile*> profiles =
       personal_data_manager_->address_data_manager().GetProfilesToSuggest();
   std::u16string title_or_empty_message;
   if (profiles.empty()) {

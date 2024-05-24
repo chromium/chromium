@@ -200,7 +200,7 @@ class AutofillSuggestionGenerator {
   // Returns the top matching profiles based on prefix search. At most
   // `kMaxPrefixMatchedProfilesForSuggestion` are returned.
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-  GetPrefixMatchedProfiles(const std::vector<AutofillProfile*>& profiles,
+  GetPrefixMatchedProfiles(const std::vector<const AutofillProfile*>& profiles,
                            FieldType trigger_field_type,
                            const std::u16string& raw_field_contents,
                            const std::u16string& field_contents_canon,

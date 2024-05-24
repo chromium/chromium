@@ -1040,7 +1040,7 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
     const FieldTypeSet& field_types,
     ProfilesToSuggestOptions options) {
   // Get the profiles to suggest, which are already sorted.
-  std::vector<AutofillProfile*> sorted_profiles =
+  std::vector<const AutofillProfile*> sorted_profiles =
       personal_data().address_data_manager().GetProfilesToSuggest();
   if (options.require_non_empty_value_on_trigger_field) {
     std::erase_if(sorted_profiles, [&](const AutofillProfile* profile) {
@@ -1237,7 +1237,7 @@ AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
 
 std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
 AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<const AutofillProfile*>& profiles,
     FieldType trigger_field_type,
     const std::u16string& raw_field_contents,
     const std::u16string& field_contents_canon,

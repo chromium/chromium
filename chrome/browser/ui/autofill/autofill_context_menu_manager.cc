@@ -431,7 +431,7 @@ bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
     CHECK(personal_data_manager_);
     if (base::ranges::any_of(
             personal_data_manager_->address_data_manager().GetProfiles(),
-            [field](AutofillProfile* profile) {
+            [field](const AutofillProfile* profile) {
               return profile->HasInfo(field->Type().GetStorableType());
             })) {
       return true;

@@ -122,27 +122,19 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // `GetProfiles()` returns local-or-syncable and account profiles. Using
   // `GetProfilesFromSource()`, profiles from a single source can be retrieved.
   // The profiles are returned in the specified `order`.
-  // TODO(crbug.com/40283168): Change return type to
-  // std::vector<const AutofillProfile*>
-  std::vector<AutofillProfile*> GetProfiles(
+  std::vector<const AutofillProfile*> GetProfiles(
       ProfileOrder order = ProfileOrder::kNone) const;
-  // TODO(crbug.com/40283168): Change return type to
-  // std::vector<const AutofillProfile*>
-  std::vector<AutofillProfile*> GetProfilesFromSource(
+  std::vector<const AutofillProfile*> GetProfilesFromSource(
       AutofillProfile::Source profile_source,
       ProfileOrder order = ProfileOrder::kNone) const;
 
   // Returns the profiles to suggest to the user for filling, ordered by
   // frecency.
-  // TODO(crbug.com/40283168): Change return type to
-  // std::vector<const AutofillProfile*>
-  std::vector<AutofillProfile*> GetProfilesToSuggest() const;
+  std::vector<const AutofillProfile*> GetProfilesToSuggest() const;
 
   // Returns all `GetProfiles()` in the order that the should be shown in the
   // settings.
-  // TODO(crbug.com/40283168): Change return type to
-  // std::vector<const AutofillProfile*>
-  std::vector<AutofillProfile*> GetProfilesForSettings() const;
+  std::vector<const AutofillProfile*> GetProfilesForSettings() const;
 
   // Returns the profile with the specified `guid`, or nullptr if there is no
   // profile such profile. See `GetProfiles()` for the lifetime of the pointer.

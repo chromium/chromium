@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest, HappyPath) {
   personal_data_manager->RemoveObserver(&personal_data_observer_);
   ASSERT_EQ(1UL,
             personal_data_manager->address_data_manager().GetProfiles().size());
-  autofill::AutofillProfile* profile =
+  const autofill::AutofillProfile* profile =
       personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
 
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   personal_data_manager->RemoveObserver(&personal_data_observer_);
   ASSERT_EQ(1UL,
             personal_data_manager->address_data_manager().GetProfiles().size());
-  autofill::AutofillProfile* profile =
+  const autofill::AutofillProfile* profile =
       personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
 
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest, Validation) {
   personal_data_manager->RemoveObserver(&personal_data_observer_);
   ASSERT_EQ(1UL,
             personal_data_manager->address_data_manager().GetProfiles().size());
-  autofill::AutofillProfile* profile =
+  const autofill::AutofillProfile* profile =
       personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
 
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   personal_data_manager->RemoveObserver(&personal_data_observer_);
   ASSERT_EQ(1UL,
             personal_data_manager->address_data_manager().GetProfiles().size());
-  autofill::AutofillProfile* profile =
+  const autofill::AutofillProfile* profile =
       personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
 

@@ -179,13 +179,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
 
   TableViewModel* model = self.tableViewModel;
-  const std::vector<autofill::AutofillProfile*> autofillProfiles =
+  const std::vector<const autofill::AutofillProfile*> autofillProfiles =
       _personalDataManager->address_data_manager().GetProfilesForSettings();
   if (!autofillProfiles.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierProfiles];
     [model setHeader:[self profileSectionHeader]
         forSectionWithIdentifier:SectionIdentifierProfiles];
-    for (autofill::AutofillProfile* autofillProfile : autofillProfiles) {
+    for (const autofill::AutofillProfile* autofillProfile : autofillProfiles) {
       DCHECK(autofillProfile);
       [model addItem:[self itemForProfile:*autofillProfile]
           toSectionWithIdentifier:SectionIdentifierProfiles];

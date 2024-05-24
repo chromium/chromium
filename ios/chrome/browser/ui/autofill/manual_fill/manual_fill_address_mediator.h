@@ -38,13 +38,15 @@ extern NSString* const ManageAddressAccessibilityIdentifier;
 
 // The designated initializer.
 - (instancetype)initWithProfiles:
-    (std::vector<autofill::AutofillProfile*>)profiles NS_DESIGNATED_INITIALIZER;
+    (std::vector<const autofill::AutofillProfile*>)profiles
+    NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use `initWithProfiles:`.
 - (instancetype)init NS_UNAVAILABLE;
 
 // Updates the `profiles` being presented.
-- (void)reloadWithProfiles:(std::vector<autofill::AutofillProfile*>)profiles;
+- (void)reloadWithProfiles:
+    (std::vector<const autofill::AutofillProfile*>)profiles;
 
 @end
 

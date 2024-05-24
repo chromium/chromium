@@ -16,7 +16,7 @@ namespace autofill::autofill_metrics {
 // Emits metrics for the `ProfileTokenQuality` of every provided `profiles`.
 // See implementation for an overview of all the metrics.
 void LogStoredProfileTokenQualityMetrics(
-    const std::vector<AutofillProfile*>& profiles);
+    const std::vector<const AutofillProfile*>& profiles);
 
 // Considers all autofilled fields of the `form`. For each of them, it emits
 // the total number of observations that the profile used for filling had for

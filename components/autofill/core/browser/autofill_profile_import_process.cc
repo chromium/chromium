@@ -37,7 +37,7 @@ using UserDecision = AutofillClient::AddressPromptUserDecision;
 // mergeable, they must share the same address model.
 bool ShouldCountryApproximationBeRemoved(
     const AutofillProfile& profile,
-    const std::vector<AutofillProfile*>& existing_profiles,
+    const std::vector<const AutofillProfile*>& existing_profiles,
     const AutofillProfileComparator& comparator) {
   auto IsMergeableWithExistingProfiles = [&](const AutofillProfile& profile) {
     return base::ranges::any_of(existing_profiles, [&](auto* existing_profile) {
@@ -113,7 +113,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
 
   // We don't offer an import if `observed_profile_` is a duplicate of an
   // existing profile.
-  const std::vector<AutofillProfile*> existing_profiles =
+  const std::vector<const AutofillProfile*> existing_profiles =
       personal_data_manager_->address_data_manager().GetProfiles(
           AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
 
@@ -502,7 +502,7 @@ void ProfileImportProcess::set_prompt_was_shown() {
 void ProfileImportProcess::CollectMetrics(
     ukm::UkmRecorder* ukm_recorder,
     ukm::SourceId source_id,
-    const std::vector<AutofillProfile*>& existing_profiles) const {
+    const std::vector<const AutofillProfile*>& existing_profiles) const {
   // Metrics should only be recorded after a user decision was supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
 

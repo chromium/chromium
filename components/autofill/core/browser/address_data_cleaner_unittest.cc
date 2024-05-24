@@ -212,7 +212,8 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
   // Expect that only the account profile remains and that it became a Chrome-
   // originating profile.
   test_api(data_cleaner_).ApplyDeduplicationRoutine();
-  std::vector<AutofillProfile*> deduped_profiles = test_adm_.GetProfiles();
+  std::vector<const AutofillProfile*> deduped_profiles =
+      test_adm_.GetProfiles();
   ASSERT_THAT(deduped_profiles, UnorderedElementsAre(Pointee(account_profile)));
   EXPECT_EQ(deduped_profiles[0]->initial_creator_id(),
             AutofillProfile::kInitialCreatorOrModifierChrome);

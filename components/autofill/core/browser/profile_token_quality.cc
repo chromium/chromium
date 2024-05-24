@@ -46,7 +46,7 @@ ObservationType GetObservationTypeForEditedField(
     FieldType type,
     std::u16string_view edited_value,
     const AutofillProfile& profile,
-    const std::vector<AutofillProfile*>& other_profiles,
+    const std::vector<const AutofillProfile*>& other_profiles,
     const std::string& app_locale) {
   if (edited_value.empty()) {
     return ObservationType::kEditedValueCleared;
@@ -82,15 +82,17 @@ ObservationType GetObservationTypeForEditedField(
     return ObservationType::kEditedToDifferentTokenOfSameProfile;
   }
 
-  if (base::ranges::any_of(other_profiles, [&](AutofillProfile* other_profile) {
-        return matches(other_types(*other_profile), *other_profile);
-      })) {
+  if (base::ranges::any_of(
+          other_profiles, [&](const AutofillProfile* other_profile) {
+            return matches(other_types(*other_profile), *other_profile);
+          })) {
     return ObservationType::kEditedToDifferentTokenOfOtherProfile;
   }
 
-  if (base::ranges::any_of(other_profiles, [&](AutofillProfile* other_profile) {
-        return matches({type}, *other_profile);
-      })) {
+  if (base::ranges::any_of(other_profiles,
+                           [&](const AutofillProfile* other_profile) {
+                             return matches({type}, *other_profile);
+                           })) {
     return ObservationType::kEditedToSameTokenOfOtherProfile;
   }
 
@@ -128,9 +130,9 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     const PersonalDataManager& pdm) {
   CHECK_EQ(form_structure.field_count(), form_data.fields.size());
 
-  std::vector<AutofillProfile*> other_profiles =
+  std::vector<const AutofillProfile*> other_profiles =
       pdm.address_data_manager().GetProfiles();
-  std::erase_if(other_profiles, [&](AutofillProfile* p) {
+  std::erase_if(other_profiles, [&](const AutofillProfile* p) {
     return p->guid() == profile_->guid();
   });
 
@@ -261,11 +263,11 @@ size_t ProfileTokenQuality::AddSubsetOfObservations(
 ObservationType ProfileTokenQuality::GetObservationTypeFromField(
     const AutofillField& field,
     std::u16string_view current_field_value,
-    const std::vector<AutofillProfile*>& other_profiles,
+    const std::vector<const AutofillProfile*>& other_profiles,
     const std::string& app_locale) const {
   CHECK(field.autofill_source_profile_guid() == profile_->guid());
   DCHECK(!base::Contains(other_profiles, profile_->guid(),
-                         [](AutofillProfile* p) { return p->guid(); }));
+                         [](const AutofillProfile* p) { return p->guid(); }));
 
   const FieldType type = field.Type().GetStorableType();
   if (field.is_autofilled()) {

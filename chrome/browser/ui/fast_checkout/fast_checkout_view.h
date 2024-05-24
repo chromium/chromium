@@ -23,7 +23,7 @@ class FastCheckoutView {
   // Show the sheet with provided options to the user. After user interaction,
   // either `OnCredentialSelected` or `OnDismiss` gets invoked.
   virtual void Show(
-      const std::vector<autofill::AutofillProfile*>& autofill_profiles,
+      const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
       const std::vector<autofill::CreditCard*>& credit_cards) = 0;
 
   // Factory function for creating the view.

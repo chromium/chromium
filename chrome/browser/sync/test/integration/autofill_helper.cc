@@ -121,12 +121,13 @@ std::vector<AutocompleteEntry> GetAllAutocompleteEntries(
   return entries;
 }
 
-bool ProfilesMatchImpl(const std::optional<unsigned int>& expected_count,
-                       int profile_a,
-                       const std::vector<AutofillProfile*>& autofill_profiles_a,
-                       int profile_b,
-                       const std::vector<AutofillProfile*>& autofill_profiles_b,
-                       std::ostream* os) {
+bool ProfilesMatchImpl(
+    const std::optional<unsigned int>& expected_count,
+    int profile_a,
+    const std::vector<const AutofillProfile*>& autofill_profiles_a,
+    int profile_b,
+    const std::vector<const AutofillProfile*>& autofill_profiles_b,
+    std::ostream* os) {
   if (expected_count.has_value() &&
       autofill_profiles_a.size() != *expected_count) {
     *os << "Profile " << profile_a
@@ -135,7 +136,7 @@ bool ProfilesMatchImpl(const std::optional<unsigned int>& expected_count,
   }
 
   std::map<std::string, AutofillProfile> autofill_profiles_a_map;
-  for (AutofillProfile* p : autofill_profiles_a) {
+  for (const AutofillProfile* p : autofill_profiles_a) {
     autofill_profiles_a_map.insert({p->guid(), *p});
   }
 
@@ -148,7 +149,7 @@ bool ProfilesMatchImpl(const std::optional<unsigned int>& expected_count,
     return false;
   }
 
-  for (AutofillProfile* p : autofill_profiles_b) {
+  for (const AutofillProfile* p : autofill_profiles_b) {
     if (!autofill_profiles_a_map.count(p->guid())) {
       *os << "GUID " << p->guid() << " not found in profile " << profile_b
           << ".";
@@ -325,7 +326,7 @@ void UpdateProfile(int profile,
   std::move(waiter).Wait();
 }
 
-std::vector<AutofillProfile*> GetAllAutoFillProfiles(int profile) {
+std::vector<const AutofillProfile*> GetAllAutoFillProfiles(int profile) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
   autofill::PersonalDataChangedWaiter waiter(*pdm);
   pdm->Refresh();
@@ -357,9 +358,9 @@ size_t GetKeyCount(int profile) {
 }
 
 bool ProfilesMatch(int profile_a, int profile_b) {
-  const std::vector<AutofillProfile*>& autofill_profiles_a =
+  const std::vector<const AutofillProfile*>& autofill_profiles_a =
       GetAllAutoFillProfiles(profile_a);
-  const std::vector<AutofillProfile*>& autofill_profiles_b =
+  const std::vector<const AutofillProfile*>& autofill_profiles_b =
       GetAllAutoFillProfiles(profile_b);
   std::ostringstream mismatch_reason_stream;
   bool matched =
@@ -435,11 +436,11 @@ bool AutofillProfileChecker::Wait() {
 
 bool AutofillProfileChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for matching autofill profiles";
-  const std::vector<AutofillProfile*>& autofill_profiles_a =
+  const std::vector<const AutofillProfile*>& autofill_profiles_a =
       autofill_helper::GetPersonalDataManager(profile_a_)
           ->address_data_manager()
           .GetProfiles();
-  const std::vector<AutofillProfile*>& autofill_profiles_b =
+  const std::vector<const AutofillProfile*>& autofill_profiles_b =
       autofill_helper::GetPersonalDataManager(profile_b_)
           ->address_data_manager()
           .GetProfiles();

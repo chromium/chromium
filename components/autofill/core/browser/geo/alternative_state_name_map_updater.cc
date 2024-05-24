@@ -84,10 +84,11 @@ void AlternativeStateNameMapUpdater::OnAddressDataChanged() {
 void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
     base::OnceClosure callback) {
   DCHECK(address_data_manager_);
-  std::vector<AutofillProfile*> profiles = address_data_manager_->GetProfiles();
+  std::vector<const AutofillProfile*> profiles =
+      address_data_manager_->GetProfiles();
 
   CountryToStateNamesListMapping country_to_state_names_map;
-  for (AutofillProfile* profile : profiles) {
+  for (const AutofillProfile* profile : profiles) {
     const AlternativeStateNameMap::CountryCode country(base::UTF16ToUTF8(
         profile->GetInfo(AutofillType(HtmlFieldType::kCountryCode),
                          address_data_manager_->app_locale())));

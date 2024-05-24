@@ -1008,7 +1008,7 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
 
   // Only upload server statistics and UMA metrics if at least some local data
   // is available to use as a baseline.
-  std::vector<AutofillProfile*> profiles =
+  std::vector<const AutofillProfile*> profiles =
       client().GetPersonalDataManager()->address_data_manager().GetProfiles();
   if (observed_submission && form_structure->IsAutofillable()) {
     AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
@@ -1451,7 +1451,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
                   ->address_data_manager()
                   .GetProfiles(),
               [field_type = autofill_field->Type().GetStorableType()](
-                  AutofillProfile* profile) {
+                  const AutofillProfile* profile) {
                 return profile->HasInfo(field_type);
               }) &&
           base::FeatureList::IsEnabled(
@@ -2330,7 +2330,7 @@ bool BrowserAutofillManager::RefreshDataModels() {
 
   GetCreditCardAccessManager().UpdateCreditCardFormEventLogger();
 
-  const std::vector<AutofillProfile*>& profiles =
+  const std::vector<const AutofillProfile*>& profiles =
       client().GetPersonalDataManager()->address_data_manager().GetProfiles();
   address_form_event_logger_->set_record_type_count(profiles.size());
 

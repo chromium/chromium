@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   AddProfile(0, CreateAutofillProfile(PROFILE_HOMER));
   ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
-  AutofillProfile* profile = GetAllAutoFillProfiles(0)[0];
+  const AutofillProfile* profile = GetAllAutoFillProfiles(0)[0];
   ASSERT_TRUE(profile);
   UpdateProfile(0, profile->guid(), AutofillType(autofill::NAME_FIRST),
                 profile->GetRawInfo(autofill::NAME_FIRST),
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ExceedsMaxLength) {
                 AutofillType(autofill::ADDRESS_HOME_LINE1),
                 exceeds_max_length_string);
   // The values stored on clients 0 are already truncated.
-  AutofillProfile* profile = GetAllAutoFillProfiles(0)[0];
+  const AutofillProfile* profile = GetAllAutoFillProfiles(0)[0];
   for (const auto type :
        {autofill::NAME_FIRST, autofill::NAME_LAST, autofill::EMAIL_ADDRESS,
         autofill::ADDRESS_HOME_LINE1}) {

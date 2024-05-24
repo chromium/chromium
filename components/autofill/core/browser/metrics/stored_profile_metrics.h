@@ -40,15 +40,17 @@ void LogStoredProfileDaysSinceLastUse(AutofillProfileSourceCategory category,
 // Logs the `LogStoredProfileCountStatistics()` and
 // `LogStoredProfileDaysSinceLastUse()` metrics for every
 // AutofillProfileSourceCategory and the corresponding subset of `profiles`.
-void LogStoredProfileMetrics(const std::vector<AutofillProfile*>& profiles);
+void LogStoredProfileMetrics(
+    const std::vector<const AutofillProfile*>& profiles);
 
 // Logs the number of `kLocalOrSynable` profiles that are a strict superset of
 // some `kAccount` profile. This corresponds to the number of profiles that
 // cannot be automatically deduplicated, since no profiles should be silently
 // deleted from the account storage.
 // Comparisons are done by the `app_locale`-based `AutofillProfileComparator`.
-void LogLocalProfileSupersetMetrics(std::vector<AutofillProfile*> profiles,
-                                    std::string_view app_locale);
+void LogLocalProfileSupersetMetrics(
+    std::vector<const AutofillProfile*> profiles,
+    std::string_view app_locale);
 
 }  // namespace autofill::autofill_metrics
 

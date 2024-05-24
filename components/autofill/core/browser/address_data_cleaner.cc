@@ -272,7 +272,7 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
     return;
   }
 
-  const std::vector<AutofillProfile*>& profiles =
+  const std::vector<const AutofillProfile*>& profiles =
       address_data_manager_->GetProfiles(
           AddressDataManager::ProfileOrder::kHighestFrecencyDesc);
   // Early return to prevent polluting metrics with uninteresting events.
@@ -294,7 +294,7 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
 }
 
 void AddressDataCleaner::DeleteDisusedAddresses() {
-  const std::vector<AutofillProfile*>& profiles =
+  const std::vector<const AutofillProfile*>& profiles =
       address_data_manager_->GetProfilesFromSource(
           AutofillProfile::Source::kLocalOrSyncable);
   // Early return to prevent polluting metrics with uninteresting events.
@@ -304,7 +304,7 @@ void AddressDataCleaner::DeleteDisusedAddresses() {
   // Don't call `PDM::RemoveByGUID()` directly, since this can invalidate the
   // pointers in `profiles`.
   std::vector<std::string> guids_to_delete;
-  for (AutofillProfile* profile : profiles) {
+  for (const AutofillProfile* profile : profiles) {
     if (profile->IsDeletable()) {
       guids_to_delete.push_back(profile->guid());
     }

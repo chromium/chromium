@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestProfileListTest, PrioritizeCompleteness) {
 
   // In the Personal Data Manager, the partial address is more frecent.
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  std::vector<autofill::AutofillProfile*> profiles =
+  std::vector<const autofill::AutofillProfile*> profiles =
       personal_data_manager->address_data_manager().GetProfilesToSuggest();
   ASSERT_EQ(2UL, profiles.size());
   EXPECT_EQ(partial, *profiles[0]);

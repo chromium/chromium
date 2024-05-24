@@ -143,7 +143,7 @@ void AddressProfileSaveManager::FinalizeProfileImport(
     std::unique_ptr<ProfileImportProcess> import_process) {
   DCHECK(personal_data_manager_);
 
-  const std::vector<AutofillProfile*> existing_profiles =
+  const std::vector<const AutofillProfile*> existing_profiles =
       personal_data_manager_->address_data_manager().GetProfiles();
   import_process->ApplyImport();
 

@@ -127,7 +127,7 @@ TEST_F(AddressDataManagerTest, AddProfile) {
   // Reload the database.
   ResetAddressDataManager();
   // Verify the addition.
-  const std::vector<AutofillProfile*>& results1 =
+  const std::vector<const AutofillProfile*>& results1 =
       address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results1.size());
   EXPECT_EQ(0, profile0.Compare(*results1[0]));
@@ -142,7 +142,7 @@ TEST_F(AddressDataManagerTest, AddProfile) {
   ResetAddressDataManager();
 
   // Verify the non-addition.
-  const std::vector<AutofillProfile*>& results2 =
+  const std::vector<const AutofillProfile*>& results2 =
       address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results2.size());
   EXPECT_EQ(0, profile0.Compare(*results2[0]));
@@ -179,7 +179,8 @@ TEST_F(AddressDataManagerTest, UpdateProfile_ModificationDate) {
   test_clock.SetNow(kSomeLaterTime);
   profile.SetRawInfo(EMAIL_ADDRESS, u"new" + profile.GetRawInfo(EMAIL_ADDRESS));
   UpdateProfileOnAddressDataManager(profile);
-  std::vector<AutofillProfile*> profiles = address_data_manager().GetProfiles();
+  std::vector<const AutofillProfile*> profiles =
+      address_data_manager().GetProfiles();
   ASSERT_THAT(profiles, UnorderedElementsAre(Pointee(profile)));
   EXPECT_EQ(profiles[0]->modification_date(), kSomeLaterTime);
 
@@ -225,12 +226,15 @@ TEST_F(AddressDataManagerTest, GetProfiles_Order) {
   AutofillProfile profile1 = test::GetFullProfile();
   profile1.set_use_date(now - base::Hours(2));
   profile1.set_use_count(1);
+  profile1.set_modification_date(now);
   AutofillProfile profile2 = test::GetFullProfile2();
   profile2.set_use_date(now);
   profile2.set_use_count(1);
+  profile2.set_modification_date(now - base::Hours(1));
   AutofillProfile profile3 = test::GetFullCanadianProfile();
   profile3.set_use_date(now - base::Hours(1));
   profile3.set_use_count(1234);
+  profile3.set_modification_date(now - base::Hours(2));
 
   AddProfileToAddressDataManager(profile1);
   AddProfileToAddressDataManager(profile2);
@@ -251,26 +255,17 @@ TEST_F(AddressDataManagerTest, GetProfiles_Order) {
               testing::ElementsAre(Pointee(profile3), Pointee(profile2),
                                    Pointee(profile1)));
 
-  std::vector<AutofillProfile*> profiles = address_data_manager().GetProfiles(
-      AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
   // Ordered by `use_date()`.
-  EXPECT_THAT(profiles,
+  EXPECT_THAT(address_data_manager().GetProfiles(
+                  AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc),
               testing::ElementsAre(Pointee(profile2), Pointee(profile3),
                                    Pointee(profile1)));
 
-  // TODO(crbug.com/40258814): The modification date cannot be set beforehand,
-  // since it is overwritten by the database when the profile is initially
-  // stored. To test the ordering by modification date, update the `profiles`
-  // modification dates such that the order gets reversed. It is necessary to
-  // modify the PDM's profiles directly, since any modification involving the
-  // database will overwrite the modification date.
-  for (int i = 0; i < 3; i++) {
-    profiles[i]->set_modification_date(now - base::Hours(2 - i));
-  }
+  // Ordered by `modification_date()`.
   EXPECT_THAT(address_data_manager().GetProfiles(
                   AddressDataManager::ProfileOrder::kMostRecentlyModifiedDesc),
-              testing::ElementsAre(Pointee(profile1), Pointee(profile3),
-                                   Pointee(profile2)));
+              testing::ElementsAre(Pointee(profile1), Pointee(profile2),
+                                   Pointee(profile3)));
 }
 
 // Test that profiles are not shown if |kAutofillProfileEnabled| is set to
@@ -410,7 +405,7 @@ TEST_F(AddressDataManagerTest, AddProfile_BasicInformation) {
   ResetAddressDataManager();
 
   // Verify the addition.
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<const AutofillProfile*>& results =
       address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(0, profile.Compare(*results[0]));
@@ -677,7 +672,7 @@ TEST_F(AddressDataManagerTest, MigrateProfileToAccount) {
 
   address_data_manager().MigrateProfileToAccount(kLocalProfile);
   WaitForOnAddressDataChanged();
-  const std::vector<AutofillProfile*> profiles =
+  const std::vector<const AutofillProfile*> profiles =
       address_data_manager().GetProfiles();
 
   // `kLocalProfile` should be gone and only the migrated account profile should
@@ -704,7 +699,7 @@ TEST_F(AddressDataManagerTest, PopulateUniqueIDsOnLoad) {
   AddProfileToAddressDataManager(profile0);
 
   // Verify that we've loaded the profiles from the web database.
-  const std::vector<AutofillProfile*>& results2 =
+  const std::vector<const AutofillProfile*>& results2 =
       address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results2.size());
   EXPECT_EQ(0, profile0.Compare(*results2[0]));
@@ -716,7 +711,7 @@ TEST_F(AddressDataManagerTest, PopulateUniqueIDsOnLoad) {
   AddProfileToAddressDataManager(profile1);
 
   // Make sure the two profiles have different GUIDs, both valid.
-  const std::vector<AutofillProfile*>& results3 =
+  const std::vector<const AutofillProfile*>& results3 =
       address_data_manager().GetProfiles();
   ASSERT_EQ(2U, results3.size());
   EXPECT_NE(results3[0]->guid(), results3[1]->guid());
@@ -810,7 +805,7 @@ TEST_F(AddressDataManagerTest, UpdateLanguageCodeInProfile) {
   profile.set_language_code("en");
   UpdateProfileOnAddressDataManager(profile);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<const AutofillProfile*>& results =
       address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(0, profile.Compare(*results[0]));

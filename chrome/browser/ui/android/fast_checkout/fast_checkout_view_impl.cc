@@ -53,7 +53,7 @@ void FastCheckoutViewImpl::OnDismiss(JNIEnv* env) {
 }
 
 void FastCheckoutViewImpl::Show(
-    const std::vector<autofill::AutofillProfile*>& autofill_profiles,
+    const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
     const std::vector<autofill::CreditCard*>& credit_cards) {
   if (!RecreateJavaObjectIfNecessary()) {
     // It's possible that the constructor cannot access the bottom sheet clank

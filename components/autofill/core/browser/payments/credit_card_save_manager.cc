@@ -923,7 +923,7 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
 
   // Second, collect all of the already stored addresses used or modified
   // recently.
-  for (AutofillProfile* profile :
+  for (const AutofillProfile* profile :
        personal_data_manager_->address_data_manager().GetProfiles()) {
     has_profile = true;
     if ((now - profile->use_date()) < fifteen_minutes ||

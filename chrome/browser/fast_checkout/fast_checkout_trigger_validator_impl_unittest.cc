@@ -51,7 +51,7 @@ class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
               GetValidCreditCards,
               (),
               (const override));
-  MOCK_METHOD(std::vector<autofill::AutofillProfile*>,
+  MOCK_METHOD(std::vector<const autofill::AutofillProfile*>,
               GetValidAddressProfiles,
               (),
               (const override));
@@ -59,7 +59,7 @@ class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
               GetPersonalDataManager,
               (),
               (const override));
-  MOCK_METHOD(std::vector<autofill::AutofillProfile*>,
+  MOCK_METHOD(std::vector<const autofill::AutofillProfile*>,
               GetProfilesToSuggest,
               (),
               (const override));
@@ -96,7 +96,7 @@ class FastCheckoutTriggerValidatorTest
             Return(std::vector<autofill::CreditCard*>{&credit_card_}));
     ON_CALL(*personal_data_helper(), GetValidAddressProfiles)
         .WillByDefault(
-            Return(std::vector<autofill::AutofillProfile*>{&profile_}));
+            Return(std::vector<const autofill::AutofillProfile*>{&profile_}));
     ON_CALL(*personal_data_helper(), GetPersonalDataManager)
         .WillByDefault(Return(&pdm()));
     ON_CALL(*autofill_client(), IsContextSecure).WillByDefault(Return(true));
@@ -218,7 +218,7 @@ TEST_F(FastCheckoutTriggerValidatorTest,
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_NoValidAddressProfiles_ReturnsFalse) {
   ON_CALL(*personal_data_helper(), GetValidAddressProfiles)
-      .WillByDefault(Return(std::vector<autofill::AutofillProfile*>{}));
+      .WillByDefault(Return(std::vector<const autofill::AutofillProfile*>{}));
   EXPECT_EQ(ShouldRun(),
             FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile);
 }

@@ -241,7 +241,7 @@ class ProfileTokenQuality {
   ObservationType GetObservationTypeFromField(
       const AutofillField& field,
       std::u16string_view current_field_value,
-      const std::vector<AutofillProfile*>& other_profiles,
+      const std::vector<const AutofillProfile*>& other_profiles,
       const std::string& app_locale) const;
 
   // The profile for which observations are collected.

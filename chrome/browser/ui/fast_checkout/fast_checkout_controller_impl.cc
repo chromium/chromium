@@ -18,7 +18,7 @@ FastCheckoutControllerImpl::FastCheckoutControllerImpl(
 FastCheckoutControllerImpl::~FastCheckoutControllerImpl() = default;
 
 void FastCheckoutControllerImpl::Show(
-    const std::vector<autofill::AutofillProfile*>& autofill_profiles,
+    const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
     const std::vector<autofill::CreditCard*>& credit_cards) {
   GetOrCreateView()->Show(autofill_profiles, credit_cards);
 }

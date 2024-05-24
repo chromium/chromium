@@ -23,7 +23,7 @@ class AutofillProfile;
 // Converts a list of `autofill::AutofillProfile` into a list of
 // `ManualFillAddress`.
 + (NSArray<ManualFillAddress*>*)manualFillAddressesFromProfiles:
-    (std::vector<autofill::AutofillProfile*>)profiles;
+    (std::vector<const autofill::AutofillProfile*>)profiles;
 
 @end
 

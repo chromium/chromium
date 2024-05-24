@@ -39,26 +39,29 @@ namespace autofill {
 namespace {
 
 // Orders all `profiles` by the specified `order` rule.
-void OrderProfiles(std::vector<AutofillProfile*>& profiles,
+void OrderProfiles(std::vector<const AutofillProfile*>& profiles,
                    AddressDataManager::ProfileOrder order) {
   switch (order) {
     case AddressDataManager::ProfileOrder::kNone:
       break;
     case AddressDataManager::ProfileOrder::kHighestFrecencyDesc:
-      base::ranges::sort(profiles, [comparison_time = AutofillClock::Now()](
-                                       AutofillProfile* a, AutofillProfile* b) {
-        return a->HasGreaterRankingThan(b, comparison_time);
-      });
+      base::ranges::sort(
+          profiles, [comparison_time = AutofillClock::Now()](
+                        const AutofillProfile* a, const AutofillProfile* b) {
+            return a->HasGreaterRankingThan(b, comparison_time);
+          });
       break;
     case AddressDataManager::ProfileOrder::kMostRecentlyModifiedDesc:
-      base::ranges::sort(profiles, [](AutofillProfile* a, AutofillProfile* b) {
-        return a->modification_date() > b->modification_date();
-      });
+      base::ranges::sort(
+          profiles, [](const AutofillProfile* a, const AutofillProfile* b) {
+            return a->modification_date() > b->modification_date();
+          });
       break;
     case AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc:
-      base::ranges::sort(profiles, [](AutofillProfile* a, AutofillProfile* b) {
-        return a->use_date() > b->use_date();
-      });
+      base::ranges::sort(
+          profiles, [](const AutofillProfile* a, const AutofillProfile* b) {
+            return a->use_date() > b->use_date();
+          });
       break;
   }
 }
@@ -176,11 +179,11 @@ void AddressDataManager::OnWebDataServiceRequestDone(
   NotifyObservers();
 }
 
-std::vector<AutofillProfile*> AddressDataManager::GetProfiles(
+std::vector<const AutofillProfile*> AddressDataManager::GetProfiles(
     ProfileOrder order) const {
-  std::vector<AutofillProfile*> a = GetProfilesFromSource(
+  std::vector<const AutofillProfile*> a = GetProfilesFromSource(
       AutofillProfile::Source::kLocalOrSyncable, ProfileOrder::kNone);
-  std::vector<AutofillProfile*> b = GetProfilesFromSource(
+  std::vector<const AutofillProfile*> b = GetProfilesFromSource(
       AutofillProfile::Source::kAccount, ProfileOrder::kNone);
   a.reserve(a.size() + b.size());
   base::ranges::move(b, std::back_inserter(a));
@@ -188,12 +191,12 @@ std::vector<AutofillProfile*> AddressDataManager::GetProfiles(
   return a;
 }
 
-std::vector<AutofillProfile*> AddressDataManager::GetProfilesFromSource(
+std::vector<const AutofillProfile*> AddressDataManager::GetProfilesFromSource(
     AutofillProfile::Source profile_source,
     ProfileOrder order) const {
   const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
       GetProfileStorage(profile_source);
-  std::vector<AutofillProfile*> result;
+  std::vector<const AutofillProfile*> result;
   result.reserve(profiles.size());
   for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
     result.push_back(profile.get());
@@ -202,20 +205,21 @@ std::vector<AutofillProfile*> AddressDataManager::GetProfilesFromSource(
   return result;
 }
 
-std::vector<AutofillProfile*> AddressDataManager::GetProfilesToSuggest() const {
+std::vector<const AutofillProfile*> AddressDataManager::GetProfilesToSuggest()
+    const {
   return IsAutofillProfileEnabled()
              ? GetProfiles(ProfileOrder::kHighestFrecencyDesc)
-             : std::vector<AutofillProfile*>{};
+             : std::vector<const AutofillProfile*>{};
 }
 
-std::vector<AutofillProfile*> AddressDataManager::GetProfilesForSettings()
+std::vector<const AutofillProfile*> AddressDataManager::GetProfilesForSettings()
     const {
   return GetProfiles(ProfileOrder::kMostRecentlyModifiedDesc);
 }
 
 const AutofillProfile* AddressDataManager::GetProfileByGUID(
     const std::string& guid) const {
-  std::vector<AutofillProfile*> profiles = GetProfiles();
+  std::vector<const AutofillProfile*> profiles = GetProfiles();
   auto it = base::ranges::find(
       profiles, guid,
       [](const AutofillProfile* profile) { return profile->guid(); });
@@ -805,7 +809,7 @@ void AddressDataManager::OnProfileChangeDone(const std::string& guid) {
 }
 
 void AddressDataManager::LogStoredDataMetrics() const {
-  const std::vector<AutofillProfile*> profiles = GetProfiles();
+  const std::vector<const AutofillProfile*> profiles = GetProfiles();
   autofill_metrics::LogStoredProfileMetrics(profiles);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profiles);
   if (base::FeatureList::IsEnabled(

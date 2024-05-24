@@ -452,7 +452,7 @@ auto ComparesEqual(T expected) {
 
 template <typename T>
 auto UnorderedElementsCompareEqualArray(const std::vector<T>& expected_values) {
-  std::vector<::testing::Matcher<T*>> matchers;
+  std::vector<::testing::Matcher<const T*>> matchers;
   for (const T& expected : expected_values)
     matchers.push_back(::testing::Pointee(ComparesEqual(expected)));
   return ::testing::UnorderedElementsAreArray(matchers);
@@ -978,7 +978,7 @@ TEST_F(FormDataImporterTest, ImportStructuredNameProfile) {
                                          nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<const AutofillProfile*>& results =
       personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
 
@@ -1022,7 +1022,7 @@ TEST_F(FormDataImporterTest,
                                          nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<const AutofillProfile*>& results =
       personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
 
@@ -1069,7 +1069,7 @@ TEST_F(
                                          nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<const AutofillProfile*>& results =
       personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
 
@@ -1111,7 +1111,7 @@ TEST_F(FormDataImporterTest,
                                          nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<const AutofillProfile*>& results =
       personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
 
@@ -1246,7 +1246,7 @@ TEST_F(FormDataImporterTest, ImportStructuredNameAddressProfile) {
                                          nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<const AutofillProfile*>& results =
       personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
 
@@ -3044,7 +3044,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_OneAddressOneCreditCard) {
 
   // Test that the address has been saved.
   AutofillProfile expected_address = ConstructDefaultProfile();
-  const std::vector<AutofillProfile*>& results_addr =
+  const std::vector<const AutofillProfile*>& results_addr =
       personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results_addr.size());
   EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
@@ -3245,7 +3245,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_OneAddressCreditCardDisabled) {
 
   // Test that the address has been saved.
   AutofillProfile expected_address = ConstructDefaultProfile();
-  const std::vector<AutofillProfile*>& results_addr =
+  const std::vector<const AutofillProfile*>& results_addr =
       personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results_addr.size());
   EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
@@ -3721,7 +3721,7 @@ TEST_F(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
   ExtractAddressProfiles(/*extraction_successful=*/false, form_structure);
 
   // Expect that no new profile is saved.
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<const AutofillProfile*>& results =
       personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_NE(0, profile.Compare(*results[0]));
@@ -3771,7 +3771,7 @@ TEST_F(
                          /*allow_save_prompts=*/false);
 
   // Expect that no new profile is saved and the existing profile is updated.
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<const AutofillProfile*>& results =
       personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_NE(0, profile.Compare(*results[0]));
@@ -3818,7 +3818,7 @@ TEST_F(FormDataImporterTest, UnusableIncompleteProfile) {
   ExtractAddressProfiles(/*extraction_successful=*/false, form_structure);
 
   // Expect that no new profile is saved.
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<const AutofillProfile*>& results =
       personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(profile));

@@ -379,7 +379,7 @@ class WebViewPasswordStoreObserver
 
 - (NSArray<CWVAutofillProfile*>*)profiles {
   NSMutableArray* profiles = [NSMutableArray array];
-  for (autofill::AutofillProfile* internalProfile :
+  for (const autofill::AutofillProfile* internalProfile :
        _personalDataManager->address_data_manager().GetProfiles()) {
     CWVAutofillProfile* profile =
         [[CWVAutofillProfile alloc] initWithProfile:*internalProfile];

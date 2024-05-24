@@ -57,7 +57,7 @@ class AutofillProfilesEqualChecker
       return true;
     }
     // Compare the profiles of `pdms_[0]` with every other PDM's profiles.
-    testing::Matcher<std::vector<AutofillProfile*>> matcher =
+    testing::Matcher<std::vector<const AutofillProfile*>> matcher =
         testing::UnorderedPointwise(
             PointeeEquals(), pdms_[0]->address_data_manager().GetProfiles());
     for (size_t i = 1; i < pdms_.size(); i++) {

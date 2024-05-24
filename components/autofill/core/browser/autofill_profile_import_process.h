@@ -232,7 +232,7 @@ class ProfileImportProcess {
   void CollectMetrics(
       ukm::UkmRecorder* ukm_recorder,
       ukm::SourceId source_id,
-      const std::vector<AutofillProfile*>& existing_profiles) const;
+      const std::vector<const AutofillProfile*>& existing_profiles) const;
 
  private:
   // Determines the import type of |observed_profile_| with respect to

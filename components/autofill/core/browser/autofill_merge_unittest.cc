@@ -93,9 +93,10 @@ const std::vector<base::FilePath> GetTestFiles() {
 }
 
 // Serializes the |profiles| into a string.
-std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
+std::string SerializeProfiles(
+    const std::vector<const AutofillProfile*>& profiles) {
   std::string result;
-  for (auto* profile : profiles) {
+  for (const AutofillProfile* profile : profiles) {
     result += kProfileSeparator;
     result += "\n";
     for (const FieldType& type : kProfileFieldTypes) {
@@ -240,13 +241,13 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
     }
   }
 
-  std::vector<AutofillProfile*> imported_profiles =
+  std::vector<const AutofillProfile*> imported_profiles =
       personal_data_.address_data_manager().GetProfiles();
   // To ensure a consistent order with the output files, sort the profiles by
   // modification date. This corresponds to the order in which the profiles
   // were imported (or updated).
   base::ranges::sort(imported_profiles,
-                     [](AutofillProfile* a, AutofillProfile* b) {
+                     [](const AutofillProfile* a, const AutofillProfile* b) {
                        return a->modification_date() < b->modification_date();
                      });
   *merged_profiles = SerializeProfiles(imported_profiles);
