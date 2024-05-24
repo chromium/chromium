@@ -3522,6 +3522,10 @@ inline constexpr char kRendererAppContainerEnabled[] =
 inline constexpr char kBlockBrowserLegacyExtensionPoints[] =
     "block_browser_legacy_extension_points";
 
+// An integer enum that controls the policy-managed dynamic code settings. This
+// is linked via a PolicyToPreferenceMapEntry to the underlying policy.
+inline constexpr char kDynamicCodeSettings[] = "dynamic_code_settings";
+
 // A boolean that controls whether the Browser process has Application Bound
 // (App-Bound) Encryption enabled.
 inline constexpr char kApplicationBoundEncryptionEnabled[] =

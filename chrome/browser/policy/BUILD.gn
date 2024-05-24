@@ -412,6 +412,7 @@ source_set("browser_tests") {
   if (is_win) {
     sources += [
       "test/audio_process_high_priority_enabled_browsertest.cc",
+      "test/browser_dynamic_code_blocked_win_browsertest.cc",
       "test/locale_policy_browsertest.cc",
       "test/renderer_app_container_enabled_win_browsertest.cc",
     ]
