@@ -12,6 +12,7 @@ import argparse
 from multiprocessing import Process, Manager, cpu_count, Pool
 import os
 import subprocess
+import glob
 from typing import Mapping, Sequence
 
 WHOLE_CORPUS_RETRIES = 2
@@ -81,8 +82,31 @@ def _run_and_log(cmd: Sequence[str], env: Mapping[str, str], timeout: float,
   return False
 
 
+def _erase_profraws(pattern):
+  """Erases any pre-existing profraws matching a LLVM_PROFILE_FILE pattern.
+
+  Parameters:
+    pattern: An LLVM_PROFILE_FILE environment variable value, which may
+      contain %p for a process ID
+  """
+  pattern = pattern.replace("%p", "*")
+  for f in glob.iglob(pattern):
+    os.unlink(f)
+
+
+def _matching_profraws(pattern):
+  """Returns a list of filenames matching a given LLVM_PROFILE_FILE pattern.
+
+  Parameters:
+    pattern: An LLVM_PROFILE_FILE environment variable value, which may
+      contain %p for a process ID
+  """
+  pattern = pattern.replace("%p", "*")
+  return [f for f in glob.iglob(pattern) if os.path.getsize(f) > 0]
+
+
 def _run_fuzzer_target(args):
-  """ Runs a given fuzzer target. Designed to be called in parallel.
+  """Runs a given fuzzer target. Designed to be called in parallel.
 
   Parameters:
     args[0]: A dict containing information about what to run. Must contain:
@@ -116,23 +140,23 @@ def _run_fuzzer_target(args):
         (target, len(verified_fuzzer_targets) + len(failed_targets),
          num_targets, len(verified_fuzzer_targets)))
 
-  fullcorpus_profraw = os.path.join(profraw_dir, target + ".profraw")
+  fullcorpus_profraw = os.path.join(profraw_dir, target + "_%p.profraw")
   env['LLVM_PROFILE_FILE'] = fullcorpus_profraw
   fullcorpus_cmd = cmd.copy()
   if corpus_dir is not None:
     fullcorpus_cmd.append(corpus_dir)
+  _erase_profraws(fullcorpus_profraw)
   for i in range(WHOLE_CORPUS_RETRIES):
     ok = _run_and_log(fullcorpus_cmd, env, WHOLE_CORPUS_TIMEOUT_SECS,
                       f"full corpus attempt {i}")
     if ok:
       break
   valid_profiles = 0
-  if os.path.exists(
-      fullcorpus_profraw) and os.path.getsize(fullcorpus_profraw) > 0:
-    ok = _profdata_merge([fullcorpus_profraw], target_profdata)
+  for profraw in _matching_profraws(fullcorpus_profraw):
+    ok = _profdata_merge([profraw], target_profdata)
     if ok:
       valid_profiles = 1
-  else:
+  if valid_profiles == 0:
     # We failed to run the fuzzer with the whole corpus in one go. That probably
     # means one of the test cases caused a crash. Let's run each test
     # case one at a time. The resulting profraw files can be hundreds of MB
@@ -140,25 +164,25 @@ def _run_fuzzer_target(args):
     # profdata file.
     for count, corpus_entry in enumerate(os.listdir(corpus_dir)):
       specific_test_case_profraw = os.path.join(
-          profraw_dir, target + "_" + str(count) + ".profraw")
+          profraw_dir, target + "_" + str(count) + "_%p.profraw")
       test_case = os.path.join(corpus_dir, corpus_entry)
       specific_test_case_cmd = cmd + [test_case]
       env['LLVM_PROFILE_FILE'] = specific_test_case_profraw
+      _erase_profraws(specific_test_case_profraw)
       _run_and_log(specific_test_case_cmd, env,
                    INDIVIDUAL_TESTCASE_TIMEOUT_SECS,
                    f"specific test case {count}")
-      if os.path.exists(specific_test_case_profraw
-                        ) and os.path.getsize(specific_test_case_profraw) > 0:
-        # We recorded valid profraw, let's merge this into
+      resulting_profraws = list(_matching_profraws(specific_test_case_profraw))
+      if resulting_profraws:
+        # We recorded valid profraws, let's merge them into
         # the accumulating profdata
         valid_profiles += 1
-        prof_files_to_merge = [specific_test_case_profraw]
-        temp_profdata = os.path.join(
-          profraw_dir, target + "_accumlated.profraw")
+        temp_profdata = os.path.join(profraw_dir,
+                                     target + "_accumlated.profraw")
         if os.path.exists(target_profdata):
           os.rename(target_profdata, temp_profdata)
-          prof_files_to_merge.append(temp_profdata)
-        ok = _profdata_merge(prof_files_to_merge, target_profdata)
+          resulting_profraws.append(temp_profdata)
+        ok = _profdata_merge(resulting_profraws, target_profdata)
         if not ok:
           valid_profiles = 0
           break
