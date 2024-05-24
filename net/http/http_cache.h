@@ -496,10 +496,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Creates a WorkItem and sets it as the |pending_op|'s writer, or adds it to
   // the queue if a writer already exists.
-  net::Error CreateAndSetWorkItem(scoped_refptr<ActiveEntry>* entry,
-                                  Transaction* transaction,
-                                  WorkItemOperation operation,
-                                  PendingOp* pending_op);
+  Error CreateAndSetWorkItem(scoped_refptr<ActiveEntry>* entry,
+                             Transaction* transaction,
+                             WorkItemOperation operation,
+                             PendingOp* pending_op);
 
   // Creates the `disk_cache_` object and notifies the `callback` when the
   // operation completes. Returns an error code.

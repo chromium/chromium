@@ -95,8 +95,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
       ResponseHeadersCallback callback) override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
   void SetModifyRequestHeadersCallback(
-      base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
-      override;
+      base::RepeatingCallback<void(HttpRequestHeaders*)> callback) override;
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
   int ResumeNetworkStart() override;
@@ -476,8 +475,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // The callback to modify the request header. They will be called just before
   // sending the request to the network.
-  base::RepeatingCallback<void(net::HttpRequestHeaders*)>
-      modify_headers_callbacks_;
+  base::RepeatingCallback<void(HttpRequestHeaders*)> modify_headers_callbacks_;
 
   ConnectionAttempts connection_attempts_;
   IPEndPoint remote_endpoint_;

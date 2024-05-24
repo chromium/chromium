@@ -247,7 +247,7 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
 
   // This always returns ERR_IO_PENDING because DoCreateStream() does, but
   // GenerateNetworkErrorLoggingReportIfError() should be called here if any
-  // other net::Error can be returned.
+  // other Error can be returned.
   DCHECK_EQ(rv, ERR_IO_PENDING);
   return rv;
 }
@@ -269,7 +269,7 @@ int HttpNetworkTransaction::RestartIgnoringLastError(
 
   // This always returns ERR_IO_PENDING because DoCreateStream() does, but
   // GenerateNetworkErrorLoggingReportIfError() should be called here if any
-  // other net::Error can be returned.
+  // other Error can be returned.
   DCHECK_EQ(rv, ERR_IO_PENDING);
   return rv;
 }
@@ -306,7 +306,7 @@ int HttpNetworkTransaction::RestartWithCertificate(
 
   // This always returns ERR_IO_PENDING because DoCreateStream() does, but
   // GenerateNetworkErrorLoggingReportIfError() should be called here if any
-  // other net::Error can be returned.
+  // other Error can be returned.
   DCHECK_EQ(rv, ERR_IO_PENDING);
   return rv;
 }
@@ -583,7 +583,7 @@ void HttpNetworkTransaction::SetResponseHeadersCallback(
 }
 
 void HttpNetworkTransaction::SetModifyRequestHeadersCallback(
-    base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
+    base::RepeatingCallback<void(HttpRequestHeaders*)> callback) {
   modify_headers_callbacks_ = std::move(callback);
 }
 
@@ -1105,10 +1105,9 @@ int HttpNetworkTransaction::BuildRequestHeaders(
     auth_controllers_[HttpAuth::AUTH_SERVER]->AddAuthorizationHeader(
         &request_headers_);
 
-  if (net::features::kIpPrivacyAddHeaderToProxiedRequests.Get() &&
+  if (features::kIpPrivacyAddHeaderToProxiedRequests.Get() &&
       proxy_info_.is_for_ip_protection()) {
-    CHECK(!proxy_info_.is_direct() ||
-          net::features::kIpPrivacyDirectOnly.Get());
+    CHECK(!proxy_info_.is_direct() || features::kIpPrivacyDirectOnly.Get());
     if (!proxy_info_.is_direct()) {
       request_headers_.SetHeader("IP-Protection", "1");
     }
@@ -1554,7 +1553,7 @@ void HttpNetworkTransaction::GenerateNetworkErrorLoggingReportIfError(int rv) {
 }
 
 void HttpNetworkTransaction::GenerateNetworkErrorLoggingReport(int rv) {
-  // |rv| should be a valid net::Error
+  // |rv| should be a valid Error
   DCHECK_NE(rv, ERR_IO_PENDING);
   DCHECK_LE(rv, 0);
 
@@ -1999,7 +1998,7 @@ GURL HttpNetworkTransaction::AuthURL(HttpAuth::Target target) const {
     }
     case HttpAuth::AUTH_SERVER:
       if (ForWebSocketHandshake()) {
-        return net::ChangeWebSocketSchemeToHttpScheme(request_->url);
+        return ChangeWebSocketSchemeToHttpScheme(request_->url);
       }
       return request_->url;
     default:

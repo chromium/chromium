@@ -134,19 +134,19 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
 class TestProxyDelegateForIpProtection : public TestProxyDelegate {
  public:
   TestProxyDelegateForIpProtection() {
-    set_proxy_chain(net::ProxyChain::ForIpProtection(
-        {net::ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS,
-                                                 "ip-pro", 443)}));
-    set_extra_header_name(net::HttpRequestHeaders::kAuthorization);
+    set_proxy_chain(
+        ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+            ProxyServer::SCHEME_HTTPS, "ip-pro", 443)}));
+    set_extra_header_name(HttpRequestHeaders::kAuthorization);
   }
   void OnResolveProxy(const GURL& url,
                       const NetworkAnonymizationKey& network_anonymization_key,
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
-    net::ProxyList proxy_list;
+    ProxyList proxy_list;
     proxy_list.AddProxyChain(proxy_chain());
-    proxy_list.AddProxyChain(net::ProxyChain::Direct());
+    proxy_list.AddProxyChain(ProxyChain::Direct());
     result->UseProxyList(proxy_list);
   }
 };
@@ -652,7 +652,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
   const struct {
     ErrorPhase phase;
-    net::Error error;
+    Error error;
   } kRetriableErrors[] = {
       // These largely correspond to the list of errors in
       // CanFalloverToNextProxy() which can occur with an HTTP proxy.
@@ -841,7 +841,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
   const struct {
     ErrorPhase phase;
-    net::Error error;
+    Error error;
     // Each test case simulates a connection attempt through a proxy that fails
     // twice, followed by two connection attempts that succeed. For most cases,
     // this is done by having a connection attempt to the first proxy fail,
@@ -1082,7 +1082,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
   const struct {
     ErrorPhase phase;
-    net::Error error;
+    Error error;
     // For a description of this field, see the corresponding struct member
     // comment in `ReconsiderProxyAfterErrorHttpsProxy`.
     bool triggers_ssl_connect_job_retry_logic = false;
@@ -1324,7 +1324,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
   const struct {
     ErrorPhase phase;
-    net::Error error;
+    Error error;
     // For a description of this field, see the corresponding struct member
     // comment in `ReconsiderProxyAfterErrorHttpsProxy`.
     bool triggers_ssl_connect_job_retry_logic = false;
@@ -1639,7 +1639,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
   const struct {
     ErrorPhase phase;
-    net::Error error;
+    Error error;
   } kRetriableErrors[] = {
       // These largely correspond to the list of errors in
       // CanFalloverToNextProxy() which can occur with an HTTPS proxy.
@@ -2106,7 +2106,7 @@ void HttpStreamFactoryJobControllerTestBase::
   // QUIC session hasn't been created yet. The wait time should be greater than
   // 0.
   EXPECT_TRUE(job_controller_->ShouldWait(
-      const_cast<net::HttpStreamFactory::Job*>(job_controller_->main_job())));
+      const_cast<HttpStreamFactory::Job*>(job_controller_->main_job())));
   if (async_quic_session) {
     EXPECT_TRUE(JobControllerPeer::main_job_is_blocked(job_controller_));
   } else {
@@ -3675,7 +3675,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
     request_info.network_isolation_key = other_network_isolation_key;
     request_info.network_anonymization_key =
-        net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+        NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
             other_network_isolation_key);
     MockHttpStreamRequestDelegate request_delegate;
     auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
@@ -4118,7 +4118,7 @@ TEST_F(JobControllerLimitMultipleH2Requests,
           kNetworkIsolationKey2}) {
       request_info.network_isolation_key = network_isolation_key;
       request_info.network_anonymization_key =
-          net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
               network_isolation_key);
       // For kNetworkIsolationKey1, all requests but the first will be
       // throttled.

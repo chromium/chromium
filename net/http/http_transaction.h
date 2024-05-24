@@ -205,7 +205,7 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   // Sets the callback to modify the request header. The callback will be called
   // just before sending the request to the network.
   virtual void SetModifyRequestHeadersCallback(
-      base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) = 0;
+      base::RepeatingCallback<void(HttpRequestHeaders*)> callback) = 0;
 
   virtual void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) = 0;

@@ -153,7 +153,7 @@ class WritersTest : public TestWithTaskEnvironment {
   }
 
   void CreateWritersAddTransactionPriority(
-      net::RequestPriority priority,
+      RequestPriority priority,
       HttpCache::ParallelWritingPattern parallel_writing_pattern_ =
           HttpCache::PARALLEL_WRITING_JOIN) {
     CreateWritersAddTransaction(parallel_writing_pattern_);

@@ -222,7 +222,7 @@ bool PartialData::UpdateFromStoredHeaders(const HttpResponseHeaders* headers,
     return true;
   }
 
-  sparse_entry_ = (headers->response_code() == net::HTTP_PARTIAL_CONTENT);
+  sparse_entry_ = (headers->response_code() == HTTP_PARTIAL_CONTENT);
 
   if (writing_in_progress || sparse_entry_) {
     // |writing_in_progress| means another Transaction is still fetching the
@@ -288,7 +288,7 @@ bool PartialData::IsRequestedRangeOK() {
 }
 
 bool PartialData::ResponseHeadersOK(const HttpResponseHeaders* headers) {
-  if (headers->response_code() == net::HTTP_NOT_MODIFIED) {
+  if (headers->response_code() == HTTP_NOT_MODIFIED) {
     if (!byte_range_.IsValid() || truncated_)
       return true;
 
@@ -371,7 +371,7 @@ void PartialData::FixResponseHeaders(HttpResponseHeaders* headers,
   if (byte_range_.IsValid() && resource_size_) {
     headers->UpdateWithNewRange(byte_range_, resource_size_, !sparse_entry_);
   } else {
-    if (headers->response_code() == net::HTTP_PARTIAL_CONTENT) {
+    if (headers->response_code() == HTTP_PARTIAL_CONTENT) {
       // TODO(rvargas): Is it safe to change the protocol version?
       headers->ReplaceStatusLine("HTTP/1.1 200 OK");
     }

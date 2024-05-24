@@ -398,7 +398,7 @@ void HttpProxyConnectJob::RestartWithAuthCredentials() {
   next_state_ = STATE_RESTART_WITH_AUTH;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&HttpProxyConnectJob::OnIOComplete,
-                                weak_ptr_factory_.GetWeakPtr(), net::OK));
+                                weak_ptr_factory_.GetWeakPtr(), OK));
 }
 
 int HttpProxyConnectJob::DoLoop(int result) {

@@ -29,6 +29,8 @@
 #include "net/http/http_auth_handler_negotiate.h"
 #endif
 
+namespace net {
+
 namespace {
 
 base::Value::Dict NetLogParamsForCreateAuth(
@@ -37,11 +39,12 @@ base::Value::Dict NetLogParamsForCreateAuth(
     const int net_error,
     const url::SchemeHostPort& scheme_host_port,
     const std::optional<bool>& allows_default_credentials,
-    net::NetLogCaptureMode capture_mode) {
+    NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
-  dict.Set("scheme", net::NetLogStringValue(scheme));
-  if (net::NetLogCaptureIncludesSensitive(capture_mode))
-    dict.Set("challenge", net::NetLogStringValue(challenge));
+  dict.Set("scheme", NetLogStringValue(scheme));
+  if (NetLogCaptureIncludesSensitive(capture_mode)) {
+    dict.Set("challenge", NetLogStringValue(challenge));
+  }
   dict.Set("origin", scheme_host_port.Serialize());
   if (allows_default_credentials)
     dict.Set("allows_default_credentials", *allows_default_credentials);
@@ -51,8 +54,6 @@ base::Value::Dict NetLogParamsForCreateAuth(
 }
 
 }  // namespace
-
-namespace net {
 
 int HttpAuthHandlerFactory::CreateAuthHandlerFromString(
     const std::string& challenge,
@@ -260,8 +261,8 @@ HttpAuthHandlerRegistryFactory::GetNegotiateLibraryNameForTesting() const {
   if (!IsSchemeAllowed(kNegotiateAuthScheme))
     return std::nullopt;
 
-  return reinterpret_cast<net::HttpAuthHandlerNegotiate::Factory*>(
-             GetSchemeFactory(net::kNegotiateAuthScheme))
+  return reinterpret_cast<HttpAuthHandlerNegotiate::Factory*>(
+             GetSchemeFactory(kNegotiateAuthScheme))
       ->GetLibraryNameForTesting();  // IN-TEST
 }
 #endif

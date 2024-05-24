@@ -121,18 +121,18 @@ struct PreloadResult {
   bool has_pins = false;
 };
 
-using net::extras::PreloadDecoder;
+using extras::PreloadDecoder;
 
 // Extracts the current PreloadResult entry from the given Huffman encoded trie.
 // If an "end of string" matches a period in the hostname then the information
 // is remembered because, if no more specific node is found, then that
 // information applies to the hostname.
-class HSTSPreloadDecoder : public net::extras::PreloadDecoder {
+class HSTSPreloadDecoder : public extras::PreloadDecoder {
  public:
-  using net::extras::PreloadDecoder::PreloadDecoder;
+  using extras::PreloadDecoder::PreloadDecoder;
 
-  // net::extras::PreloadDecoder:
-  bool ReadEntry(net::extras::PreloadDecoder::BitReader* reader,
+  // extras::PreloadDecoder:
+  bool ReadEntry(extras::PreloadDecoder::BitReader* reader,
                  const std::string& search,
                  size_t current_search_offset,
                  bool* out_found) override {
@@ -307,7 +307,7 @@ bool TransportSecurityState::HasPublicKeyPins(const std::string& host) {
 
 TransportSecurityState::CTRequirementsStatus
 TransportSecurityState::CheckCTRequirements(
-    const net::HostPortPair& host_port_pair,
+    const HostPortPair& host_port_pair,
     bool is_issued_by_known_root,
     const HashValueVector& public_key_hashes,
     const X509Certificate* validated_certificate_chain,

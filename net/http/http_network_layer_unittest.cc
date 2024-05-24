@@ -130,7 +130,7 @@ TEST_F(HttpNetworkLayerTest, GET) {
                                        "Foo/1.0");
   request_info.load_flags = LOAD_NORMAL;
   request_info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpTransaction> trans;
   int rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
@@ -170,7 +170,7 @@ TEST_F(HttpNetworkLayerTest, NetworkVerified) {
                                        "Foo/1.0");
   request_info.load_flags = LOAD_NORMAL;
   request_info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpTransaction> trans;
   int rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
@@ -204,7 +204,7 @@ TEST_F(HttpNetworkLayerTest, NetworkUnVerified) {
                                        "Foo/1.0");
   request_info.load_flags = LOAD_NORMAL;
   request_info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpTransaction> trans;
   int rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);

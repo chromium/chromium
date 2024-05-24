@@ -201,7 +201,7 @@ HttpStreamParser::HttpStreamParser(StreamSocket* stream_socket,
       connection_is_reused_(connection_is_reused),
       net_log_(net_log),
       truncate_to_content_length_enabled_(base::FeatureList::IsEnabled(
-          net::features::kTruncateBodyToContentLength)) {
+          features::kTruncateBodyToContentLength)) {
   io_callback_ = base::BindRepeating(&HttpStreamParser::OnIOComplete,
                                      weak_ptr_factory_.GetWeakPtr());
 }
@@ -933,7 +933,7 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
   int end_of_header_offset = FindAndParseResponseHeaders(result);
 
   // Note: -1 is special, it indicates we haven't found the end of headers.
-  // Anything less than -1 is a net::Error, so we bail out.
+  // Anything less than -1 is a Error, so we bail out.
   if (end_of_header_offset < -1)
     return end_of_header_offset;
 
@@ -977,7 +977,7 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
         response_body_length_ = -1;
         // Record the timing of the 103 Early Hints response for the experiment
         // (https://crbug.com/1093693).
-        if (response_->headers->response_code() == net::HTTP_EARLY_HINTS &&
+        if (response_->headers->response_code() == HTTP_EARLY_HINTS &&
             first_early_hints_time_.is_null()) {
           first_early_hints_time_ = current_response_start_time_;
         }
@@ -1053,7 +1053,7 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
     headers = HttpResponseHeaders::TryToCreate(
         std::string_view(read_buf_->StartOfBuffer(), end_offset));
     if (!headers)
-      return net::ERR_INVALID_HTTP_RESPONSE;
+      return ERR_INVALID_HTTP_RESPONSE;
     has_seen_status_line_ = true;
   } else {
     // Enough data was read -- there is no status line, so this is HTTP/0.9, or
@@ -1145,9 +1145,9 @@ void HttpStreamParser::CalculateResponseBodySize() {
     response_body_length_ = 0;
   } else {
     switch (response_->headers->response_code()) {
-      case net::HTTP_NO_CONTENT:     // No Content
-      case net::HTTP_RESET_CONTENT:  // Reset Content
-      case net::HTTP_NOT_MODIFIED:   // Not Modified
+      case HTTP_NO_CONTENT:     // No Content
+      case HTTP_RESET_CONTENT:  // Reset Content
+      case HTTP_NOT_MODIFIED:   // Not Modified
         response_body_length_ = 0;
         break;
     }

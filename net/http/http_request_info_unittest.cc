@@ -14,12 +14,12 @@ TEST(HTTPRequestInfoTest, IsConsistent) {
   const SchemefulSite kTestSiteA = SchemefulSite(GURL("http://a.test/"));
   const SchemefulSite kTestSiteB = SchemefulSite(GURL("http://b.test/"));
 
-  net::HttpRequestInfo with_anon_nak;
+  HttpRequestInfo with_anon_nak;
   with_anon_nak.network_isolation_key =
       NetworkIsolationKey(kTestSiteA, kTestSiteB);
   EXPECT_FALSE(with_anon_nak.IsConsistent());
 
-  net::HttpRequestInfo cross_site;
+  HttpRequestInfo cross_site;
   cross_site.network_isolation_key =
       NetworkIsolationKey(kTestSiteA, kTestSiteB);
   cross_site.network_anonymization_key =

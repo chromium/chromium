@@ -21,7 +21,7 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
     return std::nullopt;
   }
 
-  std::optional<net::structured_headers::List> list =
+  std::optional<structured_headers::List> list =
       structured_headers::ParseList(normalized_header);
   if (!list.has_value()) {
     return std::nullopt;
@@ -47,7 +47,7 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
     //      cookie-name       = *cookie-name-octet
     //      cookie-name-octet = %x20-3A / %x3C / %x3E-7E / %x80-FF
     //                          ; octets excluding CTLs, ";", and "="
-    //    See |net::ParsedCookie::IsValidCookieName|.
+    //    See |ParsedCookie::IsValidCookieName|.
     //
     // 2. Cookie names RFC 6265 considers valid, given by:
     //      cookie-name = token

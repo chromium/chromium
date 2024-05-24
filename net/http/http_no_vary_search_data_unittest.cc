@@ -122,7 +122,7 @@ TEST_P(HttpNoVarySearchResponseHeadersTest, ParsingSuccess) {
   const TestData test = GetParam();
 
   const std::string raw_headers =
-      net::HttpUtil::AssembleRawHeaders(test.raw_headers);
+      HttpUtil::AssembleRawHeaders(test.raw_headers);
 
   const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
   ASSERT_OK_AND_ASSIGN(const auto no_vary_search_data,
@@ -149,7 +149,7 @@ class HttpNoVarySearchResponseHeadersParseFailureTest
 TEST_P(HttpNoVarySearchResponseHeadersParseFailureTest,
        ParsingFailureOrDefaultValue) {
   const std::string raw_headers =
-      net::HttpUtil::AssembleRawHeaders(GetParam().raw_headers);
+      HttpUtil::AssembleRawHeaders(GetParam().raw_headers);
 
   const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
   const auto no_vary_search_data =
@@ -800,7 +800,7 @@ TEST(HttpNoVarySearchCompare, CheckUrlEqualityWithSpecialCharacters) {
       "HTTP/1.1 200 OK\r\n"
       R"(No-Vary-Search: params=("c"))"
       "\r\n\r\n";
-  const std::string headers = net::HttpUtil::AssembleRawHeaders(raw_headers);
+  const std::string headers = HttpUtil::AssembleRawHeaders(raw_headers);
   const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   const auto no_vary_search_data =
@@ -829,7 +829,7 @@ TEST(HttpNoVarySearchCompare, CheckUrlEqualityWithSpecialCharacters) {
     base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", key);
 
     const auto parsed_header = base::MakeRefCounted<HttpResponseHeaders>(
-        net::HttpUtil::AssembleRawHeaders(header_template));
+        HttpUtil::AssembleRawHeaders(header_template));
     const auto no_vary_search_data_special_char =
         HttpNoVarySearchData::ParseFromHeaders(*parsed_header).value();
 
@@ -863,7 +863,7 @@ TEST(HttpNoVarySearchCompare,
     base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", value);
 
     const auto parsed_header = base::MakeRefCounted<HttpResponseHeaders>(
-        net::HttpUtil::AssembleRawHeaders(header_template));
+        HttpUtil::AssembleRawHeaders(header_template));
     const auto no_vary_search_data_special_char =
         HttpNoVarySearchData::ParseFromHeaders(*parsed_header).value();
 
@@ -890,7 +890,7 @@ TEST(HttpNoVarySearchCompare,
     base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", value);
 
     const auto parsed_header = base::MakeRefCounted<HttpResponseHeaders>(
-        net::HttpUtil::AssembleRawHeaders(header_template));
+        HttpUtil::AssembleRawHeaders(header_template));
     const auto no_vary_search_data_special_char =
         HttpNoVarySearchData::ParseFromHeaders(*parsed_header).value();
 
@@ -910,7 +910,7 @@ TEST_P(HttpNoVarySearchCompare, CheckUrlEqualityByNoVarySearch) {
   const auto& test_data = GetParam();
 
   const std::string headers =
-      net::HttpUtil::AssembleRawHeaders(test_data.raw_headers);
+      HttpUtil::AssembleRawHeaders(test_data.raw_headers);
   const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   const auto no_vary_search_data =
       HttpNoVarySearchData::ParseFromHeaders(*parsed).value();

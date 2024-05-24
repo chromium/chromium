@@ -381,7 +381,7 @@ HttpRequestInfo DefaultRequestInfo() {
   info.method = "GET";
   info.url = GURL("http://foo.test");
   info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   return info;
 }
 
@@ -493,7 +493,7 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
     request.method = "GET";
     request.url = GURL("http://www.example.org/");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     RecordingNetLogObserver net_log_observer;
     NetLogWithSource net_log_with_source =
@@ -602,16 +602,16 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
                                base::Unretained(this), delta);
   }
 
-  void HttpsNestedProxyNoSocketReuseHelper(const net::ProxyChain& chain1,
-                                           const net::ProxyChain& chain2);
+  void HttpsNestedProxyNoSocketReuseHelper(const ProxyChain& chain1,
+                                           const ProxyChain& chain2);
 
   const CommonConnectJobParams dummy_connect_job_params_;
 
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey =
+  const NetworkAnonymizationKey kNetworkAnonymizationKey =
       NetworkAnonymizationKey::CreateCrossSite(
           SchemefulSite(GURL("https://foo.test/")));
 
-  const net::NetworkIsolationKey kNetworkIsolationKey =
+  const NetworkIsolationKey kNetworkIsolationKey =
       NetworkIsolationKey(SchemefulSite(GURL("https://foo.test/")),
                           SchemefulSite(GURL("https://bar.test/")));
 
@@ -636,9 +636,9 @@ class HttpNetworkTransactionTest : public HttpNetworkTransactionTestBase,
  protected:
   HttpNetworkTransactionTest() {
     if (PriorityHeaderEnabled()) {
-      feature_list_.InitAndEnableFeature(net::features::kPriorityHeader);
+      feature_list_.InitAndEnableFeature(features::kPriorityHeader);
     } else {
-      feature_list_.InitAndDisableFeature(net::features::kPriorityHeader);
+      feature_list_.InitAndDisableFeature(features::kPriorityHeader);
     }
   }
 
@@ -892,7 +892,7 @@ TEST_P(HttpNetworkTransactionTest, SimpleGETNoHeadersWeirdPort) {
   request.method = "GET";
   request.url = GURL("http://www.example.com:2000/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
   int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
@@ -921,7 +921,7 @@ TEST_P(HttpNetworkTransactionTest, SimpleGETNoReadDestroyRequestInfo) {
     request->method = "GET";
     request->url = GURL("http://www.example.org/");
     request->traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     int rv =
         trans->Start(request.get(), callback.callback(), NetLogWithSource());
@@ -938,11 +938,11 @@ TEST_P(HttpNetworkTransactionTest, SimpleGETHostResolutionFailure) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto resolver = std::make_unique<MockHostResolver>();
   resolver->rules()->AddSimulatedTimeoutFailure("www.example.org");
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
   session_deps_.host_resolver = std::move(resolver);
   std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -1484,7 +1484,7 @@ TEST_P(HttpNetworkTransactionTest, TwoIdenticalLocationHeaders) {
   request.method = "GET";
   request.url = GURL("http://redirect.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -1529,7 +1529,7 @@ TEST_P(HttpNetworkTransactionTest, Head) {
   request.method = "HEAD";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -1607,7 +1607,7 @@ TEST_P(HttpNetworkTransactionTest, ReuseConnection) {
     request.method = "GET";
     request.url = GURL("http://www.example.org/");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -1644,7 +1644,7 @@ TEST_P(HttpNetworkTransactionTest, Ignores100) {
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Check the upload progress returned before initialization is correct.
   UploadProgress progress = request.upload_data_stream->GetUploadProgress();
@@ -1691,7 +1691,7 @@ TEST_P(HttpNetworkTransactionTest, Ignores1xx) {
   request.method = "GET";
   request.url = GURL("http://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -1732,7 +1732,7 @@ TEST_P(HttpNetworkTransactionTest, LoadTimingMeasuresTimeToFirstByteForHttp) {
   request.method = "GET";
   request.url = GURL("http://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::vector<MockWrite> data_writes = {
       MockWrite(ASYNC, 0,
@@ -1802,7 +1802,7 @@ void HttpNetworkTransactionTestBase::Check100ResponseTiming(bool use_spdy) {
   request.method = "GET";
   request.url = GURL("https://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   SSLSocketDataProvider ssl(ASYNC, OK);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
@@ -1905,7 +1905,7 @@ TEST_P(HttpNetworkTransactionTest, Incomplete100ThenEOF) {
   request.method = "POST";
   request.url = GURL("http://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -1936,7 +1936,7 @@ TEST_P(HttpNetworkTransactionTest, EmptyResponse) {
   request.method = "POST";
   request.url = GURL("http://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -1963,9 +1963,9 @@ void HttpNetworkTransactionTestBase::KeepAliveConnectionResendRequestTest(
   request.method = "GET";
   request.url = GURL("http://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // Written data for successfully sending both requests.
@@ -2050,7 +2050,7 @@ void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
   request.method = "GET";
   request.url = GURL("https://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const char upload_data[] = "foobar";
   ChunkedUploadDataStream upload_data_stream(0);
@@ -2061,7 +2061,7 @@ void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
     request.upload_data_stream = &upload_data_stream;
   }
 
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   SSLSocketDataProvider ssl1(ASYNC, OK);
@@ -2203,7 +2203,7 @@ TEST_P(HttpNetworkTransactionTest, FiniteRetriesOnIOError) {
   request.method = "GET";
   request.url = GURL("https://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Check whether we give up after the third try.
 
@@ -2243,7 +2243,7 @@ TEST_P(HttpNetworkTransactionTest, RetryTwiceOnIOError) {
   request.method = "GET";
   request.url = GURL("https://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Check whether we try atleast thrice before giving up.
 
@@ -2394,7 +2394,7 @@ TEST_P(HttpNetworkTransactionTest, NonKeepAliveConnectionReset) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -2450,7 +2450,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveEarlyClose) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   auto trans =
@@ -2494,7 +2494,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveEarlyClose2) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   auto trans =
@@ -2537,9 +2537,9 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveAfterUnreadBody) {
   request.method = "GET";
   request.url = GURL("http://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   const char kRequestData[] =
@@ -2705,7 +2705,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveWithUnusedData1) {
   request1.method = "HEAD";
   request1.url = GURL("http://www.borked.com/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto trans1 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
@@ -2729,7 +2729,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveWithUnusedData1) {
   request2.method = "GET";
   request2.url = GURL("http://www.borked.com/foo");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto trans2 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
@@ -2783,7 +2783,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveWithUnusedData2) {
   request1.method = "GET";
   request1.url = GURL("http://www.borked.com/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto trans1 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
@@ -2807,7 +2807,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveWithUnusedData2) {
   request2.method = "GET";
   request2.url = GURL("http://www.borked.com/foo");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto trans2 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
@@ -2861,7 +2861,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveWithUnusedData3) {
   request1.method = "GET";
   request1.url = GURL("http://www.borked.com/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto trans1 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
@@ -2885,7 +2885,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveWithUnusedData3) {
   request2.method = "GET";
   request2.url = GURL("http://www.borked.com/foo");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto trans2 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
@@ -2929,7 +2929,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveWithUnusedData4) {
   request1.method = "GET";
   request1.url = GURL("http://www.borked.com/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
@@ -2961,9 +2961,9 @@ TEST_P(HttpNetworkTransactionTest, BasicAuth) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -3064,11 +3064,11 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthWithAddressChange) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto resolver = std::make_unique<MockHostResolver>();
   auto* resolver_ptr = resolver.get();
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
   session_deps_.host_resolver = std::move(resolver);
   std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -3179,9 +3179,9 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthForever) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -3246,7 +3246,7 @@ TEST_P(HttpNetworkTransactionTest, DoNotSendAuth) {
   request.url = GURL("http://www.example.org/");
   request.privacy_mode = PRIVACY_MODE_ENABLED;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -3297,9 +3297,9 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAlive) {
     request.method = "GET";
     request.url = GURL("http://www.example.org/");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-    session_deps_.net_log = net::NetLog::Get();
+    session_deps_.net_log = NetLog::Get();
     std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
     MockWrite data_writes[] = {
@@ -3386,7 +3386,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAliveNoBody) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -3459,7 +3459,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAliveLargeBody) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -3540,7 +3540,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAliveImpatientServer) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -3625,7 +3625,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp10) {
   // when the no authentication data flag is set.
   request.privacy_mode = PRIVACY_MODE_ENABLED;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -3776,7 +3776,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp11) {
   // when the no authentication data flag is set.
   request.privacy_mode = PRIVACY_MODE_ENABLED;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -3925,7 +3925,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp10) {
     // when the no authentication data flag is set.
     request.privacy_mode = PRIVACY_MODE_ENABLED;
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     // Configure against proxy server "myproxy:70".
     session_deps_.proxy_resolution_service =
@@ -4038,7 +4038,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp11) {
     // when the no authentication data flag is set.
     request.privacy_mode = PRIVACY_MODE_ENABLED;
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     // Configure against proxy server "myproxy:70".
     session_deps_.proxy_resolution_service =
@@ -4152,7 +4152,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveExtraData) {
   // when the no authentication data flag is set.
   request.privacy_mode = PRIVACY_MODE_ENABLED;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -4279,7 +4279,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHangupDuringBody) {
   // when the no authentication data flag is set.
   request.privacy_mode = PRIVACY_MODE_ENABLED;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -4369,7 +4369,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyCancelTunnel) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -4430,7 +4430,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyMatchesServerAuthNoTunnel) {
   request.method = "GET";
   request.url = GURL("http://myproxy:70/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Proxy matches request URL.
   session_deps_.proxy_resolution_service =
@@ -4579,12 +4579,12 @@ TEST_P(HttpNetworkTransactionTest,
        BasicAuthProxyMatchesServerAuthWithNetworkAnonymizationKeyNoTunnel) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey1 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite1);
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const auto kNetworkAnonymizationKey2 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite2);
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   // This test would need to use a single socket without this option enabled.
   // Best to use this option when it would affect a test, as it will eventually
@@ -4696,7 +4696,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("http://myproxy:70/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request.network_isolation_key = kNetworkIsolationKey1;
   request.network_anonymization_key = kNetworkAnonymizationKey1;
 
@@ -4843,12 +4843,12 @@ TEST_P(HttpNetworkTransactionTest,
        BasicAuthProxyMatchesServerAuthWithNetworkAnonymizationKeyWithTunnel) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey1 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite1);
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const auto kNetworkAnonymizationKey2 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite2);
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   // This test would need to use a single socket without this option enabled.
   // Best to use this option when it would affect a test, as it will eventually
@@ -4979,7 +4979,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://myproxy:70/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request.network_isolation_key = kNetworkIsolationKey1;
   request.network_anonymization_key = kNetworkAnonymizationKey1;
 
@@ -5129,7 +5129,7 @@ TEST_P(HttpNetworkTransactionTest, SanitizeProxyAuthHeaders) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -5192,7 +5192,7 @@ TEST_P(HttpNetworkTransactionTest, UnexpectedProxyAuth) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // We are using a DIRECT connection (i.e. no proxy) for this session.
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
@@ -5236,7 +5236,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsServerRequestsProxyAuthThroughProxy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -5298,7 +5298,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -5414,7 +5414,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -5535,7 +5535,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -5635,7 +5635,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -5753,7 +5753,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -5857,7 +5857,7 @@ TEST_P(HttpNetworkTransactionTest, NonPermanentGenerateAuthTokenError) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto auth_handler_factory = std::make_unique<HttpAuthHandlerMock::Factory>();
   auth_handler_factory->set_do_init_from_challenge(true);
@@ -6171,7 +6171,7 @@ TEST_P(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
     request.method = "GET";
     request.url = test_case.url;
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     ConnectedHandler connected_handler;
 
     auto transaction = std::make_unique<HttpNetworkTransaction>(
@@ -6251,13 +6251,13 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingNoPacTwoRequests) {
   request1.method = "GET";
   request1.url = GURL("https://www.example.org/1");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpRequestInfo request2;
   request2.method = "GET";
   request2.url = GURL("https://www.example.org/2");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -6358,13 +6358,13 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingWithPacTwoRequests) {
   request1.method = "GET";
   request1.url = GURL("https://www.example.org/1");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpRequestInfo request2;
   request2.method = "GET";
   request2.url = GURL("https://www.example.org/2");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -6494,7 +6494,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyResolvedWithNetworkAnonymizationKey) {
   request.method = "GET";
   request.url = GURL("http://foo.test/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request.network_isolation_key = kNetworkIsolationKey;
   request.network_anonymization_key = kNetworkAnonymizationKey;
   HttpNetworkTransaction trans(LOWEST, session.get());
@@ -6515,7 +6515,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyHostResolutionFailure) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "proxy:70".
   session_deps_.proxy_resolution_service =
@@ -6523,7 +6523,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyHostResolutionFailure) {
           "https://proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   auto resolver = std::make_unique<MockHostResolver>();
   resolver->rules()->AddSimulatedTimeoutFailure("proxy");
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
   session_deps_.host_resolver = std::move(resolver);
   std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -6545,7 +6545,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyGet) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "proxy:70".
   session_deps_.proxy_resolution_service =
@@ -6629,7 +6629,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyGet) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
@@ -6732,7 +6732,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "proxy:70".
   session_deps_.proxy_resolution_service =
@@ -6816,7 +6816,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
@@ -6973,7 +6973,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
   const ProxyServer kProxyServer{ProxyServer::SCHEME_HTTPS,
@@ -7200,7 +7200,7 @@ TEST_P(HttpNetworkTransactionTest, NestedProxyHttpOverSpdyProtocolError) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
 
@@ -7264,7 +7264,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsClientAuthCertNeededNoCrash) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
 
@@ -7339,7 +7339,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
 
@@ -7400,7 +7400,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
 
@@ -7498,7 +7498,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
 
@@ -7586,7 +7586,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
 
@@ -7704,7 +7704,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
 
@@ -7736,7 +7736,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGetWithSessionRace) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure SPDY proxy server "proxy:70".
   session_deps_.proxy_resolution_service =
@@ -7811,7 +7811,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGetWithProxyAuth) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -7909,7 +7909,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectHttps) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "proxy:70".
   session_deps_.proxy_resolution_service =
@@ -7994,7 +7994,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyConnectHttps) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
@@ -8135,7 +8135,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectSpdy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "proxy:70".
   session_deps_.proxy_resolution_service =
@@ -8230,7 +8230,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectSpdy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
@@ -8345,7 +8345,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectHttps) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
@@ -8467,7 +8467,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectFailure) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "proxy:70".
   session_deps_.proxy_resolution_service =
@@ -8527,7 +8527,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
@@ -8597,7 +8597,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
@@ -8703,8 +8703,8 @@ TEST_P(HttpNetworkTransactionTest,
 // This is used to test that no unexpected socket reuse occurs between different
 // proxy chains.
 void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
-    const net::ProxyChain& chain1,
-    const net::ProxyChain& chain2) {
+    const ProxyChain& chain1,
+    const ProxyChain& chain2) {
   ASSERT_NE(chain1, chain2);
 
   session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
@@ -8716,7 +8716,7 @@ void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -8928,7 +8928,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
@@ -9193,7 +9193,7 @@ TEST_P(HttpNetworkTransactionTest,
   request1.method = "GET";
   request1.url = GURL("https://www.example.org/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy1.test", 70)};
@@ -9374,7 +9374,7 @@ TEST_P(HttpNetworkTransactionTest,
   request2.method = "GET";
   request2.url = GURL("https://www.example.com/2");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   SSLSocketDataProvider ssl4(ASYNC, OK);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl4);
@@ -9541,7 +9541,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuseAfterError) {
   request1.method = "GET";
   request1.url = GURL("https://www.example.org/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback1;
 
@@ -9705,7 +9705,7 @@ TEST_P(HttpNetworkTransactionTest, ProxiedH2SessionAppearsDuringAuth) {
   request1.method = "GET";
   request1.url = GURL(kMyUrl);
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(LOWEST, session.get());
   int rv = trans1.Start(&request1, callback.callback(), NetLogWithSource());
   EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -9721,7 +9721,7 @@ TEST_P(HttpNetworkTransactionTest, ProxiedH2SessionAppearsDuringAuth) {
   request2.method = "GET";
   request2.url = GURL(kMyUrl);
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(LOWEST, session.get());
   rv = trans2.Start(&request2, callback.callback(), NetLogWithSource());
   EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -9772,14 +9772,14 @@ TEST_P(HttpNetworkTransactionTest,
   request1.url = GURL("https://www.example.org/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpRequestInfo request2;
   request2.method = "GET";
   request2.url = GURL("https://mail.example.org/");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // CONNECT to www.example.org:443 via SPDY.
   spdy::SpdySerializedFrame connect1(spdy_util_.ConstructSpdyConnect(
@@ -9912,14 +9912,14 @@ TEST_P(HttpNetworkTransactionTest,
   request1.url = GURL("https://www.example.org/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpRequestInfo request2;
   request2.method = "GET";
   request2.url = GURL("https://www.example.org/2");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // CONNECT to www.example.org:443 via SPDY.
   spdy::SpdySerializedFrame connect1(spdy_util_.ConstructSpdyConnect(
@@ -10040,14 +10040,14 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyLoadTimingTwoHttpRequests) {
   request1.url = GURL("http://www.example.org/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpRequestInfo request2;
   request2.method = "GET";
   request2.url = GURL("http://mail.example.org/");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // http://www.example.org/
   spdy::Http2HeaderBlock headers(
@@ -10228,7 +10228,7 @@ TEST_P(HttpNetworkTransactionTest, SpdyProxyIsolation1) {
   request1.method = "GET";
   request1.url = GURL("https://www.example.org/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpNetworkTransaction trans1(LOWEST, session.get());
   int rv = trans1.Start(&request1, callback.callback(), NetLogWithSource());
@@ -10256,7 +10256,7 @@ TEST_P(HttpNetworkTransactionTest, SpdyProxyIsolation1) {
   request2.method = "GET";
   request2.url = GURL("https://proxy:70/");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(LOWEST, session.get());
   EXPECT_THAT(callback.GetResult(trans2.Start(&request2, callback.callback(),
                                               NetLogWithSource())),
@@ -10360,7 +10360,7 @@ TEST_P(HttpNetworkTransactionTest, SpdyProxyIsolation2) {
   request1.method = "GET";
   request1.url = GURL("https://proxy:70/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(LOWEST, session.get());
   EXPECT_THAT(callback.GetResult(trans1.Start(&request1, callback.callback(),
                                               NetLogWithSource())),
@@ -10375,7 +10375,7 @@ TEST_P(HttpNetworkTransactionTest, SpdyProxyIsolation2) {
   request2.method = "GET";
   request2.url = GURL("https://www.example.org/");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpNetworkTransaction trans2(LOWEST, session.get());
   int rv = trans2.Start(&request2, callback.callback(), NetLogWithSource());
@@ -10405,7 +10405,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetry) {
   // when the no authentication data flag is set.
   request.privacy_mode = PRIVACY_MODE_ENABLED;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -10511,7 +10511,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
   // when the no authentication data flag is set.
   request.privacy_mode = PRIVACY_MODE_ENABLED;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -10636,7 +10636,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
   // when the no authentication data flag is set.
   request.privacy_mode = PRIVACY_MODE_ENABLED;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -10764,7 +10764,7 @@ TEST_P(HttpNetworkTransactionTest,
   // when the no authentication data flag is set.
   request.privacy_mode = PRIVACY_MODE_ENABLED;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -10878,7 +10878,7 @@ void HttpNetworkTransactionTestBase::ConnectStatusHelperWithExpectedStatus(
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -11095,7 +11095,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyThenServer) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -11226,7 +11226,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2) {
   request.method = "GET";
   request.url = GURL("https://server/kids/login.aspx");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Ensure load is not disrupted by flags which suppress behaviour specific
   // to other auth schemes.
@@ -11376,7 +11376,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2WrongThenRightPassword) {
   request.method = "GET";
   request.url = GURL("https://server/kids/login.aspx");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpAuthNtlmMechanism::ScopedProcSetter proc_setter(
       MockGetMSTime, MockGenerateRandom, MockGetHostName);
@@ -11607,7 +11607,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
   request.method = "GET";
   request.url = GURL(kUrl);
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // First request without credentials.
   spdy::Http2HeaderBlock request_headers0(
@@ -11768,7 +11768,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
   request.method = "GET";
   request.url = GURL(kUrl);
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // First request without credentials.
   spdy::Http2HeaderBlock request_headers0(
@@ -12060,7 +12060,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   initial_request_info.method = "GET";
   initial_request_info.url = kInitialUrl;
   initial_request_info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction initial_trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback initial_callback;
   int rv = initial_trans.Start(&initial_request_info,
@@ -12074,7 +12074,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   websocket_request_info.method = "GET";
   websocket_request_info.url = kWebSocketUrl;
   websocket_request_info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   EXPECT_TRUE(HostPortPair::FromURL(initial_request_info.url)
                   .Equals(HostPortPair::FromURL(websocket_request_info.url)));
   websocket_request_info.extra_headers.SetHeader("Origin", "http://server");
@@ -12145,7 +12145,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMProxyTLSHandshakeReset) {
   request.method = "GET";
   request.url = GURL("https://origin/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Ensure load is not disrupted by flags which suppress behaviour specific
   // to other auth schemes.
@@ -12282,7 +12282,7 @@ TEST_P(HttpNetworkTransactionTest, LargeHeadersNoBody) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -12317,7 +12317,7 @@ TEST_P(HttpNetworkTransactionTest, DontRecycleTransportSocketForSSLTunnel) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -12375,7 +12375,7 @@ TEST_P(HttpNetworkTransactionTest, RecycleSocket) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -12431,7 +12431,7 @@ TEST_P(HttpNetworkTransactionTest, RecycleSSLSocket) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -12489,7 +12489,7 @@ TEST_P(HttpNetworkTransactionTest, RecycleDeadSSLSocket) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -12595,7 +12595,7 @@ TEST_P(HttpNetworkTransactionTest, CloseConnectionOnDestruction) {
       request.method = "GET";
       request.url = GURL("http://foo.test/");
       request.traffic_annotation =
-          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
       std::unique_ptr<HttpNetworkSession> session(
           CreateSession(&session_deps_));
@@ -12682,7 +12682,7 @@ TEST_P(HttpNetworkTransactionTest, FlushSocketPoolOnLowMemoryNotifications) {
   request.url = GURL("http://www.example.org/");
   request.load_flags = 0;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -12752,7 +12752,7 @@ TEST_P(HttpNetworkTransactionTest, NoFlushSocketPoolOnLowMemoryNotifications) {
   request.url = GURL("http://www.example.org/");
   request.load_flags = 0;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Disable idle socket closing on memory pressure.
   session_deps_.disable_idle_sockets_close_on_memory_pressure = true;
@@ -12830,7 +12830,7 @@ TEST_P(HttpNetworkTransactionTest, FlushSSLSocketPoolOnLowMemoryNotifications) {
   request.url = GURL("https://www.example.org/");
   request.load_flags = 0;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -12902,7 +12902,7 @@ TEST_P(HttpNetworkTransactionTest, RecycleSocketAfterZeroContentLength) {
       "e=17259,18167,19592,19773,19981,20133,20173,20233&"
       "rt=prt.2642,ol.2649,xjs.2951");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -12964,7 +12964,7 @@ TEST_P(HttpNetworkTransactionTest, ResendRequestOnWriteBodyError) {
   request[0].url = GURL("http://www.google.com/");
   request[0].load_flags = 0;
   request[0].traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   // Transaction 2: a POST request.  Reuses the socket kept alive from
   // transaction 1.  The first attempts fails when writing the POST data.
   // This causes the transaction to retry with a new socket.  The second
@@ -12974,7 +12974,7 @@ TEST_P(HttpNetworkTransactionTest, ResendRequestOnWriteBodyError) {
   request[1].upload_data_stream = &upload_data_stream;
   request[1].load_flags = 0;
   request[1].traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -13049,7 +13049,7 @@ TEST_P(HttpNetworkTransactionTest, AuthIdentityInURL) {
   request.url = GURL("http://foo:b@r@www.example.org/");
   request.load_flags = LOAD_NORMAL;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -13129,7 +13129,7 @@ TEST_P(HttpNetworkTransactionTest, WrongAuthIdentityInURL) {
 
   request.load_flags = LOAD_NORMAL;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -13233,7 +13233,7 @@ TEST_P(HttpNetworkTransactionTest, AuthIdentityInURLSuppressed) {
   request.url = GURL("http://foo:bar@www.example.org/");
   request.load_flags = LOAD_DO_NOT_USE_EMBEDDED_IDENTITY;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -13311,7 +13311,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
     request.method = "GET";
     request.url = GURL("http://www.example.org/x/y/z");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -13385,7 +13385,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
     // protection space as MyRealm1.
     request.url = GURL("http://www.example.org/x/y/a/b");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -13467,7 +13467,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
     request.method = "GET";
     request.url = GURL("http://www.example.org/x/y/z2");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -13514,7 +13514,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
     request.method = "GET";
     request.url = GURL("http://www.example.org/x/1");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -13582,7 +13582,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
     request.method = "GET";
     request.url = GURL("http://www.example.org/p/q/t");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -13691,7 +13691,7 @@ TEST_P(HttpNetworkTransactionTest, DigestPreAuthNonceCount) {
     request.method = "GET";
     request.url = GURL("http://www.example.org/x/y/z");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -13770,7 +13770,7 @@ TEST_P(HttpNetworkTransactionTest, DigestPreAuthNonceCount) {
     // protection space as digest.
     request.url = GURL("http://www.example.org/x/y/a/b");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -13846,7 +13846,7 @@ TEST_P(HttpNetworkTransactionTest, HTTPSBadCertificate) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -13905,7 +13905,7 @@ TEST_P(HttpNetworkTransactionTest, HTTPSBadCertificateViaProxy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite proxy_writes[] = {
       MockWrite("CONNECT www.example.org:443 HTTP/1.1\r\n"
@@ -13975,13 +13975,13 @@ TEST_P(HttpNetworkTransactionTest, HTTPSViaHttpsProxy) {
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite("CONNECT www.example.org:443 HTTP/1.1\r\n"
@@ -14040,7 +14040,7 @@ TEST_P(HttpNetworkTransactionTest, RedirectOfHttpsConnectViaHttpsProxy) {
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   const base::TimeDelta kTimeIncrement = base::Seconds(4);
   session_deps_.host_resolver->set_ondemand_mode(true);
@@ -14050,7 +14050,7 @@ TEST_P(HttpNetworkTransactionTest, RedirectOfHttpsConnectViaHttpsProxy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite(ASYNC, 0,
@@ -14106,13 +14106,13 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite(ASYNC, 0,
@@ -14152,14 +14152,14 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.proxy_resolution_service = ConfiguredProxyResolutionService::
       CreateFixedFromAutoDetectedPacResultForTest("HTTPS proxy:70",
                                                   TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   HttpRequestInfo request;
   request.load_flags = LOAD_MAIN_FRAME_DEPRECATED;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite(ASYNC, 0,
@@ -14198,7 +14198,7 @@ TEST_P(HttpNetworkTransactionTest, RedirectOfHttpsConnectViaSpdyProxy) {
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   const base::TimeDelta kTimeIncrement = base::Seconds(4);
   session_deps_.host_resolver->set_ondemand_mode(true);
@@ -14208,7 +14208,7 @@ TEST_P(HttpNetworkTransactionTest, RedirectOfHttpsConnectViaSpdyProxy) {
   request.load_flags = LOAD_MAIN_FRAME_DEPRECATED;
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   spdy::SpdySerializedFrame conn(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
@@ -14274,7 +14274,7 @@ TEST_P(HttpNetworkTransactionTest, ErrorResponseToHttpsConnectViaHttpsProxy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite("CONNECT www.example.org:443 HTTP/1.1\r\n"
@@ -14319,7 +14319,7 @@ TEST_P(HttpNetworkTransactionTest, ErrorResponseToHttpsConnectViaSpdyProxy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   spdy::SpdySerializedFrame conn(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
@@ -14374,7 +14374,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthSpdyProxy) {
   // when the no authentication data flag is set.
   request.privacy_mode = PRIVACY_MODE_ENABLED;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against https proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -14523,7 +14523,7 @@ TEST_P(HttpNetworkTransactionTest, HTTPSBadCertificateViaHttpsProxy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Attempt to fetch the URL from a server with a bad cert
   MockWrite bad_cert_writes[] = {
@@ -14598,7 +14598,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_UserAgent) {
   request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent,
                                   "Chromium Ultra Awesome X Edition");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14657,7 +14657,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_UserAgentOverTunnel) {
                                         request_user_agent);
       }
       request.traffic_annotation =
-          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
       HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -14707,7 +14707,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_Referer) {
   request.extra_headers.SetHeader(HttpRequestHeaders::kReferer,
                                   "http://the.previous.site.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14744,7 +14744,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_PostContentLengthZero) {
   request.method = "POST";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14781,7 +14781,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_PutContentLengthZero) {
   request.method = "PUT";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14818,7 +14818,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_HeadContentLengthZero) {
   request.method = "HEAD";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14855,7 +14855,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_CacheControlNoCache) {
   request.url = GURL("http://www.example.org/");
   request.load_flags = LOAD_BYPASS_CACHE;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14894,7 +14894,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_CacheControlValidateCache) {
   request.url = GURL("http://www.example.org/");
   request.load_flags = LOAD_VALIDATE_CACHE;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14932,7 +14932,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_ExtraHeaders) {
   request.url = GURL("http://www.example.org/");
   request.extra_headers.SetHeader("FooHeader", "Bar");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14972,7 +14972,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_ExtraHeadersStripped) {
   request.extra_headers.SetHeader("hEllo", "Kitty");
   request.extra_headers.SetHeader("FoO", "bar");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -15011,12 +15011,12 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "SOCKS myproxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -15069,12 +15069,12 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_SSL_GET) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "SOCKS myproxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -15132,12 +15132,12 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET_no_PAC) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "socks4://myproxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -15187,12 +15187,12 @@ TEST_P(HttpNetworkTransactionTest, SOCKS5_HTTP_GET) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "SOCKS5 myproxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -15257,12 +15257,12 @@ TEST_P(HttpNetworkTransactionTest, SOCKS5_SSL_GET) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "SOCKS5 myproxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -15360,7 +15360,7 @@ int GroupIdTransactionHelper(const std::string& url,
   request.method = "GET";
   request.url = GURL(url);
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session);
 
@@ -15596,7 +15596,7 @@ TEST_P(HttpNetworkTransactionTest, ReconsiderProxyAfterFailedConnection) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -15624,7 +15624,7 @@ TEST_P(HttpNetworkTransactionTest, RequestWriteError) {
   request.method = "GET";
   request.url = GURL("http://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite write_failure[] = {
       MockWrite(ASYNC, ERR_CONNECTION_RESET),
@@ -15654,7 +15654,7 @@ TEST_P(HttpNetworkTransactionTest, ConnectionClosedAfterStartOfHeaders) {
   request.method = "GET";
   request.url = GURL("http://www.foo.com/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockRead data_reads[] = {
       MockRead("HTTP/1."),
@@ -15698,7 +15698,7 @@ TEST_P(HttpNetworkTransactionTest, DrainResetOK) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes1[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -15777,7 +15777,7 @@ TEST_P(HttpNetworkTransactionTest, HTTPSViaProxyWithExtraData) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockRead proxy_reads[] = {
       MockRead("HTTP/1.0 200 Connected\r\n\r\nExtra data"),
@@ -15808,7 +15808,7 @@ TEST_P(HttpNetworkTransactionTest, LargeContentLengthThenClose) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -15857,7 +15857,7 @@ TEST_P(HttpNetworkTransactionTest, UploadFileSmallerThanLength) {
   request.url = GURL("http://www.example.org/upload");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -15904,7 +15904,7 @@ TEST_P(HttpNetworkTransactionTest, UploadUnreadableFile) {
   request.url = GURL("http://www.example.org/upload");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // If we try to upload an unreadable file, the transaction should fail.
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
@@ -15960,7 +15960,7 @@ TEST_P(HttpNetworkTransactionTest, CancelDuringInitRequestBody) {
   request.url = GURL("http://www.example.org/upload");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   auto trans =
@@ -15989,7 +15989,7 @@ TEST_P(HttpNetworkTransactionTest, ChangeAuthRealms) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // First transaction will request a resource and receive a Basic challenge
   // with realm="first_realm".
@@ -16145,7 +16145,7 @@ TEST_P(HttpNetworkTransactionTest, IgnoreAltSvcWithInvalidCert) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   StaticSocketDataProvider data(data_reads, base::span<MockWrite>());
   session_deps_.socket_factory->AddSocketDataProvider(&data);
@@ -16205,7 +16205,7 @@ TEST_P(HttpNetworkTransactionTest, HonorAlternativeServiceHeader) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   StaticSocketDataProvider data(data_reads, base::span<MockWrite>());
   session_deps_.socket_factory->AddSocketDataProvider(&data);
@@ -16266,11 +16266,11 @@ TEST_P(HttpNetworkTransactionTest,
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey1 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite1);
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const auto kNetworkAnonymizationKey2 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite2);
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   MockRead data_reads[] = {
@@ -16285,7 +16285,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request.network_isolation_key = kNetworkIsolationKey1;
   request.network_anonymization_key = kNetworkAnonymizationKey1;
 
@@ -16363,7 +16363,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.url = GURL("http://www.example.org/");
   request.load_flags = 0;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   StaticSocketDataProvider data(data_reads, base::span<MockWrite>());
   session_deps_.socket_factory->AddSocketDataProvider(&data);
@@ -16413,7 +16413,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.url = GURL("https://www.example.org/");
   request.load_flags = 0;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockConnect mock_connect(ASYNC, ERR_CONNECTION_REFUSED);
   StaticSocketDataProvider first_data;
@@ -16459,7 +16459,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.url = GURL("http://www.example.org/");
   request.load_flags = 0;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockConnect mock_connect(ASYNC, ERR_CONNECTION_REFUSED);
   StaticSocketDataProvider first_data;
@@ -16529,7 +16529,7 @@ TEST_P(HttpNetworkTransactionTest, ClearAlternativeServices) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
 
@@ -16568,7 +16568,7 @@ TEST_P(HttpNetworkTransactionTest, HonorMultipleAlternativeServiceHeaders) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   StaticSocketDataProvider data(data_reads, base::span<MockWrite>());
   session_deps_.socket_factory->AddSocketDataProvider(&data);
@@ -16671,7 +16671,7 @@ TEST_P(HttpNetworkTransactionTest, IdentifyQuicBroken) {
   request.method = "GET";
   request.url = GURL(origin_url);
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
   NetErrorDetails details;
@@ -16750,7 +16750,7 @@ TEST_P(HttpNetworkTransactionTest, IdentifyQuicNotBroken) {
   request.method = "GET";
   request.url = GURL(origin_url);
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
   NetErrorDetails details;
@@ -16766,7 +16766,7 @@ TEST_P(HttpNetworkTransactionTest, MarkBrokenAlternateProtocolAndFallback) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockConnect mock_connect(ASYNC, ERR_CONNECTION_REFUSED);
   StaticSocketDataProvider first_data;
@@ -16834,7 +16834,7 @@ TEST_P(HttpNetworkTransactionTest, AlternateProtocolPortRestrictedBlocked) {
   restricted_port_request.url = GURL("https://www.example.org:1023/");
   restricted_port_request.load_flags = 0;
   restricted_port_request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockConnect mock_connect(ASYNC, ERR_CONNECTION_REFUSED);
   StaticSocketDataProvider first_data;
@@ -16885,7 +16885,7 @@ TEST_P(HttpNetworkTransactionTest, AlternateProtocolPortRestrictedPermitted) {
   restricted_port_request.url = GURL("https://www.example.org:1023/");
   restricted_port_request.load_flags = 0;
   restricted_port_request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockConnect mock_connect(ASYNC, ERR_CONNECTION_REFUSED);
   StaticSocketDataProvider first_data;
@@ -16935,7 +16935,7 @@ TEST_P(HttpNetworkTransactionTest, AlternateProtocolPortRestrictedAllowed) {
   restricted_port_request.url = GURL("https://www.example.org:1023/");
   restricted_port_request.load_flags = 0;
   restricted_port_request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockConnect mock_connect(ASYNC, ERR_CONNECTION_REFUSED);
   StaticSocketDataProvider first_data;
@@ -16985,7 +16985,7 @@ TEST_P(HttpNetworkTransactionTest, AlternateProtocolPortUnrestrictedAllowed1) {
   unrestricted_port_request.url = GURL("https://www.example.org:1024/");
   unrestricted_port_request.load_flags = 0;
   unrestricted_port_request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockConnect mock_connect(ASYNC, ERR_CONNECTION_REFUSED);
   StaticSocketDataProvider first_data;
@@ -17035,7 +17035,7 @@ TEST_P(HttpNetworkTransactionTest, AlternateProtocolPortUnrestrictedAllowed2) {
   unrestricted_port_request.url = GURL("https://www.example.org:1024/");
   unrestricted_port_request.load_flags = 0;
   unrestricted_port_request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockConnect mock_connect(ASYNC, ERR_CONNECTION_REFUSED);
   StaticSocketDataProvider first_data;
@@ -17083,7 +17083,7 @@ TEST_P(HttpNetworkTransactionTest, AlternateProtocolUnsafeBlocked) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // The alternate protocol request will error out before we attempt to connect,
   // so only the standard HTTP request will try to connect.
@@ -17130,7 +17130,7 @@ TEST_P(HttpNetworkTransactionTest, UseAlternateProtocolForNpnSpdy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockRead data_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"),
@@ -17214,7 +17214,7 @@ TEST_P(HttpNetworkTransactionTest, AlternateProtocolWithSpdyLateBinding) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // First transaction receives Alt-Svc header over HTTP/1.1.
   MockRead data_reads[] = {
@@ -17334,7 +17334,7 @@ TEST_P(HttpNetworkTransactionTest, StallAlternativeServiceForNpnSpdy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockRead data_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"),
@@ -17421,9 +17421,9 @@ TEST_P(HttpNetworkTransactionTest, UseOriginNotAlternativeForProxy) {
   session_deps_.proxy_resolution_service =
       std::make_unique<ConfiguredProxyResolutionService>(
           std::move(proxy_config_service), std::move(proxy_resolver_factory),
-          net::NetLog::Get(), /*quick_check_enabled=*/true);
+          NetLog::Get(), /*quick_check_enabled=*/true);
 
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   // Configure alternative service with a hostname that is not bypassed by the
   // proxy.
@@ -17451,7 +17451,7 @@ TEST_P(HttpNetworkTransactionTest, UseOriginNotAlternativeForProxy) {
   request.url = GURL("https://www.example.org/");
   request.load_flags = 0;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyGet("https://www.example.org/", 1, LOWEST));
@@ -17505,13 +17505,13 @@ TEST_P(HttpNetworkTransactionTest, UseAlternativeServiceForTunneledNpnSpdy) {
           std::make_unique<CapturingProxyResolverFactory>(
               &capturing_proxy_resolver),
           nullptr, /*quick_check_enabled=*/true);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
 
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockRead data_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"),
@@ -17618,7 +17618,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockRead data_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"),
@@ -18569,7 +18569,7 @@ TEST_P(HttpNetworkTransactionTest, GenerateAuthToken) {
     request.method = "GET";
     request.url = GURL(test_config.server_url);
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -18680,7 +18680,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   request.method = "GET";
   request.url = url;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -18868,7 +18868,7 @@ TEST_P(HttpNetworkTransactionTest, NpnWithHttpOverSSL) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -18923,7 +18923,7 @@ TEST_P(HttpNetworkTransactionTest, SpdyPostALPNServerHangup) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   SSLSocketDataProvider ssl(ASYNC, OK);
   ssl.next_proto = kProtoHTTP2;
@@ -18992,7 +18992,7 @@ TEST_P(HttpNetworkTransactionTest, SimpleCancel) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   auto trans =
@@ -19038,7 +19038,7 @@ TEST_P(HttpNetworkTransactionTest, CancelAfterHeaders) {
     request.method = "GET";
     request.url = GURL("http://www.example.org/");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
     TestCompletionCallback callback;
@@ -19074,7 +19074,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyGet) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes1[] = {
       MockWrite("GET http://www.example.org/ HTTP/1.1\r\n"
@@ -19143,7 +19143,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyTunnelGet) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Since we have proxy, should try to establish tunnel.
   MockWrite data_writes1[] = {
@@ -19229,7 +19229,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyTunnelGetIPv6) {
   request.method = "GET";
   request.url = GURL("https://[::2]:443/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Since we have proxy, should try to establish tunnel.
   MockWrite data_writes1[] = {
@@ -19307,7 +19307,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyTunnelGetHangup) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Since we have proxy, should try to establish tunnel.
   MockWrite data_writes1[] = {
@@ -19388,7 +19388,7 @@ TEST_P(HttpNetworkTransactionTest, PreconnectWithExistingSpdySession) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -19407,7 +19407,7 @@ void HttpNetworkTransactionTestBase::CheckErrorIsPassedBack(int error,
   request_info.method = "GET";
   request_info.load_flags = LOAD_NORMAL;
   request_info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   SSLSocketDataProvider ssl_data(mode, OK);
   MockWrite data_writes[] = {
@@ -19453,7 +19453,7 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_NoFalseStart) {
   request_info.method = "GET";
   request_info.load_flags = LOAD_NORMAL;
   request_info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto cert_request = base::MakeRefCounted<SSLCertRequestInfo>();
   cert_request->host_and_port = HostPortPair("www.example.com", 443);
@@ -19544,7 +19544,7 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_FalseStart) {
   request_info.method = "GET";
   request_info.load_flags = LOAD_NORMAL;
   request_info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto cert_request = base::MakeRefCounted<SSLCertRequestInfo>();
   cert_request->host_and_port = HostPortPair("www.example.com", 443);
@@ -19672,7 +19672,7 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Proxy_Fail) {
   requests[0].method = "GET";
   requests[0].load_flags = LOAD_NORMAL;
   requests[0].traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // HTTPS requests are tunneled.
   MockWrite https_writes[] = {
@@ -19685,7 +19685,7 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Proxy_Fail) {
   requests[1].method = "GET";
   requests[1].load_flags = LOAD_NORMAL;
   requests[1].traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // HTTP requests are not.
   MockWrite http_writes[] = {
@@ -19815,7 +19815,7 @@ TEST_P(HttpNetworkTransactionTest, CertificateRequestInRenego) {
   request_info.method = "GET";
   request_info.load_flags = LOAD_NORMAL;
   request_info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto cert_request = base::MakeRefCounted<SSLCertRequestInfo>();
   cert_request->host_and_port = HostPortPair("www.example.com", 443);
@@ -19934,7 +19934,7 @@ TEST_P(HttpNetworkTransactionTest, UseIPConnectionPooling) {
   request1.url = GURL("https://www.example.org/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
 
   int rv = trans1.Start(&request1, callback.callback(), NetLogWithSource());
@@ -19961,7 +19961,7 @@ TEST_P(HttpNetworkTransactionTest, UseIPConnectionPooling) {
   request2.url = GURL("https://mail.example.com/");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
 
   ConnectedHandler connected_handler2;
@@ -19973,8 +19973,7 @@ TEST_P(HttpNetworkTransactionTest, UseIPConnectionPooling) {
 
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kDirect;
-  expected_transport.endpoint =
-      net::IPEndPoint(net::IPAddress(1, 2, 3, 4), 443);
+  expected_transport.endpoint = IPEndPoint(IPAddress(1, 2, 3, 4), 443);
   expected_transport.negotiated_protocol = kProtoHTTP2;
   EXPECT_THAT(connected_handler2.transports(), ElementsAre(expected_transport));
 
@@ -20031,7 +20030,7 @@ TEST_P(HttpNetworkTransactionTest, UseIPConnectionPoolingAfterResolution) {
   request1.url = GURL("https://www.example.org/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
 
   int rv = trans1.Start(&request1, callback.callback(), NetLogWithSource());
@@ -20052,7 +20051,7 @@ TEST_P(HttpNetworkTransactionTest, UseIPConnectionPoolingAfterResolution) {
   request2.url = GURL("https://mail.example.com/");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
 
   rv = trans2.Start(&request2, callback.callback(), NetLogWithSource());
@@ -20149,7 +20148,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostSpdy) {
   request1.method = "GET";
   request1.url = GURL("https://request1.test/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback1;
 
@@ -20203,7 +20202,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostSpdy) {
   request2.method = "GET";
   request2.url = GURL("https://mail.example.com/");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback2;
 
@@ -20276,7 +20275,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostHttp) {
   request1.method = "GET";
   request1.url = GURL("http://request1.test/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback1;
 
@@ -20326,7 +20325,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostHttp) {
   request2.method = "GET";
   request2.url = GURL("https://mail.example.com/");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback2;
 
@@ -20432,7 +20431,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
   request1.method = "GET";
   request1.url = GURL("https://request1.test/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback1;
 
@@ -20511,7 +20510,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
   request2.method = "GET";
   request2.url = GURL("https://request2.test/");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback2;
 
@@ -20593,7 +20592,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesHttp) {
   request1.method = "GET";
   request1.url = GURL("http://request1.test/");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback1;
 
@@ -20643,7 +20642,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesHttp) {
   request2.method = "GET";
   request2.url = GURL("http://request2.test/");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback2;
 
@@ -20741,7 +20740,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
   request1.url = GURL("https://www.example.org/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
 
   TestCompletionCallback callback;
@@ -20765,7 +20764,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
   request2.url = GURL("https://mail.example.org/");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
 
   RecordingNetLogObserver net_log_observer;
@@ -20869,7 +20868,7 @@ TEST_P(HttpNetworkTransactionTest, ReturnHTTP421OnRetry) {
   request1.url = GURL("https://www.example.org/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
 
   TestCompletionCallback callback;
@@ -20893,7 +20892,7 @@ TEST_P(HttpNetworkTransactionTest, ReturnHTTP421OnRetry) {
   request2.url = GURL("https://mail.example.org/");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
 
   rv = trans2.Start(&request2, callback.callback(),
@@ -20983,7 +20982,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.url = GURL("https://www.example.org");
   request.load_flags = 0;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request.upload_data_stream = &upload_data_stream;
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -21051,7 +21050,7 @@ TEST_P(HttpNetworkTransactionTest, Response421WithStreamingBodyWithNullSource) {
   request.url = GURL("https://www.example.org");
   request.load_flags = 0;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request.upload_data_stream = &upload_data_stream;
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
@@ -21118,7 +21117,7 @@ TEST_P(HttpNetworkTransactionTest,
   request1.url = GURL("https://www.example.org/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
 
   int rv = trans1.Start(&request1, callback.callback(), NetLogWithSource());
@@ -21145,7 +21144,7 @@ TEST_P(HttpNetworkTransactionTest,
   request2.url = GURL("https://mail.example.com/");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
 
   rv = trans2.Start(&request2, callback.callback(), NetLogWithSource());
@@ -21214,7 +21213,7 @@ TEST_P(HttpNetworkTransactionTest, DoNotUseSpdySessionForHttp) {
   request1.url = GURL(https_url);
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(LOWEST, session.get());
   TestCompletionCallback callback1;
   EXPECT_EQ(ERR_IO_PENDING,
@@ -21230,7 +21229,7 @@ TEST_P(HttpNetworkTransactionTest, DoNotUseSpdySessionForHttp) {
   request2.url = GURL(http_url);
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(MEDIUM, session.get());
   TestCompletionCallback callback2;
   EXPECT_EQ(ERR_IO_PENDING,
@@ -21278,7 +21277,7 @@ TEST_P(HttpNetworkTransactionTest, AlternativeServiceNotOnHttp11) {
   request.method = "GET";
   request.url = GURL("https://www.example.org:443");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   TestCompletionCallback callback;
 
   // HTTP/2 (or SPDY) is required for alternative service, if HTTP/1.1 is
@@ -21347,7 +21346,7 @@ TEST_P(HttpNetworkTransactionTest, FailedAlternativeServiceIsNotUserVisible) {
   request1.url = GURL("https://www.example.org:443");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   TestCompletionCallback callback1;
 
   int rv = trans1.Start(&request1, callback1.callback(), NetLogWithSource());
@@ -21377,7 +21376,7 @@ TEST_P(HttpNetworkTransactionTest, FailedAlternativeServiceIsNotUserVisible) {
   request2.url = GURL("https://www.example.org:443/second");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   TestCompletionCallback callback2;
 
   rv = trans2.Start(&request2, callback2.callback(), NetLogWithSource());
@@ -21454,7 +21453,7 @@ TEST_P(HttpNetworkTransactionTest, AlternativeServiceShouldNotPoolToHttp11) {
   request1.url = GURL(alternative_url);
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   TestCompletionCallback callback1;
 
   int rv = trans1.Start(&request1, callback1.callback(), NetLogWithSource());
@@ -21480,7 +21479,7 @@ TEST_P(HttpNetworkTransactionTest, AlternativeServiceShouldNotPoolToHttp11) {
   request2.url = GURL(origin_url);
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   TestCompletionCallback callback2;
 
   rv = trans2.Start(&request2, callback2.callback(), NetLogWithSource());
@@ -21494,7 +21493,7 @@ TEST_P(HttpNetworkTransactionTest, AlternativeServiceShouldNotPoolToHttp11) {
   request3.url = GURL(alternative_url);
   request3.load_flags = 0;
   request3.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   TestCompletionCallback callback3;
 
   rv = trans3.Start(&request3, callback3.callback(), NetLogWithSource());
@@ -21573,7 +21572,7 @@ TEST_P(HttpNetworkTransactionTest, DoNotUseSpdySessionForHttpOverTunnel) {
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.net_log = net::NetLog::Get();
+  session_deps_.net_log = NetLog::Get();
   SSLSocketDataProvider ssl1(ASYNC, OK);  // to the proxy
   ssl1.next_proto = kProtoHTTP2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl1);
@@ -21590,7 +21589,7 @@ TEST_P(HttpNetworkTransactionTest, DoNotUseSpdySessionForHttpOverTunnel) {
   request1.url = GURL(https_url);
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(LOWEST, session.get());
   TestCompletionCallback callback1;
   int rv = trans1.Start(&request1, callback1.callback(), NetLogWithSource());
@@ -21613,7 +21612,7 @@ TEST_P(HttpNetworkTransactionTest, DoNotUseSpdySessionForHttpOverTunnel) {
   request2.url = GURL(http_url);
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(MEDIUM, session.get());
   TestCompletionCallback callback2;
   rv = trans2.Start(&request2, callback2.callback(), NetLogWithSource());
@@ -21729,7 +21728,7 @@ TEST_P(HttpNetworkTransactionTest, DoNotUseSpdySessionIfCertDoesNotMatch) {
   request1.url = GURL(url1);
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(LOWEST, session.get());
   TestCompletionCallback callback1;
   ASSERT_EQ(ERR_IO_PENDING,
@@ -21748,7 +21747,7 @@ TEST_P(HttpNetworkTransactionTest, DoNotUseSpdySessionIfCertDoesNotMatch) {
   request2.url = GURL(url2);
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(MEDIUM, session.get());
   TestCompletionCallback callback2;
   EXPECT_EQ(ERR_IO_PENDING,
@@ -21807,7 +21806,7 @@ TEST_P(HttpNetworkTransactionTest, ErrorSocketNotConnected) {
   request1.url = GURL(https_url);
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans1(MEDIUM, session.get());
   TestCompletionCallback callback1;
   EXPECT_EQ(ERR_IO_PENDING,
@@ -21820,7 +21819,7 @@ TEST_P(HttpNetworkTransactionTest, ErrorSocketNotConnected) {
   request2.url = GURL(https_url);
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(MEDIUM, session.get());
   TestCompletionCallback callback2;
   EXPECT_EQ(ERR_IO_PENDING,
@@ -21917,7 +21916,7 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   request1.url = GURL("https://www.a.com/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   auto trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
 
@@ -21951,7 +21950,7 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   request2.url = GURL("https://www.b.com/");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
 
@@ -21984,7 +21983,7 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   request3.url = GURL("http://www.a.com/");
   request3.load_flags = 0;
   request3.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
 
@@ -22011,7 +22010,7 @@ TEST_P(HttpNetworkTransactionTest, HttpSyncConnectError) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22043,7 +22042,7 @@ TEST_P(HttpNetworkTransactionTest, HttpAsyncConnectError) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22075,7 +22074,7 @@ TEST_P(HttpNetworkTransactionTest, HttpSyncWriteError) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22104,7 +22103,7 @@ TEST_P(HttpNetworkTransactionTest, HttpAsyncWriteError) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22133,7 +22132,7 @@ TEST_P(HttpNetworkTransactionTest, HttpSyncReadError) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22164,7 +22163,7 @@ TEST_P(HttpNetworkTransactionTest, HttpAsyncReadError) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22204,7 +22203,7 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest) {
   ssl_request.method = "GET";
   ssl_request.url = GURL("https://www.example.org/");
   ssl_request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite ssl_writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -22229,7 +22228,7 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest) {
   http_request.method = "GET";
   http_request.url = GURL("http://www.example.org/");
   http_request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite http_writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -22296,7 +22295,7 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
   ssl_request.method = "GET";
   ssl_request.url = GURL("https://www.foopy.com/");
   ssl_request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // No data will be sent on the SSL socket.
   StaticSocketDataProvider ssl_data;
@@ -22311,7 +22310,7 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
   http_request.method = "GET";
   http_request.url = GURL("http://www.example.org/");
   http_request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite http_writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -22364,7 +22363,7 @@ TEST_P(HttpNetworkTransactionTest, PostReadsErrorResponseAfterReset) {
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22439,7 +22438,7 @@ TEST_P(HttpNetworkTransactionTest,
   request1.url = GURL("http://www.foo.com/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto trans1 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
@@ -22473,7 +22472,7 @@ TEST_P(HttpNetworkTransactionTest,
   request2.upload_data_stream = &upload_data_stream;
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
   rv = trans2.Start(&request2, callback.callback(), NetLogWithSource());
@@ -22506,7 +22505,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22558,7 +22557,7 @@ TEST_P(HttpNetworkTransactionTest, ChunkedPostReadsErrorResponseAfterReset) {
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22617,7 +22616,7 @@ TEST_P(HttpNetworkTransactionTest, PostReadsErrorResponseAfterResetAnd100) {
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22670,7 +22669,7 @@ TEST_P(HttpNetworkTransactionTest, PostIgnoresNonErrorResponseAfterReset) {
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22712,7 +22711,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22755,7 +22754,7 @@ TEST_P(HttpNetworkTransactionTest, PostIgnoresHttp09ResponseAfterReset) {
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22795,7 +22794,7 @@ TEST_P(HttpNetworkTransactionTest, PostIgnoresPartial400HeadersAfterReset) {
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -22869,7 +22868,7 @@ TEST_P(HttpNetworkTransactionTest, CreateWebSocketHandshakeStream) {
         GURL(secure ? "ws://www.example.org/" : "wss://www.example.org/");
     AddWebSocketHeaders(&request.extra_headers);
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     TestWebSocketHandshakeStreamCreateHelper
         websocket_handshake_stream_create_helper;
@@ -22903,7 +22902,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyHeadersNotSentOverWssTunnel) {
   request.method = "GET";
   request.url = GURL("wss://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   AddWebSocketHeaders(&request.extra_headers);
 
   // Configure against proxy server "myproxy:70".
@@ -23010,7 +23009,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyHeadersNotSentOverWsTunnel) {
   request.method = "GET";
   request.url = GURL("ws://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   AddWebSocketHeaders(&request.extra_headers);
 
   // Configure against proxy server "myproxy:70".
@@ -23099,7 +23098,7 @@ TEST_P(HttpNetworkTransactionTest, WebSocketNotSentOverQuicProxy) {
         GURL(secure ? "ws://www.example.org/" : "wss://www.example.org/");
     AddWebSocketHeaders(&request.extra_headers);
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     TestWebSocketHandshakeStreamCreateHelper
         websocket_handshake_stream_create_helper;
@@ -23131,7 +23130,7 @@ TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesPost) {
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -23175,7 +23174,7 @@ TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesPost100Continue) {
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -23217,7 +23216,7 @@ TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesChunkedPost) {
   request.url = GURL("http://www.foo.com/");
   request.upload_data_stream = &upload_data_stream;
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -23271,7 +23270,7 @@ void CheckContentEncodingMatching(SpdySessionDependencies* session_deps,
   request.extra_headers.SetHeader(HttpRequestHeaders::kAcceptEncoding,
                                   accept_encoding);
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(session_deps));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -23352,7 +23351,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyResolutionFailsSync) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -23384,7 +23383,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyResolutionFailsAsync) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -23412,7 +23411,7 @@ TEST_P(HttpNetworkTransactionTest, NoSupportedProxies) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   TestCompletionCallback callback;
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -23468,7 +23467,7 @@ class HttpNetworkTransactionReportingTest
     request.method = "GET";
     request.url = GURL(url_);
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     request.network_isolation_key = kNetworkIsolationKey;
     request.network_anonymization_key = kNetworkAnonymizationKey;
     MockWrite data_writes[] = {
@@ -23588,7 +23587,7 @@ class HttpNetworkTransactionNetworkErrorLoggingTest
     request_.extra_headers = extra_headers_;
     request_.reporting_upload_depth = reporting_upload_depth_;
     request_.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
   void TearDown() override {
@@ -23710,7 +23709,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Since we have proxy, should try to establish tunnel.
   MockWrite data_writes1[] = {
@@ -24419,7 +24418,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
   request1.url = GURL("https://www.example.org/");
   request1.load_flags = 0;
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   auto trans1 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
 
@@ -24446,7 +24445,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
   request2.url = GURL("https://mail.example.org/");
   request2.load_flags = 0;
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   auto trans2 =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
 
@@ -24647,7 +24646,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest, DontCreateReportProxy) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
@@ -24831,7 +24830,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTDoesntConfirm) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -24897,7 +24896,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTSyncConfirmSyncWrite) {
   request.method = "POST";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite(SYNCHRONOUS,
@@ -24965,7 +24964,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTSyncConfirmAsyncWrite) {
   request.method = "POST";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite(ASYNC,
@@ -25020,7 +25019,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTAsyncConfirmSyncWrite) {
   request.method = "POST";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite(SYNCHRONOUS,
@@ -25087,7 +25086,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTAsyncConfirmAsyncWrite) {
   request.method = "POST";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite(ASYNC,
@@ -25157,7 +25156,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTReject) {
       request.method = type == RejectType::kConfirm ? "POST" : "GET";
       request.url = GURL("https://www.example.org/");
       request.traffic_annotation =
-          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
       // The first request fails.
       std::vector<MockWrite> data1_writes;
@@ -25242,7 +25241,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTConfirmErrorSync) {
   request.method = "POST";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite("POST / HTTP/1.1\r\n"
@@ -25289,7 +25288,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTConfirmErrorAsync) {
   request.method = "POST";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite data_writes[] = {
       MockWrite("POST / HTTP/1.1\r\n"
@@ -25360,7 +25359,7 @@ TEST_P(HttpNetworkTransactionTest, AuthEverything) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // First, the client connects to the proxy, which requests a client
   // certificate.
@@ -25547,7 +25546,7 @@ TEST_P(HttpNetworkTransactionTest, AuthEverythingWithConnectClose) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // First, the client connects to the proxy, which requests a client
   // certificate.
@@ -25779,7 +25778,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyHTTPAndServerTLSAuth) {
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // The client connects to the proxy. The handshake succeeds.
   SSLSocketDataProvider ssl_proxy1(ASYNC, OK);
@@ -25886,13 +25885,13 @@ TEST_P(HttpNetworkTransactionTest, ClientCertSocketReuse) {
   request1.method = "GET";
   request1.url = GURL("https://www.example.org/a");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpRequestInfo request2;
   request2.method = "GET";
   request2.url = GURL("https://www.example.org/b");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // The first connection results in a client certificate request.
   StaticSocketDataProvider data1;
@@ -25963,9 +25962,9 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolation) {
   const SchemefulSite kSite1(GURL("http://origin1/"));
   const SchemefulSite kSite2(GURL("http://origin2/"));
   const auto network_anonymization_key1 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite1);
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   const auto network_anonymization_key2 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite2);
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
   NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
   NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
 
@@ -26068,7 +26067,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolation) {
     request1.method = "GET";
     request1.url = GURL("http://foo.test/1");
     request1.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     request1.network_isolation_key = network_isolation_key1;
     request1.network_anonymization_key = network_anonymization_key1;
     auto trans1 = std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY,
@@ -26084,7 +26083,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolation) {
     request2.method = "GET";
     request2.url = GURL("http://foo.test/2");
     request2.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     request2.network_isolation_key = network_isolation_key2;
     request2.network_anonymization_key = network_anonymization_key2;
     auto trans2 = std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY,
@@ -26100,7 +26099,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolation) {
     request3.method = "GET";
     request3.url = GURL("http://foo.test/3");
     request3.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     request3.network_isolation_key = network_isolation_key1;
     request3.network_anonymization_key = network_anonymization_key1;
     auto trans3 = std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY,
@@ -26118,9 +26117,9 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationH2) {
   const SchemefulSite kSite1(GURL("http://origin1/"));
   const SchemefulSite kSite2(GURL("http://origin2/"));
   const auto network_anonymization_key1 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite1);
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   const auto network_anonymization_key2 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite2);
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
   NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
   NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
 
@@ -26289,7 +26288,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationH2) {
       request1.method = "GET";
       request1.url = GURL(url1);
       request1.traffic_annotation =
-          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
       request1.network_isolation_key = network_isolation_key1;
       request1.network_anonymization_key = network_anonymization_key1;
 
@@ -26307,7 +26306,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationH2) {
       request2.method = "GET";
       request2.url = GURL(url2);
       request2.traffic_annotation =
-          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
       request2.network_isolation_key = network_isolation_key2;
       request2.network_anonymization_key = network_anonymization_key2;
       auto trans2 =
@@ -26323,7 +26322,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationH2) {
       request3.method = "GET";
       request3.url = GURL(url3);
       request3.traffic_annotation =
-          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
       request3.network_isolation_key = network_isolation_key1;
       request3.network_anonymization_key = network_anonymization_key1;
 
@@ -26434,7 +26433,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
     request.method = "GET";
     request.url = GURL("http://www.foo.com/");
     request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
     request.network_isolation_key = preconnect1_isolation_key;
     request.network_anonymization_key = preconnect1_anonymization_key;
@@ -26489,10 +26488,10 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   const SchemefulSite kSite2(GURL("http://origin2/"));
   const auto kNetworkAnonymizationKey1 =
       NetworkAnonymizationKey::CreateSameSite(kSite1);
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSite2);
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // The server always sends Connection: close, so each request goes over a
@@ -26556,7 +26555,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   request1.method = "GET";
   request1.url = GURL("https://foo.test/1");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request1.network_isolation_key = kNetworkIsolationKey1;
   request1.network_anonymization_key = kNetworkAnonymizationKey1;
 
@@ -26573,7 +26572,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   request2.method = "GET";
   request2.url = GURL("https://foo.test/2");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request2.network_isolation_key = kNetworkIsolationKey2;
   request2.network_anonymization_key = kNetworkAnonymizationKey2;
   auto trans2 =
@@ -26589,7 +26588,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   request3.method = "GET";
   request3.url = GURL("https://foo.test/3");
   request3.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request3.network_isolation_key = kNetworkIsolationKey1;
   request3.network_anonymization_key = kNetworkAnonymizationKey1;
   auto trans3 =
@@ -26619,8 +26618,8 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
       NetworkAnonymizationKey::CreateSameSite(kSite1);
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSite2);
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // Make both a tunneled and non-tunneled request.
@@ -26628,7 +26627,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
   request1.method = "GET";
   request1.url = GURL("https://foo.test/1");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request1.network_isolation_key = kNetworkIsolationKey1;
   request1.network_anonymization_key = kNetworkAnonymizationKey1;
 
@@ -26636,7 +26635,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
   request2.method = "GET";
   request2.url = GURL("http://foo.test/2");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   request2.network_isolation_key = kNetworkIsolationKey2;
   request2.network_anonymization_key = kNetworkAnonymizationKey2;
 
@@ -26722,19 +26721,19 @@ TEST_P(HttpNetworkTransactionTest, SSLConfigChanged) {
   request1.method = "GET";
   request1.url = GURL("https://foo.test/1");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpRequestInfo request2;
   request2.method = "GET";
   request2.url = GURL("https://foo.test/2");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   HttpRequestInfo request3;
   request3.method = "GET";
   request3.url = GURL("https://foo.test/3");
   request3.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const MockWrite kWrites1[] = {
       MockWrite("GET /1 HTTP/1.1\r\n"
@@ -26828,7 +26827,7 @@ TEST_P(HttpNetworkTransactionTest, SSLConfigChangedDuringTransaction) {
   request1.method = "GET";
   request1.url = GURL("https://foo.test/1");
   request1.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const MockWrite kWrites1[] = {
       MockWrite("GET /1 HTTP/1.1\r\n"
@@ -26850,7 +26849,7 @@ TEST_P(HttpNetworkTransactionTest, SSLConfigChangedDuringTransaction) {
   request2.method = "GET";
   request2.url = GURL("https://foo.test/2");
   request2.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const MockWrite kWrites2[] = {
       MockWrite("GET /2 HTTP/1.1\r\n"
@@ -26932,7 +26931,7 @@ TEST_P(HttpNetworkTransactionTest, SSLConfigChangedPendingConnect) {
   request.method = "GET";
   request.url = GURL("https://foo.test/1");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const MockWrite kWrites1[] = {
       MockWrite("GET /1 HTTP/1.1\r\n"
@@ -27272,7 +27271,7 @@ TEST_P(HttpNetworkTransactionTest, RequestWithDnsAliases) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Add a rule with DNS aliases to the host resolver.
   std::vector<std::string> aliases({"alias1", "alias2", "www.example.org"});
@@ -27328,7 +27327,7 @@ TEST_P(HttpNetworkTransactionTest, RequestWithNoAdditionalDnsAliases) {
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Add a rule without DNS aliases to the host resolver.
   session_deps_.host_resolver->rules()->AddRule("www.example.org", "127.0.0.1");
@@ -27441,7 +27440,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtectionDirect) {
 class IpProtectionProxyDelegate : public TestProxyDelegate {
  public:
   IpProtectionProxyDelegate() {
-    set_extra_header_name(net::HttpRequestHeaders::kAuthorization);
+    set_extra_header_name(HttpRequestHeaders::kAuthorization);
   }
 
   // ProxyDelegate implementation:
@@ -27475,14 +27474,14 @@ TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxyIpProtectionRequestHeaderAddedWhenEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyAddHeaderToProxiedRequests.name, "true"}});
+      features::kEnableIpProtectionProxy,
+      {{features::kIpPrivacyAddHeaderToProxiedRequests.name, "true"}});
 
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy1.test", 70)};
@@ -27572,15 +27571,15 @@ TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxyIpProtectionRequestHeaderNotAddedForIpProtectionDirect) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyAddHeaderToProxiedRequests.name, "true"},
-       {net::features::kIpPrivacyDirectOnly.name, "true"}});
+      features::kEnableIpProtectionProxy,
+      {{features::kIpPrivacyAddHeaderToProxiedRequests.name, "true"},
+       {features::kIpPrivacyDirectOnly.name, "true"}});
 
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const auto kIpProtectionDirectChain =
       ProxyChain::ForIpProtection(std::vector<ProxyServer>());
@@ -27636,14 +27635,14 @@ TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxyIpProtectionRequestHeaderNotAddedIfFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyAddHeaderToProxiedRequests.name, "false"}});
+      features::kEnableIpProtectionProxy,
+      {{features::kIpPrivacyAddHeaderToProxiedRequests.name, "false"}});
 
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy1.test", 70)};
@@ -27732,13 +27731,13 @@ TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxyIpProtectionRequestHeaderNotAddedAfterFallback) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyAddHeaderToProxiedRequests.name, "true"}});
+      features::kEnableIpProtectionProxy,
+      {{features::kIpPrivacyAddHeaderToProxiedRequests.name, "true"}});
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
   request.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy1.test", 70)};

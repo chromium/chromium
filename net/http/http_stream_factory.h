@@ -119,7 +119,7 @@ class NET_EXPORT HttpStreamFactory {
 
   void ProcessAlternativeServices(
       HttpNetworkSession* session,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const HttpResponseHeaders* headers,
       const url::SchemeHostPort& http_server);
 

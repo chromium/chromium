@@ -14,7 +14,7 @@ bool UploadDataStreamNotAllowHTTP1::AllowHTTP1() const {
 }
 
 int UploadDataStreamNotAllowHTTP1::InitInternal(const NetLogWithSource&) {
-  return net::OK;
+  return OK;
 }
 
 int UploadDataStreamNotAllowHTTP1::ReadInternal(IOBuffer* buf, int buf_len) {

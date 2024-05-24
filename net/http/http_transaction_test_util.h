@@ -244,8 +244,7 @@ class MockNetworkTransaction
   void SetEarlyResponseHeadersCallback(ResponseHeadersCallback) override {}
 
   void SetModifyRequestHeadersCallback(
-      base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
-      override;
+      base::RepeatingCallback<void(HttpRequestHeaders*)> callback) override;
 
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override {}
@@ -338,7 +337,7 @@ class MockNetworkTransaction
 
   CompletionOnceCallback resume_start_callback_;  // used for pause and restart.
 
-  base::RepeatingCallback<void(net::HttpRequestHeaders*)>
+  base::RepeatingCallback<void(HttpRequestHeaders*)>
       modify_request_headers_callback_;
 
   base::WeakPtrFactory<MockNetworkTransaction> weak_factory_{this};

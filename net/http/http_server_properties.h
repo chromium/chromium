@@ -259,28 +259,26 @@ class NET_EXPORT HttpServerProperties
   // multiple requests.
   bool SupportsRequestPriority(
       const url::SchemeHostPort& server,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Returns the value set by SetSupportsSpdy(). If not set, returns false.
   bool GetSupportsSpdy(
       const url::SchemeHostPort& server,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Records whether |server| supports H2 or not. Information is restricted to
   // the context of |network_anonymization_key|, to prevent cross-site
   // information leakage.
-  void SetSupportsSpdy(
-      const url::SchemeHostPort& server,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      bool supports_spdy);
+  void SetSupportsSpdy(const url::SchemeHostPort& server,
+                       const NetworkAnonymizationKey& network_anonymization_key,
+                       bool supports_spdy);
 
   // Returns true if |server| has required HTTP/1.1 via HTTP/2 error code, in
   // the context of |network_anonymization_key|.
   //
   // Any relevant HostMappingRules must already have been applied to `server`.
-  bool RequiresHTTP11(
-      const url::SchemeHostPort& server,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+  bool RequiresHTTP11(const url::SchemeHostPort& server,
+                      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Require HTTP/1.1 on subsequent connections, in the context of
   // |network_anonymization_key|.  Not persisted.
@@ -288,14 +286,14 @@ class NET_EXPORT HttpServerProperties
   // Any relevant HostMappingRules must already have been applied to `server`.
   void SetHTTP11Required(
       const url::SchemeHostPort& server,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Modify SSLConfig to force HTTP/1.1 if necessary.
   //
   // Any relevant HostMappingRules must already have been applied to `server`.
   void MaybeForceHTTP11(
       const url::SchemeHostPort& server,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       SSLConfig* ssl_config);
 
   // Return all alternative services for |origin|, learned in the context of
@@ -303,7 +301,7 @@ class NET_EXPORT HttpServerProperties
   // services never have empty hostnames.
   AlternativeServiceInfoVector GetAlternativeServiceInfos(
       const url::SchemeHostPort& origin,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Set a single HTTP/2 alternative service for |origin|.  Previous
   // alternative services for |origin| are discarded.
@@ -330,47 +328,47 @@ class NET_EXPORT HttpServerProperties
   // |alternative_service_info_vector| may be empty.
   void SetAlternativeServices(
       const url::SchemeHostPort& origin,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const AlternativeServiceInfoVector& alternative_service_info_vector);
 
   // Marks |alternative_service| as broken in the context of
   // |network_anonymization_key|. |alternative_service.host| must not be empty.
   void MarkAlternativeServiceBroken(
       const AlternativeService& alternative_service,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Marks |alternative_service| as broken in the context of
   // |network_anonymization_key| until the default network changes.
   // |alternative_service.host| must not be empty.
   void MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
       const AlternativeService& alternative_service,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Marks |alternative_service| as recently broken in the context of
   // |network_anonymization_key|. |alternative_service.host| must not be empty.
   void MarkAlternativeServiceRecentlyBroken(
       const AlternativeService& alternative_service,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Returns true iff |alternative_service| is currently broken in the context
   // of |network_anonymization_key|. |alternative_service.host| must not be
   // empty.
   bool IsAlternativeServiceBroken(
       const AlternativeService& alternative_service,
-      const net::NetworkAnonymizationKey& network_anonymization_key) const;
+      const NetworkAnonymizationKey& network_anonymization_key) const;
 
   // Returns true iff |alternative_service| was recently broken in the context
   // of |network_anonymization_key|. |alternative_service.host| must not be
   // empty.
   bool WasAlternativeServiceRecentlyBroken(
       const AlternativeService& alternative_service,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Confirms that |alternative_service| is working in the context of
   // |network_anonymization_key|. |alternative_service.host| must not be empty.
   void ConfirmAlternativeService(
       const AlternativeService& alternative_service,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Called when the default network changes.
   // Clears all the alternative services that were marked broken until the
@@ -517,27 +515,27 @@ class NET_EXPORT HttpServerProperties
   // with the incorrect scheme would still be available.
   bool GetSupportsSpdyInternal(
       url::SchemeHostPort server,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
   void SetSupportsSpdyInternal(
       url::SchemeHostPort server,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       bool supports_spdy);
   bool RequiresHTTP11Internal(
       url::SchemeHostPort server,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
   void SetHTTP11RequiredInternal(
       url::SchemeHostPort server,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
   void MaybeForceHTTP11Internal(
       url::SchemeHostPort server,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       SSLConfig* ssl_config);
   AlternativeServiceInfoVector GetAlternativeServiceInfosInternal(
       const url::SchemeHostPort& origin,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
   void SetAlternativeServicesInternal(
       const url::SchemeHostPort& origin,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const AlternativeServiceInfoVector& alternative_service_info_vector);
   void SetServerNetworkStatsInternal(
       url::SchemeHostPort server,
@@ -564,13 +562,13 @@ class NET_EXPORT HttpServerProperties
   // ServerInfos without |alternative_service_info| populated.
   ServerInfoMap::const_iterator GetIteratorWithAlternativeServiceInfo(
       const url::SchemeHostPort& server,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Return the canonical host for |server|  in the context of
   // |network_anonymization_key|, or end if none exists.
   CanonicalMap::const_iterator GetCanonicalAltSvcHost(
       const url::SchemeHostPort& server,
-      const net::NetworkAnonymizationKey& network_anonymization_key) const;
+      const NetworkAnonymizationKey& network_anonymization_key) const;
 
   // Return the canonical host with the same canonical suffix as |server|.
   // The returned canonical host can be used to search for server info in

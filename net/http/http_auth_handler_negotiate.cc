@@ -59,7 +59,7 @@ std::unique_ptr<HttpAuthMechanism> CreateAuthSystem(
   if (negotiate_auth_system_factory)
     return negotiate_auth_system_factory.Run(prefs);
 #if BUILDFLAG(IS_ANDROID)
-  return std::make_unique<net::android::HttpAuthNegotiateAndroid>(prefs);
+  return std::make_unique<android::HttpAuthNegotiateAndroid>(prefs);
 #elif BUILDFLAG(IS_WIN)
   return std::make_unique<HttpAuthSSPI>(auth_library,
                                         HttpAuth::AUTH_SCHEME_NEGOTIATE);

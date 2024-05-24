@@ -139,7 +139,7 @@ AlternativeServiceInfoVector ProcessAlternativeServices(
     bool is_quic_enabled,
     const quic::ParsedQuicVersionVector& supported_quic_versions) {
   // Convert spdy::SpdyAltSvcWireFormat::AlternativeService entries
-  // to net::AlternativeServiceInfo.
+  // to AlternativeServiceInfo.
   AlternativeServiceInfoVector alternative_service_info_vector;
   for (const spdy::SpdyAltSvcWireFormat::AlternativeService&
            alternative_service_entry : alternative_service_vector) {

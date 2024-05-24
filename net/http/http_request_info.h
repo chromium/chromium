@@ -80,7 +80,7 @@ struct NET_EXPORT HttpRequestInfo {
   SocketTag socket_tag;
 
   // Network traffic annotation received from URL request.
-  net::MutableNetworkTrafficAnnotationTag traffic_annotation;
+  MutableNetworkTrafficAnnotationTag traffic_annotation;
 
   // Reporting upload nesting depth of this request.
   //
@@ -109,7 +109,7 @@ struct NET_EXPORT HttpRequestInfo {
   // replay the request. If the request has any side effects, those effects can
   // happen multiple times. It is only safe to enable the 0-RTT if it is known
   // that the request is idempotent.
-  net::Idempotency idempotency = net::DEFAULT_IDEMPOTENCY;
+  Idempotency idempotency = DEFAULT_IDEMPOTENCY;
 
   // If not null, the value is used to evaluate whether the cache entry should
   // be bypassed; if is null, that means the request site does not match the

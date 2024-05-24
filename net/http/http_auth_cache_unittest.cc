@@ -49,8 +49,8 @@ AuthCredentials CreateASCIICredentials(const char* username,
 
 bool DoesUrlMatchFilter(const std::set<std::string>& domains, const GURL& url) {
   std::string url_registerable_domain =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+      registry_controlled_domains::GetDomainAndRegistry(
+          url, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   bool found_domain = (domains.find(url_registerable_domain != ""
                                         ? url_registerable_domain
                                         : url.host()) != domains.end());
@@ -353,10 +353,10 @@ TEST(HttpAuthCacheTest, SeparateByTarget) {
 TEST(HttpAuthCacheTest, SeparateServersByNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   auto kNetworkAnonymizationKey1 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite1);
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   auto kNetworkAnonymizationKey2 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite2);
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   url::SchemeHostPort kSchemeHostPort(GURL("http://www.google.com"));
   const char kPath[] = "/";
@@ -461,10 +461,10 @@ TEST(HttpAuthCacheTest, SeparateServersByNetworkAnonymizationKey) {
 TEST(HttpAuthCacheTest, NeverSeparateProxiesByNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   auto kNetworkAnonymizationKey1 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite1);
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   auto kNetworkAnonymizationKey2 =
-      net::NetworkAnonymizationKey::CreateSameSite(kSite2);
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   url::SchemeHostPort kSchemeHostPort(GURL("http://www.google.com"));
   const char kPath[] = "/";

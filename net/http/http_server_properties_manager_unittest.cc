@@ -70,7 +70,7 @@ std::unique_ptr<base::test::ScopedFeatureList> SetNetworkAnonymizationKeyMode(
   return feature_list;
 }
 
-class MockPrefDelegate : public net::HttpServerProperties::PrefDelegate {
+class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
  public:
   MockPrefDelegate() = default;
 

@@ -949,7 +949,7 @@ TEST_P(HttpProxyConnectJobTest, NeedAuth) {
     // Per API contract, the request can not complete synchronously.
     EXPECT_FALSE(test_delegate.has_result());
 
-    EXPECT_EQ(net::OK, test_delegate.WaitForResult());
+    EXPECT_EQ(OK, test_delegate.WaitForResult());
     EXPECT_EQ(1, test_delegate.num_auth_challenges());
 
     // Close the H2 session to prevent reuse.
@@ -1092,7 +1092,7 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
     // Per API contract, the request can't complete synchronously.
     EXPECT_FALSE(test_delegate.has_result());
 
-    EXPECT_EQ(net::OK, test_delegate.WaitForResult());
+    EXPECT_EQ(OK, test_delegate.WaitForResult());
     EXPECT_EQ(2, test_delegate.num_auth_challenges());
 
     // Close the H2 session to prevent reuse.

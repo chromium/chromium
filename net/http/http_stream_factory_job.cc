@@ -1231,7 +1231,7 @@ void HttpStreamFactory::Job::OnSpdySessionAvailable(
 
   // This will synchronously close |connection_|, so no need to worry about it
   // calling back into |this|.
-  RunLoop(net::OK);
+  RunLoop(OK);
 }
 
 int HttpStreamFactory::Job::ReconsiderProxyAfterError(int error) {

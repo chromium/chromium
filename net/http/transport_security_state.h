@@ -298,7 +298,7 @@ class NET_EXPORT TransportSecurityState {
   // The behavior may be further be altered by setting a RequireCTDelegate
   // via |SetRequireCTDelegate()|.
   CTRequirementsStatus CheckCTRequirements(
-      const net::HostPortPair& host_port_pair,
+      const HostPortPair& host_port_pair,
       bool is_issued_by_known_root,
       const HashValueVector& public_key_hashes,
       const X509Certificate* validated_certificate_chain,
