@@ -28,4 +28,5 @@ include_rules = [
   "+chrome/common/extensions",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
+  "+chrome/browser/download/download_dir_util.h",
 ]

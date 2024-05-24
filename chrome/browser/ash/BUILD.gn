@@ -2928,6 +2928,8 @@ source_set("ash") {
     "policy/skyvault/file_location_utils.h",
     "policy/skyvault/local_files_cleanup.cc",
     "policy/skyvault/local_files_cleanup.h",
+    "policy/skyvault/local_files_migration_manager.cc",
+    "policy/skyvault/local_files_migration_manager.h",
     "policy/skyvault/local_user_files_policy_observer.cc",
     "policy/skyvault/local_user_files_policy_observer.h",
     "policy/skyvault/odfs_skyvault_uploader.cc",

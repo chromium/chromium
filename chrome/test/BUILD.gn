@@ -4846,6 +4846,7 @@ if (!is_android) {
         "../browser/ash/policy/skyvault/drive_upload_observer_browsertest.cc",
         "../browser/ash/policy/skyvault/file_location_utils_browsertest.cc",
         "../browser/ash/policy/skyvault/local_files_cleanup_browsertest.cc",
+        "../browser/ash/policy/skyvault/local_files_migration_manager_browsertest.cc",
         "../browser/ash/policy/skyvault/local_user_files_policy_observer_browsertest.cc",
         "../browser/ash/policy/skyvault/odfs_skyvault_uploader_browsertest.cc",
         "../browser/ash/policy/skyvault/policy_utils_browsertest.cc",
