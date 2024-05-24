@@ -310,7 +310,7 @@ void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
   if (in_picture_in_picture_) {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kExitPictureInPicture),
-        vector_icons::kPictureInPictureAltIcon,
+        vector_icons::kPipExitIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP,
         media_color_theme_.secondary_foreground_color_id);
   } else {
