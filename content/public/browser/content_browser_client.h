@@ -1675,6 +1675,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns true if the audio process should run with high priority. false
   // otherwise.
   virtual bool ShouldEnableAudioProcessHighPriority();
+
+  // Returns true if a site_url should launch a renderer that resolves
+  // fonts via the SkiaFontManager.
+  virtual bool ShouldUseSkiaFontManager(const GURL& site_url);
 #endif
 
   // Binds a new media remoter service to |receiver|, if supported by the

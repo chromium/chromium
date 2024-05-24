@@ -1416,7 +1416,12 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
       flags |= RenderProcessFlags::kPdf;
     }
   }
-
+#if BUILDFLAG(IS_WIN)
+  if (site_instance && GetContentClient()->browser()->ShouldUseSkiaFontManager(
+                           site_instance->GetSiteURL())) {
+    flags |= RenderProcessFlags::kSkiaFontManager;
+  }
+#endif
   return new RenderProcessHostImpl(browser_context, storage_partition_impl,
                                    flags);
 }
@@ -3369,6 +3374,10 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   command_line->AppendSwitchASCII(
       switches::kDeviceScaleFactor,
       base::NumberToString(display::win::GetDPIScale()));
+
+  if (!!(flags_ & RenderProcessFlags::kSkiaFontManager)) {
+    command_line->AppendSwitch(switches::kUseSkiaFontManager);
+  }
 #endif
 
   AppendCompositorCommandLineFlags(command_line);

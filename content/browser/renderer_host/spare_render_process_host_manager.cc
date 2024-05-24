@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -140,6 +141,17 @@ SpareRenderProcessHostManager::MaybeTakeSpareRenderProcessHost(
     embedder_allows_spare_usage = false;
   }
 
+  // Do not use spare renderer if running an experiment to run SkiaFontManager.
+  // SkiaFontManager needs to be initialized during renderer creation.
+  // This is temporary and will be removed after the experiment has concluded;
+  // see crbug.com/335680565.
+  bool use_skia_font_manager = false;
+#if BUILDFLAG(IS_WIN)
+  use_skia_font_manager =
+      GetContentClient()->browser()->ShouldUseSkiaFontManager(
+          site_instance->GetSiteURL());
+#endif
+
   // We shouldn't use the spare if:
   // 1. The SiteInstance has already got an associated process.  This is
   //    important to avoid taking and then immediately discarding the spare
@@ -189,7 +201,8 @@ SpareRenderProcessHostManager::MaybeTakeSpareRenderProcessHost(
       browser_context == spare_render_process_host_->GetBrowserContext() &&
       spare_render_process_host_->InSameStoragePartition(site_storage) &&
       !site_instance->IsGuest() && embedder_allows_spare_usage &&
-      site_instance_allows_spare_usage && !hosts_pdf_content) {
+      site_instance_allows_spare_usage && !hosts_pdf_content &&
+      !use_skia_font_manager) {
     CHECK(spare_render_process_host_->HostHasNotBeenUsed());
 
     // If the spare process ends up getting killed, the spare manager should

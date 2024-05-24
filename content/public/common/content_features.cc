@@ -927,6 +927,15 @@ BASE_FEATURE(kSiteIsolationForCrossOriginOpenerPolicy,
 #endif
 );
 
+// This feature controls whether the renderer should use SkiaFontManager to
+// fetch fonts from the Browser's SkiaFontService. It is currently scoped to
+// just Windows. See crbug.com/335680565.
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kSkiaFontService,
+             "SkiaFontService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 // This feature param (true by default) controls whether sites are persisted
 // across restarts.
 const base::FeatureParam<bool>
