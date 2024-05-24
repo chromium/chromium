@@ -602,8 +602,6 @@ base::Value::Dict SupportToolUI::GetLocalizedStrings() {
       l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DONT_INCLUDE_EMAIL));
   localized_strings.Set("selectAll",
                         l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_SELECT_ALL));
-  localized_strings.Set(
-      "selectNone", l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_SELECT_NONE));
   return localized_strings;
 }
 

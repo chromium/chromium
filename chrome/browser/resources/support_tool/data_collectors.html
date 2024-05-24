@@ -5,14 +5,15 @@ found in the LICENSE file.
 -->
 
 <style include="support-tool-shared cr-shared-style">
-    .data-collector-list {
-      /* Using negative margin to cancel out the padding of the top-most item if
-      the list to set the spacing between items to 8px.*/
-      margin-top: -8px;
-    }
 </style>
 
 <h1 tabindex="0">$i18n{dataSelectionPageTitle}</h1>
+
+<cr-checkbox class="select-all-checkbox" id="selectAllCheckbox"
+  checked="{{allSelected_}}" tabindex="0">
+    $i18n{selectAll}
+</cr-checkbox>
+
 <iron-list class="data-collector-list" items="[[dataCollectors_]]">
   <template>
     <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}"
@@ -21,10 +22,6 @@ found in the LICENSE file.
     </cr-checkbox>
   </template>
 </iron-list>
-<cr-button class="select-all-button" id="selectAllButton"
-    on-click="onSelectAllClick_">
-  [[getSelectAllButtonLabel_(allSelected_)]]
-</cr-button>
 
 <template is="dom-if" if="[[enableScreenshot_]]" restamp>
   <screenshot-element id="screenshot"></screenshot-element>
