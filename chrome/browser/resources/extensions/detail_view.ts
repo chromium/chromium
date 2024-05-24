@@ -326,6 +326,18 @@ export class ExtensionsDetailViewElement extends
         this.data.id, this.data.safetyCheckWarningReason);
   }
 
+  /**
+   * Opens a URL in the Web Store with extensions recommendations for the
+   * extension.
+   */
+  private onFindAlternativeButtonClick_(): void {
+    chrome.metricsPrivate.recordUserAction(
+        'Extensions.Mv2Deprecation.Warning.FindAlternativeForExtension.Entry');
+    const recommendationsUrl: string|undefined = this.data.recommendationsUrl;
+    assert(!!recommendationsUrl);
+    this.delegate.openUrl(recommendationsUrl);
+  }
+
   private onRepairClick_() {
     this.delegate.repairItem(this.data.id);
   }

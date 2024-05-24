@@ -691,7 +691,7 @@ suite('ExtensionDetailViewTest', function() {
     testVisible(item, '#mv2DeprecationMessage', false);
   });
 
-  test('Mv2DeprecationMessageWarning_Enabled', function() {
+  test('Mv2DeprecationMessageWarning_Enabled', async function() {
     // Warning is hidden if feature is enabled but extension is not affected by
     // the MV2 deprecation.
     loadTimeData.overrideValues({MV2DeprecationPanelEnabled: true});
@@ -702,6 +702,31 @@ suite('ExtensionDetailViewTest', function() {
     item.set('data.isAffectedByMV2Deprecation', true);
     flush();
     testVisible(item, '#mv2DeprecationMessage', true);
+
+    // Find alternative button is hidden when the extension doesn't have a
+    // recommendations url.
+    const findAlternativeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('.find-alternative-button');
+    assertTrue(!!findAlternativeButton);
+    assertFalse(isVisible(findAlternativeButton));
+
+    // Add a recommendations url to the extension.
+    const id = 'a'.repeat(32);
+    const recommendationsUrl =
+        `https://chromewebstore.google.com/detail/${id}` +
+        `/related-recommendations`;
+    item.set('data.recommendationsUrl', recommendationsUrl);
+    flush();
+
+    // Find alternative button is visible when the extension has a
+    // recommendations url.
+    assertTrue(isVisible(findAlternativeButton));
+
+    // Click on the find alternative button, and verify it triggered the
+    // correct delegate call.
+    await mockDelegate.testClickingCalls(
+        findAlternativeButton, 'openUrl', [recommendationsUrl]);
   });
 
   test('PinnedToToolbar', async function() {
