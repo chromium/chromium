@@ -1117,6 +1117,7 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/342627260")
     public void testFragmentWhenChildStatusIsLoadedAfterNativeAndPolicy() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         when(mChildAccountStatusListenerMock.get()).thenReturn(null);
