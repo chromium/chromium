@@ -114,6 +114,10 @@ tast_disabled_tests_from_chrome_all = [
   "login.ChangePassword.consumer_update",
   "login.ChangePassword.no_consumer_update",
 
+  # b/341794182, until LKGM R127-15898.0.0 lands
+  "arc.IntentForward.lacros",
+  "login.Chrome.lacros",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
