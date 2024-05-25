@@ -435,16 +435,22 @@ suite('cr-dialog', function() {
     const bodyContainer =
         dialog.shadowRoot!.querySelector<HTMLElement>('.body-container');
     assertTrue(!!bodyContainer);
-    const topShadow =
-        dialog.shadowRoot!.querySelector('#cr-container-shadow-top');
+    const topShadow = dialog.shadowRoot!.querySelector<HTMLElement>(
+        '#cr-container-shadow-top');
     assertTrue(!!topShadow);
-    const bottomShadow =
-        dialog.shadowRoot!.querySelector('#cr-container-shadow-bottom');
+    const bottomShadow = dialog.shadowRoot!.querySelector<HTMLElement>(
+        '#cr-container-shadow-bottom');
     assertTrue(!!bottomShadow);
 
     dialog.showModal();  // Attach the dialog for the first time here.
 
     let observerCount = 0;
+
+    function hasTransparentBorder(element: HTMLElement): boolean {
+      const style = element.computedStyleMap().get('border-bottom-color') as
+          CSSStyleValue;
+      return style.toString() === 'rgba(0, 0, 0, 0)';
+    }
 
     // Needs to setup the observer before attaching, since InteractionObserver
     // calls callback before MutationObserver does.
@@ -457,25 +463,24 @@ suite('cr-dialog', function() {
       observerCount++;
       switch (observerCount) {
         case 1:  // Triggered when scrolled to bottom.
-          assertFalse(bottomShadow!.classList.contains('has-shadow'));
-          assertTrue(topShadow!.classList.contains('has-shadow'));
+          assertTrue(hasTransparentBorder(bottomShadow!));
+          assertFalse(hasTransparentBorder(topShadow!));
           bodyContainer!.scrollTop = 0;
           break;
         case 2:  // Triggered when scrolled back to top.
-          assertTrue(bottomShadow!.classList.contains('has-shadow'));
-          assertFalse(topShadow!.classList.contains('has-shadow'));
+          assertFalse(hasTransparentBorder(bottomShadow));
+          assertTrue(hasTransparentBorder(topShadow));
           bodyContainer!.scrollTop = 2;
           break;
         case 3:  // Triggered when finally scrolling to middle.
-          assertTrue(bottomShadow!.classList.contains('has-shadow'));
-          assertTrue(topShadow!.classList.contains('has-shadow'));
+          assertFalse(hasTransparentBorder(bottomShadow!));
+          assertFalse(hasTransparentBorder(topShadow!));
           observer.disconnect();
           done();
           break;
       }
     });
-    observer.observe(topShadow!, {attributes: true});
-    observer.observe(bottomShadow!, {attributes: true});
+    observer.observe(bodyContainer!, {attributes: true});
 
     // Height is normally set via CSS, but mixin doesn't work with innerHTML.
     bodyContainer!.style.height = '60px';  // Element has "min-height: 60px".

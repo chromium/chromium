@@ -35,21 +35,17 @@
     width: 100%;
   }
 
-  #canScrollLog,
-  #isScrolledLog,
-  #scrolledToBottomLog {
+  .can-scroll-log,
+  .is-scrolled-log,
+  .scrolled-to-top-log,
+  .scrolled-to-bottom-log {
     display: none;
   }
 
-  .can-scroll ~ #canScrollLog {
-    display: block;
-  }
-
-  .is-scrolled ~ #isScrolledLog {
-    display: block;
-  }
-
-  .scrolled-to-bottom ~ #scrolledToBottomLog {
+  .can-scroll ~ .can-scroll-log,
+  .is-scrolled ~ .is-scrolled-log,
+  .scrolled-to-top ~ .scrolled-to-top-log,
+  .scrolled-to-bottom ~ .scrolled-to-bottom-log {
     display: block;
   }
 
@@ -70,6 +66,9 @@
     <div id="container" show-bottom-shadow>
       <div id="mockContent"></div>
     </div>
+    <div class="can-scroll-log">can scroll</div>
+    <div class="scrolled-to-top-log">scrolled to top</div>
+    <div class="scrolled-to-bottom-log">scrolled to bottom</div>
   </div>
 </div>
 
@@ -92,7 +91,7 @@
     </iron-list>
   </div>
 
-  <div id="canScrollLog">can scroll</div>
-  <div id="isScrolledLog">is scrolled</div>
-  <div id="scrolledToBottomLog">scrolled to bottom</div>
+  <div class="can-scroll-log">can scroll</div>
+  <div class="is-scrolled-log">is scrolled</div>
+  <div class="scrolled-to-bottom-log">scrolled to bottom</div>
 </div>

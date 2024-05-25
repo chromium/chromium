@@ -143,8 +143,9 @@ dialog::backdrop {
       var(--transparent-border));
 }
 
-#cr-container-shadow-top.has-shadow,
-#cr-container-shadow-bottom.has-shadow {
+#cr-container-shadow-top:has(+ #container.can-scroll:not(.scrolled-to-top)),
+#container.can-scroll:not(.scrolled-to-bottom) +
+    #cr-container-shadow-bottom {
   border-bottom: var(--scroll-border);
 }
 

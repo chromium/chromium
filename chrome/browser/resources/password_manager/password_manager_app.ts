@@ -205,10 +205,11 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     this.selectedPage_ = route.page;
     setTimeout(() => {  // Async to allow page to load.
       if (route.page === Page.CHECKUP_DETAILS) {
-        this.enableShadowBehavior(false);
-        this.showDropShadows();
+        this.enableScrollObservation(false);
+        this.setForceDropShadows(true);
       } else {
-        this.enableShadowBehavior(true);
+        this.setForceDropShadows(false);
+        this.enableScrollObservation(true);
       }
     }, 0);
   }

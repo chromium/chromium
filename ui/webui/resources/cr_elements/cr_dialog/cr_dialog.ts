@@ -26,11 +26,13 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {CrContainerShadowMixinLit} from '../cr_container_shadow_mixin_lit.js';
 import type {CrInputElement} from '../cr_input/cr_input.js';
+import {CrScrollObserverMixinLit} from '../cr_scroll_observer_mixin_lit.js';
 
 import {getCss} from './cr_dialog.css.js';
 import {getHtml} from './cr_dialog.html.js';
 
-const CrDialogElementBase = CrContainerShadowMixinLit(CrLitElement);
+const CrDialogElementBase =
+    CrContainerShadowMixinLit(CrScrollObserverMixinLit(CrLitElement));
 
 export interface CrDialogElement {
   $: {
@@ -131,10 +133,10 @@ export class CrDialogElement extends CrDialogElementBase {
     super.connectedCallback();
     const mutationObserverCallback = () => {
       if (this.$.dialog.open) {
-        this.enableShadowBehavior(true);
+        this.enableScrollObservation(true);
         this.addKeydownListener_();
       } else {
-        this.enableShadowBehavior(false);
+        this.enableScrollObservation(false);
         this.removeKeydownListener_();
       }
     };

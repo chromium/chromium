@@ -90,15 +90,18 @@ iron-list.cr-separators > *:not([first]) {
   z-index: 1;
 }
 
-/** Styles for elements that implement the CrContainerShadowBehavior */
+/** Styles for elements that implement the CrContainerShadowMixin */
 #cr-container-shadow-bottom {
   margin-bottom: 0;
   margin-top: var(--cr-container-shadow-margin);
   transform: scaleY(-1);
 }
 
-#cr-container-shadow-top.has-shadow,
-#cr-container-shadow-bottom.has-shadow {
+#cr-container-shadow-top:has(+ #container.can-scroll:not(.scrolled-to-top)),
+#container.can-scroll:not(.scrolled-to-bottom) +
+    #cr-container-shadow-bottom,
+#cr-container-shadow-bottom.force-shadow,
+#cr-container-shadow-top.force-shadow {
   opacity: var(--cr-container-shadow-max-opacity);
 }
 
