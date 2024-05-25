@@ -4424,6 +4424,15 @@ Quando ela é desativada, os usuários não podem rastrear as encomendas no <ph 
 <translation id="439661169333921592">Desativar o destaque de foco do teclado na tela de login</translation>
 <translation id="4397045637922200204">Desativar a recuperação de conta</translation>
 <translation id="4397464099112037398">Configuração padrão da permissão para posicionamento de janelas</translation>
+<translation id="4398803806072237638">A sintaxe <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> do recurso de estado personalizado de CSS está sendo modificada para <ph name="CUSTOM_STATE_NEW_SYNTAX" /> no <ph name="PRODUCT_NAME" /> para conformidade com as mudanças feitas no <ph name="FIREFOX_PRODUCT_NAME" /> e no <ph name="SAFARI_PRODUCT_NAME" />. Esta política permite que a sintaxe antiga descontinuada fique ativada até a versão M133.
+
+A descontinuação pode causar falhas em alguns sites somente para <ph name="PRODUCT_NAME" /> que usam a sintaxe descontinuada <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />.
+
+Se ela for ativada, a sintaxe descontinuada será ativada.
+
+Se ela for desativada, a sintaxe descontinuada também será.
+
+Se ela não for definida, a sintaxe descontinuada será desativada.</translation>
 <translation id="4401196752827224189">O WebSQL em contextos não seguros vai ser removido da versão M110 em diante. Esta política reativa a API.
           Se a política for definida como verdadeira, o WebSQL em contextos não seguros vai ficar disponível.
           Se ela for definida como falsa ou for deixada sem definição, o WebSQL em contextos não seguros continuará disponível até a versão M109 e indisponível da M110 em diante.
@@ -4775,6 +4784,7 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 
 A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá efeito se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> for definida como falsa.</translation>
 <translation id="4638906910792947645">Ativar pesquisas no produto</translation>
+<translation id="4641557638919545432">A sintaxe antiga descontinuada será ativada.</translation>
 <translation id="4646626362889216307">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de origens diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada origem. A chave da origem de maior prioridade tem precedência.
 
       Use o caractere curinga "*" para permitir a mescla de todas as políticas de dicionário com suporte.
@@ -5491,6 +5501,7 @@ Observação: esse recurso ainda não está disponível para o público geral. P
       Aqui, "versão" pode ser uma versão exata, como "61.0.3163.120", ou um prefixo de versão, como "61.0".  </translation>
 <translation id="5247584184349816217">Ativar o protetor na tela de bloqueio.</translation>
 <translation id="5247973380763021389">Impedir que políticas da nuvem de usuários substituam políticas da nuvem da máquina.</translation>
+<translation id="5249006530384016395">Controla se a sintaxe <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> descontinuada para o estado personalizado de CSS está ativada</translation>
 <translation id="5249453807420671499">Os usuários podem adicionar contas do Kerberos</translation>
 <translation id="5249555581286638799">Ativar o modo de alta eficiência</translation>
 <translation id="5252210248395576403">Esta política permite que as Respostas rápidas acessem conteúdos selecionados e enviem informações ao servidor para receber resultados de tradução.
@@ -9966,6 +9977,7 @@ Isso inclui relatórios que são ativados pela <ph name="CLOUD_REPORTING_ENABLED
 
 Quando a política é deixada sem definição, o upload dos relatórios é feito a cada 24 horas.
 Quando a política é configurada, o número de horas entre dois uploads sucessivos de relatórios é definido por ela.</translation>
+<translation id="8613622696148230463">A sintaxe descontinuada será desativada.</translation>
 <translation id="8618037841203431360">Esta política controla a permissão de fornecimento dos dados da política e o horário de busca dela.
 
 Quando a <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> não for definida ou for desativada, esta política será ignorada.

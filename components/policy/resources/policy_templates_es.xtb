@@ -4287,6 +4287,15 @@ Si esta política se inhabilita, los usuarios no podrán hacer el seguimiento de
 <translation id="439661169333921592">Inhabilitar el resaltado del foco del teclado en la pantalla de inicio de sesión</translation>
 <translation id="4397045637922200204">Desactivar recuperación de cuenta</translation>
 <translation id="4397464099112037398">Configuración predeterminada del permiso de colocación de ventanas</translation>
+<translation id="4398803806072237638">La sintaxis <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> de la función de estado personalizado de CSS se va a cambiar a <ph name="CUSTOM_STATE_NEW_SYNTAX" /> en <ph name="PRODUCT_NAME" /> para cumplir los cambios que se han hecho en <ph name="FIREFOX_PRODUCT_NAME" /> y <ph name="SAFARI_PRODUCT_NAME" />. Esta política permite habilitar la sintaxis obsoleta anterior hasta la versión M133.
+
+La discontinuación puede provocar que algunos sitios web únicamente de <ph name="PRODUCT_NAME" /> dejen de funcionar si usan la sintaxis obsoleta <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />.
+
+Si se habilita esta política, se habilitará la sintaxis obsoleta anterior.
+
+Si se inhabilita esta política, se inhabilitará la sintaxis obsoleta anterior.
+
+Si no se define esta política, se inhabilitará la sintaxis obsoleta anterior.</translation>
 <translation id="4401196752827224189">WebSQL en contextos no seguros se eliminará a partir de la versión M110. Esta política vuelve a habilitar la API.
           Si se le asigna el valor true a esta política, WebSQL en contextos no seguros estará disponible.
           Si se le asigna el valor false a esta política o no se establece, WebSQL en contextos no seguros seguirá disponible hasta la versión M109 y, a partir de la M110, dejará de admitirse.
@@ -4611,6 +4620,7 @@ Si no se establece la política, los usuarios podrán cambiar la lista de aplica
 
 Establecer <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efecto si se le asigna el valor False a <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" />.</translation>
 <translation id="4638906910792947645">Habilitar encuestas en el producto</translation>
+<translation id="4641557638919545432">Se habilitará la sintaxis obsoleta anterior.</translation>
 <translation id="4646626362889216307">Si se establece la política, se permitirá la combinación de las políticas seleccionadas cuando procedan de fuentes distintas, con los mismos permisos y el mismo nivel. Esta combinación está en las claves de primer nivel del diccionario de cada fuente. La clave procedente de la fuente con más prioridad prevalecerá.
 
       Usa el carácter comodín "*" para permitir la combinación de todas las políticas de diccionarios admitidas.
@@ -5322,6 +5332,7 @@ Nota: Esta función aún no está disponible de forma general, por lo que habili
       "Versión" puede hacer referencia a una versión exacta, como "61.0.3163.120", o al prefijo de una versión, como "61.0".  </translation>
 <translation id="5247584184349816217">Habilitar el salvapantallas en la pantalla de bloqueo.</translation>
 <translation id="5247973380763021389">Impedir que las políticas basadas en la nube a nivel de usuario anulen las políticas basadas en la nube a nivel de máquina</translation>
+<translation id="5249006530384016395">Controla si la sintaxis obsoleta <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> del estado personalizado de CSS está habilitada</translation>
 <translation id="5249453807420671499">Los usuarios pueden añadir cuentas de Kerberos</translation>
 <translation id="5249555581286638799">Habilitar el modo Alta eficiencia</translation>
 <translation id="5252210248395576403">Esta política da permiso a la función Respuestas rápidas para acceder al contenido seleccionado y enviar la información al servidor con el fin de obtener resultados de traducción.
@@ -9664,6 +9675,7 @@ Se incluyen los informes habilitados por la política <ph name="CLOUD_REPORTING_
 
 Si la política no se establece, los informes se suben cada 24 horas.
 Si se establece, el número de horas entre dos subidas de informe sucesivas lo define esta política.</translation>
+<translation id="8613622696148230463">Se inhabilitará la sintaxis obsoleta anterior.</translation>
 <translation id="8618037841203431360">Esta política determina si se proporcionan datos de políticas y la hora de su obtención.
 
 Si no se establece la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o se inhabilita, esta se ignorará.

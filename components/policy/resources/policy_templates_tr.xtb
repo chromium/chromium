@@ -4358,6 +4358,15 @@ Politika, Devre Dışı değerine ayarlanırsa kullanıcılar, kargolarını <ph
 <translation id="439661169333921592">Giriş ekranında klavye odağını vurgulamayı devre dışı bırak</translation>
 <translation id="4397045637922200204">Hesap kurtarmayı devre dışı bırak</translation>
 <translation id="4397464099112037398">Varsayılan pencere yerleşimi izni ayarı</translation>
+<translation id="4398803806072237638"><ph name="FIREFOX_PRODUCT_NAME" /> ve <ph name="SAFARI_PRODUCT_NAME" /> tarayıcılarında yapılan değişikliklere uymak için CSS özel durum özelliğinin <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> söz dizimi, <ph name="PRODUCT_NAME" /> tarayıcısında <ph name="CUSTOM_STATE_NEW_SYNTAX" /> olarak değiştiriliyor. Bu politika, desteği sonlandırılmış eski söz diziminin M133 sürümüne kadar etkinleştirilmesine olanak tanır.
+
+Desteğin sonlandırılması, desteği sonlandırılmış <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> söz dizimini kullanan ve yalnızca <ph name="PRODUCT_NAME" /> tarayıcısında kullanılabilen bazı web sitelerinin çalışmamasına neden olabilir.
+
+Bu politika etkinleştirilirse, desteği sonlandırılmış eski söz dizimi etkinleştirilir.
+
+Bu politika devre dışı bırakılırsa, desteği sonlandırılmış eski söz dizimi devre dışı bırakılır.
+
+Bu politika ayarlanmazsa, desteği sonlandırılmış eski söz dizimi devre dışı bırakılır.</translation>
 <translation id="4401196752827224189">Güvenli olmayan bağlamlarda WebSQL, M110'dan itibaren kaldırılacaktır. Bu politika, API'yi yeniden etkinleştirir.
           Bu politika Doğru değerine ayarlanırsa güvenli olmayan bağlamlarda WebSQL kullanımı etkinleştirilir.
           Bu politika Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa güvenli olmayan bağlamlarda WebSQL, M109'a kadar kullanılabilir ancak M110'dan itibaren kullanılamaz.
@@ -4682,6 +4691,7 @@ Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uyg
 
 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> politikasının etkili olabilmesi için <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> politikasının Yanlış değerine ayarlanması şarttır.</translation>
 <translation id="4638906910792947645">Ürün içi anketleri etkinleştir</translation>
+<translation id="4641557638919545432">Desteği sonlandırılmış eski söz dizimi etkinleştirilir.</translation>
 <translation id="4646626362889216307">Politikanın ayarlanması, farklı kaynaklardan seçilen politikaların aynı kapsamda ve düzeyde birleştirilmesine olanak tanır. Bu birleştirme, her kaynaktaki sözlüğün ilk düzey anahtarlarında meydana gelir. En yüksek öncelikli kaynaktan gelen anahtar tercih edilir.
 
       Desteklenen tüm sözlük politikalarının birleştirilmesine izin vermek için "*" joker karakterini kullanın.
@@ -5394,6 +5404,7 @@ Not: Bu özellik henüz genel kullanıma sunulmadığı için özelliğin etkinl
       Burada "Sürüm" ile kastedilen, tam sürüm (ör. "61.0.3163.120") veya sürüm öneki (ör. "61.0") olabilir.  </translation>
 <translation id="5247584184349816217">Kilit ekranında ekran koruyucuyu etkinleştir.</translation>
 <translation id="5247973380763021389">Kullanıcı bulut politikalarının makine bulut politikalarını geçersiz kılmasını engelle.</translation>
+<translation id="5249006530384016395">CSS özel durumu için desteği sonlandırılmış <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> söz diziminin etkinleştirilip etkinleştirilmeyeceğini kontrol eder</translation>
 <translation id="5249453807420671499">Kullanıcılar Kerberos hesapları ekleyebilirler</translation>
 <translation id="5249555581286638799">Yüksek Verimlilik Modu'nu etkinleştir</translation>
 <translation id="5252210248395576403">Bu politika, çeviri sonuçlarını almak için Bil bakalım'a seçilen içeriğe erişme ve sunucuya bilgi gönderme izni verir.
@@ -9797,6 +9808,7 @@ Bu politika <ph name="POLICY_VALUE_ALL" /> değerine ayarlanır veya ayarlanmada
 
 Bu politika ayarlanmadığında raporlar her 24 saatte bir yüklenir.
 Politika ayarlanmışsa birbirini izleyen iki rapor yüklemesi arasındaki saat sayısı bu politika tarafından belirlenir.</translation>
+<translation id="8613622696148230463">Desteği sonlandırılmış eski söz dizimi devre dışı bırakılır.</translation>
 <translation id="8618037841203431360">Bu politika; politika verilerinin ve politika getirme zamanının bildirilip bildirilmeyeceğini kontrol eder.
 
 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> politikası ayarlanmadan bırakıldığında veya devre dışı değerine ayarlandığında bu politika yok sayılır.
