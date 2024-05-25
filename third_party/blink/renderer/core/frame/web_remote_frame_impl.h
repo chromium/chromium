@@ -23,7 +23,7 @@ struct FrameVisualProperties;
 class RemoteFrame;
 class RemoteFrameClientImpl;
 enum class WebFrameLoadType;
-class WebFrameWidgetImpl;
+class WebFrameWidget;
 class WebView;
 class WindowAgentFactory;
 
@@ -126,7 +126,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
   friend class RemoteFrameClientImpl;
 
   void SetCoreFrame(RemoteFrame*);
-  void InitializeFrameVisualProperties(WebFrameWidgetImpl* ancestor_widget,
+  void InitializeFrameVisualProperties(WebFrameWidget* ancestor_widget,
                                        WebView* web_view);
 
   // Inherited from WebFrame, but intentionally hidden: it never makes sense
