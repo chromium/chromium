@@ -1983,7 +1983,9 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       DCHECK(match.GetActionAt(0u));
       return match.GetActionAt(0u)->GetLabelStrings().accessibility_hint;
     case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION:
-      additional_message_id = IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX;
+      additional_message_id = match.IsIPHSuggestion()
+                                  ? IDS_ACC_DISMISS_CHROME_TIP_FOCUSED_PREFIX
+                                  : IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX;
       break;
     default:
       break;
@@ -2003,6 +2005,34 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
   return AutocompleteMatchType::ToAccessibilityLabel(
       match, match_text, line, total_matches, additional_message,
       label_prefix_length);
+}
+
+std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForIPHSuggestion() {
+  DCHECK(popup_view_);
+  DCHECK_NE(popup_selection_.line, OmniboxPopupSelection::kNoMatch)
+      << "GetPopupAccessibilityLabelForIPHSuggestion should never be called "
+         "if the current selection is kNoMatch.";
+
+  std::u16string label = u"";
+  size_t next_line = popup_selection_.line + 1;
+  if (next_line < autocomplete_controller()->result().size()) {
+    const AutocompleteMatch& next_match =
+        autocomplete_controller()->result().match_at(next_line);
+    if (next_match.IsIPHSuggestion()) {
+      label =
+          l10n_util::GetStringFUTF16(IDS_ACC_CHROME_TIP, next_match.contents);
+    }
+    if (!label.empty() &&
+        OmniboxPopupSelection(
+            next_line, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)
+            .IsControlPresentOnMatch(autocomplete_controller()->result(),
+                                     GetPrefService())) {
+      label =
+          l10n_util::GetStringFUTF16(IDS_ACC_DISMISS_CHROME_TIP_SUFFIX, label);
+    }
+  }
+
+  return label;
 }
 
 void OmniboxEditModel::OnPopupResultChanged() {

@@ -563,12 +563,23 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
         autocomplete_controller->result().match_at(model_index_);
     // The selected match can have a special name, e.g. when is one or more
     // buttons that can be tabbed to.
-    std::u16string label =
-        is_selected ? popup_view_->model()
-                          ->GetPopupAccessibilityLabelForCurrentSelection(
-                              raw_match.contents, false)
-                    : AutocompleteMatchType::ToAccessibilityLabel(
-                          raw_match, raw_match.contents);
+    std::u16string label;
+    if (is_selected) {
+      // The selected match can have a special name, e.g. when is one or more
+      // buttons that can be tabbed to.
+      label =
+          popup_view_->model()->GetPopupAccessibilityLabelForCurrentSelection(
+              raw_match.contents, false);
+
+      // If the line immediately after the current selection is the
+      // informational IPH row, append its accessibility label at the end of
+      // this selection's accessibility label.
+      label +=
+          popup_view_->model()->GetPopupAccessibilityLabelForIPHSuggestion();
+    } else {
+      label = AutocompleteMatchType::ToAccessibilityLabel(raw_match,
+                                                          raw_match.contents);
+    }
     node_data->SetName(label);
   }
 
