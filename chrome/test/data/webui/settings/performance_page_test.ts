@@ -23,7 +23,7 @@ const memorySaverModeMockPrefs = {
     },
     aggressiveness: {
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 1,
+      value: MemorySaverModeAggressiveness.MEDIUM,
     },
   },
 };
@@ -224,6 +224,38 @@ suite('PerformancePageImprovements', function() {
     testMemorySaverModeChangeState(
         performancePage.$.toggleButton, MemorySaverModeState.DISABLED,
         MemorySaverModeAggressiveness.MEDIUM);
+  });
+
+  suite('EnterprisePolicy', function() {
+    function assertMemorySaverModeAggressivenessPolicyIndicatorExists(
+        mode: MemorySaverModeAggressiveness, el: HTMLElement) {
+      performancePage.setPrefValue(MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, mode);
+      flush();
+      assertTrue(!!el.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+    }
+
+    setup(function() {
+      performancePage.set(`prefs.${MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF}`, {
+        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+        controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: MemorySaverModeAggressiveness.MEDIUM,
+      });
+    });
+
+    test('testMemorySaverModeAggressiveness', function() {
+      performancePage.setPrefValue(
+          MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
+
+      assertMemorySaverModeAggressivenessPolicyIndicatorExists(
+          MemorySaverModeAggressiveness.CONSERVATIVE, conservativeButton);
+
+      assertMemorySaverModeAggressivenessPolicyIndicatorExists(
+          MemorySaverModeAggressiveness.MEDIUM, mediumButton);
+
+      assertMemorySaverModeAggressivenessPolicyIndicatorExists(
+          MemorySaverModeAggressiveness.AGGRESSIVE, aggressiveButton);
+    });
   });
 
   test('testDiscardTingTreatmentChangeState', async function() {
