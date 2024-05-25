@@ -812,5 +812,104 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesNoRSSData) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
+TEST_F(PageDiscardingHelperTest, DiscardingProtectedTabReported) {
+  auto process_node2 = CreateNode<performance_manager::ProcessNodeImpl>();
+  auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node2 =
+      CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
+  testing::MakePageNodeDiscardable(page_node2.get(), task_env());
+
+  // Page node 2 is still audible but has not been visible for 30 minutes. It
+  // should be protected but the lower priority tab and should be discarded.
+  page_node2->SetIsVisible(true);
+  page_node2->SetIsAudible(true);
+  AdvanceClock(base::Minutes(30));
+  page_node2->SetIsVisible(false);
+  AdvanceClock(base::Minutes(30));
+
+  // Set the primary page node to visible so it is higher priority than
+  // page_node2.
+  page_node()->SetIsVisible(true);
+
+  process_node2->set_resident_set_kb(1024);
+
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
+      .WillOnce(Return(true));
+
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1),
+      /*discard_protected_tabs*/ true,
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      DiscardReason::URGENT);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingProtectedTab",
+                                        true, 1);
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingProtectedTab",
+                                        false, 0);
+}
+
+TEST_F(PageDiscardingHelperTest, DiscardingUnprotectedTabReported) {
+  // By default the primary page node is not protected.
+
+  process_node()->set_resident_set_kb(1024);
+
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(Return(true));
+
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1),
+      /*discard_protected_tabs*/ true,
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      DiscardReason::URGENT);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingProtectedTab",
+                                        true, 0);
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingProtectedTab",
+                                        false, 1);
+}
+
+TEST_F(PageDiscardingHelperTest, DiscardingFocusedTabReported) {
+  process_node()->set_resident_set_kb(1024);
+  page_node()->SetIsVisible(true);
+  page_node()->SetIsFocused(true);
+
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(Return(true));
+
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1),
+      /*discard_protected_tabs*/ true,
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      DiscardReason::URGENT);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingFocusedTab", true,
+                                        1);
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingFocusedTab",
+                                        false, 0);
+}
+
+TEST_F(PageDiscardingHelperTest, DiscardingUnfocusedTabReported) {
+  // Main process node is not focused by default.
+  process_node()->set_resident_set_kb(1024);
+
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(Return(true));
+
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1),
+      /*discard_protected_tabs*/ true,
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      DiscardReason::URGENT);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingFocusedTab", true,
+                                        0);
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingFocusedTab",
+                                        false, 1);
+}
+
 }  // namespace policies
 }  // namespace performance_manager

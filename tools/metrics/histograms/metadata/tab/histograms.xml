@@ -98,6 +98,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Discarding.DiscardingFocusedTab" enum="BooleanFocusedTab"
+    expires_after="2024-12-01">
+  <owner>kalutes@chromium.org</owner>
+  <owner>cros-core-systems-perf@google.com</owner>
+  <summary>
+    Logged every time a tab is set to be discarded. Tracks the porportion of tab
+    discards that are focused at the time of discard.
+  </summary>
+</histogram>
+
+<histogram name="Discarding.DiscardingProtectedTab" enum="BooleanProtectedTab"
+    expires_after="2024-12-01">
+  <owner>kalutes@chromium.org</owner>
+  <owner>cros-core-systems-perf@google.com</owner>
+  <summary>
+    Logged every time a tab is set to be discarded. Tracks the porportion of tab
+    discards that are protected at the time of discard.
+  </summary>
+</histogram>
+
 <histogram name="Discarding.DiscardsDrivenByStaleSignal" units="tabs"
     expires_after="2024-12-01">
   <owner>kalutes@chromium.org</owner>

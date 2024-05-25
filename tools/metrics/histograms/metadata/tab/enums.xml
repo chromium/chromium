@@ -26,9 +26,19 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="BooleanFocusedTab">
+  <int value="0" label="Not Focused"/>
+  <int value="1" label="Focused"/>
+</enum>
+
 <enum name="BooleanOverlap">
   <int value="0" label="No overlap"/>
   <int value="1" label="Overlapped"/>
+</enum>
+
+<enum name="BooleanProtectedTab">
+  <int value="0" label="Not Protected"/>
+  <int value="1" label="Protected"/>
 </enum>
 
 <enum name="ExternalLauncherOption">

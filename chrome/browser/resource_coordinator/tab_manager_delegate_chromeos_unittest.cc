@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/process/process_handle.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
@@ -27,8 +28,18 @@ class TabManagerDelegateTest : public testing::Test {
   TabManagerDelegateTest() {}
   ~TabManagerDelegateTest() override {}
 
+  void SetUp() override {
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+
+  void TearDown() override { histogram_tester_.reset(); }
+
+ protected:
+  base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 constexpr bool kIsFocused = true;
@@ -651,6 +662,100 @@ TEST_F(TabManagerDelegateTest, TestTargetMemoryToFreeIsRespected) {
   auto killed_tabs = tab_manager_delegate.GetKilledTabs();
 
   ASSERT_EQ(2U, killed_tabs.size());
+}
+
+TEST_F(TabManagerDelegateTest, TestUnprotectedTabDiscardIsReported) {
+  // Not owned.
+  MockMemoryStat* memory_stat = new MockMemoryStat();
+
+  // Instantiate the mock instance.
+  MockTabManagerDelegate tab_manager_delegate(memory_stat);
+
+  TestLifecycleUnit tab1(base::TimeTicks() + base::Seconds(3), 11);
+  tab_manager_delegate.AddLifecycleUnit(&tab1);
+
+  memory_stat->SetTargetMemoryToFreeKB(250000);
+
+  tab_manager_delegate.LowMemoryKillImpl(
+      base::TimeTicks::Now(), ::mojom::LifecycleUnitDiscardReason::EXTERNAL,
+      TabManager::TabDiscardDoneCB(base::DoNothing()), {});
+
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingProtectedTab",
+                                        true, 0);
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingProtectedTab",
+                                        false, 1);
+}
+
+TEST_F(TabManagerDelegateTest, TestProtectedTabDiscardIsReported) {
+  // Not owned.
+  MockMemoryStat* memory_stat = new MockMemoryStat();
+
+  // Instantiate the mock instance.
+  MockTabManagerDelegate tab_manager_delegate(memory_stat);
+
+  TestLifecycleUnit protected_tab(base::TimeTicks() + base::Seconds(3), 11);
+  // Setting can discard to false forces this tab to be protected.
+  protected_tab.SetCanDiscard(false);
+  tab_manager_delegate.AddLifecycleUnit(&protected_tab);
+
+  memory_stat->SetTargetMemoryToFreeKB(250000);
+
+  tab_manager_delegate.LowMemoryKillImpl(
+      base::TimeTicks::Now(), ::mojom::LifecycleUnitDiscardReason::EXTERNAL,
+      TabManager::TabDiscardDoneCB(base::DoNothing()), {});
+
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingProtectedTab",
+                                        true, 1);
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingProtectedTab",
+                                        false, 0);
+}
+
+TEST_F(TabManagerDelegateTest, TestFocusedTabIsNotDiscarded) {
+  // Not owned.
+  MockMemoryStat* memory_stat = new MockMemoryStat();
+
+  // Instantiate the mock instance.
+  MockTabManagerDelegate tab_manager_delegate(memory_stat);
+
+  // Add a single focused tab. This tab should never be discarded.
+  TestLifecycleUnit focused_tab(base::TimeTicks::Max(), 11);
+  // Setting can discard to false forces this tab to be protected.
+  focused_tab.SetCanDiscard(false);
+  tab_manager_delegate.AddLifecycleUnit(&focused_tab);
+
+  memory_stat->SetTargetMemoryToFreeKB(250000);
+
+  tab_manager_delegate.LowMemoryKillImpl(
+      base::TimeTicks::Now(), ::mojom::LifecycleUnitDiscardReason::EXTERNAL,
+      TabManager::TabDiscardDoneCB(base::DoNothing()), {});
+
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingFocusedTab",
+                                        false, 0);
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingFocusedTab", true,
+                                        0);
+}
+
+TEST_F(TabManagerDelegateTest, TestUnfocusedTabDiscardIsReported) {
+  // Not owned.
+  MockMemoryStat* memory_stat = new MockMemoryStat();
+
+  // Instantiate the mock instance.
+  MockTabManagerDelegate tab_manager_delegate(memory_stat);
+
+  TestLifecycleUnit background_tab(base::TimeTicks() + base::Seconds(4), 11);
+  background_tab.SetCanDiscard(true);
+  tab_manager_delegate.AddLifecycleUnit(&background_tab);
+
+  memory_stat->SetTargetMemoryToFreeKB(250000);
+
+  tab_manager_delegate.LowMemoryKillImpl(
+      base::TimeTicks::Now(), ::mojom::LifecycleUnitDiscardReason::EXTERNAL,
+      TabManager::TabDiscardDoneCB(base::DoNothing()), {});
+
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingFocusedTab", true,
+                                        0);
+  histogram_tester()->ExpectBucketCount("Discarding.DiscardingFocusedTab",
+                                        false, 1);
 }
 
 }  // namespace resource_coordinator

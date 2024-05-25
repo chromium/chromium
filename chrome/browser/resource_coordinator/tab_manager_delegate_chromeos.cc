@@ -713,6 +713,17 @@ int TabManagerDelegate::ProcessLifecycleUnitCandidate(
     return 0;
   }
 
+  // Logs a histogram entry to track the proportion of discarded tabs that were
+  // protected at the time of discard. If the candidate is not a background tab,
+  // then it must be protected.
+  UMA_HISTOGRAM_BOOLEAN("Discarding.DiscardingProtectedTab",
+                        candidate.process_type() != ProcessType::BACKGROUND);
+
+  // Logs a histogram entry to track the proportion of discarded tabs that were
+  // focused at the time of discard.
+  UMA_HISTOGRAM_BOOLEAN("Discarding.DiscardingFocusedTab",
+                        candidate.process_type() == ProcessType::FOCUSED_TAB);
+
   memory::MemoryKillsMonitor::LogLowMemoryKill("TAB",
                                                kill_estimated_memory_freed_kb);
   MEMORY_LOG(ERROR) << "Killed tab (id: " << candidate.lifecycle_unit()->GetID()

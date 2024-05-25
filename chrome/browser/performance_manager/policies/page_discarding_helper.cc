@@ -106,6 +106,18 @@ NodeRssMap GetPageNodeRssEstimateKb(
   return result;
 }
 
+void RecordDiscardedTabMetrics(const PageNodeSortProxy& candidate) {
+  // Logs a histogram entry to track the proportion of discarded tabs that
+  // were protected at the time of discard.
+  UMA_HISTOGRAM_BOOLEAN("Discarding.DiscardingProtectedTab",
+                        candidate.is_protected());
+
+  // Logs a histogram entry to track the proportion of discarded tabs that
+  // were focused at the time of discard.
+  UMA_HISTOGRAM_BOOLEAN("Discarding.DiscardingFocusedTab",
+                        candidate.is_focused());
+}
+
 }  // namespace
 
 PageDiscardingHelper::PageDiscardingHelper()
@@ -173,6 +185,9 @@ void PageDiscardingHelper::DiscardMultiplePages(
   if (!reclaim_target) {
     const PageNode* oldest = candidates[0].page_node();
     discard_attempts.emplace_back(oldest);
+
+    // Record metrics about the tab that is about to be discarded.
+    RecordDiscardedTabMetrics(candidates[0]);
   } else {
     const uint64_t reclaim_target_kb_value = reclaim_target->target_kb;
     uint64_t total_reclaim_kb = 0;
@@ -183,6 +198,10 @@ void PageDiscardingHelper::DiscardMultiplePages(
       }
       const PageNode* node = candidate.page_node();
       discard_attempts.emplace_back(node);
+
+      // Record metrics about the tab that is about to be discarded.
+      RecordDiscardedTabMetrics(candidate);
+
       // The node RSS value is updated by ProcessMetricsDecorator periodically.
       // The RSS value is 0 for nodes that have never been updated, estimate the
       // RSS value to 80 MiB for these nodes. 80 MiB is the average
