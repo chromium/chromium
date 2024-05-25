@@ -116,7 +116,7 @@ void WebApkRestoreManager::MaybeStartNextTask() {
   web_contents_manager()->EnsureWebContentsCreated(PassKey());
   restorable_tasks_.at(tasks_.front())
       ->Start(base::BindOnce(&WebApkRestoreManager::OnTaskFinished,
-                             base::Unretained(this)));
+                             weak_factory_.GetWeakPtr()));
 }
 
 void WebApkRestoreManager::OnTaskFinished(const GURL& manifest_id,
