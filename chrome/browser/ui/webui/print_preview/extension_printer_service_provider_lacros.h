@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_EXTENSION_PRINTER_SERVICE_PROVIDER_LACROS_H_
 
 #include <memory>
+#include <string>
 
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
@@ -47,6 +49,10 @@ class ExtensionPrinterServiceProviderLacros
   void DispatchStartGetCapability(
       const std::string& destination_id,
       DispatchStartGetCapabilityCallback callback) override;
+  void DispatchStartPrint(const std::u16string& job_title,
+                          base::Value::Dict settings,
+                          scoped_refptr<::base::RefCountedMemory> print_data,
+                          DispatchStartPrintCallback callback) override;
 
   void SetPrinterHandlerForTesting(std::unique_ptr<PrinterHandler> handler) {
     extension_printer_handler_ = std::move(handler);

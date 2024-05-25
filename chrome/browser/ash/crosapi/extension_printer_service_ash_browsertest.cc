@@ -87,6 +87,13 @@ class MockExtensionPrinterServiceProvider
               (const std::string& destination_id,
                DispatchStartGetCapabilityCallback callback),
               (override));
+  MOCK_METHOD(void,
+              DispatchStartPrint,
+              (const ::std::u16string& job_title,
+               ::base::Value::Dict settings,
+               ::scoped_refptr<::base::RefCountedMemory> print_data,
+               DispatchStartPrintCallback callback),
+              (override));
 
   mojo::Receiver<mojom::ExtensionPrinterServiceProvider> receiver_{this};
 };
@@ -263,6 +270,55 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceAshBrowserTest,
   EXPECT_TRUE(contentType1.is_dict());
   base::ExpectDictStringValue("application/pdf", contentType1.GetDict(),
                               "content_type");
+}
+
+// Verifies that StartPrint is dispatched correctly.
+IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceAshBrowserTest, StartPrint) {
+  // Test data for the print job.
+  const std::u16string job_title = u"Test Print Job";
+  base::Value::Dict settings = base::test::ParseJsonDict(R"(
+    {
+      "copies": 2,
+      "color": "color"
+    }
+  )");
+  scoped_refptr<base::RefCountedMemory> print_data =
+      base::MakeRefCounted<base::RefCountedString>("Test print data");
+
+  // Captures the arguments passed to DispatchStartPrint.
+  std::u16string captured_job_title;
+  base::Value::Dict captured_settings;
+  scoped_refptr<base::RefCountedMemory> captured_print_data;
+
+  // Sets up the expectation for DispatchStartPrint.
+  EXPECT_CALL(mock_provider(), DispatchStartPrint(_, _, _, _))
+      .WillOnce(
+          [&](const std::u16string& job_title, base::Value::Dict settings,
+              scoped_refptr<base::RefCountedMemory> print_data,
+              MockExtensionPrinterServiceProvider::DispatchStartPrintCallback
+                  callback) {
+            // Capture the arguments.
+            captured_job_title = job_title;
+            captured_settings = std::move(settings);
+            captured_print_data = print_data;
+
+            // Simulate a successful print job.
+            std::move(callback).Run(crosapi::mojom::StartPrintStatus::KOk);
+          });
+
+  // Calls the StartPrint method.
+  base::test::TestFuture<crosapi::mojom::StartPrintStatus> print_future;
+  ExtensionPrinterService()->StartPrint(job_title, std::move(settings),
+                                        print_data, print_future.GetCallback());
+  FlushForTesting();
+
+  // Verifies the result of the print job.
+  EXPECT_EQ(print_future.Get(), crosapi::mojom::StartPrintStatus::KOk);
+  // Asserts the captured data matches the input.
+  EXPECT_EQ(captured_job_title, job_title);
+  EXPECT_EQ(captured_settings,
+            base::test::ParseJsonDict(R"({"copies": 2, "color": "color"})"));
+  EXPECT_TRUE(captured_print_data->Equals(print_data));
 }
 
 }  // namespace crosapi

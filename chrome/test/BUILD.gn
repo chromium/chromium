@@ -5506,6 +5506,7 @@ if (!is_android) {
       if (is_chromeos_ash) {
         sources += [
           "../browser/ash/crosapi/extension_printer_service_ash_browsertest.cc",
+          "../browser/ui/webui/print_preview/extension_printer_handler_adapter_ash_browsertest.cc",
         ]
       }
 
@@ -12837,6 +12838,7 @@ if (is_chromeos) {
         # For StandaloneBrowserTestController.
         "//chrome/browser/apps/app_service",
         "//chrome/browser/extensions:test_support",
+        "//chrome/browser/ui",
         "//chrome/browser/web_applications",
         "//chromeos/lacros:lacros_paths",
         "//components/webapps/browser",

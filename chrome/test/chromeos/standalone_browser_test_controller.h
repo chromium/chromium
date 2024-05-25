@@ -78,6 +78,9 @@ class StandaloneBrowserTestController
       const std::string& web_app_settings_json,
       SetWebAppInstallForceListPrefCallback callback) override;
 
+  void SetFakeExtensionPrinterHandler(
+      SetFakeExtensionPrinterHandlerCallback callback) override;
+
  private:
   class LacrosUtteranceEventDelegate;
 

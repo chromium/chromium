@@ -132,6 +132,23 @@ bool ExtensionPrinterServiceAsh::HasAnyPendingGetPrintersRequests() const {
          !pending_printers_added_callbacks_.empty();
 }
 
+void ExtensionPrinterServiceAsh::StartPrint(
+    const std::u16string& job_title,
+    base::Value::Dict settings,
+    scoped_refptr<base::RefCountedMemory> print_data,
+    StartPrintCallback callback) {
+  VLOG(1) << "ExtensionPrinterServiceAsh::StartPrint():" << " job_title="
+          << job_title;
+  if (!HasProvider()) {
+    LOG(WARNING) << "ExtensionPrinterServiceAsh::StartPrint(): none "
+                    "ExtensionPrinterServiceProvider available";
+    std::move(callback).Run(crosapi::mojom::StartPrintStatus::kFailed);
+    return;
+  }
+  service_provider_->DispatchStartPrint(job_title, std::move(settings),
+                                        print_data, std::move(callback));
+}
+
 bool ExtensionPrinterServiceAsh::HasPendingGetPrintersRequestForTesting(
     base::UnguessableToken& request_id) const {
   CHECK_IS_TEST();

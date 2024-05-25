@@ -17,6 +17,7 @@ Dictation*
 EduCoexistenceWithArcRestrictionsMochaTest*
 ExtensionKeeplistAllowPerfettoTest*
 ExtensionKeeplistTest*
+*ExtensionPrinterHandlerAdapterAshBrowserTest*
 # Note: Some of FileTasksBrowserTest* runs only on branded ash and lacros builds.
 *FileTasksBrowserTest*
 NonKioskAcceleratorLacrosTest*

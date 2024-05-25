@@ -4,13 +4,31 @@
 
 #include "chrome/browser/ui/webui/print_preview/extension_printer_handler_adapter_ash.h"
 
+#include <string>
+#include <unordered_map>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/extension_printer_service_ash.h"
+#include "chromeos/crosapi/mojom/extension_printer.mojom-forward.h"
 
 namespace printing {
+
+using crosapi::mojom::StartPrintStatus;
+
+std::string StartPrintStatusToString(StartPrintStatus status) {
+  static base::NoDestructor<std::unordered_map<StartPrintStatus, std::string>>
+      status_map({{StartPrintStatus::kUnknown, "UNKNOWN"},
+                  {StartPrintStatus::KOk, "OK"},
+                  {StartPrintStatus::kFailed, "FAILED"},
+                  {StartPrintStatus::kInvalidTicket, "INVALID_TICKET"},
+                  {StartPrintStatus::kInvalidData, "INVALID_DATA"}});
+
+  const auto it = status_map->find(status);
+  return it != status_map->end() ? it->second : "UNKNOWN";
+}
 
 ExtensionPrinterHandlerAdapterAsh::ExtensionPrinterHandlerAdapterAsh() =
     default;
@@ -42,7 +60,14 @@ void ExtensionPrinterHandlerAdapterAsh::StartPrint(
     base::Value::Dict settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
-  // TODO(http://b/40273973): Add Implementation.
+  GetExtensionPrinterService()->StartPrint(
+      job_title, std::move(settings), print_data,
+      base::BindOnce(
+          [](PrintCallback callback, StartPrintStatus status) {
+            std::move(callback).Run(
+                base::Value(StartPrintStatusToString(status)));
+          },
+          std::move(callback)));
 }
 
 void ExtensionPrinterHandlerAdapterAsh::StartGrantPrinterAccess(

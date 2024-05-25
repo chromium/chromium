@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 // Chrome internally uses base::RefCountedMemory to pass data around. These
 // data segments can be fairly large, to the point where we don't want them
 // to be stuffed raw through the mojo ipc layer.
+[Stable]
 struct RefCountedMemory {
   mojo_base.mojom.BigBuffer data;
 };

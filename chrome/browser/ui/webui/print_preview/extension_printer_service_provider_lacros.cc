@@ -5,9 +5,13 @@
 #include "chrome/browser/ui/webui/print_preview/extension_printer_service_provider_lacros.h"
 
 #include <memory>
+#include <string>
+#include <unordered_map>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/print_preview/extension_printer_service_provider_factory_lacros.h"
@@ -16,6 +20,22 @@
 #include "chromeos/lacros/lacros_service.h"
 
 namespace printing {
+
+using crosapi::mojom::StartPrintStatus;
+
+StartPrintStatus ToStartPrintStatus(const base::Value& status) {
+  static base::NoDestructor<std::unordered_map<std::string, StartPrintStatus>>
+      string_to_status_map(
+          {{"UNKNOWN", StartPrintStatus::kUnknown},
+           {"OK", StartPrintStatus::KOk},
+           {"FAILED", StartPrintStatus::kFailed},
+           {"INVALID_TICKET", StartPrintStatus::kInvalidTicket},
+           {"INVALID_DATA", StartPrintStatus::kInvalidData}});
+
+  const auto it = string_to_status_map->find(status.GetString());
+  return it != string_to_status_map->end() ? it->second
+                                           : StartPrintStatus::kUnknown;
+}
 
 ExtensionPrinterServiceProviderLacros::ExtensionPrinterServiceProviderLacros(
     content::BrowserContext* browser_context)
@@ -100,6 +120,22 @@ void ExtensionPrinterServiceProviderLacros::DispatchStartGetCapability(
       << " destination_id=" << destination_id;
   extension_printer_handler_->StartGetCapability(destination_id,
                                                  std::move(callback));
+}
+
+void ExtensionPrinterServiceProviderLacros::DispatchStartPrint(
+    const std::u16string& job_title,
+    base::Value::Dict settings,
+    scoped_refptr<::base::RefCountedMemory> print_data,
+    DispatchStartPrintCallback callback) {
+  VLOG(1) << "ExtensionPrinterServiceProviderLacros::DispatchStartPrint():"
+          << " job_title=" << job_title;
+  extension_printer_handler_->StartPrint(
+      job_title, std::move(settings), print_data,
+      base::BindOnce(
+          [](DispatchStartPrintCallback callback, const base::Value& status) {
+            std::move(callback).Run(ToStartPrintStatus(status));
+          },
+          std::move(callback)));
 }
 
 }  // namespace printing

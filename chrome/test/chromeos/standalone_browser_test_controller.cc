@@ -11,6 +11,7 @@
 #include "base/functional/overloaded.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/values_test_util.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -21,6 +22,8 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
+#include "chrome/browser/ui/webui/print_preview/extension_printer_service_provider_lacros.h"
+#include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -108,6 +111,61 @@ void OnIsolatedWebAppUrlInfoCreated(
       base::BindOnce(&IsolatedWebAppInstallationDone, iwa_url_info.app_id(),
                      std::move(callback)));
 }
+
+class FakeExtensionPrinterHandler : public printing::PrinterHandler {
+ public:
+  FakeExtensionPrinterHandler() = default;
+  FakeExtensionPrinterHandler(const FakeExtensionPrinterHandler&) = delete;
+  FakeExtensionPrinterHandler& operator=(const FakeExtensionPrinterHandler&) =
+      delete;
+  ~FakeExtensionPrinterHandler() override = default;
+
+  void Reset() override {}
+
+  void StartGetPrinters(AddedPrintersCallback added_printers_callback,
+                        GetPrintersDoneCallback done_callback) override {
+    added_printers_callback.Run(base::test::ParseJsonList(R"(
+      [ {
+        "description": "A virtual printer for testing",
+        "extensionId": "jbljdigmdjodgkcllikhggoepmmffbam",
+        "extensionName": "Test Printer Provider",
+        "id": "jbljdigmdjodgkcllikhggoepmmffbam:test-printer-01",
+        "name": "Test Printer 01"
+      }, {
+        "description": "A virtual printer for testing",
+        "extensionId": "jbljdigmdjodgkcllikhggoepmmffbam",
+        "extensionName": "Test Printer Provider",
+        "id": "jbljdigmdjodgkcllikhggoepmmffbam:test-printer-02",
+        "name": "Test Printer 02"
+      } ]
+    )"));
+    std::move(done_callback).Run();
+  }
+
+  void StartGetCapability(const std::string& destination_id,
+                          GetCapabilityCallback callback) override {
+    std::move(callback).Run(base::test::ParseJsonDict(R"(
+    {
+      "version": "1.0",
+      "printer": {
+        "supported_content_type": [
+          {"content_type": "application/pdf"}
+        ]
+      }
+    })"));
+  }
+
+  void StartGrantPrinterAccess(const std::string& printer_id,
+                               GetPrinterInfoCallback callback) override {}
+
+  void StartPrint(const std::u16string& job_title,
+                  base::Value::Dict settings,
+                  scoped_refptr<base::RefCountedMemory> print_data,
+                  PrintCallback callback) override {
+    // Simulate a successful print job. "OK" means successful.
+    std::move(callback).Run(base::Value("OK"));
+  }
+};
 
 }  // namespace
 
@@ -392,6 +450,17 @@ void StandaloneBrowserTestController::SetWebAppInstallForceListPref(
       prefs::kWebAppInstallForceList, std::move(*result).TakeList());
 
   std::move(callback).Run(/*success=*/true);
+}
+
+// Uses a fake extension printer handler to process printing requests from ash
+// browser tests.
+void StandaloneBrowserTestController::SetFakeExtensionPrinterHandler(
+    SetFakeExtensionPrinterHandlerCallback callback) {
+  printing::ExtensionPrinterServiceProviderLacros::GetForBrowserContext(
+      ProfileManager::GetPrimaryUserProfile())
+      ->SetPrinterHandlerForTesting(
+          std::make_unique<FakeExtensionPrinterHandler>());
+  std::move(callback).Run();
 }
 
 void StandaloneBrowserTestController::OnUtteranceFinished(int utterance_id) {
