@@ -1159,7 +1159,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1862311223300693744">Herhangi bir özel VPN, proxy, güvenlik duvarı veya NAS yazılımı yüklü mü?</translation>
 <translation id="1863047423483329595">İzlemeye Karşı Koruma özelliği geçici olarak kullanılamıyor. Chrome bu özelliği güncellerken siteler, engellemediğiniz sürece üçüncü taraf çerezlerini geçici olarak kullanabilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Seri bağlantı noktası bulunamadı</translation>
-<translation id="1864111464094315414">Oturum Aç</translation>
+<translation id="1864111464094315414">Giriş</translation>
 <translation id="1864400682872660285">Daha Soğuk</translation>
 <translation id="1864454756846565995">USB-C cihaz (arka bağlantı noktası)</translation>
 <translation id="1865769994591826607">Yalnızca aynı site bağlantıları</translation>
@@ -6132,7 +6132,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5702749864074810610">Öneri reddedildi</translation>
 <translation id="5703716265115423771">sesi kıs</translation>
 <translation id="5704875434923668958">Şu hesapla senkronize ediliyor:</translation>
-<translation id="5705005699929844214">Her zaman erişilebilirlik seçeneklerini göster</translation>
+<translation id="5705005699929844214">Erişilebilirlik seçeneklerini her zaman göster</translation>
 <translation id="5705882733397021510">Geri Git</translation>
 <translation id="5707185214361380026">Uzantı şuradan yüklenemedi:</translation>
 <translation id="5708171344853220004">Microsoft Asıl Adı</translation>
