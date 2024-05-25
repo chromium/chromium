@@ -47,6 +47,7 @@ class ASH_EXPORT RefreshRateController
 
   // WindowObserver implementation.
   void OnWindowAddedToRootWindow(aura::Window* window) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   // DisplayObserver implementation.
   void OnDisplayMetricsChanged(const display::Display& display,

@@ -155,6 +155,8 @@ display::Display ScreenAsh::GetDisplayNearestWindow(
   if (!root_window)
     return GetPrimaryDisplay();
   const RootWindowSettings* rws = GetRootWindowSettings(root_window);
+  CHECK(rws) << "Missing RootWindowSettings : window=" << window->GetName()
+             << ", root=" << root_window->GetName();
   int64_t id = rws->display_id;
   // if id is |kInvaildDisplayID|, it's being deleted.
   if (id == display::kInvalidDisplayId)

@@ -83,6 +83,12 @@ void RefreshRateController::OnWindowAddedToRootWindow(aura::Window* window) {
   UpdateStates();
 }
 
+void RefreshRateController::OnWindowDestroying(aura::Window* window) {
+  DCHECK_EQ(window, game_window_observer_.GetSource());
+  game_window_observer_.Reset();
+  UpdateStates();
+}
+
 void RefreshRateController::OnDisplayConfigurationChanged(
     const DisplayStateList& displays) {
   for (const display::DisplaySnapshot* snapshot : displays) {
