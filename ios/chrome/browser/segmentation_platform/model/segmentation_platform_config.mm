@@ -20,6 +20,7 @@
 #import "components/segmentation_platform/embedder/default_model/search_user_model.h"
 #import "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
 #import "components/segmentation_platform/embedder/default_model/tab_resumption_ranker.h"
+#import "components/segmentation_platform/embedder/default_model/url_visit_resumption_ranker.h"
 #import "components/segmentation_platform/internal/stats.h"
 #import "components/segmentation_platform/public/config.h"
 #import "components/segmentation_platform/public/features.h"
@@ -54,6 +55,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
     configs.emplace_back(IosModuleRanker::GetConfig());
   }
   configs.emplace_back(MostVisitedTilesUser::GetConfig());
+  configs.emplace_back(URLVisitResumptionRanker::GetConfig());
 
   // Add new configs here.
   std::erase_if(configs, [](const auto& config) { return !config.get(); });

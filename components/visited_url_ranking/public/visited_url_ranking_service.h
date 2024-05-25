@@ -15,7 +15,8 @@
 
 namespace visited_url_ranking {
 
-const char kTabResumptionRankerKey[] = "tab_resumption_ranker";
+// Value must match `segmentation_platform::kURLVisitResumptionClassifierKey`.
+const char kTabResumptionRankerKey[] = "url_visit_resumption_ranker";
 
 // Settings leveraged for ranking `URLVisitAggregate` objects.
 struct Config {
@@ -55,22 +56,22 @@ class VisitedURLRankingService : public KeyedService {
   VisitedURLRankingService() = default;
   ~VisitedURLRankingService() override = default;
 
-  // Computes `URLVisitAggregate` objects based on a series of
-  // `options` from one or more data providers and triggers the `callback` with
-  // such data.
+  // Computes `URLVisitAggregate` objects based on a series of `options` for
+  // one or more data providers and triggers the `callback` with such data.
   using GetURLVisitAggregatesCallback =
       base::OnceCallback<void(ResultStatus, std::vector<URLVisitAggregate>)>;
   virtual void FetchURLVisitAggregates(
       const FetchOptions& options,
       GetURLVisitAggregatesCallback callback) = 0;
 
-  using RankVisitAggregatesCallback =
+  using RankURLVisitAggregatesCallback =
       base::OnceCallback<void(ResultStatus, std::vector<URLVisitAggregate>)>;
-  // Ranks a collection of `URLVisitAggregate` objects based on a
-  // client specified strategy.
-  virtual void RankURLVisitAggregates(const Config& config,
-                                      std::vector<URLVisitAggregate> visits,
-                                      RankVisitAggregatesCallback callback) = 0;
+  // Ranks a collection of `URLVisitAggregate` objects based on a client
+  // specified strategy.
+  virtual void RankURLVisitAggregates(
+      const Config& config,
+      std::vector<URLVisitAggregate> visit_aggregates,
+      RankURLVisitAggregatesCallback callback) = 0;
 };
 
 }  // namespace visited_url_ranking

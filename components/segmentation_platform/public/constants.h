@@ -92,6 +92,11 @@ const char kDeviceTierUmaName[] = "DeviceTier";
 const char kTabResumptionClassifierKey[] = "tab_resupmtion_classifier";
 const char kTabResumptionClassifierUmaName[] = "TabResumptionClassifier";
 
+// The key is used to rank `URLVisitAggregate` objects leveraged by UI tab
+// resumption features.
+const char kURLVisitResumptionRankerKey[] = "url_visit_resumption_ranker";
+const char kURLVisitResumptionRankerUmaName[] = "URLVisitResumptionRanker";
+
 const char kIosModuleRankerKey[] = "ios_module_ranker";
 const char kIosModuleRankerUmaName[] = "IosModuleRanker";
 

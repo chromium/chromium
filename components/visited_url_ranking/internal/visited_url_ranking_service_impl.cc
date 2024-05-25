@@ -4,7 +4,6 @@
 
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <queue>
@@ -14,38 +13,35 @@
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/result.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/url_visit_schema.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+
+using segmentation_platform::AnnotatedNumericResult;
+using segmentation_platform::InputContext;
+using segmentation_platform::PredictionOptions;
+using segmentation_platform::PredictionStatus;
+using segmentation_platform::processing::ProcessedValue;
+using visited_url_ranking::URLVisit;
 
 namespace visited_url_ranking {
 
 namespace {
-
-base::Time GetVisitTime(const URLVisitAggregate::URLVisitVariant& visit) {
-  const URLVisitAggregate::TabData* tab_data =
-      std::get_if<URLVisitAggregate::TabData>(&visit);
-  if (tab_data) {
-    return tab_data->last_active;
-  }
-
-  const URLVisitAggregate::HistoryData* history_data =
-      std::get_if<URLVisitAggregate::HistoryData>(&visit);
-  if (history_data) {
-    return history_data->last_visited.visit_row.visit_time;
-  }
-
-  return base::Time::Max();
-}
-
-}  // namespace
-
 // Combines `URLVisitVariant` data obtained from various fetchers into
 // `URLVisitAggregate` objects. Leverages the `URLMergeKey` in order to
 // reconcile what data belongs to the same aggregate object.
@@ -89,11 +85,26 @@ std::vector<URLVisitAggregate> ComputeURLVisitAggregates(
   return url_visits;
 }
 
+void SortScoredAggregatesAndCallback(
+    std::vector<URLVisitAggregate> scored_visits,
+    VisitedURLRankingService::RankURLVisitAggregatesCallback callback) {
+  base::ranges::stable_sort(scored_visits, [](const auto& c1, const auto& c2) {
+    // Sort such that higher scored entries precede lower scored entries.
+    return c1.score > c2.score;
+  });
+  std::move(callback).Run(ResultStatus::kSuccess, std::move(scored_visits));
+}
+
+}  // namespace
+
 VisitedURLRankingServiceImpl::VisitedURLRankingServiceImpl(
+    segmentation_platform::SegmentationPlatformService*
+        segmentation_platform_service,
     std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers,
     std::map<URLVisitAggregatesTransformType,
              std::unique_ptr<URLVisitAggregatesTransformer>> transformers)
-    : data_fetchers_(std::move(data_fetchers)),
+    : segmentation_platform_service_(segmentation_platform_service),
+      data_fetchers_(std::move(data_fetchers)),
       transformers_(std::move(transformers)) {}
 
 VisitedURLRankingServiceImpl::~VisitedURLRankingServiceImpl() = default;
@@ -116,36 +127,25 @@ void VisitedURLRankingServiceImpl::FetchURLVisitAggregates(
 
 void VisitedURLRankingServiceImpl::RankURLVisitAggregates(
     const Config& config,
-    std::vector<URLVisitAggregate> visits,
-    RankVisitAggregatesCallback callback) {
-  // TODO(crbug.com/330577142): Implement `URLVisitAggregate` ranking logic.
-
-  // To enable development and testing, below we implement a stub implementation
-  // that simply sorts |visits| by minimal |last_active|.
-  size_t num_visits = visits.size();
-
-  // Extract sort keys (|fetcher_data_map| may have any size) and create sort
-  // permutation, which also avoids object movement churn from direct sort.
-  std::vector<std::pair<base::Time, size_t>> keys;
-  keys.reserve(num_visits);
-  for (size_t i = 0; i < num_visits; ++i) {
-    const auto& aggregate = visits[i];
-    base::Time min_last_visit_time = base::Time::Max();
-    for (auto& key_value : aggregate.fetcher_data_map) {
-      min_last_visit_time =
-          std::min(min_last_visit_time, GetVisitTime(key_value.second));
-    }
-    keys.emplace_back(min_last_visit_time, i);
+    std::vector<URLVisitAggregate> visit_aggregates,
+    RankURLVisitAggregatesCallback callback) {
+  if (visit_aggregates.empty()) {
+    std::move(callback).Run(ResultStatus::kSuccess, {});
+    return;
   }
-  // Sort from oldest to newest.
-  std::sort(keys.begin(), keys.end());
 
-  // Apply permutation, and reverse, so newest comes first.
-  std::vector<URLVisitAggregate> ranked_visits(num_visits);
-  for (size_t i = 0; i < num_visits; ++i) {
-    ranked_visits[num_visits - 1 - i] = std::move(visits[keys[i].second]);
+  if (!segmentation_platform_service_) {
+    std::move(callback).Run(ResultStatus::kError, {});
+    return;
   }
-  std::move(callback).Run(ResultStatus::kSuccess, std::move(ranked_visits));
+
+  std::deque<URLVisitAggregate> visits_queue;
+  for (auto& visit : visit_aggregates) {
+    visits_queue.push_back(std::move(visit));
+  }
+  visit_aggregates.clear();
+
+  GetNextResult(config.key, std::move(visits_queue), {}, std::move(callback));
 }
 
 void VisitedURLRankingServiceImpl::MergeVisitsAndCallback(
@@ -190,6 +190,48 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
       base::BindOnce(&VisitedURLRankingServiceImpl::TransformVisitsAndCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(transform_type_queue)));
+}
+
+void VisitedURLRankingServiceImpl::GetNextResult(
+    const std::string& segmentation_key,
+    std::deque<URLVisitAggregate> visit_aggregates,
+    std::vector<URLVisitAggregate> scored_visits,
+    RankURLVisitAggregatesCallback callback) {
+  if (visit_aggregates.empty()) {
+    SortScoredAggregatesAndCallback(std::move(scored_visits),
+                                    std::move(callback));
+    return;
+  }
+
+  PredictionOptions options;
+  options.on_demand_execution = true;
+  scoped_refptr<InputContext> input_context =
+      AsInputContext(kURLVisitAggregateSchema, visit_aggregates.front());
+  segmentation_platform_service_->GetAnnotatedNumericResult(
+      segmentation_key, options, input_context,
+      base::BindOnce(&VisitedURLRankingServiceImpl::OnGetResult,
+                     weak_ptr_factory_.GetWeakPtr(), segmentation_key,
+                     std::move(visit_aggregates), std::move(scored_visits),
+                     std::move(callback)));
+}
+
+void VisitedURLRankingServiceImpl::OnGetResult(
+    const std::string& segmentation_key,
+    std::deque<URLVisitAggregate> visit_aggregates,
+    std::vector<URLVisitAggregate> scored_visits,
+    RankURLVisitAggregatesCallback callback,
+    const AnnotatedNumericResult& result) {
+  float model_score = -1;
+  if (result.status == PredictionStatus::kSucceeded) {
+    model_score = *result.GetResultForLabel(segmentation_key);
+  }
+  auto visit = std::move(visit_aggregates.front());
+  visit.score = model_score;
+  visit_aggregates.pop_front();
+  scored_visits.emplace_back(std::move(visit));
+
+  GetNextResult(segmentation_key, std::move(visit_aggregates),
+                std::move(scored_visits), std::move(callback));
 }
 
 }  // namespace visited_url_ranking

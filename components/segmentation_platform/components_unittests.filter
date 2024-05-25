@@ -77,6 +77,7 @@
 *TabletProductivityUserModelTest.*
 *TrainingDataCacheTest.*
 *TrainingDataCollectorImplTest.*
+*URLVisitResumptionRankerTest.*
 *UkmConfigTest.*
 *UkmDataManagerImplTest.*
 *UkmDatabaseBackendTest.*

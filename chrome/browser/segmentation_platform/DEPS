@@ -3,4 +3,5 @@ include_rules = [
   "+components/segmentation_platform/embedder",
   "+components/segmentation_platform/internal",
   "+components/sync_device_info",
+  "+components/visited_url_ranking/public"
 ]

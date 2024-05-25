@@ -23,8 +23,6 @@ static_library("internal") {
     "transformer/history_url_visit_aggregates_categories_transformer.h",
     "transformer/history_url_visit_aggregates_visibility_score_transformer.cc",
     "transformer/history_url_visit_aggregates_visibility_score_transformer.h",
-    "url_visit_util.cc",
-    "url_visit_util.h",
     "visited_url_ranking_service_impl.cc",
     "visited_url_ranking_service_impl.h",
   ]
@@ -33,6 +31,7 @@ static_library("internal") {
     "//base",
     "//components/bookmarks/browser",
     "//components/history/core/browser",
+    "//components/segmentation_platform/public",
     "//components/sessions",
     "//components/sync_sessions",
     "//components/visited_url_ranking/public",
@@ -44,8 +43,6 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "test_support.cc",
-    "test_support.h",
     "transformer/transformer_test_support.cc",
     "transformer/transformer_test_support.h",
   ]
@@ -80,9 +77,12 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/bookmarks/browser:browser",
     "//components/history/core/browser",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
     "//components/sessions",
     "//components/sync_sessions",
     "//components/visited_url_ranking/public",
+    "//components/visited_url_ranking/public:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

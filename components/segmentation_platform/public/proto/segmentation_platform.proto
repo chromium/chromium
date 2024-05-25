@@ -75,6 +75,8 @@ enum SegmentId {
   OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER = 41;
   // Target to determine whether to show promotion for Compose.
   OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION = 45;
+  // Target for ranking URL visits used in visit resumption features.
+  OPTIMIZATION_TARGET_URL_VISIT_RESUMPTION_RANKER = 46;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not

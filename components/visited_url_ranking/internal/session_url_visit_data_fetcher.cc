@@ -16,9 +16,9 @@
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
-#include "components/visited_url_ranking/internal/url_visit_util.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 #include "url/gurl.h"
 
 namespace visited_url_ranking {

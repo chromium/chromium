@@ -11,8 +11,8 @@
 
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
-#include "components/visited_url_ranking/internal/test_support.h"
 #include "components/visited_url_ranking/internal/transformer/transformer_test_support.h"
+#include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

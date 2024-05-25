@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/visited_url_ranking/public/url_visit.h"
 #include "url/gurl.h"
 
 namespace visited_url_ranking {
@@ -40,6 +41,28 @@ history::AnnotatedVisit GenerateSampleAnnotatedVisit(
   annotated_visit.content_annotations = std::move(content_annotations);
 
   return annotated_visit;
+}
+
+URLVisitAggregate CreateSampleURLVisitAggregate(const GURL& url,
+                                                float visibility_score,
+                                                base::Time time) {
+  URLVisitAggregate visit_aggregate;
+  visit_aggregate.bookmarked = true;
+
+  const std::u16string kSampleTitle(u"sample_title");
+  visit_aggregate.fetcher_data_map.emplace(
+      Fetcher::kHistory,
+      URLVisitAggregate::HistoryData(GenerateSampleAnnotatedVisit(
+          1, kSampleTitle, url, true, "foreign_session_guid", visibility_score,
+          {}, time)));
+  visit_aggregate.fetcher_data_map.emplace(
+      Fetcher::kSession, URLVisitAggregate::TabData(URLVisitAggregate::Tab(
+                             1,
+                             URLVisit(url, kSampleTitle, time,
+                                      syncer::DeviceInfo::FormFactor::kUnknown,
+                                      URLVisit::Source::kLocal),
+                             "sample_tag", "sample_session_name")));
+  return visit_aggregate;
 }
 
 }  // namespace visited_url_ranking

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VISITED_URL_RANKING_INTERNAL_TEST_SUPPORT_H_
-#define COMPONENTS_VISITED_URL_RANKING_INTERNAL_TEST_SUPPORT_H_
+#ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_TEST_SUPPORT_H_
+#define COMPONENTS_VISITED_URL_RANKING_PUBLIC_TEST_SUPPORT_H_
 
 #include <vector>
 
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/visited_url_ranking/public/url_visit.h"
 #include "url/gurl.h"
 
 namespace visited_url_ranking {
@@ -27,6 +28,11 @@ history::AnnotatedVisit GenerateSampleAnnotatedVisit(
         categories = {},
     const base::Time visit_time = base::Time::Now());
 
+URLVisitAggregate CreateSampleURLVisitAggregate(
+    const GURL& url,
+    float visibility_score = 1.0f,
+    base::Time time = base::Time::Now());
+
 }  // namespace visited_url_ranking
 
-#endif  // COMPONENTS_VISITED_URL_RANKING_INTERNAL_TEST_SUPPORT_H_
+#endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_TEST_SUPPORT_H_

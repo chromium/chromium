@@ -38,6 +38,8 @@ static_library("default_model") {
     "shopping_user_model.h",
     "tab_resumption_ranker.cc",
     "tab_resumption_ranker.h",
+    "url_visit_resumption_ranker.cc",
+    "url_visit_resumption_ranker.h",
   ]
   deps = [
     "//base",
@@ -49,6 +51,7 @@ static_library("default_model") {
     "//components/segmentation_platform/public",
     "//components/sync/service",
     "//components/sync_device_info",
+    "//components/visited_url_ranking/public",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
   ]
@@ -97,6 +100,7 @@ source_set("unit_tests") {
     "search_user_model_unittest.cc",
     "shopping_user_model_unittest.cc",
     "tab_resumption_ranker_unittest.cc",
+    "url_visit_resumption_ranker_unittest.cc",
   ]
 
   if (is_android) {
@@ -124,6 +128,7 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync_device_info",
     "//components/sync_device_info:test_support",
+    "//components/visited_url_ranking/public",
     "//testing/gtest",
   ]
 

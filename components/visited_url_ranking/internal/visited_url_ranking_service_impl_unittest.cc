@@ -10,15 +10,42 @@
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/segmentation_platform/public/result.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
+#include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using segmentation_platform::MockSegmentationPlatformService;
+using testing::_;
+
 namespace visited_url_ranking {
+
+namespace {
+
+const segmentation_platform::TrainingRequestId kTestRequestId =
+    segmentation_platform::TrainingRequestId::FromUnsafeValue(0);
+
+segmentation_platform::AnnotatedNumericResult CreateResult(float val) {
+  segmentation_platform::AnnotatedNumericResult result(
+      segmentation_platform::PredictionStatus::kSucceeded);
+  result.result.mutable_output_config()
+      ->mutable_predictor()
+      ->mutable_generic_predictor()
+      ->add_output_labels(kTabResumptionRankerKey);
+  result.result.add_result(val);
+  result.request_id = kTestRequestId;
+  return result;
+}
+
+}  // namespace
 
 class MockURLVisitDataFetcher : public URLVisitDataFetcher {
  public:
@@ -45,18 +72,14 @@ class MockURLVisitAggregatesTransformer : public URLVisitAggregatesTransformer {
                     OnTransformCallback callback));
 };
 
-constexpr char kSampleSearchUrl[] = "https://www.google.com/search?q=sample";
-
 class VisitedURLRankingServiceImplTest : public testing::Test {
  public:
   VisitedURLRankingServiceImplTest() = default;
 
-  void InitService(
-      std::map<URLVisitAggregatesTransformType,
-               std::unique_ptr<URLVisitAggregatesTransformer>> transformers) {
+  std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>>
+  PrepareMockDataFetchers() {
     auto session_tab_data_fetcher = std::make_unique<MockURLVisitDataFetcher>();
-    EXPECT_CALL(*session_tab_data_fetcher,
-                FetchURLVisitData(testing::_, testing::_))
+    EXPECT_CALL(*session_tab_data_fetcher, FetchURLVisitData(_, _))
         .Times(1)
         .WillOnce(testing::Invoke([](const FetchOptions& options,
                                      URLVisitDataFetcher::FetchResultCallback
@@ -77,8 +100,23 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
     std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers = {};
     data_fetchers.emplace(Fetcher::kSession,
                           std::move(session_tab_data_fetcher));
+    return data_fetchers;
+  }
+
+  void InitService(
+      std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers,
+      std::map<URLVisitAggregatesTransformType,
+               std::unique_ptr<URLVisitAggregatesTransformer>> transformers) {
+    segmentation_platform_service_ =
+        std::make_unique<MockSegmentationPlatformService>();
     service_impl_ = std::make_unique<VisitedURLRankingServiceImpl>(
-        std::move(data_fetchers), std::move(transformers));
+        segmentation_platform_service_.get(), std::move(data_fetchers),
+        std::move(transformers));
+  }
+
+  ~VisitedURLRankingServiceImplTest() override {
+    service_impl_ = nullptr;
+    segmentation_platform_service_ = nullptr;
   }
 
   using Result = std::pair<ResultStatus, std::vector<URLVisitAggregate>>;
@@ -100,15 +138,36 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
     return result;
   }
 
+  Result RunRankURLVisitAggregates(
+      const Config& config,
+      std::vector<URLVisitAggregate> visit_aggregates) {
+    Result result;
+    base::RunLoop wait_loop;
+    service_impl_->RankURLVisitAggregates(
+        config, std::move(visit_aggregates),
+        base::BindOnce(
+            [](base::OnceClosure stop_waiting, Result* result,
+               ResultStatus status, std::vector<URLVisitAggregate> aggregates) {
+              result->first = status;
+              result->second = std::move(aggregates);
+              std::move(stop_waiting).Run();
+            },
+            wait_loop.QuitClosure(), &result));
+    wait_loop.Run();
+    return result;
+  }
+
  protected:
   std::unique_ptr<VisitedURLRankingServiceImpl> service_impl_;
+  std::unique_ptr<MockSegmentationPlatformService>
+      segmentation_platform_service_;
 
  private:
   base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(VisitedURLRankingServiceImplTest, FetchURLVisitAggregates) {
-  InitService({});
+  InitService(PrepareMockDataFetchers(), /*transformers=*/{});
   FetchOptions fetch_options = FetchOptions(
       {
           {Fetcher::kSession, FetchOptions::kOriginSources},
@@ -124,7 +183,7 @@ TEST_F(VisitedURLRankingServiceImplTest,
        FetchURLVisitAggregatesWithTransforms) {
   auto mock_bookmark_transformer =
       std::make_unique<MockURLVisitAggregatesTransformer>();
-  EXPECT_CALL(*mock_bookmark_transformer, Transform(testing::_, testing::_))
+  EXPECT_CALL(*mock_bookmark_transformer, Transform(_, _))
       .Times(1)
       .WillOnce(testing::Invoke(
           [](std::vector<URLVisitAggregate> aggregates,
@@ -139,7 +198,7 @@ TEST_F(VisitedURLRankingServiceImplTest,
       transformers = {};
   transformers.emplace(URLVisitAggregatesTransformType::kBookmarkData,
                        std::move(mock_bookmark_transformer));
-  InitService(std::move(transformers));
+  InitService(PrepareMockDataFetchers(), std::move(transformers));
 
   FetchOptions fetch_options = FetchOptions(
       {
@@ -151,6 +210,34 @@ TEST_F(VisitedURLRankingServiceImplTest,
       RunFetchURLVisitAggregates(fetch_options);
   EXPECT_EQ(result.first, ResultStatus::kSuccess);
   EXPECT_EQ(result.second.size(), 1u);
+}
+
+TEST_F(VisitedURLRankingServiceImplTest, RankURLVisitAggregates) {
+  InitService(/*data_fetchers=*/{}, /*transformers=*/{});
+
+  base::Time now = base::Time::Now();
+  std::vector<URLVisitAggregate> url_visit_aggregates = {};
+  const GURL kSampleUrl1 = GURL(base::StrCat({kSampleSearchUrl, "1"}));
+  url_visit_aggregates.push_back(
+      CreateSampleURLVisitAggregate(kSampleUrl1, 0.9f, now));
+  const GURL kSampleUrl2 = GURL(base::StrCat({kSampleSearchUrl, "2"}));
+  url_visit_aggregates.push_back(
+      CreateSampleURLVisitAggregate(kSampleUrl2, 1.0f, now));
+
+  testing::InSequence s;
+  EXPECT_CALL(*segmentation_platform_service_,
+              GetAnnotatedNumericResult(_, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(CreateResult(0.9f)));
+  EXPECT_CALL(*segmentation_platform_service_,
+              GetAnnotatedNumericResult(_, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(CreateResult(1.0f)));
+
+  Config config = {.key = kTabResumptionRankerKey};
+  VisitedURLRankingServiceImplTest::Result result =
+      RunRankURLVisitAggregates(config, std::move(url_visit_aggregates));
+  EXPECT_EQ(result.first, ResultStatus::kSuccess);
+  EXPECT_EQ(result.second.size(), 2u);
+  EXPECT_EQ(**result.second[0].GetAssociatedURLs().begin(), kSampleUrl2);
 }
 
 }  // namespace visited_url_ranking

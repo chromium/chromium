@@ -12,8 +12,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
-#include "components/visited_url_ranking/internal/url_visit_util.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 #include "url/gurl.h"
 
 namespace visited_url_ranking {

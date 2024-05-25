@@ -99,6 +99,8 @@ chromium-metrics-reviews@google.com.
   <variant name="TextClassifier" summary="Smart text selection"/>
   <variant name="TextEmbedder" summary="Generic Text Embedding"/>
   <variant name="TextSafety" summary="Classifies safety of the text"/>
+  <variant name="URLVisitResumptionRanker"
+      summary="URL Visit resumption ranker"/>
   <variant name="VisualSearchClassification"
       summary="Classifies images on the page"/>
   <variant name="WebAppInstallationPromo"

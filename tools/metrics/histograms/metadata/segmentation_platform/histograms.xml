@@ -90,6 +90,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ShoppingUser"/>
   <variant name="TabletProductivityUser"/>
   <variant name="TabResumptionClassifier"/>
+  <variant name="URLVisitResumptionRanker"/>
   <variant name="WebAppInstallationPromo"/>
 </variants>
 
@@ -124,6 +125,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TabletProductivityUser"/>
   <variant name="TabResumptionClassifier"/>
   <variant name="Unknown"/>
+  <variant name="URLVisitResumptionRanker"/>
   <variant name="Voice"/>
   <variant name="WebAppInstallationPromo"/>
 </variants>

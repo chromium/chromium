@@ -5,5 +5,6 @@ include_rules = [
   "+components/sync",
   "+components/sync_device_info",
   "+components/sync_sessions",
+  "+components/visited_url_ranking/public",
   "+ui/base",
 ]

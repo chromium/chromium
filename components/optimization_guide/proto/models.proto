@@ -218,6 +218,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_PHRASE_SEGMENTATION = 44;
   // Target to determine whether to show promotion for Compose.
   OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION = 45;
+  // Target for ranking URL visits used in visit resumption features.
+  OPTIMIZATION_TARGET_URL_VISIT_RESUMPTION_RANKER = 46;
 }
 
 // The model engine versions that can be used to do model inference.

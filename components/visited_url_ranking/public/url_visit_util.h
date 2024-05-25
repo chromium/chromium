@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_VISIT_UTIL_H_
-#define COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_VISIT_UTIL_H_
+#ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_UTIL_H_
+#define COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_UTIL_H_
 
+#include <array>
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/url_visit_schema.h"
 #include "url/gurl.h"
 
 namespace visited_url_ranking {
@@ -34,6 +37,12 @@ inline constexpr auto kDefaultAppBlocklist =
 // deduplication of similar URLs.
 URLMergeKey ComputeURLMergeKey(const GURL& url);
 
+// Generates an input context from a given `URLVisitAggregate` object given a
+// schema definition.
+scoped_refptr<segmentation_platform::InputContext> AsInputContext(
+    const std::array<FieldSchema, kNumInputs>& fields_schema,
+    const URLVisitAggregate& url_visit_aggregate);
+
 }  // namespace visited_url_ranking
 
-#endif  // COMPONENTS_URL_VISIT_URL_VISIT_UTIL_H_
+#endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_UTIL_H_

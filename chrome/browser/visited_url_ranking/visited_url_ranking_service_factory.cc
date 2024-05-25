@@ -15,6 +15,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -28,10 +29,10 @@
 #include "components/visited_url_ranking/internal/transformer/default_app_url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_categories_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_visibility_score_transformer.h"
-#include "components/visited_url_ranking/internal/url_visit_util.h"
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -63,6 +64,8 @@ VisitedURLRankingServiceFactory::VisitedURLRankingServiceFactory()
               .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
+  DependsOn(
+      segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
@@ -75,6 +78,13 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
   if (profile->IsOffTheRecord()) {
+    return nullptr;
+  }
+
+  auto* sps =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile);
+  if (!sps) {
     return nullptr;
   }
 
@@ -101,8 +111,6 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
         std::make_unique<visited_url_ranking::HistoryURLVisitDataFetcher>(hs));
   }
 
-  // TODO(crbug.com/329242209): Add various aggregate transformers (e.g,
-  // shopping) to the service's map of supported transformers.
   std::map<URLVisitAggregatesTransformType,
            std::unique_ptr<URLVisitAggregatesTransformer>>
       transformers = {};
@@ -135,7 +143,7 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return std::make_unique<VisitedURLRankingServiceImpl>(
-      std::move(data_fetchers), std::move(transformers));
+      sps, std::move(data_fetchers), std::move(transformers));
 }
 
 bool VisitedURLRankingServiceFactory::ServiceIsCreatedWithBrowserContext()

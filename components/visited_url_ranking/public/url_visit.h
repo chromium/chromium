@@ -147,6 +147,13 @@ struct URLVisitAggregate {
 
   // Whether the visit is bookmarked or not.
   bool bookmarked = false;
+
+  // The number of times the visits associated with the aggregate where on the
+  // foreground.
+  size_t num_times_active = 0;
+
+  // A score associated with the aggregate, if any.
+  std::optional<float> score = std::nullopt;
 };
 
 // Helper to visit each variant of URLVisitVariant.

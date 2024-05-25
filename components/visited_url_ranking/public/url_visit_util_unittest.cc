@@ -1,0 +1,50 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/visited_url_ranking/public/url_visit_util.h"
+
+#include <optional>
+
+#include "base/memory/scoped_refptr.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
+#include "components/visited_url_ranking/public/test_support.h"
+#include "components/visited_url_ranking/public/url_visit_schema.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+using segmentation_platform::InputContext;
+using segmentation_platform::processing::ProcessedValue;
+
+namespace visited_url_ranking {
+
+class URLVisitUtilTest : public testing::Test {};
+
+TEST_F(URLVisitUtilTest, CreateInputContextFromURLVisitAggregate) {
+  auto aggregate = CreateSampleURLVisitAggregate(GURL(kSampleSearchUrl));
+  scoped_refptr<InputContext> input_context =
+      AsInputContext(kURLVisitAggregateSchema, aggregate);
+  ASSERT_EQ(input_context->metadata_args.size(), kNumInputs);
+
+  for (const auto& field_schema : kURLVisitAggregateSchema) {
+    EXPECT_TRUE(input_context->metadata_args.find(field_schema.name) !=
+                input_context->metadata_args.end());
+  }
+
+  std::optional<ProcessedValue> tab_count = input_context->GetMetadataArgument(
+      kURLVisitAggregateSchema
+          .at(URLVisitAggregateRankingModelInputSignals::kTabCount)
+          .name);
+  ASSERT_TRUE(tab_count);
+  EXPECT_EQ(tab_count.value(), ProcessedValue::FromFloat(1.0f));
+
+  std::optional<ProcessedValue> visit_count =
+      input_context->GetMetadataArgument(
+          kURLVisitAggregateSchema
+              .at(URLVisitAggregateRankingModelInputSignals::kVisitCount)
+              .name);
+  ASSERT_TRUE(visit_count);
+  EXPECT_EQ(visit_count.value(), ProcessedValue::FromFloat(1.0f));
+}
+
+}  // namespace visited_url_ranking
