@@ -47,4 +47,14 @@ interface InSessionAuth {
 
   // Release the token when no longer needed, rendering it invalid.
   InvalidateToken@2(string token);
+
+  // Instructs Ash to summon the legacy WebAuthn dialog to authenticate
+  // the currently active user. Returns whether the authentication
+  // was successful. `rp_id` is the identifier of the WebAuthn relying party,
+  // which is usually (but not necessarily) a part of the URL. `window_id` is
+  // the window identifier that sent the WebAuthn request. The identifier is
+  // given by the window manager, so we can't make extra assumptions about it
+  // (like whether it's a integer or URL etc.) other than that it is a string.
+  [MinVersion=2]
+  RequestLegacyWebAuthn@3(string rp_id, string window_id) => (bool success);
 };

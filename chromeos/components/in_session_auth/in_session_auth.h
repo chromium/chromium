@@ -36,6 +36,9 @@ class InSessionAuth : public chromeos::auth::mojom::InSessionAuth {
                   const std::string& token,
                   CheckTokenCallback callback) override;
   void InvalidateToken(const std::string& token) override;
+  void RequestLegacyWebAuthn(const std::string& rp_id,
+                             const std::string& window_id,
+                             RequestLegacyWebAuthnCallback callback) override;
 
  private:
   // Continuation of InSessionAuth::RequestToken. Last 3 params match
