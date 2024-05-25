@@ -42,7 +42,12 @@
           </iron-icon>
           <div class="start settings-box-text">
             $i18n{appParentalControlsTitle}
-            <div class="secondary">$i18n{appParentalControlsSubtitle}</div>
+            <div class="secondary">
+              <localized-link
+                  localized-string=
+                      "[[i18nAdvanced('appParentalControlsSubtitle')]]">
+              </localized-link>
+            </div>
           </div>
           <template is="dom-if"
               if="[[!prefs.on_device_app_controls.setup_completed.value]]">

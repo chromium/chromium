@@ -54,8 +54,10 @@ inline constexpr char kAppNotificationsBrowserSettingsURL[] =
     "chrome://settings/content/notifications";
 
 // "Learn more" URL for App Parental Controls.
-inline constexpr char kAppParentalControlsLearnMoreUrl[] =
-    "https://support.google.com/chromebook?p=local_app_controls";
+// char16_t is used here because this constant may be used to set the src
+// attribute of iframe elements.
+inline constexpr char16_t kAppParentalControlsLearnMoreUrl[] =
+    u"https://support.google.com/chromebook?p=local_app_controls";
 
 // "Learn more" URL for Battery Saver Mode.
 inline constexpr char kBatterySaverModeLearnMoreUrl[] =
