@@ -272,6 +272,10 @@ class CORE_EXPORT InspectorDOMAgent final
                                           const String& relation,
                                           int* out_node_id) override;
 
+  protocol::Response getAnchorElement(int node_id,
+                                      protocol::Maybe<String> anchor_specifier,
+                                      int* out_node_id) override;
+
   bool Enabled() const;
   IncludeWhitespaceEnum IncludeWhitespace() const;
   void ReleaseDanglingNodes();

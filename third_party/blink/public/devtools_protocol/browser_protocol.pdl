@@ -3337,6 +3337,21 @@ domain DOM
       # Descendant nodes with container queries against the given container.
       array of NodeId nodeIds
 
+  # Returns the target anchor element of the given anchor query according to
+  # https://www.w3.org/TR/css-anchor-position-1/#target.
+  experimental command getAnchorElement
+    parameters
+      # Id of the positioned element from which to find the anchor.
+      NodeId nodeId
+      # An optional anchor specifier, as defined in
+      # https://www.w3.org/TR/css-anchor-position-1/#anchor-specifier.
+      # If not provided, it will return the implicit anchor element for
+      # the given positioned element.
+      optional string anchorSpecifier
+    returns
+      # The anchor element of the given anchor query.
+      NodeId nodeId
+
   # Fired when `Element`'s attribute is modified.
   event attributeModified
     parameters

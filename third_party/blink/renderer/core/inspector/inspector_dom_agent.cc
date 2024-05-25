@@ -1730,6 +1730,41 @@ protocol::Response InspectorDOMAgent::getElementByRelation(
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorDOMAgent::getAnchorElement(
+    int node_id,
+    protocol::Maybe<String> anchor_specifier,
+    int* anchor_element_id) {
+  *anchor_element_id = 0;
+  Node* node = nullptr;
+  protocol::Response response = AssertNode(node_id, node);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  const LayoutObject* querying_object = node->GetLayoutObject();
+  if (!querying_object) {
+    return protocol::Response::ServerError(
+        "No layout object for node, perhaps orphan or hidden node");
+  }
+  const auto* box = To<LayoutBox>(querying_object);
+  const LayoutObject* target_object;
+  if (anchor_specifier.has_value()) {
+    target_object = box->FindTargetAnchor(*MakeGarbageCollected<ScopedCSSName>(
+        AtomicString(anchor_specifier.value()),
+        &querying_object->GetDocument()));
+  } else {
+    target_object = box->AcceptableImplicitAnchor();
+  }
+
+  if (target_object) {
+    Element* element = DynamicTo<Element>(target_object->GetNode());
+    if (element) {
+      *anchor_element_id = PushNodePathToFrontend(element);
+    }
+  }
+  return protocol::Response::Success();
+}
+
 // static
 const HeapVector<Member<Element>>
 InspectorDOMAgent::GetContainerQueryingDescendants(Element* container) {
