@@ -362,8 +362,8 @@ suite('cr-dialog', function() {
       static override get properties() {
         return {
           showDialog: {type: Boolean},
-          autfocusCrInput: {type: Boolean},
-          autfocusCrTextarea: {type: Boolean},
+          autofocusCrInput: {type: Boolean},
+          autofocusCrTextarea: {type: Boolean},
         };
       }
 
