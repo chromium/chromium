@@ -98,6 +98,9 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       "darkMode",
       lens::LensOverlayShouldUseDarkMode(
           ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))));
+  html_source->AddDouble(
+      "selectTextTriggerThreshold",
+      lens::features::GetLensOverlaySelectTextOverRegionTriggerThreshold());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

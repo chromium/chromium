@@ -133,6 +133,10 @@ constexpr base::FeatureParam<int> kLensOverlayTapRegionHeight{
 constexpr base::FeatureParam<int> kLensOverlayTapRegionWidth{
     &kLensOverlay, "tap-region-width", 300};
 
+constexpr base::FeatureParam<double>
+    kLensOverlaySelectTextOverRegionTriggerThreshold{
+        &kLensOverlay, "select-text-over-region-trigger-threshold", 0.03};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -387,6 +391,10 @@ double DynamicThemeMinPopulationPct() {
 
 double DynamicThemeMinChroma() {
   return kDynamicThemeMinChroma.Get();
+}
+
+double GetLensOverlaySelectTextOverRegionTriggerThreshold() {
+  return kLensOverlaySelectTextOverRegionTriggerThreshold.Get();
 }
 
 }  // namespace lens::features

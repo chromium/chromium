@@ -343,6 +343,11 @@ extern double DynamicThemeMinPopulationPct();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern double DynamicThemeMinChroma();
 
+// Returns the minimum intersection over union between region and text to serve
+// as a threshold for triggering select text chip over region search.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern double GetLensOverlaySelectTextOverRegionTriggerThreshold();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

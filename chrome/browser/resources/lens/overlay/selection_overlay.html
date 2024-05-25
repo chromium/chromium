@@ -124,7 +124,7 @@
     width: 100%;
   }
 
-  #contextMenu {
+  .context-menu {
     align-items: flex-start;
     background: var(--color-selection-element);
     border-radius: 8px;
@@ -143,7 +143,12 @@
     justify-content: space-between;
   }
 
-  :host([show-text-context-menu]) #contextMenu {
+  :host([show-selected-text-context-menu]) #selectedTextContextMenu {
+    /* TODO: b/338642962 - Add animation */
+    display: flex;
+  }
+
+  :host([show-detected-text-context-menu]) #detectedTextContextMenu {
     /* TODO: b/338642962 - Add animation */
     display: flex;
   }
@@ -200,18 +205,27 @@
     <lens-text-layer id="textSelectionLayer"></lens-text-layer>
   </div>
   <div id="contextMenuOverlay">
-    <div id="contextMenu" role="menu"
+    <div id="selectedTextContextMenu" class="context-menu" role="menu"
         style$="[[getContextMenuStyle(contextMenuX, contextMenuY)]]"
         on-pointerenter="handlePointerEnterContextMenu"
         on-pointerleave="handlePointerLeaveContextMenu">
-    <div class="context-menu-item" role="menuitem" on-pointerup="handleCopy">
-      <img src="copy.svg" class="menu-item-icon">
-      <span class="menu-item-label">$i18n{copy}</span>
+      <div class="context-menu-item" role="menuitem" on-pointerup="handleCopy">
+        <img src="copy.svg" class="menu-item-icon">
+        <span class="menu-item-label">$i18n{copy}</span>
+      </div>
+      <div class="context-menu-item" role="menuitem"
+          on-pointerup="handleTranslate">
+        <img src="translate.svg" class="menu-item-icon">
+        <span class="menu-item-label">$i18n{translate}</span>
+      </div>
     </div>
-    <div class="context-menu-item" role="menuitem"
-        on-pointerup="handleTranslate">
-      <img src="translate.svg" class="menu-item-icon">
-      <span class="menu-item-label">$i18n{translate}</span>
+    <div id="detectedTextContextMenu" class="context-menu" role="menu"
+        style$="[[getContextMenuStyle(contextMenuX, contextMenuY)]]"
+        on-pointerenter="handlePointerEnterContextMenu"
+        on-pointerleave="handlePointerLeaveContextMenu">
+      <div class="context-menu-item" role="menuitem"
+          on-pointerup="handleSelectText">
+        <span class="menu-item-label">Select text</span>
       </div>
     </div>
   </div>

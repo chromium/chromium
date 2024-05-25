@@ -137,6 +137,8 @@ export class PostSelectionRendererElement extends PolymerElement {
     unfocusShimmer(this, ShimmerControlRequester.POST_SELECTION);
     this.height = 0;
     this.width = 0;
+    this.dispatchEvent(new CustomEvent(
+        'hide-detected-text-context-menu', {bubbles: true, composed: true}));
   }
 
   handleDownGesture(event: GestureEvent): boolean {
@@ -291,10 +293,17 @@ export class PostSelectionRendererElement extends PolymerElement {
   }
 
   handleUpGesture() {
-    if (this.shouldSendLensRequest()) {
+    if (this.areBoundsChanging()) {
       // Issue Lens request for new bounds
       BrowserProxyImpl.getInstance().handler.issueLensRequest(
           this.getNormalizedCenterRotatedBox());
+
+      // Check for selectable text
+      this.dispatchEvent(new CustomEvent('detect-text-in-region', {
+        bubbles: true,
+        composed: true,
+        detail: this.getNormalizedCenterRotatedBox(),
+      }));
     }
 
     this.originalBounds = {left: 0, top: 0, width: 0, height: 0};
@@ -370,8 +379,8 @@ export class PostSelectionRendererElement extends PolymerElement {
         });
   }
 
-  // Returns if the current bounds should be sent to Lens.
-  private shouldSendLensRequest() {
+  // Returns if the current bounds are being updated.
+  private areBoundsChanging() {
     return this.originalBounds.top !== this.top ||
         this.originalBounds.left !== this.left ||
         this.originalBounds.height !== this.height ||

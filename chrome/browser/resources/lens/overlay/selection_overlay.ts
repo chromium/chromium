@@ -42,7 +42,7 @@ export interface CursorData {
   cursor: CursorType;
 }
 
-export interface TextContextMenuData {
+export interface SelectedTextContextMenuData {
   // The text selection that the context menu commands will act on.
   text: string;
   // Dominant content language of the text. Language code is CLDR/BCP-47.
@@ -61,16 +61,32 @@ export interface TextContextMenuData {
   selectionEndIndex: number;
 }
 
+export interface DetectedTextContextMenuData {
+  // The left-most position of the detected text.
+  left: number;
+  // The right-most position of the detected text.
+  right: number;
+  // The highest position of the detected text.
+  top: number;
+  // The lowest position of the detected text.
+  bottom: number;
+  // The selection start index of the text.
+  selectionStartIndex: number;
+  // The end selection index of the text.
+  selectionEndIndex: number;
+}
+
 export interface SelectionOverlayElement {
   $: {
     backgroundImage: HTMLImageElement,
-    contextMenu: HTMLElement,
     copyToast: CrToastElement,
     cursor: HTMLElement,
+    detectedTextContextMenu: HTMLElement,
     objectSelectionLayer: ObjectLayerElement,
     overlayShimmer: OverlayShimmerElement,
     postSelectionRenderer: PostSelectionRendererElement,
     regionSelectionLayer: RegionSelectionElement,
+    selectedTextContextMenu: HTMLElement,
     selectionOverlay: HTMLElement,
     textSelectionLayer: TextLayerElement,
   };
@@ -100,7 +116,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
-      showTextContextMenu: {
+      showSelectedTextContextMenu: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+      showDetectedTextContextMenu: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
@@ -127,14 +148,17 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   // Whether the selection overlay is its initial size, or has changed size.
   private isResized: boolean = false;
-  private showTextContextMenu: boolean;
-  // Location at which to show the text context menu.
+  private showSelectedTextContextMenu: boolean;
+  private showDetectedTextContextMenu: boolean;
+  // Location at which to show the context menus.
   private contextMenuX: number;
   private contextMenuY: number;
   private highlightedText: string = '';
   private contentLanguage: string = '';
   private textSelectionStartIndex: number = -1;
   private textSelectionEndIndex: number = -1;
+  private detectedTextStartIndex: number = -1;
+  private detectedTextEndIndex: number = -1;
   // The data URI of the current overlay screenshot.
   private screenshotDataUri: string;
   private isPointerInside = false;
@@ -192,9 +216,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           }
         });
     this.eventTracker_.add(
-        document, 'show-text-context-menu',
-        (e: CustomEvent<TextContextMenuData>) => {
-          this.showTextContextMenu = true;
+        document, 'show-selected-text-context-menu',
+        (e: CustomEvent<SelectedTextContextMenuData>) => {
+          this.showSelectedTextContextMenu = true;
           this.contextMenuX = e.detail.left;
           this.contextMenuY = e.detail.bottom;
           this.highlightedText = e.detail.text;
@@ -202,10 +226,23 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.textSelectionStartIndex = e.detail.selectionStartIndex;
           this.textSelectionEndIndex = e.detail.selectionEndIndex;
         });
-    this.eventTracker_.add(document, 'hide-text-context-menu', () => {
-      this.showTextContextMenu = false;
+    this.eventTracker_.add(
+        document, 'show-detected-text-context-menu', (e: CustomEvent) => {
+          this.showDetectedTextContextMenu = true;
+          this.contextMenuX = e.detail.left;
+          this.contextMenuY = e.detail.bottom;
+          this.detectedTextStartIndex = e.detail.selectionStartIndex;
+          this.detectedTextEndIndex = e.detail.selectionEndIndex;
+        });
+    this.eventTracker_.add(document, 'hide-selected-text-context-menu', () => {
+      this.showSelectedTextContextMenu = false;
       this.textSelectionStartIndex = -1;
       this.textSelectionEndIndex = -1;
+    });
+    this.eventTracker_.add(document, 'hide-detected-text-context-menu', () => {
+      this.showDetectedTextContextMenu = false;
+      this.detectedTextStartIndex = -1;
+      this.detectedTextEndIndex = -1;
     });
     this.eventTracker_.add(document, 'darken-extra-scrim-opacity', () => {
       this.darkenExtraScrim = true;
@@ -541,7 +578,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     const elementsAtPoint =
         this.shadowRoot!.elementsFromPoint(event.clientX, event.clientY);
     // Do not intercept events that should go to the following elements.
-    if (elementsAtPoint.includes(this.$.contextMenu) ||
+    if (elementsAtPoint.includes(this.$.selectedTextContextMenu) ||
+        elementsAtPoint.includes(this.$.detectedTextContextMenu) ||
         elementsAtPoint.includes(this.$.copyToast)) {
       return true;
     }
@@ -589,6 +627,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.$.copyToast.hide();
   }
 
+  private handleSelectText() {
+    this.$.textSelectionLayer.selectAndSendWords(
+        this.detectedTextStartIndex, this.detectedTextEndIndex);
+    this.$.postSelectionRenderer.clearSelection();
+  }
+
   private handleTranslate() {
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
         this.highlightedText, this.contentLanguage,
@@ -612,6 +656,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private handlePointerLeaveContextMenu() {
     this.isPointerInside = true;
     this.isPointerInsideContextMenu = false;
+  }
+
+  getShowDetectedTextContextMenuForTesting() {
+    return this.showDetectedTextContextMenu;
+  }
+
+  handleSelectTextForTesting() {
+    this.handleSelectText();
   }
 }
 

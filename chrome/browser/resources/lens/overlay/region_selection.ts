@@ -94,6 +94,13 @@ export class RegionSelectionElement extends PolymerElement {
       detail: this.getPostSelectionRegion(event),
     }));
 
+    // Check for selectable text
+    this.dispatchEvent(new CustomEvent('detect-text-in-region', {
+      bubbles: true,
+      composed: true,
+      detail: this.getNormalizedCenterRotatedBoxFromGesture(event),
+    }));
+
     this.clearCanvas();
     return true;
   }
