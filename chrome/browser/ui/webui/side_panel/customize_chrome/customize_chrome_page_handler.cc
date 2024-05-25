@@ -484,11 +484,6 @@ void CustomizeChromePageHandler::OnCustomBackgroundImageUpdated() {
   OnThemeChanged();
 }
 
-void CustomizeChromePageHandler::OnNtpCustomBackgroundServiceShuttingDown() {
-  ntp_custom_background_service_observation_.Reset();
-  ntp_custom_background_service_ = nullptr;
-}
-
 void CustomizeChromePageHandler::OnCollectionInfoAvailable() {
   if (!background_collections_callback_) {
     return;

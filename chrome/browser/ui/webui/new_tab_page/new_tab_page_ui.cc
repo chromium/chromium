@@ -1097,11 +1097,6 @@ void NewTabPageUI::OnCustomBackgroundImageUpdated() {
                                    std::move(update));
 }
 
-void NewTabPageUI::OnNtpCustomBackgroundServiceShuttingDown() {
-  ntp_custom_background_service_observation_.Reset();
-  ntp_custom_background_service_ = nullptr;
-}
-
 void NewTabPageUI::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame() &&

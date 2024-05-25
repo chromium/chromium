@@ -121,7 +121,6 @@ class CustomizeChromePageHandler
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
-  void OnNtpCustomBackgroundServiceShuttingDown() override;
 
   // NtpBackgroundServiceObserver:
   void OnCollectionInfoAvailable() override;

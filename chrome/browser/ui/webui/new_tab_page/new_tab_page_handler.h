@@ -163,7 +163,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
-  void OnNtpCustomBackgroundServiceShuttingDown() override;
 
   // NtpBackgroundServiceObserver:
   void OnCollectionInfoAvailable() override;

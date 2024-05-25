@@ -220,11 +220,6 @@ NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
 
 NtpCustomBackgroundService::~NtpCustomBackgroundService() = default;
 
-void NtpCustomBackgroundService::Shutdown() {
-  for (NtpCustomBackgroundServiceObserver& observer : observers_)
-    observer.OnNtpCustomBackgroundServiceShuttingDown();
-}
-
 void NtpCustomBackgroundService::OnCollectionInfoAvailable() {}
 
 void NtpCustomBackgroundService::OnCollectionImagesAvailable() {}

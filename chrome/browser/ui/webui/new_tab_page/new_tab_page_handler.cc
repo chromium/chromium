@@ -1227,11 +1227,6 @@ void NewTabPageHandler::OnCustomBackgroundImageUpdated() {
   OnThemeChanged();
 }
 
-void NewTabPageHandler::OnNtpCustomBackgroundServiceShuttingDown() {
-  ntp_custom_background_service_observation_.Reset();
-  ntp_custom_background_service_ = nullptr;
-}
-
 void NewTabPageHandler::OnCollectionInfoAvailable() {
   if (!background_collections_callback_) {
     return;

@@ -54,7 +54,6 @@ class MockNtpCustomBackgroundServiceObserver
     : public NtpCustomBackgroundServiceObserver {
  public:
   MOCK_METHOD0(OnCustomBackgroundImageUpdated, void());
-  MOCK_METHOD0(OnNtpCustomBackgroundServiceShuttingDown, void());
 };
 
 class MockThemeService : public ThemeService {

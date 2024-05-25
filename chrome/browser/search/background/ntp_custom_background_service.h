@@ -44,9 +44,6 @@ class NtpCustomBackgroundService : public KeyedService,
   explicit NtpCustomBackgroundService(Profile* profile);
   ~NtpCustomBackgroundService() override;
 
-  // KeyedService:
-  void Shutdown() override;
-
   // NtpBackgroundServiceObserver:
   void OnCollectionInfoAvailable() override;
   void OnCollectionImagesAvailable() override;

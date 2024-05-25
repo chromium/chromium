@@ -270,8 +270,3 @@ void ThemeColorPickerHandler::OnThemeChanged() {
 void ThemeColorPickerHandler::OnCustomBackgroundImageUpdated() {
   OnThemeChanged();
 }
-
-void ThemeColorPickerHandler::OnNtpCustomBackgroundServiceShuttingDown() {
-  ntp_custom_background_service_observation_.Reset();
-  ntp_custom_background_service_ = nullptr;
-}

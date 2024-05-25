@@ -271,7 +271,6 @@ class NewTabPageUI
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
-  void OnNtpCustomBackgroundServiceShuttingDown() override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(

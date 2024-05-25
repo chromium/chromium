@@ -69,7 +69,6 @@ class ThemeColorPickerHandler
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
-  void OnNtpCustomBackgroundServiceShuttingDown() override;
 
   bool seed_color_changed_ = false;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
