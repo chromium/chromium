@@ -1151,6 +1151,9 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "showMeteredToggle",
       base::FeatureList::IsEnabled(::features::kMeteredShowToggle));
   html_source->AddBoolean(
+      "trafficCountersForWifiTesting",
+      ash::features::IsTrafficCountersForWiFiTestingEnabled());
+  html_source->AddBoolean(
       "showHiddenToggle",
       base::FeatureList::IsEnabled(::features::kShowHiddenNetworkToggle));
   html_source->AddBoolean("isInstantHotspotRebrandEnabled",

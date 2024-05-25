@@ -9322,6 +9322,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"traffic-counters", flag_descriptions::kTrafficCountersEnabledName,
      flag_descriptions::kTrafficCountersEnabledDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kTrafficCountersEnabled)},
+
+    {"traffic-counters-for-wifi-testing",
+     flag_descriptions::kTrafficCountersForWiFiTestingName,
+     flag_descriptions::kTrafficCountersForWiFiTestingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTrafficCountersForWiFiTesting)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

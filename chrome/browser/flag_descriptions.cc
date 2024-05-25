@@ -7356,6 +7356,12 @@ const char kTrafficCountersEnabledDescription[] =
     "If enabled, data usage will be visible in the Cellular Settings UI and "
     "traffic counters will be automatically reset if that setting is enabled.";
 
+const char kTrafficCountersForWiFiTestingName[] =
+    "Traffic counters enabled for WiFi networks";
+const char kTrafficCountersForWiFiTestingDescription[] =
+    "If enabeld, data usage will be visible in the Settings UI for WiFi "
+    "networks";
+
 const char kUploadOfficeToCloudName[] = "Enable Office files upload workflow.";
 const char kUploadOfficeToCloudDescription[] =
     "Some file handlers for Microsoft Office files are only available on the "

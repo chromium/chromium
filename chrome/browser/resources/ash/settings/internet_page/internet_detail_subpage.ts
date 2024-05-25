@@ -278,6 +278,14 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
+      isTrafficCountersForWifiTestingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('trafficCountersForWifiTesting') &&
+              loadTimeData.getBoolean('trafficCountersForWifiTesting');
+        },
+      },
+
       /**
        * Tracks whether traffic counter info should be shown.
        */
@@ -420,6 +428,7 @@ export class SettingsInternetDetailPageElement extends
   private isRevampWayfindingEnabled_: boolean;
   private isSecondaryUser_: boolean;
   private isTrafficCountersEnabled_: boolean;
+  private isTrafficCountersForWifiTestingEnabled_: boolean;
   private isWifiSyncEnabled_: boolean;
   private managedProperties_: ManagedProperties|undefined;
   private meteredOverride_: boolean;
@@ -1235,6 +1244,10 @@ export class SettingsInternetDetailPageElement extends
   private isTether_(managedProperties: ManagedProperties|undefined): boolean {
     return !!managedProperties &&
         managedProperties.type === NetworkType.kTether;
+  }
+
+  private isWiFi_(managedProperties: ManagedProperties|undefined): boolean {
+    return !!managedProperties && managedProperties.type === NetworkType.kWiFi;
   }
 
   private isWireGuard_(managedProperties: ManagedProperties|
@@ -2216,10 +2229,15 @@ export class SettingsInternetDetailPageElement extends
     if (!this.isTrafficCountersEnabled_) {
       return false;
     }
-    const connectedToCellular = !!managedProperties && this.guid !== '' &&
-        this.isCellular_(managedProperties) &&
-        this.isConnectedState_(managedProperties);
-    if (!connectedToCellular) {
+    if (!managedProperties || this.guid === '') {
+      return false;
+    }
+    if (!this.isCellular_(managedProperties) &&
+        !(this.isWiFi_(managedProperties) &&
+          this.isTrafficCountersForWifiTestingEnabled_)) {
+      return false;
+    }
+    if (!this.isConnectedState_(managedProperties)) {
       return false;
     }
 

@@ -8405,6 +8405,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "traffic-counters-for-wifi-testing",
+    "owners": ["khegde@google.com", "cros-connectivity@google.com"],
+    "expiry_milestone": 132
+  },
+  {
     "name": "translate-force-trigger-on-english",
     "owners": [ "megjablon@chromium.org", "cuianthony@chromium.org", "chrome-language@google.com" ],
     // This flag is used to manually trigger a Finch controlled, India only

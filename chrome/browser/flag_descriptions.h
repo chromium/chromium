@@ -4273,6 +4273,9 @@ extern const char kTouchscreenCalibrationDescription[];
 extern const char kTrafficCountersEnabledName[];
 extern const char kTrafficCountersEnabledDescription[];
 
+extern const char kTrafficCountersForWiFiTestingName[];
+extern const char kTrafficCountersForWiFiTestingDescription[];
+
 extern const char kUiDevToolsName[];
 extern const char kUiDevToolsDescription[];
 

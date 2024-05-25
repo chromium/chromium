@@ -2856,6 +2856,11 @@ BASE_FEATURE(kTrafficCountersEnabled,
              "TrafficCountersEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables traffic counters for WiFi networks.
+BASE_FEATURE(kTrafficCountersForWiFiTesting,
+             "TrafficCountersForWiFiTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables trilinear filtering.
 BASE_FEATURE(kTrilinearFiltering,
              "TrilinearFiltering",
@@ -4543,6 +4548,10 @@ bool IsTouchscreenInDiagnosticsAppEnabled() {
 
 bool IsTrafficCountersEnabled() {
   return base::FeatureList::IsEnabled(kTrafficCountersEnabled);
+}
+
+bool IsTrafficCountersForWiFiTestingEnabled() {
+  return base::FeatureList::IsEnabled(kTrafficCountersForWiFiTesting);
 }
 
 bool IsTrilinearFilteringEnabled() {

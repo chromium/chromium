@@ -19242,6 +19242,7 @@ from previous Chrome versions.
   <int value="-902719249" label="EnableSchemeBoundCookies:disabled"/>
   <int value="-902227224" label="MlRelevanceScoring:disabled"/>
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
+  <int value="-901418755" label="TrafficCountersForWiFiTesting:enabled"/>
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
   <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
   <int value="-899799867" label="AllowWgcScreenCapturer:disabled"/>
@@ -23411,6 +23412,7 @@ from previous Chrome versions.
   <int value="925950257" label="WebRtcCombinedNetworkAndWorkerThread:disabled"/>
   <int value="926844887" label="QuickDim:disabled"/>
   <int value="926852901" label="DataReductionProxyMainMenu:disabled"/>
+  <int value="928840332" label="TrafficCountersForWiFiTesting:disabled"/>
   <int value="928900043" label="OmniboxLooseMaxLimitOnDedicatedRows:disabled"/>
   <int value="928991555" label="DefaultViewportIsDeviceWidth:disabled"/>
   <int value="929462705" label="disable-link-disambiguation-popup"/>
