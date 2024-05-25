@@ -78,6 +78,12 @@ These design principles make it easier to write, debug, and maintain code in //c
       `BASE_FEATURE(kFooFeature,...)`
     * Global functions that access non-global state are disallowed. e.g.
       static methods on `BrowserList`.
+* No distinction between `//chrome/browser/BUILD.gn` and
+  `//chrome/browser/ui/BUILD.gn`
+    * There is plenty of UI code outside of the `ui` subdirectory, and plenty of
+      non-UI code inside of the `ui` subdirectory. Currently the two BUILD files
+      allow circular includes. We will continue to treat these directories and
+      BUILD files as interchangeable.
 
 ## UI
 * Features should use WebUI and Views toolkit, which are x-platform.
@@ -90,7 +96,19 @@ These design principles make it easier to write, debug, and maintain code in //c
     * For simple features that do not require data persistence, we only require
       separation of controller from view.
     * TODO: work with UI/toolkit team to come up with appropriate examples.
-* Avoid subclassing Views/Widgets.
+* Views:
+    * For simple configuration changes, prefer to use existing setter methods
+      and builder syntax.
+    * Feel free to create custom view subclasses to encapsulate logic or
+      override methods where doing so helps implement layout as the composition
+      of smaller standard layouts, or similar. Don't try to jam the kitchen sink
+      into a single giant view.
+    * However, avoid subclassing existing concrete view subclasses, e.g. to add
+      or tweak existing behavior. This risks violating the Google style guidance
+      on multiple inheritance and makes maintenance challenging. In particular
+      do not do this with core controls, as the behaviors of common controls
+      should not vary across the product.
+* Avoid subclassing Widgets.
 * Avoid self-owned objects/classes for views or controllers.
 
 ## General
