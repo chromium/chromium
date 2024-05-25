@@ -6012,6 +6012,10 @@ void NavigationRequest::CommitNavigation() {
 
   blink::mojom::ServiceWorkerContainerInfoForClientPtr
       service_worker_container_info;
+  blink::mojom::ControllerServiceWorkerInfoPtr controller;
+  SubresourceLoaderParams::CheckWithMainResourceHandle(
+      service_worker_handle_.get(),
+      subresource_loader_params_.service_worker_client.get());
   if (service_worker_handle_) {
     DCHECK(coep_reporter());
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -6026,6 +6030,11 @@ void NavigationRequest::CommitNavigation() {
           GetRenderFrameHost()->GetGlobalId(),
           policy_container_builder_->FinalPolicies(),
           std::move(reporter_remote), commit_params_->document_ukm_source_id);
+
+      if (service_worker_handle_->service_worker_client()->controller()) {
+        controller = service_worker_handle_->service_worker_client()
+                         ->CreateControllerServiceWorkerInfo();
+      }
     }
   }
 
@@ -6117,8 +6126,8 @@ void NavigationRequest::CommitNavigation() {
   GetRenderFrameHost()->CommitNavigation(
       this, std::move(common_params), std::move(commit_params),
       std::move(response_head), std::move(response_body_),
-      std::move(url_loader_client_endpoints_),
-      std::move(subresource_loader_params_), std::move(subresource_overrides_),
+      std::move(url_loader_client_endpoints_), std::move(controller),
+      std::move(subresource_overrides_),
       std::move(service_worker_container_info), document_token_,
       devtools_navigation_token_);
   if (service_worker_handle_ &&

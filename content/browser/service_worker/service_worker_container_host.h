@@ -496,6 +496,10 @@ class CONTENT_EXPORT ServiceWorkerClient final
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Should be called only when `controller()` is non-null.
+  blink::mojom::ControllerServiceWorkerInfoPtr
+  CreateControllerServiceWorkerInfo();
+
  private:
   class ServiceWorkerRunningStatusObserver;
 
@@ -565,11 +569,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
 #if DCHECK_IS_ON()
   void CheckControllerConsistency(bool should_crash) const;
 #endif  // DCHECK_IS_ON()
-
-  // Should be called only when `controller()` is non-null.
-  // Callers should fill `ControllerServiceWorkerInfo::object_info` when needed.
-  blink::mojom::ControllerServiceWorkerInfoPtr
-  CreateControllerServiceWorkerInfo();
 
   // Flushes features stored, when it gets ready to send.
   // If it is still not ready to send, the features are buffered again.
@@ -641,14 +640,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   class PendingUpdateVersion;
 
   base::flat_set<PendingUpdateVersion> versions_to_update_;
-
-  // Mojo endpoint which will be be sent to the service worker just before
-  // the response is committed, where |cross_origin_embedder_policy_| is ready.
-  // We need to store this here because navigation code depends on having a
-  // mojo::Remote<ControllerServiceWorker> for making a SubresourceLoaderParams,
-  // which is created before the response header is ready.
-  mojo::PendingReceiver<blink::mojom::ControllerServiceWorker>
-      pending_controller_receiver_;
 
   // The type of client.
   std::optional<ServiceWorkerClientInfo> client_info_;

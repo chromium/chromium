@@ -67,22 +67,6 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
   // CreateIncompleteObjectInfo() instead.
   blink::mojom::ServiceWorkerObjectInfoPtr CreateCompleteObjectInfoToSend();
 
-  // Similar to CreateCompleteObjectInfoToSend(), except the returned info has
-  // an empty Mojo request for ServiceWorkerObject. To make the info usable, the
-  // caller should add a request to the info, send the info over Mojo, and
-  // then call AddRemoteObjectPtrAndUpdateState().
-  //
-  // This function is useful when an info is needed before it can be sent over
-  // Mojo.
-  blink::mojom::ServiceWorkerObjectInfoPtr CreateIncompleteObjectInfo();
-
-  // Starts to use the |pending_object| as a valid remote, and triggers
-  // statechanged event if |sent_state| is old and needs to be updated.
-  void AddRemoteObjectPtrAndUpdateState(
-      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerObject>
-          pending_object,
-      blink::mojom::ServiceWorkerState sent_state);
-
   base::WeakPtr<ServiceWorkerObjectHost> AsWeakPtr();
 
  private:

@@ -9,12 +9,11 @@
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 
 namespace content {
 
 class ServiceWorkerClient;
-class ServiceWorkerObjectHost;
+class ServiceWorkerMainResourceHandle;
 
 // For NetworkService glues:
 // Navigation parameters that are necessary to set-up a subresource loader
@@ -28,20 +27,14 @@ struct CONTENT_EXPORT SubresourceLoaderParams {
   SubresourceLoaderParams(SubresourceLoaderParams&& other);
   SubresourceLoaderParams& operator=(SubresourceLoaderParams&& other);
 
-  // For ServiceWorkers.
-  // The controller service worker, non-null if the frame is to be
-  // controlled by the service worker.
-  //
-  // |controller_service_worker_info->object_info| is "incomplete". It must be
-  // updated before being sent over Mojo and then registered with
-  // |controller_service_worker_object_host|. See
-  // ServiceWorkerObjectHost::CreateIncompleteObjectInfo() for details.
-  blink::mojom::ControllerServiceWorkerInfoPtr controller_service_worker_info;
-  base::WeakPtr<ServiceWorkerObjectHost> controller_service_worker_object_host;
-
-  // For `NavigationURLLoaderImpl` only, to detect the controller lost and
-  // cancel ServiceWorker subresource interception. See the comment in
-  // `NavigationURLLoaderImpl::NotifyResponseStarted()` for details.
+  // The service worker client corresponding to the to-be-created global scope.
+  // This is mainly used to create
+  // `blink::mojom::ControllerServiceWorkerInfoPtr` from its controller, to
+  // indicate the controlling service worker (if any) for subresource loading.
+  // The controller of `service_worker_client` should remain the same as the
+  // service worker intercepted the main resource request (if any) unless the
+  // service worker has been lost before navigation commit, so we don't keep the
+  // controller information separately here.
   base::WeakPtr<ServiceWorkerClient> service_worker_client;
 
   // When signed exchanges were prefetched in the previous page and were stored
@@ -51,6 +44,13 @@ struct CONTENT_EXPORT SubresourceLoaderParams {
   // renderer.
   std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>
       prefetched_signed_exchanges;
+
+  // Should be called at the time of `ServiceWorkerClient::CommitResponse()` to
+  // check some invariants (see implementation for details).
+  // `service_worker_client_from_params` comes from `SubresourceLoaderParams`.
+  static void CheckWithMainResourceHandle(
+      ServiceWorkerMainResourceHandle* handle,
+      ServiceWorkerClient* service_worker_client_from_params);
 };
 
 }  // namespace content

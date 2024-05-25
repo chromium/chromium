@@ -158,9 +158,7 @@ class SharedWorkerHostTest : public testing::Test {
         WorkerScriptFetcherResult(
             std::move(subresource_loader_factories),
             std::move(main_script_load_params), PolicyContainerPolicies(),
-            /*controller=*/nullptr,
-            /*controller_service_worker_object_host=*/nullptr,
-            final_response_url));
+            /*service_worker_client=*/nullptr, final_response_url));
   }
 
   MessagePortChannel AddClient(

@@ -298,7 +298,6 @@ class WebAuthRequestSecurityChecker;
 class WebUIImpl;
 struct PendingNavigation;
 struct ResourceTimingInfo;
-struct SubresourceLoaderParams;
 
 // To be called when a RenderFrameHostImpl receives an event.
 // Provides the host, the event fired, and which node id the event was for.
@@ -1525,7 +1524,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      SubresourceLoaderParams subresource_loader_params,
+      blink::mojom::ControllerServiceWorkerInfoPtr controller,
       std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,

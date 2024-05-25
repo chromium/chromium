@@ -287,13 +287,12 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 void ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
     LoaderCallback loader_callback,
     base::WeakPtr<ServiceWorkerClient> service_worker_client) {
-  auto subresource_loader_params =
-      ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
-          service_worker_client);
-  if (subresource_loader_params.controller_service_worker_info) {
+  if (service_worker_client && service_worker_client->controller()) {
     std::move(loader_callback)
         .Run(NavigationLoaderInterceptor::Result(
-            /*factory=*/nullptr, std::move(subresource_loader_params)));
+            /*factory=*/nullptr,
+            ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
+                service_worker_client)));
     return;
   }
 

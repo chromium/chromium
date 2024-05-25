@@ -1734,22 +1734,6 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
     }
   }
 
-  // When dispatching a ServiceWorker fetch event failed, controller is marked
-  // lost in `ServiceWorkerMainResourceLoader::DidDispatchFetchEvent`. In this
-  // case, the main resource loading should have already been fallen back to the
-  // network, and ServiceWorker subresource interception is reset here by
-  // detecting the controller lost, to completely cancel the ServiceWorker
-  // interception initially set in `MaybeCreateLoader()`.
-  //
-  // There might be other cases where the controller is lost here, but probably
-  // it's fine to reset ServiceWorker subresource interception as well, as the
-  // controller is anyway lost.
-  if (!subresource_loader_params_.service_worker_client ||
-      !subresource_loader_params_.service_worker_client->controller()) {
-    subresource_loader_params_.controller_service_worker_info = nullptr;
-    subresource_loader_params_.controller_service_worker_object_host = nullptr;
-  }
-
   // TODO(scottmg): This needs to do more of what
   // NavigationResourceHandler::OnResponseStarted() does.
   delegate_->OnResponseStarted(

@@ -28,7 +28,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
-#include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/websockets/websocket_connector_impl.h"
@@ -43,7 +42,6 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/common/content_client.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/isolation_info.h"
@@ -462,18 +460,6 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   result->subresource_loader_factories->set_bypass_redirect_checks(
       bypass_redirect_checks);
 
-  // Prepare the controller service worker info to pass to the renderer.
-  // |object_info| can be nullptr when the service worker context or the
-  // service worker version is gone during dedicated worker startup.
-  mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerObject>
-      service_worker_remote_object;
-  blink::mojom::ServiceWorkerState service_worker_state;
-  if (result->controller && result->controller->object_info) {
-    result->controller->object_info->receiver =
-        service_worker_remote_object.InitWithNewEndpointAndPassReceiver();
-    service_worker_state = result->controller->object_info->state;
-  }
-
   // Notify that the loading is completed to DevTools. It fires
   // `Network.onLoadingFinished` event.
   devtools_instrumentation::OnWorkerMainScriptLoadingFinished(
@@ -481,6 +467,9 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       DedicatedWorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
       network::URLLoaderCompletionStatus(net::OK));
 
+  SubresourceLoaderParams::CheckWithMainResourceHandle(
+      service_worker_handle_.get(), result->service_worker_client.get());
+  blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {
     // TODO(crbug.com/41478971): Plumb the COEP reporter.
     // TODO(crbug.com/40153087): Propagate dedicated worker ukm::SourceId
@@ -488,6 +477,15 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     service_worker_handle_->service_worker_client()->CommitResponse(
         /*rfh_id=*/std::nullopt, std::move(result->policy_container_policies),
         /*coep_reporter=*/{}, ukm::kInvalidSourceId);
+
+    // Prepare the controller service worker info to pass to the renderer.
+    // `controller()` can be nullptr when the client isn't controlled in the
+    // first place, or the service worker context or the service worker version
+    // is gone during dedicated worker startup.
+    if (service_worker_handle_->service_worker_client()->controller()) {
+      controller = service_worker_handle_->service_worker_client()
+                       ->CreateControllerServiceWorkerInfo();
+    }
   }
 
   client_->OnScriptLoadStarted(
@@ -495,19 +493,10 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       std::move(result->main_script_load_params),
       std::move(result->subresource_loader_factories),
       subresource_loader_updater_.BindNewPipeAndPassReceiver(),
-      std::move(result->controller),
+      std::move(controller),
       BindAndPassRemoteForBackForwardCacheControllerHost());
   if (service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();
-  }
-
-  // |service_worker_remote_object| is an associated remote, so calls can't be
-  // made on it until its receiver is sent. Now that the receiver was sent, it
-  // can be used, so add it to ServiceWorkerObjectHost.
-  if (service_worker_remote_object) {
-    result->controller_service_worker_object_host
-        ->AddRemoteObjectPtrAndUpdateState(
-            std::move(service_worker_remote_object), service_worker_state);
   }
 }
 

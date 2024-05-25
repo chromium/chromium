@@ -1465,10 +1465,6 @@ TEST_P(ServiceWorkerVersionTest,
       1,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
-  // This is necessary to make OnBeginNavigationCommit() work.
-  auto remote_controller =
-      service_worker_client->GetRemoteControllerServiceWorker();
-
   // Establish a dummy connection to allow sending messages without errors.
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       reporter;

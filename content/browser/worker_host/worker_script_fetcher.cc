@@ -127,19 +127,7 @@ void DidCreateScriptLoader(
     const network::URLLoaderCompletionStatus* completion_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(main_script_load_params.is_null(), completion_status == nullptr);
-  DCHECK(!(main_script_load_params.is_null() &&
-           subresource_loader_params.controller_service_worker_info));
   TRACE_EVENT("loading", "DidCreateScriptLoader");
-
-  // Prepare the controller service worker info to pass to the renderer.
-  blink::mojom::ControllerServiceWorkerInfoPtr controller;
-  base::WeakPtr<ServiceWorkerObjectHost> controller_service_worker_object_host;
-  if (subresource_loader_params.controller_service_worker_info) {
-    controller =
-        std::move(subresource_loader_params.controller_service_worker_info);
-    controller_service_worker_object_host =
-        subresource_loader_params.controller_service_worker_object_host;
-  }
 
   // Figure out the final response URL.
   GURL final_response_url;
@@ -185,7 +173,7 @@ void DidCreateScriptLoader(
     std::move(callback).Run(std::make_optional<WorkerScriptFetcherResult>(
         std::move(subresource_loader_factories),
         std::move(main_script_load_params), PolicyContainerPolicies(),
-        std::move(controller), std::move(controller_service_worker_object_host),
+        std::move(subresource_loader_params.service_worker_client),
         final_response_url));
   } else {
     std::move(callback).Run(std::nullopt);
@@ -217,16 +205,12 @@ WorkerScriptFetcherResult::WorkerScriptFetcherResult(
         subresource_loader_factories,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
     PolicyContainerPolicies policy_container_policies,
-    blink::mojom::ControllerServiceWorkerInfoPtr controller,
-    base::WeakPtr<ServiceWorkerObjectHost>
-        controller_service_worker_object_host,
+    base::WeakPtr<ServiceWorkerClient> service_worker_client,
     const GURL& final_response_url)
     : subresource_loader_factories(std::move(subresource_loader_factories)),
       main_script_load_params(std::move(main_script_load_params)),
       policy_container_policies(std::move(policy_container_policies)),
-      controller(std::move(controller)),
-      controller_service_worker_object_host(
-          std::move(controller_service_worker_object_host)),
+      service_worker_client(std::move(service_worker_client)),
       final_response_url(final_response_url) {
   CHECK(this->main_script_load_params);
   CHECK(this->main_script_load_params->response_head);

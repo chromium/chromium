@@ -864,6 +864,15 @@ ServiceWorkerClient::CreateControllerServiceWorkerInfo() {
   for (const auto feature : controller()->used_features()) {
     controller_info->used_features.push_back(feature);
   }
+
+  // Set the info for the JavaScript ServiceWorkerContainer#controller object.
+  if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
+          container_host().version_object_manager().GetOrCreateHost(
+              controller())) {
+    controller_info->object_info =
+        object_host->CreateCompleteObjectInfoToSend();
+  }
+
   return controller_info;
 }
 
@@ -889,14 +898,6 @@ void ServiceWorkerClient::SendSetControllerServiceWorker(
   DCHECK_EQ(controller_registration_->active_version(), controller_.get());
 
   auto controller_info = CreateControllerServiceWorkerInfo();
-
-  // Set the info for the JavaScript ServiceWorkerContainer#controller object.
-  if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
-          container_host().version_object_manager().GetOrCreateHost(
-              controller())) {
-    controller_info->object_info =
-        object_host->CreateCompleteObjectInfoToSend();
-  }
 
   // TODO(crbug.com/331279951): Remove these crash keys after investigation.
   SCOPED_CRASH_KEY_NUMBER("SWCH_SC", "client_type",
@@ -1127,21 +1128,8 @@ void ServiceWorkerClient::CommitResponse(
   DCHECK(!policy_container_policies_.has_value());
   policy_container_policies_ = policy_container_policies.Clone();
 
-  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_to_be_passed;
   if (coep_reporter) {
     coep_reporter_.Bind(std::move(coep_reporter));
-    coep_reporter_->Clone(
-        coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
-  }
-
-  if (controller_ && controller_->fetch_handler_existence() ==
-                         ServiceWorkerVersion::FetchHandlerExistence::EXISTS) {
-    DCHECK(pending_controller_receiver_);
-    controller_->controller()->Clone(
-        std::move(pending_controller_receiver_),
-        policy_container_policies_->cross_origin_embedder_policy,
-        std::move(coep_reporter_to_be_passed));
   }
 
   if (IsContainerForWindowClient()) {
@@ -1240,38 +1228,29 @@ ServiceWorkerClient::GetRemoteControllerServiceWorker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(controller_);
+  CHECK(is_response_committed());
   if (controller_->fetch_handler_existence() ==
       ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST) {
     return mojo::Remote<blink::mojom::ControllerServiceWorker>();
   }
 
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller;
-  if (!is_response_committed()) {
-    // The receiver will be connected to the controller in
-    // OnBeginNavigationCommit() or CompleteWebWorkerPreparation(). The pair of
-    // Mojo endpoints is created on each main resource response including
-    // redirect. The final Mojo endpoint which is corresponding to the OK
-    // response will be sent to the service worker.
-    pending_controller_receiver_ =
-        remote_controller.BindNewPipeAndPassReceiver();
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter_to_be_passed;
+  if (coep_reporter_) {
+    DCHECK(IsContainerForWindowClient());
+    coep_reporter_->Clone(
+        coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
   } else {
-    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter_to_be_passed;
-    if (coep_reporter_) {
-      DCHECK(IsContainerForWindowClient());
-      coep_reporter_->Clone(
-          coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
-    } else {
-      // TODO(crbug.com/41478971): Implement DedicatedWorker and
-      // SharedWorker cases.
-      DCHECK(IsContainerForWorkerClient());
-    }
-
-    controller_->controller()->Clone(
-        remote_controller.BindNewPipeAndPassReceiver(),
-        policy_container_policies_->cross_origin_embedder_policy,
-        std::move(coep_reporter_to_be_passed));
+    // TODO(crbug.com/41478971): Implement DedicatedWorker and
+    // SharedWorker cases.
+    DCHECK(IsContainerForWorkerClient());
   }
+
+  controller_->controller()->Clone(
+      remote_controller.BindNewPipeAndPassReceiver(),
+      policy_container_policies_->cross_origin_embedder_policy,
+      std::move(coep_reporter_to_be_passed));
   return remote_controller;
 }
 
@@ -2056,27 +2035,8 @@ ServiceWorkerClient::GetRunningStatusCallbackReceiver() {
 
 SubresourceLoaderParams ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
     base::WeakPtr<ServiceWorkerClient> service_worker_client) {
-  // We didn't find a matching service worker for this request, and
-  // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
-  if (!service_worker_client || !service_worker_client->controller()) {
-    return {};
-  }
-
-  // Otherwise let's send the controller service worker information along
-  // with the navigation commit.
   SubresourceLoaderParams params;
-  params.controller_service_worker_info =
-      service_worker_client->CreateControllerServiceWorkerInfo();
-  if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
-          service_worker_client->container_host()
-              .version_object_manager()
-              .GetOrCreateHost(service_worker_client->controller())) {
-    params.controller_service_worker_object_host = object_host;
-    params.controller_service_worker_info->object_info =
-        object_host->CreateIncompleteObjectInfo();
-  }
   params.service_worker_client = service_worker_client;
-
   return params;
 }
 

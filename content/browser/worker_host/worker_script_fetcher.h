@@ -20,7 +20,6 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 
@@ -46,10 +45,8 @@ class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerMainResourceHandle;
-class ServiceWorkerObjectHost;
 class StoragePartitionImpl;
 class WorkerScriptLoaderFactory;
-
 struct SubresourceLoaderParams;
 
 // Contains the result of successful worker script fetch. On fetch failure,
@@ -60,9 +57,7 @@ struct CONTENT_EXPORT WorkerScriptFetcherResult final {
           subresource_loader_factories,
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
       PolicyContainerPolicies policy_container_policies,
-      blink::mojom::ControllerServiceWorkerInfoPtr controller,
-      base::WeakPtr<ServiceWorkerObjectHost>
-          controller_service_worker_object_host,
+      base::WeakPtr<ServiceWorkerClient> service_worker_client,
       const GURL& final_response_url);
   ~WorkerScriptFetcherResult();
 
@@ -84,14 +79,8 @@ struct CONTENT_EXPORT WorkerScriptFetcherResult final {
 
   PolicyContainerPolicies policy_container_policies;
 
-  // May be nullptr.
-  // Contains information about the service worker controller (if any). Once
-  // a ServiceWorker object about the controller is prepared, it is registered
-  // to `controller_service_worker_object_host`.
-  blink::mojom::ControllerServiceWorkerInfoPtr controller;
-
-  // May be nullptr.
-  base::WeakPtr<ServiceWorkerObjectHost> controller_service_worker_object_host;
+  // Plumbed from `SubresourceLoaderParams`.
+  base::WeakPtr<ServiceWorkerClient> service_worker_client;
 
   // The script response URL.
   // https://fetch.spec.whatwg.org/#concept-response-url

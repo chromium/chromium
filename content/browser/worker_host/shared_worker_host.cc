@@ -23,7 +23,6 @@
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
-#include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/webtransport/web_transport_connector_impl.h"
@@ -39,7 +38,6 @@
 #include "content/public/browser/worker_type.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
@@ -335,23 +333,20 @@ void SharedWorkerHost::Start(
   result.subresource_loader_factories->set_bypass_redirect_checks(
       bypass_redirect_checks);
 
-  // Prepare the controller service worker info to pass to the renderer.
-  // |object_info| can be nullptr when the service worker context or the service
-  // worker version is gone during shared worker startup.
-  mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerObject>
-      service_worker_remote_object;
-  blink::mojom::ServiceWorkerState service_worker_sent_state;
-  if (result.controller && result.controller->object_info) {
-    result.controller->object_info->receiver =
-        service_worker_remote_object.InitWithNewEndpointAndPassReceiver();
-    service_worker_sent_state = result.controller->object_info->state;
-  }
-
+  SubresourceLoaderParams::CheckWithMainResourceHandle(
+      service_worker_handle_.get(), result.service_worker_client.get());
+  blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {
     // TODO(crbug.com/41478971): Plumb the COEP reporter.
     service_worker_handle_->service_worker_client()->CommitResponse(
         /*rfh_id=*/std::nullopt, std::move(result.policy_container_policies),
         /*coep_reporter=*/{}, ukm_source_id());
+
+    // Prepare the controller service worker info to pass to the renderer.
+    if (service_worker_handle_->service_worker_client()->controller()) {
+      controller = service_worker_handle_->service_worker_client()
+                       ->CreateControllerServiceWorkerInfo();
+    }
   }
 
   // Send the CreateSharedWorker message.
@@ -367,24 +362,13 @@ void SharedWorkerHost::Start(
       std::move(renderer_preferences), std::move(preference_watcher_receiver),
       std::move(content_settings), service_worker_handle_->TakeContainerInfo(),
       std::move(result.main_script_load_params),
-      std::move(result.subresource_loader_factories),
-      std::move(result.controller),
+      std::move(result.subresource_loader_factories), std::move(controller),
       policy_container_host->CreatePolicyContainerForBlink(),
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
       std::move(browser_interface_broker), ukm_source_id_,
       instance_.DoesRequireCrossSiteRequestForCookies());
   if (service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();
-  }
-
-  // |service_worker_remote_object| is an associated interface ptr, so calls
-  // can't be made on it until its request endpoint is sent. Now that the
-  // request endpoint was sent, it can be used, so add it to
-  // ServiceWorkerObjectHost.
-  if (service_worker_remote_object.is_valid()) {
-    result.controller_service_worker_object_host
-        ->AddRemoteObjectPtrAndUpdateState(
-            std::move(service_worker_remote_object), service_worker_sent_state);
   }
 
   // Monitor the lifetime of the worker.
