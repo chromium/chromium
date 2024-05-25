@@ -2615,6 +2615,10 @@ std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
   }
   response_dict.Set("threat_infos", std::move(threat_info_list));
 
+  response_dict.Set(
+      "client_side_detection_type",
+      SerializeClientSideDetectionType(response.client_side_detection_type()));
+
   base::Value::List url_categories_list;
   for (const std::string& url_category : response.url_categories()) {
     url_categories_list.Append(url_category);
