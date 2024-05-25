@@ -162,6 +162,6 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         // for both regular and off-the-record profile is safe.
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile.getOriginalProfile());
-        return identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
+        return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
     }
 }
