@@ -51,6 +51,7 @@ TEST_F(InputDeviceSettingsMetadataManagerTest, GetDeviceImage) {
   base::RunLoop run_loop;
   manager()->GetDeviceImage(
       test_device_key,
+      AccountId::FromUserEmailGaiaId("user@example.com", "123"),
       base::BindLambdaForTesting([&](const DeviceImage& device_image) {
         // Confirm that the image was encoded as a base64 data URL.
         EXPECT_TRUE(base::StartsWith(device_image.data_url(),

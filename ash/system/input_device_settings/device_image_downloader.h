@@ -6,8 +6,10 @@
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_DEVICE_IMAGE_DOWNLOADER_H_
 
 #include "ash/ash_export.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "ui/gfx/image/image_skia.h"
+
+class AccountId;
 
 namespace ash {
 
@@ -17,6 +19,7 @@ class ASH_EXPORT DeviceImageDownloader {
  public:
   void DownloadImage(
       const std::string& device_key,
+      const AccountId& account_id,
       base::OnceCallback<void(const DeviceImage& image)> callback);
 
  private:

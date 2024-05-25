@@ -21,8 +21,9 @@ InputDeviceSettingsMetadataManager::~InputDeviceSettingsMetadataManager() =
 
 void InputDeviceSettingsMetadataManager::GetDeviceImage(
     const std::string& device_key,
+    const AccountId& account_id,
     ImageDownloadCallback callback) {
-  image_downloader_->DownloadImage(device_key, std::move(callback));
+  image_downloader_->DownloadImage(device_key, account_id, std::move(callback));
 }
 
 }  // namespace ash

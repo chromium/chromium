@@ -5,8 +5,8 @@
 #include "ash/system/input_device_settings/device_image_downloader.h"
 
 #include "ash/public/cpp/image_downloader.h"
-#include "ash/shell.h"
 #include "ash/system/input_device_settings/device_image.h"
+#include "components/account_id/account_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -58,6 +58,17 @@ GURL GetResourceUrlFromDeviceKey(const std::string& device_key) {
 
 }  // namespace
 
+void DeviceImageDownloader::DownloadImage(
+    const std::string& device_key,
+    const AccountId& account_id,
+    base::OnceCallback<void(const DeviceImage& image)> callback) {
+  const auto url = GetResourceUrlFromDeviceKey(device_key);
+  ImageDownloader::Get()->Download(
+      url, kTrafficAnnotation, account_id,
+      base::BindOnce(&DeviceImageDownloader::OnImageDownloaded,
+                     base::Unretained(this), device_key, std::move(callback)));
+}
+
 // TODO(b/329686601): Store image as data URL in local state.
 // TODO(b/329686601): Implement error handling for cases where the image
 // download fails.
@@ -66,17 +77,6 @@ void DeviceImageDownloader::OnImageDownloaded(
     base::OnceCallback<void(const DeviceImage& image)> callback,
     const gfx::ImageSkia& image) {
   std::move(callback).Run(DeviceImage(device_key, image));
-}
-
-void DeviceImageDownloader::DownloadImage(
-    const std::string& device_key,
-    base::OnceCallback<void(const DeviceImage& image)> callback) {
-  const auto url = GetResourceUrlFromDeviceKey(device_key);
-  ImageDownloader::Get()->Download(
-      url, kTrafficAnnotation,
-      Shell::Get()->session_controller()->GetActiveAccountId(),
-      base::BindOnce(&DeviceImageDownloader::OnImageDownloaded,
-                     base::Unretained(this), device_key, std::move(callback)));
 }
 
 }  // namespace ash

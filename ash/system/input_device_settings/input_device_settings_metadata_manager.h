@@ -12,6 +12,7 @@
 #include "ash/system/input_device_settings/device_image_downloader.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -35,6 +36,7 @@ class ASH_EXPORT InputDeviceSettingsMetadataManager {
   // `device_key`. Initiates a download for the image using the
   // ImageDownloader.
   void GetDeviceImage(const std::string& device_key,
+                      const AccountId& account_id,
                       ImageDownloadCallback callback);
 
  private:
