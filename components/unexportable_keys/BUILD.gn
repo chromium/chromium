@@ -35,7 +35,6 @@ component("unexportable_keys") {
 
   public_deps = [
     "//base",
-    "//components/keyed_service/core",
     "//crypto",
     "//third_party/abseil-cpp:absl",
   ]

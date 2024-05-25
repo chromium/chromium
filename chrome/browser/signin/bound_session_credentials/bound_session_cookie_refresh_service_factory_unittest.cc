@@ -17,6 +17,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/browser/signin/bound_session_credentials/fake_keyed_unexportable_key_service.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -25,7 +26,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +40,7 @@ using ::testing::Values;
 
 std::unique_ptr<KeyedService> CreateFakeUnexportableKeyService(
     content::BrowserContext* context) {
-  return std::make_unique<unexportable_keys::FakeUnexportableKeyService>();
+  return std::make_unique<FakeKeyedUnexportableKeyService>();
 }
 
 bool DoesServiceExistForProfile(Profile* profile) {
