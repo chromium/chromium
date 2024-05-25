@@ -23,7 +23,7 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
                   chromeos::editor_menu::PreTargetHandlerView)
 
  public:
-  MagicBoostOptInCard();
+  explicit MagicBoostOptInCard(const bool include_orca);
   MagicBoostOptInCard(const MagicBoostOptInCard&) = delete;
   MagicBoostOptInCard& operator=(const MagicBoostOptInCard&) = delete;
   ~MagicBoostOptInCard() override;
@@ -31,7 +31,8 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   // Creates a widget that contains a `MagicBoostOptInCard`, configured with the
   // given `anchor_view_bounds`.
   static views::UniqueWidgetPtr CreateWidget(
-      const gfx::Rect& anchor_view_bounds);
+      const gfx::Rect& anchor_view_bounds,
+      const bool include_orca);
 
   // Returns the host widget's name.
   static const char* GetWidgetName();

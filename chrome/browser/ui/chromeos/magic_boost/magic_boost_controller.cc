@@ -48,7 +48,8 @@ MagicBoostController::~MagicBoostController() = default;
 void MagicBoostController::ShowOptInUi(const gfx::Rect& anchor_view_bounds) {
   CHECK(!opt_in_widget_);
   CHECK(!disclaimer_widget_);
-  opt_in_widget_ = MagicBoostOptInCard::CreateWidget(anchor_view_bounds);
+  opt_in_widget_ =
+      MagicBoostOptInCard::CreateWidget(anchor_view_bounds, is_orca_included_);
   opt_in_widget_->ShowInactive();
 }
 
