@@ -158,6 +158,7 @@ void EmbeddedPermissionPromptBaseView::AddedToWidget() {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetCollapseWhenHidden(true);
   label->SetMultiLine(true);
+  label->SetAllowCharacterBreak(true);
   label->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
