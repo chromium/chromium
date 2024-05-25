@@ -21,6 +21,9 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
+// TODO(b/342514059): Depending on chrome/browser/ash/child_accounts is not
+// ideal because it's in chrome.
+#include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -108,6 +111,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
           editor_mediator != nullptr && editor_mediator->IsAllowedForUse();
     }
     source->AddBoolean("isEditorSwitchAllowed", isEditorSwitchAllowed);
+    source->AddBoolean("isOnDeviceAppControlsAvailable",
+                       ash::on_device_controls::AppControlsServiceFactory::
+                           IsOnDeviceAppControlsAvailable(profile));
     source->AddBoolean(
         "isSeaPenAllowed",
         ash::features::IsSeaPenEnabled() &&
