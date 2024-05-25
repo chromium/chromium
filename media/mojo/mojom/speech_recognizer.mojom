@@ -4,9 +4,9 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/speech_recognition_error.mojom";
 import "media/mojo/mojom/speech_recognition_grammar.mojom";
 import "media/mojo/mojom/speech_recognition_result.mojom";
-import "media/mojo/mojom/speech_recognition_error.mojom";
 
 // Created by the renderer and sent to the browser to start a speech recognition
 // session.
@@ -47,14 +47,15 @@ interface SpeechRecognizer {
 // SpeechRecognizer::Start, and is bound to an implementation there.
 // SpeechRecognitionSession and SpeechRecognitionSessionClient are 1:1 with each
 // other and with WebSpeechRecognitionHandle.
+[Stable]
 interface SpeechRecognitionSession {
   // Requests the speech recognition service to abort speech recognition for the
   // associated session.
-  Abort();
+  Abort@0();
 
   // Requests the speech recognition service to stop audio capture for the
   // associated session.
-  StopCapture();
+  StopCapture@1();
 };
 
 // API for the browser process to communicate speech recognition related updates
@@ -63,29 +64,30 @@ interface SpeechRecognitionSession {
 // process via SpeechRecognizer::Start. SpeechRecognitionSession and
 // SpeechRecognitionSessionClient are 1:1 with each other and with
 // WebSpeechRecognitionHandle.
+[Stable]
 interface SpeechRecognitionSessionClient {
   // Called to dispatch the "result" event.
-  ResultRetrieved(array<WebSpeechRecognitionResult> results);
+  ResultRetrieved@0(array<WebSpeechRecognitionResult> results);
 
   // Called to dispatch the "nomatch" event if the error code passed is of types
   // kNoMatch, otherwise dispatchers an "error" event.
-  ErrorOccurred(SpeechRecognitionError error);
+  ErrorOccurred@1(SpeechRecognitionError error);
 
   // Called to dispatch the "start" event.
-  Started();
+  Started@2();
 
   // Called to dispatch the "audiostart" event.
-  AudioStarted();
+  AudioStarted@3();
 
   // Called to  dispatch the "soundstart" and "speechstart" events.
-  SoundStarted();
+  SoundStarted@4();
 
   // Called to dispatch "soundend" and "speechend" events.
-  SoundEnded();
+  SoundEnded@5();
 
   // Called to dispatch the "audioend" event.
-  AudioEnded();
+  AudioEnded@6();
 
   // Called to dispatch the "end" event.
-  Ended();
+  Ended@7();
 };

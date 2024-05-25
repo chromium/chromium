@@ -5,11 +5,13 @@
 module media.mojom;
 
 import "media/mojo/mojom/audio_data.mojom";
+import "media/mojo/mojom/speech_recognition_audio_forwarder.mojom";
+import "media/mojo/mojom/speech_recognizer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -31,11 +33,12 @@ enum AsrSwitchResult {
   kSwitchSkipedNoLp,
 };
 
-// The main interface a renderer client uses to interact with a speech
-// recognition service process. In web Live Caption, every renderer can own one
+// The main interface a client uses to interact with a speech
+// recognition service process. For Live Caption, every renderer can own one
 // or more Remote<SpeechRecognitionContext>, with the receiver bound through the
-// BrowserInterfaceBroker. This is a stable interface that is used across the
-// LaCrOS/Ash boundary.
+// BrowserInterfaceBroker. For the Web Speech API, the browser is the client and
+// can own one or more Remote<SpeechRecognitionContext>. This is a stable
+// interface that is used across the LaCrOS/Ash boundary.
 [Stable]
 interface SpeechRecognitionContext {
   // Bind the recognizers to the speech recognition service. Returns a flag
@@ -44,7 +47,7 @@ interface SpeechRecognitionContext {
   BindRecognizer@0(pending_receiver<SpeechRecognitionRecognizer> receiver,
                    pending_remote<SpeechRecognitionRecognizerClient> client,
                    SpeechRecognitionOptions options)
-                   => (bool is_multichannel_supported);
+      => (bool is_multichannel_supported);
 };
 
 // The interface used to pass raw audio from the renderer to the speech
@@ -71,7 +74,8 @@ interface SpeechRecognitionRecognizer {
 
   // Notify the speech recognition recognizer that the mask offensive words
   // setting has changed.
-  [MinVersion=2] OnMaskOffensiveWordsChanged@3(bool mask_offensive_words);
+  [MinVersion=2]
+  OnMaskOffensiveWordsChanged@3(bool mask_offensive_words);
 };
 
 // The interface used to return speech recognition events from the speech
@@ -128,7 +132,7 @@ struct TimingInformation {
   // chromeos/services/machine_learning/public/mojom/soda.mojom. Therefore, it
   // must be optional. Hypothesis parts maybe non-empty optional containing a
   // zero length vector if no words were spoken during the event's time span.
-  array<HypothesisParts> ? hypothesis_parts;
+  array<HypothesisParts>? hypothesis_parts;
 };
 
 // A speech recognition result created by the speech service and passed to the
@@ -161,7 +165,8 @@ struct LanguageIdentificationEvent {
 
   // If multilang is enabled, describes the actions Automatic Speech Recognition
   // took as a result of this event.
-  [MinVersion=1] AsrSwitchResult? asr_switch_result;
+  [MinVersion=1]
+  AsrSwitchResult? asr_switch_result;
 };
 
 // The interface used to notify the speech recognition client of events
@@ -172,7 +177,8 @@ struct LanguageIdentificationEvent {
 interface SpeechRecognitionBrowserObserver {
   // Notify the speech recognition client when speech recognition availability
   // changes.
-  SpeechRecognitionAvailabilityChanged@0(bool is_speech_recognition_available);
+  SpeechRecognitionAvailabilityChanged@0(
+      bool is_speech_recognition_available);
 
   // Notify the speech recognition client when the speech recognition language
   // changes.
@@ -180,8 +186,8 @@ interface SpeechRecognitionBrowserObserver {
 
   // Notify the speech recognition client when the mask offensive words pref
   // changes.
-  [MinVersion=2] SpeechRecognitionMaskOffensiveWordsChanged@2(
-      bool mask_offensive_words);
+  [MinVersion=2]
+  SpeechRecognitionMaskOffensiveWordsChanged@2(bool mask_offensive_words);
 };
 
 // The user-facing source of recognized speech; typically a tab. The remote
@@ -230,17 +236,18 @@ struct SpeechRecognitionSurfaceMetadata {
 interface SpeechRecognitionClientBrowserInterface {
   // Bind the speech recognition availability observer.
   BindSpeechRecognitionBrowserObserver@0(
-    pending_remote<SpeechRecognitionBrowserObserver> observer);
+      pending_remote<SpeechRecognitionBrowserObserver> observer);
 
   // Requests that a remote speech recognition client be instantiated and bound
   // in the Ash browser process. The instantiated client should use the surface
   // and surface client bindings to perform tasks (such as refocusing) that
   // require coordination with the current lacros tab.
-  [MinVersion=1] BindRecognizerToRemoteClient@1(
-    pending_receiver<SpeechRecognitionRecognizerClient> client,
-    pending_receiver<SpeechRecognitionSurfaceClient> surface_client,
-    pending_remote<SpeechRecognitionSurface> surface,
-    SpeechRecognitionSurfaceMetadata metadata);
+  [MinVersion=1]
+  BindRecognizerToRemoteClient@1(
+      pending_receiver<SpeechRecognitionRecognizerClient> client,
+      pending_receiver<SpeechRecognitionSurfaceClient> surface_client,
+      pending_remote<SpeechRecognitionSurface> surface,
+      SpeechRecognitionSurfaceMetadata metadata);
 };
 
 // Corresponds to ExtendedSodaConfigMsg.RecognitionMode in
@@ -290,10 +297,12 @@ struct SpeechRecognitionOptions {
   string? language;
 
   // Whether the recognition is happening on-device or remotely on a server.
-  [MinVersion=1] bool is_server_based;
+  [MinVersion=1]
+  bool is_server_based;
 
   // Which client is requesting the speech recognition session.
-  [MinVersion=1] RecognizerClientType recognizer_client_type;
+  [MinVersion=1]
+  RecognizerClientType recognizer_client_type;
 
   // When true, if the incoming audio buffer is zero for an extended period
   // (e.g. 10 seconds), audio won't be fed to the captioning model until nonzero
@@ -301,8 +310,10 @@ struct SpeechRecognitionOptions {
   // When false, even empty audio is captioned indefinitely.
   // Set to false if accurate TimingInfo relative to the start of captioning is
   // needed.
-  [MinVersion=4] bool skip_continuously_empty_audio = false;
+  [MinVersion=4]
+  bool skip_continuously_empty_audio = false;
 
   // The optional experiment recognizer routing key for current request.
-  [MinVersion=5] string? experiment_recognizer_routing_key;
+  [MinVersion=5]
+  string? experiment_recognizer_routing_key;
 };

@@ -78,6 +78,7 @@ mojom("mojom") {
   public_deps = [
     ":audio_data",
     ":encryption_pattern",
+    ":web_speech_recognition",
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
     "//media/mojo/mojom/stable:stable_video_decoder",
@@ -767,6 +768,12 @@ mojom("encryption_pattern") {
   ]
 }
 
+mojom("speech_recognition_audio_forwarder") {
+  generate_java = true
+  sources = [ "speech_recognition_audio_forwarder.mojom" ]
+  public_deps = [ ":audio_data" ]
+}
+
 # Speech recognition API used between renderer/browser/service and between
 # LaCrOS/Ash.
 mojom("speech_recognition") {
@@ -800,6 +807,8 @@ mojom("speech_recognition") {
   ]
   public_deps = [
     ":audio_data",
+    ":speech_recognition_audio_forwarder",
+    ":web_speech_recognition",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//ui/gfx/geometry/mojom",
@@ -887,8 +896,12 @@ mojom("web_speech_recognition") {
     "speech_recognizer.mojom",
   ]
 
-  deps = [
+  public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
 }

@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/audio_data.mojom";
+
+// Interface used by the renderer to pass raw audio from the renderer to either
+// the browser or the speech recognition service. The remote lives in the
+// renderer and the receiver lives in the speech recognition process if
+// on-device speech recognition is used or the browser process if web-based
+// speech recognition is used.
+[Stable]
+interface SpeechRecognitionAudioForwarder {
+  // Pass audio to the browser.
+  [MinVersion=6]
+  AddAudioFromRenderer@1(AudioDataS16 buffer);
+};

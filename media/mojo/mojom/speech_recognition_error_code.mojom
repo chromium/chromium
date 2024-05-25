@@ -6,8 +6,9 @@ module media.mojom;
 
 // Used by the browser's speech recognition engine to indicate the reason for a
 // speech recognition error.
+[Stable, Extensible]
 enum SpeechRecognitionErrorCode {
-  kNone,
+  [Default] kNone,
   kNoSpeech,
   kAborted,
   kAudioCapture,
@@ -16,5 +17,5 @@ enum SpeechRecognitionErrorCode {
   kServiceNotAllowed,
   kBadGrammar,
   kLanguageNotSupported,
-  kNoMatch
+  kNoMatch,
 };

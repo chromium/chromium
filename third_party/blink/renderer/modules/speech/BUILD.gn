@@ -36,6 +36,4 @@ blink_modules_sources("speech") {
     "speech_synthesis_voice.cc",
     "speech_synthesis_voice.h",
   ]
-
-  deps = [ "//media/mojo/mojom:web_speech_recognition_blink" ]
 }
