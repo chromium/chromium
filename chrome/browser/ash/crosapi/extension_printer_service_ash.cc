@@ -149,6 +149,22 @@ void ExtensionPrinterServiceAsh::StartPrint(
                                         print_data, std::move(callback));
 }
 
+void ExtensionPrinterServiceAsh::StartGrantPrinterAccess(
+    const std::string& printer_id,
+    GetPrinterInfoCallback callback) {
+  VLOG(1) << "ExtensionPrinterServiceAsh::StartGrantPrinterAccess():"
+          << " printer_id=" << printer_id;
+  if (!HasProvider()) {
+    LOG(WARNING)
+        << "ExtensionPrinterServiceAsh::StartGrantPrinterAccess(): none "
+           "ExtensionPrinterServiceProvider available";
+    std::move(callback).Run(base::Value::Dict());
+    return;
+  }
+  service_provider_->DispatchStartGrantPrinterAccess(printer_id,
+                                                     std::move(callback));
+}
+
 bool ExtensionPrinterServiceAsh::HasPendingGetPrintersRequestForTesting(
     base::UnguessableToken& request_id) const {
   CHECK_IS_TEST();

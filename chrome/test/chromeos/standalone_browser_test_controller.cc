@@ -156,7 +156,13 @@ class FakeExtensionPrinterHandler : public printing::PrinterHandler {
   }
 
   void StartGrantPrinterAccess(const std::string& printer_id,
-                               GetPrinterInfoCallback callback) override {}
+                               GetPrinterInfoCallback callback) override {
+    base::Value::Dict printer_info;
+    printer_info.Set("printerId", printer_id);
+    printer_info.Set("name", "Test Printer 01");
+
+    std::move(callback).Run(std::move(printer_info));
+  }
 
   void StartPrint(const std::u16string& job_title,
                   base::Value::Dict settings,
@@ -199,8 +205,9 @@ class StandaloneBrowserTestController::LacrosUtteranceEventDelegate
     client_->OnTtsEvent(tts_crosapi_util::ToMojo(event_type), char_index,
                         char_length, error_message);
 
-    if (utterance->IsFinished())
+    if (utterance->IsFinished()) {
       controller_->OnUtteranceFinished(utterance->GetId());
+    }
     // Note: |this| is deleted if utterance->IsFinished().
   }
 
@@ -333,8 +340,9 @@ void StandaloneBrowserTestController::GetTtsVoices(
       ProfileManager::GetActiveUserProfile(), GURL(), &voices);
 
   std::vector<crosapi::mojom::TtsVoicePtr> mojo_voices;
-  for (const auto& voice : voices)
+  for (const auto& voice : voices) {
     mojo_voices.push_back(tts_crosapi_util::ToMojo(voice));
+  }
 
   std::move(callback).Run(std::move(mojo_voices));
 }
@@ -484,11 +492,13 @@ void StandaloneBrowserTestController::GetExtensionKeeplist(
         std::string(id));
   }
 
-  for (const auto& id : extensions::GetExtensionsRunInOSOnly())
+  for (const auto& id : extensions::GetExtensionsRunInOSOnly()) {
     mojo_keeplist->extensions_run_in_os_only.push_back(std::string(id));
+  }
 
-  for (const auto& id : extensions::GetExtensionAppsRunInOSOnly())
+  for (const auto& id : extensions::GetExtensionAppsRunInOSOnly()) {
     mojo_keeplist->extension_apps_run_in_os_only.push_back(std::string(id));
+  }
 
   std::move(callback).Run(std::move(mojo_keeplist));
 }

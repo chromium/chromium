@@ -50,8 +50,8 @@ interface ExtensionPrinterService {
 // Implemented by lacros-chrome. Used by ash-chrome to forward printing related
 // requests to lacros-chrome.
 //
-// Next version: 3.
-// Next method id: 4.
+// Next version: 4.
+// Next method id: 5.
 [Stable, Uuid="74d95a4e-56e3-4fdf-8df5-62660939dc73"]
 interface ExtensionPrinterServiceProvider {
   // Dispatch StartGetPrinters requests to lacros from ash-chrome. The
@@ -78,5 +78,9 @@ interface ExtensionPrinterServiceProvider {
     mojo_base.mojom.DictionaryValue settings,
     mojo_base.mojom.RefCountedMemory print_data)
       => (StartPrintStatus status);
-  // TODO(http://b/40273973): Add DispatchStartGrantPrinterAccess().
+  // Dispatch StartGrantPrinterAccess to the given provisional printer.
+  // The print handler will respond with more information about the printer
+  // including its non-provisional printer id.
+  [MinVersion=3] DispatchStartGrantPrinterAccess@4(string printer_id)
+  => (mojo_base.mojom.DictionaryValue print_info);
 };

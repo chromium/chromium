@@ -73,7 +73,13 @@ void ExtensionPrinterHandlerAdapterAsh::StartPrint(
 void ExtensionPrinterHandlerAdapterAsh::StartGrantPrinterAccess(
     const std::string& printer_id,
     GetPrinterInfoCallback callback) {
-  // TODO(http://b/40273973): Add Implementation.
+  GetExtensionPrinterService()->StartGrantPrinterAccess(
+      printer_id,
+      base::BindOnce(
+          [](GetPrinterInfoCallback callback, base::Value::Dict printer_info) {
+            std::move(callback).Run(std::move(printer_info));
+          },
+          std::move(callback)));
 }
 
 crosapi::ExtensionPrinterServiceAsh*

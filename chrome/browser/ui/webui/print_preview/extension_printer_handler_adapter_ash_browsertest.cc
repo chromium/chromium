@@ -152,4 +152,24 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterHandlerAdapterAshBrowserTest,
   EXPECT_EQ(print_future.Get(), base::Value("OK"));
 }
 
+// Verifies StartGrantPrinterAccess returns print info.
+IN_PROC_BROWSER_TEST_F(ExtensionPrinterHandlerAdapterAshBrowserTest,
+                       StartGrantPrinterAccess) {
+  const std::string printer_id =
+      "test_printer_id_123:fake_ext_id:fake_device_guid";
+
+  base::test::TestFuture<base::Value::Dict> printer_info_future;
+  printer_handler_.StartGrantPrinterAccess(
+      printer_id, base::BindOnce(
+                      [](base::OnceCallback<void(base::Value::Dict)> callback,
+                         const base::Value::Dict& printer_info) {
+                        std::move(callback).Run(printer_info.Clone());
+                      },
+                      printer_info_future.GetCallback()));
+
+  const base::Value::Dict& actual_printer_info = printer_info_future.Get();
+  base::ExpectDictStringValue(printer_id, actual_printer_info, "printerId");
+  base::ExpectDictStringValue("Test Printer 01", actual_printer_info, "name");
+}
+
 }  // namespace printing

@@ -53,6 +53,9 @@ class ExtensionPrinterServiceProviderLacros
                           base::Value::Dict settings,
                           scoped_refptr<::base::RefCountedMemory> print_data,
                           DispatchStartPrintCallback callback) override;
+  void DispatchStartGrantPrinterAccess(
+      const std::string& printer_id,
+      DispatchStartGrantPrinterAccessCallback callback) override;
 
   void SetPrinterHandlerForTesting(std::unique_ptr<PrinterHandler> handler) {
     extension_printer_handler_ = std::move(handler);

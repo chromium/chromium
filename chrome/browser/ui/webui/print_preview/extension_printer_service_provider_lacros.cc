@@ -138,4 +138,19 @@ void ExtensionPrinterServiceProviderLacros::DispatchStartPrint(
           std::move(callback)));
 }
 
+void ExtensionPrinterServiceProviderLacros::DispatchStartGrantPrinterAccess(
+    const std::string& printer_id,
+    DispatchStartGrantPrinterAccessCallback callback) {
+  VLOG(1) << "ExtensionPrinterServiceProviderLacros::"
+             "DispatchStartGrantPrinterAccess():"
+          << " printer_id=" << printer_id;
+  extension_printer_handler_->StartGrantPrinterAccess(
+      printer_id, base::BindOnce(
+                      [](DispatchStartGrantPrinterAccessCallback callback,
+                         const base::Value::Dict& printer_info) {
+                        std::move(callback).Run(printer_info.Clone());
+                      },
+                      std::move(callback)));
+}
+
 }  // namespace printing

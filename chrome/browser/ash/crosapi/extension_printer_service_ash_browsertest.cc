@@ -94,6 +94,11 @@ class MockExtensionPrinterServiceProvider
                ::scoped_refptr<::base::RefCountedMemory> print_data,
                DispatchStartPrintCallback callback),
               (override));
+  MOCK_METHOD(void,
+              DispatchStartGrantPrinterAccess,
+              (const std::string& printer_id,
+               DispatchStartGrantPrinterAccessCallback callback),
+              (override));
 
   mojo::Receiver<mojom::ExtensionPrinterServiceProvider> receiver_{this};
 };
@@ -319,6 +324,35 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceAshBrowserTest, StartPrint) {
   EXPECT_EQ(captured_settings,
             base::test::ParseJsonDict(R"({"copies": 2, "color": "color"})"));
   EXPECT_TRUE(captured_print_data->Equals(print_data));
+}
+
+// Verifies that StartGrantPrinterAccess is dispatched correctly.
+IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceAshBrowserTest,
+                       StartGrantPrinterAccess) {
+  const std::string test_printer_id = "test_printer_id_123";
+  base::Value::Dict expected_printer_info = base::test::ParseJsonDict(R"(
+    {
+      "printerId": "test_printer_id_123",
+      "name": "Test Printer"
+    }
+  )");
+
+  EXPECT_CALL(mock_provider(),
+              DispatchStartGrantPrinterAccess(test_printer_id, _))
+      .WillOnce([&expected_printer_info](
+                    const std::string& printer_id,
+                    MockExtensionPrinterServiceProvider::
+                        DispatchStartGrantPrinterAccessCallback callback) {
+        // Calls the callback with the simulated printer info.
+        std::move(callback).Run(expected_printer_info.Clone());
+      });
+
+  base::test::TestFuture<base::Value::Dict> grant_access_future;
+  ExtensionPrinterService()->StartGrantPrinterAccess(
+      test_printer_id, grant_access_future.GetCallback());
+
+  const base::Value::Dict& printer_info = grant_access_future.Get();
+  EXPECT_EQ(printer_info, expected_printer_info);
 }
 
 }  // namespace crosapi

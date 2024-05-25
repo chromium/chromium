@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceProviderLacrosBrowserTest,
         captured_job_title = job_title;
         captured_settings = std::move(settings);
         captured_print_data = print_data;
-        // Simulate a successful print job.
+        // Simulate a successful print job. "OK" means successful.
         std::move(callback).Run(base::Value("OK"));
       });
 
@@ -292,6 +292,41 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceProviderLacrosBrowserTest,
   EXPECT_EQ(captured_settings,
             base::test::ParseJsonDict(R"({"copies": 2, "color": "color"})"));
   EXPECT_TRUE(print_data->Equals(captured_print_data));
+}
+
+// Verifies that DispatchStartGrantPrinterAccess calls the handler correctly.
+IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceProviderLacrosBrowserTest,
+                       DispatchStartGrantPrinterAccess) {
+  // Test data.
+  const std::string test_printer_id =
+      "test_printer_id_123:fake_ext_id:fake_device_guid";
+  base::Value::Dict expected_printer_info = base::test::ParseJsonDict(R"(
+    {
+      "printerId": "test_printer_id_123",
+      "name": "Test Printer"
+    }
+  )");
+
+  auto mock_handler = std::make_unique<MockExtensionPrinterHandler>();
+
+  EXPECT_CALL(*mock_handler, StartGrantPrinterAccess(test_printer_id, _))
+      .WillOnce([&expected_printer_info](
+                    const std::string& printer_id,
+                    PrinterHandler::GetPrinterInfoCallback callback) {
+        // Simulates successful printer access grant.
+        std::move(callback).Run(expected_printer_info.Clone());
+      });
+
+  // Prepares and sets the provider with the mock handler.
+  ExtensionPrinterServiceProviderLacros provider{browser()->profile()};
+  provider.SetPrinterHandlerForTesting(std::move(mock_handler));
+
+  base::test::TestFuture<base::Value::Dict> grant_access_future;
+  provider.DispatchStartGrantPrinterAccess(test_printer_id,
+                                           grant_access_future.GetCallback());
+  // Verify results
+  const base::Value::Dict& printer_info = grant_access_future.Get();
+  EXPECT_EQ(printer_info, expected_printer_info);
 }
 
 }  // namespace printing
