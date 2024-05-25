@@ -3770,6 +3770,101 @@ TEST_P(OverviewSessionTest,
   EXPECT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
 }
 
+// Used to replicate the behavior of the Crostini app window, which would set
+// the window bounds to its registered display on the window's visibility
+// changed. See
+// `AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged()` for more
+// details.
+class CrostiniWindowVisibilityObserver : public aura::WindowObserver {
+ public:
+  explicit CrostiniWindowVisibilityObserver(aura::Window* window)
+      : window_(window) {
+    window->AddObserver(this);
+  }
+
+  ~CrostiniWindowVisibilityObserver() override {
+    window_->RemoveObserver(this);
+  }
+
+  // aura::WindowObserver:
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    if (visible) {
+      auto current_display =
+          display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      const auto dst_display =
+          display::Screen::GetScreen()->GetPrimaryDisplay();
+      window->SetBoundsInScreen(
+          gfx::Rect(dst_display.bounds().origin(), window->bounds().size()),
+          dst_display);
+    }
+  }
+
+ private:
+  raw_ptr<aura::Window> window_;
+};
+
+// Test verifies that dragging a minimized Crostini window to an external
+// display in Overview mode and then clicking to activate it doesn't cause a
+// crash. The crash would typically occur due to the
+// `AppServiceAppWindowCrostiniTracker` attempting to move the window back to
+// its registered display, which triggers a `CHECK_EQ(root_window_,
+// window->GetRootWindow())` crash in `OverviewItem::SetItemBounds()`. See
+// http://b/334911238 for more details.
+TEST_P(OverviewSessionTest,
+       NoCrashWhenSettingMinimizedOverviewItemBoundsOnAnotherDisplay) {
+  UpdateDisplay("1410x940,1411+0-2560x1440");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  EXPECT_EQ(2U, display_manager->GetNumDisplays());
+  const auto& displays = display_manager->active_display_list();
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+
+  const gfx::Point point_in_display2(2500, 500);
+  ASSERT_FALSE(displays[0].bounds().Contains(point_in_display2));
+  ASSERT_TRUE(displays[1].bounds().Contains(point_in_display2));
+
+  std::unique_ptr<aura::Window> window(
+      CreateAppWindow(gfx::Rect(10, 10, 500, 300)));
+
+  WMEvent minimize_event(WM_EVENT_MINIMIZE);
+  WindowState::Get(window.get())->OnWMEvent(&minimize_event);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsMinimized());
+  EXPECT_FALSE(window->IsVisible());
+  EXPECT_EQ(0.f, window->layer()->GetTargetOpacity());
+
+  CrostiniWindowVisibilityObserver visibility_observer(window.get());
+
+  ToggleOverview();
+  WaitForOverviewEntered();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  const auto& grids = GetOverviewSession()->grid_list();
+  ASSERT_EQ(2u, grids.size());
+  auto grid0 = grids[0].get();
+  ASSERT_TRUE(grid0);
+  const auto& overview_items = grid0->window_list();
+  ASSERT_EQ(overview_items.size(), 1u);
+  EXPECT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
+
+  auto* event_generator = GetEventGenerator();
+  auto* overview_item = overview_items[0].get();
+  ASSERT_TRUE(overview_item);
+  DragItemToPoint(overview_item, point_in_display2, event_generator,
+                  /*by_touch_gestures=*/false, /*drop=*/true);
+  EXPECT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
+
+  // Verify that the windows are moved to the `displays[1]` properly.
+  display::Screen* screen = display::Screen::GetScreen();
+  EXPECT_EQ(displays[1].id(),
+            screen->GetDisplayNearestWindow(window.get()).id());
+
+  event_generator->set_current_screen_location(gfx::ToRoundedPoint(
+      GetOverviewItemForWindow(window.get())->target_bounds().CenterPoint()));
+
+  // Verify that there will be no crash when activating the minimized Crostini
+  // window.
+  event_generator->ClickLeftButton();
+}
+
 // If you update the parameterisation of OverviewSessionTest also update the
 // parameterisation of OverviewRasterScaleTest below.
 INSTANTIATE_TEST_SUITE_P(
