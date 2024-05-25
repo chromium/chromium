@@ -208,17 +208,31 @@ class FrameNode : public Node {
 
   // Returns the child workers of this frame. These are either dedicated workers
   // or shared workers created by this frame, or a service worker that handles
-  // this frame's network requests.
+  // this frame's network requests. Note that this incurs a full container copy
+  // of all child nodes. Please use VisitChildWorkers or
+  // VisitChildDedicatedWorkers when that makes sense.
   virtual const base::flat_set<const WorkerNode*> GetChildWorkerNodes()
       const = 0;
+
+  // Visits the child workers of this frame. The iteration is halted if the
+  // visitor returns false. Returns true if every call to the visitor returned
+  // true, false otherwise.
+  //
+  // Note: Unlike frames, workers do not conform to a tree-like structure
+  // so care must be taken to ensure worker nodes are not visited multiple
+  // times in a complete graph traversal. For example, it's possible to
+  // have a frame F and a dedicated worker W, where W is the child of F,
+  // and a service worker S, where S is the child of both F and W. Starting
+  // the graph traversal from F will cause S to be visited twice.
+  virtual bool VisitChildWorkers(const WorkerNodeVisitor& visitor) const = 0;
 
   // Visits the child dedicated workers of this frame. The iteration is halted
   // if the visitor returns false. Returns true if every call to the visitor
   // returned true, false otherwise.
   //
-  // The reason why we don't have a generic VisitChildWorkers method is that
-  // a service/shared worker may appear as a child of multiple other nodes
-  // and thus may be visited multiple times.
+  // The reason for this method is that a service/shared worker may appear as a
+  // child of multiple other nodes and thus may be visited multiple times, which
+  // is a situation that callers might want to avoid.
   virtual bool VisitChildDedicatedWorkers(
       const WorkerNodeVisitor& visitor) const = 0;
 

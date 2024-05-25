@@ -192,6 +192,7 @@ class FrameNodeImpl
   bool VisitEmbeddedPageNodes(const PageNodeVisitor& visitor) const override;
   const base::flat_set<const PageNode*> GetEmbeddedPageNodes() const override;
   const base::flat_set<const WorkerNode*> GetChildWorkerNodes() const override;
+  bool VisitChildWorkers(const WorkerNodeVisitor& visitor) const override;
   bool VisitChildDedicatedWorkers(
       const WorkerNodeVisitor& visitor) const override;
 

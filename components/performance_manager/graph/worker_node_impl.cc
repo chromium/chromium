@@ -305,11 +305,20 @@ const base::flat_set<const WorkerNode*> WorkerNodeImpl::GetChildWorkers()
   return child_workers;
 }
 
+bool WorkerNodeImpl::VisitChildWorkers(const WorkerNodeVisitor& visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (WorkerNodeImpl* node : child_workers_) {
+    if (!visitor(node)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool WorkerNodeImpl::VisitChildDedicatedWorkers(
     const WorkerNodeVisitor& visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (WorkerNodeImpl* worker_node_impl : child_workers_) {
-    const WorkerNode* node = worker_node_impl;
+  for (WorkerNodeImpl* node : child_workers_) {
     if (node->GetWorkerType() == WorkerType::kDedicated && !visitor(node)) {
       return false;
     }

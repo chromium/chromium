@@ -592,11 +592,20 @@ const base::flat_set<const WorkerNode*> FrameNodeImpl::GetChildWorkerNodes()
   return UpcastNodeSet<WorkerNode>(child_worker_nodes());
 }
 
+bool FrameNodeImpl::VisitChildWorkers(const WorkerNodeVisitor& visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (WorkerNodeImpl* node : child_worker_nodes()) {
+    if (!visitor(node)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool FrameNodeImpl::VisitChildDedicatedWorkers(
     const WorkerNodeVisitor& visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (WorkerNodeImpl* worker_node_impl : child_worker_nodes()) {
-    const WorkerNode* node = worker_node_impl;
+  for (WorkerNodeImpl* node : child_worker_nodes()) {
     if (node->GetWorkerType() == WorkerNode::WorkerType::kDedicated &&
         !visitor(node)) {
       return false;
