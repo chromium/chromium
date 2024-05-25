@@ -163,6 +163,10 @@ BASE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching,
              "DeclarativeNetRequestResponseHeaderMatching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIncludeJSCallStackInExtensionApiRequest,
+             "IncludeJSCallStackInExtensionApiRequest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseItemSnippetsAPI,
              "UseItemSnippetsAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);

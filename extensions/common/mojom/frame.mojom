@@ -71,6 +71,11 @@ struct RequestParams {
   // worker version id. Otherwise, this is set to
   // blink::mojom::kInvalidServiceWorkerVersionId.
   int64 service_worker_version_id;
+  // Contains the JS call stack when an extension API method is invoked.
+  // This field is collected for telemetry purposes only and is only populated
+  // for a subset of extension API (for e.g., some chrome.tabs API methods).
+  // For all other API methods, this field is empty.
+  array<StackFrame>? js_callstack;
 };
 
 // Implemented in the renderer, this interface defines the local frame specific

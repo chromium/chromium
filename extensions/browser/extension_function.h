@@ -34,6 +34,8 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
+#include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/stack_frame.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
@@ -425,6 +427,14 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Same as above, but global. Yuck. Do not add any more uses of this.
   static bool ignore_all_did_respond_for_testing_do_not_use;
 
+  void set_js_callstack(extensions::StackTrace js_callstack) {
+    js_callstack_ = std::move(js_callstack);
+  }
+
+  const std::optional<extensions::StackTrace>& js_callstack() const {
+    return js_callstack_;
+  }
+
  protected:
   // ResponseValues.
   //
@@ -694,6 +704,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // The blobs transferred to the renderer process.
   std::vector<blink::mojom::SerializedBlobPtr> transferred_blobs_;
+
+  // The JS call stack snapshot captured at function invocation time.
+  std::optional<extensions::StackTrace> js_callstack_;
 };
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_FUNCTION_H_

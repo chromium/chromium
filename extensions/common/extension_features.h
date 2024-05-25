@@ -196,6 +196,11 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
 // matching condition.
 BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
 
+// If enabled, include JS call stack data in the extension API request
+// sent to the browser process. This data is used for telemetry purpose
+// only.
+BASE_DECLARE_FEATURE(kIncludeJSCallStackInExtensionApiRequest);
+
 // If enabled, use the new CWS itemSnippets API to fetch extension info.
 BASE_DECLARE_FEATURE(kUseItemSnippetsAPI);
 

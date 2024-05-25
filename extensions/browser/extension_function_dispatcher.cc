@@ -658,6 +658,9 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   function->set_has_callback(params.has_callback);
   function->set_user_gesture(params.user_gesture);
   function->set_extension(extension);
+  if (params.js_callstack.has_value()) {
+    function->set_js_callstack(*params.js_callstack);
+  }
   function->set_response_callback(std::move(callback));
   function->set_source_context_type(context_type);
   function->set_source_process_id(requesting_process_id);
