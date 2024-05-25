@@ -930,6 +930,7 @@ TEST_F(TimeTest, Min) {
   static_assert(kMin < Time());
   EXPECT_TRUE((Time::Now() - kMin).is_positive());
   EXPECT_TRUE((kMin - Time::Now()).is_negative());
+  static_assert(!kMin.is_null());
 }
 
 TEST_F(TimeTest, TimeTOverflow) {

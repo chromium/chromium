@@ -428,8 +428,8 @@ class TimeBase {
   constexpr bool is_min() const { return *this == Min(); }
   constexpr bool is_inf() const { return is_min() || is_max(); }
 
-  // Returns the maximum/minimum times, which should be greater/less than than
-  // any reasonable time with which we might compare it.
+  // Returns the maximum/minimum times, which should be non-null and
+  // greater/less than than any reasonable time with which we might compare it.
   static constexpr TimeClass Max() {
     return TimeClass(std::numeric_limits<int64_t>::max());
   }
