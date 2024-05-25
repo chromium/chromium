@@ -520,7 +520,13 @@ class IdlSchemaTest(unittest.TestCase):
                                    ('type', 'string')])),
                      ('key_ref',
                       OrderedDict([('name', 'key_ref'),
-                                   ('$ref', 'MyType2')]))]),
+                                   ('$ref', 'MyType2')])),
+                     ('choice_with_arrays',
+                      OrderedDict([('name', 'choice_with_arrays'),
+                                   ('$ref', 'ChoiceWithArraysType')])),
+                     ('choice_with_optional',
+                      OrderedDict([('name', 'choice_with_optional'),
+                                   ('$ref', 'ChoiceWithOptionalType')]))]),
         schema.get('manifest_keys'))
 
   def testNoManifestKeys(self):

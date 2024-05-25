@@ -88,6 +88,7 @@ source_set("unit_tests") {
     ":generated_api_json_strings",
     ":generated_types",
     "//base",
+    "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

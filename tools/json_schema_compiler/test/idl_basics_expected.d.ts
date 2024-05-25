@@ -45,6 +45,14 @@ declare global {
         x: string;
       }
 
+      export interface ChoiceWithArraysType {
+        entries: string|string[];
+      }
+
+      export interface ChoiceWithOptionalType {
+        entries?: string|string[];
+      }
+
       export interface UnionType {
         x?: EnumType|string;
         y: string|EnumType;

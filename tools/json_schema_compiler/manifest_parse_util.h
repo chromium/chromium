@@ -26,6 +26,20 @@ void PopulateInvalidEnumValueError(
     std::u16string& error,
     std::vector<base::StringPiece>& error_path_reversed);
 
+// Populates `error` and `error_path_reversed` indicating a provided value was
+// invalid for a set of type choices.
+void PopulateInvalidChoiceValueError(
+    base::StringPiece key,
+    std::u16string& error,
+    std::vector<base::StringPiece>& error_path_reversed);
+
+// Populates `error` and `error_path_reversed` indicating a certain key is
+// required.
+void PopulateKeyIsRequiredError(
+    base::StringPiece key,
+    std::u16string& error,
+    std::vector<base::StringPiece>& error_path_reversed);
+
 // Returns array parse error for `item_error` at index `error_index`
 std::u16string GetArrayParseError(size_t error_index,
                                   const std::u16string& item_error);
@@ -262,6 +276,31 @@ bool ParseEnumArrayFromDictionary(
   }
 
   out = std::move(result);
+  return true;
+}
+
+// Specialization for type "CHOICES" from ManifestKeys.
+template <typename T>
+bool ParseChoicesFromDictionary(
+    const base::Value::Dict& dict,
+    base::StringPiece key,
+    T& out,
+    std::u16string& error,
+    std::vector<base::StringPiece>& error_path_reversed) {
+  const base::Value* value = dict.Find(key);
+  if (!value) {
+    PopulateKeyIsRequiredError(key, error, error_path_reversed);
+    return false;
+  }
+
+  // Here, we leverage the existing "parse from value" logic generated for C++
+  // types, rather than trying to go through the rigmarole of using the
+  // manifest_parse_util methods.
+  if (!T::Populate(*value, out)) {
+    PopulateInvalidChoiceValueError(key, error, error_path_reversed);
+    return false;
+  }
+
   return true;
 }
 

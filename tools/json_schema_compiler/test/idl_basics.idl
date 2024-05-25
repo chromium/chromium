@@ -39,6 +39,14 @@
     DOMString x;
   };
 
+  dictionary ChoiceWithArraysType {
+    (DOMString or DOMString[]) entries;
+  };
+
+  dictionary ChoiceWithOptionalType {
+    (DOMString or DOMString[])? entries;
+  };
+
   dictionary UnionType {
     (EnumType or DOMString)? x;
     (DOMString or EnumType) y;
@@ -48,10 +56,13 @@
     DOMString x;
   };
 
+  // TODO(https://crbug.com/342445415): Support inline choices.
   dictionary ManifestKeys {
     // String manifest key.
     DOMString key_str;
     MyType2 key_ref;
+    ChoiceWithArraysType choice_with_arrays;
+    ChoiceWithOptionalType choice_with_optional;
   };
 
   callback Callback1 = void();

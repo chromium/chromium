@@ -52,6 +52,29 @@ void PopulateInvalidEnumValueError(
       "Specified value '%s' is invalid.", std::string(value).c_str()));
 }
 
+void PopulateInvalidChoiceValueError(
+    base::StringPiece key,
+    std::u16string& error,
+    std::vector<base::StringPiece>& error_path_reversed) {
+  DCHECK(error.empty());
+  DCHECK(error_path_reversed.empty());
+
+  error_path_reversed.push_back(key);
+  error = base::ASCIIToUTF16(base::StringPrintf(
+      "Provided value matches none of the allowed options."));
+}
+
+void PopulateKeyIsRequiredError(
+    base::StringPiece key,
+    std::u16string& error,
+    std::vector<base::StringPiece>& error_path_reversed) {
+  DCHECK(error.empty());
+  DCHECK(error_path_reversed.empty());
+
+  error_path_reversed.push_back(key);
+  error = u"Manifest key is required.";
+}
+
 std::u16string GetArrayParseError(size_t error_index,
                                   const std::u16string& item_error) {
   return base::ASCIIToUTF16(
@@ -83,8 +106,7 @@ const base::Value* FindKeyOfType(
 
   const base::Value* value = dict.Find(key);
   if (!value) {
-    error_path_reversed.push_back(key);
-    error = u"Manifest key is required.";
+    PopulateKeyIsRequiredError(key, error, error_path_reversed);
     return nullptr;
   }
 

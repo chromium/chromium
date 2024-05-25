@@ -516,15 +516,16 @@ class _Generator(object):
     """Generates a function that deserializes the type from the passed
     dictionary. E.g. for type "Foo", generates Foo::ParseFromDictionary().
     """
-    assert type_.property_type == PropertyType.OBJECT, \
-      ('Manifest type %s must be an object, but it is: %s' %
-      (type_.name, type_.property_type))
-
     if type_.IsRootManifestKeyType():
+      # Root manifest types must always be objects.
+      assert type_.property_type == PropertyType.OBJECT, \
+        ('Manifest type %s must be an object, but it is: %s' %
+        (type_.name, type_.property_type))
       return self._GenerateParseFromDictionaryForRootManifestType(
         classname, classname_in_namespace, type_.properties.values())
+
     return self._GenerateParseFromDictionaryForChildManifestType(
-      classname, classname_in_namespace, type_.properties.values())
+      type_, classname, classname_in_namespace, type_.properties.values())
 
   def _GenerateParseFromDictionaryForRootManifestType(
     self, classname, classname_in_namespace, properties):
@@ -566,7 +567,7 @@ class _Generator(object):
     return c
 
   def _GenerateParseFromDictionaryForChildManifestType(
-    self, classname, classname_in_namespace, properties):
+    self, type_, classname, classname_in_namespace, properties):
     # type: (str, str, List[Property]) -> Code
     """Generates T::ParseFromDictionary for a child manifest type.
     """
@@ -588,6 +589,24 @@ class _Generator(object):
              self._GenerateParams(params, generate_error_messages=False))
 
     c.Append()
+
+    # For CHOICES, we leverage the specialized helper in manifest_parse_util.
+    if type_.property_type is PropertyType.CHOICES:
+      c.Append(
+          'return ::json_schema_compiler::manifest_parse_util::\n'
+          '    ParseChoicesFromDictionary(root_dict, key, out, error,\n'
+          '                               error_path_reversed);')
+      c.Eblock('}')
+      return c.Substitute({
+        'classname_in_namespace': classname_in_namespace,
+        'classname': classname
+      })
+
+    # Otherwise, this must be an object, and we parse each property
+    # individually.
+    assert type_.property_type == PropertyType.OBJECT, \
+      ('Manifest type %s must be an object, but it is: %s' %
+      (type_.name, type_.property_type))
 
     c.Append(
       'const base::Value* value = '
@@ -627,6 +646,7 @@ class _Generator(object):
       PropertyType.DOUBLE,
       PropertyType.INT64,
       PropertyType.INTEGER,
+      PropertyType.CHOICES,
       PropertyType.OBJECT,
       PropertyType.STRING,
       PropertyType.ENUM
