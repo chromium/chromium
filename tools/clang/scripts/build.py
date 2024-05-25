@@ -937,6 +937,8 @@ def main():
         # Allocator tests fail after kernel upgrade on the builders. Suppress
         # until the test fix has landed (crbug.com/342324064).
         '^SanitizerCommon-Unit :: ./Sanitizer-x86_64-Test/.*$',
+        # This also seems to fail due to crbug.com/342324064.
+        '^DataFlowSanitizer-x86_64.*release_shadow_space.c$',
     ]
   elif sys.platform == 'darwin':
     lit_excludes += [
