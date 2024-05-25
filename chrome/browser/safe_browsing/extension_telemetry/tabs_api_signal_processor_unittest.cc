@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal_processor.h"
+
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_js_callstacks.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "extensions/common/extension_id.h"
@@ -192,6 +194,54 @@ TEST_F(TabsApiSignalProcessorTest, EnforcesMaxUniqueCallDetails) {
   ASSERT_EQ(tabs_api_info.call_details_size(), 1);
   const CallDetails& call_details = tabs_api_info.call_details(0);
   EXPECT_EQ(call_details.count(), static_cast<uint32_t>(2));
+}
+
+TEST_F(TabsApiSignalProcessorTest, IncludesJSCallStacksInSignalInfo) {
+  extensions::StackTrace stack_trace[] = {
+      {{1, 1, u"foo1.js", u"chrome.tabs.create"},
+       {2, 2, u"foo2.js", u"Func2"},
+       {3, 3, u"foo3.js", u"Func3"},
+       {4, 4, u"foo4.js", u"Func4"},
+       {5, 5, u"foo5.js", u"Func5"}},
+      {{1, 1, u"foo1.js", u"chrome.tabs.update"},
+       {2, 2, u"foo2.js", u"Func2"},
+       {3, 3, u"foo3.js", u"Func3"},
+       {5, 5, u"foo5.js", u"Func4"}},
+      {{1, 1, u"foo1.js", u"chrome.tabs.remove"},
+       {2, 2, u"foo2.js", u"Func2"},
+       {3, 3, u"foo3.js", u"Func3"}}};
+
+  // Process 3 signals, each corresponding to a different tabs API method.
+  {
+    auto signal0 = TabsApiSignal(kExtensionIds[0], kApiMethods[0],
+                                 /*current_url=*/"", kUrls[0], stack_trace[0]);
+    auto signal1 = TabsApiSignal(kExtensionIds[0], kApiMethods[1], kUrls[0],
+                                 kUrls[1], stack_trace[1]);
+    auto signal2 = TabsApiSignal(kExtensionIds[0], kApiMethods[2], kUrls[0],
+                                 /*new_url=*/"", stack_trace[2]);
+    processor_.ProcessSignal(signal0);
+    processor_.ProcessSignal(signal1);
+    processor_.ProcessSignal(signal2);
+  }
+
+  // Retrieve signal info.
+  std::unique_ptr<SignalInfo> signal_info =
+      processor_.GetSignalInfoForReport(kExtensionIds[0]);
+  ASSERT_NE(signal_info, nullptr);
+  const TabsApiInfo& tabs_api_info = signal_info->tabs_api_info();
+  ASSERT_EQ(tabs_api_info.call_details_size(), 3);
+
+  // Verify JS callstack data stored.
+  for (int i = 0; i < 3; i++) {
+    const CallDetails& call_details = tabs_api_info.call_details(i);
+    EXPECT_EQ(call_details.method(), kApiMethods[i]);
+    EXPECT_EQ(call_details.js_callstacks_size(), 1);
+    const SignalInfoJSCallStack siginfo_callstack =
+        call_details.js_callstacks(0);
+    extensions::StackTrace trace =
+        ExtensionJSCallStacks::ToExtensionsStackTrace(siginfo_callstack);
+    EXPECT_EQ(trace, stack_trace[i]);
+  }
 }
 
 }  // namespace

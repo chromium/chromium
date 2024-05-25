@@ -29,6 +29,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal_processor.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_js_callstacks.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_config_manager.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_file_processor.h"
@@ -899,6 +900,12 @@ void ExtensionTelemetryService::DumpReportForTest(
                << "      current URL: " << entry.current_url() << "\n"
                << "      new URL: " << entry.new_url() << "\n"
                << "      count: " << entry.count() << "\n";
+            const auto& js_callstacks = entry.js_callstacks();
+            int stack_idx = 0;
+            for (const auto& stack : js_callstacks) {
+              ss << "      JS callstack " << stack_idx++ << " :";
+              ss << ExtensionJSCallStacks::SignalInfoJSCallStackAsString(stack);
+            }
           }
         }
         continue;

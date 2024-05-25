@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_js_callstacks.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal_processor.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
@@ -44,9 +45,22 @@ class TabsApiSignalProcessor : public ExtensionSignalProcessor {
   // details.
   size_t max_unique_call_details_;
 
-  // Stores a map of unique API call details. The key used is a string
+  // Call data consists of call arguments and JS call stacks associated
+  // with the API invocations.
+  struct CallData {
+    CallData();
+    ~CallData();
+    CallData(const CallData&);
+
+    // Arguments passed to the API call.
+    TabsApiCallDetails call_details;
+    // Multiple JS callstacks (one for each API invocation).
+    ExtensionJSCallStacks js_callstacks;
+  };
+
+  // Stores a map of unique API call data. The key used is a string
   // concatenation of the call arguments stored.
-  using TabsApiCallDetailsMap = base::flat_map<std::string, TabsApiCallDetails>;
+  using CallDataMap = base::flat_map<std::string, CallData>;
 
   // Stores chrome.tabs API signal info for a single extension. If
   // `max_unique_call_details_` is exceeded, no more call details will be
@@ -56,7 +70,7 @@ class TabsApiSignalProcessor : public ExtensionSignalProcessor {
     ~TabsApiInfoStoreEntry();
     TabsApiInfoStoreEntry(const TabsApiInfoStoreEntry&);
 
-    TabsApiCallDetailsMap tabs_api_call_details_map;
+    CallDataMap call_data_map;
   };
 
   // Stores chrome.tabs API signal for multiple extensions, keyed by extension
