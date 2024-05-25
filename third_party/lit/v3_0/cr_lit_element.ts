@@ -47,7 +47,7 @@ export class CrLitElement extends LitElement {
                 self.tagName} tried to access this.$ within willUpdate().`);
           }
 
-          // See Case3 in `ensureInitialRender_` docs.
+          // See Case3 in `ensureInitialRender` docs.
           self.performUpdate();
         }
 
@@ -100,7 +100,7 @@ export class CrLitElement extends LitElement {
   // Addressed by the effectively identical logic in the this.$ Proxy above.
   //
   // This happens when the same pattern as Case 2 above is encountered.
-  private ensureInitialRender_() {
+  ensureInitialRender() {
     if (!this.hasUpdated) {
       this.performUpdate();
     }
@@ -108,8 +108,8 @@ export class CrLitElement extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    // See Case1 in `ensureInitialRender_` docs.
-    this.ensureInitialRender_();
+    // See Case1 in `ensureInitialRender` docs.
+    this.ensureInitialRender();
   }
 
   override willUpdate(_changedProperties: PropertyValues<this>) {
@@ -141,8 +141,8 @@ export class CrLitElement extends LitElement {
   }
 
   override focus() {
-    // See Case2 in `ensureInitialRender_` docs.
-    this.ensureInitialRender_();
+    // See Case2 in `ensureInitialRender` docs.
+    this.ensureInitialRender();
     super.focus();
   }
 

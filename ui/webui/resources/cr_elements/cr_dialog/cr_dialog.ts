@@ -188,6 +188,15 @@ export class CrDialogElement extends CrDialogElementBase {
   }
 
   async showModal() {
+    if (this.showOnAttach) {
+      const element = this.querySelector('[autofocus]');
+      if (element && element instanceof CrLitElement && !element.shadowRoot) {
+        // Force initial render, so that any inner elements with [autofocus] are
+        // picked up by the browser.
+        element.ensureInitialRender();
+      }
+    }
+
     this.$.dialog.showModal();
     assert(this.$.dialog.open);
     this.open = true;
