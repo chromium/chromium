@@ -1,0 +1,47 @@
+{
+  "cwd": "/example/path",
+  "browsers": {
+    "chrome_v125_linux.x64.local_0": {
+      "cwd": "/example/path/chrome_v125_linux.x64.local_0/stories",
+      "probes": {
+        "motionmark_1.2": {
+          "json": [
+            "/example/path/chrome_v125_linux.x64.local_0/stories/motionmark_1.2.json"
+          ],
+          "csv": [
+            "/example/path/chrome_v125_linux.x64.local_0/stories/motionmark_1.2.csv"
+          ]
+        },
+        "cb.system.details": null,
+        "cb.log": null,
+        "cb.errors": null,
+        "cb.durations": {
+          "json": [
+            "/example/path/chrome_v125_linux.x64.local_0/stories/cb.durations.json"
+          ]
+        }
+      },
+      "errors": []
+    }
+  },
+  "probes": {
+    "motionmark_1.2": {
+      "json": [
+        "/example/path/motionmark_1.2.json"
+      ],
+      "csv": [
+        "/example/path/motionmark_1.2.csv"
+      ]
+    },
+    "cb.system.details": null,
+    "cb.log": null,
+    "cb.errors": null,
+    "cb.durations": {
+      "json": [
+        "/example/path/cb.durations.json"
+      ]
+    }
+  },
+  "success": true,
+  "errors": []
+}

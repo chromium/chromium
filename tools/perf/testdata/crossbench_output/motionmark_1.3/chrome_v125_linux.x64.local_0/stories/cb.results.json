@@ -1,0 +1,75 @@
+{
+  "cwd": "/example/path/chrome_v125_linux.x64.local_0/stories",
+  "browser": {
+    "label": "linux.x64.local_0",
+    "browser": "chrome",
+    "unique_name": "chrome_v125_linux.x64.local_0",
+    "app_name": "google-chrome",
+    "version": "125.0.6422.76",
+    "flags": [
+      "--no-default-browser-check",
+      "--disable-component-update",
+      "--disable-sync",
+      "--disable-extensions",
+      "--no-first-run",
+      "--disable-search-engine-choice-screen",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--no-experiments",
+      "--enable-benchmarking",
+      "--disable-field-trial-config"
+    ],
+    "js_flags": [],
+    "path": "/usr/bin/google-chrome",
+    "clear_cache_dir": true,
+    "major_version": 125
+  },
+  "stories": {
+    "motionmark_1.3": {
+      "cwd": "/example/path/chrome_v125_linux.x64.local_0/stories/motionmark_1.3",
+      "duration": 327.5,
+      "probes": {
+        "motionmark_1.3": {
+          "json": [
+            "/example/path/chrome_v125_linux.x64.local_0/stories/motionmark_1.3/motionmark_1.3.json"
+          ],
+          "csv": [
+            "/example/path/chrome_v125_linux.x64.local_0/stories/motionmark_1.3/motionmark_1.3.csv"
+          ]
+        },
+        "cb.system.details": null,
+        "cb.log": null,
+        "cb.errors": null,
+        "cb.durations": {
+          "json": [
+            "/example/path/chrome_v125_linux.x64.local_0/stories/motionmark_1.3/cb.durations.json"
+          ],
+          "csv": [
+            "/example/path/chrome_v125_linux.x64.local_0/stories/motionmark_1.3/cb.durations.csv"
+          ]
+        }
+      },
+      "errors": []
+    }
+  },
+  "probes": {
+    "motionmark_1.3": {
+      "json": [
+        "/example/path/chrome_v125_linux.x64.local_0/stories/motionmark_1.3.json"
+      ],
+      "csv": [
+        "/example/path/chrome_v125_linux.x64.local_0/stories/motionmark_1.3.csv"
+      ]
+    },
+    "cb.system.details": null,
+    "cb.log": null,
+    "cb.errors": null,
+    "cb.durations": {
+      "json": [
+        "/example/path/chrome_v125_linux.x64.local_0/stories/cb.durations.json"
+      ]
+    }
+  },
+  "success": true,
+  "errors": []
+}
