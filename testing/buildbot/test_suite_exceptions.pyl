@@ -1978,28 +1978,10 @@
           'shards': 41,
         },
       },
-      'fuchsia-x64-cast-receiver-dbg': {
-        'swarming': {
-          'shards': 41,
-        },
-        'args': [
-          # TODO(crbug.com/42050564): Remove this when the kernal panic in
-          # fuchsia has been resolved.
-          '--test-arg=--test-launcher-jobs=1',
-        ],
-      },
       'fuchsia-x64-cast-receiver-rel': {
         # Temporarily only run this on CI due to resource requirements.
         # TODO(crbug.com/40872145): Remove this once resources are available.
         'ci_only': True,
-        'swarming': {
-          'shards': 41,
-        },
-        'args': [
-          # TODO(crbug.com/42050564): Remove this when the kernal panic in
-          # fuchsia has been resolved.
-          '--test-arg=--test-launcher-jobs=1',
-        ],
       },
       'linux-chromeos-code-coverage': {
         'swarming': {

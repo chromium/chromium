@@ -1447,8 +1447,7 @@
         "args": [
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
-          "--test-arg=--ozone-platform=headless",
-          "--test-arg=--test-launcher-jobs=1"
+          "--test-arg=--ozone-platform=headless"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1461,7 +1460,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 41
+          "shards": 14
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -2813,8 +2812,7 @@
         "args": [
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
-          "--test-arg=--ozone-platform=headless",
-          "--test-arg=--test-launcher-jobs=1"
+          "--test-arg=--ozone-platform=headless"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -2828,7 +2826,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 41
+          "shards": 14
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
