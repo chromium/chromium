@@ -8,6 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {App, AppParentalControlsHandlerInterface, AppParentalControlsObserverReceiver} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+import {Router, routes} from '../../router.js';
 
 import {getTemplate} from './app_parental_controls_subpage.html.js';
 import {getAppParentalControlsProvider} from './mojo_interface_provider.js';
@@ -32,12 +33,18 @@ export class SettingsAppParentalControlsSubpageElement extends PolymerElement {
         computed: 'computeAppList_(appList_, searchTerm)',
       },
 
+      isVerified: {
+        type: Boolean,
+        value: false,
+      },
+
       searchTerm: String,
     };
   }
 
   searchTerm: string;
   private appList_: App[] = [];
+  private isVerified: boolean;
   private filteredAppList_: App[];
   private mojoInterfaceProvider: AppParentalControlsHandlerInterface;
   private observerReceiver: AppParentalControlsObserverReceiver|null;
@@ -58,6 +65,13 @@ export class SettingsAppParentalControlsSubpageElement extends PolymerElement {
     this.observerReceiver = new AppParentalControlsObserverReceiver(this);
     this.mojoInterfaceProvider.addObserver(
         this.observerReceiver.$.bindNewPipeAndPassRemote());
+
+    if (!this.isVerified) {
+      // Redirect to the apps page if the PIN is not verified.
+      setTimeout(() => {
+        Router.getInstance().navigateTo(routes.APPS);
+      });
+    }
   }
 
   override disconnectedCallback(): void {

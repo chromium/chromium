@@ -20,6 +20,8 @@ suite('AppParentalControlsSubpage', () => {
   async function createPage(): Promise<void> {
     Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
     page = new SettingsAppParentalControlsSubpageElement();
+    // Set verified to true to indicate pin was accepted on the apps page.
+    page.set('isVerified', true);
     document.body.appendChild(page);
     await flushTasks();
   }
@@ -127,6 +129,16 @@ suite('AppParentalControlsSubpage', () => {
         assertTrue(appToggle.checked);
         assertFalse(app.isBlocked);
       });
+
+  test('Unverified page redirects to Apps', async () => {
+    Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
+    // Page is unverified by default and will redirect.
+    page = new SettingsAppParentalControlsSubpageElement();
+    document.body.appendChild(page);
+    await flushTasks();
+
+    assertEquals(Router.getInstance().currentRoute, routes.APPS);
+  });
 });
 
 suite('AppParentalControlsSubpage search', () => {
@@ -136,6 +148,8 @@ suite('AppParentalControlsSubpage search', () => {
   async function createPage(): Promise<void> {
     Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
     page = new SettingsAppParentalControlsSubpageElement();
+    // Set verified to true to indicate pin was accepted on the apps page.
+    page.set('isVerified', true);
     document.body.appendChild(page);
     await flushTasks();
   }

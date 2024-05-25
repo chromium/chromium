@@ -3,15 +3,18 @@
     text-align: center;
   }
 </style>
-<div id="appParentalControlsList" class="hr">
-  <template is="dom-repeat" items="[[filteredAppList_]]" as="app"
-      sort="alphabeticalSort_">
-      <block-app-item app="[[app]]"></block-app-item>
-  </template>
-</div>
 
-<template is="dom-if" if="[[isAppListEmpty_(filteredAppList_)]]">
-  <div id="noAppsLabel" class="cr-secondary-text">
-    $i18n{appParentalControlsNoAppsText}
+<template is="dom-if" if="[[isVerified]]">
+  <div id="appParentalControlsList" class="hr">
+    <template is="dom-repeat" items="[[filteredAppList_]]" as="app"
+        sort="alphabeticalSort_">
+        <block-app-item app="[[app]]"></block-app-item>
+    </template>
   </div>
+
+  <template is="dom-if" if="[[isAppListEmpty_(filteredAppList_)]]">
+    <div id="noAppsLabel" class="cr-secondary-text">
+      $i18n{appParentalControlsNoAppsText}
+    </div>
+  </template>
 </template>
