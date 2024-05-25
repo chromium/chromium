@@ -1825,7 +1825,7 @@ IN_PROC_BROWSER_TEST_F(
   // Issuing a region selection request should update the results page.
   const GURL second_search_url(
       "https://www.google.com/"
-      "search?cs=0&source=chrome.cr.menu&q=&lns_mode=un&gsc=1&"
+      "search?cs=0&source=chrome.cr.menu&q=&lns_fp=1&lns_mode=un&gsc=1&"
       "hl=en-US");
   // We can't use content::WaitForLoadStop here and below since the last
   // navigation was already successful.

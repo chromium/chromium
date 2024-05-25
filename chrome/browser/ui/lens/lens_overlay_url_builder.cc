@@ -213,10 +213,10 @@ GURL BuildTextOnlySearchURL(
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kLensFootprintParameterKey,
         kLensFootprintParameterValue);
+    url_with_query_params = net::AppendOrReplaceQueryParameter(
+        url_with_query_params, kLensModeParameterKey,
+        kLensModeParameterTextValue);
   }
-  url_with_query_params = net::AppendOrReplaceQueryParameter(
-      url_with_query_params, kLensModeParameterKey,
-      kLensModeParameterTextValue);
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params);
   url_with_query_params = AppendSearchContextParamToURL(url_with_query_params,

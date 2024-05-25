@@ -37,6 +37,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "third_party/lens_server_proto/lens_overlay_client_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_filters.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_polygon.pb.h"
@@ -199,6 +200,8 @@ LensOverlayQueryController::CreateClientContext() {
   context.set_platform(lens::WEB);
   context.mutable_rendering_context()->set_rendering_environment(
       lens::RENDERING_ENV_LENS_OVERLAY);
+  context.mutable_client_filters()->add_filter()->set_filter_type(
+      lens::AUTO_FILTER);
   context.mutable_locale_context()->set_language(
       g_browser_process->GetApplicationLocale());
   context.mutable_locale_context()->set_region(
@@ -229,6 +232,8 @@ LensOverlayQueryController::AddVisualSearchInteractionLogData(
       ->mutable_user_selection_data()
       ->set_selection_type(selection_type);
   interaction_data.mutable_log_data()->set_is_parent_query(!parent_query_sent_);
+  interaction_data.mutable_log_data()->set_client_platform(
+      lens::CLIENT_PLATFORM_LENS_OVERLAY);
   parent_query_sent_ = true;
 
   std::string serialized_proto;

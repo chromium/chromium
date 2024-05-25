@@ -70,9 +70,9 @@ class LensOverlayUrlBuilderTest : public testing::Test {
 TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURL) {
   std::string text_query = "Apples";
   std::map<std::string, std::string> additional_params;
-  std::string expected_url = base::StringPrintf(
-      "%s?cs=0&source=chrome.cr.menu&q=%s&lns_mode=text&gsc=1&hl=%s",
-      kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
+  std::string expected_url =
+      base::StringPrintf("%s?cs=0&source=chrome.cr.menu&q=%s&gsc=1&hl=%s",
+                         kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(
                 text_query,
@@ -117,9 +117,9 @@ TEST_F(LensOverlayUrlBuilderTest,
       EncodeSearchContext(std::make_optional<GURL>(kPageUrl),
                           std::make_optional<std::string>(kPageTitle));
 
-  std::string expected_url = base::StringPrintf(
-      "%s?cs=0&source=chrome.cr.menu&q=%s&lns_mode=text&gsc=1&hl=%s",
-      kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
+  std::string expected_url =
+      base::StringPrintf("%s?cs=0&source=chrome.cr.menu&q=%s&gsc=1&hl=%s",
+                         kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(
                 text_query, std::make_optional<GURL>(kPageUrl),
@@ -138,7 +138,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrlAndTitle) {
                           std::make_optional<std::string>(kPageTitle));
 
   std::string expected_url = base::StringPrintf(
-      "%s?cs=0&source=chrome.cr.menu&q=%s&lns_mode=text&gsc=1&hl=%s&masfc=c&"
+      "%s?cs=0&source=chrome.cr.menu&q=%s&gsc=1&hl=%s&masfc=c&"
       "mactx=%s",
       kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
       expected_search_context.c_str());
@@ -159,7 +159,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrl) {
       std::make_optional<GURL>(kPageUrl), /*page_title=*/std::nullopt);
 
   std::string expected_url = base::StringPrintf(
-      "%s?cs=0&source=chrome.cr.menu&q=%s&lns_mode=text&gsc=1&hl=%s&masfc=c&"
+      "%s?cs=0&source=chrome.cr.menu&q=%s&gsc=1&hl=%s&masfc=c&"
       "mactx=%s",
       kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
       expected_search_context.c_str());
@@ -180,7 +180,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageTitle) {
       /*page_url=*/std::nullopt, std::make_optional<std::string>(kPageTitle));
 
   std::string expected_url = base::StringPrintf(
-      "%s?cs=0&source=chrome.cr.menu&q=%s&lns_mode=text&gsc=1&hl=%s&masfc=c&"
+      "%s?cs=0&source=chrome.cr.menu&q=%s&gsc=1&hl=%s&masfc=c&"
       "mactx=%s",
       kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
       expected_search_context.c_str());
@@ -198,9 +198,9 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageTitle) {
 TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLEmpty) {
   std::string text_query = "";
   std::map<std::string, std::string> additional_params;
-  std::string expected_url = base::StringPrintf(
-      "%s?cs=0&source=chrome.cr.menu&q=&lns_mode=text&gsc=1&hl=%s",
-      kResultsSearchBaseUrl, kLanguage);
+  std::string expected_url =
+      base::StringPrintf("%s?cs=0&source=chrome.cr.menu&q=&gsc=1&hl=%s",
+                         kResultsSearchBaseUrl, kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(
                 text_query,
@@ -218,8 +218,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLPunctuation) {
   std::string escaped_text_query =
       base::EscapeQueryParamValue(text_query, /*use_plus=*/true);
   std::string expected_url = base::StringPrintf(
-      "%s?cs=0&source=chrome.cr.menu&q=%s&lns_mode=text&gsc=1&hl=%s",
-      kResultsSearchBaseUrl, escaped_text_query.c_str(), kLanguage);
+      "%s?cs=0&source=chrome.cr.menu&q=%s&gsc=1&hl=%s", kResultsSearchBaseUrl,
+      escaped_text_query.c_str(), kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(
                 text_query,
@@ -237,8 +237,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWhitespace) {
   std::string escaped_text_query =
       base::EscapeQueryParamValue(text_query, /*use_plus=*/true);
   std::string expected_url = base::StringPrintf(
-      "%s?cs=0&source=chrome.cr.menu&q=%s&lns_mode=text&gsc=1&hl=%s",
-      kResultsSearchBaseUrl, escaped_text_query.c_str(), kLanguage);
+      "%s?cs=0&source=chrome.cr.menu&q=%s&gsc=1&hl=%s", kResultsSearchBaseUrl,
+      escaped_text_query.c_str(), kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(
                 text_query,
