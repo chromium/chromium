@@ -2762,8 +2762,7 @@ float Internals::pageZoomFactor(ExceptionState& exception_state) {
     return 0;
   }
   // Page zoom without Device Scale Factor.
-  return document_->GetPage()->GetChromeClient().UserZoomFactor(
-      document_->GetFrame());
+  return document_->GetPage()->GetChromeClient().UserZoomFactor();
 }
 
 void Internals::setIsCursorVisible(Document* document,
