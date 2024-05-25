@@ -164,7 +164,8 @@ bool ContainedInWorkArea(aura::Window* window) {
       .Contains(window->GetBoundsInScreen());
 }
 
-void ResizeWindow(aura::Window* window, const gfx::Rect& screen_bounds) {
+void ResizeAndActivateWindow(aura::Window* window,
+                             const gfx::Rect& screen_bounds) {
   auto* window_state = WindowState::Get(window);
   if (!chromeos::IsNormalWindowStateType(window_state->GetStateType())) {
     // TODO(b/308194482): Disable animation, e.g. if this would unmaximize.
@@ -172,10 +173,10 @@ void ResizeWindow(aura::Window* window, const gfx::Rect& screen_bounds) {
     const WMEvent event(WM_EVENT_NORMAL);
     window_state->OnWMEvent(&event);
   }
-  // TODO(b/306204394): Also bring window to the front for visibility.
   window->SetBoundsInScreen(
       screen_bounds,
       display::Screen::GetScreen()->GetDisplayMatching(screen_bounds));
+  window_state->Activate();
 }
 
 }  // namespace
@@ -192,6 +193,8 @@ std::optional<SplitWindowInfo> WindowSplitter::MaybeSplitWindow(
   if (!ContainedInWorkArea(topmost_window)) {
     return std::nullopt;
   }
+
+  // TODO(b/342672204): Consider filtering out windows that are too occluded.
 
   const auto split_region = GetSplitRegion(topmost_window, screen_location);
   if (!IsRegionSplittable(split_region)) {
@@ -277,8 +280,10 @@ void WindowSplitter::CompleteDrag(const gfx::PointF& last_location_in_screen) {
           GetTopmostWindow(dragged_window(), last_location_in_screen)) {
     if (const std::optional<SplitWindowInfo> split_bounds = MaybeSplitWindow(
             topmost_window, dragged_window(), last_location_in_screen)) {
-      ResizeWindow(topmost_window, split_bounds->topmost_window_bounds);
-      ResizeWindow(dragged_window(), split_bounds->dragged_window_bounds);
+      ResizeAndActivateWindow(topmost_window,
+                              split_bounds->topmost_window_bounds);
+      ResizeAndActivateWindow(dragged_window(),
+                              split_bounds->dragged_window_bounds);
       completed_split_region_ = split_bounds->split_region;
     }
   }

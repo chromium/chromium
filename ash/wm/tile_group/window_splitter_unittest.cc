@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "ash/public/cpp/window_finder.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
@@ -15,11 +18,13 @@
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -872,6 +877,42 @@ TEST_F(WindowSplitterTest, DragAcrossExtendedDisplay) {
 
   ExpectHistogramWithSplit(histogram_tester, SplitRegion::kRight,
                            /*preview_count=*/1);
+}
+
+TEST_F(WindowSplitterTest, DragSplitWindowBringToTop) {
+  auto topmost_window = CreateToplevelTestWindow(kTopmostWindowBounds);
+  auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
+  auto occluding_window = CreateToplevelTestWindow(gfx::Rect(80, 10, 500, 350));
+
+  constexpr gfx::Point left_point(100, 40);
+  constexpr gfx::Point right_point(400, 200);
+
+  EXPECT_EQ(GetTopmostWindowAtPoint(left_point, {}), occluding_window.get());
+  EXPECT_EQ(GetTopmostWindowAtPoint(right_point, {}), occluding_window.get());
+
+  WindowSplitter splitter(dragged_window.get());
+  gfx::PointF screen_location(kTopmostWindowBounds.left_center());
+  screen_location.Offset(5, 0);
+  splitter.UpdateDrag(screen_location, /*can_split=*/true);
+  FastForwardPastDwellDuration();
+  EXPECT_TRUE(LeftHalf(kTopmostWindowBounds)
+                  .Contains(GetPhantomWindowTargetBounds(splitter)));
+
+  splitter.CompleteDrag(screen_location);
+  EXPECT_EQ(topmost_window->GetBoundsInScreen(),
+            RightHalf(kTopmostWindowBounds));
+  EXPECT_EQ(dragged_window->GetBoundsInScreen(),
+            LeftHalf(kTopmostWindowBounds));
+  EXPECT_EQ(GetTopmostWindowAtPoint(left_point, {}), dragged_window.get());
+  EXPECT_EQ(GetTopmostWindowAtPoint(right_point, {}), topmost_window.get());
+  EXPECT_THAT(
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
+      testing::ElementsAre(dragged_window.get(), topmost_window.get(),
+                           occluding_window.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(dragged_window.get()));
+  EXPECT_EQ(
+      aura::client::GetFocusClient(dragged_window.get())->GetFocusedWindow(),
+      dragged_window.get());
 }
 
 }  // namespace ash
