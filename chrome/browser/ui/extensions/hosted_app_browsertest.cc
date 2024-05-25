@@ -185,6 +185,13 @@ bool TryToLoadImage(const content::ToRenderFrameHost& adapter,
 // Therefore, we use different approach to wait and verify the expected browser
 // to become the active or last active browser in test.
 
+// TODO(b/342491793): On Mac, the expected browser window (to be activated) is
+// occasionally deactivated after being activated. So the test will fail
+// (correctly) and become flaky if we use WidgetActivationWaiter to wait for the
+// browser to be activated. BrowserList::GetLastActive() may have hid the
+// potential UI issue on mac. We should fix the issue on mac and remove its
+// dependency on BrowserList::GetLastActive().
+
 void WaitUntilBrowserBecomeActiveOrLastActive(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   ui_test_utils::WaitUntilBrowserBecomeActive(browser);
@@ -407,7 +414,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
 }
 
 // Tests that Ctrl + Clicking a link opens a foreground tab.
-// TODO(crbug.com/40755999): Flaky on Linux and LACROS..
+// TODO(crbug.com/40755999): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_CtrlClickLink DISABLED_CtrlClickLink
 #else
