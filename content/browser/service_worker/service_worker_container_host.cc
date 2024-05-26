@@ -235,21 +235,22 @@ ServiceWorkerContainerHostForServiceWorker::
 
 ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
-    mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-        container_remote)
+    blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info)
     : service_worker_client_(std::move(service_worker_client)),
-      container_(std::move(container_remote)) {
+      container_(
+          container_info->client_receiver.InitWithNewEndpointAndPassRemote()) {
   CHECK(service_worker_client_);
   DCHECK(container_.is_bound());
+  service_worker_client_->context().BindHost(
+      *this, container_info->host_remote.InitWithNewEndpointAndPassReceiver());
 }
 
 void ServiceWorkerContainerHostForClient::Create(
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
-    mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-        container_remote) {
+    blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info) {
   service_worker_client->set_container_host(
       std::make_unique<ServiceWorkerContainerHostForClient>(
-          service_worker_client, std::move(container_remote)));
+          service_worker_client, container_info));
 }
 
 void ServiceWorkerClient::set_container_host(

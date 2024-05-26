@@ -28,8 +28,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/url_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -151,27 +149,13 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   // If this is the first request before redirects, a container info and
   // container host has not yet been created.
   if (!handle_->has_container_info()) {
-    // Create `container_info`.
-    auto container_info =
-        blink::mojom::ServiceWorkerContainerInfoForClient::New();
-    mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
-        host_receiver =
-            container_info->host_remote.InitWithNewEndpointAndPassReceiver();
-    mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-        client_remote;
-
-    container_info->client_receiver =
-        client_remote.InitWithNewEndpointAndPassReceiver();
-    handle_->OnCreatedContainerHost(std::move(container_info));
-
     // Create the ServiceWorkerContainerHost. Its lifetime is bound to
     // `container_info`.
     DCHECK(!handle_->service_worker_client());
     if (blink::IsRequestDestinationFrame(request_destination_)) {
       handle_->set_service_worker_client(
           context_core->CreateServiceWorkerClientForWindow(
-              std::move(host_receiver), are_ancestors_secure_,
-              std::move(client_remote), frame_tree_node_id_));
+              are_ancestors_secure_, frame_tree_node_id_));
     } else {
       DCHECK(request_destination_ ==
                  network::mojom::RequestDestination::kWorker ||
@@ -180,7 +164,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 
       handle_->set_service_worker_client(
           context_core->CreateServiceWorkerClientForWorker(
-              std::move(host_receiver), process_id_, std::move(client_remote),
+              process_id_,
               absl::ConvertVariantTo<ServiceWorkerClientInfo>(*worker_token_)));
     }
     CHECK(handle_->service_worker_client());

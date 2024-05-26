@@ -330,18 +330,11 @@ std::unique_ptr<ServiceWorkerClientAndInfo>
 CreateServiceWorkerClientAndInfoForWindow(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool are_ancestors_secure) {
-  mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-      client_remote;
-  mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
-      host_receiver;
-  auto info = blink::mojom::ServiceWorkerContainerInfoForClient::New();
-  info->client_receiver = client_remote.InitWithNewEndpointAndPassReceiver();
-  host_receiver = info->host_remote.InitWithNewEndpointAndPassReceiver();
+  auto [service_worker_client, info] =
+      context->CreateServiceWorkerClientForWindow(are_ancestors_secure,
+                                                  /*frame_tree_node_id=*/1);
   return std::make_unique<ServiceWorkerClientAndInfo>(
-      context->CreateServiceWorkerClientForWindow(
-          std::move(host_receiver), are_ancestors_secure,
-          std::move(client_remote), /*frame_tree_node_id=*/1),
-      std::move(info));
+      std::move(service_worker_client), std::move(info));
 }
 
 base::OnceCallback<void(blink::ServiceWorkerStatusCode)>

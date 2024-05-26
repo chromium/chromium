@@ -240,23 +240,25 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // navigation. |are_ancestors_secure| should be true for main frames.
   // Otherwise it is true iff all ancestor frames of this frame have a secure
   // origin. |frame_tree_node_id| is FrameTreeNode id.
-  base::WeakPtr<ServiceWorkerClient> CreateServiceWorkerClientForWindow(
-      mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
-          host_receiver,
-      bool are_ancestors_secure,
-      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-          container_remote,
-      int frame_tree_node_id);
+  std::tuple<base::WeakPtr<ServiceWorkerClient>,
+             blink::mojom::ServiceWorkerContainerInfoForClientPtr>
+  CreateServiceWorkerClientForWindow(bool are_ancestors_secure,
+                                     int frame_tree_node_id);
 
   // Used for starting a web worker (dedicated worker or shared worker). Returns
   // a service worker client for the worker.
-  base::WeakPtr<ServiceWorkerClient> CreateServiceWorkerClientForWorker(
+  std::tuple<base::WeakPtr<ServiceWorkerClient>,
+             blink::mojom::ServiceWorkerContainerInfoForClientPtr>
+  CreateServiceWorkerClientForWorker(int process_id,
+                                     ServiceWorkerClientInfo client_info);
+
+  // Binds the ServiceWorkerContainerHost mojo receiver for `container_host`.
+  // After this point, `container_host` and its `ServiceWorkerClient` will be
+  // destroyed on the mojo pipe close.
+  void BindHost(
+      ServiceWorkerContainerHostForClient& container_host,
       mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
-          host_receiver,
-      int process_id,
-      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-          container_remote,
-      ServiceWorkerClientInfo client_info);
+          host_receiver);
 
   // Updates the client UUID of an existing service worker client.
   void UpdateServiceWorkerClientClientID(const std::string& current_client_uuid,

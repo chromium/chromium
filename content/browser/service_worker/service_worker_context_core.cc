@@ -418,13 +418,10 @@ void ServiceWorkerContextCore::HasMainFrameWindowClient(
       FROM_HERE, base::BindOnce(std::move(callback), has_main_frame));
 }
 
-base::WeakPtr<ServiceWorkerClient>
+std::tuple<base::WeakPtr<ServiceWorkerClient>,
+           blink::mojom::ServiceWorkerContainerInfoForClientPtr>
 ServiceWorkerContextCore::CreateServiceWorkerClientForWindow(
-    mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
-        host_receiver,
     bool are_ancestors_secure,
-    mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-        container_remote,
     int frame_tree_node_id) {
   auto client = std::make_unique<ServiceWorkerClient>(
       base::PassKey<ServiceWorkerContextCore>(), *this, are_ancestors_secure,
@@ -435,23 +432,17 @@ ServiceWorkerContextCore::CreateServiceWorkerClientForWindow(
                       .second;
   DCHECK(inserted);
 
-  // Bind the host receiver.
-  ServiceWorkerContainerHostForClient::Create(weak_client,
-                                              std::move(container_remote));
-  container_host_receivers_->Add(&weak_client->container_host(),
-                                 std::move(host_receiver),
-                                 &weak_client->container_host());
+  auto container_info =
+      blink::mojom::ServiceWorkerContainerInfoForClient::New();
+  ServiceWorkerContainerHostForClient::Create(weak_client, container_info);
 
-  return weak_client;
+  return std::make_tuple(std::move(weak_client), std::move(container_info));
 }
 
-base::WeakPtr<ServiceWorkerClient>
+std::tuple<base::WeakPtr<ServiceWorkerClient>,
+           blink::mojom::ServiceWorkerContainerInfoForClientPtr>
 ServiceWorkerContextCore::CreateServiceWorkerClientForWorker(
-    mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
-        host_receiver,
     int process_id,
-    mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-        container_remote,
     ServiceWorkerClientInfo client_info) {
   auto client = std::make_unique<ServiceWorkerClient>(
       base::PassKey<ServiceWorkerContextCore>(), *this, process_id,
@@ -462,14 +453,19 @@ ServiceWorkerContextCore::CreateServiceWorkerClientForWorker(
                       .second;
   DCHECK(inserted);
 
-  // Bind the host receiver.
-  ServiceWorkerContainerHostForClient::Create(weak_client,
-                                              std::move(container_remote));
-  container_host_receivers_->Add(&weak_client->container_host(),
-                                 std::move(host_receiver),
-                                 &weak_client->container_host());
+  auto container_info =
+      blink::mojom::ServiceWorkerContainerInfoForClient::New();
+  ServiceWorkerContainerHostForClient::Create(weak_client, container_info);
 
-  return weak_client;
+  return std::make_tuple(std::move(weak_client), std::move(container_info));
+}
+
+void ServiceWorkerContextCore::BindHost(
+    ServiceWorkerContainerHostForClient& container_host,
+    mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
+        host_receiver) {
+  container_host_receivers_->Add(&container_host, std::move(host_receiver),
+                                 &container_host);
 }
 
 void ServiceWorkerContextCore::UpdateServiceWorkerClientClientID(

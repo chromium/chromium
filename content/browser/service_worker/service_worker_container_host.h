@@ -818,18 +818,16 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
 class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
     : public ServiceWorkerContainerHost {
  public:
-  // Creates `ServiceWorkerContainerHostForClient` and associates it with
-  // `service_worker_client`.
+  // Creates `ServiceWorkerContainerHostForClient`, binds mojo pipes of
+  // `container_info` and associates it with `service_worker_client`.
   static void Create(
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-          container_remote);
+      blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info);
 
   // Use Create() instead.
   ServiceWorkerContainerHostForClient(
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-          container_remote);
+      blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info);
   ~ServiceWorkerContainerHostForClient() override;
 
   ServiceWorkerClient& service_worker_client() {

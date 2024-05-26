@@ -30,8 +30,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_content_browser_client.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -130,21 +128,10 @@ class SharedWorkerHostTest : public testing::Test {
     auto service_worker_handle =
         std::make_unique<ServiceWorkerMainResourceHandle>(
             helper_->context_wrapper(), base::DoNothing());
-    mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-        client_remote;
-    mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
-        host_receiver;
-    auto container_info =
-        blink::mojom::ServiceWorkerContainerInfoForClient::New();
-    container_info->client_receiver =
-        client_remote.InitWithNewEndpointAndPassReceiver();
-    host_receiver =
-        container_info->host_remote.InitWithNewEndpointAndPassReceiver();
-
-    helper_->context()->CreateServiceWorkerClientForWorker(
-        std::move(host_receiver), mock_render_process_host_->GetID(),
-        std::move(client_remote), ServiceWorkerClientInfo(host->token()));
-    service_worker_handle->OnCreatedContainerHost(std::move(container_info));
+    service_worker_handle->set_service_worker_client(
+        helper_->context()->CreateServiceWorkerClientForWorker(
+            mock_render_process_host_->GetID(),
+            ServiceWorkerClientInfo(host->token())));
     host->SetServiceWorkerHandle(std::move(service_worker_handle));
 
     TestContentBrowserClient client;

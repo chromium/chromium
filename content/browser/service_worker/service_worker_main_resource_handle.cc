@@ -26,13 +26,19 @@ ServiceWorkerMainResourceHandle::ServiceWorkerMainResourceHandle(
 
 ServiceWorkerMainResourceHandle::~ServiceWorkerMainResourceHandle() = default;
 
-void ServiceWorkerMainResourceHandle::OnCreatedContainerHost(
-    blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info) {
+void ServiceWorkerMainResourceHandle::set_service_worker_client(
+    std::tuple<base::WeakPtr<ServiceWorkerClient>,
+               blink::mojom::ServiceWorkerContainerInfoForClientPtr>
+        service_worker_client_and_container_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(container_info->host_remote.is_valid() &&
-         container_info->client_receiver.is_valid());
+  CHECK(!service_worker_client_);
 
-  container_info_ = std::move(container_info);
+  std::tie(service_worker_client_, container_info_) =
+      std::move(service_worker_client_and_container_info);
+
+  CHECK(container_info_->host_remote.is_valid() &&
+        container_info_->client_receiver.is_valid());
+  CHECK(service_worker_client_);
 }
 
 }  // namespace content

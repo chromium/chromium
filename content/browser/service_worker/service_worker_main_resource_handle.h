@@ -51,11 +51,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
 
   ~ServiceWorkerMainResourceHandle();
 
-  // Called after a ServiceWorkerClient tied with |container_info| was
-  // pre-created for the navigation.
-  void OnCreatedContainerHost(
-      blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info);
-
   blink::mojom::ServiceWorkerContainerInfoForClientPtr TakeContainerInfo() {
     return std::move(container_info_);
   }
@@ -63,9 +58,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
   bool has_container_info() const { return !!container_info_; }
 
   void set_service_worker_client(
-      base::WeakPtr<ServiceWorkerClient> service_worker_client) {
-    service_worker_client_ = std::move(service_worker_client);
-  }
+      std::tuple<base::WeakPtr<ServiceWorkerClient>,
+                 blink::mojom::ServiceWorkerContainerInfoForClientPtr>
+          service_worker_client_and_container_info);
 
   base::WeakPtr<ServiceWorkerClient> service_worker_client() {
     return service_worker_client_;
