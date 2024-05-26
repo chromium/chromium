@@ -12,25 +12,18 @@
 namespace ash::file_manager {
 
 // FileIndexService provides asynchronous version of operations defined in
-// the FileIndex interface. It uses FileIndexImpl that implements the FileIndex
-// interface to delegate all details to it. The current structure of the classes
-// is as follows:
+// the FileIndex class. The current structure of the classes is as follows:
 //
-//                                         [ File Index  ]
-//                                         [ (interface) ]
-//                                               ^
-//                                               |
-//             [ IndexStorage ]<>---------[ FileIndexImpl ]
-//             [ (interface)  ]                  |
-//                      ^                        |
-//                      |                        |
-//               -------+--------                |
-//               |               |               |
-//        [ RamStorage ]   [ SqlStorage ]        |
-//                                               |
-//                                               |
-//  [ FileIndexService ]---<>[ SequenceBound<FileIndexImpl> ]
-
+//  [ FileIndexService ]---<>[ SequenceBound<FileIndex> ]
+//                                                |
+//                                                |
+//              [ IndexStorage ]<>----------------'
+//              [ (interface)  ]
+//                      ^
+//                      |
+//               -------+--------.
+//               |               |
+//        [ RamStorage ]   [ SqlStorage ]
 namespace {
 
 base::FilePath MakeDbPath(base::FilePath& profile_path) {
@@ -43,11 +36,11 @@ constexpr char kSqlDatabaseUmaTag[] =
 }  // namespace
 
 FileIndexService::FileIndexService(base::FilePath profile_path)
-    : file_index_impl_(base::ThreadPool::CreateSequencedTaskRunner(
-                           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-                            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-                       std::make_unique<SqlStorage>(MakeDbPath(profile_path),
-                                                    kSqlDatabaseUmaTag)) {}
+    : file_index_(base::ThreadPool::CreateSequencedTaskRunner(
+                      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+                       base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+                  std::make_unique<SqlStorage>(MakeDbPath(profile_path),
+                                               kSqlDatabaseUmaTag)) {}
 FileIndexService::~FileIndexService() = default;
 
 void FileIndexService::Init(IndexingOperationCallback callback) {
@@ -55,7 +48,7 @@ void FileIndexService::Init(IndexingOperationCallback callback) {
     std::move(callback).Run(inited_);
     return;
   }
-  file_index_impl_.AsyncCall(&FileIndexImpl::Init)
+  file_index_.AsyncCall(&FileIndex::Init)
       .Then(base::BindOnce(
           [](IndexingOperationCallback callback, OpResults* inited,
              OpResults result) {
@@ -71,7 +64,7 @@ void FileIndexService::PutFileInfo(const FileInfo& file_info,
     std::move(callback).Run(OpResults::kUninitialized);
     return;
   }
-  file_index_impl_.AsyncCall(&FileIndexImpl::PutFileInfo)
+  file_index_.AsyncCall(&FileIndex::PutFileInfo)
       .WithArgs(file_info)
       .Then(std::move(callback));
 }
@@ -83,7 +76,7 @@ void FileIndexService::UpdateTerms(const std::vector<Term>& terms,
     std::move(callback).Run(kUninitialized);
     return;
   }
-  file_index_impl_.AsyncCall(&FileIndexImpl::UpdateTerms)
+  file_index_.AsyncCall(&FileIndex::UpdateTerms)
       .WithArgs(terms, url)
       .Then(std::move(callback));
 }
@@ -95,7 +88,7 @@ void FileIndexService::AugmentTerms(const std::vector<Term>& terms,
     std::move(callback).Run(kUninitialized);
     return;
   }
-  file_index_impl_.AsyncCall(&FileIndexImpl::AugmentTerms)
+  file_index_.AsyncCall(&FileIndex::AugmentTerms)
       .WithArgs(terms, url)
       .Then(std::move(callback));
 }
@@ -106,7 +99,7 @@ void FileIndexService::RemoveFile(const GURL& url,
     std::move(callback).Run(kUninitialized);
     return;
   }
-  file_index_impl_.AsyncCall(&FileIndexImpl::RemoveFile)
+  file_index_.AsyncCall(&FileIndex::RemoveFile)
       .WithArgs(url)
       .Then(std::move(callback));
 }
@@ -118,7 +111,7 @@ void FileIndexService::RemoveTerms(const std::vector<Term>& terms,
     std::move(callback).Run(kUninitialized);
     return;
   }
-  file_index_impl_.AsyncCall(&FileIndexImpl::RemoveTerms)
+  file_index_.AsyncCall(&FileIndex::RemoveTerms)
       .WithArgs(terms, url)
       .Then(std::move(callback));
 }
@@ -130,7 +123,7 @@ void FileIndexService::Search(const Query& query,
     std::move(callback).Run(SearchResults());
     return;
   }
-  file_index_impl_.AsyncCall(&FileIndexImpl::Search)
+  file_index_.AsyncCall(&FileIndex::Search)
       .WithArgs(query)
       .Then(std::move(callback));
 }

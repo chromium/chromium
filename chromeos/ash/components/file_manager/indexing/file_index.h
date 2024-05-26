@@ -5,12 +5,16 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_FILE_INDEX_H_
 #define CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_FILE_INDEX_H_
 
+#include <memory>
+#include <set>
 #include <vector>
 
 #include "chromeos/ash/components/file_manager/indexing/file_info.h"
+#include "chromeos/ash/components/file_manager/indexing/index_storage.h"
 #include "chromeos/ash/components/file_manager/indexing/query.h"
 #include "chromeos/ash/components/file_manager/indexing/search_results.h"
 #include "chromeos/ash/components/file_manager/indexing/term.h"
+#include "url/gurl.h"
 
 namespace ash::file_manager {
 
@@ -52,22 +56,26 @@ enum OpResults {
 //   index->RemoveFile(info.file_url);
 class FileIndex {
  public:
-  FileIndex() = default;
-  virtual ~FileIndex() = default;
+  // Creates a new file index supported by the given storage.
+  explicit FileIndex(std::unique_ptr<IndexStorage> storage);
+  ~FileIndex();
+
+  FileIndex(const FileIndex&) = delete;
+  FileIndex& operator=(const FileIndex&) = delete;
 
   // Initializes this index; must be called before any index operations are
   // invoked. Returns false if the initialization failed.
-  virtual OpResults Init() = 0;
+  OpResults Init();
 
   // Stores the given `file_info` in this index. This method must be called
   // before any other methods that either update or terms associated
   // with this file are called.
-  virtual OpResults PutFileInfo(const FileInfo& file_info) = 0;
+  OpResults PutFileInfo(const FileInfo& file_info);
 
   // Removes the file uniquely identified by the URL from this index. This is
   // preferred way of removing files over calling the UpdateFile method with an
   // empty terms vector. Returns true if the file was found and removed.
-  virtual OpResults RemoveFile(const GURL& url) = 0;
+  OpResults RemoveFile(const GURL& url);
 
   // Updates terms associated with the file. The `url` must be of a FileInfo
   // previously put in the index. Please note that only the passed terms are
@@ -79,8 +87,7 @@ class FileIndex {
   //
   // It is an error to pass an empty term vector. Use the RemoveFile() method
   // instead.
-  virtual OpResults UpdateTerms(const std::vector<Term>& terms,
-                                const GURL& url) = 0;
+  OpResults UpdateTerms(const std::vector<Term>& terms, const GURL& url);
 
   // Augments terms associated with the file with the specified `url` with
   // the `terms` given as the first argument. Once this operation is finished,
@@ -90,18 +97,25 @@ class FileIndex {
   // AugmentTerms() method with Term("label", "starred") you can retrieve the
   // file with the matching `url` (specified in both of these calls) by either
   // or both of the terms.
-  virtual OpResults AugmentTerms(const std::vector<Term>& terms,
-                                 const GURL& url) = 0;
+  OpResults AugmentTerms(const std::vector<Term>& terms, const GURL& url);
 
   // Removes the specified term from terms associated with the file with the
   // given URL.
-  virtual OpResults RemoveTerms(const std::vector<Term>& terms,
-                                const GURL& url) = 0;
+  OpResults RemoveTerms(const std::vector<Term>& terms, const GURL& url);
 
   // Searches the index for file info matching the specified query.
-  virtual SearchResults Search(const Query& query) = 0;
+  SearchResults Search(const Query& query);
+
+ private:
+  OpResults SetFileTerms(const std::vector<Term>& terms, const GURL& url);
+
+  // Does a bulk conversion of given terms to term IDs.
+  std::set<int64_t> ConvertToTermIds(const std::vector<Term>& terms);
+
+  // Actual storage for structures needed to implement the inverted index.
+  std::unique_ptr<IndexStorage> storage_;
 };
 
 }  // namespace ash::file_manager
 
-#endif  // CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_FILE_INDEX_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_FILE_INDEX_IMPL_H_

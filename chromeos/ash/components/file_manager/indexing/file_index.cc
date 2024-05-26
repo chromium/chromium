@@ -2,34 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/file_manager/indexing/file_index_impl.h"
+#include "chromeos/ash/components/file_manager/indexing/file_index.h"
 
 #include "base/time/time.h"
 
 namespace ash::file_manager {
 
-FileIndexImpl::FileIndexImpl(std::unique_ptr<IndexStorage> storage)
+FileIndex::FileIndex(std::unique_ptr<IndexStorage> storage)
     : storage_(std::move(storage)) {}
-FileIndexImpl::~FileIndexImpl() = default;
+FileIndex::~FileIndex() = default;
 
-OpResults FileIndexImpl::Init() {
+OpResults FileIndex::Init() {
   return storage_->Init() ? OpResults::kSuccess : OpResults::kUninitialized;
 }
 
-OpResults FileIndexImpl::PutFileInfo(const FileInfo& file_info) {
+OpResults FileIndex::PutFileInfo(const FileInfo& file_info) {
   return storage_->PutFileInfo(file_info) == -1 ? OpResults::kGenericError
                                                 : OpResults::kSuccess;
 }
 
-OpResults FileIndexImpl::UpdateTerms(const std::vector<Term>& terms,
-                                     const GURL& url) {
+OpResults FileIndex::UpdateTerms(const std::vector<Term>& terms,
+                                 const GURL& url) {
   if (terms.empty()) {
     return OpResults::kArgumentError;
   }
   return SetFileTerms(terms, url);
 }
 
-OpResults FileIndexImpl::RemoveFile(const GURL& url) {
+OpResults FileIndex::RemoveFile(const GURL& url) {
   int64_t url_id = storage_->GetUrlId(url);
   if (url_id < 0) {
     return OpResults::kSuccess;
@@ -43,8 +43,8 @@ OpResults FileIndexImpl::RemoveFile(const GURL& url) {
   return OpResults::kSuccess;
 }
 
-OpResults FileIndexImpl::RemoveTerms(const std::vector<Term>& terms,
-                                     const GURL& url) {
+OpResults FileIndex::RemoveTerms(const std::vector<Term>& terms,
+                                 const GURL& url) {
   int64_t url_id = storage_->GetUrlId(url);
   if (url_id < 0) {
     return OpResults::kSuccess;
@@ -66,8 +66,8 @@ OpResults FileIndexImpl::RemoveTerms(const std::vector<Term>& terms,
   return OpResults::kSuccess;
 }
 
-OpResults FileIndexImpl::AugmentTerms(const std::vector<Term>& terms,
-                                      const GURL& url) {
+OpResults FileIndex::AugmentTerms(const std::vector<Term>& terms,
+                                  const GURL& url) {
   if (terms.empty()) {
     return OpResults::kSuccess;
   }
@@ -83,7 +83,7 @@ OpResults FileIndexImpl::AugmentTerms(const std::vector<Term>& terms,
 }
 
 // Searches the index for file info matching the specified query.
-SearchResults FileIndexImpl::Search(const Query& query) {
+SearchResults FileIndex::Search(const Query& query) {
   const std::vector<Term>& terms = query.terms();
   SearchResults results;
   if (terms.empty()) {
@@ -131,8 +131,7 @@ SearchResults FileIndexImpl::Search(const Query& query) {
   return results;
 }
 
-std::set<int64_t> FileIndexImpl::ConvertToTermIds(
-    const std::vector<Term>& terms) {
+std::set<int64_t> FileIndex::ConvertToTermIds(const std::vector<Term>& terms) {
   std::set<int64_t> term_ids;
   for (const Term& term : terms) {
     DCHECK(!term.field().empty());
@@ -142,8 +141,8 @@ std::set<int64_t> FileIndexImpl::ConvertToTermIds(
   return term_ids;
 }
 
-OpResults FileIndexImpl::SetFileTerms(const std::vector<Term>& terms,
-                                      const GURL& url) {
+OpResults FileIndex::SetFileTerms(const std::vector<Term>& terms,
+                                  const GURL& url) {
   DCHECK(!terms.empty());
 
   // Arrange terms by field and remove duplicates and convert to internal IDs.

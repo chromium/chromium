@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/threading/sequence_bound.h"
-#include "chromeos/ash/components/file_manager/indexing/file_index_impl.h"
+#include "chromeos/ash/components/file_manager/indexing/file_index.h"
 #include "chromeos/ash/components/file_manager/indexing/file_info.h"
 #include "chromeos/ash/components/file_manager/indexing/query.h"
 #include "chromeos/ash/components/file_manager/indexing/term.h"
@@ -117,8 +117,8 @@ class COMPONENT_EXPORT(FILE_MANAGER) FileIndexService {
   void Search(const Query& query, SearchResultsCallback callback);
 
  private:
-  // The actual implementation of the index used by this service.
-  base::SequenceBound<FileIndexImpl> file_index_impl_;
+  // A fully synchronous file index that handles the asynchronous calls.
+  base::SequenceBound<FileIndex> file_index_;
 
   // Remembers if init was called to prevent multiple calls.
   OpResults inited_ = OpResults::kUndefined;

@@ -20,9 +20,8 @@ component("file_manager") {
   ]
 
   sources = [
+    "indexing/file_index.cc",
     "indexing/file_index.h",
-    "indexing/file_index_impl.cc",
-    "indexing/file_index_impl.h",
     "indexing/file_index_service.cc",
     "indexing/file_index_service.h",
     "indexing/file_index_service_registry.cc",

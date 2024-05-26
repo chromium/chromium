@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "chromeos/ash/components/file_manager/indexing/file_index.h"
 #include "chromeos/ash/components/file_manager/indexing/file_info.h"
 #include "chromeos/ash/components/file_manager/indexing/term.h"
 #include "url/gurl.h"
