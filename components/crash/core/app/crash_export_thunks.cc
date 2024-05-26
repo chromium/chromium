@@ -8,7 +8,6 @@
 #include <type_traits>
 
 #include "base/process/process.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/crash/core/app/crashpad.h"
