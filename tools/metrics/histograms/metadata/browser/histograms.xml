@@ -500,6 +500,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Browser.MainThreadsCongestion.LowMemory" units="janks"
+    expires_after="2024-11-21">
+  <owner>vovoy@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    This metric is emitted every 30 seconds after main message loop start, when
+    there is user activity. Each 30 second duration is divided into 100ms
+    intervals. This metric counts the number of these intervals that were
+    &quot;congested&quot;. An interval is congested if during it the UI or IO
+    thread executes an &quot;important&quot; task that was queued more than 100
+    ms ago, or a non-important task or a native event handler that started
+    executing more than 100 ms ago. See
+    https://docs.google.com/document/d/1vDSGFvJblh7yJ3U3RVB_7qZLubyfTbQdQjuN1GoUNkc/edit
+    for more details.
+
+    This metric is only recorded if the available physical memory is below a
+    threshold based on Memory.Experimental.AvailableMemoryPercent 10 percentile.
+  </summary>
+</histogram>
+
 <histogram name="Browser.MainThreadsCongestion.Used" units="janks"
     expires_after="2024-10-06">
   <owner>pmonette@chromium.org</owner>

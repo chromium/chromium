@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 
@@ -40,6 +41,17 @@ bool IsChromeUsedInScenario(Scenario scenario) {
       NOTREACHED_NORETURN();
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Returns true if available memory is less than 5.7% of total memory. It's
+// based on ChromeOS stable 7 day aggregation ending May 20th 2024 from
+// Memory.Experimental.AvailableMemoryPercent 10 percentile.
+bool IsLowMemory() {
+  auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
+  auto total_bytes = base::SysInfo::AmountOfPhysicalMemory();
+  return (available_bytes * 1000 / total_bytes) > 57;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char* GetSuffixForExtensionCount(size_t extension_count) {
   if (extension_count >= 16) {
@@ -112,6 +124,13 @@ void ChromeResponsivenessCalculatorDelegate::OnResponsivenessEmitted(
                  extensions_with_content_scripts_in_interval_.value())}),
         num_congested_slices, min, exclusive_max, buckets);
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsLowMemory()) {
+    base::UmaHistogramCustomCounts("Browser.MainThreadsCongestion.LowMemory",
+                                   num_congested_slices, min, exclusive_max,
+                                   buckets);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 ChromeResponsivenessCalculatorDelegate::ChromeResponsivenessCalculatorDelegate(
