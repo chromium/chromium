@@ -30,12 +30,6 @@ ChangePinController* ChangePinController::ForWebContents(
   if (instance_for_testing_) {
     return instance_for_testing_;
   }
-  static constexpr char kChangePinControllerKey[] = "ChangePinControllerKey";
-  if (!web_contents->GetUserData(kChangePinControllerKey)) {
-    web_contents->SetUserData(
-        kChangePinControllerKey,
-        std::make_unique<ChangePinControllerImpl>(web_contents));
-  }
-  return static_cast<ChangePinControllerImpl*>(
-      web_contents->GetUserData(kChangePinControllerKey));
+  ChangePinControllerImpl::CreateForWebContents(web_contents);
+  return ChangePinControllerImpl::FromWebContents(web_contents);
 }

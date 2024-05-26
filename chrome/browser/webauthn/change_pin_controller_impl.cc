@@ -18,13 +18,15 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "device/fido/features.h"
 
 using Step = AuthenticatorRequestDialogModel::Step;
 
 ChangePinControllerImpl::ChangePinControllerImpl(
     content::WebContents* web_contents)
-    : enclave_enabled_(
+    : content::WebContentsUserData<ChangePinControllerImpl>(*web_contents),
+      enclave_enabled_(
           base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
   if (!enclave_enabled_) {
     return;
@@ -45,20 +47,6 @@ ChangePinControllerImpl::~ChangePinControllerImpl() {
   if (!notify_pin_change_callback_.is_null()) {
     std::move(notify_pin_change_callback_).Run(false);
   }
-}
-
-// static
-ChangePinControllerImpl* ChangePinControllerImpl::ForWebContents(
-    content::WebContents* web_contents) {
-  static constexpr char kChangePinControllerImplKey[] =
-      "ChangePinControllerImplKey";
-  if (!web_contents->GetUserData(kChangePinControllerImplKey)) {
-    web_contents->SetUserData(
-        kChangePinControllerImplKey,
-        std::make_unique<ChangePinControllerImpl>(web_contents));
-  }
-  return static_cast<ChangePinControllerImpl*>(
-      web_contents->GetUserData(kChangePinControllerImplKey));
 }
 
 bool ChangePinControllerImpl::IsChangePinFlowAvailable() {
@@ -131,3 +119,5 @@ void ChangePinControllerImpl::OnGpmPinChanged(bool success) {
   }
   Reset(/*success=*/true);
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChangePinControllerImpl);

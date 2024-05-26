@@ -10,6 +10,7 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/change_pin_controller.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 class WebContents;
@@ -64,17 +65,13 @@ class EnclaveManager;
 // the view.
 class ChangePinControllerImpl
     : public ChangePinController,
-      public base::SupportsUserData::Data,
+      public content::WebContentsUserData<ChangePinControllerImpl>,
       public AuthenticatorRequestDialogModel::Observer {
  public:
-  explicit ChangePinControllerImpl(content::WebContents* web_contents);
   ChangePinControllerImpl(const ChangePinControllerImpl&) = delete;
   ChangePinControllerImpl& operator=(const ChangePinControllerImpl&) = delete;
 
   ~ChangePinControllerImpl() override;
-
-  static ChangePinControllerImpl* ForWebContents(
-      content::WebContents* web_contents);
 
   // Checks whether changing PIN flow is available. Changing the PIN is only
   // possible when the `EnclaveManager` is ready and has a wrapped PIN.
@@ -91,6 +88,10 @@ class ChangePinControllerImpl
   void OnGPMPinOptionChanged(bool is_arbitrary) override;
 
  private:
+  explicit ChangePinControllerImpl(content::WebContents* web_contents);
+  friend class content::WebContentsUserData<ChangePinControllerImpl>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
   void OnGpmPinChanged(bool success);
   void Reset(bool success);
 
