@@ -90,10 +90,6 @@ BASE_DECLARE_FEATURE(kChromeOsPasskeys);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRelatedOrigin);
 
-// CHECK an invariant about credential sources.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnChromeImplementedInvariant);
-
 // Allow extensions to assert WebAuthn relying party identifiers for domains
 // they have host permissions for.
 // Added in M121. Remove in or after M124.

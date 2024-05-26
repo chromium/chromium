@@ -115,11 +115,6 @@ BASE_FEATURE(kWebAuthnRelatedOrigin,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabled in M122. Remove in or after M125.
-BASE_FEATURE(kWebAuthnChromeImplementedInvariant,
-             "WebAuthenticationChromeImplementedInvariant",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M122. Remove in or after M125.
 BASE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds,
              "AllowExtensionsToSetWebAuthnRpIds",
              base::FEATURE_ENABLED_BY_DEFAULT);

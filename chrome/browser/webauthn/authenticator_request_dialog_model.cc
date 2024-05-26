@@ -651,20 +651,16 @@ void AuthenticatorRequestDialogController::StartFlow(
   transport_availability_ = std::move(transport_availability);
   UpdateModelForTransportAvailability();
   use_conditional_mediation_ = use_conditional_mediation;
-
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnChromeImplementedInvariant)) {
-    // All recognised credentials that are "Chrome implemented" are from the
-    // same source, i.e. a platform never has two Chrome implemented platform
-    // authenticators.
-    std::optional<device::AuthenticatorType> chrome_implemented_type;
-    for (const auto& cred : transport_availability_.recognized_credentials) {
-      if (IsChromeImplemented(cred.source)) {
-        if (chrome_implemented_type.has_value()) {
-          CHECK_EQ(*chrome_implemented_type, cred.source);
-        } else {
-          chrome_implemented_type = cred.source;
-        }
+  // All recognised credentials that are "Chrome implemented" are from the
+  // same source, i.e. a platform never has two Chrome implemented platform
+  // authenticators.
+  std::optional<device::AuthenticatorType> chrome_implemented_type;
+  for (const auto& cred : transport_availability_.recognized_credentials) {
+    if (IsChromeImplemented(cred.source)) {
+      if (chrome_implemented_type.has_value()) {
+        CHECK_EQ(*chrome_implemented_type, cred.source);
+      } else {
+        chrome_implemented_type = cred.source;
       }
     }
   }
