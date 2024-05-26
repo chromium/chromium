@@ -25,10 +25,11 @@ class API_AVAILABLE(macos(12)) MacAuthenticationView : public views::View {
   using Callback =
       base::OnceCallback<void(std::optional<crypto::ScopedLAContext>)>;
 
-  // This callback is called when Touch ID is complete with a boolean that
+  // The callback is called when Touch ID is complete with a boolean that
   // indicates whether the operation was successful and if successful, the
   // authenticated LAContext.
-  explicit MacAuthenticationView(Callback callback);
+  explicit MacAuthenticationView(Callback callback,
+                                 const std::u16string touch_id_reason);
   ~MacAuthenticationView() override;
 
   // views::View:
@@ -50,6 +51,7 @@ class API_AVAILABLE(macos(12)) MacAuthenticationView : public views::View {
   std::unique_ptr<ObjCStorage> storage_;
   bool evaluation_requested_ = false;
   base::OneShotTimer touch_id_animation_timer_;
+  const std::u16string touch_id_reason_;
 
   base::WeakPtrFactory<MacAuthenticationView> weak_factory_{this};
 };

@@ -19,6 +19,7 @@
 #include "crypto/scoped_lacontext.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/mac/util.h"
+#include "device/fido/strings/grit/fido_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/image_view.h"
@@ -57,7 +58,10 @@ AuthenticatorTouchIdView::BuildStepSpecificContent() {
   if (device::fido::mac::DeviceHasBiometricsAvailable()) {
     container->AddChildView(std::make_unique<MacAuthenticationView>(
         base::BindOnce(&AuthenticatorTouchIdView::OnTouchIDComplete,
-                       base::Unretained(this))));
+                       base::Unretained(this)),
+        l10n_util::GetStringFUTF16(
+            IDS_WEBAUTHN_TOUCH_ID_PROMPT_REASON,
+            base::UTF8ToUTF16(dialog_model->relying_party_id))));
     container->AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_TOUCH_ID_CONTINUE)));
   } else {
