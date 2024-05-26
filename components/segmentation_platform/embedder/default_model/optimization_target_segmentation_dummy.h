@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
