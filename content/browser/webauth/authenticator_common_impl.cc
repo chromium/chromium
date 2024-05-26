@@ -210,15 +210,8 @@ bool AddTransportsFromCertificate(
 base::TimeDelta AdjustTimeout(std::optional<base::TimeDelta> timeout,
                               RenderFrameHost* render_frame_host) {
   // Time to wait for an authenticator to successfully complete an operation.
-  base::TimeDelta adjusted_timeout_lower;
-  base::TimeDelta adjusted_timeout_upper;
-  if (base::FeatureList::IsEnabled(device::kWebAuthnAccessibleTimeouts)) {
-    adjusted_timeout_lower = base::Minutes(3);
-    adjusted_timeout_upper = base::Hours(20);
-  } else {
-    adjusted_timeout_lower = base::Seconds(10);
-    adjusted_timeout_upper = base::Minutes(10);
-  }
+  base::TimeDelta adjusted_timeout_lower = base::Minutes(3);
+  base::TimeDelta adjusted_timeout_upper = base::Hours(20);
   if (!timeout) {
     return adjusted_timeout_upper;
   }
