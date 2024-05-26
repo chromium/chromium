@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">ახლა არა</translation>
 <translation id="100881991356161927">საიტის სახელი</translation>
 <translation id="1009663062402466586">ახლა ხელმისაწვდომია თამაშის მართვის საშუალებები</translation>
+<translation id="1010136228650201057">მომხმარებლის მონაცემთა დაშიფვრა</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{გვერდი არ პასუხობს}other{გვერდები არ პასუხობს}}</translation>
 <translation id="1011003645819296594">შენახული მოწყობილობები</translation>
 <translation id="1011355516189274711">ტექსტის გახმოვანების ხმა</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">ინკოგნიტო</translation>
 <translation id="1049795001945932310">&amp;ენის პარამეტრები</translation>
 <translation id="1050693411695664090">ცუდი</translation>
+<translation id="1053776357096024725">გააუმჯობესეთ ჩაშენებული მიკროფონის ხმა მრავალი ეფექტით</translation>
 <translation id="1054048317165655285">დაასრულეთ დაყენება თქვენს ტელეფონზე</translation>
 <translation id="1054153489933238809">ორიგინალი &amp;გამოსახულების გახსნა ახალ ჩანართში</translation>
 <translation id="1054187194995068149">მოგესალმებით. ეს წინასწარი გადახედვის რეჟიმია</translation>
@@ -833,6 +835,7 @@
 <translation id="1607139524282324606">ჩანაწერის გასუფთავება</translation>
 <translation id="1607499585984539560">მომხმარებელი არაა დაკავშირებული ამ დომენთან</translation>
 <translation id="1608668830839595724">სხვა ქმედებები არჩეული ერთეულებისთვის</translation>
+<translation id="1608698493373028805">ეს გაფართოება, შესაძლოა, მალე აღარ იყოს მხარდაჭერილი</translation>
 <translation id="1610272688494140697">აპის პარამეტრები</translation>
 <translation id="161042844686301425">ციანი</translation>
 <translation id="1611432201750675208">თქვენი მოწყობილობა ჩაკეტილია</translation>
@@ -2308,6 +2311,7 @@
 <translation id="2667144577800272420">იმ ბმულების გასახსნელად, რომლებსაც <ph name="APP_NAME" /> ხსნის, დაყენებულია სხვა აპები. ამ ქმედების შედეგად, <ph name="APP_NAME_2" /> და <ph name="APP_NAME_3" /> აღარ გახსნის მხარდაჭერილ ბმულებს.</translation>
 <translation id="2667463864537187133">მართლწერის შემოწმების მართვა</translation>
 <translation id="2668094785979141847">დააწკაპუნეთ Google Lens-იდან გასასვლელად</translation>
+<translation id="2668604389652548400">ამოშალეთ ან ჩაანაცვლეთ ის მსგავსი გაფართოებით <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-იდან</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />-ის გახსნა ვერ მოხერხდა</translation>
 <translation id="2669454659051515572">ჩამოტვირთული ფაილების ნახვას შეძლებს ამ მოწყობილობის ნებისმიერი მომხმარებელი</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome-ის ჩანართს აზიარებს.</translation>
@@ -2358,6 +2362,7 @@
 <translation id="2710101514844343743">გამოყენებისა და დიაგნოსტიკის მონაცემები</translation>
 <translation id="271033894570825754">ახალი</translation>
 <translation id="2710507903599773521">თქვენი <ph name="DEVICE_TYPE" /> ახლა განბლოკილია</translation>
+<translation id="2712141162840347885">აირჩიეთ ის, რისი მოძებნაც გსურთ Google Lens-ით, ან დააჭირეთ Escape-ს Google Lens-იდან გასასვლელად</translation>
 <translation id="2713106313042589954">კამერის გამორთვა</translation>
 <translation id="2713444072780614174">თეთრი</translation>
 <translation id="2714180132046334502">მუქი ფონი</translation>
@@ -2982,6 +2987,7 @@
 <translation id="3177914167275935955">თქვენს მოწყობილობას მოჰყვება Chrome Education Upgrade, თუმცა თქვენი მომხმარებლის სახელი არ არის დაკავშირებული Google for Education ანგარიშთან. შექმენით Google for Education ანგარიში — ამისთვის გადადით მისამართზე g.co/workspace/edusignup მეორეული მოწყობილობიდან.</translation>
 <translation id="3179982752812949580">ტექსტის შრიფტი</translation>
 <translation id="3180284704187420717">შეინახეთ თქვენი სანიშნეები, პაროლები და სხვა კონტენტი სინქრონიზაციის მეშვეობით</translation>
+<translation id="3180716079618904608">აპებისა და თამაშების მიღება</translation>
 <translation id="3181954750937456830">Safe Browsing (თქვენ და თქვენს მოწყობილობებს გიცავთ სახიფათო საიტებისგან)</translation>
 <translation id="3182749001423093222">მართლწერის შემოწმება</translation>
 <translation id="3183139917765991655">პროფილის იმპორტიორი</translation>
@@ -4273,6 +4279,7 @@
 <translation id="4120817667028078560">მდებარეობა ძალიან გრძელია</translation>
 <translation id="4124823734405044952">თქვენი უსაფრთხოების გასაღები გადაყენებულია</translation>
 <translation id="4124935795427217608">ზღაპრული მარტორქა</translation>
+<translation id="4126375522951286587">გამოირთოს <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">სპანდექსი</translation>
 <translation id="4130199216115862831">მოწყობილობაში შესვლა</translation>
 <translation id="4130750466177569591">ვეთანხმები</translation>
@@ -4573,6 +4580,7 @@
 <translation id="4364327530094270451">ნესვი</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ფანჯარას აზიარებს.</translation>
 <translation id="4364830672918311045">შეტყობინებების ჩვენება</translation>
+<translation id="4367027658822022112">შეგიძლიათ, ჩაამაგროთ Google Lens მასზე მარტივად წვდომისთვის; დააწკაპუნეთ ჩამაგრების ღილაკს გვერდითი ზოლის ზედა ნაწილში</translation>
 <translation id="4367513928820380646">გაუქმებული ნებართვების შემოწმება</translation>
 <translation id="4367971618859387374">საჩვენებელი სახელი</translation>
 <translation id="4368960422722232719">მეხსიერების გამოყენების ჩვენება გადახედვის ბარათზე ჩანართზე კურსორის გადატარებისას</translation>
@@ -4975,6 +4983,7 @@
 <translation id="4666911709726371538">სხვა აპები</translation>
 <translation id="4668279686271488041">რეკლამის ეფექტურობის გასაზომად გამოყენებული მონაცემები რეგულარულად იშლება თქვენი მოწყობილობიდან</translation>
 <translation id="4668929960204016307">.</translation>
+<translation id="4668936527507421457">PIN-კოდი მხოლოდ ციფრებს უნდა შეიცავდეს</translation>
 <translation id="4670909875730475086">გილოცავთ! <ph name="APP_NAME" /> წარმატებით დაინსტალირდა თქვენს მოწყობილობაზე</translation>
 <translation id="4672759829555593783">ახლავე გაიხსნას <ph name="FILE_NAME" /></translation>
 <translation id="4673442866648850031">სტილუსის ამოღებისას სტილუსის ხელსაწყოების გახსნა</translation>
@@ -5058,6 +5067,7 @@
 <translation id="473936925429402449">არჩეულია, დამატებითი კონტენტი <ph name="CURRENT_ELEMENT" /> / <ph name="TOTAL_ELEMENTS" />-დან</translation>
 <translation id="4739639199548674512">ბილეთები</translation>
 <translation id="4740546261986864539">ახლახან გახსნილი</translation>
+<translation id="4741235124132242877">ჩამაგრებულია! ისევ გამოიყენეთ Google Lens ხელსაწყოთა ზოლიდან</translation>
 <translation id="4742334355511750246">სურათების ჩვენება დაუშვებელია</translation>
 <translation id="4742795653798179840">Chrome-ის მონაცემები წაიშალა</translation>
 <translation id="4742970037960872810">გამოყოფის ამოშლა</translation>
@@ -6755,6 +6765,7 @@
 <translation id="6042308850641462728">სხვა</translation>
 <translation id="604388835206766544">კონფიგურაციის გარჩევა ვერ მოხერხდა</translation>
 <translation id="6043994281159824495">გამოსვლა</translation>
+<translation id="604424701295382420">ჩამაგრებულია! Google Lens-ზე წვდომა შეგიძლიათ ხელსაწყოთა ზოლში ღილაკით „ახალი“</translation>
 <translation id="6045114302329202345">ძირითადი TrackPoint-ის ღილაკი</translation>
 <translation id="6047632800149092791">სინქრონიზაცია არ მუშაობს. ცადეთ სისტემიდან გასვლა და ხელახლა შესვლა.</translation>
 <translation id="6048747414605857443">აირჩიეთ და მოირგეთ ტექსტის გახმოვანების ხმები ChromeVox-ში და წარმოსათქმელად მონიშვნის ფუნქციისთვის</translation>
@@ -7587,6 +7598,7 @@
 <translation id="6686490380836145850">ჩანართების დახურვა მარჯვნივ</translation>
 <translation id="6686665106869989887">ჩანართი გადატანილია მარჯვნივ</translation>
 <translation id="6686817083349815241">შეინახეთ თქვენი პაროლი</translation>
+<translation id="6687008241368170505">Google პაროლების მმართველის PIN-კოდის შეცვლა</translation>
 <translation id="6687079240787935001">დამალოს <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">სთხოვეთ <ph name="SUPERVISED_USER_NAME" />-ს, მოვიდეს კომპიუტერთან. თქვენმა ბავშვმა ამ ეკრანიდან რამდენიმე ფრაზა უნდა წაიკითხოს, თავისი ხმის მოდელი რომ შექმნას.
     <ph name="BR" />
@@ -8365,6 +8377,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> — მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშს F6</translation>
 <translation id="7290242001003353852">სისტემაში შესვლის ამ სერვისს, რომლის ჰოსტინგსაც <ph name="SAML_DOMAIN" /> უზრუნველყოფს, თქვენს კამერაზე წვდომა აქვს.</translation>
 <translation id="7292067737327289208">თქვენს <ph name="BEGIN_LINK" />ბრაუზერს მართავს<ph name="END_LINK" /> თქვენი ორგანიზაცია, თქვენს <ph name="BEGIN_LINK" />პროფილს<ph name="END_LINK" /> კი — <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">სთხოვეთ მშობლებს პარამეტრებიდან წვდომის დაშვება</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">გაითვალისწინეთ, რომ Android-ზე, Play-სა და დაკავშირებულ აპებზე ვრცელდება მონაცემთა შეგროვებისა და გამოყენების საკუთარი წესები.</translation>
 <translation id="7296503797589217366">აირჩეს საქაღალდე <ph name="FOLDER_TITLE" /></translation>
@@ -8672,6 +8685,7 @@
 <translation id="7514239104543605883">თქვენს მოწყობილობაზე კოპირება</translation>
 <translation id="7514365320538308">ჩამოტვირთვა</translation>
 <translation id="7514417110442087199">მიმაგრება</translation>
+<translation id="7515191208480168435">ჩაამაგრეთ Google Lens მასზე მარტივად წვდომისთვის</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> დაბლოკილია ადმინისტრატორის მიერ. ამ აპის გამოსაყენებლად დაგჭირდებათ ადმინისტრატორის ნებართვა.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10146,6 +10160,7 @@
 <translation id="8592141010104017453">ყველა შეტყობინების დამალვა</translation>
 <translation id="859246725979739260">ამ საიტისთვის დაიბლოკა თქვენს მდებარეობაზე წვდომა.</translation>
 <translation id="8593450223647418235">ფაილებს Microsoft 365-ში ვერ გახსნით, სანამ დაყენება არ დასრულდება.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> დაიბლოკა თქვენს <ph name="DEVICE_TYPE" />-ში</translation>
 <translation id="8596540852772265699">მორგებული ფაილები</translation>
 <translation id="8597845839771543242">ქონების ფორმატი:</translation>
 <translation id="8598249292448297523">ბეჭდვა</translation>
@@ -10565,6 +10580,7 @@
 <translation id="8890529496706615641">პროფილის გადარქმევა ვერ მოხერხდა. ცადეთ ხელახლა ან დაუკავშირდით თქვენს ოპერატორს ტექნიკური მხარდაჭერისთვის.</translation>
 <translation id="8892168913673237979">ყველაფერი დაყენებულია!</translation>
 <translation id="8892246501904593980">იხილეთ თქვენი ყველა სანიშნე „სანიშნეებისა და სიების“ სექციაში</translation>
+<translation id="8893479486525393799">სტუდიური მიკროფონი</translation>
 <translation id="8893801527741465188">დეინსტალაცია დასრულდა</translation>
 <translation id="8893928184421379330">ვწუხვართ, მოწყობილობა <ph name="DEVICE_LABEL" />-ის ამოცნობა ვერ მოხერხდა.</translation>
 <translation id="8894761918470382415">მონაცემებზე წვდომის დაცვა პერიფერიული მოწყობილობებისთვის</translation>

@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">ಈಗಲೇ ಅಲ್ಲ</translation>
 <translation id="100881991356161927">ಸೈಟ್ ಹೆಸರು</translation>
 <translation id="1009663062402466586">ಗೇಮ್ ನಿಯಂತ್ರಣಗಳು ಈಗ ಲಭ್ಯವಿದೆ</translation>
+<translation id="1010136228650201057">ಡೇಟಾ ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ಪ್ರತಿಕ್ರಿಯೆರಹಿತ ಪುಟ}one{ಪ್ರತಿಕ್ರಿಯೆರಹಿತ ಪುಟಗಳು}other{ಪ್ರತಿಕ್ರಿಯೆರಹಿತ ಪುಟಗಳು}}</translation>
 <translation id="1011003645819296594">ಉಳಿಸಲಾದ ಸಾಧನಗಳು</translation>
 <translation id="1011355516189274711">ಪಠ್ಯದಿಂದ ಧ್ವನಿ ವಾಲ್ಯೂಮ್</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">ಅದೃಶ್ಯ</translation>
 <translation id="1049795001945932310">&amp;ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1050693411695664090">ಕಳಪೆ</translation>
+<translation id="1053776357096024725">ವಿವಿಧ ಎಫೆಕ್ಟ್‌ಗಳೊಂದಿಗೆ ನಿಮ್ಮ ಬಿಲ್ಟ್-ಇನ್ ಮೈಕ್ರೊಫೋನ್ ಸೌಂಡ್ ಅನ್ನು ವರ್ಧಿಸಿ</translation>
 <translation id="1054048317165655285">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಸೆಟಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="1054153489933238809">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಮೂಲ &amp;ಚಿತ್ರವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1054187194995068149">ನಮಸ್ಕಾರ. ಇದು ಪೂರ್ವವೀಕ್ಷಣೆಯಾಗಿದೆ</translation>
@@ -836,6 +838,7 @@
 <translation id="1607139524282324606">ಪ್ರವೇಶವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="1607499585984539560">ಡೊಮೇನ್‌ ಜೊತೆಗೆ ಬಳಕೆದಾರರು ಸಂಯೋಜಿತವಾಗಿಲ್ಲ</translation>
 <translation id="1608668830839595724">ಆಯ್ದ ಐಟಂಗಳಿಗಾಗಿ ಹೆಚ್ಚಿನ ಕ್ರಿಯೆಗಳು</translation>
+<translation id="1608698493373028805">ಶೀಘ್ರದಲ್ಲೇ ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಬೆಂಬಲಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು</translation>
 <translation id="1610272688494140697">ಆ್ಯಪ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="161042844686301425">ಹಸಿರುನೀಲಿ</translation>
 <translation id="1611432201750675208">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -2314,6 +2317,7 @@
 <translation id="2667144577800272420">ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು <ph name="APP_NAME" /> ನಂತೆಯೇ ಲಿಂಕ್ ತೆರೆಯಲು ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಇದು <ph name="APP_NAME_2" /> ಮತ್ತು <ph name="APP_NAME_3" /> ಆ್ಯಪ್‌ನ ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳು ತೆರೆಯುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="2667463864537187133">ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2668094785979141847">Google Lens ನಿಂದ ನಿರ್ಗಮಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
+<translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome ವೆಬ್ ಸ್ಟೋರ್‌ನಿಂದ<ph name="END_LINK" /> ಒಂದೇ ರೀತಿಯ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಮೂಲಕ ಅದನ್ನು ತೆಗೆದುಹಾಕಿ ಅಥವಾ ಬದಲಾಯಿಸಿ</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="2669454659051515572">ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಯಾರಾದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ನೋಡಬಹುದು</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
@@ -2364,6 +2368,7 @@
 <translation id="2710101514844343743">ಬಳಕೆ ಮತ್ತು ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಡೇಟಾ</translation>
 <translation id="271033894570825754">ಹೊಸತು</translation>
 <translation id="2710507903599773521">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಈಗ ಅನ್‌ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="2712141162840347885">Google Lens ನೊಂದಿಗೆ ಹುಡುಕಲು ಯಾವುದನ್ನಾದರೂ ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ Google Lens ನಿಂದ ನಿರ್ಗಮಿಸಲು escape ಒತ್ತಿರಿ</translation>
 <translation id="2713106313042589954">ಕ್ಯಾಮರಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2713444072780614174">ಬಿಳಿ</translation>
 <translation id="2714180132046334502">ದಟ್ಟ ಬೆಳಕಿನ ಹಿನ್ನೆಲೆ</translation>
@@ -2988,6 +2993,7 @@
 <translation id="3177914167275935955">ನಿಮ್ಮ ಸಾಧನವು Chrome Education ಅಪ್‌ಗ್ರೇಡ್ ಅನ್ನು ಹೊಂದಿದೆ, ಆದರೆ ನಿಮ್ಮ ಬಳಕೆದಾರ ಹೆಸರು ಅದಕ್ಕೆ ಸಂಬಂಧಿಸಿದ Google for Education ಖಾತೆಯನ್ನು ಹೊಂದಿಲ್ಲ. ಸೆಕೆಂಡರಿ ಸಾಧನದಲ್ಲಿ g.co/workspace/edusignup ಗೆ ಭೇಟಿ ನೀಡುವ ಮೂಲಕ Google for Education ಖಾತೆಯನ್ನು ರಚಿಸಿ.</translation>
 <translation id="3179982752812949580">ಪಠ್ಯದ ಫಾಂಟ್</translation>
 <translation id="3180284704187420717">ಸಿಂಕ್ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಮುಂತಾದವುಗಳನ್ನು ಉಳಿಸಿ</translation>
+<translation id="3180716079618904608">ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಗೇಮ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="3181954750937456830">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ (ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಮತ್ತು ನಿಮ್ಮ ಸಾಧನವನ್ನು ರಕ್ಷಿಸುತ್ತದೆ)</translation>
 <translation id="3182749001423093222">ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ</translation>
 <translation id="3183139917765991655">ಪ್ರೊಫೈಲ್ ಆಮದುದಾರ</translation>
@@ -4278,6 +4284,7 @@
 <translation id="4120817667028078560">ಹಾದಿ ತುಂಬಾ ಉದ್ದವಾಗಿದೆ</translation>
 <translation id="4124823734405044952">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಅನ್ನು ಮರುಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="4124935795427217608">ಯುನಿಕಾರ್ನ್</translation>
+<translation id="4126375522951286587"><ph name="VM_NAME" /> ಅನ್ನು ಶಟ್ ಡೌನ್ ಮಾಡಿ</translation>
 <translation id="412730574613779332">ಸ್ಪ್ಯಾಂಡೆಕ್ಸ್</translation>
 <translation id="4130199216115862831">ಸಾಧನದ ಲಾಗ್</translation>
 <translation id="4130750466177569591">ನಾನು ಒಪ್ಪುತ್ತೇನೆ</translation>
@@ -4578,6 +4585,7 @@
 <translation id="4364327530094270451">ಕಲ್ಲಂಗಡಿ ಹಣ್ಣು</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ವಿಂಡೋವನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="4364830672918311045">ಅಧಿಸೂಚನೆಗಳನ್ನು ಪ್ರದರ್ಶಿಸಿ</translation>
+<translation id="4367027658822022112">ಸುಲಭ ಆ್ಯಕ್ಸೆಸ್‌ಗಾಗಿ ನೀವು Google Lens ಅನ್ನು ಪಿನ್ ಮಾಡಬಹುದು; ಸೈಡ್ ಪ್ಯಾನಲ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿರುವ ಪಿನ್ ಬಟನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="4367513928820380646">ತೆಗೆದುಹಾಕಲಾದ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4367971618859387374">ಡಿಸ್‌ಪ್ಲೇ ಹೆಸರು</translation>
 <translation id="4368960422722232719">ಟ್ಯಾಬ್ ಹೋವರ್ ಪೂರ್ವವೀಕ್ಷಣೆ ಕಾರ್ಡ್‌ನಲ್ಲಿ ಮೆಮೊರಿ ಬಳಕೆಯನ್ನು ತೋರಿಸಿ</translation>
@@ -4980,6 +4988,7 @@
 <translation id="4666911709726371538">ಇನ್ನಷ್ಟು ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4668279686271488041">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಜಾಹೀರಾತು-ಮಾಪನ ಡೇಟಾವನ್ನು ನಿಯಮಿತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">ಪಿನ್ ಸಂಖ್ಯೆಗಳನ್ನು ಮಾತ್ರ ಬಳಸಬೇಕು</translation>
 <translation id="4670909875730475086">ಅಭಿನಂದನೆಗಳು! <ph name="APP_NAME" /> ಅನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಯಶಸ್ವಿಯಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4672759829555593783">ಈಗ <ph name="FILE_NAME" /> ತೆರೆದಿದೆ</translation>
 <translation id="4673442866648850031">ಸ್ಟೈಲಸ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿದಾಗ ಸ್ಟೈಲಸ್ ಪರಿಕರಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -5063,6 +5072,7 @@
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" /> ರಲ್ಲಿ <ph name="CURRENT_ELEMENT" /> ಹೆಚ್ಚುವರಿ ವಿಷಯವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4739639199548674512">ಟಿಕೆಟ್‌ಗಳು</translation>
 <translation id="4740546261986864539">ಇತ್ತೀಚೆಗೆ ತೆರೆಯಲಾಗಿದೆ</translation>
+<translation id="4741235124132242877">ಪಿನ್ ಮಾಡಲಾಗಿದೆ! ಟೂಲ್‌ಬಾರ್‌ನಿಂದ ಮತ್ತೊಮ್ಮೆ Google Lens ಬಳಸಿ</translation>
 <translation id="4742334355511750246">ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="4742795653798179840">Chrome ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4742970037960872810">ಹೈಲೈಟ್ ತೆಗೆದುಹಾಕಿ</translation>
@@ -6761,6 +6771,7 @@
 <translation id="6042308850641462728">ಇನ್ನಷ್ಟು</translation>
 <translation id="604388835206766544">ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ವಿಶ್ಲೇಷಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6043994281159824495">ಈಗ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
+<translation id="604424701295382420">ಪಿನ್ ಮಾಡಲಾಗಿದೆ! ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿರುವ ಹೊಸ ಬಟನ್‌ನಿಂದ ನೀವು ಮತ್ತೆ Google Lens ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು</translation>
 <translation id="6045114302329202345">ಪ್ರಾಥಮಿಕ TrackPoint ಬಟನ್</translation>
 <translation id="6047632800149092791">ಸಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ. ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6048747414605857443">ChromeVox ಮತ್ತು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿಗಾಗಿ ಟೆಕ್ಸ್ಟ್-ಟು-ಸ್ಪೀಚ್ ಧ್ವನಿಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
@@ -7595,6 +7606,7 @@
 <translation id="6686490380836145850">ಬಲಗಡೆಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="6686665106869989887">ಟ್ಯಾಬ್ ಅನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="6686817083349815241">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಉಳಿಸಿ</translation>
+<translation id="6687008241368170505">Google Password Manager ಪಿನ್ ಅನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="6689714331348768690">ಕಂಪ್ಯೂಟರ್‌ಗೆ ಬರಲು <ph name="SUPERVISED_USER_NAME" /> ಅವರಿಗೆ ಕೇಳಿ. ನಿಮ್ಮ ಮಗು ಅವರ ವಾಯ್ಸ್ ಮಾಡೆಲ್ ಅನ್ನು ರಚಿಸಲು ಈ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಕೆಲವು ನುಡಿಗಟ್ಟುಗಳನ್ನು ಓದುತ್ತದೆ.
     <ph name="BR" />
@@ -8375,6 +8387,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ, ಪ್ರತಿಕ್ರಿಯಿಸಲು F6 ಒತ್ತಿರಿ</translation>
 <translation id="7290242001003353852">ಈ ಸೈನ್ ಇನ್ ಸೇವೆಯನ್ನು <ph name="SAML_DOMAIN" /> ಮೂಲಕ ಹೋಸ್ಟ್ ಮಾಡಲಾಗಿದೆ, ಇದು ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸುತ್ತದೆ.</translation>
 <translation id="7292067737327289208">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ<ph name="END_LINK" />ಮತ್ತು <ph name="PROFILE_DOMAIN" /> ಮೂಲಕ <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>
+<translation id="7292147651179697920">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಅನುಮತಿಸುವಂತೆ ನಿಮ್ಮ ಪೋಷಕರನ್ನು ಕೇಳಿ</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Android, Play ಮತ್ತು ಸಂಬಂಧಿಸಿದ ಆ್ಯಪ್‌ಗಳು, ಅವುಗಳ ಸ್ವಂತ ಡೇಟಾ ಸಂಗ್ರಹಣೆ ಮತ್ತು ಬಳಕೆ ಕಾರ್ಯನೀತಿಗಳ ಮೂಲಕ ನಿಯಂತ್ರಣಗೊಳ್ಳುತ್ತವೆ ಎಂಬುದನ್ನು ಗಮನಿಸಿ.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ಫೋಲ್ಡರ್ ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -8682,6 +8695,7 @@
 <translation id="7514239104543605883">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ನಕಲಿಸಿ</translation>
 <translation id="7514365320538308">ಡೌನ್‌ಲೋಡ್</translation>
 <translation id="7514417110442087199">ಕಾರ್ಯನಿಯೋಜನೆ ಸೇರಿಸಿ</translation>
+<translation id="7515191208480168435">ಸುಲಭ ಆ್ಯಕ್ಸೆಸ್‌ಗಾಗಿ ನೀವು Google Lens ಅನ್ನು ಪಿನ್ ಮಾಡಬಹುದು</translation>
 <translation id="751523031290522286">ನಿರ್ವಾಹಕರು<ph name="APP_NAME" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ. ಈ ಆ್ಯಪ್ ಅನ್ನು ಬಳಸುವುದಕ್ಕೆ ನಿರ್ವಾಹಕರ ಅನುಮತಿಯನ್ನು ಕೇಳಿ.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">ಪೇಜ್ ಡೌನ್</translation>
@@ -10153,6 +10167,7 @@
 <translation id="8592141010104017453">ಅಧಿಸೂಚನೆಗಳನ್ನು ತೋರಿಸಲೇಬೇಡಿ</translation>
 <translation id="859246725979739260">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸದಂತೆ ಈ ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="8593450223647418235">ಸೆಟಪ್ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ ನೀವು Microsoft 365 ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> ಅನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="8596540852772265699">ಕಸ್ಟಮ್ ಫೈಲ್‌ಗಳು</translation>
 <translation id="8597845839771543242">ಗುಣಲಕ್ಷಣದ ಫಾರ್ಮ್ಯಾಟ್‌:</translation>
 <translation id="8598249292448297523">ಮುದ್ರಿಸಿ</translation>
@@ -10573,6 +10588,7 @@
 <translation id="8890529496706615641">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮರುಹೆಸರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ತಾಂತ್ರಿಕ ಬೆಂಬಲಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="8892168913673237979">ಎಲ್ಲ ಹೊಂದಿಸಿ!</translation>
 <translation id="8892246501904593980">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಪಟ್ಟಿಗಳಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನೋಡಿ</translation>
+<translation id="8893479486525393799">ಸ್ಟುಡಿಯೋ ಮೈಕ್</translation>
 <translation id="8893801527741465188">ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="8893928184421379330">ಕ್ಷಮಿಸಿ, <ph name="DEVICE_LABEL" />ಸಾಧನವನ್ನು ಗುರುತಿಸಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="8894761918470382415">ಬಾಹ್ಯ ಸಾಧನಗಳ ಡೇಟಾ ಆ್ಯಕ್ಸೆಸ್ ರಕ್ಷಣೆ</translation>
