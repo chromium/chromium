@@ -225,9 +225,6 @@ void PaintOpReader::Read(SkColor4f* color) {
                  !std::isfinite(color->fB) || !std::isfinite(color->fA))) {
     SetInvalid(DeserializationError::kNonFiniteSkColor4f);
   }
-  if (color->fA < 0.0f || 1.0f < color->fA) {
-    SetInvalid(DeserializationError::kInvalidSkColor4fAlpha);
-  }
 }
 
 void PaintOpReader::Read(SkPath* path) {
@@ -634,7 +631,7 @@ void PaintOpReader::Read(sk_sp<DrawLooper>* looper) {
 
     ReadSimple(&offset);
     ReadSimple(&blur_sigma);
-    Read(&color);
+    ReadSimple(&color);
     ReadSimple(&flags);
     if (!valid_) {
       *looper = nullptr;
