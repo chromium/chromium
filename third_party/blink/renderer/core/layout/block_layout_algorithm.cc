@@ -2511,9 +2511,10 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     bool self_collapsing_child_had_clearance) {
   // Determine the child's end logical offset, for the next child to use.
   LayoutUnit logical_block_offset;
+  LayoutUnit clearance_after_line;
   std::optional<LayoutUnit> trim_block_end_by;
 
-  bool is_self_collapsing = layout_result.IsSelfCollapsing();
+  const bool is_self_collapsing = layout_result.IsSelfCollapsing();
   if (is_self_collapsing) {
     // The default behavior for self-collapsing children is they just pass
     // through the previous inflow position.
@@ -2574,7 +2575,7 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
   } else {
     logical_block_offset = logical_offset.block_offset + fragment.BlockSize();
 
-    const LayoutUnit clearance_after_line = layout_result.ClearanceAfterLine();
+    clearance_after_line = layout_result.ClearanceAfterLine();
     trim_block_end_by = layout_result.TrimBlockEndBy();
     if (trim_block_end_by) {
       // Trim the space to respect the `text-box-trim` property here. Objects
@@ -2649,15 +2650,15 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
        is_self_collapsing);
 
   LayoutUnit annotation_space;
-  if (!trim_block_end_by) {
+  if (!is_self_collapsing && !trim_block_end_by) {
     annotation_space = layout_result.BlockEndAnnotationSpace();
     if (layout_result.AnnotationOverflow() > LayoutUnit()) {
       DCHECK(!annotation_space);
       // Allow the portion of the annotation overflow that isn't also part of
       // clearance to overlap with certain types of subsequent content.
       annotation_space =
-          -std::max(LayoutUnit(), layout_result.AnnotationOverflow() -
-                                      layout_result.ClearanceAfterLine());
+          -std::max(LayoutUnit(),
+                    layout_result.AnnotationOverflow() - clearance_after_line);
     }
   }
 
