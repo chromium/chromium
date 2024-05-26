@@ -51,7 +51,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         }
         user_data: {
-          type: NONE
+          type: HW_OS_INFO
         }
         data: "Device technical specifications (e.g. model)."
         destination: GOOGLE_OWNED_SERVICE
