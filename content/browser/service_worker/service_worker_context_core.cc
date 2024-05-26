@@ -424,8 +424,7 @@ ServiceWorkerContextCore::CreateServiceWorkerClientForWindow(
     bool are_ancestors_secure,
     int frame_tree_node_id) {
   auto client = std::make_unique<ServiceWorkerClient>(
-      base::PassKey<ServiceWorkerContextCore>(), *this, are_ancestors_secure,
-      frame_tree_node_id);
+      AsWeakPtr(), are_ancestors_secure, frame_tree_node_id);
   auto weak_client = client->AsWeakPtr();
   auto inserted = service_worker_clients_by_uuid_
                       .emplace(weak_client->client_uuid(), std::move(client))
@@ -444,9 +443,8 @@ std::tuple<base::WeakPtr<ServiceWorkerClient>,
 ServiceWorkerContextCore::CreateServiceWorkerClientForWorker(
     int process_id,
     ServiceWorkerClientInfo client_info) {
-  auto client = std::make_unique<ServiceWorkerClient>(
-      base::PassKey<ServiceWorkerContextCore>(), *this, process_id,
-      client_info);
+  auto client = std::make_unique<ServiceWorkerClient>(AsWeakPtr(), process_id,
+                                                      client_info);
   auto weak_client = client->AsWeakPtr();
   auto inserted = service_worker_clients_by_uuid_
                       .emplace(weak_client->client_uuid(), std::move(client))
