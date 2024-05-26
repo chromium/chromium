@@ -73,8 +73,6 @@ class ServiceWorkerRemoteContainerEndpoint {
   ~ServiceWorkerRemoteContainerEndpoint();
 
   void BindForWindow(blink::mojom::ServiceWorkerContainerInfoForClientPtr info);
-  void BindForServiceWorker(
-      blink::mojom::ServiceWorkerProviderInfoForStartWorkerPtr info);
 
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainerHost>*
   host_remote() {
@@ -138,8 +136,7 @@ std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
     int process_id,
     bool is_parent_frame_secure,
     ServiceWorkerVersion& hosted_version,
-    base::WeakPtr<ServiceWorkerContextCore> context,
-    ServiceWorkerRemoteContainerEndpoint* output_endpoint);
+    base::WeakPtr<ServiceWorkerContextCore> context);
 
 // Calls CreateNewRegistration() synchronously.
 scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(

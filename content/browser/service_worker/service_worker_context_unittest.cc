@@ -1170,12 +1170,11 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
           blink::mojom::ScriptType::kClassic, 1L /* version_id */,
           mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
           helper_->context()->AsWeakPtr());
-  remote_endpoints.emplace_back();
   // ServiceWorkerHost creates ServiceWorkerClient for a service worker
   // execution context.
   std::unique_ptr<ServiceWorkerHost> worker_host4 = CreateServiceWorkerHost(
       kRenderProcessId2, true /* is_parent_frame_secure */, *version,
-      context()->AsWeakPtr(), &remote_endpoints.back());
+      context()->AsWeakPtr());
 
   ASSERT_TRUE(service_worker_client1);
   ASSERT_TRUE(service_worker_client2);

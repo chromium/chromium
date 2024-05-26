@@ -293,11 +293,6 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
   host_remote_.Bind(std::move(received_info->host_remote));
 }
 
-void ServiceWorkerRemoteContainerEndpoint::BindForServiceWorker(
-    blink::mojom::ServiceWorkerProviderInfoForStartWorkerPtr info) {
-  host_remote_.Bind(std::move(info->host_remote));
-}
-
 ServiceWorkerClientAndInfo::ServiceWorkerClientAndInfo(
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr info)
@@ -414,8 +409,7 @@ std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
     int process_id,
     bool is_parent_frame_secure,
     ServiceWorkerVersion& hosted_version,
-    base::WeakPtr<ServiceWorkerContextCore> context,
-    ServiceWorkerRemoteContainerEndpoint* output_endpoint) {
+    base::WeakPtr<ServiceWorkerContextCore> context) {
   auto provider_info =
       blink::mojom::ServiceWorkerProviderInfoForStartWorker::New();
   auto host = std::make_unique<ServiceWorkerHost>(
@@ -429,8 +423,12 @@ std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
       process_id,
       provider_info->browser_interface_broker.InitWithNewPipeAndPassReceiver(),
       pending_interface_provider.InitWithNewPipeAndPassRemote());
-  output_endpoint->BindForServiceWorker(std::move(provider_info));
+
   return host;
+
+  // `provider_info->host_remote`, `provider_info->browser_interface_broker` and
+  // `pending_interface_provider` are currently not used in tests and destroyed
+  // here.
 }
 
 scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(

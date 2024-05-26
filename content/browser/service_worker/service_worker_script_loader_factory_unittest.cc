@@ -50,9 +50,9 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
         blink::mojom::ScriptType::kClassic);
     DCHECK(version_);
 
-    worker_host_ = CreateServiceWorkerHost(
-        helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
-        *version_, context->AsWeakPtr(), &remote_endpoint_);
+    worker_host_ = CreateServiceWorkerHost(helper_->mock_render_process_id(),
+                                           true /* is_parent_frame_secure */,
+                                           *version_, context->AsWeakPtr());
 
     factory_ = std::make_unique<ServiceWorkerScriptLoaderFactory>(
         helper_->context()->AsWeakPtr(), worker_host_->GetWeakPtr(),
@@ -85,7 +85,6 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
   std::unique_ptr<ServiceWorkerHost> worker_host_;
-  ServiceWorkerRemoteContainerEndpoint remote_endpoint_;
   std::unique_ptr<ServiceWorkerScriptLoaderFactory> factory_;
 };
 

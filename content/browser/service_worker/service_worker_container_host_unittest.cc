@@ -783,10 +783,9 @@ TEST_F(ServiceWorkerContainerHostTest, AllowServiceWorker) {
           helper_->context()->AsWeakPtr());
   registration1_->SetActiveVersion(version);
 
-  ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   std::unique_ptr<ServiceWorkerHost> worker_host = CreateServiceWorkerHost(
       helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
-      *version, helper_->context()->AsWeakPtr(), &remote_endpoint);
+      *version, helper_->context()->AsWeakPtr());
   ServiceWorkerContainerHost* container_host = worker_host->container_host();
 
   ServiceWorkerTestContentBrowserClient test_browser_client;
@@ -1346,10 +1345,9 @@ void ServiceWorkerContainerHostTest::TestBackForwardCachedClientsAreNotExposed(
             helper_->context()->AsWeakPtr());
     registration1_->SetActiveVersion(version);
 
-    ServiceWorkerRemoteContainerEndpoint remote_endpoint;
     worker_host = CreateServiceWorkerHost(
         helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
-        *version, helper_->context()->AsWeakPtr(), &remote_endpoint);
+        *version, helper_->context()->AsWeakPtr());
     ASSERT_TRUE(worker_host);
   }
   {
