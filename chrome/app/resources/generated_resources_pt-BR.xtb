@@ -1613,6 +1613,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2156877321344104010">Fazer a confirmação de segurança novamente</translation>
 <translation id="2157474325782140681">Para ter outros recursos, use uma base de encaixe Dell compatível com este Chromebook.</translation>
 <translation id="215753907730220065">Sair do modo tela cheia</translation>
+<translation id="2157779167749714207">Seu <ph name="DEVICE_TYPE" /> vem com o Gemini</translation>
 <translation id="2158249272743343757">Excluir dados de personalização…</translation>
 <translation id="2158475082070321257">Copiar link para o conteúdo destacado</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10344,6 +10345,8 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
           <ph name="LINE_BREAK" />
           Os dados de preenchimento automático não serão compartilhados</translation>
 <translation id="8729133765463465108">Usar a câmera para ler um QR code</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Converse com o Gemini para começar a escrever, planejar, aprender e fazer muito mais com a IA do Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Após a configuração, selecione o app Gemini na parte de baixo da tela para começar a usar esse recurso.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Concluir</translation>
 <translation id="8731029916209785242">Permissões (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Código de segurança</translation>

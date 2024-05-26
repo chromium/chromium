@@ -1599,6 +1599,7 @@
 <translation id="2156877321344104010">സുരക്ഷാ പരിശോധന വീണ്ടും റൺ ചെയ്യുക</translation>
 <translation id="2157474325782140681">അധിക ഫീച്ചറുകൾ ലഭിക്കാൻ, ഈ Chromebook-ൽ പ്രവർത്തിക്കുന്നതിനായി രൂപകൽപ്പന ചെയ്‌തിരിക്കുന്ന Dell ഡോക്കിംഗ് സ്‌റ്റേഷൻ ഉപയോഗിക്കുക.</translation>
 <translation id="215753907730220065">പൂര്‍‌ണ്ണ സ്‌ക്രീനില്‍‌ നിന്ന് പുറത്തുകടക്കുക</translation>
+<translation id="2157779167749714207">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിനൊപ്പം Gemini-യും ലഭിക്കും</translation>
 <translation id="2158249272743343757">വ്യക്തിപരമാക്കൽ ഡാറ്റ ഇല്ലാതാക്കുക...</translation>
 <translation id="2158475082070321257">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് പകർത്തുക</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10322,6 +10323,8 @@
           <ph name="LINE_BREAK" />
           (നിങ്ങളുടെ സ്വയമേവ പൂരിപ്പിക്കൽ ഡാറ്റ പങ്കിടില്ല)</translation>
 <translation id="8729133765463465108">QR കോഡ് സ്‌കാൻ ചെയ്യാൻ ക്യാമറ ഉപയോഗിക്കുക</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Google AI-യുടെ സഹായത്തോടെ എഴുതാനും പ്ലാൻ ചെയ്യാനും പഠിക്കാനും മറ്റും Gemini-യുമായി ചാറ്റ് ചെയ്യൂ.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />സജ്ജീകരിച്ചതിന് ശേഷം, നിങ്ങളുടെ സ്ക്രീനിന്റെ താഴെയുള്ള ഷെൽഫിൽ നിന്ന് Gemini ആപ്പ് തിരഞ്ഞെടുത്ത് Gemini ഉപയോഗിച്ച് തുടങ്ങൂ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8731029916209785242">അനുമതികൾ (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">സുരക്ഷാ കോഡ്</translation>

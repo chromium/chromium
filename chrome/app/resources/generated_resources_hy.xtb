@@ -1602,6 +1602,7 @@
 <translation id="2156877321344104010">Նորից անցնել անվտանգություն ստուգում</translation>
 <translation id="2157474325782140681">Լրացուցիչ գործառույթների համար օգտագործեք այս Chromebook-ի համար նախատեսված Dell դոկ-կայան:</translation>
 <translation id="215753907730220065">Ելնել լիաէկրան ռեժիմից</translation>
+<translation id="2157779167749714207">Gemini-ն արդեն ներառված է ձեր <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="2158249272743343757">Ջնջել անհատականացման տվյալները...</translation>
 <translation id="2158475082070321257">Պատճենել հղումը որպես ընդգծված տեքստ</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10319,6 +10320,8 @@
           <ph name="LINE_BREAK" />
           (ինքնալրացման ձեր տվյալները չեն փոխանցվի)</translation>
 <translation id="8729133765463465108">Սկանավորել QR կոդը տեսախցիկի միջոցով</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Գրեք տեքստեր, պլանավորեք գործեր, սովորեք և արեք ավելին Gemini AI-ի օգնությամբ։<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Կարգավորումից հետո սկսեք օգտագործել Gemini-ը՝ էկրանի ներքևի դարակում ընտրելով Gemini հավելվածը։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8731029916209785242">Թույլտվություններ (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Անվտանգության կոդ</translation>

@@ -1593,6 +1593,7 @@
 <translation id="2156877321344104010">再次运行安全检查</translation>
 <translation id="2157474325782140681">要获得更多功能，请使用由戴尔专为这款 Chromebook 设计的基座。</translation>
 <translation id="215753907730220065">退出全屏模式</translation>
+<translation id="2157779167749714207">您的 <ph name="DEVICE_TYPE" /> 内置了 Gemini</translation>
 <translation id="2158249272743343757">删除个性化数据…</translation>
 <translation id="2158475082070321257">复制指向突出显示的内容的链接</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10312,6 +10313,8 @@
           <ph name="LINE_BREAK" />
           （系统不会分享您的这类数据）</translation>
 <translation id="8729133765463465108">使用摄像头扫描二维码</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />与 Gemini 聊天，让 Google AI 帮您撰写内容、规划活动、学习新知识等等。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />设置完成后，选择屏幕底部任务栏上的 Gemini 应用，即可开始使用 Gemini。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731029916209785242">权限 (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">安全码</translation>

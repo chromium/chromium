@@ -1612,6 +1612,7 @@
 <translation id="2156877321344104010">Επανάληψη εκτέλεσης ελέγχου ασφαλείας</translation>
 <translation id="2157474325782140681">Για επιπλέον λειτουργίες, χρησιμοποιήστε μια βάση σύνδεσης Dell που έχει σχεδιαστεί για χρήση με αυτό το Chromebook.</translation>
 <translation id="215753907730220065">Έξοδος από πλήρη οθόνη</translation>
+<translation id="2157779167749714207">Η συσκευή <ph name="DEVICE_TYPE" /> διαθέτει το Gemini</translation>
 <translation id="2158249272743343757">Διαγραφή δεδομένων εξατομίκευσης…</translation>
 <translation id="2158475082070321257">Αντιγραφή συνδέσμου προς την επισήμανση</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10341,6 +10342,8 @@
           <ph name="LINE_BREAK" />
           (τα δεδομένα αυτόματης συμπλήρωσης δεν θα κοινοποιηθούν)</translation>
 <translation id="8729133765463465108">Χρήση της κάμερας για σάρωση κωδικών QR</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Συνομιλήστε με το Gemini για να ξεκινήσετε να γράφετε, να προγραμματίζετε, να μαθαίνετε και πολλά άλλα με το Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Μετά τη ρύθμιση, ξεκινήστε να χρησιμοποιείτε το Gemini επιλέγοντας την εφαρμογή Gemini στο ράφι, στο κάτω μέρος της οθόνης.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8731029916209785242">Άδειες (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Κωδικός ασφαλείας</translation>

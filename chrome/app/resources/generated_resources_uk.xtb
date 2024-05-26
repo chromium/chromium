@@ -1615,6 +1615,7 @@
 <translation id="2156877321344104010">Запустити перевірку безпеки знову</translation>
 <translation id="2157474325782140681">Щоб отримати додаткові функції, використовуйте док-станцію Dell, розроблену для цього комп'ютера Chromebook.</translation>
 <translation id="215753907730220065">Вийти з повноекранного режиму</translation>
+<translation id="2157779167749714207">На ваш пристрій <ph name="DEVICE_TYPE" /> установлено додаток Gemini</translation>
 <translation id="2158249272743343757">Видалити дані персоналізації…</translation>
 <translation id="2158475082070321257">Копіювати посилання на виділений текст</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10345,6 +10346,8 @@
           <ph name="LINE_BREAK" />
           (самі дані автозаповнення не надсилатимуться)</translation>
 <translation id="8729133765463465108">Зісканувати QR-код за допомогою камери</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Спілкуйтеся в чаті з Gemini, щоб писати тексти, планувати справи, навчатися тощо за допомогою ШІ від Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Завершивши налаштування, виберіть додаток Gemini на панелі запуску внизу екрана.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Дозволи (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Код безпеки</translation>

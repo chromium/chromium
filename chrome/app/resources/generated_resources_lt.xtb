@@ -1615,6 +1615,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2156877321344104010">Dar kartą vykdyti saugos patikrą</translation>
 <translation id="2157474325782140681">Norėdami naudotis papildomomis funkcijomis, naudokite „Dell“ doką, sukurtą specialiai šiam „Chromebook“.</translation>
 <translation id="215753907730220065">Išeiti iš viso ekrano režimo</translation>
+<translation id="2157779167749714207">Įsigiję „<ph name="DEVICE_TYPE" />“ gaunate „Gemini“</translation>
 <translation id="2158249272743343757">Ištrinti suasmeninimo duomenis...</translation>
 <translation id="2158475082070321257">Kopijuoti nuorodą į paryškintą tekstą</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10350,6 +10351,8 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
           <ph name="LINE_BREAK" />
           (automatinio pildymo duomenys nebus bendrinami)</translation>
 <translation id="8729133765463465108">QR kodą nuskaityti naudojant fotoaparatą</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Kalbėkitės su „Gemini“ ir rašykite, planuokite, mokykitės ar užsiimkite kita veikla naudodami „Google“ DI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Baigę sąranką pradėkite naudoti „Gemini“ pasirinkdami „Gemini“ programą lentynoje, kuri rodoma ekrano apačioje.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8731029916209785242">Leidimai (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Saugos kodas</translation>

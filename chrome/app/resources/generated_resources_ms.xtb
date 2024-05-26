@@ -1612,6 +1612,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2156877321344104010">Jalankan semakan keselamatan sekali lagi</translation>
 <translation id="2157474325782140681">Gunakan stesen dok Dell yang direka khusus untuk Chromebook ini untuk mendapatkan ciri tambahan.</translation>
 <translation id="215753907730220065">Keluar Daripada Skrin Penuh</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> anda disertakan dengan Gemini</translation>
 <translation id="2158249272743343757">Padamkan data pemeribadian...</translation>
 <translation id="2158475082070321257">Salin pautan kepada serlahan</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10341,6 +10342,8 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
           <ph name="LINE_BREAK" />
           (data autolengkap anda tidak akan dikongsi)</translation>
 <translation id="8729133765463465108">Gunakan kamera untuk mengimbas Kod QR</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Sembang dengan Gemini untuk mula menulis, merancang, belajar dan pelbagai lagi menggunakan Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Selepas persediaan, mula menggunakan Gemini dengan memilih apl Gemini pada rak anda, pada bahagian bawah skrin anda.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8731029916209785242">Kebenaran (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Kod keselamatan</translation>

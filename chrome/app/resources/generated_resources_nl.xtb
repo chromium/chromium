@@ -1600,6 +1600,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2156877321344104010">Veiligheidscheck opnieuw uitvoeren</translation>
 <translation id="2157474325782140681">Gebruik voor aanvullende functies een Dell-dockingstation dat is bedoeld voor gebruik met deze Chromebook.</translation>
 <translation id="215753907730220065">Volledig scherm sluiten</translation>
+<translation id="2157779167749714207">Je <ph name="DEVICE_TYPE" /> wordt geleverd met Gemini</translation>
 <translation id="2158249272743343757">Personalisatiegegevens verwijderen…</translation>
 <translation id="2158475082070321257">Link naar markering kopiëren</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10314,6 +10315,8 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <ph name="LINE_BREAK" />
 (je gegevens voor automatisch invullen worden niet gedeeld)</translation>
 <translation id="8729133765463465108">Camera gebruiken om QR-code te scannen</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Chat met Gemini om te beginnen met bijvoorbeeld schrijven, plannen of leren met hulp van de AI van Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gebruik Gemini na het instellen door onderaan het scherm de Gemini-app te selecteren op de plank.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8731029916209785242">Rechten (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Beveiligingscode</translation>

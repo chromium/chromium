@@ -1601,6 +1601,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2156877321344104010">Relancer la vérification de sécurité</translation>
 <translation id="2157474325782140681">Pour obtenir des fonctionnalités supplémentaires, servez-vous d'une station d'accueil Dell conçue pour être utilisée avec ce Chromebook.</translation>
 <translation id="215753907730220065">Quitter le mode plein écran</translation>
+<translation id="2157779167749714207">Votre <ph name="DEVICE_TYPE" /> est doté de Gemini</translation>
 <translation id="2158249272743343757">Supprimer les données personnelles…</translation>
 <translation id="2158475082070321257">Copier le lien vers l'élément en surbrillance</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10326,6 +10327,8 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8727751378406387165">Envoyez des <ph name="BEGIN_LINK1" />métadonnées de remplissage automatique<ph name="END_LINK1" />
           <ph name="LINE_BREAK" /> (vos données de remplissage automatique ne seront pas partagées)</translation>
 <translation id="8729133765463465108">Utiliser l'appareil photo pour numériser le code QR</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Clavardez avec Gemini pour commencer à écrire, à planifier, à apprendre et bien plus encore avec l'IA de Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Après la configuration, commencez à utiliser Gemini en sélectionnant l'appli Gemini sur votre étagère, au bas de votre écran.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8731029916209785242">Autorisations (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>

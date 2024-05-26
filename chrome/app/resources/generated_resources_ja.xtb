@@ -1597,6 +1597,7 @@
 <translation id="2156877321344104010">安全チェックを再実行</translation>
 <translation id="2157474325782140681">すべての機能を利用できるようにするには、この Chromebook に対応した Dell のドッキング ステーションを使用してください。</translation>
 <translation id="215753907730220065">全画面表示を終了</translation>
+<translation id="2157779167749714207">この <ph name="DEVICE_TYPE" /> には Gemini が搭載されています</translation>
 <translation id="2158249272743343757">入力履歴を削除...</translation>
 <translation id="2158475082070321257">選択箇所へのリンクをコピー</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10307,6 +10308,8 @@
           <ph name="LINE_BREAK" />
           （自動入力データは共有されません）</translation>
 <translation id="8729133765463465108">カメラを使用して QR コードをスキャンする</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Gemini と話しながら、文章作成、計画、学習など、Google AI を活用したさまざまな作業を行うことができます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />セットアップが完了したら、画面下部のシェルフで Gemini アプリを選択してご利用を開始できます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731029916209785242">権限（<ph name="FORMATTED_ORIGIN" />）</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>

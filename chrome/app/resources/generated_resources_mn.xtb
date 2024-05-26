@@ -1608,6 +1608,7 @@
 <translation id="2156877321344104010">Аюулгүй байдлын шалгалтыг дахин ажиллуулах</translation>
 <translation id="2157474325782140681">Нэмэлт онцлогийг авахын тулд энэ Chromebook-тэй ажиллахад зориулсан Dell холбогч станцыг ашиглана уу.</translation>
 <translation id="215753907730220065">Дэлгэц дүүрэн харах горимоос гарах</translation>
+<translation id="2157779167749714207">Таны <ph name="DEVICE_TYPE" />-д Gemini дагалддаг</translation>
 <translation id="2158249272743343757">Хувийн болгосон өгөгдлийг устгах...</translation>
 <translation id="2158475082070321257">Тодруулсан текстийн холбоосыг хуулах</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10331,6 +10332,8 @@
           <ph name="LINE_BREAK" />
           (таны автоматаар бөглөх өгөгдлийг хуваалцахгүй)</translation>
 <translation id="8729133765463465108">QR кодыг скан хийхийн тулд камер ашиглах</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Google AI-р бичих, төлөвлөх, сурах болон илүү ихийг хийхийн тулд Gemini-тэй чатална уу.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Тохируулгын дараа дэлгэцийнхээ доод талд байх тавиур дээрээс Gemini-тэй харилцах аппыг сонгосноор Gemini-г ашиглаж эхэлнэ үү.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8731029916209785242">Зөвшөөрөл (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Аюулгүй байдлын код</translation>

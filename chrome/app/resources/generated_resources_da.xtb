@@ -1613,6 +1613,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2156877321344104010">Kør sikkerhedstjek igen</translation>
 <translation id="2157474325782140681">Hvis du vil have yderligere funktioner, skal du bruge en Dell-dockingstation, som er udviklet til at fungere sammen med denne Chromebook.</translation>
 <translation id="215753907730220065">Afslut fuld skærm</translation>
+<translation id="2157779167749714207">Din <ph name="DEVICE_TYPE" /> leveres med Gemini</translation>
 <translation id="2158249272743343757">Slet personligt tilpassede data...</translation>
 <translation id="2158475082070321257">Kopiér link til fremhævning</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10342,6 +10343,8 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
           <ph name="LINE_BREAK" />
           (dine data for autofyld deles ikke)</translation>
 <translation id="8729133765463465108">Scan QR-koden med kameraet</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Chat med Gemini for at komme i gang med at skrive, planlægge, lære og meget mere med Googles AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Efter konfigurationen kan du begynde at bruge Gemini ved at vælge Gemini-appen på din hylde nederst på skærmen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8731029916209785242">Tilladelser (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Sikkerhedskode</translation>

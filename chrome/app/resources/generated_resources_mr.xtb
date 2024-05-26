@@ -1611,6 +1611,7 @@
 <translation id="2156877321344104010">सुरक्षा तपासणी पुन्हा रन करा</translation>
 <translation id="2157474325782140681">अतिरिक्त वैशिष्‍ट्ये मिळवण्यासाठी, या Chromebook सोबत काम करणारे Dell डॉक स्टेशन वापरा.</translation>
 <translation id="215753907730220065">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
+<translation id="2157779167749714207">तुमच्या <ph name="DEVICE_TYPE" /> Gemini सह येते</translation>
 <translation id="2158249272743343757">पर्सनलायझेशन डेटा हटवा...</translation>
 <translation id="2158475082070321257">हायलाइट करण्यासाठी लिंक कॉपी करा</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10336,6 +10337,8 @@
           <ph name="LINE_BREAK" />
           (तुमचा ऑटोफिल डेटा शेअर केला जाणार नाही)</translation>
 <translation id="8729133765463465108">QR कोड स्कॅन करण्यासाठी कॅमेरा वापरा</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Google AI च्या मदतीने लिहिणे, नियोजन करणे, शिकणे आणि आणखी बऱ्याच गोष्टी करण्यासाठी Gemini सोबत चॅट करा.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />सेटअप केल्यानंतर, तुमच्या स्क्रीनच्या तळाशी, तुमच्या शेल्फवरील Gemini ॲप निवडून Gemini वापरण्यास सुरुवात करा.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8731029916209785242">परवानग्या (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">सुरक्षितता कोड</translation>

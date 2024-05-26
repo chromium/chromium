@@ -1611,6 +1611,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2156877321344104010">Biztonsági ellenőrzés újbóli futtatása</translation>
 <translation id="2157474325782140681">Ha további funkciókhoz is hozzá szeretne férni, használjon olyan Dell dokkolóállomást, amelyet ehhez a Chromebookhoz terveztek.</translation>
 <translation id="215753907730220065">Kilépés a teljes képernyős módból</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> eszközén megtalálható a Gemini</translation>
 <translation id="2158249272743343757">Személyre szabási adatok törlése…</translation>
 <translation id="2158475082070321257">Kiemelt szöveghez vezető link másolása</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10338,6 +10339,8 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
           <ph name="LINE_BREAK" />
           (az automatikus kitöltési adatai nem lesznek megosztva)</translation>
 <translation id="8729133765463465108">Kamera használata a QR-kód beolvasásához</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />A Geminivel csevegve a Google AI-jal kezdhet el írni valamit, tervezhet, tanulhat stb.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A beállítást követően elkezdheti használni a Geminit. Ehhez válassza ki a Gemini alkalmazást a polcon, a képernyő alján.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8731029916209785242">Engedélyek (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Biztonsági kód</translation>

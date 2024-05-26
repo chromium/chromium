@@ -1765,7 +1765,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4332872603299969513">Literatura pro děti</translation>
 <translation id="4333295216031073611">Nákupní seznam</translation>
 <translation id="4333561522337981382">Správa oken na všech obrazovkách</translation>
-<translation id="4336219115486912529">{COUNT,plural, =1{Platnost vyprší zítra}few{Platnost vyprší za # dny}many{Platnost vyprší za # dne}other{Platnost vyprší za # dní}}</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Platnost skončí zítra}few{Platnost skončí za # dny}many{Platnost skončí za # dne}other{Platnost skončí za # dní}}</translation>
 <translation id="4336913590841287350">Tato zásada zatím v systému iOS není podporována jako zásada pro uživatele.</translation>
 <translation id="4340575312453649552">Tato reklama v zařízení používala příliš mnoho zdrojů, proto ji Chrome odstranil.</translation>
 <translation id="4340810192899866471">Importovat ze souboru JSON</translation>
@@ -2803,7 +2803,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="639673288733510393">Skútry a mopedy</translation>
 <translation id="6398765197997659313">Ukončit režim celé obrazovky</translation>
 <translation id="6401136357288658127">Podpora této zásady byla ukončena. Měli byste místo ní používat zásadu <ph name="NEW_POLICY" />.</translation>
-<translation id="640163077447496506">Platnost vyprší dnes</translation>
+<translation id="640163077447496506">Platnost skončí dnes</translation>
 <translation id="6402537308870515461">Před přesunutím je vyžadována kontrola</translation>
 <translation id="6403167778944553">Ložnice a koupelny</translation>
 <translation id="6404511346730675251">Upravit záložku</translation>
@@ -3604,7 +3604,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7934414805353235750">Web <ph name="URL" /> chce přehrát chráněný obsah. Google ověří identitu vašeho zařízení.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Kód CVC této karty bude zašifrován a uložen do vašeho zařízení pro rychlejší placení</translation>
-<translation id="7937554595067888181">Platnost vyprší <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="7937554595067888181">Platnost skončí <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938490694919717008">Při placení ukázat, jaké odměny a výhody jsou pro vaše karty k dispozici. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Další informace o výhodách karet<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Certifikát serveru ještě není platný.</translation>
 <translation id="7941628148012649605">Obálka Chou 4</translation>

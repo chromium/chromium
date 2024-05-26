@@ -160,7 +160,7 @@
 <translation id="1555130319947370107">നീല</translation>
 <translation id="1557622599341396706">ഡെസ്‌ക്കിന്റെ പേര് കാണിക്കുക</translation>
 <translation id="1569384531973824928">ക്യാമറ, മൈക്രോഫോൺ എന്നിവ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള മുഴുവൻ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ആക്‌സസ് അനുവദിക്കുന്നു. നിങ്ങൾക്ക് വെബ് പേജ് റീഫ്രഷ് ചെയ്യേണ്ടതായോ ആപ്പ് റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതായോ വന്നേക്കാം.</translation>
-<translation id="1571697193564730395">'ശല്യപ്പെടുത്തരുത്' മാറ്റുക. <ph name="STATE_TEXT" /></translation>
+<translation id="1571697193564730395">'ശല്യപ്പെടുത്തരുത്' ടോഗിൾ ചെയ്യുക. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">മാഗ്നിഫയർ ഓണായിരിക്കുമ്പോൾ സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="1582946770779745370">ഗെയിം ഡാഷ്ബോർഡ് ലഭ്യമാണ്. തുറക്കാൻ എപ്പോൾ വേണമെങ്കിലും <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, തുടർന്ന് <ph name="LAUNCHER_KEY_NAME" /> + g അമർത്തുക</translation>
 <translation id="1586324912145647027">1 മുതൽ 8 വരെയുള്ള ഡെസ്ക്കുകളിലേക്ക് പോകുക</translation>
@@ -272,7 +272,7 @@
 <translation id="2049240716062114887">ഡെസ്‌കിന്റെ പേര് <ph name="DESK_NAME" /> എന്നാക്കി മാറ്റി</translation>
 <translation id="2064048859448024834">ക്യാമറാ പ്രിവ്യു ഓണാണ്</translation>
 <translation id="2067602449040652523">കീബോർഡ് തെളിച്ചം</translation>
-<translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> മാറ്റുക. <ph name="CAPTURE_MEDIUM" />, <ph name="CAPTURE_STATE" /></translation>
+<translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ടോഗിൾ ചെയ്യുക. <ph name="CAPTURE_MEDIUM" />, <ph name="CAPTURE_STATE" /></translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
 <translation id="2083190527011054446">ഗുഡ്‌നെെറ്റ് <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ഇമോജി പിക്കർ തുറക്കുക</translation>
@@ -1887,7 +1887,7 @@
 <translation id="8255234195843591763">അപ്ഡേറ്റ് ചെയ്യാൻ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="8257510091797044096">നിങ്ങളുടെ ഉപകരണം സജ്ജീകരിക്കുക</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
-<translation id="8262312463845990408">പ്ലേബാക്ക് മാറ്റുക</translation>
+<translation id="8262312463845990408">പ്ലേബാക്ക് ടോഗിൾ ചെയ്യുക</translation>
 <translation id="8270450402312105425">{0,plural, =1{ഒരു മണിക്കൂറിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റുക}other{# മണിക്കൂറിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റുക}}</translation>
 <translation id="8277261673056602147">നിങ്ങളുടെ സ്ക്രീനിലെ ടെക്സ്റ്റ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="8287009018010202411">ഉൽപ്പാദനക്ഷമത</translation>

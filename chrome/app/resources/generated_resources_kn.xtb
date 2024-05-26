@@ -840,6 +840,7 @@
 <translation id="1607139524282324606">ಪ್ರವೇಶವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="1607499585984539560">ಡೊಮೇನ್‌ ಜೊತೆಗೆ ಬಳಕೆದಾರರು ಸಂಯೋಜಿತವಾಗಿಲ್ಲ</translation>
 <translation id="1608668830839595724">ಆಯ್ದ ಐಟಂಗಳಿಗಾಗಿ ಹೆಚ್ಚಿನ ಕ್ರಿಯೆಗಳು</translation>
+<translation id="1608698493373028805">ಶೀಘ್ರದಲ್ಲೇ ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಬೆಂಬಲಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು</translation>
 <translation id="1610272688494140697">ಆ್ಯಪ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="161042844686301425">ಹಸಿರುನೀಲಿ</translation>
 <translation id="1611432201750675208">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1605,6 +1606,7 @@
 <translation id="2156877321344104010">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆಯನ್ನು ಪುನಃ ರನ್ ಮಾಡಿ</translation>
 <translation id="2157474325782140681">ಹೆಚ್ಚುವರಿ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಪಡೆಯಲು, ಈ Chromebook ನೊಂದಿಗೆ ಕೆಲಸ ಮಾಡಲು ವಿನ್ಯಾಸಗೊಳಿಸಲಾದ Dell ಡಾಕಿಂಗ್ ಸ್ಟೇಷನ್ ಒಂದನ್ನು ಬಳಸಿ.</translation>
 <translation id="215753907730220065">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="2157779167749714207">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> Gemini ಯೊಂದಿಗೆ ಬರುತ್ತದೆ</translation>
 <translation id="2158249272743343757">ವೈಯಕ್ತೀಕರಣ ಡೇಟಾವನ್ನು ಅಳಿಸಿ...</translation>
 <translation id="2158475082070321257">ಹೈಲೈಟ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಲಿಂಕ್ ಅನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2315,6 +2317,7 @@
 <translation id="2666247341166669829">ಎಡಬದಿಯ ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು <ph name="APP_NAME" /> ನಂತೆಯೇ ಲಿಂಕ್ ತೆರೆಯಲು ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಇದು <ph name="APP_NAME_2" /> ಮತ್ತು <ph name="APP_NAME_3" /> ಆ್ಯಪ್‌ನ ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳು ತೆರೆಯುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="2667463864537187133">ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ ನಿರ್ವಹಿಸಿ</translation>
+<translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome ವೆಬ್ ಸ್ಟೋರ್‌ನಿಂದ<ph name="END_LINK" /> ಒಂದೇ ರೀತಿಯ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಮೂಲಕ ಅದನ್ನು ತೆಗೆದುಹಾಕಿ ಅಥವಾ ಬದಲಾಯಿಸಿ</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="2669454659051515572">ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಯಾರಾದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ನೋಡಬಹುದು</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
@@ -10333,6 +10336,8 @@
            <ph name="LINE_BREAK" />
            (ನಿಮ್ಮ ಆಟೋಫಿಲ್ ಡೇಟಾವನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗುವುದಿಲ್ಲ)</translation>
 <translation id="8729133765463465108">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಕ್ಯಾಮರಾ ಬಳಸಿ</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Google AI ಮೂಲಕ ಬರವಣಿಗೆ, ಪ್ಲಾನಿಂಗ್, ಕಲಿಕೆ ಮತ್ತು ಇನ್ನಷ್ಟು ಚಟುವಟಿಕೆಗಳನ್ನು ಪ್ರಾರಂಭಿಸಲು Gemini ಜೊತೆ ಚಾಟ್ ಮಾಡಿ.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />ಸೆಟಪ್ ಮಾಡಿದ ನಂತರ, ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಭಾಗದಲ್ಲಿರುವ ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ Gemini ಆ್ಯಪ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವ ಮೂಲಕ Gemini ಬಳಸಲು ಪ್ರಾರಂಭಿಸಿ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8731029916209785242">ಅನುಮತಿಗಳು (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">ಭದ್ರತಾ ಕೋಡ್</translation>

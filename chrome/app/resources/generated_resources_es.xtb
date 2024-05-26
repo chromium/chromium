@@ -1600,6 +1600,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2156877321344104010">Volver a ejecutar la comprobación de seguridad</translation>
 <translation id="2157474325782140681">Si quieres obtener funciones adicionales, usa una base Dell que se haya diseñado para funcionar con este Chromebook.</translation>
 <translation id="215753907730220065">Desactivar pantalla completa</translation>
+<translation id="2157779167749714207">Tu <ph name="DEVICE_TYPE" /> incluye Gemini</translation>
 <translation id="2158249272743343757">Eliminar datos de personalización...</translation>
 <translation id="2158475082070321257">Copiar enlace al texto destacado</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -8208,7 +8209,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7181117767881540376">&amp;Ocultar barra de marcadores</translation>
 <translation id="7181329571386134105">Para permitir que <ph name="CHILD_NAME" /> instale extensiones sin tu aprobación en el futuro, abre la aplicación Family Link en tu dispositivo y actualiza los ajustes de Google Chrome de <ph name="CHILD_NAME" />.</translation>
 <translation id="7182051712900867547">Usar otra cuenta</translation>
-<translation id="7182063559013288142">Punto de acceso instantáneo</translation>
+<translation id="7182063559013288142">Conexión compartida instantánea</translation>
 <translation id="7182791023900310535">Mover tu contraseña</translation>
 <translation id="718427252411067142">Para impedir que otros usuarios usen tu contraseña, abre la aplicación para cambiarla</translation>
 <translation id="7186088072322679094">Mantener en la barra de herramientas</translation>
@@ -10323,6 +10324,8 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
           <ph name="LINE_BREAK" />
           (tus datos de Autocompletar no se compartirán)</translation>
 <translation id="8729133765463465108">Usar cámara para escanear código QR</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Chatea con Gemini para empezar a escribir, planificar, aprender y más con la IA de Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Después de la configuración, selecciona la aplicación de Gemini en tu estantería, en la parte inferior de la pantalla, para empezar a usarla.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Hecho</translation>
 <translation id="8731029916209785242">Permisos (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Código de seguridad</translation>

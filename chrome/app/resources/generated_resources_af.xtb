@@ -1612,6 +1612,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2156877321344104010">Doen veiligheidskontrole weer</translation>
 <translation id="2157474325782140681">Gebruik 'n Dell-dokstasie wat ontwerp is om saam met hierdie Chromebook te gebruik om bykomende kenmerke te kry.</translation>
 <translation id="215753907730220065">Gaan by Volskerm uit</translation>
+<translation id="2157779167749714207">Gemini is reeds op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">Vee personaliseringdata uit …</translation>
 <translation id="2158475082070321257">Kopieer skakel na hoogtepunt</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10339,6 +10340,8 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
           <ph name="LINE_BREAK" />
           (jou outovuldata sal nie gedeel word nie)</translation>
 <translation id="8729133765463465108">Gebruik kamera om QR-kode te skandeer</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Klets met Gemini om met Google AI te begin skryf, beplan, leer en meer.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Begin ná opstelling Gemini gebruik deur die Gemini-app op jou rak onderaan jou skerm te kies.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8731029916209785242">Toestemmings (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Sekuriteitkode</translation>

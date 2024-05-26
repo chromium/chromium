@@ -1597,6 +1597,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2156877321344104010">Volver a ejecutar la Verificación de seguridad</translation>
 <translation id="2157474325782140681">Para obtener más funciones, usa una estación de conexión Dell diseñada para funcionar con esta Chromebook.</translation>
 <translation id="215753907730220065">Salir de pantalla completa</translation>
+<translation id="2157779167749714207">Tu <ph name="DEVICE_TYPE" /> incluye Gemini</translation>
 <translation id="2158249272743343757">Borrar datos de personalización…</translation>
 <translation id="2158475082070321257">Copiar el vínculo al texto destacado</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10321,6 +10322,8 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
           <ph name="LINE_BREAK" />
           (no se compartirán tus datos de Autocompletar)</translation>
 <translation id="8729133765463465108">Usar la cámara para escanear el código QR</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Chatea con Gemini para comenzar a escribir, planificar, aprender y mucho más con la IA de Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Después de la configuración, selecciona la app de Gemini en la barra, en la parte inferior de la pantalla, para comenzar a usarla.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8731029916209785242">Permisos (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Código de seguridad</translation>

@@ -1602,6 +1602,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2156877321344104010">Znova spustiť kontrolu bezpečnosti</translation>
 <translation id="2157474325782140681">Ak chcete získať ďalšie funkcie, použite dokovaciu stanicu od spoločnosti Dell, ktorá je navrhnutá pre tento Chromebook.</translation>
 <translation id="215753907730220065">Ukončiť zobrazenie na celú obrazovku</translation>
+<translation id="2157779167749714207">Vaše zariadenie <ph name="DEVICE_TYPE" /> sa dodáva s Gemini</translation>
 <translation id="2158249272743343757">Odstrániť údaje prispôsobenia…</translation>
 <translation id="2158475082070321257">Kopírovať odkaz na zvýraznenie</translation>
 <translation id="2159488579268505102">USB‑C</translation>
@@ -10329,6 +10330,8 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
           <ph name="LINE_BREAK" />
           (vaše údaje automatického dopĺňania sa nebudú zdieľať)</translation>
 <translation id="8729133765463465108">Naskenovať QR kód fotoaparátom</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Četujte s Gemini a začnite písať, plánovať, učiť sa a mnoho iného pomocou umelej inteligencie od Googlu.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Po nastavení začnite používať Gemini výberom aplikácie Gemini na poličke v dolnej časti obrazovky.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8731029916209785242">Povolenia (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Bezpečnostný kód</translation>

@@ -1613,6 +1613,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2156877321344104010">Magpatakbo ulit ng pag-check sa kaligtasan</translation>
 <translation id="2157474325782140681">Para makakuha ng karagdagang feature, gumamit ng istasyon ng pag-dock ng Dell na idinisenyo para gumana sa Chromebook na ito.</translation>
 <translation id="215753907730220065">Umalis sa Full Screen</translation>
+<translation id="2157779167749714207">May kasamang Gemini ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">I-delete ang data ng pag-personalize...</translation>
 <translation id="2158475082070321257">Kopyahin ang link sa highlight</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10344,6 +10345,8 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
           <ph name="LINE_BREAK" />
           (hindi ishe-share ang iyong data ng autofill)</translation>
 <translation id="8729133765463465108">Gamitin ang camera para mag-scan ng QR Code</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Makipag-chat sa Gemini para magsimulang magsulat, magplano, matuto, at iba pa gamit ang Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Pagkatapos ng pag-set up, magsimulang gamitin ang Gemini sa pamamagitan ng pagpili sa Gemini app sa iyong shelf, sa ibaba ng screen mo.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8731029916209785242">Mga Pahintulot (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Panseguridad na code</translation>

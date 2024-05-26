@@ -835,6 +835,7 @@
 <translation id="1607139524282324606">ჩანაწერის გასუფთავება</translation>
 <translation id="1607499585984539560">მომხმარებელი არაა დაკავშირებული ამ დომენთან</translation>
 <translation id="1608668830839595724">სხვა ქმედებები არჩეული ერთეულებისთვის</translation>
+<translation id="1608698493373028805">ეს გაფართოება, შესაძლოა, მალე აღარ იყოს მხარდაჭერილი</translation>
 <translation id="1610272688494140697">აპის პარამეტრები</translation>
 <translation id="161042844686301425">ციანი</translation>
 <translation id="1611432201750675208">თქვენი მოწყობილობა ჩაკეტილია</translation>
@@ -1600,6 +1601,7 @@
 <translation id="2156877321344104010">უსაფრთხოების შემოწმების ხელახლა გაშვება</translation>
 <translation id="2157474325782140681">დამატებითი ფუნქციებით სარგებლობისთვის გამოიყენეთ Dell-ის სამაგრი, რომელიც შექმნილია ამ Chromebook-თან მუშაობისთვის.</translation>
 <translation id="215753907730220065">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
+<translation id="2157779167749714207">თქვენს <ph name="DEVICE_TYPE" />-ს მოჰყვება Gemini</translation>
 <translation id="2158249272743343757">პერსონალიზების მონაცემების წაშლა...</translation>
 <translation id="2158475082070321257">გამოყოფილთან ბმულის კოპირება</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2307,6 +2309,7 @@
 <translation id="2666247341166669829">მარცხენა ბატარეის დონეა <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">იმ ბმულების გასახსნელად, რომლებსაც <ph name="APP_NAME" /> ხსნის, დაყენებულია სხვა აპები. ამ ქმედების შედეგად, <ph name="APP_NAME_2" /> და <ph name="APP_NAME_3" /> აღარ გახსნის მხარდაჭერილ ბმულებს.</translation>
 <translation id="2667463864537187133">მართლწერის შემოწმების მართვა</translation>
+<translation id="2668604389652548400">ამოშალეთ ან ჩაანაცვლეთ ის მსგავსი გაფართოებით <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-იდან</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />-ის გახსნა ვერ მოხერხდა</translation>
 <translation id="2669454659051515572">ჩამოტვირთული ფაილების ნახვას შეძლებს ამ მოწყობილობის ნებისმიერი მომხმარებელი</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome-ის ჩანართს აზიარებს.</translation>
@@ -10321,6 +10324,8 @@
           <ph name="LINE_BREAK" />
           (ავტომატური შევსების მონაცემები არ გაზიარდება)</translation>
 <translation id="8729133765463465108">QR კოდის სკანირება კამერით</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />ესაუბრეთ Gemini-ს, რომ დაიწყოთ წერა, დაგეგმვა, სწავლა და ა.შ. Google-ის ხელოვნურ ინტელექტთან ერთად.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />დაყენების დასრულების შემდეგ Gemini-ს გამოყენებას შეძლებთ Gemini აპის არჩევით თქვენი თაროდან, რომელიც ეკრანის ქვედა ნაწილშია მოცემული.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8731029916209785242">ნებართვები (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">უსაფრთხოების კოდი</translation>

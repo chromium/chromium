@@ -1613,6 +1613,7 @@
 <translation id="2156877321344104010">안전 확인 다시 실행</translation>
 <translation id="2157474325782140681">추가 기능을 사용하려면 이 Chromebook과 호환되는 Dell 도킹 스테이션을 사용하세요.</translation>
 <translation id="215753907730220065">전체화면 종료</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" />의 경우 Gemini가 탑재되어 출시됩니다</translation>
 <translation id="2158249272743343757">맞춤설정 데이터 삭제…</translation>
 <translation id="2158475082070321257">하이라이트 링크 복사</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10340,6 +10341,8 @@ https://support.google.com/chromebook/?p=sm</translation>
           <ph name="LINE_BREAK" />
           (자동 완성 데이터는 공유되지 않음)</translation>
 <translation id="8729133765463465108">카메라를 사용하여 QR 코드 스캔</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Gemini와 채팅하며 Google AI를 활용해 글쓰기, 계획, 학습 등을 시작해 보세요.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />설정 후 화면 하단의 앱 표시줄에서 Gemini 앱을 선택하여 Gemini 사용을 시작하세요<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8731029916209785242">권한(<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">보안 코드</translation>

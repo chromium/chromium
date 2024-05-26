@@ -1612,6 +1612,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2156877321344104010">Kontrollera säkerheten igen</translation>
 <translation id="2157474325782140681">Använd en dockningsstation som är gjord för att användas med denna Chromebook om du vill ha tillgång till ytterligare funktioner.</translation>
 <translation id="215753907730220065">Avsluta helskärmsläge</translation>
+<translation id="2157779167749714207">Gemini ingår med <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">Radera anpassningsdata …</translation>
 <translation id="2158475082070321257">Kopiera länk till markering</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10340,6 +10341,8 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
           <ph name="LINE_BREAK" />
           (din autofylldata delas inte)</translation>
 <translation id="8729133765463465108">Skanna QR-koden med kameran</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Chatta med Gemini och börja skriva, planera, lära dig saker och mycket annat med Googles AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />När du har konfigurerat Gemini kan du börja använda den genom att välja Gemini-appen på hyllan längst ned på skärmen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Klart</translation>
 <translation id="8731029916209785242">Behörigheter (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Säkerhetskod</translation>

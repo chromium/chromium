@@ -834,6 +834,7 @@
 <translation id="1607139524282324606">Обриши унос</translation>
 <translation id="1607499585984539560">Корисник није повезан са доменом</translation>
 <translation id="1608668830839595724">Још радњи за изабране ставке</translation>
+<translation id="1608698493373028805">Овај додатак ускоро можда више неће бити подржан</translation>
 <translation id="1610272688494140697">Подешавања апликације</translation>
 <translation id="161042844686301425">Плавозелена</translation>
 <translation id="1611432201750675208">Уређај је закључан</translation>
@@ -1598,6 +1599,7 @@
 <translation id="2156877321344104010">Поново покрени безбедносну проверу</translation>
 <translation id="2157474325782140681">Да бисте користили додатне функције, користите Dell базну станицу компатибилну са овим Chromebook-ом.</translation>
 <translation id="215753907730220065">Изађи из режима целог екрана</translation>
+<translation id="2157779167749714207">Уз <ph name="DEVICE_TYPE" /> добијате Gemini</translation>
 <translation id="2158249272743343757">Избриши податке за персонализацију...</translation>
 <translation id="2158475082070321257">Копирај линк до истакнутог текста</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2305,6 +2307,7 @@
 <translation id="2666247341166669829">Ниво напуњености батерије за леву <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Друге апликације су подешене да отварају исте линкове као апликација <ph name="APP_NAME" />. Овим се апликације <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" /> онемогућавају да отварају подржане линкове.</translation>
 <translation id="2667463864537187133">Управљање провером правописа</translation>
+<translation id="2668604389652548400">Уклоните га или замените сличним додацима из <ph name="BEGIN_LINK" />Chrome веб-продавнице<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Отварање апликације <ph name="APP_NAME" /> није успело</translation>
 <translation id="2669454659051515572">Свако ко користи овај уређај може да види преузете фајлове</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> дели Chrome картицу.</translation>
@@ -10326,6 +10329,8 @@
           <ph name="LINE_BREAK" />
           (подаци за аутоматско попуњавање се не деле)</translation>
 <translation id="8729133765463465108">Скенирај QR кôд помоћу камере</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Ћаскајте са Gemini-јем да бисте почели да пишете, планирате, учите и друго уз Google вештачку интелигенцију.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />После подешавања почните да користите Gemini тако што ћете изабрати апликацију Gemini на полици у дну екрана.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Дозволе (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Безбедносни кôд</translation>

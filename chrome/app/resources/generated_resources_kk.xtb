@@ -1597,6 +1597,7 @@
 <translation id="2156877321344104010">Қауіпсіздік шарасын қайта қолдану</translation>
 <translation id="2157474325782140681">Қосымша функцияларды пайдалану үшін осы Chromebook құрылғысымен жұмыс істеуге арналған қондыру станциясын пайдаланыңыз.</translation>
 <translation id="215753907730220065">Толық экраннан шығу</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> құрылғысы Gemini-мен бірге ұсынылады</translation>
 <translation id="2158249272743343757">Жекелендіру деректерін жою...</translation>
 <translation id="2158475082070321257">Ерекшеленген мәтіннің сілтемесін көшіру</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10315,6 +10316,8 @@
           <ph name="LINE_BREAK" />
           (автотолтыру деректері берілмейді)</translation>
 <translation id="8729133765463465108">QR кодын сканерлеу үшін камераны пайдалану</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Google AI-мен жазуды, жоспарлауды, оқуды және т.б. әрекеттерді бастау үшін Gemini-мен чатта сөйлесіңіз.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gemini-ды орнатқаннан кейін, оны экранның төменгі жағындағы сөреден таңдап, қолдана бастаңыз.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Дайын</translation>
 <translation id="8731029916209785242">Рұқсаттар (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Қауіпсіздік коды</translation>

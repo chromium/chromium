@@ -1603,6 +1603,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2156877321344104010">Käita ohutuskontroll uuesti</translation>
 <translation id="2157474325782140681">Lisafunktsioonidele juurdepääsu saamiseks kasutage Delli dokkimisjaama, mis on mõeldud kasutamiseks selle Chromebookiga.</translation>
 <translation id="215753907730220065">Täisekraanilt väljumine</translation>
+<translation id="2157779167749714207">Seadmega <ph name="DEVICE_TYPE" /> on kaasas Gemini</translation>
 <translation id="2158249272743343757">Isikupärastamisandmete kustutamine …</translation>
 <translation id="2158475082070321257">Kopeeri esiletõstuga link</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10330,6 +10331,8 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
           <ph name="LINE_BREAK" />
           (teie automaattäite andmeid ei jagata)</translation>
 <translation id="8729133765463465108">Kasutage QR-koodi skannimiseks kaamerat</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Vestelge Geminiga, et alustada Google'i AI abil kirjutamist, plaanimist, õppimist ja muud.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Seadistage Gemini ja alustage selle kasutamist, valides ekraani allosas asuvalt riiulilt Gemini rakenduse.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8731029916209785242">Load (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Turvakood</translation>

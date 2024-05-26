@@ -1611,6 +1611,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2156877321344104010">Tee turvatarkistus uudelleen</translation>
 <translation id="2157474325782140681">Jos haluat lisäominaisuuksia, käytä Dell-telinettä, joka on suunniteltu yhteensopivaksi tämän Chromebookin kanssa.</translation>
 <translation id="215753907730220065">Poistu koko näytön tilasta</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> sisältää Geminin</translation>
 <translation id="2158249272743343757">Poista henkilökohtaista dataa…</translation>
 <translation id="2158475082070321257">Kopioi linkki korostukseen</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10335,6 +10336,8 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
           <ph name="LINE_BREAK" />
           (automaattisen täytön dataa ei jaeta)</translation>
 <translation id="8729133765463465108">Skannaa QR-koodi kameralla</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Keskustele Geminin kanssa ja aloita kirjoittaminen, suunnittelu, oppiminen ja paljon muuta Googlen tekoälyn avulla.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Aloita Geminin käyttäminen käyttöönoton jälkeen valitsemalla Gemini-sovellus näytön alareunasta.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8731029916209785242">Luvat (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Turvakoodi</translation>

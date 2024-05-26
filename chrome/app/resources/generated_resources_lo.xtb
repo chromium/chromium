@@ -1610,6 +1610,7 @@
 <translation id="2156877321344104010">ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພອີກຄັ້ງ</translation>
 <translation id="2157474325782140681">ເພື່ອຮັບຄຸນສົມບັດເພີ່ມເຕີມ, ກະລຸນາໃຊ້ສະຖານີແທ່ນສາກ Dell ທີ່ຖືກອອກແບບມາໃຫ້ໃຊ້ໄດ້ກັບ Chromebook ນີ້.</translation>
 <translation id="215753907730220065">ອອກຈາກເຕັມໜ້າຈໍ</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> ຂອງທ່ານມາພ້ອມກັບ Gemini</translation>
 <translation id="2158249272743343757">ກຳລັງລຶບຂໍ້ມູນການປັບແຕ່ງເປັນແບບສ່ວນຕົວ...</translation>
 <translation id="2158475082070321257">ສຳເນົາລິ້ງໄປຍັງໄຮໄລ້</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10334,6 +10335,8 @@
           <ph name="LINE_BREAK" />
           (ຂໍ້ມູນທີ່ທ່ານຕື່ມອັດຕະໂນມັດຈະບໍ່ຖືກແບ່ງປັນ)</translation>
 <translation id="8729133765463465108">ໃຊ້ກ້ອງຖ່າຍຮູບເພື່ອສະແກນລະຫັດ QR</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />ສົນທະນາກັບ Gemini ເພື່ອເລີ່ມຕົ້ນຂຽນ, ວາງແຜນ, ຮຽນຮູ້ ແລະ ອື່ນໆອີກຫຼາຍຢ່າງດ້ວຍ Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />ຫຼັງຈາກຕັ້ງຄ່າແລ້ວ, ໃຫ້ເລີ່ມຕົ້ນນຳໃຊ້ Gemini ໂດຍເລືອກແອັບ Gemini ຢູ່ຖ້ານຂອງທ່ານທາງລຸ່ມສຸດຂອງໜ້າຈໍຂອງທ່ານ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8731029916209785242">ການອະນຸຍາດ (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">ລະຫັດຄວາມປອດໄພ</translation>

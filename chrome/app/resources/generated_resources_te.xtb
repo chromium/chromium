@@ -1610,6 +1610,7 @@
 <translation id="2156877321344104010">భద్రతా తనిఖీని మళ్లీ రన్ చేయండి</translation>
 <translation id="2157474325782140681">ఈ Chromebookకు అనుగుణంగా పని చేయడానికి రూపొందించబడిన డెల్ డాకింగ్ స్టేషన్‌ను ఉపయోగించి, అదనపు ఫీచర్‌లను పొందండి.</translation>
 <translation id="215753907730220065">ఫుల్-స్క్రీన్‌ను నిష్క్రమించండి</translation>
+<translation id="2157779167749714207">మీ <ph name="DEVICE_TYPE" />‌తో పాటు Gemini వస్తుంది</translation>
 <translation id="2158249272743343757">వ్యక్తిగతీకరణ డేటాను తొలగించండి...</translation>
 <translation id="2158475082070321257">హైలైట్ చేసిన టెక్స్ట్‌కు లింక్‌ను కాపీ చేయండి</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10334,6 +10335,8 @@
           <ph name="LINE_BREAK" />
           (మీ ఆటోఫిల్ డేటా షేర్ చేయబడదు)</translation>
 <translation id="8729133765463465108">QR కోడ్‌ను స్కాన్ చేయడానికి కెమెరాను ఉపయోగించండి</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Google AIతో రాయడం, ప్లాన్ చేయడం, నేర్చుకోవడం, ఇంకా మరెన్నో చేయడానికి Geminiతో చాట్ చేయండి.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />సెటప్ చేసిన తర్వాత, మీ షెల్ఫ్‌లో, మీ స్క్రీన్ దిగువున ఉన్న Gemini యాప్‌ను ఎంచుకోవడం ద్వారా Geminiని ఉపయోగించడం ప్రారంభించండి.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="8731029916209785242">అనుమతులు (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">సెక్యూరిటీ కోడ్</translation>

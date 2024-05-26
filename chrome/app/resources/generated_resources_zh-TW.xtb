@@ -1600,6 +1600,7 @@
 <translation id="2156877321344104010">再次執行安全檢查</translation>
 <translation id="2157474325782140681">如要取得其他功能，請使用這部 Chromebook 的專用座架。</translation>
 <translation id="215753907730220065">結束全螢幕</translation>
+<translation id="2157779167749714207">Gemini 是 <ph name="DEVICE_TYPE" /> 隨附的服務</translation>
 <translation id="2158249272743343757">刪除個人化資料...</translation>
 <translation id="2158475082070321257">複製醒目顯示文字的連結</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10319,6 +10320,8 @@
           <ph name="LINE_BREAK" />
           (系統不會共用自動填入資料)</translation>
 <translation id="8729133765463465108">使用相機掃描 QR 圖碼</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />只要與 Gemini 對話，Google AI 就能協助你撰寫內容、擬定計畫及學習新知等等。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />設定完成後，請在畫面底部的檔案櫃選取 Gemini 應用程式，即可開始使用 Gemini。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731029916209785242">權限 (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">安全碼</translation>

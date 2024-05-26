@@ -1601,6 +1601,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2156877321344104010">Rulează din nou verificarea de siguranță</translation>
 <translation id="2157474325782140681">Pentru a beneficia de mai multe funcții, folosește o stație de andocare Dell proiectată să funcționeze cu acest Chromebook.</translation>
 <translation id="215753907730220065">Ieși din ecranul complet</translation>
+<translation id="2157779167749714207">Dispozitivul <ph name="DEVICE_TYPE" /> este livrat cu Gemini</translation>
 <translation id="2158249272743343757">Șterge datele de personalizare...</translation>
 <translation id="2158475082070321257">Copiază linkul către textul evidențiat</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10327,6 +10328,8 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
           <ph name="LINE_BREAK" />
           (datele pentru completarea automată nu vor fi trimise)</translation>
 <translation id="8729133765463465108">Folosește camera ca să scanezi codul QR</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Conversează prin chat cu Gemini pentru a începe să scrii, să planifici, să înveți și multe altele cu Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />După configurare, începe să folosești Gemini selectând aplicația Gemini de pe raft, din partea de jos a ecranului.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8731029916209785242">Permisiuni (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Cod de securitate</translation>

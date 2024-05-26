@@ -1605,6 +1605,7 @@
 <translation id="2156877321344104010">تشغيل اختبار "التحقق من الأمان" مرة أخرى</translation>
 <translation id="2157474325782140681">‏للحصول على ميزات إضافية، يُرجى استخدام محطة إرساء Dell المصمّمة للعمل مع جهاز Chromebook هذا.</translation>
 <translation id="215753907730220065">إنهاء وضع ملء الشاشة</translation>
+<translation id="2157779167749714207">‏‫Gemini ضمن <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">حذف بيانات التخصيص...</translation>
 <translation id="2158475082070321257">نسخ الرابط المؤدي إلى نص محدد</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10336,6 +10337,8 @@
           <ph name="LINE_BREAK" />
           (لن تتم مشاركة بيانات الملء التلقائي)</translation>
 <translation id="8729133765463465108">استخدام الكاميرا لمسح رمز الاستجابة السريعة ضوئيًا</translation>
+<translation id="8730446113129943001">‏<ph name="BEGIN_PARAGRAPH1" />يمكنك الدردشة مع Gemini لبدء الكتابة والتخطيط والتعلّم وغير ذلك باستخدام تكنولوجيات الذكاء الاصطناعي من Google.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />بعد عملية الإعداد، يمكنك بدء استخدام Gemini من خلال النقر على تطبيق Gemini على الرف في أسفل الشاشة.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">تم</translation>
 <translation id="8731029916209785242">الأذونات (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">رمز الأمان</translation>

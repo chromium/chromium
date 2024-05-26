@@ -1611,6 +1611,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2156877321344104010">Ponovno pokretanje sigurnosne provjere</translation>
 <translation id="2157474325782140681">Za dodatne funkcije, koristite Dell priključnu stanicu koja je namijenjena za rad s ovim Chromebookom.</translation>
 <translation id="215753907730220065">Izađi iz prikaza preko cijelog ekrana</translation>
+<translation id="2157779167749714207">Gemini dolazi uz uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="2158249272743343757">Brisanje podataka personalizacije…</translation>
 <translation id="2158475082070321257">Kopiraj link za istaknuti tekst</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10343,6 +10344,8 @@ Fajl ključa: <ph name="KEY_FILE" />
           <ph name="LINE_BREAK" />
           (vaši podaci o automatskom popunjavanju se neće dijeliti)</translation>
 <translation id="8729133765463465108">Kamerom skenirajte QR kôd</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Chatajte s Geminijem da počnete pisati, planirati, učiti i drugo uz Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Nakon postavljanja započnite koristiti Gemini odabirom aplikacije Gemini na polici u donjem dijelu ekrana.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8731029916209785242">Odobrenja (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Sigurnosni kôd</translation>

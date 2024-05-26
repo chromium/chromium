@@ -1612,6 +1612,7 @@
 <translation id="2156877321344104010">பாதுகாப்புச் சரிபார்ப்பை மீண்டும் இயக்கும்</translation>
 <translation id="2157474325782140681">கூடுதல் அம்சங்களைப் பெற இந்த Chromebookகுடன் இணங்குமாறு வடிவமைக்கப்பட்ட Dell டாக்கிங் ஸ்டேஷனைப் பயன்படுத்தவும்.</translation>
 <translation id="215753907730220065">முழுத்திரையிலிருந்து வெளியேறு</translation>
+<translation id="2157779167749714207">உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் Gemini உள்ளது</translation>
 <translation id="2158249272743343757">பிரத்தியேகத் தரவை நீக்கு...</translation>
 <translation id="2158475082070321257">ஹைலைட் செய்யப்பட்ட உரைக்கான இணைப்பை நகலெடு</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10341,6 +10342,8 @@
           <ph name="LINE_BREAK" />
           (உங்களின் தன்னிரப்பித் தரவு பகிரப்படாது)</translation>
 <translation id="8729133765463465108">QR குறியீட்டை ஸ்கேன் செய்ய கேமராவைப் பயன்படுத்து</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />எழுதுதல், திட்டமிடல், கற்றல் மற்றும் பலவற்றுக்கு Google AI மூலம் உதவி பெற Gemini உடன் உரையாடுங்கள்.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />அமைத்தபிறகு, திரையின் கீழ்ப்பகுதியில் உள்ள உங்கள் ஷெல்ஃபில் Gemini ஆப்ஸைத் தேர்ந்தெடுத்து Geminiயைப் பயன்படுத்தத் தொடங்குங்கள்.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8731029916209785242">அனுமதிகள் (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">பாதுகாப்புக் குறியீடு</translation>

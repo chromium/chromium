@@ -1608,6 +1608,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2156877321344104010">Tekeleza ukaguzi wa usalama tena</translation>
 <translation id="2157474325782140681">Ili upate vipengele vya ziada, tumia kituo cha Dell cha kuambatisha kinachoweza kutumiwa na Chromebook hii.</translation>
 <translation id="215753907730220065">Ondoka kwenye Skrini Kamili</translation>
+<translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> yako ina Gemini</translation>
 <translation id="2158249272743343757">Futa data ya uwekaji mapendeleo...</translation>
 <translation id="2158475082070321257">Nakili kiungo cha maandishi yaliyoangaziwa</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -10336,6 +10337,8 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
           <ph name="LINE_BREAK" />
           (data yako ya kujaza kiotomatiki haitashirikiwa)</translation>
 <translation id="8729133765463465108">Tumia kamera kuchanganua Msimbo wa QR</translation>
+<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Piga gumzo na Gemini ili uanze kuandika, kupanga, kujifunza na zaidi ukitumia Google AI.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Baada ya kuweka mipangilio, anza kutumia Gemini kwa kuchagua programu ya Gemini kwenye rafu yako, katika sehemu ya chini ya skrini yako.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="8731029916209785242">Ruhusa (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Msimbo wa usalama</translation>
