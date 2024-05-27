@@ -36,6 +36,12 @@ id<GREYMatcher> MatchInBlockerWindowWithNumber(int window_number,
 id<GREYMatcher> ButtonWithAccessibilityLabelId(int message_id);
 
 // Returns a matcher for element with accessibility label corresponding to
+// `message_id`, `number` for the plural rule and accessibility trait
+// UIAccessibilityTraitButton.
+id<GREYMatcher> ButtonWithAccessibilityLabelIdAndNumberForPlural(int message_id,
+                                                                 int number);
+
+// Returns a matcher for element with accessibility label corresponding to
 // `label` and accessibility trait UIAccessibilityTraitButton.
 id<GREYMatcher> ButtonWithAccessibilityLabel(NSString* label);
 

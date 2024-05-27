@@ -31,6 +31,8 @@ public struct TabStripConstants {
     public static let selectedZIndex: Int = 10
     public static let fontSize: CGFloat = 14
     public static let maximumVisibleDistance: CGFloat = 10
+    public static let closeButtonAccessibilityIdentifier: String =
+      "TabStripCloseButtonAccessibilityIdentifier"
   }
 
   /// Group item constants.

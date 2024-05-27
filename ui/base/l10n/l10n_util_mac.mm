@@ -185,4 +185,9 @@ NSString* GetPluralNSStringF(int message_id, int number) {
                                                                    number));
 }
 
+NSString* GetPluralNSStringFWithFixup(int message_id, int number) {
+  return FixUpWindowsStyleLabel(
+      l10n_util::GetPluralStringFUTF16(message_id, number));
+}
+
 }  // namespace l10n_util

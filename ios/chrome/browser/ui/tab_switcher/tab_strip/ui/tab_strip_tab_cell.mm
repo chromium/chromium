@@ -902,6 +902,8 @@ UIImage* DefaultFavicon() {
                   action:@selector(closeButtonTapped:)
         forControlEvents:UIControlEventTouchUpInside];
   closeButton.pointerInteractionEnabled = YES;
+  closeButton.accessibilityIdentifier =
+      TabStripTabItemConstants.closeButtonAccessibilityIdentifier;
   return closeButton;
 }
 

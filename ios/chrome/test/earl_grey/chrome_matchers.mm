@@ -39,6 +39,12 @@ id<GREYMatcher> ButtonWithAccessibilityLabelId(int message_id) {
   return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:message_id];
 }
 
+id<GREYMatcher> ButtonWithAccessibilityLabelIdAndNumberForPlural(int message_id,
+                                                                 int number) {
+  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:message_id
+                                                    numberForPlural:number];
+}
+
 id<GREYMatcher> ButtonWithForegroundColor(NSString* colorName) {
   return [ChromeMatchersAppInterface buttonWithForegroundColor:colorName];
 }

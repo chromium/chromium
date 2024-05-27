@@ -20,6 +20,8 @@ import ios_chrome_browser_ui_tab_switcher_tab_strip_ui_swift_constants
   public static let fontSize = TabStripConstants.TabItem.fontSize
   public static let selectedZIndex = TabStripConstants.TabItem.selectedZIndex
   public static let horizontalSpacing = TabStripConstants.TabItem.horizontalSpacing
+  public static let closeButtonAccessibilityIdentifier = TabStripConstants.TabItem
+    .closeButtonAccessibilityIdentifier
 }
 
 /// Bridge to access `TabStripConstants.GroupItem` from Objective-C code.

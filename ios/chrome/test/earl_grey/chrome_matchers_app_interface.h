@@ -35,6 +35,12 @@
 // and accessibility trait UIAccessibilityTraitButton.
 + (id<GREYMatcher>)buttonWithAccessibilityLabelID:(int)messageID;
 
+// Matcher for element with accessibility label corresponding to `messageID`,
+// `number` for the plural rule and accessibility trait
+// UIAccessibilityTraitButton.
++ (id<GREYMatcher>)buttonWithAccessibilityLabelID:(int)messageID
+                                  numberForPlural:(int)number;
+
 // Matcher for element with foreground color corresponding to `colorName`
 // and accessibility trait UIAccessibilityTraitButton.
 + (id<GREYMatcher>)buttonWithForegroundColor:(NSString*)colorName;
