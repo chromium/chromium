@@ -238,6 +238,7 @@ public class TabSwitcherTabletTest {
     @Test
     @MediumTest
     @RequiresRestart
+    @DisabledTest(message = "crbug.com/342983248")
     public void testGridTabSwitcherOnNoNextTab_WithRestart() throws ExecutionException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         checkTabSwitcherLayout(cta, /* isInitialized= */ false);
@@ -339,6 +340,7 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/342983248")
     public void testEmptyStateView() throws Exception {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareTabs(1, 0);
