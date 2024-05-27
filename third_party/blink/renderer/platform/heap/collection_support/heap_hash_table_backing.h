@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
@@ -27,10 +26,7 @@ namespace blink {
 
 template <typename Table>
 class HeapHashTableBacking final
-    : public GarbageCollected<HeapHashTableBacking<Table>>,
-      public WTF::ConditionalDestructor<
-          HeapHashTableBacking<Table>,
-          !std::is_trivially_destructible<typename Table::ValueType>::value> {
+    : public GarbageCollected<HeapHashTableBacking<Table>> {
   using ClassType = HeapHashTableBacking<Table>;
   using ValueType = typename Table::ValueType;
 
@@ -56,8 +52,11 @@ class HeapHashTableBacking final
     return cppgc::subtle::Resize(*this, GetAdditionalBytes(new_size));
   }
 
-  // Conditionally invoked via destructor.
-  void Finalize();
+  ~HeapHashTableBacking()
+    requires(std::is_trivially_destructible_v<typename Table::ValueType>)
+  = default;
+  ~HeapHashTableBacking()
+    requires(!std::is_trivially_destructible_v<typename Table::ValueType>);
 
  private:
   static cppgc::AdditionalBytes GetAdditionalBytes(size_t wanted_array_size) {
@@ -70,7 +69,9 @@ class HeapHashTableBacking final
 };
 
 template <typename Table>
-void HeapHashTableBacking<Table>::Finalize() {
+HeapHashTableBacking<Table>::~HeapHashTableBacking()
+  requires(!std::is_trivially_destructible_v<typename Table::ValueType>)
+{
   using Value = typename Table::ValueType;
   static_assert(
       !std::is_trivially_destructible<Value>::value,

@@ -52,7 +52,6 @@ component("wtf") {
     "bit_field.h",
     "bloom_filter.h",
     "casting.h",
-    "conditional_destructor.h",
     "container_annotations.h",
     "cross_thread_copier.cc",
     "cross_thread_copier.h",

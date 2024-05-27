@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
-#include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/container_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"  // For default Vector template parameters.
@@ -722,8 +721,9 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   }
 
   size_t AllocationSize(size_t capacity) const {
-    if (capacity <= InlineCapacity)
+    if (capacity <= InlineCapacity) {
       return kInlineBufferSize;
+    }
     return Base::AllocationSize(capacity);
   }
 
@@ -1055,30 +1055,24 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
 
 // In general, Vector requires destruction.
 template <typename T, wtf_size_t InlineCapacity, bool isGced>
-struct VectorNeedsDestructor {
-  static constexpr bool value = true;
-};
+inline constexpr bool kVectorNeedsDestructor = true;
 
 // For garbage collection, Vector does not require destruction when there's no
 // inline capacity.
 template <typename T>
-struct VectorNeedsDestructor<T, 0, true> {
-  static constexpr bool value = false;
-};
+inline constexpr bool kVectorNeedsDestructor<T, 0, true> = false;
 
 // For garbage collection, a Vector with inline capacity conditionally requires
 // destruction based on whether the element type itself requires destruction.
+//
+// However, for now, always return true, as there are many uses of on-stack
+// HeapVector with inline capacity that require eager clearing for performance.
+//
+// Ideally, there should be a different representation for on-stack usages
+// which would allow eager clearing for all uses of Vector from stack and avoid
+// destructors on heap.
 template <typename T, wtf_size_t InlineCapacity>
-struct VectorNeedsDestructor<T, InlineCapacity, true> {
-  // Always return true here as currently there's many uses of on-stack
-  // HeapVector with inline capacity that require eager clearing for
-  // performance.
-  //
-  // Ideally, there's a different representation for on-stack usages which would
-  // allow eager clearing for all uses of Vector from stack and avoid
-  // destructors on heap.
-  static constexpr bool value = true;
-};
+inline constexpr bool kVectorNeedsDestructor<T, InlineCapacity, true> = true;
 
 namespace internal {
 
@@ -1095,13 +1089,7 @@ concept VectorCanConstructFromCollection = requires(Collection c) {
 }  // namespace internal
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-class Vector
-    : private VectorBuffer<T, INLINE_CAPACITY, Allocator>,
-      public ConditionalDestructor<
-          Vector<T, INLINE_CAPACITY, Allocator>,
-          VectorNeedsDestructor<T,
-                                INLINE_CAPACITY,
-                                Allocator::kIsGarbageCollected>::value> {
+class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   USE_ALLOCATOR(Vector, Allocator);
   using Base = VectorBuffer<T, INLINE_CAPACITY, Allocator>;
   using TypeOperations = VectorTypeOperations<T, Allocator>;
@@ -1433,7 +1421,16 @@ class Vector
     return Allocator::template MaxElementCountInBackingStore<T>();
   }
 
-  void Finalize() {
+  ~Vector()
+    requires(!kVectorNeedsDestructor<T,
+                                     INLINE_CAPACITY,
+                                     Allocator::kIsGarbageCollected>)
+  = default;
+  ~Vector()
+    requires(kVectorNeedsDestructor<T,
+                                    INLINE_CAPACITY,
+                                    Allocator::kIsGarbageCollected>)
+  {
     static_assert(!Allocator::kIsGarbageCollected || INLINE_CAPACITY,
                   "GarbageCollected collections without inline capacity cannot "
                   "be finalized.");
@@ -1632,8 +1629,9 @@ inline bool TypelessPointersAreEqual(const void* a, const void* b) {
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <wtf_size_t otherCapacity>
-Vector<T, InlineCapacity, Allocator>& Vector<T, InlineCapacity, Allocator>::
-operator=(const Vector<T, otherCapacity, Allocator>& other) {
+Vector<T, InlineCapacity, Allocator>&
+Vector<T, InlineCapacity, Allocator>::operator=(
+    const Vector<T, otherCapacity, Allocator>& other) {
   // If the inline capacities match, we should call the more specific
   // template.  If the inline capacities don't match, the two objects
   // shouldn't be allocated the same address.
@@ -1710,8 +1708,9 @@ Vector<T, InlineCapacity, Allocator>::Vector(std::initializer_list<T> elements)
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-Vector<T, InlineCapacity, Allocator>& Vector<T, InlineCapacity, Allocator>::
-operator=(std::initializer_list<T> elements) {
+Vector<T, InlineCapacity, Allocator>&
+Vector<T, InlineCapacity, Allocator>::operator=(
+    std::initializer_list<T> elements) {
   wtf_size_t input_size = base::checked_cast<wtf_size_t>(elements.size());
   if (size() > input_size) {
     Shrink(input_size);
