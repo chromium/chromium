@@ -288,7 +288,7 @@ class LoginUnlockThroughputRecorderTestBase : public LoginTestBase {
 
   void RestoredWindowsPresented(const std::vector<int>& ids) {
     for (int n : ids) {
-      throughput_recorder()->OnRestoredWindowPresented(n);
+      throughput_recorder()->window_restore_tracker()->OnPresentedForTesting(n);
     }
   }
 
