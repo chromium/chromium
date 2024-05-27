@@ -245,14 +245,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
 
 // Searches for '1 + 1', checks the top result is '2', and inserts it
 // into a web input field.
-// TODO: crbug.com/40240570 - Re-enable once MSan stops failing on Rust-side
-// allocations.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_SearchAndInsertMath DISABLED_SearchAndInsertMath
-#else
-#define MAYBE_SearchAndInsertMath SearchAndInsertMath
-#endif
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, MAYBE_SearchAndInsertMath) {
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertMath) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -401,17 +394,8 @@ IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
       }));
 }
 
-// TODO(b/328144222): Re-enable this test. Causes build failures with MSAN
-// enabled on CrOS.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_AnnouncesKeyboardNavigationOnResultsPage \
-  DISABLED_AnnouncesKeyboardNavigationOnResultsPage
-#else
-#define MAYBE_AnnouncesKeyboardNavigationOnResultsPage \
-  AnnouncesKeyboardNavigationOnResultsPage
-#endif
 IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
-                       MAYBE_AnnouncesKeyboardNavigationOnResultsPage) {
+                       AnnouncesKeyboardNavigationOnResultsPage) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
