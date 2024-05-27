@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"

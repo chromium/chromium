@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/common/chrome_features.h"
