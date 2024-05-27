@@ -692,8 +692,8 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
       return prefs::internal::kSyncSharedTabGroupData;
     case UserSelectableType::kPayments:
       return prefs::internal::kSyncPayments;
-    case UserSelectableType::kCompare:
-      return prefs::internal::kSyncCompare;
+    case UserSelectableType::kProductComparison:
+      return prefs::internal::kSyncProductComparison;
     case UserSelectableType::kCookies:
       return prefs::internal::kSyncCookies;
   }
@@ -756,7 +756,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case UserSelectableType::kHistory:
     case UserSelectableType::kTabs:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
-    case UserSelectableType::kCompare:
+    case UserSelectableType::kProductComparison:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case syncer::UserSelectableType::kSharedTabGroupData:
       return base::FeatureList::IsEnabled(

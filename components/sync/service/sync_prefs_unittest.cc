@@ -504,7 +504,7 @@ TEST_F(SyncPrefsTest,
   // one of those and is enabled when kReplaceSyncPromosWithSignInPromos is
   // enabled.
   UserSelectableTypeSet expected_types{
-      UserSelectableType::kBookmarks,   UserSelectableType::kCompare,
+      UserSelectableType::kBookmarks,   UserSelectableType::kProductComparison,
       UserSelectableType::kReadingList, UserSelectableType::kPasswords,
       UserSelectableType::kAutofill,    UserSelectableType::kPayments,
       UserSelectableType::kPreferences};

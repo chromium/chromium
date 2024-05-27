@@ -986,7 +986,7 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="Shared Tab Group Data"/>
   <int value="64" label="Collaboration Groups"/>
   <int value="65" label="Plus Address"/>
-  <int value="66" label="Compare"/>
+  <int value="66" label="Product Comparison"/>
   <int value="67" label="Cookies"/>
   <int value="68" label="Plus Address Settings"/>
 </enum>

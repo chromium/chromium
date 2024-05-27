@@ -10,7 +10,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/sync/protocol/compare_specifics.pb.h"
+#include "components/sync/protocol/product_comparison_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace commerce {
@@ -70,7 +70,7 @@ class ProductSpecificationsSet {
   friend commerce::ProductSpecificationsSyncBridge;
 
   static ProductSpecificationsSet FromProto(
-      const sync_pb::CompareSpecifics& compare_specifics);
+      const sync_pb::ProductComparisonSpecifics& product_comparison_specifics);
 
   const base::Uuid uuid_;
   const base::Time creation_time_;

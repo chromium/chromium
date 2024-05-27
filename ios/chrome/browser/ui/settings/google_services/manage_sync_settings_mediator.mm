@@ -899,7 +899,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case syncer::UserSelectableType::kApps:
     case syncer::UserSelectableType::kSavedTabGroups:
     case syncer::UserSelectableType::kSharedTabGroupData:
-    case syncer::UserSelectableType::kCompare:
+    case syncer::UserSelectableType::kProductComparison:
     case syncer::UserSelectableType::kCookies:
       NOTREACHED_IN_MIGRATION();
       break;

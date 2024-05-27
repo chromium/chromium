@@ -58,7 +58,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
       return syncer::kTabGroupsSaveCustomNudgeDelay.Get();
     case BOOKMARKS:
     case PREFERENCES:
-    case COMPARE:
+    case PRODUCT_COMPARISON:
       // Types with sometimes automatic changes get longer delays to allow more
       // coalescing.
       return kBigLocalChangeNudgeDelay;
@@ -173,7 +173,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case COLLABORATION_GROUP:
     case PLUS_ADDRESS:
     case PLUS_ADDRESS_SETTING:
-    case COMPARE:
+    case PRODUCT_COMPARISON:
     case COOKIES:
       return false;
     case UNSPECIFIED:

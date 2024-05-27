@@ -37,7 +37,7 @@ constexpr char kTabsTypeName[] = "tabs";
 constexpr char kSavedTabGroupsTypeName[] = "savedTabGroups";
 constexpr char kSharedTabGroupDataTypeName[] = "sharedTabGroupData";
 constexpr char kPaymentsTypeName[] = "payments";
-constexpr char kCompareTypeName[] = "compare";
+constexpr char kProductComparisonTypeName[] = "productComparison";
 constexpr char kCookiesTypeName[] = "cookies";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
@@ -106,8 +106,9 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
               {AUTOFILL_WALLET_CREDENTIAL, AUTOFILL_WALLET_DATA,
                AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
                AUTOFILL_WALLET_USAGE}};
-    case UserSelectableType::kCompare:
-      return {kCompareTypeName, COMPARE, {COMPARE}};
+    case UserSelectableType::kProductComparison:
+      return {
+          kProductComparisonTypeName, PRODUCT_COMPARISON, {PRODUCT_COMPARISON}};
     case UserSelectableType::kCookies:
       return {kCookiesTypeName, COOKIES, {COOKIES}};
   }
@@ -186,8 +187,8 @@ std::optional<UserSelectableType> GetUserSelectableTypeFromString(
   if (type == kSharedTabGroupDataTypeName) {
     return UserSelectableType::kSharedTabGroupData;
   }
-  if (type == kCompareTypeName) {
-    return UserSelectableType::kCompare;
+  if (type == kProductComparisonTypeName) {
+    return UserSelectableType::kProductComparison;
   }
   return std::nullopt;
 }

@@ -16,7 +16,6 @@
 #include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
-#include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
@@ -45,6 +44,7 @@
 #include "components/sync/protocol/printer_specifics.pb.h"
 #include "components/sync/protocol/printers_authorization_server_specifics.pb.h"
 #include "components/sync/protocol/priority_preference_specifics.pb.h"
+#include "components/sync/protocol/product_comparison_specifics.pb.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
@@ -349,7 +349,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ComparisonData& proto) {
   VISIT(url);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::CompareSpecifics& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::ProductComparisonSpecifics& proto) {
   VISIT(uuid);
   VISIT(creation_time_unix_epoch_micros);
   VISIT(update_time_unix_epoch_micros);
@@ -675,7 +675,6 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(autofill_wallet_usage);
   VISIT(bookmark);
   VISIT(collaboration_group);
-  VISIT(compare);
   VISIT(contact_info);
   VISIT(cookie);
   VISIT(device_info);
@@ -698,6 +697,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(printer);
   VISIT(printers_authorization_server);
   VISIT(priority_preference);
+  VISIT(product_comparison);
   VISIT(reading_list);
   VISIT(saved_tab_group);
   VISIT(search_engine);

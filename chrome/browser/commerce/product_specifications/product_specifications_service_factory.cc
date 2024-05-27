@@ -21,8 +21,9 @@ namespace {
 std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor>
 CreateChangeProcessor() {
   return std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-      syncer::COMPARE, base::BindRepeating(&syncer::ReportUnrecoverableError,
-                                           chrome::GetChannel()));
+      syncer::PRODUCT_COMPARISON,
+      base::BindRepeating(&syncer::ReportUnrecoverableError,
+                          chrome::GetChannel()));
 }
 
 }  // namespace

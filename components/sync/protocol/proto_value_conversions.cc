@@ -23,7 +23,6 @@
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
-#include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
@@ -44,6 +43,7 @@
 #include "components/sync/protocol/printer_specifics.pb.h"
 #include "components/sync/protocol/printers_authorization_server_specifics.pb.h"
 #include "components/sync/protocol/priority_preference_specifics.pb.h"
+#include "components/sync/protocol/product_comparison_specifics.pb.h"
 #include "components/sync/protocol/proto_visitors.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
@@ -348,7 +348,6 @@ IMPLEMENT_PROTO_TO_VALUE(BankAccountDetails)
 IMPLEMENT_PROTO_TO_VALUE(BookmarkSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ClientConfigParams)
 IMPLEMENT_PROTO_TO_VALUE(CollaborationGroupSpecifics)
-IMPLEMENT_PROTO_TO_VALUE(CompareSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ContactInfoSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(CookieSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(CrossUserSharingPublicKey)
@@ -386,6 +385,7 @@ IMPLEMENT_PROTO_TO_VALUE(PrinterPPDReference)
 IMPLEMENT_PROTO_TO_VALUE(PrinterSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(PrintersAuthorizationServerSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(PriorityPreferenceSpecifics)
+IMPLEMENT_PROTO_TO_VALUE(ProductComparisonSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ReadingListSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(SavedTabGroupSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(SearchEngineSpecifics)

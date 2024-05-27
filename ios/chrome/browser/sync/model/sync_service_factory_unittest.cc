@@ -70,7 +70,7 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.Put(syncer::BOOKMARKS);
     if (base::FeatureList::IsEnabled(commerce::kProductSpecificationsSync)) {
-      datatypes.Put(syncer::COMPARE);
+      datatypes.Put(syncer::PRODUCT_COMPARISON);
     }
     datatypes.Put(syncer::CONTACT_INFO);
     datatypes.Put(syncer::DEVICE_INFO);

@@ -15,9 +15,9 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-// A Compare sync entity, containing sufficient data to enable all data
-// acquisition for rendering the Compare experience.
-message CompareSpecifics {
+// A Product Comparison sync entity, containing sufficient data to enable all
+// data acquisition for rendering the Compare experience.
+message ProductComparisonSpecifics {
   // The primary key for local storage.
   optional string uuid = 1;
 

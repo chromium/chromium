@@ -12,8 +12,8 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-#include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/product_comparison_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace syncer {
@@ -57,23 +57,24 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   friend class commerce::ProductSpecificationsServiceTest;
   friend class commerce::ProductSpecificationsSyncBridgeTest;
   using CompareSpecificsEntries =
-      std::map<std::string, sync_pb::CompareSpecifics>;
+      std::map<std::string, sync_pb::ProductComparisonSpecifics>;
 
   const CompareSpecificsEntries& entries() { return entries_; }
 
   void AddCompareSpecificsForTesting(
-      const sync_pb::CompareSpecifics& compare_specifics) {
-    entries_.emplace(compare_specifics.uuid(), compare_specifics);
+      const sync_pb::ProductComparisonSpecifics& product_comparison_specifics) {
+    entries_.emplace(product_comparison_specifics.uuid(),
+                     product_comparison_specifics);
   }
 
-  virtual sync_pb::CompareSpecifics AddProductSpecifications(
+  virtual sync_pb::ProductComparisonSpecifics AddProductSpecifications(
       const std::string& name,
       const std::vector<GURL>& urls);
 
   // Update the specifics for the provided ProductSpecificationsSet based on its
   // UUID. If no specifics for a UUID are found, this method is a noop and
   // nullopt is returned.
-  sync_pb::CompareSpecifics UpdateProductSpecificationsSet(
+  sync_pb::ProductComparisonSpecifics UpdateProductSpecificationsSet(
       const ProductSpecificationsSet& set);
 
   void DeleteProductSpecificationsSet(const std::string& uuid);
@@ -93,9 +94,10 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   void AddObserver(commerce::ProductSpecificationsSet::Observer* observer);
   void RemoveObserver(commerce::ProductSpecificationsSet::Observer* observer);
 
-  void OnSpecificsAdded(const sync_pb::CompareSpecifics& compare_specifics);
-  void OnSpecificsUpdated(const sync_pb::CompareSpecifics& before,
-                          const sync_pb::CompareSpecifics& compare_specifics);
+  void OnSpecificsAdded(
+      const sync_pb::ProductComparisonSpecifics& product_comparison_specifics);
+  void OnSpecificsUpdated(const sync_pb::ProductComparisonSpecifics& before,
+                          const sync_pb::ProductComparisonSpecifics& after);
   void OnSpecificsRemoved(const ProductSpecificationsSet& removed_set);
 
   CompareSpecificsEntries entries_;

@@ -163,7 +163,7 @@ enum ModelType {
   PLUS_ADDRESS,
 
   // Product comparison groups.
-  COMPARE,
+  PRODUCT_COMPARISON,
 
   // Browser cookies, ChromeOS only.
   COOKIES,
@@ -269,7 +269,7 @@ enum class ModelTypeForHistograms {
   kSharedTabGroupData = 63,
   kCollaborationGroup = 64,
   kPlusAddresses = 65,
-  kCompare = 66,
+  kProductComparison = 66,
   kCookies = 67,
   kPlusAddressSettings = 68,
   kMaxValue = kPlusAddressSettings,

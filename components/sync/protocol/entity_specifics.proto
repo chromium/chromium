@@ -22,7 +22,7 @@ import "components/sync/protocol/autofill_wallet_credential_specifics.proto";
 import "components/sync/protocol/autofill_wallet_usage_specifics.proto";
 import "components/sync/protocol/bookmark_specifics.proto";
 import "components/sync/protocol/collaboration_group_specifics.proto";
-import "components/sync/protocol/compare_specifics.proto";
+import "components/sync/protocol/product_comparison_specifics.proto";
 import "components/sync/protocol/contact_info_specifics.proto";
 import "components/sync/protocol/cookie_specifics.proto";
 import "components/sync/protocol/device_info_specifics.proto";
@@ -155,7 +155,7 @@ message EntitySpecifics {
     AutofillWalletCredentialSpecifics autofill_wallet_credential = 1164238;
     SharedTabGroupDataSpecifics shared_tab_group_data = 1239418;
     CollaborationGroupSpecifics collaboration_group = 1259076;
-    CompareSpecifics compare = 1329438;
+    ProductComparisonSpecifics product_comparison = 1329438;
     PlusAddressSpecifics plus_address = 1267844;
     CookieSpecifics cookie = 1281100;
     PlusAddressSettingSpecifics plus_address_setting = 1303742;

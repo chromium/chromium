@@ -207,9 +207,10 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
     {PLUS_ADDRESS, "PLUS_ADDRESS", "plus_address", "Plus Address",
      sync_pb::EntitySpecifics::kPlusAddressFieldNumber,
      ModelTypeForHistograms::kPlusAddresses},
-    {COMPARE, "COMPARE", "compare", "Compare",
-     sync_pb::EntitySpecifics::kCompareFieldNumber,
-     ModelTypeForHistograms::kCompare},
+    {PRODUCT_COMPARISON, "PRODUCT_COMPARISON", "product_comparison",
+     "Product Comparison",
+     sync_pb::EntitySpecifics::kProductComparisonFieldNumber,
+     ModelTypeForHistograms::kProductComparison},
     {COOKIES, "COOKIE", "cookies", "Cookies",
      sync_pb::EntitySpecifics::kCookieFieldNumber,
      ModelTypeForHistograms::kCookies},
@@ -313,7 +314,8 @@ constexpr kSpecificsFieldNumberToModelTypeMap
         {sync_pb::EntitySpecifics::kCollaborationGroupFieldNumber,
          COLLABORATION_GROUP},
         {sync_pb::EntitySpecifics::kPlusAddressFieldNumber, PLUS_ADDRESS},
-        {sync_pb::EntitySpecifics::kCompareFieldNumber, COMPARE},
+        {sync_pb::EntitySpecifics::kProductComparisonFieldNumber,
+         PRODUCT_COMPARISON},
         {sync_pb::EntitySpecifics::kCookieFieldNumber, COOKIES},
         {sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber,
          PLUS_ADDRESS_SETTING},
@@ -476,8 +478,8 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
     case PLUS_ADDRESS:
       specifics->mutable_plus_address();
       break;
-    case COMPARE:
-      specifics->mutable_compare();
+    case PRODUCT_COMPARISON:
+      specifics->mutable_product_comparison();
       break;
     case COOKIES:
       specifics->mutable_cookie();
@@ -622,8 +624,8 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_plus_address()) {
     return PLUS_ADDRESS;
   }
-  if (specifics.has_compare()) {
-    return COMPARE;
+  if (specifics.has_product_comparison()) {
+    return PRODUCT_COMPARISON;
   }
   if (specifics.has_cookie()) {
     return COOKIES;

@@ -15,17 +15,17 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/protocol/compare_specifics.pb.h"
+#include "components/sync/protocol/product_comparison_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace {
 
 std::unique_ptr<syncer::EntityData> CreateEntityData(
-    const sync_pb::CompareSpecifics& specifics) {
+    const sync_pb::ProductComparisonSpecifics& specifics) {
   auto entity_data = std::make_unique<syncer::EntityData>();
   entity_data->name = base::StringPrintf("%s_%s", specifics.name().c_str(),
                                          specifics.uuid().c_str());
-  entity_data->specifics.mutable_compare()->CopyFrom(specifics);
+  entity_data->specifics.mutable_product_comparison()->CopyFrom(specifics);
   return entity_data;
 }
 
@@ -40,7 +40,7 @@ ProductSpecificationsSyncBridge::ProductSpecificationsSyncBridge(
     : syncer::ModelTypeSyncBridge(std::move(change_processor)),
       init_callback_(std::move(init_callback)) {
   std::move(create_store_callback)
-      .Run(syncer::COMPARE,
+      .Run(syncer::PRODUCT_COMPARISON,
            base::BindOnce(&ProductSpecificationsSyncBridge::OnStoreCreated,
                           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -60,6 +60,7 @@ ProductSpecificationsSyncBridge::MergeFullSyncData(
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                      std::move(entity_changes));
 }
+
 std::optional<syncer::ModelError>
 ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
@@ -67,8 +68,8 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
-    const sync_pb::CompareSpecifics& specifics =
-        change->data().specifics.compare();
+    const sync_pb::ProductComparisonSpecifics& specifics =
+        change->data().specifics.product_comparison();
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
         entries_.emplace(change->storage_key(), specifics);
@@ -78,7 +79,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_UPDATE: {
         auto local_specifics = entries_.find(change->storage_key());
         if (local_specifics != entries_.end()) {
-          sync_pb::CompareSpecifics before = local_specifics->second;
+          sync_pb::ProductComparisonSpecifics before = local_specifics->second;
           // Overwrite if specifics from sync are more recent.
           if (specifics.update_time_unix_epoch_micros() >
               local_specifics->second.update_time_unix_epoch_micros()) {
@@ -110,7 +111,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
 
 std::string ProductSpecificationsSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  return entity_data.specifics.compare().uuid();
+  return entity_data.specifics.product_comparison().uuid();
 }
 
 std::string ProductSpecificationsSyncBridge::GetClientTag(
@@ -138,14 +139,14 @@ void ProductSpecificationsSyncBridge::GetAllDataForDebugging(
   std::move(callback).Run(std::move(batch));
 }
 
-sync_pb::CompareSpecifics
+sync_pb::ProductComparisonSpecifics
 ProductSpecificationsSyncBridge::AddProductSpecifications(
     const std::string& name,
     const std::vector<GURL>& urls) {
   // Sync is mandatory for this feature to be usable.
   CHECK(change_processor()->IsTrackingMetadata());
 
-  sync_pb::CompareSpecifics specifics;
+  sync_pb::ProductComparisonSpecifics specifics;
   specifics.set_uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   int64_t time_now = base::Time::Now().InMillisecondsSinceUnixEpoch();
   specifics.set_creation_time_unix_epoch_micros(time_now);
@@ -170,7 +171,7 @@ ProductSpecificationsSyncBridge::AddProductSpecifications(
   return specifics;
 }
 
-sync_pb::CompareSpecifics
+sync_pb::ProductComparisonSpecifics
 ProductSpecificationsSyncBridge::UpdateProductSpecificationsSet(
     const ProductSpecificationsSet& product_specs_set) {
   auto it = entries_.find(product_specs_set.uuid().AsLowercaseString());
@@ -180,8 +181,8 @@ ProductSpecificationsSyncBridge::UpdateProductSpecificationsSet(
   // Sync is mandatory for this feature to be usable.
   CHECK(change_processor()->IsTrackingMetadata());
 
-  sync_pb::CompareSpecifics before = it->second;
-  sync_pb::CompareSpecifics& specifics = it->second;
+  sync_pb::ProductComparisonSpecifics before = it->second;
+  sync_pb::ProductComparisonSpecifics& specifics = it->second;
   specifics.set_update_time_unix_epoch_micros(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   specifics.set_name(product_specs_set.name());
@@ -266,11 +267,12 @@ void ProductSpecificationsSyncBridge::OnReadAllMetadata(
   }
 
   for (const syncer::ModelTypeStore::Record& record : *record_list) {
-    sync_pb::CompareSpecifics compare_specifics;
-    if (!compare_specifics.ParseFromString(record.value)) {
+    sync_pb::ProductComparisonSpecifics product_comparison_specifics;
+    if (!product_comparison_specifics.ParseFromString(record.value)) {
       continue;
     }
-    entries_.emplace(compare_specifics.uuid(), compare_specifics);
+    entries_.emplace(product_comparison_specifics.uuid(),
+                     product_comparison_specifics);
   }
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
@@ -301,16 +303,16 @@ void ProductSpecificationsSyncBridge::RemoveObserver(
 }
 
 void ProductSpecificationsSyncBridge::OnSpecificsAdded(
-    const sync_pb::CompareSpecifics& compare_specifics) {
+    const sync_pb::ProductComparisonSpecifics& product_comparison_specifics) {
   for (auto& observer : observers_) {
     observer.OnProductSpecificationsSetAdded(
-        ProductSpecificationsSet::FromProto(compare_specifics));
+        ProductSpecificationsSet::FromProto(product_comparison_specifics));
   }
 }
 
 void ProductSpecificationsSyncBridge::OnSpecificsUpdated(
-    const sync_pb::CompareSpecifics& before,
-    const sync_pb::CompareSpecifics& after) {
+    const sync_pb::ProductComparisonSpecifics& before,
+    const sync_pb::ProductComparisonSpecifics& after) {
   for (auto& observer : observers_) {
     observer.OnProductSpecificationsSetUpdate(
         ProductSpecificationsSet::FromProto(before),

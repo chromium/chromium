@@ -9,7 +9,7 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 
 namespace sync_pb {
-class CompareSpecifics;
+class ProductComparisonSpecifics;
 }  // namespace sync_pb
 
 namespace commerce {
@@ -22,7 +22,7 @@ class ProductSpecificationsChecker : public StatusChangeChecker {
  public:
   ProductSpecificationsChecker(
       commerce::ProductSpecificationsService* service,
-      const sync_pb::CompareSpecifics* compare_specifics);
+      const sync_pb::ProductComparisonSpecifics* product_comparison_specifics);
 
   ProductSpecificationsChecker(const ProductSpecificationsChecker&) = delete;
   ProductSpecificationsChecker& operator=(const ProductSpecificationsChecker&) =
@@ -34,7 +34,8 @@ class ProductSpecificationsChecker : public StatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const raw_ptr<const sync_pb::CompareSpecifics> compare_specifics_;
+  const raw_ptr<const sync_pb::ProductComparisonSpecifics>
+      product_comparison_specifics_;
   const raw_ptr<commerce::ProductSpecificationsService> service_;
 
   bool IsSpecificsAvailableAndEqual();

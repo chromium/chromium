@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
-#include "components/sync/protocol/compare_specifics.pb.h"
+#include "components/sync/protocol/product_comparison_specifics.pb.h"
 
 namespace commerce {
 
@@ -86,7 +86,7 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
     const std::vector<GURL>& urls) {
   // TODO(crbug.com/332545064) add for a product specification set being added.
-  std::optional<sync_pb::CompareSpecifics> specifics =
+  std::optional<sync_pb::ProductComparisonSpecifics> specifics =
       bridge_->AddProductSpecifications(name, urls);
   if (!specifics.has_value()) {
     return std::nullopt;
@@ -108,7 +108,7 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
     product_specs_set->urls_.push_back(url);
   }
 
-  std::optional<sync_pb::CompareSpecifics> updated_specifics =
+  std::optional<sync_pb::ProductComparisonSpecifics> updated_specifics =
       bridge_->UpdateProductSpecificationsSet(product_specs_set.value());
   if (!updated_specifics.has_value()) {
     return std::nullopt;
@@ -127,7 +127,7 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
 
   product_specs_set->name_ = name;
 
-  std::optional<sync_pb::CompareSpecifics> updated_specifics =
+  std::optional<sync_pb::ProductComparisonSpecifics> updated_specifics =
       bridge_->UpdateProductSpecificationsSet(product_specs_set.value());
   if (!updated_specifics.has_value()) {
     return std::nullopt;

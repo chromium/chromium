@@ -26,7 +26,6 @@ class ClientConfigParams;
 class ClientToServerMessage;
 class ClientToServerResponse;
 class CollaborationGroupSpecifics;
-class CompareSpecifics;
 class ContactInfoSpecifics;
 class CookieSpecifics;
 class CrossUserSharingPublicKey;
@@ -61,6 +60,7 @@ class PrinterPPDReference;
 class PrinterSpecifics;
 class PrintersAuthorizationServerSpecifics;
 class PriorityPreferenceSpecifics;
+class ProductComparisonSpecifics;
 class ReadingListSpecifics;
 class SavedTabGroupSpecifics;
 class SearchEngineSpecifics;
@@ -140,9 +140,6 @@ base::Value ClientConfigParamsToValue(const sync_pb::ClientConfigParams& proto);
 
 base::Value CollaborationGroupSpecificsToValue(
     const sync_pb::CollaborationGroupSpecifics& proto);
-
-base::Value CompareSpecificsToValue(
-    const sync_pb::CompareSpecifics& compare_specifics);
 
 base::Value ContactInfoSpecificsToValue(
     const sync_pb::ContactInfoSpecifics& proto);
@@ -238,6 +235,9 @@ base::Value PrintersAuthorizationServerSpecificsToValue(
 
 base::Value PriorityPreferenceSpecificsToValue(
     const sync_pb::PriorityPreferenceSpecifics& proto);
+
+base::Value ProductComparisonSpecificsToValue(
+    const sync_pb::ProductComparisonSpecifics& product_comparison_specifics);
 
 base::Value CrossUserSharingPublicKeyToValue(
     const sync_pb::CrossUserSharingPublicKey& proto);

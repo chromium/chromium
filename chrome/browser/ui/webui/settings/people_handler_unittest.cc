@@ -115,7 +115,6 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
              types.Has(syncer::UserSelectableType::kAutofill));
   result.Set("bookmarksSynced",
              types.Has(syncer::UserSelectableType::kBookmarks));
-  result.Set("compareSynced", types.Has(syncer::UserSelectableType::kCompare));
   result.Set("cookiesSynced", types.Has(syncer::UserSelectableType::kCookies));
   result.Set("extensionsSynced",
              types.Has(syncer::UserSelectableType::kExtensions));
@@ -125,6 +124,8 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
              types.Has(syncer::UserSelectableType::kPayments));
   result.Set("preferencesSynced",
              types.Has(syncer::UserSelectableType::kPreferences));
+  result.Set("productComparisonSynced",
+             types.Has(syncer::UserSelectableType::kProductComparison));
   result.Set("readingListSynced",
              types.Has(syncer::UserSelectableType::kReadingList));
   result.Set("savedTabGroupsSynced",
