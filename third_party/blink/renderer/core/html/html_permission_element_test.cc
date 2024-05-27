@@ -243,10 +243,8 @@ class TestPermissionService : public PermissionService {
       bool should_include_device_status,
       mojo::PendingRemote<PermissionObserver> observer) override {
     EXPECT_TRUE(should_include_device_status);
-    auto inserted_result = observers_.insert(
-        permission->name,
-        mojo::Remote<PermissionObserver>(std::move(observer)));
-    CHECK(inserted_result.is_new_entry);
+    observers_.insert(permission->name,
+                      mojo::Remote<PermissionObserver>(std::move(observer)));
     if (run_loop_) {
       run_loop_->Quit();
     }
@@ -453,6 +451,17 @@ TEST_F(HTMLPemissionElementTest, InitializeInnerText) {
     EXPECT_NE(0, rect->width());
     EXPECT_NE(0, rect->height());
   }
+}
+
+// Regression test for crbug.com/341875650, check that a detached layout tree
+// permission element doesn't crash the renderer process.
+TEST_F(HTMLPemissionElementTest, AfterDetachLayoutTreeCrashTest) {
+  auto* permission_element = CreatePermissionElement("camera");
+  RegistrationWaiter(permission_element).Wait();
+  permission_element->SetForceReattachLayoutTree();
+  UpdateAllLifecyclePhasesForTest();
+  RegistrationWaiter(permission_element).Wait();
+  // We end up here if the renderer process did not crash.
 }
 
 TEST_F(HTMLPemissionElementTest, SetInnerTextAfterRegistrationSingleElement) {
