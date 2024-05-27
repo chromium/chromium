@@ -2690,6 +2690,22 @@
             ]
         }
     ],
+    "BatchNativeEventsInMessagePumpKqueue": [
+        {
+            "platforms": [
+                "mac",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BatchNativeEventsInMessagePumpKqueue"
+                    ]
+                }
+            ]
+        }
+    ],
     "BatterySaverModeRenderTuning": [
         {
             "platforms": [
