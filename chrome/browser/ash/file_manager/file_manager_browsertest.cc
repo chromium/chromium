@@ -394,6 +394,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableSkyVault(),
         TestCase("fileDisplayOneDrivePlaceholder")
             .DontMountVolumes()
+            .EnableSkyVault(),
+        TestCase("fileDisplayFileSystemDisabled")
+            .DontMountVolumes()
             .EnableSkyVault()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

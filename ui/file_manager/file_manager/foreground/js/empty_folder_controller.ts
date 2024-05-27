@@ -6,11 +6,14 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {getODFSMetadataQueryEntry, isInteractiveVolume, isOneDrive, isOneDrivePlaceholderKey, isRecentRootType} from '../../common/js/entry_utils.js';
 import type {FakeEntry} from '../../common/js/files_app_entry_types.js';
+import {isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {str} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
+import {myFilesEntryListKey, recentRootKey, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
+import type {FileKey, State, Volume, VolumeId} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
+import type {Store} from '../../state/store.js';
 
 import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, ODFS_EXTENSION_ID} from './constants.js';
 import type {DirectoryModel} from './directory_model.js';
@@ -49,6 +52,10 @@ export type ScanFailedEvent = CustomEvent<{error: DOMError}>;
  */
 export class EmptyFolderController {
   private image_: HTMLElement;
+  private hasFilesystemError_: boolean = false;
+  private store_: Store = getStore();
+  private volumes_: (Record<VolumeId, Volume>)|null = null;
+  private uiEntries_: FileKey[] = [];
   protected isScanning_ = false;
   protected label_: HTMLElement;
 
@@ -59,6 +66,7 @@ export class EmptyFolderController {
       private recentEntry_: FakeEntry) {
     this.label_ = queryRequiredElement('.label', this.emptyFolder_);
     this.image_ = queryRequiredElement('.image', this.emptyFolder_);
+    this.store_.subscribe(this);
 
     this.directoryModel_.addEventListener(
         'cur-dir-scan-started', this.onScanStarted_.bind(this));
@@ -70,6 +78,35 @@ export class EmptyFolderController {
         'cur-dir-scan-completed', this.onScanFinished.bind(this));
     this.directoryModel_.addEventListener(
         'cur-dir-rescan-completed', this.onScanFinished.bind(this));
+  }
+
+  /**
+   * Checks whether the volumes or fake entries changed, and sets an error state
+   * if there are no volumes except Recent to show.
+   */
+  async onStateChanged(state: State) {
+    if (!isSkyvaultV2Enabled()) {
+      return;
+    }
+
+    if (this.volumes_ !== state.volumes ||
+        this.uiEntries_ !== state.uiEntries) {
+      // TODO(aidazolic): Remove myFilesEntryList if local files are disabled.
+      const filteredUIEntries = state.uiEntries.filter(
+          uiEntryKey => uiEntryKey !== myFilesEntryListKey &&
+              uiEntryKey !== recentRootKey);
+      const localUserFilesDisallowed =
+          state.preferences?.localUserFilesAllowed === false;
+      if (Object.values(state.volumes).length === 0 &&
+          filteredUIEntries.length === 0 && localUserFilesDisallowed) {
+        this.showFilesystemError_();
+      } else {
+        this.resetUi_(/*setImageVisible*/ true);
+        this.hasFilesystemError_ = false;
+      }
+      this.volumes_ = state.volumes;
+      this.uiEntries_ = state.uiEntries;
+    }
   }
 
   /**
@@ -241,9 +278,49 @@ export class EmptyFolderController {
   }
 
   /**
+   * Shows the message informing the user that the file system isn't available,
+   * for example because the admin misconfigured SkyVault policies.
+   */
+  private showFilesystemError_() {
+    if (!isSkyvaultV2Enabled()) {
+      return;
+    }
+    this.resetUi_(/*setImageVisible*/ false);
+
+    this.image_.hidden = true;
+    this.emptyFolder_.hidden = false;
+    // TODO(b/334511998): Use proper strings.
+    this.showMessage_(
+        'File system has been disabled. Please contact your administrator.');
+    this.label_.classList.add('no-image');
+
+    this.hasFilesystemError_ = true;
+  }
+
+  /**
+   * Resets the empty folder UI.
+   * @param setImageVisible Whether the image element should be visible.
+   */
+  private resetUi_(setImageVisible: boolean) {
+    this.label_.innerText = '';
+    this.emptyFolder_.hidden = true;
+
+    if (setImageVisible) {
+      this.image_.hidden = false;
+      this.label_.classList.remove('no-image');
+    } else {
+      this.image_.hidden = true;
+      this.label_.classList.add('no-image');
+    }
+  }
+
+  /**
    * Updates visibility of empty folder UI.
    */
   protected updateUi_() {
+    if (this.hasFilesystemError_) {
+      return;
+    }
     const currentRootType = this.directoryModel_.getCurrentRootType();
     const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
 
@@ -258,10 +335,9 @@ export class EmptyFolderController {
       // Show ODFS reauthentication required empty state if is it
       // non-interactive.
       svgRef = ODFS_REAUTHENTICATION_REQUIRED;
-    } else if (currentRootType === RootType.PROVIDED) {
-      if (isOneDrivePlaceholderKey(this.directoryModel_.getCurrentFileKey())) {
-        svgRef = ODFS_REAUTHENTICATION_REQUIRED;
-      }
+    } else if (isOneDrivePlaceholderKey(
+                   this.directoryModel_.getCurrentFileKey())) {
+      svgRef = ODFS_REAUTHENTICATION_REQUIRED;
     } else {
       const {search} = getStore().getState();
       if (search && search.query) {
@@ -271,10 +347,9 @@ export class EmptyFolderController {
 
     const fileListModel = this.directoryModel_.getFileList();
 
-    this.label_.innerText = '';
+    this.resetUi_(/*setImageVisible*/ true);
     if (svgRef === null || this.isScanning_ ||
         (fileListModel && fileListModel.length > 0)) {
-      this.emptyFolder_.hidden = true;
       return;
     }
 

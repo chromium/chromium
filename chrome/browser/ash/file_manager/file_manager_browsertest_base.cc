@@ -3476,17 +3476,21 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "setupSkyVault") {
-    // Set the download / default Files App directory.
+  if (name == "setLocalFilesEnabled") {
+    std::optional<bool> enabled = value.FindBool("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    g_browser_process->local_state()->SetBoolean(prefs::kLocalUserFilesAllowed,
+                                                 enabled.value());
+    return;
+  }
+
+  if (name == "setDefaultLocation") {
     const std::string* defaultLocation = value.FindString("defaultLocation");
     ASSERT_TRUE(defaultLocation &&
                 (*defaultLocation == download_dir_util::kLocationGoogleDrive ||
                  *defaultLocation == download_dir_util::kLocationOneDrive));
     profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
                                      *defaultLocation);
-    // Disable local files.
-    g_browser_process->local_state()->SetBoolean(prefs::kLocalUserFilesAllowed,
-                                                 false);
     return;
   }
 

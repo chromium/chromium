@@ -1064,6 +1064,18 @@ body.check-select #read-only-indicator {
   z-index: 500;  /* Must be below the contextmenu (600). */
 }
 
+#empty-folder > .label.no-image {
+  /* With no image, the margin-top should include the image margin and
+  height. */
+  margin-top: calc(16px + 64px + 153px)
+}
+
+.list-view #empty-folder > .label.no-image {
+  /* With no image, the margin-top should include the image margin and
+  height, and also the .table-header of the list view. */
+  margin-top: calc(16px + 64px + 49px + 153px)
+}
+
 #empty-folder #empty-folder-title {
   font: var(--cros-button-2-font);
 }

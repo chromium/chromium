@@ -7,6 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
 import type {RootType} from '../../common/js/volume_manager_types.js';
+import type {FileKey} from '../../state/state.js';
 
 import type {FileFilter} from './directory_contents.js';
 import type {DirectoryModel} from './directory_model.js';
@@ -69,6 +70,10 @@ export function createFakeDirectoryModel(): DirectoryModel {
 
     getFileList(): FileListModel|null {
       return null;
+    }
+
+    getCurrentFileKey(): FileKey|undefined {
+      return undefined;
     }
 
     /**

@@ -3,11 +3,36 @@
 // found in the LICENSE file.
 
 import {type ElementObject} from '../prod/file_manager/shared_types.js';
-import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
 import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPUTERS_ENTRY_SET} from './test_data.js';
+
+/**
+ * Waits for the empty folder element to show and assert the content to match
+ * the expected message.
+ * @param appId Files app windowId.
+ * @param expectedMessage The expected empty folder message
+ */
+async function waitForEmptyFolderMessage(
+    appId: string, expectedMessage: string) {
+  const caller = getCaller();
+  // Use repeatUntil() here because when we switch between different filters,
+  // the message changes but the element itself will always show there.
+  await repeatUntil(async () => {
+    const emptyMessage = await remoteCall.waitForElement(
+        appId, '#empty-folder:not(.hidden) > .label');
+    if (emptyMessage && emptyMessage.text?.startsWith(expectedMessage)) {
+      return;
+    }
+
+    return pending(
+        caller,
+        `Expected empty folder message: "${expectedMessage}", got "${
+            emptyMessage.text}"`);
+  });
+}
 
 /**
  * Checks if the files initially added by the C++ side are displayed, and
@@ -985,8 +1010,9 @@ export async function fileDisplayLocalFilesDisabledUnmountRemovable() {
   await remoteCall.waitForVolumesCount(2);
 
   // Enable SkyVault, this should unmount Downloads.
+  await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
   await sendTestMessage(
-      {name: 'setupSkyVault', defaultLocation: 'google_drive'});
+      {name: 'setDefaultLocation', defaultLocation: 'google_drive'});
   await remoteCall.waitForVolumesCount(1);
 
   // Open Files app without specifying the initial directory/root.
@@ -1027,9 +1053,10 @@ export async function fileDisplayLocalFilesDisableInMyFiles() {
   // Confirm that the Files App opened in MyFiles.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
 
-  // Disable local storage.
+  // Disable local storage and set Google Drive as the default.
+  await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
   await sendTestMessage(
-      {name: 'setupSkyVault', defaultLocation: 'google_drive'});
+      {name: 'setDefaultLocation', defaultLocation: 'google_drive'});
 
   // We should navigate to Drive.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
@@ -1043,6 +1070,10 @@ export async function fileDisplayOneDrivePlaceholder() {
   // Mount Downloads.
   await sendTestMessage({name: 'mountDownloads'});
 
+  // Set OneDrive as the default. Must be done before the dialog is opened.
+  await sendTestMessage(
+      {name: 'setDefaultLocation', defaultLocation: 'microsoft_onedrive'});
+
   // Open Files app without specifying the initial directory/root.
   const appId = await remoteCall.openNewWindow(null, null);
   chrome.test.assertTrue(!!appId, 'failed to open new window');
@@ -1053,11 +1084,11 @@ export async function fileDisplayOneDrivePlaceholder() {
   // Confirm that OneDrive isn't shown yet.
   const directoryTree = await DirectoryTreePageObject.create(appId);
   const oneDriveLabel = 'Microsoft OneDrive';
-  directoryTree.waitForSelectedItemLostByLabel(oneDriveLabel);
+  directoryTree.waitForItemLostByLabel(oneDriveLabel);
 
   // Disable local storage.
-  await sendTestMessage(
-      {name: 'setupSkyVault', defaultLocation: 'microsoft_onedrive'});
+  await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
+  directoryTree.waitForItemLostByLabel('/My files');
 
   // Check that the placeholder is added.
   await directoryTree.waitForItemByLabel(oneDriveLabel);
@@ -1068,4 +1099,33 @@ export async function fileDisplayOneDrivePlaceholder() {
 
   // Check: the empty folder should be visible.
   await remoteCall.waitForElement(appId, '#empty-folder:not([hidden])');
+  await waitForEmptyFolderMessage(appId, 'You\'ve been logged out');
+}
+
+/**
+ * Tests that having no volumes (other than Recent), like when SkyVault is
+ * misconfigured (no local storage, no cloud selected as alternative) shows an
+ * error message.
+ */
+export async function fileDisplayFileSystemDisabled() {
+  // Disable local storage.
+  await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
+  // Disable drive.
+  await sendTestMessage({name: 'setDriveEnabled', enabled: false});
+
+  // Open Files app without specifying the initial directory/root.
+  const appId = await remoteCall.openNewWindow(null, null);
+  chrome.test.assertTrue(!!appId, 'failed to open new window');
+
+  // Check: the empty folder should be visible.
+  await remoteCall.waitForElement(appId, '#empty-folder:not([hidden])');
+  await waitForEmptyFolderMessage(
+      appId,
+      'File system has been disabled. Please contact your administrator.');
+
+  // Mount USB volume.
+  await sendTestMessage({name: 'mountFakeUsb'});
+
+  // Check: the empty folder should hide.
+  await remoteCall.waitForElement(appId, '#empty-folder[hidden]');
 }
