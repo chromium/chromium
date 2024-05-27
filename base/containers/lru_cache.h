@@ -19,6 +19,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <concepts>
 #include <functional>
 #include <list>
 #include <map>
@@ -114,11 +115,8 @@ class LRUCacheBase {
   // Inserts an item into the list. If an existing item has the same key, it is
   // removed prior to insertion. An iterator indicating the inserted item will
   // be returned (this will always be the front of the list).
-  template <
-      class K,
-      class V,
-      class MapKeyGetter = GetKeyFromKVPair,
-      class = std::enable_if_t<std::is_same_v<MapKeyGetter, GetKeyFromValue>>>
+  template <class K, class V>
+    requires(std::same_as<GetKeyFromValue, GetKeyFromKVPair>)
   iterator Put(K&& key, V&& value) {
     return Put(value_type{std::forward<K>(key), std::forward<V>(value)});
   }
