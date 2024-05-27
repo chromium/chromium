@@ -100,9 +100,10 @@ class ReadAnythingAppController
   void OnNodeDeleted(ui::AXTree* tree, ui::AXNodeID node) override;
 
   // read_anything::mojom::UntrustedPage:
-  void ProcessAccessibilityUpdatesAndEvents(
+  void AccessibilityEventReceived(
       const ui::AXTreeID& tree_id,
-      ui::AXUpdatesAndEvents& updates_and_events) override;
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const std::vector<ui::AXEvent>& events) override;
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
                                ukm::SourceId ukm_source_id,
                                bool is_pdf) override;

@@ -5203,24 +5203,12 @@ void WebContentsImpl::AXTreeIDForMainFrameHasChanged() {
       &WebContentsObserver::AXTreeIDForMainFrameHasChanged);
 }
 
-void WebContentsImpl::ProcessAccessibilityUpdatesAndEvents(
-    ui::AXUpdatesAndEvents& details) {
+void WebContentsImpl::AccessibilityEventReceived(
+    const ui::AXUpdatesAndEvents& details) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::AccessibilityEventReceived");
-
-  // First, supply the data to consumers that won't change it.
   observers_.NotifyObservers(&WebContentsObserver::AccessibilityEventReceived,
                              details);
-
-  // Next, supply the data to consumers that may change it or who need to avoid
-  // extra copying. Note that this also includes those who will pass to mojo
-  // pipes not taking const.
-  // TODO(accessibility): when we add multiple consumers, we will need some kind
-  // of intermediate class to ensure each consumer gets an unmutated copy of the
-  // data, but also minimize copying.
-  if (delegate_) {
-    delegate_->ProcessAccessibilityUpdatesAndEvents(details);
-  }
 }
 
 void WebContentsImpl::AccessibilityLocationChangesReceived(

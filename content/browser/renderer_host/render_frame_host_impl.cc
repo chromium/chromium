@@ -9886,7 +9886,7 @@ void RenderFrameHostImpl::ResourceLoadComplete(
 
 void RenderFrameHostImpl::HandleAXEvents(
     const ui::AXTreeID& tree_id,
-    ui::AXUpdatesAndEvents updates_and_events,
+    blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
     uint32_t reset_token) {
   TRACE_EVENT0("accessibility", "RenderFrameHostImpl::HandleAXEvents");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
@@ -9934,13 +9934,11 @@ void RenderFrameHostImpl::HandleAXEvents(
     DUMP_WILL_BE_CHECK(false);
   }
 
-  // TODO(accessibility): we should probably consolidate these two params.
-  updates_and_events.ax_tree_id = tree_id;
-
   if (base::FeatureList::IsEnabled(features::kEvictOnAXEvents)) {
     // If the flag is on, evict the bfcache entry now that AX events are
     // received.
-    if (IsInactiveAndDisallowActivationForAXEvents(updates_and_events.events)) {
+    if (IsInactiveAndDisallowActivationForAXEvents(
+            updates_and_events->events)) {
       return;
     }
   } else {
@@ -9956,7 +9954,11 @@ void RenderFrameHostImpl::HandleAXEvents(
 
   GetOrCreateBrowserAccessibilityManager();
 
-  for (auto& update : updates_and_events.updates) {
+  ui::AXUpdatesAndEvents details;
+  details.ax_tree_id = tree_id;
+  details.events = std::move(updates_and_events->events);
+  details.updates = std::move(updates_and_events->updates);
+  for (auto& update : details.updates) {
     if (update.has_tree_data) {
       DCHECK_EQ(tree_id, update.tree_data.tree_id);
       ax_tree_data_ = update.tree_data;
@@ -9967,32 +9969,32 @@ void RenderFrameHostImpl::HandleAXEvents(
   if (needs_ax_root_id_) {
     // This is the first update after the tree id changed. AXTree must be sent
     // a new root id, otherwise crashes are likely to result.
-    DCHECK(!updates_and_events.updates.empty());
-    DCHECK_NE(ui::kInvalidAXNodeID, updates_and_events.updates[0].root_id);
+    DCHECK(!details.updates.empty());
+    DCHECK_NE(ui::kInvalidAXNodeID, details.updates[0].root_id);
     needs_ax_root_id_ = false;
   }
 
   if (features::IsUseMoveNotCopyInMergeTreeUpdateEnabled()) {
-    // While experimenting with moving data, we have to ensure this call
+    // While experimenting with moving `details`, we have to ensure this call
     // order. This won't be the final structure of the code.
-    delegate_->ProcessAccessibilityUpdatesAndEvents(updates_and_events);
+    delegate_->AccessibilityEventReceived(details);
 
-    // This call steals the contents of the data to avoid copying.
-    SendAccessibilityEventsToManager(updates_and_events);
+    // This call steals the contents of `details` to avoid copying.
+    SendAccessibilityEventsToManager(details);
   } else {
-    SendAccessibilityEventsToManager(updates_and_events);
-    delegate_->ProcessAccessibilityUpdatesAndEvents(updates_and_events);
+    SendAccessibilityEventsToManager(details);
+    delegate_->AccessibilityEventReceived(details);
   }
 
   // For testing only.
   if (!accessibility_testing_callback_.is_null()) {
-    if (updates_and_events.events.empty()) {
+    if (details.events.empty()) {
       // Objects were marked dirty but no events were provided.
       // The callback must still run, otherwise dump event tests can hang.
       accessibility_testing_callback_.Run(this, ax::mojom::Event::kNone, 0);
     } else {
       // Call testing callback functions for each event to fire.
-      for (auto& event : updates_and_events.events) {
+      for (auto& event : details.events) {
         if (static_cast<int>(event.event_type) < 0)
           continue;
 
@@ -11656,7 +11658,7 @@ void RenderFrameHostImpl::UpdateAXTreeData() {
   detail.updates[0].tree_data = GetAXTreeData();
 
   SendAccessibilityEventsToManager(detail);
-  delegate_->ProcessAccessibilityUpdatesAndEvents(detail);
+  delegate_->AccessibilityEventReceived(detail);
 }
 
 RenderFrameHostImpl::UpdateAXFocusDeferScope::UpdateAXFocusDeferScope(

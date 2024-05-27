@@ -10,7 +10,6 @@ import "skia/public/mojom/skcolor.mojom";
 import "ui/accessibility/mojom/ax_event.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
-import "ui/accessibility/mojom/ax_updates_and_events.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
 // Used to represent the current user choices for the Read Anything visual
@@ -207,8 +206,9 @@ interface UntrustedPage {
   // Send an accessibility event notification to the WebUI. The WebUI
   // unserializes the updates and stores a copy of the tree with ID tree_id in
   // a map.
-  ProcessAccessibilityUpdatesAndEvents(ax.mojom.AXTreeID tree_id,
-      ax.mojom.AXUpdatesAndEvents updates_and_events);
+  AccessibilityEventReceived(ax.mojom.AXTreeID tree_id,
+                             array<ax.mojom.AXTreeUpdate> updates,
+                             array<ax.mojom.AXEvent> events);
 
   // Sends the active AXTreeID to the WebUI. This is not guaranteed to be called
   // after the tree_id was previously passed to AccessibilityEventsReceived.

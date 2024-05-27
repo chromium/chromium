@@ -27,9 +27,9 @@ class AutomationEventRouterInterface {
  public:
   virtual void DispatchAccessibilityEvents(
       const ui::AXTreeID& tree_id,
-      const std::vector<ui::AXTreeUpdate>& updates,
+      std::vector<ui::AXTreeUpdate> updates,
       const gfx::Point& mouse_location,
-      const std::vector<ui::AXEvent>& events) = 0;
+      std::vector<ui::AXEvent> events) = 0;
   virtual void DispatchAccessibilityLocationChange(
       const ui::AXLocationChanges& details) = 0;
 

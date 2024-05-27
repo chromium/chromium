@@ -150,11 +150,7 @@ void {{interface.name}}AsyncWaiter::{{method.name}}(
   base::RunLoop loop;
   proxy_->{{method.name}}(
 {%-   for param in method.parameters -%}
-{%- if param.kind|is_non_const_ref_kind %}
-      {{param.name}},
-{%- else %}
       std::move({{param.name}}),
-{%- endif %}
 {%-   endfor %}
       base::BindOnce(
           [](base::RunLoop* loop

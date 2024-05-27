@@ -43,8 +43,7 @@ class ReadAnythingUntrustedPageHandler;
 //  This class allows the ReadAnythingUntrustedPageHandler to observe multiple
 //  web contents at once.
 //
-class ReadAnythingWebContentsObserver : public content::WebContentsObserver,
-                                        public content::WebContentsDelegate {
+class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
  public:
   ReadAnythingWebContentsObserver(
       base::SafeRef<ReadAnythingUntrustedPageHandler> page_handler,
@@ -57,12 +56,10 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver,
   ~ReadAnythingWebContentsObserver() override;
 
   // content::WebContentsObserver:
+  void AccessibilityEventReceived(
+      const ui::AXUpdatesAndEvents& details) override;
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
-
-  // content::WebContentsDelegate:
-  void ProcessAccessibilityUpdatesAndEvents(
-      ui::AXUpdatesAndEvents& details) override;
 
   // base::SafeRef used since the lifetime of ReadAnythingWebContentsObserver is
   // completely contained by page_handler_. See
@@ -106,7 +103,7 @@ class ReadAnythingUntrustedPageHandler :
       const ReadAnythingUntrustedPageHandler&) = delete;
   ~ReadAnythingUntrustedPageHandler() override;
 
-  void ProcessAccessibilityUpdatesAndEvents(ui::AXUpdatesAndEvents& details);
+  void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
   void PrimaryPageChanged();
   void WebContentsDestroyed();
 

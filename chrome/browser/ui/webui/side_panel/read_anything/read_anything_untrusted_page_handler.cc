@@ -44,7 +44,6 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/accessibility/mojom/ax_updates_and_events.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -184,9 +183,6 @@ ReadAnythingWebContentsObserver::ReadAnythingWebContentsObserver(
     ui::AXMode accessibility_mode)
     : page_handler_(page_handler) {
   Observe(web_contents);
-  if (web_contents) {
-    web_contents->SetDelegate(this);
-  }
 
   // Enable accessibility for the top level render frame and all descendants.
   // This causes AXTreeSerializer to reset and send accessibility events of
@@ -219,15 +215,11 @@ ReadAnythingWebContentsObserver::ReadAnythingWebContentsObserver(
   }
 }
 
-ReadAnythingWebContentsObserver::~ReadAnythingWebContentsObserver() {
-  if (web_contents() && web_contents()->GetDelegate() == this) {
-    web_contents()->SetDelegate(nullptr);
-  }
-}
+ReadAnythingWebContentsObserver::~ReadAnythingWebContentsObserver() = default;
 
-void ReadAnythingWebContentsObserver::ProcessAccessibilityUpdatesAndEvents(
-    ui::AXUpdatesAndEvents& details) {
-  page_handler_->ProcessAccessibilityUpdatesAndEvents(details);
+void ReadAnythingWebContentsObserver::AccessibilityEventReceived(
+    const ui::AXUpdatesAndEvents& details) {
+  page_handler_->AccessibilityEventReceived(details);
 }
 
 void ReadAnythingWebContentsObserver::PrimaryPageChanged(content::Page& page) {
@@ -372,9 +364,10 @@ void ReadAnythingUntrustedPageHandler::WebContentsDestroyed() {
   translate_observation_.Reset();
 }
 
-void ReadAnythingUntrustedPageHandler::ProcessAccessibilityUpdatesAndEvents(
-    ui::AXUpdatesAndEvents& details) {
-  page_->ProcessAccessibilityUpdatesAndEvents(details.ax_tree_id, details);
+void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
+    const ui::AXUpdatesAndEvents& details) {
+  page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
+                                    details.events);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

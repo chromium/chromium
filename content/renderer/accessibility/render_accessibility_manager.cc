@@ -109,12 +109,12 @@ void RenderAccessibilityManager::Reset(uint32_t reset_token) {
 }
 
 void RenderAccessibilityManager::HandleAccessibilityEvents(
-    ui::AXUpdatesAndEvents& updates_and_events,
+    blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
     uint32_t reset_token,
     blink::mojom::RenderAccessibilityHost::HandleAXEventsCallback callback) {
   CHECK(reset_token);
   GetOrCreateRemoteRenderAccessibilityHost()->HandleAXEvents(
-      updates_and_events, reset_token, std::move(callback));
+      std::move(updates_and_events), reset_token, std::move(callback));
 }
 
 mojo::Remote<blink::mojom::RenderAccessibilityHost>&

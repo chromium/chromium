@@ -33,7 +33,6 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -815,10 +814,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   // later time.
   virtual bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback);
-
-  // Processes accessibility updates and events, taking ownership of the data.
-  virtual void ProcessAccessibilityUpdatesAndEvents(
-      ui::AXUpdatesAndEvents& updates_and_events) {}
 
  protected:
   virtual ~WebContentsDelegate();

@@ -49,7 +49,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     snapshot.nodes = {root, node1, node2, node3};
     SetUpdateTreeID(&snapshot);
 
-    ProcessAccessibilityUpdatesAndEvents({snapshot});
+    AccessibilityEventReceived({snapshot});
     set_active_tree_id(tree_id_);
     Reset({});
   }
@@ -112,24 +112,25 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
         SkColorSetRGB(0xDF, 0xD2, 0x63), line_spacing, letter_spacing));
   }
 
-  void ProcessAccessibilityUpdatesAndEvents(
-      std::vector<ui::AXTreeUpdate> updates) {
-    ProcessAccessibilityUpdatesAndEvents(updates[0].tree_data.tree_id, updates);
+  void AccessibilityEventReceived(
+      const std::vector<ui::AXTreeUpdate>& updates) {
+    AccessibilityEventReceived(updates[0].tree_data.tree_id, updates);
   }
 
-  void ProcessAccessibilityUpdatesAndEvents(
+  void AccessibilityEventReceived(
       const ui::AXTreeID& tree_id,
-      std::vector<ui::AXTreeUpdate> updates) {
-    ui::AXUpdatesAndEvents updates_and_events;
-    updates_and_events.updates = std::move(updates);
-    model_->ProcessAccessibilityUpdatesAndEvents(tree_id,
-                                                 std::move(updates_and_events));
+      const std::vector<ui::AXTreeUpdate>& updates) {
+    std::vector<ui::AXEvent> events;
+    model_->AccessibilityEventReceived(
+        tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates), events);
   }
 
-  void ProcessAccessibilityUpdatesAndEvents(
-      ui::AXUpdatesAndEvents updates_and_events) {
-    model_->ProcessAccessibilityUpdatesAndEvents(updates_and_events.ax_tree_id,
-                                                 std::move(updates_and_events));
+  void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
+                                  const std::vector<ui::AXTreeUpdate>& updates,
+                                  const std::vector<ui::AXEvent>& events) {
+    model_->AccessibilityEventReceived(
+        tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
+        const_cast<std::vector<ui::AXEvent>&>(events));
   }
 
   void set_active_tree_id(ui::AXTreeID tree_id) {
@@ -370,7 +371,7 @@ TEST_F(ReadAnythingAppModelTest, IsNodeIgnoredForReadAnything) {
   button_node.role = ax::mojom::Role::kButton;
   update.nodes = {static_text_node, combobox_node, button_node};
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   EXPECT_EQ(false, IsNodeIgnoredForReadAnything(2));
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(3));
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(4));
@@ -393,7 +394,7 @@ TEST_F(ReadAnythingAppModelTest,
   textfield_node.role = ax::mojom::Role::kTextField;
   update.nodes = {tree_node, textfield_with_combobox_node, textfield_node};
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(2));
   EXPECT_EQ(false, IsNodeIgnoredForReadAnything(3));
   EXPECT_EQ(false, IsNodeIgnoredForReadAnything(4));
@@ -437,7 +438,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.nodes = {root, banner_node, static_text_start_node, content_info_node,
                   static_text_end_node};
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(2));
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(3));
   EXPECT_EQ(false, IsNodeIgnoredForReadAnything(4));
@@ -499,11 +500,11 @@ TEST_F(ReadAnythingAppModelTest, AddAndRemoveTrees) {
   ASSERT_TRUE(HasTree(tree_id_));
 
   // Add the two trees.
-  ProcessAccessibilityUpdatesAndEvents({updates[0]});
+  AccessibilityEventReceived({updates[0]});
   ASSERT_EQ(2u, GetNumTrees());
   ASSERT_TRUE(HasTree(tree_id_));
   ASSERT_TRUE(HasTree(tree_ids[0]));
-  ProcessAccessibilityUpdatesAndEvents({updates[1]});
+  AccessibilityEventReceived({updates[1]});
   ASSERT_EQ(3u, GetNumTrees());
   ASSERT_TRUE(HasTree(tree_id_));
   ASSERT_TRUE(HasTree(tree_ids[0]));
@@ -536,7 +537,7 @@ TEST_F(ReadAnythingAppModelTest,
 
   // Updates on inactive trees are processed immediately and are not marked as
   // pending.
-  ProcessAccessibilityUpdatesAndEvents({update_2});
+  AccessibilityEventReceived({update_2});
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
 }
 
@@ -555,7 +556,7 @@ TEST_F(ReadAnythingAppModelTest,
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
     initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
   }
-  ProcessAccessibilityUpdatesAndEvents({initial_update});
+  AccessibilityEventReceived({initial_update});
 
   std::vector<ui::AXTreeUpdate> updates;
   for (int i = 0; i < 3; i++) {
@@ -578,21 +579,21 @@ TEST_F(ReadAnythingAppModelTest,
   }
 
   // Send update 0, which starts distillation.
-  ProcessAccessibilityUpdatesAndEvents({updates[0]});
+  AccessibilityEventReceived({updates[0]});
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
 
   // Send update 1. Since distillation is in progress, this will not be
   // unserialized yet.
   SetDistillationInProgress(true);
-  ProcessAccessibilityUpdatesAndEvents({updates[1]});
+  AccessibilityEventReceived({updates[1]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
 
   // Ensure that there are no crashes after an accessibility event is received
   // immediately after unserializing.
   UnserializePendingUpdates(tree_id_);
   SetDistillationInProgress(true);
-  ProcessAccessibilityUpdatesAndEvents({updates[2]});
+  AccessibilityEventReceived({updates[2]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
   ASSERT_FALSE(AreAllPendingUpdatesEmpty());
 }
@@ -611,7 +612,7 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
     initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
   }
-  ProcessAccessibilityUpdatesAndEvents({initial_update});
+  AccessibilityEventReceived({initial_update});
 
   std::vector<ui::AXTreeUpdate> updates;
   for (int i = 0; i < 3; i++) {
@@ -634,14 +635,14 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
   }
 
   // Send update 0, which starts distillation.
-  ProcessAccessibilityUpdatesAndEvents({updates[0]});
+  AccessibilityEventReceived({updates[0]});
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
 
   // Send update 1. Since distillation is in progress, this will not be
   // unserialized yet.
   SetDistillationInProgress(true);
-  ProcessAccessibilityUpdatesAndEvents({updates[1]});
+  AccessibilityEventReceived({updates[1]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
 
   // Destroy the tree.
@@ -664,7 +665,7 @@ TEST_F(ReadAnythingAppModelTest,
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
     initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
   }
-  ProcessAccessibilityUpdatesAndEvents({initial_update});
+  AccessibilityEventReceived({initial_update});
 
   std::vector<ui::AXTreeUpdate> updates;
   for (int i = 0; i < 3; i++) {
@@ -687,18 +688,18 @@ TEST_F(ReadAnythingAppModelTest,
   }
 
   // Send update 0, which starts distillation.
-  ProcessAccessibilityUpdatesAndEvents({updates[0]});
+  AccessibilityEventReceived({updates[0]});
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
 
   // Send update 1. Since distillation is in progress, this will not be
   // unserialized yet.
   SetDistillationInProgress(true);
-  ProcessAccessibilityUpdatesAndEvents({updates[1]});
+  AccessibilityEventReceived({updates[1]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
 
   // Send update 2. This is still not unserialized yet.
-  ProcessAccessibilityUpdatesAndEvents({updates[2]});
+  AccessibilityEventReceived({updates[2]});
   EXPECT_EQ(2u, GetNumPendingUpdates(tree_id_));
 
   // Complete distillation which unserializes the pending updates and distills
@@ -722,7 +723,7 @@ TEST_F(ReadAnythingAppModelTest, SpeechPlaying_TreeUpdateReceivedOnActiveTree) {
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
     initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
   }
-  ProcessAccessibilityUpdatesAndEvents({initial_update});
+  AccessibilityEventReceived({initial_update});
 
   std::vector<ui::AXTreeUpdate> updates;
   for (int i = 0; i < 3; i++) {
@@ -745,18 +746,18 @@ TEST_F(ReadAnythingAppModelTest, SpeechPlaying_TreeUpdateReceivedOnActiveTree) {
   }
 
   // Send update 0, which starts distillation.
-  ProcessAccessibilityUpdatesAndEvents({updates[0]});
+  AccessibilityEventReceived({updates[0]});
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
 
   // Send update 1. Since distillation is in progress, this will not be
   // unserialized yet.
   SetSpeechPlaying(true);
-  ProcessAccessibilityUpdatesAndEvents({updates[1]});
+  AccessibilityEventReceived({updates[1]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
 
   // Send update 2. This is still not unserialized yet.
-  ProcessAccessibilityUpdatesAndEvents({updates[2]});
+  AccessibilityEventReceived({updates[2]});
   EXPECT_EQ(2u, GetNumPendingUpdates(tree_id_));
 
   // Complete distillation which unserializes the pending updates and distills
@@ -791,12 +792,12 @@ TEST_F(ReadAnythingAppModelTest, ClearPendingUpdates_DeletesPendingUpdates) {
     updates.push_back(update);
   }
 
-  ProcessAccessibilityUpdatesAndEvents({updates[0]});
+  AccessibilityEventReceived({updates[0]});
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
   SetDistillationInProgress(true);
-  ProcessAccessibilityUpdatesAndEvents({updates[1]});
+  AccessibilityEventReceived({updates[1]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
-  ProcessAccessibilityUpdatesAndEvents({updates[2]});
+  AccessibilityEventReceived({updates[2]});
   EXPECT_EQ(2u, GetNumPendingUpdates(tree_id_));
 
   // Clearing the pending updates correctly deletes the pending updates.
@@ -840,11 +841,11 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
   updates.push_back(update);
 
   // Add the three updates.
-  ProcessAccessibilityUpdatesAndEvents({updates[0]});
+  AccessibilityEventReceived({updates[0]});
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
   SetDistillationInProgress(true);
-  ProcessAccessibilityUpdatesAndEvents(tree_id_, {updates[1], updates[2]});
+  AccessibilityEventReceived(tree_id_, {updates[1], updates[2]});
   EXPECT_EQ(2u, GetNumPendingUpdates(tree_id_));
 
   // Switch to a new active tree. Should not crash.
@@ -866,8 +867,8 @@ TEST_F(ReadAnythingAppModelTest, DisplayNodeIdsContains_ContentNodes) {
   update.nodes = {parent_node, node1, node2};
 
   // This update changes the structure of the tree. When the controller receives
-  // it in ProcessAccessibilityUpdatesAndEvents, it will re-distill the tree.
-  ProcessAccessibilityUpdatesAndEvents({update});
+  // it in AccessibilityEventReceived, it will re-distill the tree.
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({3, 4});
   EXPECT_TRUE(DisplayNodeIdsContains(1));
   EXPECT_FALSE(DisplayNodeIdsContains(2));
@@ -887,7 +888,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.nodes[1].AddState(ax::mojom::State::kInvisible);
   update.nodes[2].id = 4;
   update.nodes[2].AddState(ax::mojom::State::kIgnored);
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({2, 3, 4});
   EXPECT_TRUE(DisplayNodeIdsContains(1));
   EXPECT_TRUE(DisplayNodeIdsContains(2));
@@ -908,7 +909,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.nodes[1].role = ax::mojom::Role::kHeading;
   update.nodes[2].id = 4;
   update.nodes[2].role = ax::mojom::Role::kHeading;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({2, 3, 4});
   EXPECT_TRUE(DisplayNodeIdsIsEmpty());
 
@@ -921,7 +922,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.nodes[1].child_ids = {3};
   update.nodes[2].id = 3;
   update.nodes[2].role = ax::mojom::Role::kStaticText;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({3});
   EXPECT_TRUE(DisplayNodeIdsIsEmpty());
 
@@ -937,7 +938,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.nodes[2].child_ids = {4};
   update.nodes[3].id = 4;
   update.nodes[3].role = ax::mojom::Role::kInlineTextBox;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({4});
   EXPECT_TRUE(DisplayNodeIdsIsEmpty());
 }
@@ -952,7 +953,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessSelection();
   EXPECT_TRUE(SelectionNodeIdsContains(1));
   EXPECT_TRUE(SelectionNodeIdsContains(2));
@@ -969,7 +970,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = true;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessSelection();
   EXPECT_TRUE(SelectionNodeIdsContains(1));
   EXPECT_TRUE(SelectionNodeIdsContains(2));
@@ -993,7 +994,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessSelection();
   EXPECT_FALSE(DisplayNodeIdsContains(1));
   EXPECT_FALSE(SelectionNodeIdsContains(2));
@@ -1029,7 +1030,7 @@ TEST_F(ReadAnythingAppModelTest, Reset_ResetsState) {
   root.child_ids = {node1.id, node2.id};
   update.nodes = {root, node1, node2};
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({3, 4});
   SetDistillationInProgress(true);
 
@@ -1073,7 +1074,7 @@ TEST_F(ReadAnythingAppModelTest, Reset_ResetsSelectionState) {
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = true;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessSelection();
 
   // Assert initial selection state.
@@ -1114,7 +1115,7 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelection_SelectionStateCorrect) {
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   SetRequiresPostProcessSelection(true);
   ProcessSelection();
 
@@ -1141,7 +1142,7 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelectionFromAction_DoesNotDraw) {
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({2, 3});
   SetSelectionFromAction(true);
 
@@ -1158,7 +1159,7 @@ TEST_F(ReadAnythingAppModelTest,
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({2, 3});
   SetSelectionFromAction(false);
 
@@ -1204,14 +1205,14 @@ TEST_F(ReadAnythingAppModelTest,
                   static_text_child_node1,
                   static_text_child_node2};
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 2;
   update.tree_data.sel_focus_object_id = 5;
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessSelection();
 
   ASSERT_TRUE(HasSelection());
@@ -1258,14 +1259,14 @@ TEST_F(ReadAnythingAppModelTest,
   root.role = ax::mojom::Role::kStaticText;
   update.nodes = {root, static_text_node, link_node, inline_block_node};
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 4;
   update.tree_data.sel_focus_object_id = 4;
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 1;
   update.tree_data.sel_is_backward = false;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessSelection();
 
   ASSERT_TRUE(HasSelection());
@@ -1306,14 +1307,14 @@ TEST_F(ReadAnythingAppModelTest,
   update.nodes = {parent_node, static_text_node, link_node,
                   static_text_list_node};
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 4;
   update.tree_data.sel_focus_object_id = 4;
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 1;
   update.tree_data.sel_is_backward = false;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessSelection();
 
   ASSERT_TRUE(HasSelection());
@@ -1353,14 +1354,14 @@ TEST_F(ReadAnythingAppModelTest,
   update.nodes = {parent_node, static_text_node, generic_container_node,
                   inline_node};
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 4;
   update.tree_data.sel_focus_object_id = 4;
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 1;
   update.tree_data.sel_is_backward = true;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessSelection();
 
   ASSERT_TRUE(HasSelection());
@@ -1402,14 +1403,14 @@ TEST_F(
   update.nodes = {parent_node, static_text_node, generic_container_node,
                   static_text_child_node1, static_text_child_node2};
 
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 4;
   update.tree_data.sel_focus_object_id = 5;
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessSelection();
 
   ASSERT_TRUE(HasSelection());
@@ -1543,7 +1544,7 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {
   pdf_root_node.role = ax::mojom::Role::kPdfRoot;
   pdf_root_node.child_ids = {embedded_node.id};
   initial_update.nodes = {pdf_root_node, embedded_node};
-  ProcessAccessibilityUpdatesAndEvents({initial_update});
+  AccessibilityEventReceived({initial_update});
 
   // Update with no new nodes added to the tree.
   ui::AXTreeUpdate update;
@@ -1554,7 +1555,7 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {
   node.role = ax::mojom::Role::kPdfRoot;
   node.SetNameChecked("example.pdf");
   update.nodes = {node};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ASSERT_FALSE(RequiresDistillation());
 
   // Tree update with PDF contents (new nodes added).
@@ -1576,7 +1577,7 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {
   updated_embedded_node.child_ids = {static_text_node2.id};
   update2.nodes = {static_text_node1, updated_embedded_node, static_text_node2};
 
-  ProcessAccessibilityUpdatesAndEvents({update2});
+  AccessibilityEventReceived({update2});
   ASSERT_TRUE(RequiresDistillation());
 }
 
@@ -1590,7 +1591,7 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
   node.id = 1;
   node.role = ax::mojom::Role::kPdfRoot;
   initial_update.nodes = {node};
-  ProcessAccessibilityUpdatesAndEvents({initial_update});
+  AccessibilityEventReceived({initial_update});
 
   // Updates that don't create a new subtree, for example, a role change, should
   // not set requires_distillation_.
@@ -1601,7 +1602,7 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
   static_text_node.role = ax::mojom::Role::kStaticText;
   update.root_id = static_text_node.id;
   update.nodes = {static_text_node};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ASSERT_FALSE(RequiresDistillation());
 }
 
@@ -1613,7 +1614,7 @@ TEST_F(ReadAnythingAppModelTest, OnSelection_HandlesClickAndDragEvents) {
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessSelection();
 
   // If there is a click and drag selection (the anchor object id and offset are
@@ -1627,7 +1628,7 @@ TEST_F(ReadAnythingAppModelTest, OnSelection_HandlesClickAndDragEvents) {
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 1;
   update.tree_data.sel_is_backward = false;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
 
   SetRequiresPostProcessSelection(false);
   OnSelection(ax::mojom::EventFrom::kUser);
@@ -1644,7 +1645,7 @@ TEST_F(ReadAnythingAppModelTest, OnSelection_HandlesClickAndDragEvents) {
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 2;
   update.tree_data.sel_is_backward = true;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   SetRequiresPostProcessSelection(false);
   OnSelection(ax::mojom::EventFrom::kPage);
   EXPECT_TRUE(RequiresPostProcessSelection());
@@ -1657,7 +1658,7 @@ TEST_F(ReadAnythingAppModelTest, OnSelection_HandlesClickAndDragEvents) {
   update.tree_data.sel_anchor_offset = 1;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   SetRequiresPostProcessSelection(false);
   OnSelection(ax::mojom::EventFrom::kPage);
   EXPECT_FALSE(RequiresPostProcessSelection());
@@ -1762,7 +1763,7 @@ TEST_F(ReadAnythingAppModelTest, GetNextValidPosition) {
   static_text3.role = ax::mojom::Role::kStaticText;
   static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
   InitAXPosition(update.nodes[0].id);
   ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
@@ -1793,7 +1794,7 @@ TEST_F(ReadAnythingAppModelTest, GetNextValidPosition_SkipsNonTextNode) {
   static_text2.role = ax::mojom::Role::kStaticText;
   static_text2.SetNameChecked(sentence2);
   update.nodes = {static_text1, empty_node, static_text2};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, empty_node.id, static_text2.id});
   InitAXPosition(update.nodes[0].id);
   ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
@@ -1822,7 +1823,7 @@ TEST_F(ReadAnythingAppModelTest, GetNextValidPosition_SkipsNonDistilledNode) {
   static_text3.role = ax::mojom::Role::kStaticText;
   static_text3.SetName(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   // Don't distill the node with id 3.
   ProcessDisplayNodes({static_text1.id, static_text3.id});
   InitAXPosition(update.nodes[0].id);
@@ -1853,7 +1854,7 @@ TEST_F(ReadAnythingAppModelTest, GetNextValidPosition_SkipsNodeWithHTMLTag) {
   static_text3.role = ax::mojom::Role::kStaticText;
   static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
   InitAXPosition(update.nodes[0].id);
   ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
@@ -1875,7 +1876,7 @@ TEST_F(ReadAnythingAppModelTest,
   ui::AXNodeData empty_node2;
   empty_node2.id = 4;
   update.nodes = {static_text, empty_node1, empty_node2};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text.id, empty_node1.id, empty_node2.id});
   InitAXPosition(update.nodes[0].id);
   ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
@@ -1907,7 +1908,7 @@ TEST_F(
   static_text3.role = ax::mojom::Role::kStaticText;
   static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
   InitAXPosition(update.nodes[0].id);
 
@@ -1960,7 +1961,7 @@ TEST_F(ReadAnythingAppModelTest,
   static_text3.role = ax::mojom::Role::kStaticText;
   static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
   InitAXPosition(update.nodes[0].id);
 
@@ -2016,7 +2017,7 @@ TEST_F(ReadAnythingAppModelTest,
   static_text3.role = ax::mojom::Role::kStaticText;
   static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
   InitAXPosition(update.nodes[0].id);
 
@@ -2081,7 +2082,7 @@ TEST_F(ReadAnythingAppModelTest,
   static_text3.role = ax::mojom::Role::kStaticText;
   static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
   InitAXPosition(update.nodes[0].id);
 
@@ -2147,7 +2148,7 @@ TEST_F(ReadAnythingAppModelTest,
   static_text3.role = ax::mojom::Role::kStaticText;
   static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
   InitAXPosition(update.nodes[0].id);
 
@@ -2213,7 +2214,7 @@ TEST_F(ReadAnythingAppModelTest,
   static_text1.SetNameChecked(sentence);
 
   update.nodes = {static_text1};
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id});
   InitAXPosition(update.nodes[0].id);
 
@@ -2252,7 +2253,7 @@ TEST_F(ReadAnythingAppModelTest, LastExpandedNodeNamedChanged_TriggersRedraw) {
   inital_node.role = ax::mojom::Role::kStaticText;
   inital_node.SetNameChecked("Old Name");
   inital_update.nodes = {inital_node};
-  ProcessAccessibilityUpdatesAndEvents({inital_update});
+  AccessibilityEventReceived({inital_update});
 
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -2263,7 +2264,7 @@ TEST_F(ReadAnythingAppModelTest, LastExpandedNodeNamedChanged_TriggersRedraw) {
   update.nodes = {updated_node};
   SetLastExpandedNodeId(inital_node.id);
   EXPECT_EQ(LastExpandedNodeId(), inital_node.id);
-  ProcessAccessibilityUpdatesAndEvents({update});
+  AccessibilityEventReceived({update});
 
   EXPECT_FALSE(RequiresPostProcessSelection());
   EXPECT_TRUE(RequiresRedraw());
@@ -2289,10 +2290,6 @@ TEST_F(ReadAnythingAppModelTest, ContentEditableValueChanged_ResetsDrawTimer) {
   event.event_type = ax::mojom::Event::kValueChanged;
   // This update changes the structure of the tree. When the controller receives
   // it in AccessibilityEventReceived, it will re-distill the tree.
-  ui::AXUpdatesAndEvents event_and_update;
-  event_and_update.events = {event};
-  event_and_update.updates = {update};
-  event_and_update.ax_tree_id = update.tree_data.tree_id;
-  ProcessAccessibilityUpdatesAndEvents(std::move(event_and_update));
+  AccessibilityEventReceived(update.tree_data.tree_id, {update}, {event});
   EXPECT_TRUE(DrawTimerReset());
 }

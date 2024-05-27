@@ -33,9 +33,9 @@ AutomationManagerLacros::~AutomationManagerLacros() {
 
 void AutomationManagerLacros::DispatchAccessibilityEvents(
     const ui::AXTreeID& tree_id,
-    const std::vector<ui::AXTreeUpdate>& updates,
+    std::vector<ui::AXTreeUpdate> updates,
     const gfx::Point& mouse_location,
-    const std::vector<ui::AXEvent>& events) {
+    std::vector<ui::AXEvent> events) {
   if (!tree_id.token())
     return;
 

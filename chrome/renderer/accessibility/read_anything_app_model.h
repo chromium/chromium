@@ -20,7 +20,6 @@
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
-#include "ui/accessibility/ax_updates_and_events.h"
 
 namespace ui {
 class AXNode;
@@ -292,9 +291,9 @@ class ReadAnythingAppModel {
 
   void ClearPendingUpdates();
 
-  void ProcessAccessibilityUpdatesAndEvents(
-      const ui::AXTreeID& tree_id,
-      ui::AXUpdatesAndEvents updates_and_events);
+  void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
+                                  std::vector<ui::AXTreeUpdate>& updates,
+                                  std::vector<ui::AXEvent>& events);
 
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
 
@@ -420,9 +419,9 @@ class ReadAnythingAppModel {
   bool ContentNodesOnlyContainHeadings();
 
   void AddPendingUpdates(const ui::AXTreeID& tree_id,
-                         std::vector<ui::AXTreeUpdate> updates);
+                         std::vector<ui::AXTreeUpdate>& updates);
 
-  void UnserializeUpdates(std::vector<ui::AXTreeUpdate> updates,
+  void UnserializeUpdates(std::vector<ui::AXTreeUpdate>& updates,
                           const ui::AXTreeID& tree_id);
 
   void ProcessNonGeneratedEvents(const std::vector<ui::AXEvent>& events);

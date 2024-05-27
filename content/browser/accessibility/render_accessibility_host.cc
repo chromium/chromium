@@ -23,7 +23,7 @@ RenderAccessibilityHost::RenderAccessibilityHost(
 RenderAccessibilityHost::~RenderAccessibilityHost() = default;
 
 void RenderAccessibilityHost::HandleAXEvents(
-    ui::AXUpdatesAndEvents& updates_and_events,
+    blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
     uint32_t reset_token,
     HandleAXEventsCallback callback) {
   // Post the HandleAXEvents task onto the UI thread, and then when that

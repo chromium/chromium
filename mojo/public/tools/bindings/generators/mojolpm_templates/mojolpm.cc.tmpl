@@ -367,11 +367,7 @@ bool HandleCall(uint32_t instance_id,
 {%-       for param in method.parameters -%}
 {%-         set name = param.name|camel_to_under %}
 {%-         set kind = param.kind %}
-{%- if kind|is_non_const_ref_kind %}
-      local_{{name}}{{ ',' if not loop.last }}
-{%- else %}
       std::move(local_{{name}}){{ ',' if not loop.last }}
-{% endif %}
 {%-       endfor -%}
 {%-       if method.response_parameters != None -%}
 {{ ',' if method.parameters }}

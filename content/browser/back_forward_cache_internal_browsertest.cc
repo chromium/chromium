@@ -3642,11 +3642,12 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
                              ui::AXEventGenerator::Event event,
                              ui::AXNodeID event_target_id) { FAIL(); }));
   // Generate an event.
-  ui::AXUpdatesAndEvents updates_and_events;
+  blink::mojom::AXUpdatesAndEventsPtr updates_and_events =
+      blink::mojom::AXUpdatesAndEvents::New();
   ui::AXTreeUpdate update;
   update.root_id = 1;
-  updates_and_events.updates.emplace_back(update);
-  updates_and_events.events.emplace_back(
+  updates_and_events->updates.emplace_back(update);
+  updates_and_events->events.emplace_back(
       /*id=*/0, ax::mojom::Event::kChildrenChanged);
   // If any events are generated and fired, they will be fired synchronously
   // in the same task of |HandleAXEventsForTests()| and and result in a test

@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/accessibility/mojom/ax_updates_and_events.mojom.h"
 
 namespace content {
 
@@ -51,7 +50,7 @@ class RenderAccessibilityHost : public blink::mojom::RenderAccessibilityHost {
 
   ~RenderAccessibilityHost() override;
 
-  void HandleAXEvents(ui::AXUpdatesAndEvents& updates_and_events,
+  void HandleAXEvents(blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
                       uint32_t reset_token,
                       HandleAXEventsCallback callback) override;
 
