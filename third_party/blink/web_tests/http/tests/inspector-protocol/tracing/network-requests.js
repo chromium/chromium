@@ -14,13 +14,33 @@
   dp.Page.navigate(
       {url: 'http://127.0.0.1:8000/inspector-protocol/resources/basic.html'});
 
+  // Get the ID of the request for the HTML page
+  const htmlRequest = await dp.Network.onceRequestWillBeSent(e => {
+    return e.params.request.url.includes('basic.html');
+  });
+
+  // Bind a listener for when the HTML request is completely finished.
+  // Note that we don't await it yet as we want to wait for responses from
+  // our 4 expected requests first.
+  const htmlRequestDone = dp.Network.onceLoadingFinished(e => {
+    return e.params.requestId === htmlRequest.params.requestId;
+  });
+
   await new Promise(resolve => {
     let count = 0;
     dp.Network.onResponseReceived(() => {
         ++count;
+      // We expect 4 requests:
+      // - basic.html
+      // - empty.js
+      // - square.png
+      // - style.css
         if (count === 4) resolve();
     });
   });
+
+  // Ensure the HTML request is completely finished before any assertions
+  await htmlRequestDone;
 
   const timelineEvents = await tracingHelper.stopTracing(/devtools.timeline/);
 
