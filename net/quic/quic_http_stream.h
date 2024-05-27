@@ -162,9 +162,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   bool can_send_early_ = false;
 
   // The request body to send, if any, owned by the caller.
-  // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
-  raw_ptr<UploadDataStream, AcrossTasksDanglingUntriaged> request_body_stream_ =
-      nullptr;
+  raw_ptr<UploadDataStream> request_body_stream_ = nullptr;
   // Time the request was issued.
   base::Time request_time_;
   // The priority of the request.
