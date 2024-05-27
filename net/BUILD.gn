@@ -1224,6 +1224,8 @@ component("net") {
   if (is_apple) {
     sources += [
       "base/apple/guarded_fd.h",
+      "base/apple/http_response_headers_util.h",
+      "base/apple/http_response_headers_util.mm",
       "base/apple/url_conversions.h",
       "base/apple/url_conversions.mm",
       "base/network_change_notifier_apple.h",
@@ -2999,7 +3001,10 @@ test("net_unittests") {
   }
 
   if (is_apple) {
-    sources += [ "base/apple/url_conversions_unittest.mm" ]
+    sources += [
+      "base/apple/http_response_headers_util_unittest.mm",
+      "base/apple/url_conversions_unittest.mm",
+    ]
   }
 
   if (is_mac) {

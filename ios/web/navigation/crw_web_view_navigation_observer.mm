@@ -7,7 +7,6 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/net/http_response_headers_util.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/url_util.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
@@ -21,6 +20,7 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "ios/web/web_view/wk_web_view_util.h"
+#import "net/base/apple/http_response_headers_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 

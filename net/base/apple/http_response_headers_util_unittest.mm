@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/net/http_response_headers_util.h"
+#include "net/base/apple/http_response_headers_util.h"
 
 #import <Foundation/Foundation.h>
 
