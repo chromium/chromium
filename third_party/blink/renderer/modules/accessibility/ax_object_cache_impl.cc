@@ -883,7 +883,7 @@ void AXObjectCacheImpl::UpdateAXForAllDocuments() {
 
   // Next flush all accessibility events and dirty objects, for both the main
   // and popup document, and update tree if needed.
-  if (IsDirty() || HasDirtyObjects()) {
+  if (IsDirty() || HasObjectsPendingSerialization()) {
     ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
   }
 }
@@ -1695,7 +1695,7 @@ void AXObjectCacheImpl::RemovePopup(Document* popup_document) {
   RemoveSubtree(popup_document);
 
   popup_document_ = nullptr;
-  notifications_to_post_popup_.clear();
+  pending_events_to_serialize_.clear();
   tree_update_callback_queue_popup_.clear();
 }
 
@@ -1975,8 +1975,7 @@ bool AXObjectCacheImpl::PauseTreeUpdatesIfQueueFull() {
     // Clear updates from both documents.
     tree_update_callback_queue_main_.clear();
     tree_update_callback_queue_popup_.clear();
-    notifications_to_post_main_.clear();
-    notifications_to_post_popup_.clear();
+    pending_events_to_serialize_.clear();
     return true;
   }
 
@@ -2031,7 +2030,8 @@ void AXObjectCacheImpl::DeferTreeUpdate(
 void AXObjectCacheImpl::DeferTreeUpdate(
     AXObjectCacheImpl::TreeUpdateReason update_reason,
     AXObject* obj,
-    ax::mojom::blink::Event event) {
+    ax::mojom::blink::Event event,
+    bool invalidate_cached_values) {
   // Called for updates that do not have a DOM node, e.g. a children or text
   // changed event that occurs on an anonymous layout block flow.
   CHECK(obj);
@@ -2064,7 +2064,9 @@ void AXObjectCacheImpl::DeferTreeUpdate(
       nullptr, obj->AXObjectID(), ComputeEventFrom(), active_event_from_action_,
       ActiveEventIntents(), update_reason, event));
 
-  obj->InvalidateCachedValues();
+  if (invalidate_cached_values) {
+    obj->InvalidateCachedValues();
+  }
 
   // These events are fired during RunPostLifecycleTasks(),
   // ensure there is a document lifecycle update scheduled.
@@ -3114,7 +3116,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // IsDirty() is false, but this is the case for objects marked dirty from
     // RenderAccessibilityImpl, e.g. for the kEndOfTest event.
     bool did_serialize = false;
-    if (HasDirtyObjects()) {
+    if (HasObjectsPendingSerialization()) {
       did_serialize = SerializeUpdatesAndEvents();
     }
 
@@ -3142,13 +3144,13 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     DUMP_WILL_BE_CHECK(!IsDirty());
     // TODO(accessibility): in the future, we may break up serialization into
     // pieces to reduce jank, in which case this assertion will not hold.
-    DUMP_WILL_BE_CHECK(!HasDirtyObjects() || !did_serialize)
+    DUMP_WILL_BE_CHECK(!HasObjectsPendingSerialization() || !did_serialize)
         << "A serialization occurred but dirty objects remained.";
   }
 }
 
 bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
-  CHECK(HasDirtyObjects());
+  CHECK(HasObjectsPendingSerialization());
   CHECK(!IsSerializationInFlight());
   DCHECK(!ax_mode_.is_mode_off());
   CHECK(ax_mode_.has_mode(ui::AXMode::kWebContents));
@@ -3193,8 +3195,8 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
                                       had_load_complete_messages);
 
   /* Clear the pending updates and events as they're about to be serialized */
-  dirty_objects_.clear();
-  pending_events_.clear();
+  pending_objects_to_serialize_.clear();
+  pending_events_to_serialize_.clear();
 
   if (had_end_of_test_event) {
     ui::AXEvent end_of_test(Root()->AXObjectID(),
@@ -3218,7 +3220,7 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
   DCHECK(!updates.empty());
 
   // There should be no more dirty objects.
-  CHECK(!HasDirtyObjects());
+  CHECK(!HasObjectsPendingSerialization());
 
   /* Send the actual serialization message.*/
   bool success = client->SendAccessibilitySerialization(
@@ -3242,10 +3244,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
   // tree_update_callback_queue_, and have names like
   // FooBarredWithCleanLayout().
   ProcessCleanLayoutCallbacks(document);
-
-  // Send events to RenderAccessibilityImpl, which serializes them and then
-  // sends the serialized events and dirty objects to the browser process.
-  PostNotifications(document);
 }
 
 bool AXObjectCacheImpl::IsParsingMainDocument() const {
@@ -3254,8 +3252,7 @@ bool AXObjectCacheImpl::IsParsingMainDocument() const {
 }
 
 bool AXObjectCacheImpl::IsMainDocumentDirty() const {
-  return !tree_update_callback_queue_main_.empty() ||
-         !notifications_to_post_main_.empty();
+  return !tree_update_callback_queue_main_.empty();
 }
 
 bool AXObjectCacheImpl::IsPopupDocumentDirty() const {
@@ -3263,11 +3260,9 @@ bool AXObjectCacheImpl::IsPopupDocumentDirty() const {
     // This should have been cleared in RemovePopup(), but technically the
     // popup could be null without calling that, since it's a weak pointer.
     DCHECK(tree_update_callback_queue_popup_.empty());
-    DCHECK(notifications_to_post_popup_.empty());
     return false;
   }
-  return !tree_update_callback_queue_popup_.empty() ||
-         !notifications_to_post_popup_.empty();
+  return !tree_update_callback_queue_popup_.empty();
 }
 
 bool AXObjectCacheImpl::IsDirty() {
@@ -3328,12 +3323,6 @@ AXObjectCacheImpl::GetTreeUpdateCallbackQueue(Document& document) {
                            : tree_update_callback_queue_main_;
 }
 
-HeapVector<Member<AXObjectCacheImpl::AXEventParams>>&
-AXObjectCacheImpl::GetNotificationsToPost(Document& document) {
-  return IsPopup(document) ? notifications_to_post_popup_
-                           : notifications_to_post_main_;
-}
-
 void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
@@ -3358,30 +3347,6 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
   }
 }
 
-void AXObjectCacheImpl::PostNotifications(Document& document) {
-  HeapVector<Member<AXEventParams>> old_notifications_to_post;
-  GetNotificationsToPost(document).swap(old_notifications_to_post);
-  for (auto& params : old_notifications_to_post) {
-    AXObject* obj = params->target;
-
-    if (!obj || !obj->AXObjectID())
-      continue;
-
-    if (obj->IsDetached())
-      continue;
-
-    DCHECK_EQ(obj->GetDocument(), &document)
-        << "Wrong document in PostNotifications";
-
-    ax::mojom::blink::Event event_type = params->event_type;
-    ax::mojom::blink::EventFrom event_from = params->event_from;
-    ax::mojom::blink::Action event_from_action = params->event_from_action;
-    const BlinkAXEventIntentsSet& event_intents = params->event_intents;
-    FireAXEventImmediately(obj, event_type, event_from, event_from_action,
-                           event_intents);
-  }
-}
-
 void AXObjectCacheImpl::PostNotification(const LayoutObject* layout_object,
                                          ax::mojom::blink::Event notification) {
   if (!layout_object)
@@ -3401,26 +3366,39 @@ void AXObjectCacheImpl::PostNotification(AXObject* object,
   if (!object || !object->AXObjectID() || object->IsDetached())
     return;
 
-  Document& document = *object->GetDocument();
+  ax::mojom::blink::EventFrom event_from = ComputeEventFrom();
 
-  // It's possible for FireAXEventImmediately to post another notification.
-  // If we're still in the accessibility document lifecycle, fire these events
-  // immediately rather than deferring them.
-  if (processing_deferred_events_) {
-    FireAXEventImmediately(object, event_type, ComputeEventFrom(),
-                           active_event_from_action_, ActiveEventIntents());
+  // If PostNotification is called while outside of processing_deferred_events_,
+  // defer it to to happen later inside processing_deferred_events_.
+  // TODO(accessibility): Replace calls of PostNotification with direct cleaner
+  // calls to DeferTreeUpdate.
+  if (!processing_deferred_events_) {
+    // TODO(accessibility): Investigate why invalidate_cached_values needs to be
+    // false here and maybe remove it from signature once it's not needed
+    // anymore.
+    DeferTreeUpdate(TreeUpdateReason::kDelayEventFromPostNotification, object,
+                    event_type, /*invalidate_cached_values=*/false);
+
+    if (IsImmediateProcessingRequiredForEvent(event_from, object, event_type)) {
+      ScheduleImmediateSerialization();
+    }
     return;
   }
 
-  AXEventParams* event = MakeGarbageCollected<AXEventParams>(
-      object, event_type, ComputeEventFrom(), active_event_from_action_,
-      ActiveEventIntents());
-  GetNotificationsToPost(document).push_back(event);
-  if (IsImmediateProcessingRequiredForEvent(event)) {
-    ScheduleImmediateSerialization();
-  } else {
-    ScheduleAXUpdate();
-  }
+  ax::mojom::blink::Action event_from_action = active_event_from_action_;
+  const BlinkAXEventIntentsSet& event_intents = ActiveEventIntents();
+
+#if DCHECK_IS_ON()
+  // Make sure that we're not in the process of being laid out. Notifications
+  // should only be sent after the LayoutObject has finished
+  DCHECK(GetDocument().Lifecycle().GetState() !=
+         DocumentLifecycle::kInPerformLayout);
+
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+#endif  // DCHECK_IS_ON()
+
+  PostPlatformNotification(object, event_type, event_from, event_from_action,
+                           event_intents);
 }
 
 void AXObjectCacheImpl::ScheduleAXUpdate() const {
@@ -3493,6 +3471,9 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
   switch (tree_update->update_reason) {
     case TreeUpdateReason::kChildrenChanged:
       ChildrenChangedWithCleanLayout(ax_object->GetNode(), ax_object);
+      break;
+    case TreeUpdateReason::kDelayEventFromPostNotification:
+      PostNotification(ax_object, tree_update->event);
       break;
     case TreeUpdateReason::kMarkAXObjectDirty:
       MarkAXObjectDirtyWithCleanLayout(ax_object);
@@ -3640,25 +3621,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
   if (!ax_object->IsDetached()) {
     ax_object->UpdateChildrenIfNecessary();
   }
-}
-
-void AXObjectCacheImpl::FireAXEventImmediately(
-    AXObject* obj,
-    ax::mojom::blink::Event event_type,
-    ax::mojom::blink::EventFrom event_from,
-    ax::mojom::blink::Action event_from_action,
-    const BlinkAXEventIntentsSet& event_intents) {
-#if DCHECK_IS_ON()
-  // Make sure that we're not in the process of being laid out. Notifications
-  // should only be sent after the LayoutObject has finished
-  DCHECK(GetDocument().Lifecycle().GetState() !=
-         DocumentLifecycle::kInPerformLayout);
-
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-#endif  // DCHECK_IS_ON()
-
-  PostPlatformNotification(obj, event_type, event_from, event_from_action,
-                           event_intents);
 }
 
 bool AXObjectCacheImpl::IsAriaOwned(const AXObject* object) const {
@@ -4489,14 +4451,16 @@ WebLocalFrameClient* AXObjectCacheImpl::GetWebLocalFrameClient() const {
 }
 
 bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
-    AXEventParams* event) const {
+    ax::mojom::blink::EventFrom& event_from,
+    AXObject* target,
+    ax::mojom::blink::Event& event_type) const {
   // Already scheduled for immediate mode.
   if (serialize_immediately_) {
     return true;
   }
 
   // Actions should result in an immediate response.
-  if (event->event_from == ax::mojom::blink::EventFrom::kAction) {
+  if (event_from == ax::mojom::blink::EventFrom::kAction) {
     return true;
   }
 
@@ -4504,11 +4468,11 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
   // currently focused object, so schedule serializations immediately if that
   // object changes. The root is an exception because it often has focus while
   // the page is loading.
-  if (event->target->GetNode() != document_ && event->target->IsFocused()) {
+  if (target->GetNode() != document_ && target->IsFocused()) {
     return true;
   }
 
-  switch (event->event_type) {
+  switch (event_type) {
     case ax::mojom::blink::Event::kActiveDescendantChanged:
     case ax::mojom::blink::Event::kBlur:
     case ax::mojom::blink::Event::kCheckedStateChanged:
@@ -4576,7 +4540,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kWindowVisibilityChanged:
       // Never fired from Blink.
       NOTREACHED_IN_MIGRATION()
-          << "Event not expected from Blink: " << event->event_type;
+          << "Event not expected from Blink: " << event_type;
       return false;
   }
 }
@@ -4627,6 +4591,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
       return true;
 
     case TreeUpdateReason::kAriaOwnsChanged:
+    case TreeUpdateReason::kDelayEventFromPostNotification:
     case TreeUpdateReason::kFocusableChanged:
     case TreeUpdateReason::kIdChanged:
     case TreeUpdateReason::kMarkDirtyFromHandleScroll:
@@ -4683,7 +4648,7 @@ void AXObjectCacheImpl::AddEventToSerializationQueue(
   AXObject* obj = ObjectFromAXID(event.id);
   DCHECK(!obj->IsDetached());
 
-  pending_events_.push_back(event);
+  pending_events_to_serialize_.push_back(event);
 
   AddDirtyObjectToSerializationQueue(
       obj, event.event_from, event.event_from_action, event.event_intents);
@@ -4741,6 +4706,8 @@ void AXObjectCacheImpl::PostPlatformNotification(
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action,
     const BlinkAXEventIntentsSet& event_intents) {
+  CHECK(processing_deferred_events_);
+
   obj = GetSerializationTarget(obj);
   if (!obj)
     return;
@@ -4758,8 +4725,9 @@ void AXObjectCacheImpl::PostPlatformNotification(
   for (auto agent : agents_)
     agent->AXEventFired(obj, event_type);
 
-  // Ommediate serialization bit has already been processed for this event.
-  AddEventToSerializationQueue(event, /*immediate_serialization*/ false);
+  // Since we're in the middle of processing_deferred_events_ anyways, we know
+  // this will be immediately serialized.
+  AddEventToSerializationQueue(event, /* immediate_serialization */ false);
 
   // TODO(aleventhal) This is for web tests only, in order to record MarkDirty
   // events. Is there a way to avoid these calls for normal browsing?
@@ -4911,7 +4879,8 @@ void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
 
   // Clear anything about to be serialized, because everything will be
   // reserialized anyway.
-  dirty_objects_.clear();
+  pending_events_to_serialize_.clear();
+  pending_objects_to_serialize_.clear();
   changed_bounds_ids_.clear();
   cached_bounding_boxes_.clear();
 
@@ -4932,8 +4901,10 @@ void AXObjectCacheImpl::ResetSerializer() {
 
   // Clear anything about to be serialized, because everything will be
   // reserialized anyway.
-  dirty_objects_.clear();
-  pending_events_.clear();
+  pending_objects_to_serialize_.clear();
+  pending_events_to_serialize_.clear();
+  changed_bounds_ids_.clear();
+  cached_bounding_boxes_.clear();
 
   // Send the serialization at the next available opportunity.
   ScheduleAXUpdate();
@@ -5212,7 +5183,7 @@ void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
 
   // Add to object to a queue that will be sent to the serializer in
   // SerializeDirtyObjectsAndEvents().
-  dirty_objects_.push_back(
+  pending_objects_to_serialize_.push_back(
       AXDirtyObject::Create(obj, event_from, event_from_action, event_intents));
 
   // ensure there is a document lifecycle update scheduled for plugin
@@ -5237,9 +5208,10 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
             DocumentLifecycle::kLayoutClean);
   DCHECK(!popup_document_ || popup_document_->Lifecycle().GetState() >=
                                  DocumentLifecycle::kLayoutClean);
-  DUMP_WILL_BE_CHECK(HasDirtyObjects());
+  DUMP_WILL_BE_CHECK(HasObjectsPendingSerialization());
 
-  DCHECK_GE(dirty_objects_.size(), pending_events_.size())
+  DCHECK_GE(pending_objects_to_serialize_.size(),
+            pending_events_to_serialize_.size())
       << "There should be at least as many updates as events, because events "
          "always mark a node dirty.";
 
@@ -5251,7 +5223,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     plugin_serializer_->Reset();
   }
   ui::AXNodeData::AXNodeDataSize node_data_size;
-  for (auto& current_dirty_object : dirty_objects_) {
+  for (auto& current_dirty_object : pending_objects_to_serialize_) {
     const AXObject* obj = current_dirty_object->obj;
 
     // Dirty objects can be added using MarkWebAXObjectDirty(obj) from other
@@ -5334,7 +5306,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
   }
 
   // Loop over each event and generate an updated event message.
-  for (ui::AXEvent& event : pending_events_) {
+  for (ui::AXEvent& event : pending_events_to_serialize_) {
     if (event.event_type == ax::mojom::blink::Event::kEndOfTest) {
       had_end_of_test_event = true;
       continue;
@@ -5884,15 +5856,13 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(active_aria_modal_dialog_);
 
   visitor->Trace(objects_);
-  visitor->Trace(notifications_to_post_main_);
-  visitor->Trace(notifications_to_post_popup_);
   visitor->Trace(permission_service_);
   visitor->Trace(permission_observer_receiver_);
   visitor->Trace(tree_update_callback_queue_main_);
   visitor->Trace(tree_update_callback_queue_popup_);
   visitor->Trace(render_accessibility_host_);
   visitor->Trace(ax_tree_source_);
-  visitor->Trace(dirty_objects_);
+  visitor->Trace(pending_objects_to_serialize_);
   visitor->Trace(node_to_parse_before_more_tree_updates_);
   visitor->Trace(weak_factory_for_serialization_pipeline_);
   visitor->Trace(weak_factory_for_loc_updates_pipeline_);

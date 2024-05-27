@@ -71,13 +71,6 @@ void WebAXContext::GetImagesToAnnotate(ui::AXTreeUpdate& updates,
   private_->GetAXObjectCache().GetImagesToAnnotate(updates, nodes);
 }
 
-bool WebAXContext::HasDirtyObjects() {
-  if (!HasActiveDocument()) {
-    return false;
-  }
-  return private_->GetAXObjectCache().HasDirtyObjects();
-}
-
 void WebAXContext::UpdateAXForAllDocuments() {
   if (!HasActiveDocument()) {
     return;

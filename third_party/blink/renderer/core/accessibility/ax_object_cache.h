@@ -246,7 +246,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   // Note that any pending event also causes its corresponding object to
   // become dirty.
-  virtual bool HasDirtyObjects() const = 0;
+  virtual bool HasObjectsPendingSerialization() const = 0;
 
   // Ensure that a call to ProcessDeferredAccessibilityEvents() will occur soon.
   virtual void ScheduleAXUpdate() const = 0;

@@ -61,10 +61,6 @@ class BLINK_EXPORT WebAXContext {
   void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                            std::vector<ui::AXNodeData*>&);
 
-  // Note that any pending event also causes its corresponding object to
-  // become dirty.
-  bool HasDirtyObjects();
-
   // Ensure that accessibility is clean and up-to-date for both the main and
   // popup document. Ensures layout is clean as well.
   void UpdateAXForAllDocuments();
