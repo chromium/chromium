@@ -95,7 +95,7 @@ void Autofill(
   if (!best_matches.empty() || !federated_matches.empty()) {
     client->PasswordWasAutofilled(best_matches,
                                   Origin::Create(form_for_autofill.url),
-                                  &federated_matches, !wait_for_username);
+                                  federated_matches, !wait_for_username);
   }
 }
 

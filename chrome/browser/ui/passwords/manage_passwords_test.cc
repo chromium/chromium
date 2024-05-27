@@ -126,7 +126,7 @@ void ManagePasswordsTest::SetupManagingPasswords(
   std::vector<password_manager::PasswordForm> forms = {password_form_,
                                                        federated_form};
   GetController()->OnPasswordAutofilled(
-      forms, embedded_test_server()->GetOrigin(), nullptr);
+      forms, embedded_test_server()->GetOrigin(), {});
 }
 
 void ManagePasswordsTest::SetupPendingPassword() {

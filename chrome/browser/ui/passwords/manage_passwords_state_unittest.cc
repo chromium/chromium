@@ -380,7 +380,7 @@ TEST_F(ManagePasswordsStateTest, AutomaticPasswordSaveWithFederations) {
 TEST_F(ManagePasswordsStateTest, PasswordAutofilled) {
   std::vector<PasswordForm> password_forms = {saved_match()};
   const url::Origin origin = url::Origin::Create(GURL(kTestOrigin));
-  passwords_data().OnPasswordAutofilled(password_forms, origin, nullptr);
+  passwords_data().OnPasswordAutofilled(password_forms, origin, {});
 
   EXPECT_THAT(passwords_data().GetCurrentForms(),
               ElementsAre(Pointee(saved_match())));
@@ -393,9 +393,9 @@ TEST_F(ManagePasswordsStateTest, PasswordAutofilled) {
 TEST_F(ManagePasswordsStateTest, PasswordAutofillWithSavedFederations) {
   std::vector<PasswordForm> password_forms = {saved_match()};
   const url::Origin origin = url::Origin::Create(GURL(kTestOrigin));
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> federated;
-  federated.push_back(&local_federated_form());
-  passwords_data().OnPasswordAutofilled(password_forms, origin, &federated);
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> federated = {
+      &local_federated_form()};
+  passwords_data().OnPasswordAutofilled(password_forms, origin, federated);
 
   // |federated| represents the locally saved federations. These are bundled in
   // the "current forms".
@@ -408,9 +408,9 @@ TEST_F(ManagePasswordsStateTest, PasswordAutofillWithSavedFederations) {
 
 TEST_F(ManagePasswordsStateTest, PasswordAutofillWithOnlyFederations) {
   const url::Origin origin = url::Origin::Create(GURL(kTestOrigin));
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> federated;
-  federated.push_back(&local_federated_form());
-  passwords_data().OnPasswordAutofilled({}, origin, &federated);
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> federated = {
+      &local_federated_form()};
+  passwords_data().OnPasswordAutofilled({}, origin, federated);
 
   EXPECT_THAT(passwords_data().GetCurrentForms(),
               ElementsAre(Pointee(local_federated_form())));
@@ -421,7 +421,7 @@ TEST_F(ManagePasswordsStateTest, PasswordAutofillWithOnlyFederations) {
 TEST_F(ManagePasswordsStateTest, ActiveOnMixedPSLAndNonPSLMatched) {
   std::vector<PasswordForm> password_forms = {saved_match(), psl_match()};
   const url::Origin origin = url::Origin::Create(GURL(kTestOrigin));
-  passwords_data().OnPasswordAutofilled(password_forms, origin, nullptr);
+  passwords_data().OnPasswordAutofilled(password_forms, origin, {});
 
   EXPECT_THAT(passwords_data().GetCurrentForms(),
               ElementsAre(Pointee(saved_match())));
@@ -434,7 +434,7 @@ TEST_F(ManagePasswordsStateTest, ActiveOnMixedPSLAndNonPSLMatched) {
 TEST_F(ManagePasswordsStateTest, InactiveOnPSLMatched) {
   std::vector<PasswordForm> password_forms = {psl_match()};
   passwords_data().OnPasswordAutofilled(
-      password_forms, url::Origin::Create(GURL(kTestOrigin)), nullptr);
+      password_forms, url::Origin::Create(GURL(kTestOrigin)), {});
 
   EXPECT_THAT(passwords_data().GetCurrentForms(), IsEmpty());
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, passwords_data().state());
@@ -518,7 +518,7 @@ TEST_F(ManagePasswordsStateTest, AutomaticPasswordSaveAddBlocklisted) {
 TEST_F(ManagePasswordsStateTest, BackgroundAutofilledAddBlocklisted) {
   std::vector<PasswordForm> password_forms = {saved_match()};
   passwords_data().OnPasswordAutofilled(
-      password_forms, url::Origin::Create(password_forms.front().url), nullptr);
+      password_forms, url::Origin::Create(password_forms.front().url), {});
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, passwords_data().state());
 
   TestBlocklistedUpdates();
@@ -641,7 +641,7 @@ TEST_F(ManagePasswordsStateTest, AutofillCausedByInternalFormManager) {
   // Force autofill with the parameters coming from the object to be destroyed.
   passwords_data().OnPasswordAutofilled(weak_manager->best_matches,
                                         url::Origin::Create(weak_manager->url),
-                                        &weak_manager->federated_matches);
+                                        weak_manager->federated_matches);
   EXPECT_THAT(passwords_data().GetCurrentForms(),
               UnorderedElementsAre(Pointee(local_federated_form()),
                                    Pointee(saved_match())));

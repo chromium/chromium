@@ -296,14 +296,14 @@ class PasswordManagerClient {
   // PasswordForm into which a password was filled: the client may choose to
   // save this to the PasswordStore, for example. |origin| is the origin of the
   // form into which a password was filled. |federated_matches| are the stored
-  // federated matches relevant to the filled form, this argument may be null.
+  // federated matches relevant to the filled form, this argument may be empty.
   // They are never filled, but might be needed in the UI, for example. Default
   // implementation is a noop. |was_autofilled_on_pageload| contains information
   // if password form was autofilled on pageload.
   virtual void PasswordWasAutofilled(
       base::span<const PasswordForm> best_matches,
       const url::Origin& origin,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
           federated_matches,
       bool was_autofilled_on_pageload);
 

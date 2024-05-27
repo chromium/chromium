@@ -236,7 +236,7 @@ void CredentialManagerPendingRequestTask::ProcessForms(
         }
       }
       delegate_->client()->PasswordWasAutofilled(
-          non_federated_matches, origin_, &federated_matches,
+          non_federated_matches, origin_, federated_matches,
           /*was_autofilled_on_pageload=*/false);
     }
     if (can_use_autosignin) {

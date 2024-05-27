@@ -103,7 +103,7 @@ class ManagePasswordsUIController
       base::span<const password_manager::PasswordForm> password_forms,
       const url::Origin& origin,
       const std::vector<
-          raw_ptr<const password_manager::PasswordForm, VectorExperimental>>*
+          raw_ptr<const password_manager::PasswordForm, VectorExperimental>>&
           federated_matches) override;
   void OnCredentialLeak(password_manager::CredentialLeakType leak_dialog_type,
                         const GURL& url,

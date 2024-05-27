@@ -198,14 +198,11 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
 void ManagePasswordsState::OnPasswordAutofilled(
     base::span<const PasswordForm> password_forms,
     url::Origin origin,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
         federated_matches) {
-  DCHECK(!password_forms.empty() ||
-         (federated_matches && !federated_matches->empty()));
+  DCHECK(!password_forms.empty() || !federated_matches.empty());
   auto local_credentials_forms = DeepCopyNonPSLVector(password_forms);
-  if (federated_matches) {
-    AppendDeepCopyVector(*federated_matches, &local_credentials_forms);
-  }
+  AppendDeepCopyVector(federated_matches, &local_credentials_forms);
 
   // Delete |form_manager_| only when the parameters are processed. They may be
   // coming from |form_manager_|.

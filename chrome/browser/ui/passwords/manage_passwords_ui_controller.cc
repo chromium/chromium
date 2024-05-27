@@ -336,7 +336,7 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
     base::span<const password_manager::PasswordForm> password_forms,
     const url::Origin& origin,
     const std::vector<raw_ptr<const password_manager::PasswordForm,
-                              VectorExperimental>>* federated_matches) {
+                              VectorExperimental>>& federated_matches) {
   // To change to managed state only when the managed state is more important
   // for the user that the current state.
   if (passwords_data_.state() != password_manager::ui::INACTIVE_STATE &&

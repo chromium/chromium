@@ -64,7 +64,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
       PasswordWasAutofilled,
       (const base::span<const PasswordForm>,
        const Origin&,
-       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*),
+       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&),
        bool was_autofilled_on_pageload),
       (override));
   MOCK_METHOD(bool,
