@@ -17751,6 +17751,21 @@
             ]
         }
     ],
+    "SafetyHubAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RecordPermissionExpirationTimestamps"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScalableIphStudy": [
         {
             "platforms": [
