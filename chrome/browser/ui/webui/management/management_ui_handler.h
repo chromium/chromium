@@ -65,7 +65,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
 
  protected:
-  void AddReportingInfo(base::Value::List* report_sources);
+  void AddReportingInfo(base::Value::List* report_sources, bool is_browser);
 
   virtual base::Value::Dict GetContextualManagedData(Profile* profile);
   base::Value::Dict GetThreatProtectionInfo(Profile* profile);
@@ -106,10 +106,12 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void HandleGetManagedWebsites(const base::Value::List& args);
   void HandleGetApplications(const base::Value::List& args);
   void HandleInitBrowserReportingInfo(const base::Value::List& args);
+  void HandleInitProfileReportingInfo(const base::Value::List& args);
 
   void AsyncUpdateLogo();
 
   void NotifyBrowserReportingInfoUpdated();
+  void NotifyProfileReportingInfoUpdated();
 
   // extensions::ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,

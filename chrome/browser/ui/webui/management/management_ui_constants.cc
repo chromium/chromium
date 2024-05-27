@@ -71,6 +71,13 @@ const char kReportingTypeUser[] = "user";
 const char kReportingTypeUserActivity[] = "user-activity";
 const char kReportingTypeLegacyTech[] = "legacy-tech";
 
+const char kProfileReportingExplanation[] = "profileReportingExplanation";
+const char kProfileReportingOverview[] = "profileReportingOverview";
+const char kProfileReportingUsername[] = "profileReportingUsername";
+const char kProfileReportingBrowser[] = "profileReportingBrowser";
+const char kProfileReportingExtension[] = "profileReportingExtension";
+const char kProfileReportingPolicy[] = "profileReportingPolicy";
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 const char kManagementScreenCaptureEvent[] = "managementScreenCaptureEvent";
 const char kManagementScreenCaptureData[] = "managementScreenCaptureData";

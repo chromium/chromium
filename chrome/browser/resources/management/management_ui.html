@@ -196,11 +196,12 @@
 
       .extension-permissions ul,
       .application-permissions ul,
-      .report ul {
+      .report ul.browser {
         list-style: none;
         margin: 0;
         padding: 0;
       }
+
     </style>
 
     <cr-toolbar page-name="$i18n{toolbarTitle}" role="banner" autofocus
@@ -324,7 +325,7 @@
                 <template is="dom-repeat" items="[[browserReportingInfo_]]">
                   <div class="report">
                     <cr-icon icon="[[item.icon]]"></cr-icon>
-                    <ul>
+                    <ul class="browser">
                       <template is="dom-repeat" items="[[item.messageIds]]"
                           as="messageId">
                         <li inner-h-t-m-l="[[i18nAdvanced(messageId)]]"></li>
@@ -332,6 +333,26 @@
                     </ul>
                   </div>
                 </template>
+              </div>
+            </section>
+          </template>
+
+          <template is="dom-if"
+              if="[[showProfileReportingInfo_(profileReportingInfo_)]]">
+            <section>
+              <h2 class="cr-title-text">$i18n{browserReporting}</h2>
+              <div class="subtitle">
+                $i18n{profileReportingExplanation}
+              </div>
+              <div>
+                <div class="report">
+                  <ul class="profile">
+                    <template is="dom-repeat" items="[[profileReportingInfo_]]">
+                      <li inner-h-t-m-l="[[i18nAdvanced(item.messageIds.0)]]">
+                      </li>
+                    </template>
+                  </ul>
+                </div>
               </div>
             </section>
           </template>

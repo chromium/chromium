@@ -124,6 +124,11 @@ export interface ManagementBrowserProxy {
    * @return The list of browser reporting info messages.
    */
   initBrowserReportingInfo(): Promise<BrowserReportingResponse[]>;
+
+  /**
+   * @return The list of profile reporting info messages.
+   */
+  initProfileReportingInfo(): Promise<BrowserReportingResponse[]>;
 }
 
 export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
@@ -163,6 +168,10 @@ export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
 
   initBrowserReportingInfo() {
     return sendWithPromise('initBrowserReportingInfo');
+  }
+
+  initProfileReportingInfo() {
+    return sendWithPromise('initProfileReportingInfo');
   }
 
   static getInstance(): ManagementBrowserProxy {
