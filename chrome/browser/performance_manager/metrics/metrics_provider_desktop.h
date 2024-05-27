@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "components/metrics/metrics_provider.h"
@@ -82,6 +84,20 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   void ScheduleCpuFrequencyTask();
   void PostCpuFrequencyEstimation();
 
+  struct DiskMetrics {
+    int64_t free_bytes;
+    int64_t total_bytes;
+  };
+
+  class DiskMetricsThreadPoolGetter {
+   public:
+    DiskMetrics ComputeDiskMetrics(const base::FilePath& user_data_dir);
+  };
+
+  void RecordDiskMetrics();
+  void PostDiskMetricsTask();
+  void SavePendingDiskMetrics(DiskMetrics metrics);
+
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<PrefService> local_state_;
   EfficiencyMode current_mode_ = EfficiencyMode::kNormal;
@@ -89,6 +105,9 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   bool battery_saver_enabled_ = false;
 
   bool initialized_ = false;
+
+  base::SequenceBound<DiskMetricsThreadPoolGetter> disk_metrics_getter_;
+  std::optional<DiskMetrics> pending_disk_metrics_;
 
   base::RepeatingTimer available_memory_metrics_timer_;
 

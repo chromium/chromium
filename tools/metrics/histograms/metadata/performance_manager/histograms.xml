@@ -175,6 +175,28 @@ each histogram.
   </token>
 </histogram>
 
+<histogram name="PerformanceManager.DiskStats.UserDataDirAvailableSpaceMb"
+    units="MB" expires_after="2024-09-22">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The amount of available space in megabytes on the disk that hosts the
+    current user data directory as reported by
+    SysInfo::AmountOfFreeDiskSpace(user_data_dir).
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.DiskStats.UserDataDirAvailableSpacePercent"
+    units="%" expires_after="2024-09-22">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The percentage of available space on the disk that hosts the current user
+    data directory as reported by SysInfo::AmountOfFreeDiskSpace(user_data_dir)
+    / capacity.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
     enum="AccessibilityModeFlagEnum" expires_after="2024-11-03">
   <owner>anthonyvd@chromium.org</owner>
