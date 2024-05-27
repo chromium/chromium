@@ -4,9 +4,10 @@
 
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "url/url_constants.h"

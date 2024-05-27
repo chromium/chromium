@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "url/gurl.h"
 
