@@ -15101,11 +15101,7 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "DedicatedWorkerStartDelayInMs": "1"
-                    },
                     "enable_features": [
-                        "DedicatedWorkerAblationStudyEnabled",
                         "PlzDedicatedWorker",
                         "ServiceWorkerClientIdAlignedWithSpec"
                     ]
