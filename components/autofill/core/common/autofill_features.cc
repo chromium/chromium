@@ -72,6 +72,13 @@ BASE_FEATURE(kAutofillAssociateForms,
 const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
     &kAutofillAssociateForms, "associate_forms_ttl", base::Minutes(5)};
 
+// If enabled, Autofill always sets the phone number as parsed by
+// i18n::phonenumber.
+// TODO(crbug.com/40220393): Cleanup when launched.
+BASE_FEATURE(kAutofillPreferParsedPhoneNumber,
+             "AutofillPreferParsedPhoneNumber",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the country calling code for nationally formatted phone numbers
 // is inferred from the profile's country, if available.
 // TODO(crbug.com/40220393): Cleanup when launched.

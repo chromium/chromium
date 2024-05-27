@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -283,9 +284,15 @@ TEST(PhoneNumberTest, SetInfo) {
   EXPECT_EQ(u"1 888-777-6666", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   EXPECT_EQ(u"18887776666", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
-  // Differently formatted numbers should be left alone.
+  // Differently formatted numbers should be left formatted as is, unless
+  // kAutofillPreferParsedPhoneNumbers is enabled.
   EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"800-432-8765", kLocale));
-  EXPECT_EQ(u"800-432-8765", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPreferParsedPhoneNumber)) {
+    EXPECT_EQ(u"(800) 432-8765", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  } else {
+    EXPECT_EQ(u"800-432-8765", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  }
   EXPECT_EQ(u"8004328765", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   // SetRawInfo should not try to format.
@@ -310,8 +317,10 @@ TEST(PhoneNumberTest, SetInfo) {
 
 TEST(PhoneNumberTest, InferCountryCallingCode) {
   base::test::ScopedFeatureList complement_calling_code_enabled;
-  complement_calling_code_enabled.InitAndEnableFeature(
-      features::kAutofillInferCountryCallingCode);
+  complement_calling_code_enabled.InitWithFeatures(
+      {features::kAutofillPreferParsedPhoneNumber,
+       features::kAutofillInferCountryCallingCode},
+      /*disabled_features=*/{});
 
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   PhoneNumber phone(&profile);
@@ -333,13 +342,13 @@ TEST(PhoneNumberTest, InferCountryCallingCode) {
   EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
 
   // Pre-formatted number.
-  // In this case the raw info is kept as-is, while the calling code is inferred
-  // for the filling information.
+  // In this case the calling code is inferred for the raw info and the filling
+  // information.
   EXPECT_TRUE(
       phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-5678", kLocale));
   EXPECT_EQ(u"1", phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
   EXPECT_EQ(u"16502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
-  EXPECT_EQ(u"(650) 234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"1 650-234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
 
   // Different country.
@@ -778,12 +787,18 @@ INSTANTIATE_TEST_SUITE_P(
 
         // If, however, the user has provided formatting, this is preserved for
         // PHONE_HOME_WHOLE_NUMBER. Note the broken whitespacing in the number.
+        // This is changed however when AutofillPreferParsedPhoneNumber is
+        // enabled.
         PhoneImportAndGetTestCase{
             // This time using PHONE_HOME_WHOLE_NUMBER:
             .observed_fields = {{PHONE_HOME_WHOLE_NUMBER, u"+1 65 02 345681"}},
             .default_country = u"US",
             // The + from the input is reflected here:
-            .expected_stored_number = u"+1 65 02 345681",
+            .expected_stored_number =
+                base::FeatureList::IsEnabled(
+                    features::kAutofillPreferParsedPhoneNumber)
+                    ? u"1 650-234-5681"
+                    : u"+1 65 02 345681",
             // Same expectations as above.
             .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"1"},
                                 {PHONE_HOME_CITY_CODE, u"650"},
@@ -795,7 +810,11 @@ INSTANTIATE_TEST_SUITE_P(
             .observed_fields = {{PHONE_HOME_WHOLE_NUMBER, u"1 65 02 345681"}},
             .default_country = u"US",
             // The lack of a + is refelected here:
-            .expected_stored_number = u"1 65 02 345681",
+            .expected_stored_number =
+                base::FeatureList::IsEnabled(
+                    features::kAutofillPreferParsedPhoneNumber)
+                    ? u"1 650-234-5681"
+                    : u"1 65 02 345681",
             // Same expectations as above.
             .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"1"},
                                 {PHONE_HOME_CITY_CODE, u"650"},

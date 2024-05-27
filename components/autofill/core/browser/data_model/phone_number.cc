@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -297,7 +298,9 @@ bool PhoneNumber::SetInfoWithVerificationStatusImpl(
   }
   // Store a formatted (i.e., pretty printed) version of the number if it
   // doesn't contain formatting marks.
-  if (base::ContainsOnlyChars(number_, u"+0123456789")) {
+  if (base::ContainsOnlyChars(number_, u"+0123456789") ||
+      base::FeatureList::IsEnabled(
+          features::kAutofillPreferParsedPhoneNumber)) {
     number_ = cached_parsed_phone_.GetFormattedNumber();
   } else {
     // Strip `number_` of extensions, e.g. "(123)-123 ext. 123" -> "(123)-123".
