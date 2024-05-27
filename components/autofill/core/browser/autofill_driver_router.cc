@@ -146,23 +146,6 @@ void AutofillDriverRouter::FormsSeen(
   }
 }
 
-void AutofillDriverRouter::SetFormToBeProbablySubmitted(
-    AutofillDriver& source,
-    std::optional<FormData> form,
-    RoutedCallback<base::optional_ref<const FormData>> callback) {
-  if (!form) {
-    callback(source, std::nullopt);
-    return;
-  }
-
-  FormGlobalId form_id = form->global_id();
-  form_forest_.UpdateTreeOfRendererForm(std::move(form).value(), source);
-
-  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
-  callback(CHECK_DEREF(target), &browser_form);
-}
-
 void AutofillDriverRouter::FormSubmitted(
     AutofillDriver& source,
     FormData form,

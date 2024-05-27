@@ -233,11 +233,6 @@ class AutofillDriverRouter {
       AutofillDriver& source,
       FormData form,
       RoutedCallback<const FormData&> callback);
-  // If `!form`, this event is just returned to `source`.
-  void SetFormToBeProbablySubmitted(
-      AutofillDriver& source,
-      std::optional<FormData> form,
-      RoutedCallback<base::optional_ref<const FormData>> callback);
 
   // Events called by the browser, passed to the renderer:
   // Keep in alphabetic order.
