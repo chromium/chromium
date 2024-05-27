@@ -625,6 +625,8 @@ NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutForTextBoxTrimEnd() {
     BlockLayoutAlgorithm relayout_algorithm{params};
     relayout_algorithm.override_text_box_trim_end_child_ =
         last_non_empty_inflow_child_;
+    relayout_algorithm.override_text_box_trim_end_break_token_ =
+        last_non_empty_break_token_;
     BoxFragmentBuilder& new_builder = relayout_algorithm.container_builder_;
     new_builder.SetBoxType(container_builder_.GetBoxType());
     return relayout_algorithm.Layout();
@@ -2425,10 +2427,10 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
       should_text_box_trim_end_ = false;
       container_builder_.SetIsBlockEndTrimmed();
     }
-    if (should_text_box_trim_end_ && child.IsBlock() &&
-        !layout_result->IsSelfCollapsing()) {
+    if (should_text_box_trim_end_ && !layout_result->IsSelfCollapsing()) {
       // Keep the last non-empty child for `RelayoutForTextBoxTrimEnd`.
       last_non_empty_inflow_child_ = child;
+      last_non_empty_break_token_ = child_break_token;
     }
   }
 
@@ -3125,10 +3127,27 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     if (UNLIKELY(should_text_box_trim_start_)) {
       builder.SetShouldTextBoxTrimStart();
     }
-    if (UNLIKELY(should_text_box_trim_end_) &&
-        (child.IsInline() || IsLastInflowChild(*child.GetLayoutBox()) ||
-         child == override_text_box_trim_end_child_)) {
-      builder.SetShouldTextBoxTrimEnd();
+    if (UNLIKELY(should_text_box_trim_end_)) {
+      if (child.IsInline()) {
+        // For an inline child, always set the flag. The `InlineLayoutAlgorithm`
+        // can determine if it's the last line or not rather quickly. It can
+        // still fail for empty lines, which is handled by
+        // `RelayoutForTextBoxTrimEnd()`.
+        builder.SetShouldTextBoxTrimEnd();
+        if (child == override_text_box_trim_end_child_ &&
+            InlineBreakToken::IsStartEqual(
+                To<InlineBreakToken>(override_text_box_trim_end_break_token_),
+                To<InlineBreakToken>(child_break_token))) {
+          builder.SetShouldForceTextBoxTrimEnd();
+        }
+      } else if (IsLastInflowChild(*child.GetLayoutBox()) ||
+                 child == override_text_box_trim_end_child_) {
+        // For a block child, set the flag only for the last inflow child,
+        // because `IsLastInflowChild` can determine the last inflow child
+        // rather quickly. It can still fail for empty children, which is
+        // handled by `RelayoutForTextBoxTrimEnd()`.
+        builder.SetShouldTextBoxTrimEnd();
+      }
     }
   }
 

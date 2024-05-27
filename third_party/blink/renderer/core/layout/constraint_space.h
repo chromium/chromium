@@ -797,6 +797,9 @@ class CORE_EXPORT ConstraintSpace final {
   bool ShouldTextBoxTrimEnd() const {
     return HasRareData() && rare_data_->should_text_box_trim_end;
   }
+  bool ShouldForceTextBoxTrimEnd() const {
+    return HasRareData() && rare_data_->should_force_text_box_trim_end;
+  }
 
   // Return how percentage-based margins and padding should be resolved.
   DecorationPercentageResolutionType GetDecorationPercentageResolutionType()
@@ -968,6 +971,7 @@ class CORE_EXPORT ConstraintSpace final {
           is_inside_repeatable_content(other.is_inside_repeatable_content),
           should_text_box_trim_start(other.should_text_box_trim_start),
           should_text_box_trim_end(other.should_text_box_trim_end),
+          should_force_text_box_trim_end(other.should_force_text_box_trim_end),
           decoration_percentage_resolution_type(
               other.decoration_percentage_resolution_type) {
       switch (GetDataUnionType()) {
@@ -1053,6 +1057,8 @@ class CORE_EXPORT ConstraintSpace final {
           is_inside_repeatable_content != other.is_inside_repeatable_content ||
           should_text_box_trim_start != other.should_text_box_trim_start ||
           should_text_box_trim_end != other.should_text_box_trim_end ||
+          should_force_text_box_trim_end !=
+              other.should_force_text_box_trim_end ||
           decoration_percentage_resolution_type !=
               other.decoration_percentage_resolution_type) {
         return false;
@@ -1094,6 +1100,7 @@ class CORE_EXPORT ConstraintSpace final {
           propagate_child_break_values || is_at_fragmentainer_start ||
           should_repeat || is_inside_repeatable_content ||
           should_text_box_trim_start || should_text_box_trim_end ||
+          should_force_text_box_trim_end ||
           decoration_percentage_resolution_type) {
         return false;
       }
@@ -1351,6 +1358,7 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned is_inside_repeatable_content : 1 = false;
     unsigned should_text_box_trim_start : 1 = false;
     unsigned should_text_box_trim_end : 1 = false;
+    unsigned should_force_text_box_trim_end : 1 = false;
     unsigned decoration_percentage_resolution_type : 1 = static_cast<unsigned>(
         DecorationPercentageResolutionType::kContainingBlockInlineSize);
 

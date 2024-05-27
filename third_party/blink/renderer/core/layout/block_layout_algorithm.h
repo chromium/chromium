@@ -519,9 +519,12 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // `should_text_box_trim_end_` and when the last child was empty. Thus this is
   // updated only in that case.
   LayoutInputNode last_non_empty_inflow_child_ = nullptr;
+  // The break token of the last non-empty line.
+  const BreakToken* last_non_empty_break_token_ = nullptr;
 
   // `text-box-trim: end` should be applied to this child.
   LayoutInputNode override_text_box_trim_end_child_ = nullptr;
+  const BreakToken* override_text_box_trim_end_break_token_ = nullptr;
 
   // Intrinsic block size based on child layout and containment.
   LayoutUnit intrinsic_block_size_;

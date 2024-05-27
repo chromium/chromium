@@ -603,7 +603,8 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
   const bool should_apply_start =
       space.ShouldTextBoxTrimStart() && line_info.IsFirstFormattedLine();
   const bool should_apply_end =
-      space.ShouldTextBoxTrimEnd() && !line_info.GetBreakToken();
+      space.ShouldTextBoxTrimEnd() &&
+      (!line_info.GetBreakToken() || space.ShouldForceTextBoxTrimEnd());
   if (!should_apply_start && !should_apply_end) {
     return;
   }

@@ -84,6 +84,7 @@ class CORE_EXPORT InlineBreakToken final : public BreakToken {
   const InlineItemTextIndex& Start() const { return start_; }
   wtf_size_t StartItemIndex() const { return start_.item_index; }
   wtf_size_t StartTextOffset() const { return start_.text_offset; }
+  static bool IsStartEqual(const InlineBreakToken*, const InlineBreakToken*);
 
   bool UseFirstLineStyle() const {
     return flags_ & kUseFirstLineStyle;
@@ -142,6 +143,14 @@ class CORE_EXPORT InlineBreakToken final : public BreakToken {
   // This is an array of one item if |kHasRareData|, or zero.
   RareData rare_data_[];
 };
+
+inline bool InlineBreakToken::IsStartEqual(const InlineBreakToken* lhs,
+                                           const InlineBreakToken* rhs) {
+  if (!lhs) {
+    return !rhs;
+  }
+  return rhs && lhs->Start() == rhs->Start();
+}
 
 template <>
 struct DowncastTraits<InlineBreakToken> {

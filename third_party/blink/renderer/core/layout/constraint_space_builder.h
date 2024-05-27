@@ -492,6 +492,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   void SetShouldTextBoxTrimEnd() {
     space_.EnsureRareData()->should_text_box_trim_end = true;
   }
+  void SetShouldForceTextBoxTrimEnd() {
+    space_.EnsureRareData()->should_force_text_box_trim_end = true;
+  }
 
   void SetDecorationPercentageResolutionType(
       DecorationPercentageResolutionType type) {
