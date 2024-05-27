@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <functional>
 #include <set>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -424,7 +426,9 @@ std::vector<ProcessedStudy> FilterAndValidateStudies(
   std::vector<ProcessedStudy> filtered_studies;
 
   // Don't create two studies with the same name.
-  std::set<std::string> created_studies;
+  // These `string_view`s contain pointers which point to memory owned by
+  // `seed`.
+  std::set<std::string_view, std::less<>> created_studies;
 
   for (const Study& study : seed.study()) {
     ProcessedStudy processed_study;
