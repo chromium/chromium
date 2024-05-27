@@ -5078,6 +5078,12 @@ No devices connected.
         Your Chromebook needs to stay on and connected to power during this time. Make sure the charger or adapter cables are completely plugged in, both to your Chromebook and the power outlet. Do not turn off your Chromebook.
       </message>
 
+      <!-- Authentication strings -->
+
+      <message name="IDS_ASH_AUTH_PIN_KEYBOARD" desc="The accessibility text for the authentication pin keyboard.">
+        Pin keyboard
+      </message>
+
       <!-- Fast Pair strings -->
       <message name="IDS_FAST_PAIR_CONNECTION_ERROR_TITLE" desc="Notification title shown when a there is a Fast Pair connection error.">
         Couldn't connect <ph name="NAME">$1<ex>Pixel Buds</ex></ph>
