@@ -490,8 +490,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   friend class ScopedPagePauser;
   class CloseTaskHandler;
 
-  void InitGroup();
-
   // SettingsDelegate overrides.
   void SettingsChanged(SettingsDelegate::ChangeType) override;
 
@@ -616,10 +614,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // The Page that opened this Page.
   WeakMember<Page> opener_;
-
-  // A handle to notify the scheduler whether this page has other related
-  // pages or not.
-  FrameScheduler::SchedulingAffectingFeatureHandle has_related_pages_;
 
   std::unique_ptr<PageScheduler> page_scheduler_;
 
