@@ -69,6 +69,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.AppHooks;
@@ -1068,6 +1069,7 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"PersonalizedGoogleServices"})
+    @DisableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testClickGoogleActivityControls() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -1085,6 +1087,7 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"PersonalizedGoogleServices"})
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    @DisableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testClickGoogleActivityControlsWhenSyncPromosShouldBeReplacedWithSigninPromos() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
