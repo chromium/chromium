@@ -6782,6 +6782,8 @@ bool ConsumeGridTemplateRowsAndAreasAndColumns(
   // consecutive <line-names> values
   CSSBracketedValueList* line_names = nullptr;
 
+  // See comment in Grid::ParseShorthand() about the use of AtEnd.
+
   do {
     // Handle leading <custom-ident>*.
     bool has_previous_line_names = line_names;
@@ -6814,9 +6816,10 @@ bool ConsumeGridTemplateRowsAndAreasAndColumns(
       template_rows_value_list->Append(*line_names);
     }
   } while (!range.AtEnd() && !(range.Peek().GetType() == kDelimiterToken &&
-                               range.Peek().Delimiter() == '/'));
+                                (range.Peek().Delimiter() == '/' ||
+                                 range.Peek().Delimiter() == '!')));
 
-  if (!range.AtEnd()) {
+  if (!range.AtEnd() && range.Peek().Delimiter() != '!') {
     if (!ConsumeSlashIncludingWhitespace(range)) {
       return false;
     }
