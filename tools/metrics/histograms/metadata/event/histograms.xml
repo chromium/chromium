@@ -178,25 +178,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Event.Jank.PredictorJankyFramePercentage" units="%"
-    expires_after="2024-09-22">
-  <owner>mekk@google.com</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    This metric is deprecated, please use
-    Event.Jank.PredictorJankyFramePercentage2.
-
-    A frame is deemed janky if an irregular jump in screen displacement occured
-    in consecutive frames, this metric is the percentage of those janky frames
-    per 50 produced frames and is only emitted if a scroll has more than 50
-    frames in a sequence. This metric is used to asses the scrolling prediction
-    performance as the scroll predictor should smooth out those irregular jumps.
-
-    For more details about this metric, please check
-    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY.
-  </summary>
-</histogram>
-
 <histogram name="Event.Jank.PredictorJankyFramePercentage2" units="%"
     expires_after="2024-09-29">
   <owner>mekk@google.com</owner>
@@ -214,39 +195,6 @@ chromium-metrics-reviews@google.com.
     Example of a slow scroll: https://youtube.com/shorts/K1ZhyjYr0No
 
     Example of a fast scroll: https://youtube.com/shorts/dGj6XTD-PYA
-  </summary>
-</histogram>
-
-<histogram name="Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration"
-    enum="JankyBoolean" expires_after="2022-11-24">
-  <owner>nuskos@google.com</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    IMPORTANT: This was deprecated and stopped being emitted due to overflow
-    from the counters being emitted in Microseconds instead of milliseconds like
-    it was supposed to. Please see
-    Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration2.
-
-    Each time a ScrollUpdate event which was displayed on the screen is
-    processed, an amount of samples equal to the event processing duration in
-    milliseconds is emitted into the corresponding bucket.
-
-    Thus the ratio of the two represents the average amount of time scrolling is
-    janky.
-  </summary>
-</histogram>
-
-<histogram name="Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration2"
-    enum="JankyBoolean" expires_after="2024-11-03">
-  <owner>nuskos@google.com</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Each time a ScrollUpdate event which was displayed on the screen is
-    processed, an amount of samples equal to the event processing duration in
-    milliseconds is emitted into the corresponding bucket.
-
-    Thus the ratio of the two represents the average amount of time scrolling is
-    janky.
   </summary>
 </histogram>
 
