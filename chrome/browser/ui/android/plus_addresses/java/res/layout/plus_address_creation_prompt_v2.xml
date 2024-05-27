@@ -12,8 +12,19 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/dialog_padding_sides"
-        android:paddingVertical="12dp">
+        android:paddingHorizontal="@dimen/dialog_padding_sides">
+
+  <ImageView
+        android:id="@+id/drag_handlebar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/drag_handlebar" />
 
   <ImageView
       android:id="@+id/plus_address_logo"
@@ -68,6 +79,7 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:textAlignment="center"
       android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
+      android:layout_marginBottom="12dp"
       android:minHeight="@dimen/min_touch_target_size"
       android:minWidth="@dimen/min_touch_target_size" />
 
