@@ -141,7 +141,7 @@ void ScopedStyleResolver::CollectFeaturesTo(
     StyleSheetContents* contents = sheet->Contents();
     if (contents->HasOneClient() ||
         visited_shared_style_sheet_contents.insert(contents).is_new_entry) {
-      features.Merge(contents->GetRuleSet().Features());
+      features.Merge(rule_set->Features());
     }
   }
 }
