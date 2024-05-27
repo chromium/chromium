@@ -9,10 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.sync.SyncService;
@@ -41,6 +43,17 @@ public class HistorySyncFragment extends PrivacyGuideBasePage
         historySyncSwitch.setChecked(PrivacyGuideUtils.isHistorySyncEnabled(getProfile()));
 
         historySyncSwitch.setOnCheckedChangeListener(this);
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            ((TextView) historySyncSwitch.findViewById(R.id.switch_text))
+                    .setText(R.string.privacy_guide_history_and_tabs_sync_toggle);
+            ((PrivacyGuideExplanationItem) view.findViewById(R.id.history_sync_item_one))
+                    .setSummaryText(
+                            getContext()
+                                    .getString(
+                                            R.string.privacy_guide_history_and_tabs_sync_item_one));
+        }
     }
 
     @Override

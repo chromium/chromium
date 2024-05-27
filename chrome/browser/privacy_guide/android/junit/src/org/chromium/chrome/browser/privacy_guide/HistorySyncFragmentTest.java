@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.fragment.app.testing.FragmentScenario;
 
@@ -27,7 +29,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.sync.SyncService;
@@ -38,6 +43,7 @@ import java.util.Set;
 
 /** JUnit tests of the class {@link HistorySyncFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class HistorySyncFragmentTest {
     private static final String CHANGE_HISTORY_SYNC_ON_USER_ACTION =
             "Settings.PrivacyGuide.ChangeHistorySyncOn";
@@ -181,5 +187,57 @@ public class HistorySyncFragmentTest {
         assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_OFF_USER_ACTION));
         mHistorySyncButton.performClick();
         assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_ON_USER_ACTION));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testStringsWhenReplaceSyncPromosWithSignInPromosFlagIsDisabled() throws Exception {
+        initSyncState(true, true);
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        HistorySyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario.onFragment(
+                fragment -> {
+                    mHistorySyncButton = fragment.getView().findViewById(R.id.history_sync_switch);
+                    assertEquals(
+                            ((TextView) mHistorySyncButton.findViewById(R.id.switch_text))
+                                    .getText(),
+                            fragment.getContext()
+                                    .getString(R.string.privacy_guide_history_sync_toggle));
+                    assertEquals(
+                            ((PrivacyGuideExplanationItem)
+                                            fragment.getView()
+                                                    .findViewById(R.id.history_sync_item_one))
+                                    .getSummaryTextForTesting(),
+                            fragment.getContext()
+                                    .getString(R.string.privacy_guide_history_sync_item_one));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testStringsWhenReplaceSyncPromosWithSignInPromosFlagIsEnabled() throws Exception {
+        initSyncState(true, true);
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        HistorySyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario.onFragment(
+                fragment -> {
+                    mHistorySyncButton = fragment.getView().findViewById(R.id.history_sync_switch);
+                    assertEquals(
+                            ((TextView) mHistorySyncButton.findViewById(R.id.switch_text))
+                                    .getText(),
+                            fragment.getContext()
+                                    .getString(
+                                            R.string.privacy_guide_history_and_tabs_sync_toggle));
+                    assertEquals(
+                            ((PrivacyGuideExplanationItem)
+                                            fragment.getView()
+                                                    .findViewById(R.id.history_sync_item_one))
+                                    .getSummaryTextForTesting(),
+                            fragment.getContext()
+                                    .getString(
+                                            R.string.privacy_guide_history_and_tabs_sync_item_one));
+                });
     }
 }
