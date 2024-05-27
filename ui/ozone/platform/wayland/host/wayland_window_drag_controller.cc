@@ -567,7 +567,7 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   should_process_drag_motion_events_ = false;
 }
 
-// Dispatch mouse release event (to tell clients that the drop just happened)
+// Dispatch mouse release events (to tell clients that the drop just happened)
 // clear focus and reset internal state. Must be called when the session is
 // about to finish.
 void WaylandWindowDragController::HandleDropAndResetState(
@@ -600,11 +600,8 @@ void WaylandWindowDragController::HandleDropAndResetState(
   } else {
     if (*drag_source_ == DragEventSource::kMouse) {
       if (pointer_grab_owner_) {
-        pointer_delegate_->OnPointerButtonEvent(
-            ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, timestamp,
-            pointer_grab_owner_, wl::EventDispatchPolicy::kImmediate,
-            /*allow_release_of_unpressed_button=*/false,
-            /*is_synthesized=*/true);
+        pointer_delegate_->ReleasePressedPointerButtons(pointer_grab_owner_,
+                                                        timestamp);
       }
     } else {
       const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();

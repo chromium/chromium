@@ -114,6 +114,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   const gfx::Vector2d& drag_offset_for_testing() const { return drag_offset_; }
 
+  bool has_received_enter_for_testing() const { return has_received_enter_; }
+
  private:
   class ExtendedDragSource;
 

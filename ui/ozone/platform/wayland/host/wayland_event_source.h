@@ -136,6 +136,8 @@ class WaylandEventSource : public PlatformEventSource,
   void OnResetPointerFlags() override;
   const gfx::PointF& GetPointerLocation() const override;
   bool IsPointerButtonPressed(EventFlags button) const override;
+  void ReleasePressedPointerButtons(WaylandWindow* window,
+                                    base::TimeTicks timestamp) override;
   void OnPointerStylusToolChanged(EventPointerType pointer_type) override;
   void OnPointerStylusForceChanged(float force) override;
   void OnPointerStylusTiltChanged(const gfx::Vector2dF& tilt) override;

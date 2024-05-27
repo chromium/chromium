@@ -2099,6 +2099,41 @@ TEST_P(WaylandWindowDragControllerTest,
   EXPECT_EQ(State::kIdle, drag_controller_state());
 }
 
+// Regression test for b/336321329. Ensures all pressed mouse buttons are
+// released when the window drag ends.
+TEST_P(WaylandWindowDragControllerTest, AllPointersReleasedAfterDragEnd) {
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+
+  // Dispatch enter and press events for several mouse buttons.
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  SendPointerPress(window_.get(), &delegate_, BTN_RIGHT);
+  SendPointerPress(window_.get(), &delegate_, BTN_MIDDLE);
+
+  EXPECT_TRUE(pointer_delegate()->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON));
+  EXPECT_TRUE(
+      pointer_delegate()->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+  EXPECT_TRUE(
+      pointer_delegate()->IsPointerButtonPressed(EF_MIDDLE_MOUSE_BUTTON));
+
+  // Start a drag with multiple mouse buttons pressed.
+  GetWaylandExtension(*window_)->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kMouse,
+      /*allow_system_drag=*/false);
+  ASSERT_EQ(State::kAttached, drag_controller_state());
+
+  // End the drag, all pressed mouse buttons should have been released.
+  SendDndFinished();
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+
+  EXPECT_FALSE(
+      pointer_delegate()->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON));
+  EXPECT_FALSE(
+      pointer_delegate()->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+  EXPECT_FALSE(
+      pointer_delegate()->IsPointerButtonPressed(EF_MIDDLE_MOUSE_BUTTON));
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Lacros requires aura shell.
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

@@ -45,13 +45,14 @@ namespace ui {
 
 namespace {
 
-constexpr auto kPointerToStringMap = base::MakeFixedFlatMap<int, const char*>({
-    {EF_LEFT_MOUSE_BUTTON, "Left"},
-    {EF_MIDDLE_MOUSE_BUTTON, "Middle"},
-    {EF_RIGHT_MOUSE_BUTTON, "Right"},
-    {EF_BACK_MOUSE_BUTTON, "Back"},
-    {EF_FORWARD_MOUSE_BUTTON, "Forward"},
-});
+constexpr auto kMouseButtonToStringMap =
+    base::MakeFixedFlatMap<int, const char*>({
+        {EF_LEFT_MOUSE_BUTTON, "Left"},
+        {EF_MIDDLE_MOUSE_BUTTON, "Middle"},
+        {EF_RIGHT_MOUSE_BUTTON, "Right"},
+        {EF_BACK_MOUSE_BUTTON, "Back"},
+        {EF_FORWARD_MOUSE_BUTTON, "Forward"},
+    });
 
 constexpr auto kModifierToStringMap = base::MakeFixedFlatMap<int, const char*>({
     {ui::EF_SHIFT_DOWN, "Shift"},
@@ -65,7 +66,7 @@ constexpr auto kModifierToStringMap = base::MakeFixedFlatMap<int, const char*>({
 });
 
 std::string ToPointerFlagsString(int flags) {
-  return ToMatchingKeyMaskString(flags, kPointerToStringMap);
+  return ToMatchingKeyMaskString(flags, kMouseButtonToStringMap);
 }
 
 std::string ToKeyboardModifierStrings(int modifiers) {
@@ -864,6 +865,26 @@ void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta,
 bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
   DCHECK(HasAnyPointerButtonFlag(button));
   return pointer_flags_ & button;
+}
+
+void WaylandEventSource::ReleasePressedPointerButtons(
+    WaylandWindow* window,
+    base::TimeTicks timestamp) {
+  CHECK(pointer_flags_);
+  for (const auto& [button, name] : kMouseButtonToStringMap) {
+    if (button & pointer_flags_) {
+      VLOG(1) << "Synthesizing pointer release for: " << name;
+      OnPointerButtonEvent(ET_MOUSE_RELEASED, button, timestamp, window,
+                           wl::EventDispatchPolicy::kImmediate,
+                           /*allow_release_of_unpressed_button=*/false,
+                           /*is_synthesized=*/true);
+      pointer_flags_ &= ~button;
+    }
+    if (!pointer_flags_) {
+      break;
+    }
+  }
+  CHECK(!pointer_flags_);
 }
 
 void WaylandEventSource::OnPointerStylusToolChanged(

@@ -173,4 +173,59 @@ TEST_F(WaylandEventSourceTest, IgnoreReleaseWithoutPress) {
   });
 }
 
+TEST_F(WaylandEventSourceTest, ReleasesAllPressedPointerButtons) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_POINTER);
+  });
+  ASSERT_TRUE(connection_->seat()->pointer());
+
+  EXPECT_FALSE(pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON));
+  EXPECT_FALSE(
+      pointer_delegate_->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+  EXPECT_FALSE(
+      pointer_delegate_->IsPointerButtonPressed(EF_MIDDLE_MOUSE_BUTTON));
+
+  // Dispatch enter, left, right and middle press pointer events.
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(4);
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+    auto* const pointer = server->seat()->pointer()->resource();
+
+    wl_pointer_send_enter(pointer, server->GetNextSerial(), surface, 0, 0);
+    wl_pointer_send_frame(pointer);
+    wl_pointer_send_button(pointer, server->GetNextSerial(),
+                           server->GetNextTime(), BTN_LEFT,
+                           WL_POINTER_BUTTON_STATE_PRESSED);
+    wl_pointer_send_frame(pointer);
+    wl_pointer_send_button(pointer, server->GetNextSerial(),
+                           server->GetNextTime(), BTN_RIGHT,
+                           WL_POINTER_BUTTON_STATE_PRESSED);
+    wl_pointer_send_frame(pointer);
+    wl_pointer_send_button(pointer, server->GetNextSerial(),
+                           server->GetNextTime(), BTN_MIDDLE,
+                           WL_POINTER_BUTTON_STATE_PRESSED);
+    wl_pointer_send_frame(pointer);
+  });
+
+  // Left, right and middle mouse buttons should register as pressed.
+  EXPECT_TRUE(pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON));
+  EXPECT_TRUE(pointer_delegate_->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+  EXPECT_TRUE(
+      pointer_delegate_->IsPointerButtonPressed(EF_MIDDLE_MOUSE_BUTTON));
+
+  // Verify release buttons are synthesized for mouse pressed events.
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(3);
+  pointer_delegate_->ReleasePressedPointerButtons(window_.get(),
+                                                  base::TimeTicks::Now());
+
+  EXPECT_FALSE(pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON));
+  EXPECT_FALSE(
+      pointer_delegate_->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+  EXPECT_FALSE(
+      pointer_delegate_->IsPointerButtonPressed(EF_MIDDLE_MOUSE_BUTTON));
+}
+
 }  // namespace ui
