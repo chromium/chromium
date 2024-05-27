@@ -21,8 +21,6 @@ extern const char kAccountIdMigrationState[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAccountInfo[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kAutologinEnabled[];
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kCookieClearOnExitMigrationNoticeComplete[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieHash[];
@@ -52,8 +50,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesUsernamePattern[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kRestrictAccountsToPatterns[];
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kReverseAutologinRejectedEmailList[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kSignedInWithCredentialProvider[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

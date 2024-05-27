@@ -189,6 +189,11 @@ constexpr char kPreferencesMigratedToBasic[] =
 constexpr char kSyncCachedTrustedVaultAutoUpgradeDebugInfo[] =
     "sync.cached_trusted_vault_auto_upgrade_debug_info";
 
+// Deprecated 05/2024.
+inline constexpr char kAutologinEnabled[] = "autologin.enabled";
+inline constexpr char kReverseAutologinRejectedEmailList[] =
+    "reverse_autologin.rejected_email_list";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -803,6 +808,10 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kContentNotificationsEnrollmentEligibility);
 
   registry->RegisterStringPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo, "");
+
+  // Deprecated 05/2024.
+  registry->RegisterBooleanPref(kAutologinEnabled, true);
+  registry->RegisterListPref(kReverseAutologinRejectedEmailList);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1019,6 +1028,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   // Added 05/2024.
   prefs->ClearPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo);
+
+  // Added 05/2024.
+  prefs->ClearPref(kAutologinEnabled);
+  prefs->ClearPref(kReverseAutologinRejectedEmailList);
 }
 
 void MigrateObsoleteUserDefault() {

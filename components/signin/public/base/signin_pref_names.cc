@@ -24,9 +24,6 @@ const char kAccountIdMigrationState[] = "account_id_migration_state";
 // tracked by this signin.
 const char kAccountInfo[] = "account_info";
 
-// Boolean identifying whether reverse auto-login is enabled.
-const char kAutologinEnabled[] = "autologin.enabled";
-
 // Whether the "clear on exit" migration is complete.
 // If this preference is not true, then the user needs to be migrated.
 // If a user has set clear cookies on exit prior to the activation of
@@ -111,11 +108,6 @@ const char kGoogleServicesSyncingUsernameMigratedToSignedIn[] =
 // all accounts are allowed (no restrictions).
 const char kGoogleServicesUsernamePattern[] =
     "google.services.username_pattern";
-
-// List to keep track of emails for which the user has rejected one-click
-// sign-in.
-const char kReverseAutologinRejectedEmailList[] =
-    "reverse_autologin.rejected_email_list";
 
 // Boolean indicating if this profile was signed in with information from a
 // credential provider.

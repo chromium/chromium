@@ -1098,6 +1098,11 @@ inline constexpr char kDefaultSearchProviderChoiceLocationPrefName[] =
 inline constexpr char kSyncCachedTrustedVaultAutoUpgradeDebugInfo[] =
     "sync.cached_trusted_vault_auto_upgrade_debug_info";
 
+// Deprecated 05/2024.
+inline constexpr char kAutologinEnabled[] = "autologin.enabled";
+inline constexpr char kReverseAutologinRejectedEmailList[] =
+    "reverse_autologin.rejected_email_list";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1582,6 +1587,10 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 05/2024.
   registry->RegisterStringPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo, "");
+
+  // Deprecated 05/2024.
+  registry->RegisterBooleanPref(kAutologinEnabled, true);
+  registry->RegisterListPref(kReverseAutologinRejectedEmailList);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2950,6 +2959,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 05/2024.
   profile_prefs->ClearPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo);
+
+  // Added 05/2024.
+  profile_prefs->ClearPref(kAutologinEnabled);
+  profile_prefs->ClearPref(kReverseAutologinRejectedEmailList);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
