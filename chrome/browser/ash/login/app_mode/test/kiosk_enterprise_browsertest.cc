@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -127,7 +128,7 @@ class KioskEnterpriseTest : public KioskBaseTest {
                                  const std::string& app_id,
                                  const std::string& update_url) {
     std::vector<policy::DeviceLocalAccount> accounts;
-    accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
+    accounts.emplace_back(policy::DeviceLocalAccountType::kKioskApp,
                           policy::DeviceLocalAccount::EphemeralMode::kUnset,
                           account_id, app_id, update_url);
     policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
@@ -329,7 +330,7 @@ class KioskEnterpriseEphemeralTest
       policy::DeviceLocalAccount::EphemeralMode ephemeral_mode,
       bool ephemeral_users_enabled) {
     std::vector<policy::DeviceLocalAccount> accounts;
-    accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
+    accounts.emplace_back(policy::DeviceLocalAccountType::kKioskApp,
                           ephemeral_mode, account_id, app_id, update_url);
     policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
     settings_helper_.SetBoolean(kAccountsPrefEphemeralUsersEnabled,

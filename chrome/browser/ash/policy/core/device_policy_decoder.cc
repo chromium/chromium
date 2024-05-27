@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
@@ -30,6 +29,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/chrome_schema.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/external_data_manager.h"
 #include "components/policy/core/common/policy_map.h"
@@ -687,7 +687,7 @@ base::Value::Dict DecodeDeviceLocalAccountInfoProto(
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
                entry.deprecated_public_session_id())
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
-               static_cast<int>(DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+               static_cast<int>(DeviceLocalAccountType::kPublicSession));
     } else {
       return base::Value::Dict();
     }

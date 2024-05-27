@@ -89,17 +89,6 @@ DeviceLocalAccount::DeviceLocalAccount(DeviceLocalAccountType type,
       kiosk_app_id(kiosk_app_id),
       kiosk_app_update_url(kiosk_app_update_url) {}
 
-DeviceLocalAccount::DeviceLocalAccount(Type type,
-                                       EphemeralMode ephemeral_mode,
-                                       const std::string& account_id,
-                                       const std::string& kiosk_app_id,
-                                       const std::string& kiosk_app_update_url)
-    : DeviceLocalAccount(static_cast<DeviceLocalAccountType>(type),
-                         ephemeral_mode,
-                         account_id,
-                         kiosk_app_id,
-                         kiosk_app_update_url) {}
-
 DeviceLocalAccount::DeviceLocalAccount(
     EphemeralMode ephemeral_mode,
     const ArcKioskAppBasicInfo& arc_kiosk_app_info,
@@ -124,12 +113,6 @@ DeviceLocalAccount::DeviceLocalAccount(const DeviceLocalAccount& other) =
     default;
 
 DeviceLocalAccount::~DeviceLocalAccount() = default;
-
-std::string GenerateDeviceLocalAccountUserId(const std::string& account_id,
-                                             DeviceLocalAccount::Type type) {
-  return ::policy::GenerateDeviceLocalAccountUserId(
-      account_id, static_cast<DeviceLocalAccountType>(type));
-}
 
 void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
                             const std::vector<DeviceLocalAccount>& accounts) {

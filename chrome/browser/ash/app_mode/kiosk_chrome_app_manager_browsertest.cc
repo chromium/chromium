@@ -39,6 +39,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -261,7 +262,7 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
             // SetAutoLaunchApp work with the existing app entry created here.
             .Set(kAccountsPrefDeviceLocalAccountsKeyId, app_id + "@kiosk-apps")
             .Set(kAccountsPrefDeviceLocalAccountsKeyType,
-                 policy::DeviceLocalAccount::TYPE_KIOSK_APP)
+                 static_cast<int>(policy::DeviceLocalAccountType::kKioskApp))
             .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                  static_cast<int>(
                      policy::DeviceLocalAccount::EphemeralMode::kUnset))

@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -619,7 +620,7 @@ TEST_F(DevicePolicyDecoderTest,
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
                    kDeviceLocalAccountKioskAccountId)
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
-                   static_cast<int>(DeviceLocalAccount::TYPE_ARC_KIOSK_APP))
+                   static_cast<int>(DeviceLocalAccountType::kArcKioskApp))
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                    static_cast<int>(
                        DeviceLocalAccount::EphemeralMode::kUnset)))));
@@ -645,7 +646,7 @@ TEST_F(DevicePolicyDecoderTest,
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
                    kDeviceLocalAccountKioskAccountId)
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
-                   static_cast<int>(DeviceLocalAccount::TYPE_KIOSK_APP))
+                   static_cast<int>(DeviceLocalAccountType::kKioskApp))
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                    static_cast<int>(
                        DeviceLocalAccount::EphemeralMode::kDisable)))));

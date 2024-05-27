@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,7 +29,7 @@ base::Value BuildDeviceLocalAccountsWithOneKioskAppWithEphemeralMode(
       base::Value::Dict()
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, kAccountId)
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
-               static_cast<int>(DeviceLocalAccount::TYPE_KIOSK_APP))
+               static_cast<int>(DeviceLocalAccountType::kKioskApp))
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                static_cast<int>(ephemeral_mode))
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
@@ -91,7 +92,7 @@ TEST_F(DeviceLocalAccountTest,
       base::Value::Dict()
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, kAccountId)
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
-               static_cast<int>(DeviceLocalAccount::TYPE_KIOSK_APP))
+               static_cast<int>(DeviceLocalAccountType::kKioskApp))
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
                kKioskAppId))));
 
@@ -109,7 +110,7 @@ TEST_F(DeviceLocalAccountTest,
       base::Value::Dict()
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, kAccountId)
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
-               static_cast<int>(DeviceLocalAccount::TYPE_PUBLIC_SESSION))
+               static_cast<int>(DeviceLocalAccountType::kPublicSession))
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                static_cast<int>(DeviceLocalAccount::EphemeralMode::kEnable)))));
 

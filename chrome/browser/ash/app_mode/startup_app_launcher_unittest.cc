@@ -64,6 +64,7 @@
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -427,7 +428,7 @@ class ScopedKioskAppManagerOverrides : public KioskChromeAppManager::Overrides {
     base::Value::Dict account;
     account.Set(kAccountsPrefDeviceLocalAccountsKeyId, kTestUserAccount);
     account.Set(kAccountsPrefDeviceLocalAccountsKeyType,
-                policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+                static_cast<int>(policy::DeviceLocalAccountType::kKioskApp));
     account.Set(
         kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
         static_cast<int>(policy::DeviceLocalAccount::EphemeralMode::kUnset));

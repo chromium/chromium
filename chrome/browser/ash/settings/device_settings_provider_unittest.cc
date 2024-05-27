@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -732,8 +733,9 @@ TEST_F(DeviceSettingsProviderTest, LegacyDeviceLocalAccounts) {
   base::Value::Dict entry_dict;
   entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyId,
                  policy::PolicyBuilder::kFakeUsername);
-  entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyType,
-                 policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+  entry_dict.Set(
+      kAccountsPrefDeviceLocalAccountsKeyType,
+      static_cast<int>(policy::DeviceLocalAccountType::kPublicSession));
   expected_accounts.Append(std::move(entry_dict));
   const base::Value* actual_accounts =
       provider_->Get(kAccountsPrefDeviceLocalAccounts);
@@ -754,7 +756,7 @@ TEST_F(DeviceSettingsProviderTest,
           .Set(kAccountsPrefDeviceLocalAccountsKeyId,
                kDeviceLocalAccountKioskAccountId)
           .Set(kAccountsPrefDeviceLocalAccountsKeyType,
-               static_cast<int>(policy::DeviceLocalAccount::TYPE_KIOSK_APP))
+               static_cast<int>(policy::DeviceLocalAccountType::kKioskApp))
           .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                static_cast<int>(
                    policy::DeviceLocalAccount::EphemeralMode::kUnset)));
@@ -780,7 +782,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceLocalAccountsWithEphemeralModeField) {
           .Set(kAccountsPrefDeviceLocalAccountsKeyId,
                kDeviceLocalAccountKioskAccountId)
           .Set(kAccountsPrefDeviceLocalAccountsKeyType,
-               static_cast<int>(policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP))
+               static_cast<int>(policy::DeviceLocalAccountType::kWebKioskApp))
           .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                static_cast<int>(
                    policy::DeviceLocalAccount::EphemeralMode::kEnable)));

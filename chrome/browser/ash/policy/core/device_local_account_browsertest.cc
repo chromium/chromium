@@ -122,6 +122,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -762,14 +763,12 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     WaitForPolicy();
   }
 
-  const AccountId account_id_1_ =
-      AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-          kAccountId1,
-          DeviceLocalAccount::TYPE_PUBLIC_SESSION));
-  const AccountId account_id_2_ =
-      AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-          kAccountId2,
-          DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+  const AccountId account_id_1_ = AccountId::FromUserEmail(
+      GenerateDeviceLocalAccountUserId(kAccountId1,
+                                       DeviceLocalAccountType::kPublicSession));
+  const AccountId account_id_2_ = AccountId::FromUserEmail(
+      GenerateDeviceLocalAccountUserId(kAccountId2,
+                                       DeviceLocalAccountType::kPublicSession));
   const std::string public_session_input_method_id_;
 
   std::string initial_locale_;
@@ -2840,14 +2839,14 @@ INSTANTIATE_TEST_SUITE_P(MgsDisplayPrefsTestInstance,
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, WebAppsInPublicSession) {
   UploadAndInstallDeviceLocalAccountPolicy();
-  // Add an account with DeviceLocalAccount::Type::TYPE_PUBLIC_SESSION.
+  // Add an account with DeviceLocalAccountType::kPublicSession.
   AddPublicSessionToDevicePolicy(kAccountId1);
   WaitForPolicy();
 
   StartLogin(std::string(), std::string());
   WaitForSessionStart();
 
-  // WebAppProvider should be enabled for TYPE_PUBLIC_SESSION user account.
+  // WebAppProvider should be enabled for kPublicSession user account.
   Profile* profile = GetProfileForTest();
   ASSERT_TRUE(profile);
   EXPECT_TRUE(web_app::WebAppProvider::GetForTest(profile));

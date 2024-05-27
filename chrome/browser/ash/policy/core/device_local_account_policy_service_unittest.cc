@@ -183,13 +183,13 @@ DeviceLocalAccountPolicyServiceTestBase::
     : DeviceSettingsTestBase(/*profile_creation_enabled=*/false),
       account_1_user_id_(GenerateDeviceLocalAccountUserId(
           kAccount1,
-          DeviceLocalAccount::TYPE_PUBLIC_SESSION)),
+          DeviceLocalAccountType::kPublicSession)),
       account_2_user_id_(GenerateDeviceLocalAccountUserId(
           kAccount2,
-          DeviceLocalAccount::TYPE_PUBLIC_SESSION)),
+          DeviceLocalAccountType::kPublicSession)),
       account_1_web_kiosk_user_id_(GenerateDeviceLocalAccountUserId(
           kAccount1,
-          DeviceLocalAccount::TYPE_WEB_KIOSK_APP)) {}
+          DeviceLocalAccountType::kWebKioskApp)) {}
 
 DeviceLocalAccountPolicyServiceTestBase::
     ~DeviceLocalAccountPolicyServiceTestBase() = default;
@@ -1228,7 +1228,7 @@ TEST_F(DeviceLocalAccountPolicyProviderLoadImmediateTest, Initialization) {
 
   provider_ = DeviceLocalAccountPolicyProvider::Create(
       GenerateDeviceLocalAccountUserId(kAccount1,
-                                       DeviceLocalAccount::TYPE_PUBLIC_SESSION),
+                                       DeviceLocalAccountType::kPublicSession),
       service_.get(), true /*force_immediate_load*/);
 
   EXPECT_TRUE(provider_->IsInitializationComplete(POLICY_DOMAIN_CHROME));

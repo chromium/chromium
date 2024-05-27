@@ -60,34 +60,6 @@ struct WebKioskAppBasicInfo {
 // This must match DeviceLocalAccountInfoProto.AccountType in
 // chrome_device_policy.proto.
 struct DeviceLocalAccount {
-  // DEPRECATED: please use DeviceLocalAccountType, instead.
-  // TODO(b/267685577): Remove this.
-  enum Type {
-    // A login-less, policy-configured browsing session.
-    TYPE_PUBLIC_SESSION,
-    // An account that serves as a container for a single full-screen app.
-    TYPE_KIOSK_APP,
-    // An account that serves as a container for a single full-screen
-    // Android app.
-    TYPE_ARC_KIOSK_APP,
-    // SAML public session account
-    TYPE_SAML_PUBLIC_SESSION,
-    // An account that serves as a container for a single full-screen web app.
-    TYPE_WEB_KIOSK_APP,
-    // Sentinel, must be last.
-    TYPE_COUNT
-  };
-  static_assert(TYPE_PUBLIC_SESSION ==
-                static_cast<Type>(DeviceLocalAccountType::kPublicSession));
-  static_assert(TYPE_KIOSK_APP ==
-                static_cast<Type>(DeviceLocalAccountType::kKioskApp));
-  static_assert(TYPE_ARC_KIOSK_APP ==
-                static_cast<Type>(DeviceLocalAccountType::kArcKioskApp));
-  static_assert(TYPE_SAML_PUBLIC_SESSION ==
-                static_cast<Type>(DeviceLocalAccountType::kSamlPublicSession));
-  static_assert(TYPE_WEB_KIOSK_APP ==
-                static_cast<Type>(DeviceLocalAccountType::kWebKioskApp));
-
   enum class EphemeralMode {
     // Default value. Same behaviour as `kFollowDeviceWidePolicy` value.
     kUnset = 0,
@@ -103,13 +75,6 @@ struct DeviceLocalAccount {
   };
 
   DeviceLocalAccount(DeviceLocalAccountType type,
-                     EphemeralMode ephemeral_mode,
-                     const std::string& account_id,
-                     const std::string& kiosk_app_id,
-                     const std::string& kiosk_app_update_url);
-  // DEPRECATED, use above one instead in the new code.
-  // TODO(b/267685577): Remove this.
-  DeviceLocalAccount(Type type,
                      EphemeralMode ephemeral_mode,
                      const std::string& account_id,
                      const std::string& kiosk_app_id,
@@ -150,12 +115,6 @@ struct DeviceLocalAccount {
   ArcKioskAppBasicInfo arc_kiosk_app_info;
   WebKioskAppBasicInfo web_kiosk_app_info;
 };
-
-// DEPRECATED: please use the one defined in
-// components/policy/core/common/device_local_account_type.h
-// TODO(b/267685577): Remove this.
-std::string GenerateDeviceLocalAccountUserId(const std::string& account_id,
-                                             DeviceLocalAccount::Type type);
 
 // Stores a list of device-local accounts in |service|. The accounts are stored
 // as a list of dictionaries with each dictionary containing the information
