@@ -128,6 +128,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting public static final String PREF_SYNC_SETTINGS = "sync_settings";
     @VisibleForTesting public static final String PREF_SYNC_APPS = "sync_apps";
     @VisibleForTesting public static final String PREF_TURN_OFF_SYNC = "turn_off_sync";
+    @VisibleForTesting public static final String PREF_SYNC_REVIEW_DATA = "sync_review_data";
     private static final String PREF_ADVANCED_CATEGORY = "advanced_category";
 
     @VisibleForTesting
@@ -162,7 +163,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     public static final String PREF_GOOGLE_ACTIVITY_CONTROLS = "google_activity_controls";
 
     @VisibleForTesting public static final String PREF_ENCRYPTION = "encryption";
-    @VisibleForTesting public static final String PREF_SYNC_REVIEW_DATA = "sync_review_data";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_DATA_DASHBOARD = "account_data_dashboard";
 
     @VisibleForTesting
     public static final String PREF_MANAGE_YOUR_GOOGLE_ACCOUNT = "manage_your_google_account";
@@ -285,6 +288,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     .values()
                     .forEach(pref -> pref.setOnPreferenceChangeListener(this));
 
+            Preference reviewSyncData = findPreference(PREF_ACCOUNT_DATA_DASHBOARD);
+            reviewSyncData.setOnPreferenceClickListener(
+                    SyncSettingsUtils.toOnClickListener(
+                            this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
+
             Preference manageYourGoogleAccount = findPreference(PREF_MANAGE_YOUR_GOOGLE_ACCOUNT);
             manageYourGoogleAccount.setOnPreferenceClickListener(
                     SyncSettingsUtils.toOnClickListener(
@@ -400,6 +408,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                                     .isUrlKeyedAnonymizedDataCollectionManaged(profile);
                         }
                     });
+            Preference reviewSyncData = findPreference(PREF_SYNC_REVIEW_DATA);
+            reviewSyncData.setOnPreferenceClickListener(
+                    SyncSettingsUtils.toOnClickListener(
+                            this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
         }
 
         mGoogleActivityControls = findPreference(PREF_GOOGLE_ACTIVITY_CONTROLS);
@@ -418,11 +430,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mSyncEncryption = findPreference(PREF_ENCRYPTION);
         mSyncEncryption.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(this, this::onSyncEncryptionClicked));
-
-        Preference reviewSyncData = findPreference(PREF_SYNC_REVIEW_DATA);
-        reviewSyncData.setOnPreferenceClickListener(
-                SyncSettingsUtils.toOnClickListener(
-                        this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
     }
 
     @Override

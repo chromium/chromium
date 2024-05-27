@@ -295,12 +295,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SIGN_IN_TO_CHROME_DISABLED_BY_USER_SUMMARY" desc="A descriptive line of text that appears when a user tries to signin when signin is disabled by the Google Services option in settings. The text explains why 'Sign in to Chrome' is not available.">
         Not available on your device
       </message>
-      <message name="IDS_SIGN_IN_GOOGLE_ACTIVITY_CONTROLS_TITLE" desc="Title of Google activity controls preference in signed in accounts settings screen">
-        Google activity controls
-      </message>
-      <message name="IDS_SIGN_IN_GOOGLE_ACTIVITY_CONTROLS_SUMMARY" desc="Message of Google activity controls preference in signed in accounts settings screen">
-        Control how your browsing history is used to personalize Search and more
-      </message>
       <message name="IDS_SIGN_IN_PERSONALIZE_GOOGLE_SERVICES_TITLE" desc="This is the title of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. It appears in Chrome’s Advanced Sync settings and is before the “Control how browsing history is used with your other data across Google services” string. [CHAR_LIMIT=30]">
         Personalization
       </message>
@@ -2340,6 +2334,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_ADVANCED_HEADER" desc="Heading of a section with settings related to the user's Google Account and data.">
         Control your data &amp; account
       </message>
+      <message name="IDS_SIGN_IN_GOOGLE_ACTIVITY_CONTROLS_TITLE" desc="Title of Google activity controls preference in signed in accounts settings screen">
+        Google activity controls
+      </message>
+      <message name="IDS_SIGN_IN_GOOGLE_ACTIVITY_CONTROLS_SUMMARY" desc="Message of Google activity controls preference in signed in accounts settings screen">
+        Control how your browsing history is used to personalize Search and more
+      </message>
       <message name="IDS_SYNC_ENCRYPTION" desc="Preference category name for sync encryption. [CHAR_LIMIT=32]">
         Encryption
       </message>
@@ -2355,16 +2355,14 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_ADDRESSES_CANCEL" desc="Button in a dialog to enable saving addresses to the Google Account. This is shown to users who have chosen to encrypt their data with a custom passphrase. The dialog informs users that newly saved addresses will not be encrypted with their passphrase.">
         Cancel
       </message>
+      <message name="IDS_ACCOUNT_DATA_DASHBOARD_TITLE" desc="Title for the cell to open 'Chrome and ChromeOS data in your account' web page where the user can control all their data data from sync.">
+        Chrome data in your account
+      </message>
+      <message name="IDS_ACCOUNT_DATA_DASHBOARD_SUBTITLE" desc="Subtitle for the cell to open 'Chrome and ChromeOS data in your account' web page where the user can control all their data data from sync.">
+        Review your account data
+      </message>
       <message name="IDS_SYNC_REVIEW_DATA" desc="Title for link to https://chrome.google.com/sync Dashboard to manage sync data.">
         Review your synced data
-      </message>
-      <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
-      <message name="IDS_SIGNIN_REVIEW_DATA_TITLE" desc="Title for link to https://chrome.google.com/sync Dashboard to manage sync data." translateable="false">
-        Data in your account
-      </message>
-      <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
-      <message name="IDS_SIGNIN_REVIEW_DATA_SUMMARY" desc="Summary for link to https://chrome.google.com/sync Dashboard to manage sync data." translateable="false">
-        Review your account data
       </message>
       <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
       <message name="IDS_MANAGE_ACCOUNTS_ON_THIS_DEVICE" desc="Title of account management section." translateable="false">
