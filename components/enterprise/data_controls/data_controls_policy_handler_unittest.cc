@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -480,9 +481,11 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
 class DataControlsPolicyHandlerTest : public testing::Test {
  public:
   policy::Schema schema() {
-    std::string error;
-    policy::Schema validation_schema = policy::Schema::Parse(kSchema, &error);
-    EXPECT_TRUE(error.empty());
+    ASSIGN_OR_RETURN(const auto validation_schema,
+                     policy::Schema::Parse(kSchema), [](const auto& e) {
+                       ADD_FAILURE() << e;
+                       return policy::Schema();
+                     });
     return validation_schema;
   }
 

@@ -5,6 +5,8 @@
 #include "components/enterprise/content/copy_prevention_settings_policy_handler.h"
 
 #include "base/json/json_reader.h"
+#include "base/logging.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/enterprise/content/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -12,8 +14,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_value_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include "base/logging.h"
 
 const char kPolicyName[] = "CopyPreventionSettings";
 
@@ -97,11 +97,8 @@ class CopyPreventionSettingsPolicyHandlerTest : public testing::Test {
 
  private:
   void SetUp() override {
-    std::string error;
-    schema_ = policy::Schema::Parse(kSchema, &error);
-
-    ASSERT_TRUE(error.empty());
-    ASSERT_TRUE(schema_.valid());
+    ASSIGN_OR_RETURN(schema_, policy::Schema::Parse(kSchema),
+                     [](const auto& e) { ADD_FAILURE() << e; });
   }
 
   policy::Schema schema_;

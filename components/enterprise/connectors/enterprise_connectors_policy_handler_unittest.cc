@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/json/json_reader.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -129,9 +130,8 @@ class EnterpriseConnectorsPolicyHandlerCloudOnlyTest
 };
 
 TEST_P(EnterpriseConnectorsPolicyHandlerCloudOnlyTest, Test) {
-  std::string error;
-  policy::Schema validation_schema = policy::Schema::Parse(kSchema, &error);
-  ASSERT_TRUE(error.empty());
+  const auto validation_schema = policy::Schema::Parse(kSchema);
+  ASSERT_TRUE(validation_schema.has_value()) << validation_schema.error();
 
   policy::PolicyMap policy_map;
   if (policy() != kEmptyPolicy) {
@@ -141,7 +141,7 @@ TEST_P(EnterpriseConnectorsPolicyHandlerCloudOnlyTest, Test) {
   }
 
   auto handler = std::make_unique<EnterpriseConnectorsPolicyHandler>(
-      kPolicyName, kTestPref, policy_scope(), validation_schema);
+      kPolicyName, kTestPref, policy_scope(), *validation_schema);
   policy::PolicyErrorMap errors;
   ASSERT_EQ(expect_valid_policy(),
             handler->CheckPolicySettings(policy_map, &errors));
@@ -202,9 +202,8 @@ class EnterpriseConnectorsPolicyHandlerLocalTest
 };
 
 TEST_P(EnterpriseConnectorsPolicyHandlerLocalTest, Test) {
-  std::string error;
-  policy::Schema validation_schema = policy::Schema::Parse(kSchema, &error);
-  ASSERT_TRUE(error.empty());
+  const auto validation_schema = policy::Schema::Parse(kSchema);
+  ASSERT_TRUE(validation_schema.has_value()) << validation_schema.error();
 
   policy::PolicyMap policy_map;
   if (policy() != kEmptyPolicy) {
@@ -215,7 +214,7 @@ TEST_P(EnterpriseConnectorsPolicyHandlerLocalTest, Test) {
   }
 
   auto handler = std::make_unique<EnterpriseConnectorsPolicyHandler>(
-      kPolicyName, policy_pref(), kTestScopePref, validation_schema);
+      kPolicyName, policy_pref(), kTestScopePref, *validation_schema);
   policy::PolicyErrorMap errors;
   ASSERT_EQ(policy_is_valid(),
             handler->CheckPolicySettings(policy_map, &errors));
@@ -247,9 +246,11 @@ class EnterpriseConnectorsPolicyHandlerMergeTest
   const char* policy() const override { return kValidPolicy; }
 
   policy::Schema schema() {
-    std::string error;
-    policy::Schema validation_schema = policy::Schema::Parse(kSchema, &error);
-    EXPECT_TRUE(error.empty());
+    ASSIGN_OR_RETURN(const auto validation_schema,
+                     policy::Schema::Parse(kSchema), [](const auto& e) {
+                       ADD_FAILURE() << e;
+                       return policy::Schema();
+                     });
     return validation_schema;
   }
 
