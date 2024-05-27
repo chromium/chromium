@@ -149,8 +149,9 @@ IN_PROC_BROWSER_TEST_F(SavableResourcesTest,
 
 // Test function GetAllSavableResourceLinksForCurrentPage with a web page
 // which does not have valid savable resource links.
-// Flaky on Linux MSan. See crbug.com/1423060.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// Flaky on Linux MSan and Windows ASan. See crbug.com/1423060.
+#if (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_GetSavableResourceLinksWithPageHasInvalidLinks \
   DISABLED_GetSavableResourceLinksWithPageHasInvalidLinks
 #else
