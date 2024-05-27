@@ -55,7 +55,7 @@
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
 #define INLINE_CAPACITY 0
 #else
-#define INLINE_CAPACITY inlineCapacity
+#define INLINE_CAPACITY InlineCapacity
 #endif
 
 namespace WTF {
@@ -522,7 +522,7 @@ class VectorBufferBase {
 };
 
 template <typename T,
-          wtf_size_t inlineCapacity,
+          wtf_size_t InlineCapacity,
           typename Allocator = PartitionAllocator>
 class VectorBuffer;
 
@@ -607,7 +607,7 @@ class VectorBuffer<T, 0, Allocator> : protected VectorBufferBase<T, Allocator> {
   using Base::CheckUnusedSlots;
 
   bool HasOutOfLineBuffer() const {
-    // When inlineCapacity is 0 we have an out of line buffer if we have a
+    // When InlineCapacity is 0 we have an out of line buffer if we have a
     // buffer.
     return IsOutOfLineBuffer(Buffer());
   }
@@ -627,7 +627,7 @@ class VectorBuffer<T, 0, Allocator> : protected VectorBufferBase<T, Allocator> {
   using Base::capacity_;
 };
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 class VectorBuffer : protected VectorBufferBase<T, Allocator> {
  private:
   using Base = VectorBufferBase<T, Allocator>;
@@ -635,7 +635,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
  public:
   using OffsetRange = typename Base::OffsetRange;
 
-  VectorBuffer() : Base(InlineBuffer(), inlineCapacity) { InitInlinedBuffer(); }
+  VectorBuffer() : Base(InlineBuffer(), InlineCapacity) { InitInlinedBuffer(); }
 
   explicit VectorBuffer(HashTableDeletedValueType value) : Base(value) {
     InitInlinedBuffer();
@@ -645,9 +645,9 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   }
 
   explicit VectorBuffer(wtf_size_t capacity)
-      : Base(InlineBuffer(), inlineCapacity) {
+      : Base(InlineBuffer(), InlineCapacity) {
     InitInlinedBuffer();
-    if (capacity > inlineCapacity) {
+    if (capacity > InlineCapacity) {
       Base::AllocateBuffer(capacity, VectorOperationOrigin::kConstruction);
     }
   }
@@ -670,7 +670,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   }
 
   bool ExpandBuffer(wtf_size_t new_capacity) {
-    DCHECK_GT(new_capacity, inlineCapacity);
+    DCHECK_GT(new_capacity, InlineCapacity);
     if (buffer_ == InlineBuffer())
       return false;
 
@@ -685,7 +685,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   inline bool ShrinkBuffer(wtf_size_t new_capacity) {
     DCHECK(buffer_);
     DCHECK_LT(new_capacity, capacity());
-    if (new_capacity <= inlineCapacity) {
+    if (new_capacity <= InlineCapacity) {
       // We need to switch to inlineBuffer.  Vector::ShrinkCapacity will
       // handle it.
       return false;
@@ -709,12 +709,12 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
 
   void ResetBufferPointer() {
     AsAtomicPtr(&buffer_)->store(InlineBuffer(), std::memory_order_relaxed);
-    capacity_ = inlineCapacity;
+    capacity_ = InlineCapacity;
   }
 
   void AllocateBuffer(wtf_size_t new_capacity, VectorOperationOrigin origin) {
     // FIXME: This should DCHECK(!buffer_) to catch misuse/leaks.
-    if (new_capacity > inlineCapacity) {
+    if (new_capacity > InlineCapacity) {
       Base::AllocateBuffer(new_capacity, origin);
     } else {
       ResetBufferPointer();
@@ -722,7 +722,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   }
 
   size_t AllocationSize(size_t capacity) const {
-    if (capacity <= inlineCapacity)
+    if (capacity <= InlineCapacity)
       return kInlineBufferSize;
     return Base::AllocationSize(capacity);
   }
@@ -741,7 +741,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   // buffer. This function assumes elements in a range [buffer_, buffer_ +
   // size_) are all allocated except for elements within |thisHole|. The same
   // applies for |other.buffer_| and |otherHole|.
-  void SwapVectorBuffer(VectorBuffer<T, inlineCapacity, Allocator>& other,
+  void SwapVectorBuffer(VectorBuffer<T, InlineCapacity, Allocator>& other,
                         OffsetRange this_hole,
                         OffsetRange other_hole,
                         VectorOperationOrigin this_origin) {
@@ -804,13 +804,13 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
         !other_source_begin) {  // Our buffer is inline, theirs is not.
       DCHECK_EQ(Buffer(), InlineBuffer());
       DCHECK_NE(other.Buffer(), other.InlineBuffer());
-      ANNOTATE_DELETE_BUFFER(buffer_, inlineCapacity, size_);
+      ANNOTATE_DELETE_BUFFER(buffer_, InlineCapacity, size_);
       AsAtomicPtr(&buffer_)->store(other.Buffer(), std::memory_order_relaxed);
       AsAtomicPtr(&other.buffer_)
           ->store(other.InlineBuffer(), std::memory_order_relaxed);
       std::swap(size_, other.size_);
       MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, other.buffer_,
-                                        inlineCapacity, other.size_);
+                                        InlineCapacity, other.size_);
       if (this_origin != VectorOperationOrigin::kConstruction) {
         Allocator::BackingWriteBarrier(&buffer_);
       }
@@ -818,11 +818,11 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
                other_source_begin) {  // Their buffer is inline, ours is not.
       DCHECK_NE(Buffer(), InlineBuffer());
       DCHECK_EQ(other.Buffer(), other.InlineBuffer());
-      ANNOTATE_DELETE_BUFFER(other.buffer_, inlineCapacity, other.size_);
+      ANNOTATE_DELETE_BUFFER(other.buffer_, InlineCapacity, other.size_);
       AsAtomicPtr(&other.buffer_)->store(Buffer(), std::memory_order_relaxed);
       AsAtomicPtr(&buffer_)->store(InlineBuffer(), std::memory_order_relaxed);
       std::swap(size_, other.size_);
-      MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer_, inlineCapacity,
+      MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer_, InlineCapacity,
                                         size_);
       Allocator::BackingWriteBarrier(&other.buffer_);
     } else {  // Both buffers are inline.
@@ -830,10 +830,10 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
       DCHECK(other_source_begin);
       DCHECK_EQ(Buffer(), InlineBuffer());
       DCHECK_EQ(other.Buffer(), other.InlineBuffer());
-      MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, buffer_, inlineCapacity,
+      MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, buffer_, InlineCapacity,
                                          size_, other.size_);
       MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, other.buffer_,
-                                         inlineCapacity, other.size_, size_);
+                                         InlineCapacity, other.size_, size_);
       std::swap(size_, other.size_);
     }
 
@@ -841,10 +841,10 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
     // which is a contiguous range such that all elements in the range are
     // treated similarly.
     wtf_size_t section_begin = 0;
-    while (section_begin < inlineCapacity) {
+    while (section_begin < InlineCapacity) {
       // To determine the end of this section, we list up all the boundaries
       // where the "occupiedness" may change.
-      wtf_size_t section_end = inlineCapacity;
+      wtf_size_t section_end = InlineCapacity;
       if (this_source_begin && section_begin < this_source_size)
         section_end = std::min(section_end, this_source_size);
       if (!this_hole.empty() && section_begin < this_hole.begin)
@@ -930,7 +930,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   using Base::buffer_;
   using Base::capacity_;
 
-  static const wtf_size_t kInlineBufferSize = inlineCapacity * sizeof(T);
+  static const wtf_size_t kInlineBufferSize = InlineCapacity * sizeof(T);
   T* InlineBuffer() { return unsafe_reinterpret_cast_ptr<T*>(inline_buffer_); }
   const T* InlineBuffer() const {
     return unsafe_reinterpret_cast_ptr<const T*>(inline_buffer_);
@@ -998,14 +998,14 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
 // necessary, an out-of-line buffer is allocated in the heap, and it will
 // take over the role of the inline buffer.
 //
-// The existence of an inline buffer is indicated by non-zero |inlineCapacity|
+// The existence of an inline buffer is indicated by non-zero |InlineCapacity|
 // template argument. The value represents the number of elements that can be
-// stored in the inline buffer. Zero |inlineCapacity| means the vector has no
+// stored in the inline buffer. Zero |InlineCapacity| means the vector has no
 // inline buffer.
 //
 // An inline buffer increases the size of the Vector instances, and, in trade
 // for that, it gives you several performance benefits, as long as the number
-// of elements do not exceed |inlineCapacity|:
+// of elements do not exceed |InlineCapacity|:
 //
 //     * No heap allocation will be made.
 //     * Memory locality will improve.
@@ -1054,7 +1054,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
 // store iterators in another heap object.
 
 // In general, Vector requires destruction.
-template <typename T, wtf_size_t inlineCapacity, bool isGced>
+template <typename T, wtf_size_t InlineCapacity, bool isGced>
 struct VectorNeedsDestructor {
   static constexpr bool value = true;
 };
@@ -1068,8 +1068,8 @@ struct VectorNeedsDestructor<T, 0, true> {
 
 // For garbage collection, a Vector with inline capacity conditionally requires
 // destruction based on whether the element type itself requires destruction.
-template <typename T, wtf_size_t inlineCapacity>
-struct VectorNeedsDestructor<T, inlineCapacity, true> {
+template <typename T, wtf_size_t InlineCapacity>
+struct VectorNeedsDestructor<T, InlineCapacity, true> {
   // Always return true here as currently there's many uses of on-stack
   // HeapVector with inline capacity that require eager clearing for
   // performance.
@@ -1094,7 +1094,7 @@ concept VectorCanConstructFromCollection = requires(Collection c) {
 
 }  // namespace internal
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 class Vector
     : private VectorBuffer<T, INLINE_CAPACITY, Allocator>,
       public ConditionalDestructor<
@@ -1531,22 +1531,22 @@ class Vector
 // Vector out-of-line implementation
 //
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline Vector<T, inlineCapacity, Allocator>::Vector() {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline Vector<T, InlineCapacity, Allocator>::Vector() {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), 0);
   size_ = 0;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline Vector<T, inlineCapacity, Allocator>::Vector(wtf_size_t size)
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline Vector<T, InlineCapacity, Allocator>::Vector(wtf_size_t size)
     : Base(size) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), size);
   size_ = size;
   TypeOperations::Initialize(begin(), end());
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline Vector<T, inlineCapacity, Allocator>::Vector(wtf_size_t size,
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline Vector<T, InlineCapacity, Allocator>::Vector(wtf_size_t size,
                                                     const T& val)
     : Base(size) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), size);
@@ -1555,8 +1555,8 @@ inline Vector<T, inlineCapacity, Allocator>::Vector(wtf_size_t size,
                                     VectorOperationOrigin::kConstruction);
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-Vector<T, inlineCapacity, Allocator>::Vector(const Vector& other)
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+Vector<T, InlineCapacity, Allocator>::Vector(const Vector& other)
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
   size_ = other.size();
@@ -1564,9 +1564,9 @@ Vector<T, inlineCapacity, Allocator>::Vector(const Vector& other)
                                     VectorOperationOrigin::kConstruction);
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename Proj, typename>
-Vector<T, inlineCapacity, Allocator>::Vector(const Vector& other, Proj proj)
+Vector<T, InlineCapacity, Allocator>::Vector(const Vector& other, Proj proj)
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
   size_ = other.size();
@@ -1575,9 +1575,9 @@ Vector<T, inlineCapacity, Allocator>::Vector(const Vector& other, Proj proj)
                                     std::move(proj));
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <wtf_size_t otherCapacity>
-Vector<T, inlineCapacity, Allocator>::Vector(
+Vector<T, InlineCapacity, Allocator>::Vector(
     const Vector<T, otherCapacity, Allocator>& other)
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
@@ -1586,9 +1586,9 @@ Vector<T, inlineCapacity, Allocator>::Vector(
                                     VectorOperationOrigin::kConstruction);
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U, wtf_size_t otherCapacity, typename Proj, typename>
-Vector<T, inlineCapacity, Allocator>::Vector(
+Vector<T, InlineCapacity, Allocator>::Vector(
     const Vector<U, otherCapacity, Allocator>& other,
     Proj proj)
     : Base(other.capacity()) {
@@ -1599,10 +1599,10 @@ Vector<T, inlineCapacity, Allocator>::Vector(
                                     std::move(proj));
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-Vector<T, inlineCapacity, Allocator>&
-Vector<T, inlineCapacity, Allocator>::operator=(
-    const Vector<T, inlineCapacity, Allocator>& other) {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+Vector<T, InlineCapacity, Allocator>&
+Vector<T, InlineCapacity, Allocator>::operator=(
+    const Vector<T, InlineCapacity, Allocator>& other) {
   if (UNLIKELY(&other == this))
     return *this;
 
@@ -1630,9 +1630,9 @@ inline bool TypelessPointersAreEqual(const void* a, const void* b) {
   return a == b;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <wtf_size_t otherCapacity>
-Vector<T, inlineCapacity, Allocator>& Vector<T, inlineCapacity, Allocator>::
+Vector<T, InlineCapacity, Allocator>& Vector<T, InlineCapacity, Allocator>::
 operator=(const Vector<T, otherCapacity, Allocator>& other) {
   // If the inline capacities match, we should call the more specific
   // template.  If the inline capacities don't match, the two objects
@@ -1659,12 +1659,12 @@ operator=(const Vector<T, otherCapacity, Allocator>& other) {
   return *this;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename Collection>
   requires internal::VectorCanConstructFromCollection<Collection>
-void Vector<T, inlineCapacity, Allocator>::assign(const Collection& other) {
+void Vector<T, InlineCapacity, Allocator>::assign(const Collection& other) {
   static_assert(
-      !std::is_same_v<Vector<T, inlineCapacity, Allocator>, Collection>,
+      !std::is_same_v<Vector<T, InlineCapacity, Allocator>, Collection>,
       "This method is for copying from a collection of a different type.");
 
   {
@@ -1676,19 +1676,19 @@ void Vector<T, inlineCapacity, Allocator>::assign(const Collection& other) {
   base::ranges::copy(other, begin());
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-Vector<T, inlineCapacity, Allocator>::Vector(
-    Vector<T, inlineCapacity, Allocator>&& other) {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+Vector<T, InlineCapacity, Allocator>::Vector(
+    Vector<T, InlineCapacity, Allocator>&& other) {
   size_ = 0;
   // It's a little weird to implement a move constructor using swap but this
   // way we don't have to add a move constructor to VectorBuffer.
   SwapForMove(std::move(other), VectorOperationOrigin::kConstruction);
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-Vector<T, inlineCapacity, Allocator>&
-Vector<T, inlineCapacity, Allocator>::operator=(
-    Vector<T, inlineCapacity, Allocator>&& other) {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+Vector<T, InlineCapacity, Allocator>&
+Vector<T, InlineCapacity, Allocator>::operator=(
+    Vector<T, InlineCapacity, Allocator>&& other) {
   // Explicitly clearing allows the backing to be freed
   // immediately. In the non-garbage-collected case this is
   // often just slightly moving it earlier as the old backing
@@ -1700,8 +1700,8 @@ Vector<T, inlineCapacity, Allocator>::operator=(
   return *this;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-Vector<T, inlineCapacity, Allocator>::Vector(std::initializer_list<T> elements)
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+Vector<T, InlineCapacity, Allocator>::Vector(std::initializer_list<T> elements)
     : Base(base::checked_cast<wtf_size_t>(elements.size())) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), elements.size());
   size_ = static_cast<wtf_size_t>(elements.size());
@@ -1709,8 +1709,8 @@ Vector<T, inlineCapacity, Allocator>::Vector(std::initializer_list<T> elements)
                                     VectorOperationOrigin::kConstruction);
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-Vector<T, inlineCapacity, Allocator>& Vector<T, inlineCapacity, Allocator>::
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+Vector<T, InlineCapacity, Allocator>& Vector<T, InlineCapacity, Allocator>::
 operator=(std::initializer_list<T> elements) {
   wtf_size_t input_size = base::checked_cast<wtf_size_t>(elements.size());
   if (size() > input_size) {
@@ -1733,9 +1733,9 @@ operator=(std::initializer_list<T> elements) {
   return *this;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-bool Vector<T, inlineCapacity, Allocator>::Contains(const U& value) const {
+bool Vector<T, InlineCapacity, Allocator>::Contains(const U& value) const {
   // Do not reuse Find because the compiler will generate extra code to
   // handle finding the kNotFound-th element in the array.  kNotFound is part
   // of wtf_size_t, but not used as an index due to runtime restrictions.  See
@@ -1750,9 +1750,9 @@ bool Vector<T, inlineCapacity, Allocator>::Contains(const U& value) const {
   return false;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-wtf_size_t Vector<T, inlineCapacity, Allocator>::Find(const U& value) const {
+wtf_size_t Vector<T, InlineCapacity, Allocator>::Find(const U& value) const {
   const T* b = begin();
   const T* e = end();
   for (const T* iter = b; iter < e; ++iter) {
@@ -1762,9 +1762,9 @@ wtf_size_t Vector<T, inlineCapacity, Allocator>::Find(const U& value) const {
   return kNotFound;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-wtf_size_t Vector<T, inlineCapacity, Allocator>::ReverseFind(
+wtf_size_t Vector<T, InlineCapacity, Allocator>::ReverseFind(
     const U& value) const {
   const T* b = begin();
   const T* iter = end();
@@ -1776,8 +1776,8 @@ wtf_size_t Vector<T, inlineCapacity, Allocator>::ReverseFind(
   return kNotFound;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-void Vector<T, inlineCapacity, Allocator>::Fill(const T& val,
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+void Vector<T, InlineCapacity, Allocator>::Fill(const T& val,
                                                 wtf_size_t new_size)
   requires(!Allocator::kIsGarbageCollected)
 {
@@ -1798,8 +1798,8 @@ void Vector<T, inlineCapacity, Allocator>::Fill(const T& val,
   size_ = new_size;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-void Vector<T, inlineCapacity, Allocator>::ExpandCapacity(
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+void Vector<T, InlineCapacity, Allocator>::ExpandCapacity(
     wtf_size_t new_min_capacity) {
   wtf_size_t old_capacity = capacity();
   wtf_size_t expanded_capacity = old_capacity;
@@ -1825,8 +1825,8 @@ void Vector<T, inlineCapacity, Allocator>::ExpandCapacity(
                    std::max(kInitialVectorSize, expanded_capacity)));
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-T* Vector<T, inlineCapacity, Allocator>::ExpandCapacity(
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+T* Vector<T, InlineCapacity, Allocator>::ExpandCapacity(
     wtf_size_t new_min_capacity,
     T* ptr) {
   if (ptr < begin() || ptr >= end()) {
@@ -1838,17 +1838,17 @@ T* Vector<T, inlineCapacity, Allocator>::ExpandCapacity(
   return begin() + index;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-inline U* Vector<T, inlineCapacity, Allocator>::ExpandCapacity(
+inline U* Vector<T, InlineCapacity, Allocator>::ExpandCapacity(
     wtf_size_t new_min_capacity,
     U* ptr) {
   ExpandCapacity(new_min_capacity);
   return ptr;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline void Vector<T, inlineCapacity, Allocator>::resize(wtf_size_t size) {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline void Vector<T, InlineCapacity, Allocator>::resize(wtf_size_t size) {
   if (size <= size_) {
     TypeOperations::Destruct(begin() + size, end());
     ClearUnusedSlots(begin() + size, end());
@@ -1865,8 +1865,8 @@ inline void Vector<T, inlineCapacity, Allocator>::resize(wtf_size_t size) {
   size_ = size;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-void Vector<T, inlineCapacity, Allocator>::Shrink(wtf_size_t size) {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+void Vector<T, InlineCapacity, Allocator>::Shrink(wtf_size_t size) {
   CHECK_LE(size, size_);
   TypeOperations::Destruct(begin() + size, end());
   ClearUnusedSlots(begin() + size, end());
@@ -1875,8 +1875,8 @@ void Vector<T, inlineCapacity, Allocator>::Shrink(wtf_size_t size) {
   size_ = size;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-void Vector<T, inlineCapacity, Allocator>::Grow(wtf_size_t size) {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+void Vector<T, InlineCapacity, Allocator>::Grow(wtf_size_t size) {
   DCHECK_GE(size, size_);
   if (size > capacity())
     ExpandCapacity(size);
@@ -1886,8 +1886,8 @@ void Vector<T, inlineCapacity, Allocator>::Grow(wtf_size_t size) {
   size_ = size;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-void Vector<T, inlineCapacity, Allocator>::reserve(wtf_size_t new_capacity) {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+void Vector<T, InlineCapacity, Allocator>::reserve(wtf_size_t new_capacity) {
   if (UNLIKELY(new_capacity <= capacity()))
     return;
   if (!data()) {
@@ -1927,8 +1927,8 @@ void Vector<T, inlineCapacity, Allocator>::reserve(wtf_size_t new_capacity) {
   ReallocateBuffer(new_capacity);
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline void Vector<T, inlineCapacity, Allocator>::ReserveInitialCapacity(
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline void Vector<T, InlineCapacity, Allocator>::ReserveInitialCapacity(
     wtf_size_t initial_capacity) {
   DCHECK(!size_);
   DCHECK(capacity() == INLINE_CAPACITY);
@@ -1943,8 +1943,8 @@ inline void Vector<T, inlineCapacity, Allocator>::ReserveInitialCapacity(
   }
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-void Vector<T, inlineCapacity, Allocator>::ShrinkCapacity(
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+void Vector<T, InlineCapacity, Allocator>::ShrinkCapacity(
     wtf_size_t new_capacity) {
   if (new_capacity >= capacity())
     return;
@@ -1979,9 +1979,9 @@ void Vector<T, inlineCapacity, Allocator>::ShrinkCapacity(
 
 // Templatizing these is better than just letting the conversion happen
 // implicitly.
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-ALWAYS_INLINE void Vector<T, inlineCapacity, Allocator>::push_back(U&& val) {
+ALWAYS_INLINE void Vector<T, InlineCapacity, Allocator>::push_back(U&& val) {
   DCHECK(Allocator::IsAllocationAllowed());
   if (LIKELY(size() != capacity())) {
     MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
@@ -1995,9 +1995,9 @@ ALWAYS_INLINE void Vector<T, inlineCapacity, Allocator>::push_back(U&& val) {
   AppendSlowCase(std::forward<U>(val));
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename... Args>
-ALWAYS_INLINE T& Vector<T, inlineCapacity, Allocator>::emplace_back(
+ALWAYS_INLINE T& Vector<T, InlineCapacity, Allocator>::emplace_back(
     Args&&... args) {
   DCHECK(Allocator::IsAllocationAllowed());
   if (UNLIKELY(size() == capacity()))
@@ -2012,9 +2012,9 @@ ALWAYS_INLINE T& Vector<T, inlineCapacity, Allocator>::emplace_back(
   return *t;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-void Vector<T, inlineCapacity, Allocator>::Append(const U* data,
+void Vector<T, InlineCapacity, Allocator>::Append(const U* data,
                                                   wtf_size_t data_size) {
   DCHECK(Allocator::IsAllocationAllowed());
   wtf_size_t new_size = size_ + data_size;
@@ -2032,10 +2032,10 @@ void Vector<T, inlineCapacity, Allocator>::Append(const U* data,
   size_ = new_size;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
 NOINLINE PRESERVE_MOST void
-Vector<T, inlineCapacity, Allocator>::AppendSlowCase(U&& val) {
+Vector<T, InlineCapacity, Allocator>::AppendSlowCase(U&& val) {
   DCHECK_EQ(size(), capacity());
 
   typename std::remove_reference<U>::type* ptr = &val;
@@ -2049,16 +2049,16 @@ Vector<T, inlineCapacity, Allocator>::AppendSlowCase(U&& val) {
   ++size_;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U, wtf_size_t otherCapacity, typename OtherAllocator>
-inline void Vector<T, inlineCapacity, Allocator>::AppendVector(
+inline void Vector<T, InlineCapacity, Allocator>::AppendVector(
     const Vector<U, otherCapacity, OtherAllocator>& val) {
   Append(val.begin(), val.size());
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename Iterator>
-void Vector<T, inlineCapacity, Allocator>::AppendRange(Iterator begin,
+void Vector<T, InlineCapacity, Allocator>::AppendRange(Iterator begin,
                                                        Iterator end) {
   for (Iterator it = begin; it != end; ++it)
     push_back(*it);
@@ -2066,12 +2066,12 @@ void Vector<T, inlineCapacity, Allocator>::AppendRange(Iterator begin,
 
 // This version of append saves a branch in the case where you know that the
 // vector's capacity is large enough for the append to succeed.
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-ALWAYS_INLINE void Vector<T, inlineCapacity, Allocator>::UncheckedAppend(
+ALWAYS_INLINE void Vector<T, InlineCapacity, Allocator>::UncheckedAppend(
     U&& val) {
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
-  // Vectors in ASAN builds don't have inlineCapacity.
+  // Vectors in ASAN builds don't have InlineCapacity.
   push_back(std::forward<U>(val));
 #else
   DCHECK_LT(size(), capacity());
@@ -2081,9 +2081,9 @@ ALWAYS_INLINE void Vector<T, inlineCapacity, Allocator>::UncheckedAppend(
 #endif
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-inline void Vector<T, inlineCapacity, Allocator>::insert(wtf_size_t position,
+inline void Vector<T, InlineCapacity, Allocator>::insert(wtf_size_t position,
                                                          U&& val) {
   DCHECK(Allocator::IsAllocationAllowed());
   CHECK_LE(position, size());
@@ -2102,9 +2102,9 @@ inline void Vector<T, inlineCapacity, Allocator>::insert(wtf_size_t position,
   ++size_;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-void Vector<T, inlineCapacity, Allocator>::insert(wtf_size_t position,
+void Vector<T, InlineCapacity, Allocator>::insert(wtf_size_t position,
                                                   const U* data,
                                                   wtf_size_t data_size) {
   DCHECK(Allocator::IsAllocationAllowed());
@@ -2126,50 +2126,50 @@ void Vector<T, inlineCapacity, Allocator>::insert(wtf_size_t position,
   size_ = new_size;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-void Vector<T, inlineCapacity, Allocator>::InsertAt(T* position, U&& val) {
+void Vector<T, InlineCapacity, Allocator>::InsertAt(T* position, U&& val) {
   insert(position - begin(), val);
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-void Vector<T, inlineCapacity, Allocator>::InsertAt(T* position,
+void Vector<T, InlineCapacity, Allocator>::InsertAt(T* position,
                                                     const U* data,
                                                     wtf_size_t data_size) {
   insert(position - begin(), data, data_size);
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U, wtf_size_t otherCapacity, typename OtherAllocator>
-inline void Vector<T, inlineCapacity, Allocator>::InsertVector(
+inline void Vector<T, InlineCapacity, Allocator>::InsertVector(
     wtf_size_t position,
     const Vector<U, otherCapacity, OtherAllocator>& val) {
   insert(position, val.begin(), val.size());
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-inline void Vector<T, inlineCapacity, Allocator>::push_front(U&& val) {
+inline void Vector<T, InlineCapacity, Allocator>::push_front(U&& val) {
   insert(0, std::forward<U>(val));
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
-void Vector<T, inlineCapacity, Allocator>::push_front(const U* data,
+void Vector<T, InlineCapacity, Allocator>::push_front(const U* data,
                                                       wtf_size_t data_size) {
   insert(0, data, data_size);
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U, wtf_size_t otherCapacity, typename OtherAllocator>
-inline void Vector<T, inlineCapacity, Allocator>::PrependVector(
+inline void Vector<T, InlineCapacity, Allocator>::PrependVector(
     const Vector<U, otherCapacity, OtherAllocator>& val) {
   insert(0, val.begin(), val.size());
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline void Vector<T, inlineCapacity, Allocator>::EraseAt(wtf_size_t position) {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline void Vector<T, InlineCapacity, Allocator>::EraseAt(wtf_size_t position) {
   CHECK_LT(position, size());
   T* spot = begin() + position;
   spot->~T();
@@ -2181,16 +2181,16 @@ inline void Vector<T, inlineCapacity, Allocator>::EraseAt(wtf_size_t position) {
   --size_;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline auto Vector<T, inlineCapacity, Allocator>::erase(iterator position)
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline auto Vector<T, InlineCapacity, Allocator>::erase(iterator position)
     -> iterator {
   wtf_size_t index = static_cast<wtf_size_t>(position - begin());
   EraseAt(index);
   return begin() + index;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline auto Vector<T, inlineCapacity, Allocator>::erase(iterator first,
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline auto Vector<T, InlineCapacity, Allocator>::erase(iterator first,
                                                         iterator last)
     -> iterator {
   DCHECK_LE(first, last);
@@ -2200,8 +2200,8 @@ inline auto Vector<T, inlineCapacity, Allocator>::erase(iterator first,
   return begin() + index;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline void Vector<T, inlineCapacity, Allocator>::EraseAt(wtf_size_t position,
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline void Vector<T, InlineCapacity, Allocator>::EraseAt(wtf_size_t position,
                                                           wtf_size_t length) {
   SECURITY_DCHECK(position <= size());
   if (!length)
@@ -2218,24 +2218,24 @@ inline void Vector<T, inlineCapacity, Allocator>::EraseAt(wtf_size_t position,
   size_ -= length;
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline void Vector<T, inlineCapacity, Allocator>::Reverse() {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline void Vector<T, InlineCapacity, Allocator>::Reverse() {
   for (wtf_size_t i = 0; i < size_ / 2; ++i)
     std::swap(at(i), at(size_ - 1 - i));
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline void swap(Vector<T, inlineCapacity, Allocator>& a,
-                 Vector<T, inlineCapacity, Allocator>& b) {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+inline void swap(Vector<T, InlineCapacity, Allocator>& a,
+                 Vector<T, InlineCapacity, Allocator>& b) {
   a.Swap(b);
 }
 
 template <typename T,
-          wtf_size_t inlineCapacityA,
-          wtf_size_t inlineCapacityB,
+          wtf_size_t InlineCapacityA,
+          wtf_size_t InlineCapacityB,
           typename Allocator>
-bool operator==(const Vector<T, inlineCapacityA, Allocator>& a,
-                const Vector<T, inlineCapacityB, Allocator>& b) {
+bool operator==(const Vector<T, InlineCapacityA, Allocator>& a,
+                const Vector<T, InlineCapacityB, Allocator>& b) {
   if (a.size() != b.size())
     return false;
   if (a.empty())
@@ -2245,11 +2245,11 @@ bool operator==(const Vector<T, inlineCapacityA, Allocator>& a,
 }
 
 template <typename T,
-          wtf_size_t inlineCapacityA,
-          wtf_size_t inlineCapacityB,
+          wtf_size_t InlineCapacityA,
+          wtf_size_t InlineCapacityB,
           typename Allocator>
-inline bool operator!=(const Vector<T, inlineCapacityA, Allocator>& a,
-                       const Vector<T, inlineCapacityB, Allocator>& b) {
+inline bool operator!=(const Vector<T, InlineCapacityA, Allocator>& a,
+                       const Vector<T, InlineCapacityB, Allocator>& b) {
   return !(a == b);
 }
 
@@ -2272,17 +2272,17 @@ void TraceInlinedBuffer(VisitorDispatcher visitor,
 template <typename Allocator,
           typename VisitorDispatcher,
           typename T,
-          wtf_size_t inlineCapacity>
+          wtf_size_t InlineCapacity>
 void DeferredTraceImpl(VisitorDispatcher visitor, const void* object) {
   internal::TraceInlinedBuffer<Allocator>(
-      visitor, reinterpret_cast<const T*>(object), inlineCapacity);
+      visitor, reinterpret_cast<const T*>(object), InlineCapacity);
 }
 
 }  // namespace internal
 
 // Only defined for HeapAllocator. Used when visiting vector object.
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-void Vector<T, inlineCapacity, Allocator>::Trace(auto visitor) const
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+void Vector<T, InlineCapacity, Allocator>::Trace(auto visitor) const
   requires Allocator::kIsGarbageCollected
 {
   static_assert(Allocator::kIsGarbageCollected,
@@ -2310,19 +2310,19 @@ void Vector<T, inlineCapacity, Allocator>::Trace(auto visitor) const
       if (Allocator::DeferTraceToMutatorThreadIfConcurrent(
               visitor, buffer,
               internal::DeferredTraceImpl<Allocator, decltype(visitor), T,
-                                          inlineCapacity>,
-              inlineCapacity * sizeof(T))) {
+                                          InlineCapacity>,
+              InlineCapacity * sizeof(T))) {
         return;
       }
     }
 
     // Inline buffer requires tracing immediately.
-    internal::TraceInlinedBuffer<Allocator>(visitor, buffer, inlineCapacity);
+    internal::TraceInlinedBuffer<Allocator>(visitor, buffer, InlineCapacity);
   }
 }
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-void Vector<T, inlineCapacity, Allocator>::ReallocateBuffer(
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+void Vector<T, InlineCapacity, Allocator>::ReallocateBuffer(
     wtf_size_t new_capacity) {
   if (new_capacity <= INLINE_CAPACITY) {
     if (HasInlineBuffer()) {
