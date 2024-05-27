@@ -31,8 +31,7 @@ struct Environment {
 
 // Test schema parsing.
 void TestParsing(const Environment& env, const std::string& data) {
-  std::string error;
-  Schema::Parse(data, &error);
+  std::ignore = Schema::Parse(data);
 }
 
 // Test validation and normalization against the Chrome policy schema.

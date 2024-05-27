@@ -124,12 +124,6 @@ class POLICY_EXPORT Schema {
   // for the failure.
   static base::expected<Schema, std::string> Parse(const std::string& content);
 
-  // Parses the JSON schema in |schema| and returns a Schema that owns
-  // the internal representation. If |schema| is invalid then an invalid Schema
-  // is returned and |error| contains a reason for the failure.
-  // TODO(b/341876066): Migrate all callers to use the base::expected function.
-  static Schema Parse(const std::string& schema, std::string* error);
-
   // Verifies if |schema| is a valid JSON v3 schema. When this validation passes
   // then |schema| is valid JSON that can be parsed into a Value::Dict which can
   // be used to build a |Schema|. Returns the parsed Value::Dict when |schema|

@@ -1435,17 +1435,6 @@ base::expected<Schema, std::string> Schema::Parse(const std::string& content) {
 }
 
 // static
-Schema Schema::Parse(const std::string& content, std::string* error) {
-  base::expected<Schema, std::string> result = Schema::Parse(content);
-
-  if (!result.has_value()) {
-    *error = result.error();
-    return Schema();
-  }
-  return result.value();
-}
-
-// static
 base::expected<base::Value::Dict, std::string> Schema::ParseToDictAndValidate(
     const std::string& schema,
     int validator_options) {

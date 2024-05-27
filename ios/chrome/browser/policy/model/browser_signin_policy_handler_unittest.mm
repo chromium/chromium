@@ -81,11 +81,10 @@ TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings) {
        static_cast<int>(BrowserSigninMode::kForced)},
   };
 
-  std::string error;
-  Schema schema = Schema::Parse(kTestSchema, &error);
-  ASSERT_EQ(error, "");
+  const auto schema = Schema::Parse(kTestSchema);
+  ASSERT_TRUE(schema.has_value());
 
-  BrowserSigninPolicyHandler handler(schema);
+  BrowserSigninPolicyHandler handler(*schema);
 
   for (const TestCase& test_case : test_cases) {
     PolicyMap policies;
@@ -107,11 +106,10 @@ TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings) {
 // Check that calling `ApplyPolicySettings` does not set the
 // preference when policies does not overrides "BrowserSignin".
 TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings_NoOverride) {
-  std::string error;
-  Schema schema = Schema::Parse(kTestSchema, &error);
-  ASSERT_EQ(error, "");
+  const auto schema = Schema::Parse(kTestSchema);
+  ASSERT_TRUE(schema.has_value());
 
-  BrowserSigninPolicyHandler handler(schema);
+  BrowserSigninPolicyHandler handler(*schema);
 
   bool value = false;
   PolicyMap policies;
@@ -123,11 +121,10 @@ TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings_NoOverride) {
 // Check that `CheckPolicySettings` does not report an error if
 // policies overrides "BrowserSignin" to support values.
 TEST_F(BrowserSigninPolicyHandlerTest, CheckPolicySettings) {
-  std::string error;
-  Schema schema = Schema::Parse(kTestSchema, &error);
-  ASSERT_EQ(error, "");
+  const auto schema = Schema::Parse(kTestSchema);
+  ASSERT_TRUE(schema.has_value());
 
-  BrowserSigninPolicyHandler handler(schema);
+  BrowserSigninPolicyHandler handler(*schema);
 
   const BrowserSigninMode supported_modes[] = {
       BrowserSigninMode::kDisabled,
