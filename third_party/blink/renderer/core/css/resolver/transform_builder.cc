@@ -258,7 +258,7 @@ TransformOperation* CreateTransformOperation(
       const auto& first_value = To<CSSPrimitiveValue>(transform_value.Item(0));
       double angle_x = 0;
       double angle_y = 0;
-      double angle = first_value.ComputeDegrees();
+      double angle = first_value.ComputeDegrees(conversion_data);
       if (transform_type == TransformOperation::kSkewY) {
         angle_y = angle;
       } else {
@@ -267,7 +267,7 @@ TransformOperation* CreateTransformOperation(
           if (transform_value.length() > 1) {
             const auto& second_value =
                 To<CSSPrimitiveValue>(transform_value.Item(1));
-            angle_y = second_value.ComputeDegrees();
+            angle_y = second_value.ComputeDegrees(conversion_data);
           }
         }
       }
