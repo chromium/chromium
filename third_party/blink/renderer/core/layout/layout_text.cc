@@ -249,8 +249,7 @@ void LayoutText::StyleDidChange(StyleDifference diff,
   if (old_transform != new_style.TextTransform() ||
       old_security != new_style.TextSecurity()) {
     TransformAndSecureOriginalText();
-  } else if (RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled() &&
-             old_transform == new_style.TextTransform() &&
+  } else if (old_transform == new_style.TextTransform() &&
              new_style.TextTransform() != ETextTransform::kNone &&
              old_style->Locale() != new_style.Locale()) {
     TransformAndSecureOriginalText();
@@ -462,9 +461,6 @@ String LayoutText::OriginalText() const {
 
 unsigned LayoutText::OriginalTextLength() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled()) {
-    return TransformedTextLength();
-  }
   DCHECK(!IsBR());
   return OriginalText().length();
 }

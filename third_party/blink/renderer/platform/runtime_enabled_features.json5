@@ -2357,7 +2357,6 @@
       // crbug.com/40417720
       name: "MaskingGraphemeClusters",
       status: "stable",
-      depends_on: ["OffsetMappingUnitVariable"],
     },
     {
       name:"MeasureMemory",
@@ -2729,11 +2728,6 @@
     {
       name: "OffscreenCanvasCommit",
       status: "experimental",
-    },
-    {
-      // crbug.com/40532763
-      name: "OffsetMappingUnitVariable",
-      status: "stable",
     },
     {
       name: "OmitBlurEventOnElementRemoval",

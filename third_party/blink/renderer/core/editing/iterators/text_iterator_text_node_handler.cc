@@ -16,27 +16,6 @@ namespace blink {
 
 namespace {
 
-// A magic value for infinity, used to indicate that text emission should
-// proceed till the end of the text node. Can be removed when we can handle text
-// length differences due to text-transform correctly.
-const unsigned kMaxOffset = std::numeric_limits<unsigned>::max();
-
-// Resolves kMaxOffset to an actual number. Should simply return |dom_length|
-// when we can handle text-transform correctly.
-unsigned CalculateMaxOffset(const Text& text) {
-  DCHECK(!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled());
-  DCHECK(text.GetLayoutObject());
-  unsigned dom_length = text.data().length();
-  unsigned layout_length;
-  if (const LayoutTextFragment* fragment =
-          DynamicTo<LayoutTextFragment>(text.GetLayoutObject())) {
-    layout_length = fragment->Start() + fragment->FragmentLength();
-  } else {
-    layout_length = text.GetLayoutObject()->TransformedTextLength();
-  }
-  return std::min(dom_length, layout_length);
-}
-
 bool ShouldSkipInvisibleTextAt(const Text& text,
                                unsigned offset,
                                bool ignores_visibility) {
@@ -178,10 +157,6 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
     return;
   }
 
-  // Restore end offset from magic value.
-  if (end_offset_ == kMaxOffset) {
-    end_offset_ = CalculateMaxOffset(*node);
-  }
   mapping_units_ = mapping->GetMappingUnitsForDOMRange(
       EphemeralRange(Position(node, offset_), Position(node, end_offset_)));
   mapping_units_index_ = 0;
@@ -191,11 +166,7 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
 void TextIteratorTextNodeHandler::HandleTextNodeStartFrom(
     const Text* node,
     unsigned start_offset) {
-  unsigned end_offset =
-      RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled()
-          ? node->data().length()
-          : kMaxOffset;
-  HandleTextNodeInRange(node, start_offset, end_offset);
+  HandleTextNodeInRange(node, start_offset, node->data().length());
 }
 
 void TextIteratorTextNodeHandler::HandleTextNodeEndAt(const Text* node,

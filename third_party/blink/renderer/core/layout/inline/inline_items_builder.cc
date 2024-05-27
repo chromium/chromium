@@ -560,8 +560,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
     return;
   }
 
-  if (!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled() ||
-      !layout_text->HasVariableLengthTransform()) {
+  if (!layout_text->HasVariableLengthTransform()) {
     AppendText(TransformedString(layout_text->TransformedText()), *layout_text);
     return;
   }

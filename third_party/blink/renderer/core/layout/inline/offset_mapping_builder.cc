@@ -113,7 +113,6 @@ void OffsetMappingBuilder::AppendCollapsedMapping(unsigned length) {
 
 void OffsetMappingBuilder::AppendVariableMapping(unsigned dom_length,
                                                  unsigned text_content_length) {
-  DCHECK(RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled());
   DCHECK_GT(dom_length, 0u);
   DCHECK_GT(text_content_length, 0u);
   const unsigned dom_start = current_offset_;
