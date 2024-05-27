@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
@@ -79,16 +80,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
 
   void DestroyAllGpuMemoryBufferForClient(int client_id);
 
-  void AllocateGpuMemoryBuffer(
-      gfx::GpuMemoryBufferId id,
-      int client_id,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      gpu::SurfaceHandle surface_handle,
-      base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
-      bool call_sync = false);
-
   bool IsNativeGpuMemoryBufferConfiguration(gfx::BufferFormat format,
                                             gfx::BufferUsage usage) const;
 
@@ -117,6 +108,22 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
 
  private:
   friend class HostGpuMemoryBufferManagerTest;
+  FRIEND_TEST_ALL_PREFIXES(HostGpuMemoryBufferManagerTest,
+                           AllocationRequestsForDestroyedClient);
+  FRIEND_TEST_ALL_PREFIXES(HostGpuMemoryBufferManagerTest,
+                           RequestsForNonNativeGMBsHandledInBrowser);
+  FRIEND_TEST_ALL_PREFIXES(HostGpuMemoryBufferManagerTest,
+                           AllocationRequestFromDeadGpuService);
+
+  void AllocateGpuMemoryBuffer(
+      gfx::GpuMemoryBufferId id,
+      int client_id,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      gpu::SurfaceHandle surface_handle,
+      base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
+      bool call_sync = false);
 
   struct PendingBufferInfo {
     PendingBufferInfo();
