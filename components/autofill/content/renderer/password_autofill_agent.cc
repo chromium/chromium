@@ -1248,7 +1248,7 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
     std::string alternative_form_signature;
     if (form_data) {
       // GetAlternativeFormSignatureAsString() require the FormData::url.
-      form_data->url = document.Url();
+      form_data->set_url(document.Url());
       form_signature = GetFormSignatureAsString(*form_data);
       alternative_form_signature =
           GetAlternativeFormSignatureAsString(*form_data);
@@ -1266,7 +1266,7 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
   std::string alternative_form_signature;
   if (form_data) {
     // GetFormSignatureAsString() may require the FormData::url.
-    form_data->url = render_frame()->GetWebFrame()->GetDocument().Url();
+    form_data->set_url(render_frame()->GetWebFrame()->GetDocument().Url());
     form_signature = GetFormSignatureAsString(*form_data);
     alternative_form_signature =
         GetAlternativeFormSignatureAsString(*form_data);
@@ -2054,8 +2054,8 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
     return;
   }
 
-  submitted_form_data->submission_event =
-      SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
+  submitted_form_data->set_submission_event(
+      SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
 
   FillNonTypedOrFilledPropertiesMasks(&submitted_form_data->fields,
                                       field_data_manager());
@@ -2209,7 +2209,7 @@ void PasswordAutofillAgent::LogFirstFillingResult(
 PasswordAutofillAgent::FormStructureInfo
 PasswordAutofillAgent::ExtractFormStructureInfo(const FormData& form_data) {
   FormStructureInfo result;
-  result.renderer_id = form_data.renderer_id;
+  result.renderer_id = form_data.renderer_id();
   result.fields.resize(form_data.fields.size());
 
   for (size_t i = 0; i < form_data.fields.size(); ++i) {
@@ -2346,7 +2346,7 @@ void PasswordAutofillAgent::MaybeTriggerSuggestionsOnFocusedElement(
   auto form_data =
       GetFormDataFromWebForm(form_util::GetOwningForm(focused_element));
   if (IsWebAuthnForm(form_data.get()) &&
-      (times_received_fill_data_[form_data->renderer_id] == 1) &&
+      (times_received_fill_data_[form_data->renderer_id()] == 1) &&
       base::FeatureList::IsEnabled(
           password_manager::features::kShowWebauthnSuggestionsOnAutofocus)) {
     autofill_agent_->TriggerSuggestions(

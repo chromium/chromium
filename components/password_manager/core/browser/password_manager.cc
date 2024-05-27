@@ -412,7 +412,7 @@ void PasswordManager::OnGeneratedPasswordAccepted(
     autofill::FieldRendererId generation_element_id,
     const std::u16string& password) {
   PasswordFormManager* manager =
-      GetMatchedManagerForForm(driver, form_data.renderer_id);
+      GetMatchedManagerForForm(driver, form_data.renderer_id());
   if (manager) {
     manager->OnGeneratedPasswordAccepted(form_data, generation_element_id,
                                          password);
@@ -425,10 +425,10 @@ void PasswordManager::OnGeneratedPasswordAccepted(
 
 void PasswordManager::OnPasswordNoLongerGenerated(PasswordManagerDriver* driver,
                                                   const FormData& form_data) {
-  DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
+  DCHECK(client_->IsSavingAndFillingEnabled(form_data.url()));
 
   PasswordFormManager* form_manager =
-      GetMatchedManagerForForm(driver, form_data.renderer_id);
+      GetMatchedManagerForForm(driver, form_data.renderer_id());
   if (form_manager) {
     form_manager->PasswordNoLongerGenerated();
   }
@@ -451,9 +451,9 @@ void PasswordManager::OnPresaveGeneratedPassword(
     PasswordManagerDriver* driver,
     const FormData& form_data,
     const std::u16string& generated_password) {
-  DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
+  DCHECK(client_->IsSavingAndFillingEnabled(form_data.url()));
   PasswordFormManager* form_manager =
-      GetMatchedManagerForForm(driver, form_data.renderer_id);
+      GetMatchedManagerForForm(driver, form_data.renderer_id());
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
                         !form_manager);
   if (form_manager) {
@@ -491,7 +491,7 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
     // now since a navigation to ntp is the sign of successful sign-in.
     PasswordFormManager* manager = GetSubmittedManager();
     if (manager && manager->GetSubmittedForm()
-                       ->form_data.is_gaia_with_skip_save_password_form) {
+                       ->form_data.is_gaia_with_skip_save_password_form()) {
       password_manager::PasswordReuseManager* reuse_manager =
           client_->GetPasswordReuseManager();
       // May be null in tests.
@@ -639,13 +639,13 @@ void PasswordManager::OnPasswordFormCleared(
     logger.LogMessage(Logger::STRING_ON_PASSWORD_FORM_CLEARED);
   }
   PasswordFormManager* manager =
-      GetMatchedManagerForForm(driver, form_data.renderer_id);
+      GetMatchedManagerForForm(driver, form_data.renderer_id());
   if (!manager || !IsAutomaticSavePromptAvailable(manager) ||
       !manager->HasLikelyChangeOrResetFormSubmitted()) {
     return;
   }
   // If a password form was cleared, login is successful.
-  if (!form_data.renderer_id.is_null()) {
+  if (!form_data.renderer_id().is_null()) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
     OnLoginSuccessful();
@@ -792,12 +792,12 @@ void PasswordManager::CreateFormManagers(
   // Find new forms.
   std::vector<const FormData*> new_forms_data;
   for (const FormData& form_data : forms_data) {
-    if (!client_->IsFillingEnabled(form_data.url)) {
+    if (!client_->IsFillingEnabled(form_data.url())) {
       continue;
     }
 
     PasswordFormManager* manager =
-        GetMatchedManagerForForm(driver, form_data.renderer_id);
+        GetMatchedManagerForForm(driver, form_data.renderer_id());
     if (!manager) {
       new_forms_data.push_back(&form_data);
       continue;
@@ -829,7 +829,7 @@ PasswordFormManager* PasswordManager::CreateFormManager(
       /*metrics_recorder=*/nullptr);
   manager->ProcessServerPredictions(predictions_);
   password_form_cache_.AddFormManager(std::move(manager));
-  return password_form_cache_.GetMatchedManager(driver, form.renderer_id);
+  return password_form_cache_.GetMatchedManager(driver, form.renderer_id());
 }
 
 PasswordFormManager* PasswordManager::ProvisionallySaveForm(
@@ -847,7 +847,7 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
     return nullptr;
   }
 
-  const GURL& submitted_url = submitted_form.url;
+  const GURL& submitted_url = submitted_form.url();
   if (ShouldBlockPasswordForSameOriginButDifferentScheme(submitted_url)) {
     RecordProvisionalSaveFailure(
         PasswordManagerMetricsRecorder::SAVING_ON_HTTP_AFTER_HTTPS,
@@ -856,7 +856,7 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
   }
 
   PasswordFormManager* matched_manager =
-      GetMatchedManagerForForm(driver, submitted_form.renderer_id);
+      GetMatchedManagerForForm(driver, submitted_form.renderer_id());
 
   auto availability =
       matched_manager
@@ -869,7 +869,7 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
 
   if (!matched_manager) {
     RecordProvisionalSaveFailure(
-        PasswordManagerMetricsRecorder::NO_MATCHING_FORM, submitted_form.url);
+        PasswordManagerMetricsRecorder::NO_MATCHING_FORM, submitted_form.url());
     matched_manager = CreateFormManager(driver, submitted_form);
   }
 
@@ -950,7 +950,7 @@ void PasswordManager::UpdateStateOnUserInput(
 
   const autofill::FormData* observed_form = manager->observed_form();
 
-  manager->UpdateStateOnUserInput(observed_form->renderer_id, field_id,
+  manager->UpdateStateOnUserInput(observed_form->renderer_id(), field_id,
                                   field_value);
 
   OnInformAboutUserInput(driver, *observed_form);
@@ -1060,7 +1060,7 @@ void PasswordManager::OnIframeDetach(
     // Find a form with corresponding frame id. Stop iterating in case the
     // target form manager was found to avoid crbug.com/1129758 and since only
     // one password form is being submitted at a time.
-    if (manager->observed_form()->frame_id == frame_id &&
+    if (manager->observed_form()->frame_id() == frame_id &&
         DetectPotentialSubmission(manager.get(), field_data_manager, driver)) {
       return;
     }
@@ -1551,8 +1551,8 @@ void PasswordManager::ShowManualFallbackForSaving(
   }
 
   if (!password_manager_util::IsAbleToSavePasswords(client_) ||
-      !client_->IsSavingAndFillingEnabled(form_data.url) ||
-      ShouldBlockPasswordForSameOriginButDifferentScheme(form_data.url)) {
+      !client_->IsSavingAndFillingEnabled(form_data.url()) ||
+      ShouldBlockPasswordForSameOriginButDifferentScheme(form_data.url())) {
     return;
   }
 
@@ -1579,7 +1579,7 @@ void PasswordManager::ShowManualFallbackForSaving(
 bool PasswordManager::NewFormsParsed(PasswordManagerDriver* driver,
                                      const std::vector<FormData>& form_data) {
   return base::ranges::any_of(form_data, [driver, this](const FormData& form) {
-    return !GetMatchedManagerForForm(driver, form.renderer_id);
+    return !GetMatchedManagerForForm(driver, form.renderer_id());
   });
 }
 
@@ -1630,7 +1630,7 @@ bool PasswordManager::DetectPotentialSubmissionAfterFormRemoval(
   // The formless form requires that all removed password fields have user
   // input.
   bool is_formless_form =
-      form_manager->observed_form()->renderer_id == FormRendererId();
+      form_manager->observed_form()->renderer_id() == FormRendererId();
   if (is_formless_form &&
       !form_manager->AreRemovedUnownedFieldsValidForSubmissionDetection(
           removed_unowned_fields, field_data_manager)) {

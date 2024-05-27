@@ -44,9 +44,9 @@ ScopedJavaLocalRef<jobject> FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
   }
 
   ScopedJavaLocalRef<jobject> obj = Java_FormData_createFormData(
-      env, session_id.value(), form.name,
+      env, session_id.value(), form.name(),
       /*origin=*/
-      form.url.DeprecatedGetOriginAsURL().spec(), android_objects);
+      form.url().DeprecatedGetOriginAsURL().spec(), android_objects);
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   return obj;
 }

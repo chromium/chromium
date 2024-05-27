@@ -12,8 +12,8 @@ namespace autofill {
 
 TEST(SignaturesTest, StripDigits) {
   FormData actual_form;
-  actual_form.url = GURL("http://foo.com");
-  actual_form.name = u"form_name_12345";
+  actual_form.set_url(GURL("http://foo.com"));
+  actual_form.set_name(u"form_name_12345");
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
@@ -27,7 +27,7 @@ TEST(SignaturesTest, StripDigits) {
 
   // Sequences of 5 digits or longer should be stripped.
   FormData expected_form(actual_form);
-  expected_form.name = u"form_name_";
+  expected_form.set_name(u"form_name_");
   expected_form.fields[0].set_name(u"field_name_");
 
   EXPECT_EQ(CalculateFormSignature(expected_form).value(),
@@ -39,7 +39,7 @@ TEST(SignaturesTest, StripDigits) {
 
 TEST(SignaturesTest, AlternativeFormSignatureLarge) {
   FormData large_form;
-  large_form.url = GURL("http://foo.com/login?q=a#ref");
+  large_form.set_url(GURL("http://foo.com/login?q=a#ref"));
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
@@ -65,7 +65,7 @@ TEST(SignaturesTest, AlternativeFormSignatureLarge) {
 
 TEST(SignaturesTest, AlternativeFormSignatureSmallPath) {
   FormData small_form_path;
-  small_form_path.url = GURL("http://foo.com/login?q=a#ref");
+  small_form_path.set_url(GURL("http://foo.com/login?q=a#ref"));
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
@@ -83,7 +83,7 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallPath) {
 
 TEST(SignaturesTest, AlternativeFormSignatureSmallRef) {
   FormData small_form_ref;
-  small_form_ref.url = GURL("http://foo.com?q=a#ref");
+  small_form_ref.set_url(GURL("http://foo.com?q=a#ref"));
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
@@ -102,7 +102,7 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallRef) {
 
 TEST(SignaturesTest, AlternativeFormSignatureSmallQuery) {
   FormData small_form_query;
-  small_form_query.url = GURL("http://foo.com?q=a");
+  small_form_query.set_url(GURL("http://foo.com?q=a"));
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);

@@ -198,13 +198,13 @@ class AutofillMetricsBaseTest {
 
   [[nodiscard]] FormData CreateEmptyForm() {
     FormData form;
-    form.host_frame = test::MakeLocalFrameToken();
-    form.renderer_id = test::MakeFormRendererId();
-    form.name = u"TestForm";
-    form.url = GURL("https://example.com/form.html");
-    form.action = GURL("https://example.com/submit.html");
-    form.main_frame_origin =
-        url::Origin::Create(autofill_client_->form_origin());
+    form.set_host_frame(test::MakeLocalFrameToken());
+    form.set_renderer_id(test::MakeFormRendererId());
+    form.set_name(u"TestForm");
+    form.set_url(GURL("https://example.com/form.html"));
+    form.set_action(GURL("https://example.com/submit.html"));
+    form.set_main_frame_origin(
+        url::Origin::Create(autofill_client_->form_origin()));
     return form;
   }
 

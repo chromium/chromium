@@ -226,7 +226,7 @@ void ExpectFormFieldData(const FormFieldData& expected,
 void ExpectFormData(const FormData& expected,
                     base::OnceClosure closure,
                     const FormData& passed) {
-  EXPECT_TRUE(passed.host_frame.is_empty());
+  EXPECT_TRUE(passed.host_frame().is_empty());
   EXPECT_TRUE(
       FormData::DeepEqual(test::WithoutUnserializedData(expected), passed));
   std::move(closure).Run();
@@ -410,13 +410,15 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
 
 TEST_F(AutofillTypeTraitsTestImpl, PassFormData) {
   FormData input = test::CreateTestAddressFormData();
-  input.username_predictions = {autofill::FieldRendererId(1),
-                                autofill::FieldRendererId(13),
-                                autofill::FieldRendererId(2)};
-  input.button_titles.push_back(std::make_pair(
-      u"Sign-up", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE));
+  input.set_username_predictions({autofill::FieldRendererId(1),
+                                  autofill::FieldRendererId(13),
+                                  autofill::FieldRendererId(2)});
+  std::vector<ButtonTitleInfo> button_titles = input.button_titles();
+  button_titles.emplace_back(
+      u"Sign-up", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE);
+  input.set_button_titles(std::move(button_titles));
 
-  EXPECT_FALSE(input.host_frame.is_empty());
+  EXPECT_FALSE(input.host_frame().is_empty());
   base::RunLoop loop;
   mojo::Remote<mojom::TypeTraitsTest> remote(GetTypeTraitsTestRemote());
   remote->PassFormData(

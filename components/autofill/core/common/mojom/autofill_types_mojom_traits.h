@@ -400,40 +400,40 @@ struct StructTraits<autofill::mojom::ButtonTitleInfoDataView,
 template <>
 struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
   static const std::u16string& id_attribute(const autofill::FormData& r) {
-    return r.id_attribute;
+    return r.id_attribute();
   }
 
   static const std::u16string& name_attribute(const autofill::FormData& r) {
-    return r.name_attribute;
+    return r.name_attribute();
   }
 
   static const std::u16string& name(const autofill::FormData& r) {
-    return r.name;
+    return r.name();
   }
 
   static const autofill::ButtonTitleList& button_titles(
       const autofill::FormData& r) {
-    return r.button_titles;
+    return r.button_titles();
   }
 
-  static const GURL& action(const autofill::FormData& r) { return r.action; }
+  static const GURL& action(const autofill::FormData& r) { return r.action(); }
 
   static bool is_action_empty(const autofill::FormData& r) {
-    return r.is_action_empty;
+    return r.is_action_empty();
   }
 
   static autofill::FormRendererId renderer_id(const autofill::FormData& r) {
-    return r.renderer_id;
+    return r.renderer_id();
   }
 
   static const std::vector<autofill::FrameTokenWithPredecessor>& child_frames(
       const autofill::FormData& r) {
-    return r.child_frames;
+    return r.child_frames();
   }
 
   static autofill::mojom::SubmissionIndicatorEvent submission_event(
       const autofill::FormData& r) {
-    return r.submission_event;
+    return r.submission_event();
   }
 
   static const std::vector<autofill::FormFieldData>& fields(
@@ -443,12 +443,12 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
 
   static const std::vector<autofill::FieldRendererId>& username_predictions(
       const autofill::FormData& r) {
-    return r.username_predictions;
+    return r.username_predictions();
   }
 
   static bool is_gaia_with_skip_save_password_form(
       const autofill::FormData& d) {
-    return d.is_gaia_with_skip_save_password_form;
+    return d.is_gaia_with_skip_save_password_form();
   }
 
   static bool Read(autofill::mojom::FormDataDataView data,

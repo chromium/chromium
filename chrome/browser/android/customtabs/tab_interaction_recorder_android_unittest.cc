@@ -49,7 +49,8 @@ void OnFormsSeenForAutofillManager(AutofillManager& autofill_manager,
                                    content::RenderFrameHost* rfh) {
   FormData form = CreateTestAddressFormData();
   if (rfh) {
-    form.host_frame = autofill::LocalFrameToken(rfh->GetFrameToken().value());
+    form.set_host_frame(
+        autofill::LocalFrameToken(rfh->GetFrameToken().value()));
   }
   autofill_manager.OnFormsSeen({form}, {});
 }

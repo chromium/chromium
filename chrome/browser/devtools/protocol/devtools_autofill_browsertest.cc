@@ -476,16 +476,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   // Create fake filled fields.
   // TODO(crbug.com/40227496): Get rid of FormFieldData.
   FormData form;
-  form.host_frame = LocalFrameToken(*main_frame()->GetFrameToken());
-  form.renderer_id = form_id().renderer_id;
+  form.set_host_frame(LocalFrameToken(*main_frame()->GetFrameToken()));
+  form.set_renderer_id(form_id().renderer_id);
   form.fields.push_back(test::CreateTestFormField(
       /*label=*/"", "name_1", "value_1", FormControlType::kInputText));
   form.fields.back().set_id_attribute(u"id_1");
-  form.fields.back().set_host_frame(form.host_frame);
+  form.fields.back().set_host_frame(form.host_frame());
   form.fields.push_back(test::CreateTestFormField(
       /*label=*/"", "name_2", "value_2", FormControlType::kInputText));
   form.fields.back().set_id_attribute(u"id_2");
-  form.fields.back().set_host_frame(form.host_frame);
+  form.fields.back().set_host_frame(form.host_frame());
 
   // The parsed form is queried by
   // AutofillHandler::OnFillOrPreviewDataModelForm() to obtain the type

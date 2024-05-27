@@ -54,9 +54,9 @@ class TestLogger : public BrowserSavePasswordProgressLogger {
 class BrowserSavePasswordProgressLoggerTest : public testing::Test {
  public:
   BrowserSavePasswordProgressLoggerTest() {
-    form_.url = GURL("http://myform.com/form.html");
-    form_.action = GURL("http://m.myform.com/submit.html");
-    form_.name = u"form_name";
+    form_.set_url(GURL("http://myform.com/form.html"));
+    form_.set_action(GURL("http://m.myform.com/submit.html"));
+    form_.set_name(u"form_name");
 
     // Add a password field.
     autofill::FormFieldData field;

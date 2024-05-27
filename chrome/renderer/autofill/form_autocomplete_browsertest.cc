@@ -199,10 +199,10 @@ void VerifyNoSubmitMessagesReceived(
 // TODO(crbug.com/41495779): Update.
 FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   FormData data;
-  data.name = u"name";
-  data.url = GURL("http://example.com/");
-  data.action = GURL("http://example.com/blade.php");
-  data.renderer_id = test::MakeFormRendererId();  // Default value.
+  data.set_name(u"name");
+  data.set_url(GURL("http://example.com/"));
+  data.set_action(GURL("http://example.com/blade.php"));
+  data.set_renderer_id(test::MakeFormRendererId());  // Default value.
 
   WebDocument document = main_frame->GetDocument();
   WebFormControlElement fname_element =
@@ -325,10 +325,10 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
 
     // TODO(crbug.com/41495779): Update.
     FormData form;
-    form.name = u"name";
-    form.url = GURL("http://example.com/");
-    form.action = GURL("http://example.com/blade.php");
-    form.renderer_id = test::MakeFormRendererId();  // Default value.
+    form.set_name(u"name");
+    form.set_url(GURL("http://example.com/"));
+    form.set_action(GURL("http://example.com/blade.php"));
+    form.set_renderer_id(test::MakeFormRendererId());  // Default value.
 
     FormFieldData field;
     field.set_name(u"fname");

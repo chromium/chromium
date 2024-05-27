@@ -179,7 +179,7 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("submission_event", ToString(form.submission_event));
   target.Set("only_for_fallback", form.only_for_fallback);
   target.Set("is_gaia_with_skip_save_password_form",
-             form.form_data.is_gaia_with_skip_save_password_form);
+             form.form_data.is_gaia_with_skip_save_password_form());
   target.Set("is_new_password_reliable", form.is_new_password_reliable);
   target.Set("in_store", ToString(form.in_store));
 

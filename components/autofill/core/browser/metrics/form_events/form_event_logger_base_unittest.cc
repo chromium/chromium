@@ -645,7 +645,7 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NotFormTag) {
 
   // Set the form to appear outside a <form> tag, which means it is not eligible
   // for the email heuristic only metric.
-  form_.renderer_id = FormRendererId();
+  form_.set_renderer_id(FormRendererId());
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);

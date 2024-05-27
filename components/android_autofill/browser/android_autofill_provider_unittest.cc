@@ -109,16 +109,16 @@ auto SaveSessionId(SessionId* session_id) {
 
 FormData CreateTestBasicForm() {
   FormData form;
-  form.renderer_id = test::MakeFormRendererId();
-  form.url = GURL("https://foo.com/form.html");
-  form.action = GURL("https://foo.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(form.url);
+  form.set_renderer_id(test::MakeFormRendererId());
+  form.set_url(GURL("https://foo.com/form.html"));
+  form.set_action(GURL("https://foo.com/submit.html"));
+  form.set_main_frame_origin(url::Origin::Create(form.url()));
   return form;
 }
 
 FormData CreateTestLoginForm() {
   FormData form = CreateTestBasicForm();
-  form.name = u"login_form";
+  form.set_name(u"login_form");
   form.fields = {
       CreateTestFormField(/*label=*/"Username", /*name=*/"username",
                           /*value=*/"", FormControlType::kInputText),
@@ -129,7 +129,7 @@ FormData CreateTestLoginForm() {
 
 FormData CreateTestChangePasswordForm() {
   FormData form = CreateTestBasicForm();
-  form.name = u"change_password_form";
+  form.set_name(u"change_password_form");
   form.fields = {
       CreateTestFormField(/*label=*/"Password", /*name=*/"password1",
                           /*value=*/"", FormControlType::kInputPassword),
@@ -473,9 +473,9 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnChangedForm) {
 
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  form.name_attribute = u"old_name";
+  form.set_name_attribute(u"old_name");
   FormData form_changed = form;
-  form_changed.name_attribute = u"changed_name";
+  form_changed.set_name_attribute(u"changed_name");
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
 
   MockFunction<void(int)> check;
@@ -792,7 +792,8 @@ TEST_F(AndroidAutofillProviderTest,
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
   ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
   FormData changed_form = form;
-  changed_form.name_attribute += u"some-suffix";
+  changed_form.set_name_attribute(changed_form.name_attribute() +
+                                  u"some-suffix");
 
   SessionId cache_session_id = SessionId(0);
   MockFunction<void()> check;

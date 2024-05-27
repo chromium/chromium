@@ -269,7 +269,7 @@ void AutofillDriverIOS::FormsSeen(const std::vector<FormData>& updated_forms) {
           autofill::features::kAutofillAcrossIframesIos)) {
     for (const autofill::FormData& form : updated_forms) {
       for (const autofill::FrameTokenWithPredecessor& child_frame :
-           form.child_frames) {
+           form.child_frames()) {
         // This absl::get is safe because on iOS, FormData::child_frames is
         // only ever populated with RemoteFrameTokens. absl::get will fail a
         // CHECK if this assumption is ever wrong.
@@ -310,7 +310,7 @@ void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
                                            const FormFieldData& field,
                                            base::TimeTicks timestamp) {
   UpdateLastInteractedForm(/*form_data=*/form,
-                           /*formless_field=*/form.renderer_id
+                           /*formless_field=*/form.renderer_id()
                                ? FieldRendererId()
                                : field.renderer_id());
 
@@ -404,7 +404,7 @@ bool AutofillDriverIOS::DetectFormSubmissionAfterFormRemoval(
   }
 
   const auto& last_interacted_form_id =
-      last_interacted_form_->form_data.renderer_id;
+      last_interacted_form_->form_data.renderer_id();
   // Check if the last interacted form was removed.
   if (last_interacted_form_id &&
       removed_forms.find(last_interacted_form_id) != removed_forms.end()) {
@@ -457,7 +457,7 @@ void AutofillDriverIOS::RecordFormRemoval(bool submission_detected,
     CHECK(last_interacted_form_);
     base::UmaHistogramBoolean(
         /*name=*/kFormlessSubmissionAfterFormRemovalHistogram,
-        /*sample=*/!last_interacted_form_->form_data.renderer_id);
+        /*sample=*/!last_interacted_form_->form_data.renderer_id());
   }
 }
 

@@ -1475,11 +1475,11 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
 TEST_P(AutofillQueryTest, Metadata) {
   // Initialize a form. Note that this state is post-parse.
   FormData form;
-  form.url = GURL("https://origin.com");
-  form.action = GURL("https://origin.com/submit-me");
-  form.id_attribute = u"form-id-attribute";
-  form.name_attribute = u"form-name-attribute";
-  form.name = form.name_attribute;
+  form.set_url(GURL("https://origin.com"));
+  form.set_action(GURL("https://origin.com/submit-me"));
+  form.set_id_attribute(u"form-id-attribute");
+  form.set_name_attribute(u"form-name-attribute");
+  form.set_name(form.name_attribute());
 
   // Add field 0.
   FormFieldData field;
@@ -1562,12 +1562,12 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   base::test::ScopedFeatureList local_feature;
 
   FormData form;
-  form.url = GURL("https://origin.com");
-  form.full_url = GURL("https://origin.com?foo=bar#foo");
-  form.action = GURL("https://origin.com/submit-me");
-  form.id_attribute = u"form-id_attribute";
-  form.name_attribute = u"form-id_attribute";
-  form.name = form.name_attribute;
+  form.set_url(GURL("https://origin.com"));
+  form.set_full_url(GURL("https://origin.com?foo=bar#foo"));
+  form.set_action(GURL("https://origin.com/submit-me"));
+  form.set_id_attribute(u"form-id_attribute");
+  form.set_name_attribute(u"form-id_attribute");
+  form.set_name(form.name_attribute());
 
   FormFieldData field;
   field.set_id_attribute(u"field-id-attribute-1");

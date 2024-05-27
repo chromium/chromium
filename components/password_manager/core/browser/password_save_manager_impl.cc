@@ -597,7 +597,7 @@ void PasswordSaveManagerImpl::BlockMovingToAccountStoreFor(
 
 void PasswordSaveManagerImpl::UpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event) {
-  pending_credentials_.form_data.submission_event = event;
+  pending_credentials_.form_data.set_submission_event(event);
   pending_credentials_.submission_event = event;
 }
 

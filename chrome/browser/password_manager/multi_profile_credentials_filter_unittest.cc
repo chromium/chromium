@@ -178,7 +178,7 @@ TEST_F(MultiProfileCredentialsFilterTest, SyncCredentialsFilter) {
   password_manager::PasswordForm form =
       password_manager::SyncUsernameTestBase::SimpleGaiaForm(
           "user@example.org");
-  form.form_data.is_gaia_with_skip_save_password_form = true;
+  form.form_data.set_is_gaia_with_skip_save_password_form(true);
 
   ASSERT_FALSE(sync_filter_.ShouldSave(form));
   MultiProfileCredentialsFilter multi_profile_filter(

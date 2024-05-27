@@ -204,7 +204,7 @@ TEST_F(AutofillAcrossIframesTest, NoChildFrames) {
   ASSERT_EQ(main_frame_manager().seen_forms().size(), 1u);
 
   const FormData& form = main_frame_manager().seen_forms()[0];
-  EXPECT_EQ(form.child_frames.size(), 0u);
+  EXPECT_EQ(form.child_frames().size(), 0u);
 
   // The main frame driver should have the correct local frame token set even
   // without any child frames.
@@ -232,10 +232,10 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
   ASSERT_EQ(main_frame_manager().seen_forms().size(), 1u);
 
   const FormData& form = main_frame_manager().seen_forms()[0];
-  ASSERT_EQ(form.child_frames.size(), 2u);
+  ASSERT_EQ(form.child_frames().size(), 2u);
 
-  FrameTokenWithPredecessor remote_token1 = form.child_frames[0];
-  FrameTokenWithPredecessor remote_token2 = form.child_frames[1];
+  FrameTokenWithPredecessor remote_token1 = form.child_frames()[0];
+  FrameTokenWithPredecessor remote_token2 = form.child_frames()[1];
 
   // Verify that tokens hold the right alternative, and the token objects are
   // valid (the bool cast checks this).
@@ -276,9 +276,9 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
 
   // Also check that data relating to the frame was properly set on the form-
   // and field-level data when extracted.
-  ASSERT_TRUE(form.host_frame);
+  ASSERT_TRUE(form.host_frame());
   web::WebFrame* main_frame_from_form_data =
-      frames_manager->GetFrameWithId(form.host_frame.ToString());
+      frames_manager->GetFrameWithId(form.host_frame().ToString());
   ASSERT_TRUE(main_frame_from_form_data);
   EXPECT_TRUE(main_frame_from_form_data->IsMainFrame());
 
@@ -286,9 +286,9 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
 
   EXPECT_EQ(form.fields.size(), 2u);
   for (const FormFieldData& field : form.fields) {
-    EXPECT_EQ(field.host_frame(), form.host_frame);
-    EXPECT_EQ(field.host_form_id(), form.renderer_id);
-    EXPECT_EQ(field.origin(), url::Origin::Create(form.url));
+    EXPECT_EQ(field.host_frame(), form.host_frame());
+    EXPECT_EQ(field.host_form_id(), form.renderer_id());
+    EXPECT_EQ(field.origin(), url::Origin::Create(form.url()));
     EXPECT_EQ(field.host_form_signature(), form_signature);
   }
 }
@@ -304,8 +304,8 @@ TEST_F(AutofillAcrossIframesTest, Resolve) {
   ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(1));
   ASSERT_EQ(main_frame_manager().seen_forms().size(), 1u);
   const FormData& form = main_frame_manager().seen_forms()[0];
-  ASSERT_EQ(form.child_frames.size(), 1u);
-  FrameTokenWithPredecessor remote_token = form.child_frames[0];
+  ASSERT_EQ(form.child_frames().size(), 1u);
+  FrameTokenWithPredecessor remote_token = form.child_frames()[0];
   EXPECT_THAT(remote_token.token, VariantWith<RemoteFrameToken>(IsTrue()));
 
   // Wait for the child frame to register itself.
@@ -350,8 +350,8 @@ TEST_F(AutofillAcrossIframesTest, SetAndGetParent) {
   ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(1));
   ASSERT_EQ(main_frame_manager().seen_forms().size(), 1u);
   const FormData& form = main_frame_manager().seen_forms()[0];
-  ASSERT_EQ(form.child_frames.size(), 1u);
-  FrameTokenWithPredecessor remote_token = form.child_frames[0];
+  ASSERT_EQ(form.child_frames().size(), 1u);
+  FrameTokenWithPredecessor remote_token = form.child_frames()[0];
   EXPECT_THAT(remote_token.token, VariantWith<RemoteFrameToken>(IsTrue()));
 
   // Wait for the child frame to register itself.
@@ -445,9 +445,9 @@ TEST_F(AutofillAcrossIframesTest, FillForm) {
     field.set_is_user_edited(false);
   }
 
-  main_frame_driver()->ApplyFormAction(mojom::FormActionType::kFill,
-                                       mojom::ActionPersistence::kFill, form,
-                                       form.main_frame_origin, field_type_map);
+  main_frame_driver()->ApplyFormAction(
+      mojom::FormActionType::kFill, mojom::ActionPersistence::kFill, form,
+      form.main_frame_origin(), field_type_map);
 
   ASSERT_TRUE(main_frame_manager().WaitForFormsFilled(1));
   ASSERT_EQ(main_frame_manager().filled_forms().size(), 1u);
@@ -483,7 +483,7 @@ TEST_F(AutofillAcrossIframesTest, FeatureDisabled) {
   ASSERT_EQ(main_frame_manager().seen_forms().size(), 1u);
 
   const FormData& form = main_frame_manager().seen_forms()[0];
-  EXPECT_EQ(form.child_frames.size(), 0u);
+  EXPECT_EQ(form.child_frames().size(), 0u);
 
   EXPECT_FALSE(
       autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state()));

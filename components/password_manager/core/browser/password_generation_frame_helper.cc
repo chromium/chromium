@@ -89,7 +89,7 @@ void PasswordGenerationFrameHelper::ProcessPasswordRequirements(
     if (auto it = predictions.find(field.global_id());
         it != predictions.end() && it->second.password_requirements) {
       password_requirements_service->AddSpec(
-          form.url.DeprecatedGetOriginAsURL(), form_signature,
+          form.url().DeprecatedGetOriginAsURL(), form_signature,
           CalculateFieldSignatureForField(field),
           *it->second.password_requirements);
     }

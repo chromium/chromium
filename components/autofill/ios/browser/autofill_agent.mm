@@ -523,7 +523,8 @@ constexpr CGFloat kSuggestionIconWidth = 32;
       fieldData.Set(NumberToString(form.data.fields[i].renderer_id().value()),
                     base::Value(form.fields[i].overall_type));
     }
-    predictionData.Set(base::UTF16ToUTF8(form.data.name), std::move(fieldData));
+    predictionData.Set(base::UTF16ToUTF8(form.data.name()),
+                       std::move(fieldData));
   }
   AutofillJavaScriptFeature::GetInstance()->FillPredictionData(
       frame, std::move(predictionData));

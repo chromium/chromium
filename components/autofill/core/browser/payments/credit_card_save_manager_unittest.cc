@@ -277,7 +277,7 @@ class CreditCardSaveManagerTest : public testing::Test {
   [[nodiscard]] FormData CreateTestCreditCardFormData(
       CreditCardFormOptions options = {}) {
     FormData form;
-    form.name = u"MyForm";
+    form.set_name(u"MyForm");
     std::u16string scheme = options.is_https ? u"https://" : u"http://";
     std::u16string host =
         options.is_google_host ? u"pay.google.com" : u"myform.com";
@@ -285,10 +285,10 @@ class CreditCardSaveManagerTest : public testing::Test {
         options.is_google_host ? u"pay.google.com" : u"myform.root.com";
     std::u16string form_path = u"/form.html";
     std::u16string submit_path = u"/submit.html";
-    form.url = GURL(scheme + host + form_path);
-    form.action = GURL(scheme + host + submit_path);
-    form.main_frame_origin =
-        url::Origin::Create(GURL(scheme + root_host + form_path));
+    form.set_url(GURL(scheme + host + form_path));
+    form.set_action(GURL(scheme + host + submit_path));
+    form.set_main_frame_origin(
+        url::Origin::Create(GURL(scheme + root_host + form_path)));
 
     if (options.split_names) {
       form.fields.push_back(
@@ -1330,11 +1330,11 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MultipleCvcFields) {
 
   // Set up our credit card form data.
   FormData credit_card_form;
-  credit_card_form.name = u"MyForm";
-  credit_card_form.url = GURL("https://myform.com/form.html");
-  credit_card_form.action = GURL("https://myform.com/submit.html");
-  credit_card_form.main_frame_origin =
-      url::Origin::Create(GURL("http://myform_root.com/form.html"));
+  credit_card_form.set_name(u"MyForm");
+  credit_card_form.set_url(GURL("https://myform.com/form.html"));
+  credit_card_form.set_action(GURL("https://myform.com/submit.html"));
+  credit_card_form.set_main_frame_origin(
+      url::Origin::Create(GURL("http://myform_root.com/form.html")));
   credit_card_form.fields = {
       CreateTestFormField("Card Name", "cardname", "",
                           FormControlType::kInputText),
@@ -1386,11 +1386,11 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoCvcFieldOnForm) {
 
   // Set up our credit card form data.  Note that CVC field is missing.
   FormData credit_card_form;
-  credit_card_form.name = u"MyForm";
-  credit_card_form.url = GURL("https://myform.com/form.html");
-  credit_card_form.action = GURL("https://myform.com/submit.html");
-  credit_card_form.main_frame_origin =
-      url::Origin::Create(GURL("http://myform_root.com/form.html"));
+  credit_card_form.set_name(u"MyForm");
+  credit_card_form.set_url(GURL("https://myform.com/form.html"));
+  credit_card_form.set_action(GURL("https://myform.com/submit.html"));
+  credit_card_form.set_main_frame_origin(
+      url::Origin::Create(GURL("http://myform_root.com/form.html")));
   credit_card_form.fields = {
       CreateTestFormField("Card Name", "cardname", "",
                           FormControlType::kInputText),
@@ -1441,11 +1441,11 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Set up our credit card form data. Note that CVC field is missing.
   FormData credit_card_form;
-  credit_card_form.name = u"MyForm";
-  credit_card_form.url = GURL("https://myform.com/form.html");
-  credit_card_form.action = GURL("https://myform.com/submit.html");
-  credit_card_form.main_frame_origin =
-      url::Origin::Create(GURL("http://myform_root.com/form.html"));
+  credit_card_form.set_name(u"MyForm");
+  credit_card_form.set_url(GURL("https://myform.com/form.html"));
+  credit_card_form.set_action(GURL("https://myform.com/submit.html"));
+  credit_card_form.set_main_frame_origin(
+      url::Origin::Create(GURL("http://myform_root.com/form.html")));
   credit_card_form.fields = {
       CreateTestFormField("Card Name", "cardname", "",
                           FormControlType::kInputText),
@@ -1499,11 +1499,11 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Set up our credit card form data. Note that CVC field is missing.
   FormData credit_card_form;
-  credit_card_form.name = u"MyForm";
-  credit_card_form.url = GURL("https://myform.com/form.html");
-  credit_card_form.action = GURL("https://myform.com/submit.html");
-  credit_card_form.main_frame_origin =
-      url::Origin::Create(GURL("http://myform_root.com/form.html"));
+  credit_card_form.set_name(u"MyForm");
+  credit_card_form.set_url(GURL("https://myform.com/form.html"));
+  credit_card_form.set_action(GURL("https://myform.com/submit.html"));
+  credit_card_form.set_main_frame_origin(
+      url::Origin::Create(GURL("http://myform_root.com/form.html")));
   credit_card_form.fields = {
       CreateTestFormField("Card Name", "cardname", "",
                           FormControlType::kInputText),
@@ -1559,11 +1559,11 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Set up our credit card form data. Note that CVC field is missing.
   FormData credit_card_form;
-  credit_card_form.name = u"MyForm";
-  credit_card_form.url = GURL("https://myform.com/form.html");
-  credit_card_form.action = GURL("https://myform.com/submit.html");
-  credit_card_form.main_frame_origin =
-      url::Origin::Create(GURL("http://myform_root.com/form.html"));
+  credit_card_form.set_name(u"MyForm");
+  credit_card_form.set_url(GURL("https://myform.com/form.html"));
+  credit_card_form.set_action(GURL("https://myform.com/submit.html"));
+  credit_card_form.set_main_frame_origin(
+      url::Origin::Create(GURL("http://myform_root.com/form.html")));
   credit_card_form.fields = {
       CreateTestFormField("Card Name", "cardname", "",
                           FormControlType::kInputText),

@@ -42,11 +42,11 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
       provider.ConsumeIntegralInRange<size_t>(0, 15);
   result.fields.resize(number_of_fields);
 
-  result.name = ConsumeU16String(provider);
-  result.action = GURL(provider.ConsumeRandomLengthString());
-  result.url = GURL(provider.ConsumeRandomLengthString());
-  result.main_frame_origin =
-      url::Origin::Create(GURL(provider.ConsumeRandomLengthString()));
+  result.set_name(ConsumeU16String(provider));
+  result.set_action(GURL(provider.ConsumeRandomLengthString()));
+  result.set_url(GURL(provider.ConsumeRandomLengthString()));
+  result.set_main_frame_origin(
+      url::Origin::Create(GURL(provider.ConsumeRandomLengthString())));
 
   int first_field_with_same_value = -1;
   for (size_t i = 0; i < number_of_fields; ++i) {

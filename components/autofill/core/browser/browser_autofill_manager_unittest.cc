@@ -554,9 +554,9 @@ void ExpectFilledForm(
   const size_t kCreditCardFormSizeMonthType = 4;
   const size_t kCreditCardFormSizeNotMonthType = 5;
 
-  EXPECT_EQ(u"MyForm", filled_form.name);
-  EXPECT_EQ(GURL("https://myform.com/form.html"), filled_form.url);
-  EXPECT_EQ(GURL("https://myform.com/submit.html"), filled_form.action);
+  EXPECT_EQ(u"MyForm", filled_form.name());
+  EXPECT_EQ(GURL("https://myform.com/form.html"), filled_form.url());
+  EXPECT_EQ(GURL("https://myform.com/submit.html"), filled_form.action());
 
   size_t form_size = 0;
   if (address_fill_data) {
@@ -868,14 +868,14 @@ class BrowserAutofillManagerTest : public testing::Test {
   void CreateTestCreditCardFormData(FormData* form,
                                     bool is_https,
                                     bool use_month_type) {
-    form->name = u"MyForm";
+    form->set_name(u"MyForm");
     if (is_https) {
       GURL::Replacements replacements;
       replacements.SetSchemeStr(url::kHttpsScheme);
       autofill_client_.set_form_origin(
           autofill_client_.form_origin().ReplaceComponents(replacements));
-      form->url = GURL("https://myform.com/form.html");
-      form->action = GURL("https://myform.com/submit.html");
+      form->set_url(GURL("https://myform.com/form.html"));
+      form->set_action(GURL("https://myform.com/submit.html"));
     } else {
       // If we are testing a form that submits over HTTP, we also need to set
       // the main frame to HTTP, otherwise mixed form warnings will trigger and
@@ -884,8 +884,8 @@ class BrowserAutofillManagerTest : public testing::Test {
       replacements.SetSchemeStr(url::kHttpScheme);
       autofill_client_.set_form_origin(
           autofill_client_.form_origin().ReplaceComponents(replacements));
-      form->url = GURL("http://myform.com/form.html");
-      form->action = GURL("http://myform.com/submit.html");
+      form->set_url(GURL("http://myform.com/form.html"));
+      form->set_action(GURL("http://myform.com/submit.html"));
     }
 
     form->fields.push_back(CreateTestFormField("Name on Card", "nameoncard", "",
@@ -1307,11 +1307,11 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormData form2;
-  form2.host_frame = test::MakeLocalFrameToken();
-  form2.renderer_id = test::MakeFormRendererId();
-  form2.name = u"MyForm";
-  form2.url = GURL("https://myform.com/form.html");
-  form2.action = GURL("https://myform.com/submit.html");
+  form2.set_host_frame(test::MakeLocalFrameToken());
+  form2.set_renderer_id(test::MakeFormRendererId());
+  form2.set_name(u"MyForm");
+  form2.set_url(GURL("https://myform.com/form.html"));
+  form2.set_action(GURL("https://myform.com/submit.html"));
   form2.fields = {
       CreateTestFormField("First Name", "firstname", "",
                           FormControlType::kInputText),
@@ -1323,11 +1323,11 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
   EXPECT_CALL(
       *crowdsourcing_manager(),
       StartQueryRequest(
-          ElementsAre(FormStructureHasRendererId(form.renderer_id)), _, _));
+          ElementsAre(FormStructureHasRendererId(form.renderer_id())), _, _));
   EXPECT_CALL(
       *crowdsourcing_manager(),
       StartQueryRequest(
-          ElementsAre(FormStructureHasRendererId(form2.renderer_id)), _, _));
+          ElementsAre(FormStructureHasRendererId(form2.renderer_id())), _, _));
   FormsSeen({form});
   FormsSeen({form2});
 }
@@ -1341,11 +1341,11 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Set up a non-queryable form.
   FormData form2;
-  form2.host_frame = test::MakeLocalFrameToken();
-  form2.renderer_id = test::MakeFormRendererId();
-  form2.name = u"NonQueryable";
-  form2.url = form1.url;
-  form2.action = GURL("https://myform.com/submit.html");
+  form2.set_host_frame(test::MakeLocalFrameToken());
+  form2.set_renderer_id(test::MakeFormRendererId());
+  form2.set_name(u"NonQueryable");
+  form2.set_url(form1.url());
+  form2.set_action(GURL("https://myform.com/submit.html"));
   form2.fields = {
       CreateTestFormField("Querty", "qwerty", "", FormControlType::kInputText)};
 
@@ -1364,9 +1364,9 @@ TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_UnrecognizedAttribute) {
   // Set up our form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       // Set a valid autocomplete attribute for the first name.
       CreateTestFormField("First name", "firstname", "",
@@ -1636,9 +1636,9 @@ TEST_F(BrowserAutofillManagerTest,
       features::kAutofillEnableManualFallbackIPH};
 
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       CreateTestFormField("First Name", "firstname", "",
                           FormControlType::kInputText, "given-name"),
@@ -1703,9 +1703,9 @@ TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_MinFieldsEnforced_NoAutocomplete) {
   // Set up our form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {CreateTestFormField("First Name", "firstname", "",
                                      FormControlType::kInputText),
                  CreateTestFormField("Last Name", "lastname", "",
@@ -1731,9 +1731,9 @@ TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_MinFieldsEnforced_WithOneAutocomplete) {
   // Set up our form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {CreateTestFormField("First Name", "firstname", "",
                                      FormControlType::kInputText, "given-name"),
                  CreateTestFormField("Last Name", "lastname", "",
@@ -1770,9 +1770,9 @@ TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_SmallFormWithTwoAutocomplete) {
   // Set up our form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       CreateTestFormField("First Name", "firstname", "",
                           FormControlType::kInputText, "given-name"),
@@ -1957,9 +1957,9 @@ TEST_P(SuggestionMatchingTest,
 TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_UnknownFields) {
   // Set up our form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       CreateTestFormField("Username", "username", "",
                           FormControlType::kInputText),
@@ -2593,7 +2593,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true, false);
   // However we set the action (target URL) to be HTTP after all.
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_action(GURL("http://myform.com/submit.html"));
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[0]);
@@ -2624,7 +2624,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   // Clear the form action.
-  form.action = GURL();
+  form.set_action(GURL());
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[1]);
@@ -2646,7 +2646,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   // Have the form action be a javascript function (which is a valid URL).
-  form.action = GURL("javascript:alert('Hello');");
+  form.set_action(GURL("javascript:alert('Hello');"));
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[1]);
@@ -3374,7 +3374,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(
       *crowdsourcing_manager(),
       StartQueryRequest(
-          ElementsAre(FormStructureHasRendererId(form.renderer_id)), _, _));
+          ElementsAre(FormStructureHasRendererId(form.renderer_id())), _, _));
   FormsSeen({form});
 }
 
@@ -3438,9 +3438,9 @@ TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_ForEmailFieldWithUserNameAutocomplete) {
   // Set up our form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
 
   struct {
     const char* const label;
@@ -3692,8 +3692,8 @@ TEST_F(BrowserAutofillManagerTest,
   const size_t n_fields = 3;
   // Set up a CC form.
   FormData form;
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
                                      FormControlType::kInputText),
                  CreateTestFormField("Card Number", "cardnumber", "",
@@ -4406,9 +4406,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
        LogEventsOnAutocompleteAttributeField) {
   // Set up our form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       CreateTestFormField("First Name", "firstname", "",
                           FormControlType::kInputText, "given-name"),
@@ -4456,11 +4456,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
        LogEventsParseQueryResponseServerPrediction) {
   // Set up our form data.
   FormData form;
-  form.host_frame = test::MakeLocalFrameToken();
-  form.renderer_id = test::MakeFormRendererId();
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_host_frame(test::MakeLocalFrameToken());
+  form.set_renderer_id(test::MakeFormRendererId());
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       CreateTestFormField(/*label=*/"Name", /*name=*/"name", /*value=*/"",
                           /*type=*/FormControlType::kInputText),
@@ -4568,11 +4568,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
        LogEventsRationalizationTwoAddresses) {
   // Set up our form data.
   FormData form;
-  form.host_frame = test::MakeLocalFrameToken();
-  form.renderer_id = test::MakeFormRendererId();
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_host_frame(test::MakeLocalFrameToken());
+  form.set_renderer_id(test::MakeFormRendererId());
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       CreateTestFormField(/*label=*/"Full Name", /*name=*/"fullName",
                           /*value=*/"", /*type=*/FormControlType::kInputText),
@@ -4709,9 +4709,9 @@ TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
   for (const ValuePatternTestCase test_case : kTestCases) {
     // Set up our form data.
     FormData form;
-    form.name = u"my-form";
-    form.url = GURL("https://myform.com/form.html");
-    form.action = GURL("https://myform.com/submit.html");
+    form.set_name(u"my-form");
+    form.set_url(GURL("https://myform.com/form.html"));
+    form.set_action(GURL("https://myform.com/submit.html"));
     form.fields = {CreateTestFormField("Some label", "my-field",
                                        test_case.value,
                                        FormControlType::kInputText)};
@@ -4914,11 +4914,11 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   // First form on the page.
   FormData form;
-  form.host_frame = test::MakeLocalFrameToken();
-  form.renderer_id = test::MakeFormRendererId();
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_host_frame(test::MakeLocalFrameToken());
+  form.set_renderer_id(test::MakeFormRendererId());
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       CreateTestFormField(/*label=*/"City", /*name=*/"city", /*value=*/"",
                           /*type=*/FormControlType::kInputText),
@@ -4938,11 +4938,11 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
 
   // Second form on the page.
   FormData form2;
-  form2.host_frame = test::MakeLocalFrameToken();
-  form2.renderer_id = test::MakeFormRendererId();
-  form2.name = u"MyForm2";
-  form2.url = GURL("https://myform.com/form.html");
-  form2.action = GURL("https://myform.com/submit.html");
+  form2.set_host_frame(test::MakeLocalFrameToken());
+  form2.set_renderer_id(test::MakeFormRendererId());
+  form2.set_name(u"MyForm2");
+  form2.set_url(GURL("https://myform.com/form.html"));
+  form2.set_action(GURL("https://myform.com/submit.html"));
   form2.fields = {CreateTestFormField("Last Name", "lastname", "",
                                       FormControlType::kInputText),
                   CreateTestFormField("Middle Name", "middlename", "",
@@ -5056,7 +5056,7 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
 TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   // Set up our form data.
   FormData form;
-  form.url = GURL("https://www.myform.com");
+  form.set_url(GURL("https://www.myform.com"));
   form.fields = {CreateTestFormField("First Name", "firstname", "",
                                      FormControlType::kInputText),
                  CreateTestFormField("Last Name", "lastname", "",
@@ -5298,9 +5298,9 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        DeterminePossibleFieldTypesForUpload_IsTriggered) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
 
   std::vector<FieldTypeSet> expected_types;
   std::vector<std::u16string> expected_values;
@@ -5393,9 +5393,9 @@ TEST_F(BrowserAutofillManagerTest, TestExternalDelegate) {
 TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
   // Set up our form data (it's already filled out with user data).
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
 
   std::vector<FieldTypeSet> expected_types;
   FieldTypeSet types;
@@ -5443,9 +5443,9 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
 TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
   // Set up our form data (it's already filled out with user data).
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
 
   std::vector<FieldTypeSet> expected_types;
   FieldTypeSet types;
@@ -5493,9 +5493,9 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
 TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
   // Set up our form data (empty).
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
 
   std::vector<FieldTypeSet> expected_types;
 
@@ -5544,9 +5544,9 @@ TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_UnrecognizedAttribute) {
   // Set up the form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       // Set a valid autocomplete attribute on the card name.
       CreateTestFormField("Name on Card", "nameoncard", "",
@@ -5577,9 +5577,9 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_ForNumberSplitAcrossFields) {
   // Set up our form data with credit card number split across fields.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
                                      FormControlType::kInputText)};
 
@@ -5626,9 +5626,9 @@ TEST_F(BrowserAutofillManagerTest, DontSaveCvcInAutocompleteHistory) {
       .WillOnce(SaveArg<0>(&form_seen_by_ahm));
 
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
 
   struct {
     const char* label;
@@ -5723,9 +5723,9 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   // is disabled by default. This tests validates both the disabled and enabled
   // scenarios.
   FormData form;
-  form.name = u"TestForm";
-  form.url = GURL("https://example.com/form.html");
-  form.action = GURL("https://example.com/submit.html");
+  form.set_name(u"TestForm");
+  form.set_url(GURL("https://example.com/form.html"));
+  form.set_action(GURL("https://example.com/submit.html"));
 
   // Empty Form.
   EXPECT_FALSE(
@@ -5793,9 +5793,9 @@ TEST_F(BrowserAutofillManagerTest,
        DisplaySuggestions_AutocompleteOffNotRespected_AddressField) {
   // Set up an address form.
   FormData mixed_form;
-  mixed_form.name = u"MyForm";
-  mixed_form.url = GURL("https://myform.com/form.html");
-  mixed_form.action = GURL("https://myform.com/submit.html");
+  mixed_form.set_name(u"MyForm");
+  mixed_form.set_url(GURL("https://myform.com/form.html"));
+  mixed_form.set_action(GURL("https://myform.com/submit.html"));
   mixed_form.fields.push_back(CreateTestFormField("First name", "firstname", "",
                                                   FormControlType::kInputText));
   mixed_form.fields.back().set_should_autocomplete(false);
@@ -5823,9 +5823,9 @@ TEST_F(BrowserAutofillManagerTest,
        DisplaySuggestions_AutocompleteOff_CreditCardField) {
   // Set up a credit card form.
   FormData mixed_form;
-  mixed_form.name = u"MyForm";
-  mixed_form.url = GURL("https://myform.com/form.html");
-  mixed_form.action = GURL("https://myform.com/submit.html");
+  mixed_form.set_name(u"MyForm");
+  mixed_form.set_url(GURL("https://myform.com/form.html"));
+  mixed_form.set_action(GURL("https://myform.com/submit.html"));
   mixed_form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
                                            FormControlType::kInputText)};
   mixed_form.fields.back().set_should_autocomplete(false);
@@ -5857,9 +5857,9 @@ TEST_F(BrowserAutofillManagerTest,
        DisplaySuggestionsForUpdatedServerTypedForm) {
   // Create a form with unknown heuristic fields.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       CreateTestFormField("Field 1", "field1", "", FormControlType::kInputText),
       CreateTestFormField("Field 2", "field2", "", FormControlType::kInputText),
@@ -5899,7 +5899,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Modify form action URL. This can happen on in-page navigation if the form
   // doesn't have an actual action (attribute is empty).
-  form.action = net::AppendQueryParameter(form.action, "arg", "value");
+  form.set_action(net::AppendQueryParameter(form.action(), "arg", "value"));
 
   // Expect the form still can be autofilled.
   for (const FormFieldData& form_field : form.fields) {
@@ -6032,7 +6032,7 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogAutocomplete_NoHappinessMetricsEmitted) {
   FormData form;
-  form.name = u"NothingSpecial";
+  form.set_name(u"NothingSpecial");
   form.fields = {CreateTestFormField("Something", "something", "",
                                      FormControlType::kInputText)};
   FormsSeen({form});
@@ -6073,14 +6073,14 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {
   // Create a form with name and address fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {CreateTestFormField("First Name", "firstname", "",
                                      FormControlType::kInputText),
                  CreateTestFormField("Last Name", "lastname", "",
@@ -6117,14 +6117,14 @@ TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressOnlyWithoutName) {
   // Create a form with address fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {CreateTestFormField("Address Line 1", "addr1", "",
                                      FormControlType::kInputText),
                  CreateTestFormField("Address Line 2", "addr2", "",
@@ -6160,14 +6160,14 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_ContactOnly) {
   // Create a form with name and contact fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {
       CreateTestFormField("First Name", "firstname", "",
                           FormControlType::kInputText),
@@ -6203,14 +6203,14 @@ TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_ContactOnlyWithoutName) {
   // Create a form with contact fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {
       CreateTestFormField("Phone Number", "phonenumber1", "",
                           FormControlType::kInputTelephone, "tel-country-code"),
@@ -6246,14 +6246,14 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_PhoneOnly) {
   // Create a form with phone field.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {
       CreateTestFormField("Phone Number", "phonenumber", "",
                           FormControlType::kInputTelephone, "tel-country-code"),
@@ -6289,14 +6289,14 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_PhoneOnly) {
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_Other) {
   // Create a form with name fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {CreateTestFormField("First Name", "firstname", "",
                                      FormControlType::kInputText),
                  CreateTestFormField("Middle Name", "middlename", "",
@@ -6332,14 +6332,14 @@ TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmail) {
   // Create a form with name, address, and email fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {
       CreateTestFormField("First Name", "firstname", "",
                           FormControlType::kInputText),
@@ -6382,14 +6382,14 @@ TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmailWithoutName) {
   // Create a form with address and email fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {
       CreateTestFormField("Address Line 1", "addr1", "",
                           FormControlType::kInputText),
@@ -6430,14 +6430,14 @@ TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusPhone) {
   // Create a form with name fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {CreateTestFormField("First Name", "firstname", "",
                                      FormControlType::kInputText),
                  CreateTestFormField("Last Name", "lastname", "",
@@ -6480,14 +6480,14 @@ TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusPhoneWithoutName) {
   // Create a form with name, address, and phone fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {CreateTestFormField("Address Line 1", "addr1", "",
                                      FormControlType::kInputText),
                  CreateTestFormField("Address Line 2", "addr2", "",
@@ -6528,14 +6528,14 @@ TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmailPlusPhone) {
   // Create a form with name, address, phone, and email fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {
       CreateTestFormField("First Name", "firstname", "",
                           FormControlType::kInputText),
@@ -6579,14 +6579,14 @@ TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmailPlusPhoneWithoutName) {
   // Create a form with address, phone, and email fields.
   FormData form;
-  form.name = u"MyForm";
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_name(u"MyForm");
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
   form.fields = {
       CreateTestFormField("Address Line 1", "addr1", "",
                           FormControlType::kInputText),
@@ -6790,9 +6790,9 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
 
   // Create a form with one field per kAutofillValue x kTypeClass combination.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   std::vector<FieldType> heuristic_types, server_types;
   for (const char* autocomplete : kAutocompleteValues) {
     for (const auto& types : kTypeClasses) {
@@ -6843,9 +6843,9 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
 TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedForm) {
   // Set up our form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
   form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
                                      FormControlType::kInputText)};
 
@@ -6868,9 +6868,9 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormOptOutPolicy) {
 
   // Set up our form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
   form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
                                      FormControlType::kInputText)};
   GetAutofillSuggestions(form, form.fields[0]);
@@ -6883,9 +6883,9 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormOptOutPolicy) {
 TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
   // Set up our form data.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
   form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
                                      FormControlType::kInputText)};
 
@@ -6911,9 +6911,9 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
 TEST_F(BrowserAutofillManagerTest, GetSuggestions_JavascriptUrlTarget) {
   // Set up our form data, using a javascript scheme target URL.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("javascript:alert('hello');");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("javascript:alert('hello');"));
   form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
                                      FormControlType::kInputText)};
   GetAutofillSuggestions(form, form.fields[0]);
@@ -6926,9 +6926,9 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_JavascriptUrlTarget) {
 TEST_F(BrowserAutofillManagerTest, GetSuggestions_AboutBlankTarget) {
   // Set up our form data, using a javascript scheme target URL.
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("about:blank");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("about:blank"));
   form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
                                      FormControlType::kInputText)};
   GetAutofillSuggestions(form, form.fields[0]);
@@ -7181,9 +7181,9 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
 
   FormData form = test::GetFormData(
       {.fields = {{.form_control_type = FormControlType::kTextArea}}});
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   FormsSeen({form});
 
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
@@ -7244,9 +7244,9 @@ class OnFocusOnFormFieldTest : public BrowserAutofillManagerTest,
 
 TEST_P(OnFocusOnFormFieldTest, AddressSuggestions) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       // Set a valid autocomplete attribute for the first name.
       CreateTestFormField("First name", "firstname", "",
@@ -7268,9 +7268,9 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions) {
 
 TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   form.fields = {
       // Set a valid autocomplete attribute for the first name.
       CreateTestFormField("First name", "firstname", "",
@@ -7293,7 +7293,7 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_Ablation) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   // Clear the form action.
-  form.action = GURL();
+  form.set_action(GURL());
   FormsSeen({form});
 
   browser_autofill_manager_->OnFocusOnFormFieldImpl(form, form.fields[1]);
@@ -7305,7 +7305,7 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_SecureContext) {
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   // Clear the form action.
-  form.action = GURL();
+  form.set_action(GURL());
   FormsSeen({form});
 
   browser_autofill_manager_->OnFocusOnFormFieldImpl(form, form.fields[1]);
@@ -7317,7 +7317,7 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_NonSecureContext) {
   FormData form = CreateTestCreditCardFormData(/*is_https=*/false,
                                                /*use_month_type=*/false);
   // Clear the form action.
-  form.action = GURL();
+  form.set_action(GURL());
   FormsSeen({form});
 
   browser_autofill_manager_->OnFocusOnFormFieldImpl(form, form.fields[1]);
@@ -7335,7 +7335,7 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_Ablation) {
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   // Clear the form action.
-  form.action = GURL();
+  form.set_action(GURL());
   FormsSeen({form});
 
   browser_autofill_manager_->OnFocusOnFormFieldImpl(form, form.fields[1]);
@@ -7493,8 +7493,8 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
 
     // Set up a CC form.
     FormData form;
-    form.url = GURL("https://myform.com/form.html");
-    form.action = GURL("https://myform.com/submit.html");
+    form.set_url(GURL("https://myform.com/form.html"));
+    form.set_action(GURL("https://myform.com/submit.html"));
     form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
                                        FormControlType::kInputText),
                    CreateTestFormField("Card Number", "cardnumber", "",
@@ -7588,9 +7588,9 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
     // All uploads should be expected explicitly.
     EXPECT_CALL(*crowdsourcing_manager(), StartUploadRequest).Times(0);
 
-    form_.name = u"MyForm";
-    form_.url = GURL("https://myform.com/form.html");
-    form_.action = GURL("https://myform.com/submit.html");
+    form_.set_name(u"MyForm");
+    form_.set_url(GURL("https://myform.com/form.html"));
+    form_.set_action(GURL("https://myform.com/submit.html"));
     form_.fields = {
         CreateTestFormField("First Name", "firstname", "",
                             FormControlType::kInputText, "given-name"),
@@ -7856,9 +7856,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
                   {.role = NAME_LAST}}});
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
   FormsSeen({form});
 
   // Check that suggestions are made for the field that has the autocomplete
@@ -7883,9 +7883,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(
       {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
 
   FormsSeen({form});
 

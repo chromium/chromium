@@ -1334,21 +1334,21 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   FormData form = [&form_element]() {
     FormData form;
     if (!form_element) {
-      DCHECK(form.renderer_id.is_null());
-      DCHECK(form.main_frame_origin.opaque());
-      form.is_action_empty = true;
+      DCHECK(form.renderer_id().is_null());
+      DCHECK(form.main_frame_origin().opaque());
+      form.set_is_action_empty(true);
       return form;
     }
-    form.name = GetFormIdentifier(form_element);
-    form.id_attribute = form_element.GetIdAttribute().Utf16();
-    form.name_attribute = GetAttribute<kName>(form_element).Utf16();
-    form.renderer_id = GetFormRendererId(form_element);
-    form.action = GetCanonicalActionForForm(form_element);
-    if (!form.action.is_valid()) {
-      form.action = blink::WebStringToGURL(form_element.Action());
+    form.set_name(GetFormIdentifier(form_element));
+    form.set_id_attribute(form_element.GetIdAttribute().Utf16());
+    form.set_name_attribute(GetAttribute<kName>(form_element).Utf16());
+    form.set_renderer_id(GetFormRendererId(form_element));
+    form.set_action(GetCanonicalActionForForm(form_element));
+    if (!form.action().is_valid()) {
+      form.set_action(blink::WebStringToGURL(form_element.Action()));
     }
-    form.is_action_empty =
-        form_element.Action().IsNull() || form_element.Action().IsEmpty();
+    form.set_is_action_empty(form_element.Action().IsNull() ||
+                             form_element.Action().IsEmpty());
     return form;
   }();
 
@@ -1358,8 +1358,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
       GetIframeElements(document, form_element);
 
   // Extracts fields from |control_elements| into `form->fields` and sets
-  // `form->child_frames[i].predecessor` to the field index of the last field
-  // that precedes the |i|th child frame.
+  // `child_frames[i].predecessor` to the field index of the last field that
+  // precedes the |i|th child frame.
   //
   // If `control_elements[i]` is autofillable, `fields_extracted[i]` is set to
   // true and the corresponding FormFieldData is appended to `form->fields`.
@@ -1369,11 +1369,11 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   //
   // After the loop,
   // - `form->fields` is completely populated;
-  // - `form->child_frames` has the correct size and
-  //   `form->child_frames[i].predecessor` is set to the correct value, but
-  //   `form->child_frames[i].token` is not initialized yet.
+  // - `child_frames` has the correct size and `child_frames[i].predecessor` is
+  //   set to the correct value, but `child_frames[i].token` is not initialized
+  //   yet.
   form.fields.reserve(control_elements.size());
-  form.child_frames.resize(iframe_elements.size());
+  std::vector<FrameTokenWithPredecessor> child_frames(iframe_elements.size());
 
   std::vector<bool> fields_extracted(control_elements.size(), false);
   std::vector<ShadowFieldData> shadow_fields;
@@ -1398,10 +1398,9 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     // The |next_frame|th frame precedes `control_element` and thus the last
     // added FormFieldData. The |k|th frames for |k| > |next_frame| may also
     // precede that FormFieldData. If they do not,
-    // `form->child_frames[i].predecessor` will be updated in a later
-    // iteration.
+    // `child_frames[i].predecessor` will be updated in a later iteration.
     for (size_t k = next_iframe; k < iframe_elements.size(); ++k) {
-      form.child_frames[k].predecessor = form.fields.size() - 1;
+      child_frames[k].predecessor = form.fields.size() - 1;
     }
     if (form.fields.size() > kMaxExtractableFields) {
       return std::nullopt;
@@ -1453,30 +1452,31 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   }
 
   // Extracts the frame tokens of |iframe_elements|.
-  DCHECK_EQ(form.child_frames.size(), iframe_elements.size());
+  DCHECK_EQ(child_frames.size(), iframe_elements.size());
   for (size_t i = 0; i < iframe_elements.size(); ++i) {
     WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_elements[i]);
     if (iframe && iframe->IsWebLocalFrame()) {
-      form.child_frames[i].token = LocalFrameToken(
+      child_frames[i].token = LocalFrameToken(
           iframe->ToWebLocalFrame()->GetLocalFrameToken().value());
     } else if (iframe && iframe->IsWebRemoteFrame()) {
-      form.child_frames[i].token = RemoteFrameToken(
+      child_frames[i].token = RemoteFrameToken(
           iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
     }
   }
-  std::erase_if(form.child_frames, [](const auto& child_frame) {
+  std::erase_if(child_frames, [](const auto& child_frame) {
     return absl::visit([](const auto& token) { return token.is_empty(); },
                        child_frame.token);
   });
-  if (form.child_frames.size() > kMaxExtractableChildFrames) {
-    form.child_frames.clear();
+  if (child_frames.size() > kMaxExtractableChildFrames) {
+    child_frames.clear();
   }
-  const bool success = (!form.fields.empty() || !form.child_frames.empty()) &&
+  const bool success = (!form.fields.empty() || !child_frames.empty()) &&
                        form.fields.size() < kMaxExtractableFields;
   if (!success) {
     return std::nullopt;
   }
 
+  form.set_child_frames(std::move(child_frames));
   base::UmaHistogramCounts100(!form_element
                                   ? "Autofill.ExtractFormUnowned.FieldCount"
                                   : "Autofill.ExtractFormOwned.FieldCount",
@@ -2182,12 +2182,12 @@ std::optional<FormData> FindFormForContentEditable(
   }
 
   FormData form;
-  form.renderer_id = GetFormRendererId(content_editable);
-  form.id_attribute = content_editable.GetIdAttribute().Utf16();
-  form.name_attribute = GetAttribute<kName>(content_editable).Utf16();
-  form.name =
-      !form.id_attribute.empty() ? form.id_attribute : form.name_attribute;
-  form.is_action_empty = true;
+  form.set_renderer_id(GetFormRendererId(content_editable));
+  form.set_id_attribute(content_editable.GetIdAttribute().Utf16());
+  form.set_name_attribute(GetAttribute<kName>(content_editable).Utf16());
+  form.set_name(!form.id_attribute().empty() ? form.id_attribute()
+                                             : form.name_attribute());
+  form.set_is_action_empty(true);
   form.fields.emplace_back();
 
   FormFieldData& field = form.fields.back();

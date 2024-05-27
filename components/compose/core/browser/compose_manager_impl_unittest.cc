@@ -147,7 +147,7 @@ class ComposeManagerImplTest : public testing::Test {
 
   autofill::FormData CreateTestFormDataWith3TextAreaFields() {
     autofill::FormData form;
-    form.url = GURL("https://www.foo.com");
+    form.set_url(GURL("https://www.foo.com"));
     form.fields = {
         autofill::test::CreateTestFormField(
             "label0", "name0", "value0", autofill::FormControlType::kTextArea),

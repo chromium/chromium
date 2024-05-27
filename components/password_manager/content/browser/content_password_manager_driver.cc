@@ -426,7 +426,7 @@ void ContentPasswordManagerDriver::InformAboutUserInput(
     // not used, such as on Android.
     content::SiteInstance::StartIsolatingSite(
         render_frame_host_->GetSiteInstance()->GetBrowserContext(),
-        form_data.url,
+        form_data.url(),
         content::ChildProcessSecurityPolicy::IsolatedOriginSource::
             USER_TRIGGERED);
   }

@@ -213,23 +213,23 @@ TEST_F(FormStructureTestImpl, AutofillCount) {
 
 TEST_F(FormStructureTestImpl, SourceURL) {
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
   FormStructure form_structure(form);
 
-  EXPECT_EQ(form.url, form_structure.source_url());
+  EXPECT_EQ(form.url(), form_structure.source_url());
 }
 
 TEST_F(FormStructureTestImpl, FullSourceURLWithHashAndParam) {
   FormData form;
-  form.full_url = GURL("https://www.foo.com/?login=asdf#hash");
+  form.set_full_url(GURL("https://www.foo.com/?login=asdf#hash"));
   FormStructure form_structure(form);
 
-  EXPECT_EQ(form.full_url, form_structure.full_source_url());
+  EXPECT_EQ(form.full_url(), form_structure.full_source_url());
 }
 
 TEST_F(FormStructureTestImpl, IsAutofillable) {
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
   FormFieldData field;
 
   // Start with a username field. It should be picked up by the password but
@@ -283,12 +283,12 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   EXPECT_TRUE(FormIsAutofillable(form));
 
   // The target cannot include http(s)://*/search...
-  form.action = GURL("http://google.com/search?q=hello");
+  form.set_action(GURL("http://google.com/search?q=hello"));
 
   EXPECT_FALSE(FormIsAutofillable(form));
 
   // But search can be in the URL.
-  form.action = GURL("http://search.com/?q=hello");
+  form.set_action(GURL("http://search.com/?q=hello"));
 
   EXPECT_TRUE(FormIsAutofillable(form));
 }
@@ -296,14 +296,14 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
 class FormStructureTestImpl_ShouldBeParsed_Test : public FormStructureTestImpl {
  public:
   FormStructureTestImpl_ShouldBeParsed_Test() {
-    form_.url = GURL("http://www.foo.com/");
+    form_.set_url(GURL("http://www.foo.com/"));
     form_structure_ = std::make_unique<FormStructure>(form_);
   }
 
   ~FormStructureTestImpl_ShouldBeParsed_Test() override = default;
 
   void SetAction(GURL action) {
-    form_.action = action;
+    form_.set_action(action);
     form_structure_ = nullptr;
   }
 
@@ -515,7 +515,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
                           "address-line1")};
 
   // Baseline, HTTP should work.
-  form.url = GURL("http://wwww.foo.com/myform");
+  form.set_url(GURL("http://wwww.foo.com/myform"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_TRUE(form_structure->ShouldBeParsed());
   EXPECT_TRUE(form_structure->ShouldRunHeuristics());
@@ -523,7 +523,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   EXPECT_TRUE(form_structure->ShouldBeUploaded());
 
   // Baseline, HTTPS should work.
-  form.url = GURL("https://wwww.foo.com/myform");
+  form.set_url(GURL("https://wwww.foo.com/myform"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_TRUE(form_structure->ShouldBeParsed());
   EXPECT_TRUE(form_structure->ShouldRunHeuristics());
@@ -531,7 +531,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   EXPECT_TRUE(form_structure->ShouldBeUploaded());
 
   // Chrome internal urls shouldn't be parsed.
-  form.url = GURL("chrome://settings");
+  form.set_url(GURL("chrome://settings"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(form_structure->ShouldBeParsed());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
@@ -539,7 +539,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   EXPECT_FALSE(form_structure->ShouldBeUploaded());
 
   // FTP urls shouldn't be parsed.
-  form.url = GURL("ftp://ftp.foo.com/form.html");
+  form.set_url(GURL("ftp://ftp.foo.com/form.html"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(form_structure->ShouldBeParsed());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
@@ -547,7 +547,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   EXPECT_FALSE(form_structure->ShouldBeUploaded());
 
   // Blob urls shouldn't be parsed.
-  form.url = GURL("blob://blob.foo.com/form.html");
+  form.set_url(GURL("blob://blob.foo.com/form.html"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(form_structure->ShouldBeParsed());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
@@ -555,7 +555,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   EXPECT_FALSE(form_structure->ShouldBeUploaded());
 
   // About urls shouldn't be parsed.
-  form.url = GURL("about://about.foo.com/form.html");
+  form.set_url(GURL("about://about.foo.com/form.html"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(form_structure->ShouldBeParsed());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
@@ -568,7 +568,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
 TEST_F(FormStructureTestImpl, ShouldBeParsed_TwoFields_HasAutocomplete) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
   form.fields = {CreateTestFormField("Name", "name", "",
                                      FormControlType::kInputText, "name"),
                  CreateTestFormField("Address", "Address", "",
@@ -863,7 +863,7 @@ TEST_F(FormStructureTestImpl,
 TEST_F(FormStructureTestImpl,
        HeuristicsAndServerPredictions_SmallForm_NoAutocompleteAttribute) {
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -903,7 +903,7 @@ TEST_F(FormStructureTestImpl,
 TEST_F(FormStructureTestImpl,
        HeuristicsAndServerPredictions_SmallForm_ValidAutocompleteAttribute) {
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
   // Set a valid autocomplete attribute to the first field.
   form.fields = {CreateTestFormField("First Name", "firstname", "",
                                      FormControlType::kInputText, "given-name"),
@@ -934,7 +934,7 @@ TEST_F(FormStructureTestImpl,
 // fewer than 3 fields.
 TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -965,7 +965,7 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
 // considered autofillable though.
 TEST_F(FormStructureTestImpl, PasswordFormShouldBeQueried) {
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
   form.fields = {CreateTestFormField("First Name", "firstname", "",
                                      FormControlType::kInputText),
                  CreateTestFormField("Last Name", "lastname", "",
@@ -987,7 +987,7 @@ TEST_F(FormStructureTestImpl, PasswordFormShouldBeQueried) {
 TEST_F(FormStructureTestImpl,
        HeuristicsAutocompleteAttributeWithSectionsDegenerate) {
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
   form.fields = {
       // Some fields will have no section specified.  These fall into the
       // default section.
@@ -1026,7 +1026,7 @@ TEST_F(FormStructureTestImpl,
 TEST_F(FormStructureTestImpl,
        HeuristicsAutocompleteAttributeWithSectionsRepeated) {
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
   form.fields = {CreateTestFormField("", "", "", FormControlType::kInputText,
                                      "section-foo email"),
                  CreateTestFormField("", "", "", FormControlType::kInputText,
@@ -1051,7 +1051,7 @@ TEST_F(FormStructureTestImpl,
 TEST_F(FormStructureTestImpl, HeuristicsSample8) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1143,7 +1143,7 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
 TEST_F(FormStructureTestImpl, HeuristicsSample6) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1214,7 +1214,7 @@ TEST_F(FormStructureTestImpl, HeuristicsSample6) {
 TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1292,7 +1292,7 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
 TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfo) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1354,7 +1354,7 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfo) {
 TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfoWithUnknownCardField) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1425,7 +1425,7 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfoWithUnknownCardField) {
 TEST_F(FormStructureTestImpl, ThreeAddressLines) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1471,7 +1471,7 @@ TEST_F(FormStructureTestImpl, ThreeAddressLines) {
 TEST_F(FormStructureTestImpl, SurplusAddressLinesIgnored) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1520,7 +1520,7 @@ TEST_F(FormStructureTestImpl, SurplusAddressLinesIgnored) {
 TEST_F(FormStructureTestImpl, ThreeAddressLinesExpedia) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1568,7 +1568,7 @@ TEST_F(FormStructureTestImpl, ThreeAddressLinesExpedia) {
 TEST_F(FormStructureTestImpl, TwoAddressLinesEbay) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1606,7 +1606,7 @@ TEST_F(FormStructureTestImpl, TwoAddressLinesEbay) {
 TEST_F(FormStructureTestImpl, HeuristicsStateWithProvince) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1645,7 +1645,7 @@ TEST_F(FormStructureTestImpl, HeuristicsStateWithProvince) {
 TEST_F(FormStructureTestImpl, HeuristicsWithBilling) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1732,7 +1732,7 @@ TEST_F(FormStructureTestImpl, HeuristicsWithBilling) {
 TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1781,7 +1781,7 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
 TEST_F(FormStructureTestImpl, HeuristicsInfernoCC) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1838,7 +1838,7 @@ TEST_F(FormStructureTestImpl, HeuristicsInfernoCC) {
 TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesNotFirst) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1904,7 +1904,7 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesNotFirst) {
 TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesFirst) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -2035,19 +2035,19 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   EXPECT_EQ(FormStructureTestImpl::Hash64Bit(std::string("://&&email&first")),
             form_structure->FormSignatureAsStr());
 
-  form.url = GURL(std::string("http://www.facebook.com"));
+  form.set_url(GURL(std::string("http://www.facebook.com")));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_EQ(FormStructureTestImpl::Hash64Bit(
                 std::string("http://www.facebook.com&&email&first")),
             form_structure->FormSignatureAsStr());
 
-  form.action = GURL(std::string("https://login.facebook.com/path"));
+  form.set_action(GURL(std::string("https://login.facebook.com/path")));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_EQ(FormStructureTestImpl::Hash64Bit(
                 std::string("https://login.facebook.com&&email&first")),
             form_structure->FormSignatureAsStr());
 
-  form.name = u"login_form";
+  form.set_name(u"login_form");
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_EQ(FormStructureTestImpl::Hash64Bit(std::string(
                 "https://login.facebook.com&login_form&email&first")),
@@ -2085,7 +2085,7 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
 
 TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureLarge) {
   FormData large_form;
-  large_form.url = GURL("http://foo.com/login?q=a#ref");
+  large_form.set_url(GURL("http://foo.com/login?q=a#ref"));
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
@@ -2113,7 +2113,7 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureLarge) {
 
 TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallPath) {
   FormData small_form_path;
-  small_form_path.url = GURL("http://foo.com/login?q=a#ref");
+  small_form_path.set_url(GURL("http://foo.com/login?q=a#ref"));
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
@@ -2133,7 +2133,7 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallPath) {
 
 TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallRef) {
   FormData small_form_ref;
-  small_form_ref.url = GURL("http://foo.com?q=a#ref");
+  small_form_ref.set_url(GURL("http://foo.com?q=a#ref"));
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
@@ -2154,7 +2154,7 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallRef) {
 
 TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallQuery) {
   FormData small_form_query;
-  small_form_query.url = GURL("http://foo.com?q=a");
+  small_form_query.set_url(GURL("http://foo.com?q=a"));
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
@@ -2175,10 +2175,10 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallQuery) {
 
 TEST_F(FormStructureTestImpl, ToFormData) {
   FormData form;
-  form.name = u"the-name";
-  form.url = GURL("http://cool.com");
-  form.action = form.url.Resolve("/login");
-  form.child_frames = {FrameTokenWithPredecessor()};
+  form.set_name(u"the-name");
+  form.set_url(GURL("http://cool.com"));
+  form.set_action(form.url().Resolve("/login"));
+  form.set_child_frames({FrameTokenWithPredecessor()});
 
   FormFieldData field;
   field.set_label(u"username");
@@ -2220,7 +2220,7 @@ TEST_F(FormStructureTestImpl, OneFieldPasswordFormShouldNotBeUpload) {
 // of type |FieldTypeGroup::kName|.
 TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
   FormData form;
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
   field.set_max_length(10000);
@@ -2278,7 +2278,7 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
 // Tests that adjacent name field types are not split into different sections.
 TEST_F(FormStructureTestImpl, NoSplitAdjacentNameFieldType) {
   FormData form;
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   form.fields = {CreateTestFormField("First Name", "firstname", "",
                                      FormControlType::kInputText),
                  CreateTestFormField("Last Name", "lastname", "",
@@ -2316,7 +2316,7 @@ TEST_F(FormStructureTestImpl, NoSplitAdjacentNameFieldType) {
 
 TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
   FormData form;
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
   field.set_max_length(10000);
@@ -2393,7 +2393,7 @@ TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
 
 TEST_F(FormStructureTestImpl, DetermineRanks) {
   FormData form;
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
 
   auto add_field = [&form](const std::u16string& name,
                            LocalFrameToken frame_token,

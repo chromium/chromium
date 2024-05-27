@@ -360,9 +360,9 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   }
   field.set_is_focusable(true);
   field.set_role(FormFieldData::RoleAttribute::kOther);
-  field.set_origin(form_data.main_frame_origin);
-  field.set_host_frame(form_data.host_frame);
-  field.set_host_form_id(form_data.renderer_id);
+  field.set_origin(form_data.main_frame_origin());
+  field.set_host_frame(form_data.host_frame());
+  field.set_host_form_id(form_data.renderer_id());
   field.set_renderer_id(test::MakeFieldRendererId());
   std::vector<SelectOption> options;
   if (const base::Value::List* select_options =
@@ -382,10 +382,10 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     const base::Value::Dict& form_dict,
     const std::string& site_url,
     FormData& form_data) {
-  form_data.url = GURL(site_url);
-  form_data.main_frame_origin = url::Origin::Create(form_data.url);
-  form_data.host_frame = test::MakeLocalFrameToken();
-  form_data.renderer_id = test::MakeFormRendererId();
+  form_data.set_url(GURL(site_url));
+  form_data.set_main_frame_origin(url::Origin::Create(form_data.url()));
+  form_data.set_host_frame(test::MakeLocalFrameToken());
+  form_data.set_renderer_id(test::MakeFormRendererId());
 
   const base::Value::List* fields = form_dict.FindList("fields");
   if (!fields) {

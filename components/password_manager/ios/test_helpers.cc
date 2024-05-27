@@ -73,8 +73,8 @@ void SetFormData(const std::string& origin,
                  const char* password_value,
                  FormData* form_data) {
   DCHECK(form_data);
-  form_data->url = GURL(origin);
-  form_data->renderer_id = FormRendererId(form_id);
+  form_data->set_url(GURL(origin));
+  form_data->set_renderer_id(FormRendererId(form_id));
 
   FormFieldData field;
   field.set_value(base::UTF8ToUTF16(username_value));
@@ -90,9 +90,9 @@ void SetFormData(const std::string& origin,
 
 autofill::FormData MakeSimpleFormData() {
   autofill::FormData form_data;
-  form_data.url = GURL("http://www.google.com/a/LoginAuth");
-  form_data.action = GURL("http://www.google.com/a/Login");
-  form_data.name = u"login_form";
+  form_data.set_url(GURL("http://www.google.com/a/LoginAuth"));
+  form_data.set_action(GURL("http://www.google.com/a/Login"));
+  form_data.set_name(u"login_form");
 
   autofill::FormFieldData field;
   field.set_name(u"Username");

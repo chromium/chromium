@@ -134,20 +134,20 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
     return nullptr;
   }
   auto form_data = std::make_unique<FormData>(std::move(*form));
-  form_data->is_gaia_with_skip_save_password_form =
+  form_data->set_is_gaia_with_skip_save_password_form(
       IsGaiaWithSkipSavePasswordForm(web_form) ||
-      IsGaiaReauthenticationForm(web_form);
+      IsGaiaReauthenticationForm(web_form));
 
   blink::WebVector<WebFormControlElement> control_elements =
       web_form.GetFormControlElements();
   if (control_elements.empty()) {
     return nullptr;
   }
-  form_data->username_predictions =
+  form_data->set_username_predictions(
       GetUsernamePredictions(control_elements.ReleaseVector(), *form_data,
-                             username_detector_cache, web_form);
-  form_data->button_titles =
-      form_util::GetButtonTitles(web_form, button_titles_cache);
+                             username_detector_cache, web_form));
+  form_data->set_button_titles(
+      form_util::GetButtonTitles(web_form, button_titles_cache));
 
   return form_data;
 }
@@ -169,9 +169,9 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     return nullptr;
   }
   auto form_data = std::make_unique<FormData>(std::move(*form));
-  form_data->username_predictions =
+  form_data->set_username_predictions(
       GetUsernamePredictions(std::move(control_elements), *form_data,
-                             username_detector_cache, WebFormElement());
+                             username_detector_cache, WebFormElement()));
   return form_data;
 }
 

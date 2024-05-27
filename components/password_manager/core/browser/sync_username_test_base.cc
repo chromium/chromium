@@ -19,7 +19,7 @@ namespace {
 
 FormData CreateSigninFormData(const GURL& url, const char* username) {
   FormData form;
-  form.url = url;
+  form.set_url(url);
   FormFieldData field;
   field.set_name(u"username_element");
   field.set_form_control_type(autofill::FormControlType::kInputText);

@@ -135,9 +135,9 @@ void AutofillDriverRouter::FormsSeen(
 
   // Send the browser forms to the individual frames.
   if (!browser_forms.empty()) {
-    LocalFrameToken frame = browser_forms.front().host_frame;
+    LocalFrameToken frame = browser_forms.front().host_frame();
     DCHECK(base::ranges::all_of(browser_forms, [frame](const FormData& f) {
-      return f.host_frame == frame;
+      return f.host_frame() == frame;
     }));
     AutofillDriver* target = DriverOfFrame(frame);
     callback(CHECK_DEREF(target), browser_forms, removed_forms);
@@ -156,7 +156,7 @@ void AutofillDriverRouter::FormSubmitted(
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, known_success, submission_source);
 }
 
@@ -171,7 +171,7 @@ void AutofillDriverRouter::CaretMovedInFormField(
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, field, caret_bounds);
 }
 
@@ -188,7 +188,7 @@ void AutofillDriverRouter::TextFieldDidChange(
   TriggerFormExtractionExcept(source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, field, timestamp);
 }
 
@@ -203,7 +203,7 @@ void AutofillDriverRouter::TextFieldDidScroll(
   TriggerFormExtractionExcept(source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, field);
 }
 
@@ -218,7 +218,7 @@ void AutofillDriverRouter::SelectControlDidChange(
   TriggerFormExtractionExcept(source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, field);
 }
 
@@ -238,7 +238,7 @@ void AutofillDriverRouter::AskForValuesToFill(
   TriggerFormExtractionExcept(source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, field, caret_bounds,
            trigger_source);
 }
@@ -301,7 +301,7 @@ void AutofillDriverRouter::FocusOnFormField(
   TriggerFormExtractionExcept(source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, field);
 }
 
@@ -314,7 +314,7 @@ void AutofillDriverRouter::DidFillAutofillFormData(
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, timestamp);
 }
 
@@ -341,7 +341,7 @@ void AutofillDriverRouter::SelectOrSelectListFieldOptionsDidChange(
   TriggerFormExtractionExcept(source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form);
 }
 
@@ -361,7 +361,7 @@ void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
   TriggerFormExtractionExcept(source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, field, old_value,
            formatting_only);
 }
@@ -399,7 +399,7 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
   base::flat_map<AutofillDriver*, std::vector<FormFieldData::FillData>>
       fields_of_driver;
   for (FormData& renderer_form : renderer_forms.renderer_forms) {
-    if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
+    if (auto* target = DriverOfFrame(renderer_form.host_frame())) {
       for (const FormFieldData& field : renderer_form.fields) {
         // Skip unsafe fields so that they do not get filled in the renderer.
         if (renderer_forms.safe_fields.contains(field.global_id())) {
@@ -454,7 +454,8 @@ void AutofillDriverRouter::ExtractForm(
           self->form_forest_.UpdateTreeOfRendererForm(*form, *response_source);
           const FormData& browser_form =
               self->form_forest_.GetBrowserForm(form->global_id());
-          auto* response_target = self->DriverOfFrame(browser_form.host_frame);
+          auto* response_target =
+              self->DriverOfFrame(browser_form.host_frame());
           std::move(browser_form_handler).Run(response_target, browser_form);
         },
         raw_ref(*this), raw_ref(*target), std::move(browser_form_handler));
@@ -487,10 +488,10 @@ void AutofillDriverRouter::SendAutofillTypePredictionsToRenderer(
     // the renderer form's frame in |renderer_fdps|.
     internal::FormForest::RendererForms renderer_forms =
         form_forest_.GetRendererFormsOfBrowserForm(
-            browser_fdp.data,
-            {&browser_fdp.data.main_frame_origin, /*field_type_map=*/nullptr});
+            browser_fdp.data, {&browser_fdp.data.main_frame_origin(),
+                               /*field_type_map=*/nullptr});
     for (FormData& renderer_form : renderer_forms.renderer_forms) {
-      LocalFrameToken frame = renderer_form.host_frame;
+      LocalFrameToken frame = renderer_form.host_frame();
       FormDataPredictions renderer_fdp;
       renderer_fdp.data = std::move(renderer_form);
       renderer_fdp.signature = browser_fdp.signature;

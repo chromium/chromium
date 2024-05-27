@@ -224,7 +224,7 @@ bool UsernameOutsideOfFormHasHigherPriority(
 
 bool ShouldUploadCrowdsourcingVotes(const FormOrDigest& form_or_digest) {
   if (absl::holds_alternative<FormData>(form_or_digest)) {
-    return !net::IsLocalhost(absl::get<FormData>(form_or_digest).url);
+    return !net::IsLocalhost(absl::get<FormData>(form_or_digest).url());
   }
   return false;
 }
@@ -264,7 +264,7 @@ PasswordFormManager::PasswordFormManager(
   // Do not fetch saved credentials for Chrome sync form, since nor filling nor
   // saving are supported.
   if (owned_form_fetcher_ &&
-      !observed_form()->is_gaia_with_skip_save_password_form) {
+      !observed_form()->is_gaia_with_skip_save_password_form()) {
     owned_form_fetcher_->Fetch();
 
     WebAuthnCredentialsDelegate* delegate =
@@ -304,7 +304,7 @@ bool PasswordFormManager::DoesManage(
     return false;
   }
   CHECK(observed_form());
-  return observed_form()->renderer_id == form_renderer_id;
+  return observed_form()->renderer_id() == form_renderer_id;
 }
 
 bool PasswordFormManager::DoesManage(
@@ -330,9 +330,9 @@ bool PasswordFormManager::IsEqualToSubmittedForm(
     return false;
   }
 
-  if (form.action.is_valid() && !form.is_action_empty &&
-      !submitted_form_.is_action_empty &&
-      submitted_form_.action == form.action) {
+  if (form.action().is_valid() && !form.is_action_empty() &&
+      !submitted_form_.is_action_empty() &&
+      submitted_form_.action() == form.action()) {
     return true;
   }
 
@@ -357,7 +357,7 @@ bool PasswordFormManager::IsEqualToSubmittedForm(
 }
 
 const GURL& PasswordFormManager::GetURL() const {
-  return observed_form() ? observed_form()->url : observed_digest()->url;
+  return observed_form() ? observed_form()->url() : observed_digest()->url;
 }
 
 base::span<const PasswordForm> PasswordFormManager::GetBestMatches() const {
@@ -533,7 +533,7 @@ void PasswordFormManager::OnUpdatePasswordFromPrompt(
 
 void PasswordFormManager::UpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event) {
-  parsed_submitted_form_->form_data.submission_event = event;
+  parsed_submitted_form_->form_data.set_submission_event(event);
   parsed_submitted_form_->submission_event = event;
   password_save_manager_->UpdateSubmissionIndicatorEvent(event);
 }
@@ -583,8 +583,8 @@ PasswordFormDigest PasswordFormManager::ConstructObservedFormDigest() const {
     signon_realm = IsHttpAuth() ? observed_digest()->signon_realm
                                 : GetSignonRealm(observed_digest()->url);
   } else {
-    url = observed_form()->url;
-    signon_realm = GetSignonRealm(observed_form()->url);
+    url = observed_form()->url();
+    signon_realm = GetSignonRealm(observed_form()->url());
   }
   return PasswordFormDigest(GetScheme(), signon_realm, url);
 }
@@ -697,7 +697,7 @@ void PasswordFormManager::UpdateStateOnUserInput(
     FormRendererId form_id,
     FieldRendererId field_id,
     const std::u16string& field_value) {
-  DCHECK(observed_form()->renderer_id == form_id);
+  DCHECK(observed_form()->renderer_id() == form_id);
   // Update the observed field value.
   auto modified_field = base::ranges::find_if(
       mutable_observed_form()->fields, [&field_id](const FormFieldData& field) {
@@ -756,7 +756,7 @@ bool PasswordFormManager::AreRemovedUnownedFieldsValidForSubmissionDetection(
     const std::set<FieldRendererId>& removed_fields,
     const FieldDataManager& field_data_manager) const {
   CHECK(observed_form());
-  CHECK(!observed_form()->renderer_id)
+  CHECK(!observed_form()->renderer_id())
       << "This method should only be called on formless form managers. Removed "
          "formless fields are only relevant for formless forms submission "
          "detection.";
@@ -989,7 +989,7 @@ bool PasswordFormManager::ProvisionallySave(
     const PasswordManagerDriver* driver,
     const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>&
         possible_usernames) {
-  DCHECK(DoesManage(submitted_form.renderer_id, driver));
+  DCHECK(DoesManage(submitted_form.renderer_id(), driver));
   auto [parsed_submitted_form, in_form_username_detection_method] =
       ParseFormAndMakeLogging(submitted_form, FormDataParser::Mode::kSaving);
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_submitted_form,
@@ -1000,9 +1000,9 @@ bool PasswordFormManager::ProvisionallySave(
     CalculateFillingAssistanceMetric(*parsed_submitted_form);
   }
 
-  if (!client_->IsSavingAndFillingEnabled(submitted_form.url)) {
+  if (!client_->IsSavingAndFillingEnabled(submitted_form.url())) {
     RecordProvisionalSaveFailure(
-        PasswordManagerMetricsRecorder::SAVING_DISABLED, submitted_form.url);
+        PasswordManagerMetricsRecorder::SAVING_DISABLED, submitted_form.url());
     is_saving_allowed_ = false;
   }
 
@@ -1132,7 +1132,7 @@ void PasswordFormManager::FillNow() {
   if (parsed_observed_form_->is_new_password_reliable && !IsBlocklisted()) {
     driver_->FormEligibleForGenerationFound({
 #if BUILDFLAG(IS_IOS)
-        .form_renderer_id = parsed_observed_form_->form_data.renderer_id,
+        .form_renderer_id = parsed_observed_form_->form_data.renderer_id(),
 #endif
         .new_password_renderer_id =
             parsed_observed_form_->new_password_element_renderer_id,
@@ -1187,8 +1187,8 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
   if (!parsed_form) {
     // Create a password form with a minimum data.
     parsed_form = std::make_unique<PasswordForm>();
-    parsed_form->url = form_data.url;
-    parsed_form->signon_realm = GetSignonRealm(form_data.url);
+    parsed_form->url = form_data.url();
+    parsed_form->signon_realm = GetSignonRealm(form_data.url());
   }
   parsed_form->password_value = password;
   password_save_manager_->GeneratedPasswordAccepted(*parsed_form, driver_);
@@ -1308,8 +1308,8 @@ void PasswordFormManager::PresaveGeneratedPasswordInternal(
   if (!parsed_form) {
     // Create a password form with a minimum data.
     parsed_form = std::make_unique<PasswordForm>();
-    parsed_form->url = form.url;
-    parsed_form->signon_realm = GetSignonRealm(form.url);
+    parsed_form->url = form.url();
+    parsed_form->signon_realm = GetSignonRealm(form.url());
   }
   // Set |password_value| to the generated password in order to ensure that
   // the generated password is saved.
@@ -1464,7 +1464,7 @@ PasswordFormManager::FindBestPossibleUsernameCandidate(
 void PasswordFormManager::UpdatePredictionsForObservedForm(
     const std::map<FormSignature, FormPredictions>& predictions) {
   CHECK(observed_form());
-  if (net::IsLocalhost(observed_form()->url)) {
+  if (net::IsLocalhost(observed_form()->url())) {
     // Avoid relying on crowdsourcing on localhost to avoid aggregating multiple
     // unrelated form together. Set empty predictions instead to avoid delaying
     // filling.

@@ -537,10 +537,10 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
   const uint64_t max_length = 10;
 
   autofill::FormData form_data;
-  form_data.url = origin;
-  form_data.action = origin;
-  form_data.name = u"login_form";
-  form_data.renderer_id = autofill::test::MakeFormRendererId();
+  form_data.set_url(origin);
+  form_data.set_action(origin);
+  form_data.set_name(u"login_form");
+  form_data.set_renderer_id(autofill::test::MakeFormRendererId());
 
   autofill::FormFieldData field;
   field.set_name(u"Username");
@@ -561,7 +561,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
   form_data.fields.push_back(field);
 
   autofill::FormFieldData password_field_data = form_data.fields.back();
-  autofill::FormRendererId form_id = form_data.renderer_id;
+  autofill::FormRendererId form_id = form_data.renderer_id();
   autofill::FieldRendererId field_id = password_field_data.renderer_id();
   autofill::PasswordFormGenerationData form_generation_data = {
       form_id, field_id,
@@ -900,8 +900,8 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   // Simulate user focusing the field in a form before the password store
   // response is received.
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
-      initWithFormName:SysUTF16ToNSString(form.name)
-        formRendererID:form.renderer_id
+      initWithFormName:SysUTF16ToNSString(form.name())
+        formRendererID:form.renderer_id()
        fieldIdentifier:SysUTF16ToNSString(form.fields[0].name())
        fieldRendererID:form.fields[0].renderer_id()
              fieldType:@"text"
@@ -927,7 +927,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   // Receive suggestions from PasswordManager.
   PasswordFormFillData form_fill_data;
   test_helpers::SetPasswordFormFillData(
-      form.url.spec(), "", form.renderer_id.value(), "",
+      form.url().spec(), "", form.renderer_id().value(), "",
       form.fields[0].renderer_id().value(), "john.doe@gmail.com", "",
       form.fields[1].renderer_id().value(), "super!secret", nullptr, nullptr,
       &form_fill_data);
@@ -970,8 +970,8 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   // response is received.
   FormSuggestionProviderQuery* form_query1 =
       [[FormSuggestionProviderQuery alloc]
-          initWithFormName:SysUTF16ToNSString(form.name)
-            formRendererID:form.renderer_id
+          initWithFormName:SysUTF16ToNSString(form.name())
+            formRendererID:form.renderer_id()
            fieldIdentifier:SysUTF16ToNSString(form.fields[0].name())
            fieldRendererID:form.fields[0].renderer_id()
                  fieldType:@"text"
@@ -997,8 +997,8 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   // response is received.
   FormSuggestionProviderQuery* form_query2 =
       [[FormSuggestionProviderQuery alloc]
-          initWithFormName:SysUTF16ToNSString(form.name)
-            formRendererID:form.renderer_id
+          initWithFormName:SysUTF16ToNSString(form.name())
+            formRendererID:form.renderer_id()
            fieldIdentifier:SysUTF16ToNSString(form.fields[1].name())
            fieldRendererID:form.fields[1].renderer_id()
                  fieldType:kObfuscatedFieldType
@@ -1025,7 +1025,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   // Receive suggestions from PasswordManager.
   PasswordFormFillData form_fill_data;
   test_helpers::SetPasswordFormFillData(
-      form.url.spec(), "", form.renderer_id.value(), "",
+      form.url().spec(), "", form.renderer_id().value(), "",
       form.fields[0].renderer_id().value(), "john.doe@gmail.com", "",
       form.fields[1].renderer_id().value(), "super!secret", nullptr, nullptr,
       &form_fill_data);
@@ -1064,7 +1064,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
 
   PasswordFormFillData form_fill_data;
   test_helpers::SetPasswordFormFillData(
-      kTestURL, "", form.renderer_id.value(), "",
+      kTestURL, "", form.renderer_id().value(), "",
       form.fields[0].renderer_id().value(), "john.doe@gmail.com", "",
       form.fields[1].renderer_id().value(), "super!secret", nullptr, nullptr,
       &form_fill_data);
@@ -1124,7 +1124,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   // Receive suggestions from PasswordManager.
   PasswordFormFillData form_fill_data;
   test_helpers::SetPasswordFormFillData(
-      form.url.spec(), "", form.renderer_id.value(), "",
+      form.url().spec(), "", form.renderer_id().value(), "",
       form.fields[0].renderer_id().value(), "john.doe@gmail.com", "",
       form.fields[1].renderer_id().value(), "super!secret", nullptr, nullptr,
       &form_fill_data);

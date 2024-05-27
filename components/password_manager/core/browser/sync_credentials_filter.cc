@@ -31,7 +31,7 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
     return false;
   }
 
-  if (form.form_data.is_gaia_with_skip_save_password_form) {
+  if (form.form_data.is_gaia_with_skip_save_password_form()) {
     return false;
   }
 

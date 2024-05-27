@@ -96,10 +96,10 @@ FormData& FormData::operator=(FormData&&) = default;
 FormData::~FormData() = default;
 
 bool FormData::SameFormAs(const FormData& form) const {
-  if (name != form.name || id_attribute != form.id_attribute ||
-      name_attribute != form.name_attribute || url != form.url ||
-      action != form.action ||
-      renderer_id.is_null() != form.renderer_id.is_null() ||
+  if (name() != form.name() || id_attribute() != form.id_attribute() ||
+      name_attribute() != form.name_attribute() || url() != form.url() ||
+      action() != form.action() ||
+      renderer_id().is_null() != form.renderer_id().is_null() ||
       fields.size() != form.fields.size()) {
     return false;
   }
@@ -114,15 +114,16 @@ bool FormData::SameFormAs(const FormData& form) const {
 bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   // We compare all unique identifiers first, including the field renderer IDs,
   // because we expect most inequalities to be due to them.
-  if (a.renderer_id != b.renderer_id || a.child_frames != b.child_frames ||
+  if (a.renderer_id() != b.renderer_id() ||
+      a.child_frames() != b.child_frames() ||
       !base::ranges::equal(a.fields, b.fields, {}, &FormFieldData::renderer_id,
                            &FormFieldData::renderer_id)) {
     return false;
   }
 
-  if (a.name != b.name || a.id_attribute != b.id_attribute ||
-      a.name_attribute != b.name_attribute || a.url != b.url ||
-      a.action != b.action ||
+  if (a.name() != b.name() || a.id_attribute() != b.id_attribute() ||
+      a.name_attribute() != b.name_attribute() || a.url() != b.url() ||
+      a.action() != b.action() ||
       !base::ranges::equal(a.fields, b.fields, &FormFieldData::DeepEqual)) {
     return false;
   }
@@ -141,8 +142,8 @@ bool FormHasNonEmptyPasswordField(const FormData& form) {
 }
 
 std::ostream& operator<<(std::ostream& os, const FormData& form) {
-  os << base::UTF16ToUTF8(form.name) << " " << form.url << " " << form.action
-     << " " << form.main_frame_origin << " " << "Fields:";
+  os << base::UTF16ToUTF8(form.name()) << " " << form.url() << " "
+     << form.action() << " " << form.main_frame_origin() << " " << "Fields:";
   for (const FormFieldData& field : form.fields) {
     os << field << ",";
   }
@@ -169,11 +170,11 @@ FormFieldData* FormData::FindFieldByName(std::u16string_view name_or_id) {
 
 void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteInt(kFormDataPickleVersion);
-  pickle->WriteString16(form_data.name);
-  pickle->WriteString(form_data.url.spec());
-  pickle->WriteString(form_data.action.spec());
+  pickle->WriteString16(form_data.name());
+  pickle->WriteString(form_data.url().spec());
+  pickle->WriteString(form_data.action().spec());
   SerializeFormFieldDataVector(form_data.fields, pickle);
-  pickle->WriteString(form_data.main_frame_origin.Serialize());
+  pickle->WriteString(form_data.main_frame_origin().Serialize());
 }
 
 bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
@@ -189,9 +190,13 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
     return false;
   }
 
-  if (!iter->ReadString16(&temp_form_data.name)) {
-    LogDeserializationError(version);
-    return false;
+  {
+    std::u16string name;
+    if (!iter->ReadString16(&name)) {
+      LogDeserializationError(version);
+      return false;
+    }
+    temp_form_data.set_name(std::move(name));
   }
 
   if (version == 1) {
@@ -203,13 +208,18 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
   }
 
   bool unused_user_submitted;
-  if (!ReadGURL(iter, &temp_form_data.url) ||
-      !ReadGURL(iter, &temp_form_data.action) ||
-      // user_submitted was removed/no longer serialized in version 4.
-      (version < 4 && !iter->ReadBool(&unused_user_submitted)) ||
-      !DeserializeFormFieldDataVector(iter, &temp_form_data.fields)) {
-    LogDeserializationError(version);
-    return false;
+  {
+    GURL url;
+    GURL action;
+    if (!ReadGURL(iter, &url) || !ReadGURL(iter, &action) ||
+        // user_submitted was removed/no longer serialized in version 4.
+        (version < 4 && !iter->ReadBool(&unused_user_submitted)) ||
+        !DeserializeFormFieldDataVector(iter, &temp_form_data.fields)) {
+      LogDeserializationError(version);
+      return false;
+    }
+    temp_form_data.set_url(std::move(url));
+    temp_form_data.set_action(std::move(action));
   }
 
   if (version >= 3 && version <= 7) {
@@ -229,10 +239,12 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
   }
 
   if (version >= 6) {
-    if (!ReadOrigin(iter, &temp_form_data.main_frame_origin)) {
+    url::Origin main_frame_origin;
+    if (!ReadOrigin(iter, &main_frame_origin)) {
       LogDeserializationError(version);
       return false;
     }
+    temp_form_data.set_main_frame_origin(std::move(main_frame_origin));
   }
 
   *form_data = temp_form_data;
@@ -242,16 +254,16 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
 LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
   buffer << Tag{"div"} << Attrib{"class", "form"};
   buffer << Tag{"table"};
-  buffer << Tr{} << "Form name:" << form.name;
+  buffer << Tr{} << "Form name:" << form.name();
   buffer << Tr{} << "Identifiers: "
          << base::StrCat(
                 {"renderer id: ",
                  base::NumberToString(form.global_id().renderer_id.value()),
                  ", host frame: ", form.global_id().frame_token.ToString(),
-                 " (", url::Origin::Create(form.url).Serialize(), ")"});
-  buffer << Tr{} << "URL:" << form.url;
-  buffer << Tr{} << "Action:" << form.action;
-  buffer << Tr{} << "Is action empty:" << form.is_action_empty;
+                 " (", url::Origin::Create(form.url()).Serialize(), ")"});
+  buffer << Tr{} << "URL:" << form.url();
+  buffer << Tr{} << "Action:" << form.action();
+  buffer << Tr{} << "Is action empty:" << form.is_action_empty();
   for (size_t i = 0; i < form.fields.size(); ++i) {
     buffer << Tag{"tr"};
     buffer << Tag{"td"} << "Field " << i << ": " << CTag{};

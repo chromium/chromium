@@ -90,7 +90,7 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
   client.SetKeepPopupOpenForTesting(true);
 
   FormData form;
-  form.url = GURL("https://foo.com/bar");
+  form.set_url(GURL("https://foo.com/bar"));
   form.fields = {test::CreateTestFormField(
       "Full name", "name", "", FormControlType::kInputText, "name")};
   form.fields.front().set_is_focusable(true);

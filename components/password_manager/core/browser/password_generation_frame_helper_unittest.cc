@@ -327,9 +327,9 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
                                        : kNoServerResponse));
 
     FormData account_creation_form;
-    account_creation_form.url = origin;
-    account_creation_form.action = origin;
-    account_creation_form.name = u"account_creation_form";
+    account_creation_form.set_url(origin);
+    account_creation_form.set_action(origin);
+    account_creation_form.set_name(u"account_creation_form");
     account_creation_form.fields.push_back(username);
     account_creation_form.fields.push_back(password);
 

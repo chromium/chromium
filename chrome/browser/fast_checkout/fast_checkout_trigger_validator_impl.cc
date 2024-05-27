@@ -104,17 +104,17 @@ bool FastCheckoutTriggerValidatorImpl::IsTriggerForm(
   autofill::FormSignature form_signature =
       autofill::CalculateFormSignature(form);
   bool is_trigger_form =
-      capabilities_fetcher_->IsTriggerFormSupported(form.main_frame_origin,
+      capabilities_fetcher_->IsTriggerFormSupported(form.main_frame_origin(),
                                                     form_signature) ||
       capabilities_fetcher_->IsTriggerFormSupported(
-          form.main_frame_origin, field.host_form_signature());
+          form.main_frame_origin(), field.host_form_signature());
   if (!is_trigger_form) {
     LogAutofillInternals(
         "not triggered because there is no Fast Checkout support for form "
         "signatures {" +
         base::NumberToString(form_signature.value()) + ", " +
         base::NumberToString(field.host_form_signature().value()) +
-        "} on origin " + form.main_frame_origin.Serialize() + ".");
+        "} on origin " + form.main_frame_origin().Serialize() + ".");
   }
   return is_trigger_form;
 }

@@ -165,7 +165,7 @@ struct FormData {
   // of identifier because FormData is a value type).
   //
   // Must not be leaked to renderer process. See FormGlobalId for details.
-  FormGlobalId global_id() const { return {host_frame, renderer_id}; }
+  FormGlobalId global_id() const { return {host_frame(), renderer_id()}; }
 
   // TODO(crbug.com/40183094): This function is deprecated. Use
   // FormData::DeepEqual() instead. Returns true if two forms are the same, not
@@ -183,10 +183,16 @@ struct FormData {
   FormFieldData* FindFieldByName(std::u16string_view name_or_id);
 
   // The id attribute of the form.
-  std::u16string id_attribute;
+  const std::u16string& id_attribute() const { return id_attribute_; }
+  void set_id_attribute(std::u16string id_attribute) {
+    id_attribute_ = std::move(id_attribute);
+  }
 
   // The name attribute of the form.
-  std::u16string name_attribute;
+  const std::u16string& name_attribute() const { return name_attribute_; }
+  void set_name_attribute(std::u16string name_attribute) {
+    name_attribute_ = std::move(name_attribute);
+  }
 
   // NOTE: Update `SameFormAs()` and `FormDataAndroid::SimilarFormAs()` if
   // needed when adding new a member.
@@ -196,46 +202,65 @@ struct FormData {
   // priority given to the name_attribute. This value is used when computing
   // form signatures.
   // TODO(crbug.com/40598703): remove this and use attributes/unique_id instead.
-  std::u16string name;
+  const std::u16string& name() const { return name_; }
+  void set_name(std::u16string name) { name_ = std::move(name); }
 
   // Titles of form's buttons.
   // Only populated in Password Manager.
-  ButtonTitleList button_titles;
+  const ButtonTitleList& button_titles() const { return button_titles_; }
+  void set_button_titles(ButtonTitleList button_titles) {
+    button_titles_ = std::move(button_titles);
+  }
 
   // The URL (minus query parameters and fragment) containing the form.
   // This value should not be sent via mojo.
-  GURL url;
+  const GURL& url() const { return url_; }
+  void set_url(GURL url) { url_ = std::move(url); }
 
   // The full URL, including query parameters and fragment.
   // This value should be set only for password forms.
   // This value should not be sent via mojo.
-  GURL full_url;
+  const GURL& full_url() const { return full_url_; }
+  void set_full_url(GURL full_url) { full_url_ = std::move(full_url); }
 
   // The action target of the form.
-  GURL action;
+  const GURL& action() const { return action_; }
+  void set_action(GURL action) { action_ = std::move(action); }
 
   // If the form in the DOM has an empty action attribute, the |action| field in
   // the FormData is set to the frame URL of the embedding document. This field
   // indicates whether the action attribute is empty in the form in the DOM.
-  bool is_action_empty = false;
+  bool is_action_empty() const { return is_action_empty_; }
+  void set_is_action_empty(bool is_action_empty) {
+    is_action_empty_ = std::move(is_action_empty);
+  }
 
   // The URL of main frame containing this form.
   // This value should not be sent via mojo.
   // |main_frame_origin| represents the main frame (not necessarily primary
   // main frame) of the form's frame tree as described by MPArch nested frame
   // trees. For details, see RenderFrameHost::GetMainFrame().
-  url::Origin main_frame_origin;
+  const url::Origin& main_frame_origin() const { return main_frame_origin_; }
+  void set_main_frame_origin(url::Origin main_frame_origin) {
+    main_frame_origin_ = std::move(main_frame_origin);
+  }
 
   // A unique identifier of the containing frame. This value is not serialized
   // because LocalFrameTokens must not be leaked to other renderer processes.
   // See LocalFrameToken for details.
-  LocalFrameToken host_frame;
+  const LocalFrameToken& host_frame() const { return host_frame_; }
+  void set_host_frame(LocalFrameToken host_frame) {
+    host_frame_ = std::move(host_frame);
+  }
 
   // Uniquely identifies the DOM element that this form represents among the
   // form DOM elements in the same frame.
   // In the browser process, use global_id() instead.
   // See global_id() for details.
-  FormRendererId renderer_id;
+  const FormRendererId& renderer_id() const { return renderer_id_; }
+  void set_renderer_id(FormRendererId renderer_id) {
+    renderer_id_ = std::move(renderer_id);
+  }
 
   // A monotonically increasing counter that indicates the generation of the
   // form: if `f.version < g.version`, then `f` has been received from the
@@ -245,18 +270,28 @@ struct FormData {
   // the cache-downdating problem.
   // TODO(crbug.com/40144964): Remove once FormData objects aren't stored
   // globally anymore.
-  FormVersion version;
+  const FormVersion& version() const { return version_; }
+  void set_version(FormVersion version) { version_ = std::move(version); }
 
   // A vector of all frames in the form, where currently 'frames' only refers
   // to iframes and not fenced frames. It can only be iframes because those are
   // the only frames with cross frame form filling.
-  std::vector<FrameTokenWithPredecessor> child_frames;
+  const std::vector<FrameTokenWithPredecessor>& child_frames() const {
+    return child_frames_;
+  }
+  void set_child_frames(std::vector<FrameTokenWithPredecessor> child_frames) {
+    child_frames_ = std::move(child_frames);
+  }
 
   // The type of the event that was taken as an indication that this form is
   // being or has already been submitted. This field is filled only in Password
   // Manager for submitted password forms.
-  mojom::SubmissionIndicatorEvent submission_event =
-      mojom::SubmissionIndicatorEvent::NONE;
+  mojom::SubmissionIndicatorEvent submission_event() const {
+    return submission_event_;
+  }
+  void set_submission_event(mojom::SubmissionIndicatorEvent submission_event) {
+    submission_event_ = std::move(submission_event);
+  }
 
   // A vector of all the input fields in the form.
   //
@@ -282,13 +317,49 @@ struct FormData {
   // of being a username (the first one is the most likely username). Can
   // contain IDs of elements which are not in |fields|. This is only used during
   // parsing into PasswordForm, and hence not serialized for storage.
-  std::vector<FieldRendererId> username_predictions;
+  const std::vector<FieldRendererId>& username_predictions() const {
+    return username_predictions_;
+  }
+  void set_username_predictions(
+      std::vector<FieldRendererId> username_predictions) {
+    username_predictions_ = std::move(username_predictions);
+  }
 
   // True if this is a Gaia form which should be skipped on saving.
-  bool is_gaia_with_skip_save_password_form = false;
+  bool is_gaia_with_skip_save_password_form() const {
+    return is_gaia_with_skip_save_password_form_;
+  }
+  void set_is_gaia_with_skip_save_password_form(
+      bool is_gaia_with_skip_save_password_form) {
+    is_gaia_with_skip_save_password_form_ =
+        std::move(is_gaia_with_skip_save_password_form);
+  }
 
 #if BUILDFLAG(IS_IOS)
-  std::string frame_id;
+  const std::string& frame_id() const { return frame_id_; }
+  void set_frame_id(std::string frame_id) { frame_id_ = std::move(frame_id); }
+#endif
+
+ private:
+  std::u16string id_attribute_;
+  std::u16string name_attribute_;
+  std::u16string name_;
+  ButtonTitleList button_titles_;
+  GURL url_;
+  GURL full_url_;
+  GURL action_;
+  bool is_action_empty_ = false;
+  url::Origin main_frame_origin_;
+  LocalFrameToken host_frame_;
+  FormRendererId renderer_id_;
+  FormVersion version_;
+  std::vector<FrameTokenWithPredecessor> child_frames_;
+  mojom::SubmissionIndicatorEvent submission_event_ =
+      mojom::SubmissionIndicatorEvent::NONE;
+  std::vector<FieldRendererId> username_predictions_;
+  bool is_gaia_with_skip_save_password_form_ = false;
+#if BUILDFLAG(IS_IOS)
+  std::string frame_id_;
 #endif
 };
 

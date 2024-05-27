@@ -114,20 +114,20 @@ std::string ServerTypesToString(const AutofillField* field) {
 }  // namespace
 
 FormStructure::FormStructure(const FormData& form)
-    : id_attribute_(form.id_attribute),
-      name_attribute_(form.name_attribute),
-      form_name_(form.name),
-      button_titles_(form.button_titles),
-      source_url_(form.url),
-      full_source_url_(form.full_url),
-      target_url_(form.action),
-      main_frame_origin_(form.main_frame_origin),
+    : id_attribute_(form.id_attribute()),
+      name_attribute_(form.name_attribute()),
+      form_name_(form.name()),
+      button_titles_(form.button_titles()),
+      source_url_(form.url()),
+      full_source_url_(form.full_url()),
+      target_url_(form.action()),
+      main_frame_origin_(form.main_frame_origin()),
       all_fields_are_passwords_(!form.fields.empty()),
       form_parsed_timestamp_(base::TimeTicks::Now()),
-      host_frame_(form.host_frame),
-      version_(form.version),
-      renderer_id_(form.renderer_id),
-      child_frames_(form.child_frames) {
+      host_frame_(form.host_frame()),
+      version_(form.version()),
+      renderer_id_(form.renderer_id()),
+      child_frames_(form.child_frames()) {
   // Copy the form fields.
   for (const FormFieldData& field : form.fields) {
     if (!IsCheckable(field.check_status())) {
@@ -746,18 +746,18 @@ bool FormStructure::is_form_element() const {
 
 FormData FormStructure::ToFormData() const {
   FormData data;
-  data.id_attribute = id_attribute_;
-  data.name_attribute = name_attribute_;
-  data.name = form_name_;
-  data.button_titles = button_titles_;
-  data.url = source_url_;
-  data.full_url = full_source_url_;
-  data.action = target_url_;
-  data.main_frame_origin = main_frame_origin_;
-  data.renderer_id = renderer_id_;
-  data.host_frame = host_frame_;
-  data.version = version_;
-  data.child_frames = child_frames_;
+  data.set_id_attribute(id_attribute_);
+  data.set_name_attribute(name_attribute_);
+  data.set_name(form_name_);
+  data.set_button_titles(button_titles_);
+  data.set_url(source_url_);
+  data.set_full_url(full_source_url_);
+  data.set_action(target_url_);
+  data.set_main_frame_origin(main_frame_origin_);
+  data.set_renderer_id(renderer_id_);
+  data.set_host_frame(host_frame_);
+  data.set_version(version_);
+  data.set_child_frames(child_frames_);
 
   for (const auto& field : fields_) {
     data.fields.push_back(*field);

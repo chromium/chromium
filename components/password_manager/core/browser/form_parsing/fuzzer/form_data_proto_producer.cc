@@ -32,13 +32,13 @@ FormData GenerateWithProto(const ::form_data_fuzzer::Form& form_proto) {
     return result;
   }
 
-  result.id_attribute = UTF8ToUTF16(form_proto.id());
-  result.name_attribute = UTF8ToUTF16(form_proto.name());
-  result.name = UTF8ToUTF16(form_proto.name());
-  result.action = GURL(form_proto.action());
-  result.url = GURL(form_proto.origin());
-  result.main_frame_origin =
-      url::Origin::Create(GURL(form_proto.main_frame_origin()));
+  result.set_id_attribute(UTF8ToUTF16(form_proto.id()));
+  result.set_name_attribute(UTF8ToUTF16(form_proto.name()));
+  result.set_name(UTF8ToUTF16(form_proto.name()));
+  result.set_action(GURL(form_proto.action()));
+  result.set_url(GURL(form_proto.origin()));
+  result.set_main_frame_origin(
+      url::Origin::Create(GURL(form_proto.main_frame_origin())));
 
   result.fields.resize(form_proto.fields_size());
   for (int i = 0; i < form_proto.fields_size(); ++i) {

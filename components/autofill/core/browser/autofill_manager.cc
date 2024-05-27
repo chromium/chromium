@@ -123,8 +123,9 @@ AutofillField* FindAutofillFillField(const FormStructure& form,
 // TODO(crbug.com/40183094): This should be some form of FormData::DeepEqual().
 bool CachedFormNeedsUpdate(const FormData& live_form,
                            const FormStructure& cached_form) {
-  if (cached_form.version() > live_form.version)
+  if (cached_form.version() > live_form.version()) {
     return false;
+  }
 
   if (live_form.fields.size() != cached_form.field_count())
     return true;

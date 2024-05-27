@@ -403,39 +403,81 @@ bool StructTraits<autofill::mojom::ButtonTitleInfoDataView,
 bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
     autofill::mojom::FormDataDataView data,
     autofill::FormData* out) {
-  if (!data.ReadIdAttribute(&out->id_attribute))
-    return false;
-  if (!data.ReadNameAttribute(&out->name_attribute))
-    return false;
-  if (!data.ReadName(&out->name))
-    return false;
-  if (!data.ReadButtonTitles(&out->button_titles))
-    return false;
-  if (!data.ReadAction(&out->action))
-    return false;
-  out->is_action_empty = data.is_action_empty();
-
-  if (!data.ReadRendererId(&out->renderer_id)) {
-    return false;
+  {
+    std::u16string id_attribute;
+    if (!data.ReadIdAttribute(&id_attribute)) {
+      return false;
+    }
+    out->set_id_attribute(std::move(id_attribute));
   }
-
-  if (!data.ReadChildFrames(&out->child_frames))
-    return false;
-
-  if (!data.ReadSubmissionEvent(&out->submission_event))
-    return false;
-
-  if (!data.ReadFields(&out->fields))
-    return false;
-
-  if (!data.ReadUsernamePredictions(&out->username_predictions))
-    return false;
-
-  out->is_gaia_with_skip_save_password_form =
-      data.is_gaia_with_skip_save_password_form();
-
+  {
+    std::u16string name_attribute;
+    if (!data.ReadNameAttribute(&name_attribute)) {
+      return false;
+    }
+    out->set_name_attribute(std::move(name_attribute));
+  }
+  {
+    std::u16string name;
+    if (!data.ReadName(&name)) {
+      return false;
+    }
+    out->set_name(std::move(name));
+  }
+  {
+    std::vector<autofill::ButtonTitleInfo> button_titles;
+    if (!data.ReadButtonTitles(&button_titles)) {
+      return false;
+    }
+    out->set_button_titles(std::move(button_titles));
+  }
+  {
+    GURL action;
+    if (!data.ReadAction(&action)) {
+      return false;
+    }
+    out->set_action(std::move(action));
+  }
+  out->set_is_action_empty(data.is_action_empty());
+  {
+    autofill::FormRendererId renderer_id;
+    if (!data.ReadRendererId(&renderer_id)) {
+      return false;
+    }
+    out->set_renderer_id(std::move(renderer_id));
+  }
+  {
+    std::vector<autofill::FrameTokenWithPredecessor> child_frames;
+    if (!data.ReadChildFrames(&child_frames)) {
+      return false;
+    }
+    out->set_child_frames(std::move(child_frames));
+  }
+  {
+    autofill::mojom::SubmissionIndicatorEvent submission_event;
+    if (!data.ReadSubmissionEvent(&submission_event)) {
+      return false;
+    }
+    out->set_submission_event(submission_event);
+  }
+  {
+    std::vector<autofill::FormFieldData> fields;
+    if (!data.ReadFields(&fields)) {
+      return false;
+    }
+    out->fields = std::move(fields);
+  }
+  {
+    std::vector<autofill::FieldRendererId> username_predictions;
+    if (!data.ReadUsernamePredictions(&username_predictions)) {
+      return false;
+    }
+    out->set_username_predictions(std::move(username_predictions));
+  }
+  out->set_is_gaia_with_skip_save_password_form(
+      data.is_gaia_with_skip_save_password_form());
   return base::ranges::all_of(
-      out->child_frames,
+      out->child_frames(),
       [&](int predecessor) {
         return predecessor == -1 ||
                base::checked_cast<size_t>(predecessor) < out->fields.size();

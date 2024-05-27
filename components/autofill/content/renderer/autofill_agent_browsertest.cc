@@ -94,7 +94,7 @@ auto HasFieldsWithIdAttributes(std::vector<std::u16string> id_attributes) {
 
 // Matches a `FormData` with a specific `FormData::renderer_id`.
 auto HasFormId(FormRendererId expectation) {
-  return Field(&FormData::renderer_id, expectation);
+  return Property(&FormData::renderer_id, expectation);
 }
 
 // Matches a `FormFieldData` with a specific `FormData::renderer_id`.
@@ -104,7 +104,7 @@ auto HasFieldId(FieldRendererId expectation) {
 
 // Matches a `FormData` with a specific `FormData::id_attribute`.
 auto HasFormIdAttribute(std::u16string id_attribute) {
-  return Field(&FormData::id_attribute, std::move(id_attribute));
+  return Property(&FormData::id_attribute, std::move(id_attribute));
 }
 
 // Matches a FormData with |num| FormData::fields.
@@ -114,7 +114,7 @@ auto HasNumFields(size_t num) {
 
 // Matches a FormData with |num| FormData::child_frames.
 auto HasNumChildFrames(size_t num) {
-  return Field(&FormData::child_frames, SizeIs(num));
+  return Property(&FormData::child_frames, SizeIs(num));
 }
 
 // Matches a container with a single element which (the element) matches all
@@ -575,8 +575,8 @@ TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledForForm) {
   Callback callback;
   EXPECT_CALL(callback,
               Run(Optional(AllOf(
-                  Field(&FormData::renderer_id, GetFormRendererIdById("f")),
-                  Field(&FormData::name, u"f"),
+                  Property(&FormData::renderer_id, GetFormRendererIdById("f")),
+                  Property(&FormData::name, u"f"),
                   Field(&FormData::fields,
                         ElementsAre(is_text_input, is_text_input))))));
   autofill_agent().ExtractForm(GetFormRendererIdById("f"), callback.Get());
@@ -599,7 +599,7 @@ TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledForContentEditable) {
   EXPECT_CALL(
       callback,
       Run(Optional(
-          AllOf(Field(&FormData::renderer_id, GetFormRendererIdById("ce")),
+          AllOf(Property(&FormData::renderer_id, GetFormRendererIdById("ce")),
                 Field(&FormData::fields, ElementsAre(is_content_editable))))));
   autofill_agent().ExtractForm(GetFormRendererIdById("ce"), callback.Get());
 }
@@ -780,7 +780,7 @@ TEST_P(AutofillAgentSubmissionTest,
   provisionally_saved_form =
       AutofillAgentTestApi(&autofill_agent()).provisionally_saved_form();
   ASSERT_TRUE(provisionally_saved_form.has_value());
-  EXPECT_EQ(provisionally_saved_form->renderer_id, form_id);
+  EXPECT_EQ(provisionally_saved_form->renderer_id(), form_id);
   ASSERT_EQ(1u, provisionally_saved_form->fields.size());
   EXPECT_EQ(u"user-set value", provisionally_saved_form->fields[0].value());
 
@@ -791,7 +791,7 @@ TEST_P(AutofillAgentSubmissionTest,
   // Since we now have a tracked form and JS modified the same form, we should
   // see the JS modification reflected in the last interacted saved form.
   ASSERT_TRUE(provisionally_saved_form.has_value());
-  EXPECT_EQ(provisionally_saved_form->renderer_id, form_id);
+  EXPECT_EQ(provisionally_saved_form->renderer_id(), form_id);
   ASSERT_EQ(1u, provisionally_saved_form->fields.size());
   EXPECT_EQ(u"js-set value", provisionally_saved_form->fields[0].value());
 }

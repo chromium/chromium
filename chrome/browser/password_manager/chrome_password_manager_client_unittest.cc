@@ -146,9 +146,9 @@ namespace {
 #if BUILDFLAG(IS_ANDROID)
 FormData MakePasswordFormData() {
   FormData form_data;
-  form_data.url = GURL("https://www.example.com/");
-  form_data.action = GURL("https://www.example.com/");
-  form_data.name = u"form-name";
+  form_data.set_url(GURL("https://www.example.com/"));
+  form_data.set_action(GURL("https://www.example.com/"));
+  form_data.set_name(u"form-name");
 
   FormFieldData field;
   field.set_name(u"password-element");
@@ -573,7 +573,7 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
                                         FormControlType::kInputText),
                     CreateTestFormField("Password", "password", "",
                                         FormControlType::kInputPassword)});
-  form.name = u"login";
+  form.set_name(u"login");
 
   {
     autofill::TestAutofillManagerWaiter waiter(
@@ -628,8 +628,8 @@ TEST_F(ChromePasswordManagerClientTest,
   // Ensure that the child frame is picked up as a child frame of `main_form`.
   {
     autofill::FrameTokenWithPredecessor child_frame_information;
-    child_frame_information.token = child_form.host_frame;
-    main_form.child_frames = {child_frame_information};
+    child_frame_information.token = child_form.host_frame();
+    main_form.set_child_frames({child_frame_information});
   }
 
   {
@@ -1358,7 +1358,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest, FocusedInputChangedGoodFrame) {
 TEST_F(ChromePasswordManagerClientAndroidTest,
        FocusedInputChangedFormsNotFetchedMessagesFeature) {
   FormData observed_form_data = MakePasswordFormData();
-  SetUpGenerationPreconditions(observed_form_data.url);
+  SetUpGenerationPreconditions(observed_form_data.url());
 
   std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
       CreateContentPasswordManagerDriver(main_rfh());
@@ -1388,7 +1388,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
   FormData observed_form_data = MakePasswordFormData();
-  SetUpGenerationPreconditions(observed_form_data.url);
+  SetUpGenerationPreconditions(observed_form_data.url());
 
   std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
       CreateContentPasswordManagerDriver(main_rfh());
@@ -1438,7 +1438,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   FormData observed_form_data = MakePasswordFormData();
-  SetUpGenerationPreconditions(observed_form_data.url);
+  SetUpGenerationPreconditions(observed_form_data.url());
 
   std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
       CreateContentPasswordManagerDriver(main_rfh());

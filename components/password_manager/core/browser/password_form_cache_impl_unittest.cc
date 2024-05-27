@@ -105,9 +105,9 @@ TEST_F(PasswordFormCacheTest, GetMatchedManager) {
       /*metrics_recorder=*/nullptr);
   cache().AddFormManager(std::move(form_manager));
   PasswordFormManager* matched_manager =
-      cache().GetMatchedManager(&driver(), form.renderer_id);
+      cache().GetMatchedManager(&driver(), form.renderer_id());
 
-  ASSERT_TRUE(matched_manager->DoesManage(form.renderer_id, &driver()));
+  ASSERT_TRUE(matched_manager->DoesManage(form.renderer_id(), &driver()));
   for (const FormFieldData& field : form.fields) {
     ASSERT_TRUE(matched_manager->DoesManage(field.renderer_id(), &driver()));
     ASSERT_EQ(matched_manager,
@@ -158,13 +158,14 @@ TEST_F(PasswordFormCacheTest, MoveOwnedSubmittedManager) {
 
   PasswordFormManager* submitted_manager = cache().GetSubmittedManager();
   ASSERT_TRUE(submitted_manager->is_submitted());
-  ASSERT_TRUE(submitted_manager->DoesManage(form.renderer_id, &driver()));
+  ASSERT_TRUE(submitted_manager->DoesManage(form.renderer_id(), &driver()));
   ASSERT_FALSE(cache().IsEmpty());
 
   std::unique_ptr<PasswordFormManager> moved_submitted_manager =
       cache().MoveOwnedSubmittedManager();
   ASSERT_TRUE(moved_submitted_manager->is_submitted());
-  ASSERT_TRUE(moved_submitted_manager->DoesManage(form.renderer_id, &driver()));
+  ASSERT_TRUE(
+      moved_submitted_manager->DoesManage(form.renderer_id(), &driver()));
   ASSERT_TRUE(cache().IsEmpty());
 }
 
@@ -198,7 +199,7 @@ TEST_F(PasswordFormCacheTest, ResetSubmittedManager_NoSubmittedManager) {
 
   cache().ResetSubmittedManager();
   EXPECT_FALSE(cache().IsEmpty());
-  EXPECT_THAT(cache().GetMatchedManager(&driver(), form.renderer_id),
+  EXPECT_THAT(cache().GetMatchedManager(&driver(), form.renderer_id()),
               NotNull());
 }
 
@@ -220,7 +221,7 @@ TEST_F(PasswordFormCacheTest, GetFormManagers) {
 
   // Check that iterators point to the expected password form managers.
   PasswordFormManager* matched_manager =
-      cache().GetMatchedManager(&driver(), form.renderer_id);
+      cache().GetMatchedManager(&driver(), form.renderer_id());
   EXPECT_THAT(matched_manager, NotNull());
   EXPECT_EQ(matched_manager, cache().GetFormManagers()[0].get());
 }

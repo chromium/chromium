@@ -342,8 +342,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
-  form.renderer_id = test::MakeFormRendererId();
+  form.set_url(GURL("http://www.foo.com/"));
+  form.set_renderer_id(test::MakeFormRendererId());
   form.fields = {
       CreateTestFormField("First Name", "firstname", "",
                           FormControlType::kInputText, "given-name"),
@@ -440,8 +440,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   std::unique_ptr<FormStructure> form_structure;
   std::vector<FieldTypeSet> possible_field_types;
   FormData form;
-  form.url = GURL("http://www.foo.com/");
-  form.renderer_id = test::MakeFormRendererId();
+  form.set_url(GURL("http://www.foo.com/"));
+  form.set_renderer_id(test::MakeFormRendererId());
 
   form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
                                             FormControlType::kInputText,
@@ -1174,11 +1174,11 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
   };
 
   FormData form;
-  form.id_attribute = u"form-id";
-  form.url = GURL("http://www.foo.com/");
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.full_url = GURL("http://www.foo.com/?foo=bar");
+  form.set_id_attribute(u"form-id");
+  form.set_url(GURL("http://www.foo.com/"));
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_full_url(GURL("http://www.foo.com/?foo=bar"));
   for (const auto& f : kFieldMetadata) {
     FormFieldData field;
     field.set_id_attribute(ASCIIToUTF16(f.id));
@@ -1213,7 +1213,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
 
   const auto form_signature = form_structure.form_signature();
 
-  if (form.id_attribute.empty()) {
+  if (form.id_attribute().empty()) {
     EXPECT_FALSE(upload.randomized_form_metadata().has_id());
   } else {
     EXPECT_EQ(upload.randomized_form_metadata().id().encoded_bits(),
@@ -1222,7 +1222,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
                                        form_structure.id_attribute()));
   }
 
-  if (form.name_attribute.empty()) {
+  if (form.name_attribute().empty()) {
     EXPECT_FALSE(upload.randomized_form_metadata().has_name());
   } else {
     EXPECT_EQ(upload.randomized_form_metadata().name().encoded_bits(),
@@ -1245,7 +1245,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
                 .encoded_bits(),
             encoder.EncodeForTesting(form_signature, FieldSignature(),
                                      RandomizedEncoder::FORM_BUTTON_TITLES,
-                                     form.button_titles[0].first));
+                                     form.button_titles()[0].first));
   EXPECT_EQ(ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE,
             upload.randomized_form_metadata().button_title()[0].type());
 
@@ -1331,9 +1331,9 @@ TEST_F(AutofillCrowdsourcingEncoding, Metadata_OnlySendFullUrlWithUserConsent) {
   for (bool has_consent : {true, false}) {
     SCOPED_TRACE(testing::Message() << " has_consent=" << has_consent);
     FormData form;
-    form.id_attribute = u"form-id";
-    form.url = GURL("http://www.foo.com/");
-    form.full_url = GURL("http://www.foo.com/?foo=bar");
+    form.set_id_attribute(u"form-id");
+    form.set_url(GURL("http://www.foo.com/"));
+    form.set_full_url(GURL("http://www.foo.com/?foo=bar"));
 
     // One form field needed to be valid form.
     FormFieldData field;
@@ -1366,7 +1366,7 @@ TEST_F(AutofillCrowdsourcingEncoding, Metadata_OnlySendFullUrlWithUserConsent) {
 TEST_F(AutofillCrowdsourcingEncoding,
        EncodeUploadRequest_WithSingleUsernameVoteType) {
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
   FormFieldData field;
   field.set_name(u"text field");
   field.set_renderer_id(test::MakeFieldRendererId());
@@ -1394,7 +1394,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 TEST_F(AutofillCrowdsourcingEncoding,
        EncodeUploadRequest_WithSingleUsernameData) {
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
   FormFieldData field_data;
   field_data.set_name(u"text field");
   field_data.set_renderer_id(test::MakeFieldRendererId());
@@ -1558,7 +1558,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   FormSignature form_signature(16692857476255362434UL);
 
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.set_url(GURL("http://www.foo.com/"));
 
   FormFieldData field;
   field.set_form_control_type(FormControlType::kInputText);
@@ -1906,7 +1906,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
 TEST_F(AutofillCrowdsourcingEncoding, AllowBigForms) {
   FormData form;
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   // Check that the form with 250 fields are processed correctly.
   for (size_t i = 0; i < 250; ++i) {
     form.fields.push_back(test::GetFormFieldData({
@@ -2081,7 +2081,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // server returns NO_SERVER_DATA, UNKNOWN_TYPE, and a valid type.
 TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
   FormData form_data;
-  form_data.url = GURL("http://foo.com");
+  form_data.set_url(GURL("http://foo.com"));
   form_data.fields = {
       CreateTestFormField("First Name", "fname", "",
                           FormControlType::kInputText),
@@ -2145,7 +2145,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
 // server returns NO_SERVER_DATA, UNKNOWN_TYPE, and a valid type.
 TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UnknownType) {
   FormData form_data;
-  form_data.url = GURL("http://foo.com");
+  form_data.set_url(GURL("http://foo.com"));
   form_data.fields = {
       CreateTestFormField("First Name", "fname", "",
                           FormControlType::kInputText),
@@ -2242,7 +2242,7 @@ TEST_F(
     // Creating the main frame form.
     FormData form;
     form.fields = fields;
-    form.url = GURL("http://foo.com");
+    form.set_url(GURL("http://foo.com"));
     FormStructure form_structure(form);
     std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
     forms.push_back(&form_structure);
@@ -2491,7 +2491,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
                                              FormControlType::kInputText);
   FormData form;
   form.fields = {field1, field2};
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
       &form_structure};
@@ -2554,7 +2554,7 @@ TEST_F(
 
   FormData form;
   form.fields = {field1, field2};
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
       &form_structure};
@@ -2617,7 +2617,7 @@ TEST_F(
 
   FormData form;
   form.fields = {field1, field2, field3};
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
       &form_structure};
@@ -2698,7 +2698,7 @@ TEST_F(
 
   FormData form;
   form.fields = {field1, field2, field3, field4};
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
       &form_structure};
@@ -2768,7 +2768,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
                                              FormControlType::kInputText);
   FormData form;
   form.fields = {field1, field2};
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
       &form_structure};
@@ -2829,7 +2829,7 @@ TEST_F(
                                              FormControlType::kInputText);
   FormData form;
   form.fields = {field1, field2};
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
       &form_structure};
@@ -2887,7 +2887,7 @@ TEST_F(
       "password", "password", "", FormControlType::kInputText);
   FormData form;
   form.fields = {name_field, password_field};
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
       &form_structure};
@@ -2940,7 +2940,7 @@ TEST_F(
 TEST_F(AutofillCrowdsourcingEncoding,
        ParseServerPredictionsQueryResponseWhenCannotParseProtoFromString) {
   FormData form;
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   form.fields = {CreateTestFormField("emailaddress", "emailaddress", "",
                                      FormControlType::kInputEmail)};
 
@@ -2968,7 +2968,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 TEST_F(AutofillCrowdsourcingEncoding,
        ParseServerPredictionsQueryResponseWhenPayloadNotBase64) {
   FormData form;
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   form.fields = {CreateTestFormField("emailaddress", "emailaddress", "",
                                      FormControlType::kInputEmail)};
 
@@ -3006,7 +3006,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
 TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_AuthorDefinedTypes) {
   FormData form;
-  form.url = GURL("http://foo.com");
+  form.set_url(GURL("http://foo.com"));
   form.fields = {
       CreateTestFormField("email", "email", "", FormControlType::kInputText,
                           "email"),
@@ -3206,7 +3206,7 @@ TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
 TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_RankEqualSignatures) {
   FormData form_data;
   FormFieldData field;
-  form_data.url = GURL("http://foo.com");
+  form_data.set_url(GURL("http://foo.com"));
   form_data.fields = {
       CreateTestFormField("First Name", "name", "",
                           FormControlType::kInputText),
@@ -3246,7 +3246,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_RankEqualSignatures) {
 TEST_F(AutofillCrowdsourcingEncoding,
        ParseQueryResponse_EqualSignaturesFewerPredictions) {
   FormData form_data;
-  form_data.url = GURL("http://foo.com");
+  form_data.set_url(GURL("http://foo.com"));
   form_data.fields = {
       CreateTestFormField("First Name", "name", "",
                           FormControlType::kInputText),
@@ -3286,7 +3286,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 TEST_F(AutofillCrowdsourcingEncoding,
        ExperimentalServerPredictionsAreSeparate) {
   FormData form_data;
-  form_data.url = GURL("http://foo.com");
+  form_data.set_url(GURL("http://foo.com"));
 
   // Add 6 fields.
   for (int i = 0; i < 6; i++) {

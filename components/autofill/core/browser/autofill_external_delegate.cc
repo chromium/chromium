@@ -1271,7 +1271,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       ->address_data_manager()
       .ClearStrikesToBlockAddressSuggestions(
           CalculateFormSignature(query_form_),
-          CalculateFieldSignatureForField(query_field_), query_form_.url);
+          CalculateFieldSignatureForField(query_field_), query_form_.url());
 #endif
 }
 

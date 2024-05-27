@@ -62,12 +62,12 @@ FormFieldData CreateTestField(std::u16string name = u"SomeName") {
 
 FormData CreateTestForm() {
   FormData f;
-  f.name = u"FormName";
-  f.name_attribute = f.name;
-  f.id_attribute = u"form_id";
-  f.url = GURL("https://foo.com");
-  f.action = GURL("https://bar.com");
-  f.renderer_id = test::MakeFormRendererId();
+  f.set_name(u"FormName");
+  f.set_name_attribute(f.name());
+  f.set_id_attribute(u"form_id");
+  f.set_url(GURL("https://foo.com"));
+  f.set_action(GURL("https://bar.com"));
+  f.set_renderer_id(test::MakeFormRendererId());
   return f;
 }
 
@@ -129,7 +129,7 @@ TEST_F(FormDataAndroidTest, Form) {
 
   EXPECT_TRUE(FormData::DeepEqual(form, form_android.form()));
 
-  form.name = form.name + u"x";
+  form.set_name(form.name() + u"x");
   EXPECT_FALSE(FormData::DeepEqual(form, form_android.form()));
 }
 
@@ -149,32 +149,32 @@ TEST_F(FormDataAndroidTest, SimilarFormAs) {
   EXPECT_TRUE(af.SimilarFormAs(f));
 
   // If names differ, they are not similar.
-  f.name = af.form().name + u"x";
+  f.set_name(af.form().name() + u"x");
   EXPECT_FALSE(af.SimilarFormAs(f));
 
   // If name attributes differ, they are not similar.
   f = af.form();
-  f.name_attribute = af.form().name_attribute + u"x";
+  f.set_name_attribute(af.form().name_attribute() + u"x");
   EXPECT_FALSE(af.SimilarFormAs(f));
 
   // If id attributes differ, they are not similar.
   f = af.form();
-  f.id_attribute = af.form().id_attribute + u"x";
+  f.set_id_attribute(af.form().id_attribute() + u"x");
   EXPECT_FALSE(af.SimilarFormAs(f));
 
   // If urls differ, they are not similar.
   f = af.form();
-  f.url = GURL("https://other.com");
+  f.set_url(GURL("https://other.com"));
   EXPECT_FALSE(af.SimilarFormAs(f));
 
   // If actions differ, they are not similar.
   f = af.form();
-  f.action = GURL("https://other.com");
+  f.set_action(GURL("https://other.com"));
   EXPECT_FALSE(af.SimilarFormAs(f));
 
   // If their global ids differ, they are not similar.
   f = af.form();
-  f.renderer_id = FormRendererId(f.renderer_id.value() + 1);
+  f.set_renderer_id(FormRendererId(f.renderer_id().value() + 1));
   EXPECT_FALSE(af.SimilarFormAs(f));
 }
 
@@ -219,38 +219,38 @@ TEST_F(FormDataAndroidTest, SimilarFormAsWithDiagnosis) {
             FormDataAndroid::kFormsAreSimilar);
 
   f = af.form();
-  f.renderer_id = FormRendererId(f.renderer_id.value() + 1);
+  f.set_renderer_id(FormRendererId(f.renderer_id().value() + 1));
   EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
             to_check_result(SimilarityCheckComponent::kGlobalId));
 
   f = af.form();
-  f.name = af.form().name + u"x";
+  f.set_name(af.form().name() + u"x");
   EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
             to_check_result(SimilarityCheckComponent::kName));
 
   f = af.form();
-  f.name_attribute = af.form().name_attribute + u"x";
+  f.set_name_attribute(af.form().name_attribute() + u"x");
   EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
             to_check_result(SimilarityCheckComponent::kNameAttribute));
 
   f = af.form();
-  f.id_attribute = af.form().id_attribute + u"x";
+  f.set_id_attribute(af.form().id_attribute() + u"x");
   EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
             to_check_result(SimilarityCheckComponent::kIdAttribute));
 
   f = af.form();
-  f.url = GURL("https://other.com");
+  f.set_url(GURL("https://other.com"));
   EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
             to_check_result(SimilarityCheckComponent::kUrl));
 
   f = af.form();
-  f.action = GURL("https://other.com");
+  f.set_action(GURL("https://other.com"));
   EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
             to_check_result(SimilarityCheckComponent::kAction));
 
   f = af.form();
-  f.name_attribute = af.form().name_attribute + u"x";
-  f.id_attribute = af.form().id_attribute + u"x";
+  f.set_name_attribute(af.form().name_attribute() + u"x");
+  f.set_id_attribute(af.form().id_attribute() + u"x");
   EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
             to_check_result(SimilarityCheckComponent::kIdAttribute,
                             SimilarityCheckComponent::kNameAttribute));

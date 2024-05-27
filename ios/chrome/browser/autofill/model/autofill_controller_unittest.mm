@@ -485,7 +485,7 @@ TEST_F(AutofillControllerTest, ReadFormName) {
           ->GetAutofillManager();
   const auto& forms = autofill_manager.form_structures();
   const auto& form = *(forms.begin()->second);
-  EXPECT_EQ(u"form1", form.ToFormData().name);
+  EXPECT_EQ(u"form1", form.ToFormData().name());
 }
 
 // Checks that an HTML page containing a profile-type form which is submitted

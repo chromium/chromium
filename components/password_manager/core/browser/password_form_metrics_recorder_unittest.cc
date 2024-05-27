@@ -725,9 +725,9 @@ void CheckFillingAssistanceTestCase(
     PasswordForm password_form_data = ConvertToPasswordForm(test_case.fields);
     if (sub_case.is_main_frame_secure) {
       if (sub_case.is_mixed_form) {
-        password_form_data.form_data.action = GURL("http://notsecure.test");
+        password_form_data.form_data.set_action(GURL("http://notsecure.test"));
       } else {
-        password_form_data.form_data.action = GURL("https://secure.test");
+        password_form_data.form_data.set_action(GURL("https://secure.test"));
       }
     }
 

@@ -363,8 +363,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_EQ(1U, forms.size());
 
     const FormData& form = forms[0];
-    EXPECT_EQ(u"TestForm", form.name);
-    EXPECT_EQ(GURL("http://cnn.com"), form.action);
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://cnn.com"), form.action());
     ASSERT_EQ(fields.size(), form.fields.size());
 
     for (size_t i = 0; i < fields.size(); ++i) {
@@ -457,8 +457,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form.name);
-      EXPECT_EQ(GURL("http://abc.com"), form.action);
+      EXPECT_EQ(u"TestForm", form.name());
+      EXPECT_EQ(GURL("http://abc.com"), form.action());
     }
 
     const std::vector<FormFieldData>& fields = form.fields;
@@ -698,8 +698,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form.name);
-      EXPECT_EQ(GURL("http://abc.com"), form.action);
+      EXPECT_EQ(u"TestForm", form.name());
+      EXPECT_EQ(GURL("http://abc.com"), form.action());
     }
 
     const std::vector<FormFieldData>& fields = form.fields;
@@ -757,8 +757,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         textarea_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form.name);
-      EXPECT_EQ(GURL("http://abc.com"), form.action);
+      EXPECT_EQ(u"TestForm", form.name());
+      EXPECT_EQ(GURL("http://abc.com"), form.action());
     }
 
     const std::vector<FormFieldData>& fields = form.fields;
@@ -819,8 +819,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form.name);
-      EXPECT_EQ(GURL("http://abc.com"), form.action);
+      EXPECT_EQ(u"TestForm", form.name());
+      EXPECT_EQ(GURL("http://abc.com"), form.action());
     }
 
     const std::vector<FormFieldData>& fields = form.fields;
@@ -863,8 +863,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form2.name);
-      EXPECT_EQ(GURL("http://abc.com"), form2.action);
+      EXPECT_EQ(u"TestForm", form2.name());
+      EXPECT_EQ(GURL("http://abc.com"), form2.action());
     }
 
     const std::vector<FormFieldData>& fields2 = form2.fields;
@@ -911,8 +911,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form.name);
-      EXPECT_EQ(GURL("http://abc.com"), form.action);
+      EXPECT_EQ(u"TestForm", form.name());
+      EXPECT_EQ(GURL("http://abc.com"), form.action());
     }
 
     const std::vector<FormFieldData>& fields = form.fields;
@@ -947,8 +947,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form2.name);
-      EXPECT_EQ(GURL("http://abc.com"), form2.action);
+      EXPECT_EQ(u"TestForm", form2.name());
+      EXPECT_EQ(GURL("http://abc.com"), form2.action());
     }
 
     const std::vector<FormFieldData>& fields2 = form2.fields;
@@ -987,8 +987,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form.name);
-      EXPECT_EQ(GURL("http://abc.com"), form.action);
+      EXPECT_EQ(u"TestForm", form.name());
+      EXPECT_EQ(GURL("http://abc.com"), form.action());
     }
 
     const std::vector<FormFieldData>& fields = form.fields;
@@ -1023,8 +1023,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form2.name);
-      EXPECT_EQ(GURL("http://abc.com"), form2.action);
+      EXPECT_EQ(u"TestForm", form2.name());
+      EXPECT_EQ(GURL("http://abc.com"), form2.action());
     }
 
     const std::vector<FormFieldData>& fields2 = form2.fields;
@@ -1067,8 +1067,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_TRUE(form.name.empty());
-      EXPECT_EQ(GURL("http://abc.com"), form.action);
+      EXPECT_TRUE(form.name().empty());
+      EXPECT_EQ(GURL("http://abc.com"), form.action());
     }
 
     const std::vector<FormFieldData>& fields = form.fields;
@@ -1110,8 +1110,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_TRUE(form2.name.empty());
-      EXPECT_EQ(GURL("http://abc.com"), form2.action);
+      EXPECT_TRUE(form2.name().empty());
+      EXPECT_EQ(GURL("http://abc.com"), form2.action());
     }
 
     const std::vector<FormFieldData>& fields2 = form2.fields;
@@ -1162,8 +1162,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form.name);
-      EXPECT_EQ(GURL("http://abc.com"), form.action);
+      EXPECT_EQ(u"TestForm", form.name());
+      EXPECT_EQ(GURL("http://abc.com"), form.action());
     }
 
     const std::vector<FormFieldData>& fields = form.fields;
@@ -1238,8 +1238,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
     if (!unowned) {
-      EXPECT_EQ(u"TestForm", form2.name);
-      EXPECT_EQ(GURL("http://abc.com"), form2.action);
+      EXPECT_EQ(u"TestForm", form2.name());
+      EXPECT_EQ(GURL("http://abc.com"), form2.action());
     }
 
     const std::vector<FormFieldData>& fields2 = form2.fields;
@@ -1351,8 +1351,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     auto [form, field] = FindFormAndField(
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
-    EXPECT_EQ(u"TestForm", form.name);
-    EXPECT_EQ(GURL("http://abc.com"), form.action);
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
 
     const std::vector<FormFieldData>& fields = form.fields;
     ASSERT_EQ(6U, fields.size());
@@ -1382,8 +1382,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     auto [form2, field2] = FindFormAndField(
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
-    EXPECT_EQ(u"TestForm", form2.name);
-    EXPECT_EQ(GURL("http://abc.com"), form2.action);
+    EXPECT_EQ(u"TestForm", form2.name());
+    EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
     const std::vector<FormFieldData>& fields2 = form2.fields;
     ASSERT_EQ(6U, fields2.size());
@@ -1516,8 +1516,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     auto [form, field] = FindFormAndField(
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
-    EXPECT_EQ(u"TestForm", form.name);
-    EXPECT_EQ(GURL("http://abc.com"), form.action);
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
 
     const std::vector<FormFieldData>& fields = form.fields;
     ASSERT_EQ(3U, fields.size());
@@ -1541,8 +1541,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     auto [form2, field2] = FindFormAndField(
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
-    EXPECT_EQ(u"TestForm", form2.name);
-    EXPECT_EQ(GURL("http://abc.com"), form2.action);
+    EXPECT_EQ(u"TestForm", form2.name());
+    EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
     const std::vector<FormFieldData>& fields2 = form2.fields;
     ASSERT_EQ(3U, fields2.size());
@@ -1627,8 +1627,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     auto [form, field] = FindFormAndField(
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
-    EXPECT_EQ(u"TestForm", form.name);
-    EXPECT_EQ(GURL("http://abc.com"), form.action);
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
 
     const std::vector<FormFieldData>& fields = form.fields;
     ASSERT_EQ(3U, fields.size());
@@ -1655,8 +1655,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     auto [form2, field2] = FindFormAndField(
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
-    EXPECT_EQ(u"TestForm", form2.name);
-    EXPECT_EQ(GURL("http://abc.com"), form2.action);
+    EXPECT_EQ(u"TestForm", form2.name());
+    EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
     const std::vector<FormFieldData>& fields2 = form2.fields;
     ASSERT_EQ(3U, fields2.size());
@@ -1749,8 +1749,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     auto [form, field] = FindFormAndField(
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
-    EXPECT_EQ(u"TestForm", form.name);
-    EXPECT_EQ(GURL("http://abc.com"), form.action);
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
 
     const std::vector<FormFieldData>& fields = form.fields;
     ASSERT_EQ(3U, fields.size());
@@ -1777,8 +1777,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     auto [form2, field2] = FindFormAndField(
         input_element, *base::MakeRefCounted<FieldDataManager>(),
         /*extract_options=*/{});
-    EXPECT_EQ(u"TestForm", form2.name);
-    EXPECT_EQ(GURL("http://abc.com"), form2.action);
+    EXPECT_EQ(u"TestForm", form2.name());
+    EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
     const std::vector<FormFieldData>& fields2 = form2.fields;
     ASSERT_EQ(3U, fields2.size());
@@ -2642,9 +2642,9 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
 
-  EXPECT_EQ(u"TestForm", form.name);
-  EXPECT_EQ(GetFormRendererId(forms[0]), form.renderer_id);
-  EXPECT_EQ(GURL("http://cnn.com/submit/"), form.action);
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(GetFormRendererId(forms[0]), form.renderer_id());
+  EXPECT_EQ(GURL("http://cnn.com/submit/"), form.action());
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(6U, fields.size());
@@ -2937,8 +2937,8 @@ TEST_F(FormAutofillTest, ExtractMultipleForms) {
 
   // First form.
   const FormData& form = forms[0];
-  EXPECT_EQ(u"TestForm", form.name);
-  EXPECT_EQ(GURL("http://cnn.com"), form.action);
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(3U, fields.size());
@@ -2967,8 +2967,8 @@ TEST_F(FormAutofillTest, ExtractMultipleForms) {
 
   // Second form.
   const FormData& form2 = forms[1];
-  EXPECT_EQ(u"TestForm2", form2.name);
-  EXPECT_EQ(GURL("http://zoo.com"), form2.action);
+  EXPECT_EQ(u"TestForm2", form2.name());
+  EXPECT_EQ(GURL("http://zoo.com"), form2.action());
 
   const std::vector<FormFieldData>& fields2 = form2.fields;
   ASSERT_EQ(3U, fields2.size());
@@ -4450,8 +4450,8 @@ TEST_F(FormAutofillTest, ThreePartPhone) {
   FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
                                    *base::MakeRefCounted<FieldDataManager>(),
                                    {ExtractOption::kValue});
-  EXPECT_EQ(u"TestForm", form.name);
-  EXPECT_EQ(GURL("http://cnn.com"), form.action);
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(4U, fields.size());
@@ -4505,8 +4505,8 @@ TEST_F(FormAutofillTest, MaxLengthFields) {
   FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
                                    *base::MakeRefCounted<FieldDataManager>(),
                                    {ExtractOption::kValue});
-  EXPECT_EQ(u"TestForm", form.name);
-  EXPECT_EQ(GURL("http://cnn.com"), form.action);
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(6U, fields.size());
@@ -4931,8 +4931,8 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
       *ExtractFormData(forms[0].GetDocument(), forms[0],
                        *base::MakeRefCounted<FieldDataManager>(),
                        {ExtractOption::kValue, ExtractOption::kOptionText});
-  EXPECT_EQ(u"TestForm", form.name);
-  EXPECT_EQ(GURL("http://cnn.com"), form.action);
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(3U, fields.size());
@@ -4968,8 +4968,8 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   form = *ExtractFormData(forms[0].GetDocument(), forms[0],
                           *base::MakeRefCounted<FieldDataManager>(),
                           {ExtractOption::kValue});
-  EXPECT_EQ(u"TestForm", form.name);
-  EXPECT_EQ(GURL("http://cnn.com"), form.action);
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
   ASSERT_EQ(3U, fields.size());
 
@@ -5012,8 +5012,8 @@ TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
       *ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
                        *base::MakeRefCounted<FieldDataManager>());
 
-  EXPECT_TRUE(form.name.empty());
-  EXPECT_FALSE(form.action.is_valid());
+  EXPECT_TRUE(form.name().empty());
+  EXPECT_FALSE(form.action().is_valid());
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(3U, fields.size());
@@ -5126,7 +5126,7 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
     std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     EXPECT_EQ(test_case.number_of_extracted_forms, forms.size());
     if (!forms.empty())
-      EXPECT_EQ(test_case.is_form_tag, !forms.back().renderer_id.is_null());
+      EXPECT_EQ(test_case.is_form_tag, !forms.back().renderer_id().is_null());
   }
 }
 

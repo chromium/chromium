@@ -116,7 +116,7 @@ class PasswordFormFillingTest : public testing::Test {
         autofill::FieldRendererId(101);
     observed_form_.submit_element = u"signIn";
     observed_form_.signon_realm = "https://accounts.google.com";
-    observed_form_.form_data.name = u"the-form-name";
+    observed_form_.form_data.set_name(u"the-form-name");
 
     saved_match_ = observed_form_;
     saved_match_.url = GURL("https://accounts.google.com/a/ServiceLoginAuth");
@@ -751,9 +751,9 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
 
   // Set renderer id related fields.
   FormData form_data;
-  form_data.host_frame = autofill::LocalFrameToken(
-      base::UnguessableToken::CreateForTesting(98765, 43210));
-  form_data.renderer_id = FormRendererId(42);
+  form_data.set_host_frame(autofill::LocalFrameToken(
+      base::UnguessableToken::CreateForTesting(98765, 43210)));
+  form_data.set_renderer_id(FormRendererId(42));
   form_on_page.form_data = form_data;
   form_on_page.username_element_renderer_id = FieldRendererId(123);
   form_on_page.password_element_renderer_id = FieldRendererId(456);
@@ -763,7 +763,7 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
   PasswordFormFillData result = CreatePasswordFormFillData(
       form_on_page, {}, preferred_match, page_origin, true);
 
-  EXPECT_EQ(form_data.renderer_id, result.form_renderer_id);
+  EXPECT_EQ(form_data.renderer_id(), result.form_renderer_id);
   EXPECT_EQ(form_on_page.username_element_renderer_id,
             result.username_element_renderer_id);
   EXPECT_EQ(form_on_page.password_element_renderer_id,
@@ -789,7 +789,7 @@ TEST(PasswordFormFillDataTest, NoPasswordElement) {
   preferred_match.match_type = PasswordForm::MatchType::kExact;
 
   FormData form_data;
-  form_data.renderer_id = FormRendererId(42);
+  form_data.set_renderer_id(FormRendererId(42));
   form_on_page.form_data = form_data;
 
   Origin page_origin = Origin::Create(GURL("https://foo.com/"));

@@ -290,9 +290,10 @@ class FormParserTest : public testing::Test {
                                      ParseResultIds* fill_result,
                                      ParseResultIds* save_result) {
     FormData form_data;
-    form_data.action = GURL("http://example1.com");
-    form_data.url = GURL("http://example2.com");
-    form_data.submission_event = test_case.submission_event;
+    form_data.set_action(GURL("http://example1.com"));
+    form_data.set_url(GURL("http://example2.com"));
+    form_data.set_submission_event(test_case.submission_event);
+    std::vector<autofill::FieldRendererId> username_predictions;
     for (const FieldDataDescription& field_description : test_case.fields) {
       FormFieldData field;
       const autofill::FieldRendererId renderer_id = GetUniqueId();
@@ -344,20 +345,21 @@ class FormParserTest : public testing::Test {
       if (field_description.predicted_username >= 0) {
         size_t index =
             static_cast<size_t>(field_description.predicted_username);
-        if (form_data.username_predictions.size() <= index) {
-          form_data.username_predictions.resize(index + 1);
+        if (username_predictions.size() <= index) {
+          username_predictions.resize(index + 1);
         }
-        form_data.username_predictions[index] = field.renderer_id();
+        username_predictions[index] = field.renderer_id();
       }
     }
     // Fill unused ranks in predictions with fresh IDs to check that those are
     // correctly ignored. In real situation, this might correspond, e.g., to
     // fields which were not fillable and hence dropped from the selection.
-    for (autofill::FieldRendererId& id : form_data.username_predictions) {
+    for (autofill::FieldRendererId& id : username_predictions) {
       if (id.is_null()) {
         id = GetUniqueId();
       }
     }
+    form_data.set_username_predictions(std::move(username_predictions));
     return form_data;
   }
 
@@ -2987,7 +2989,7 @@ TEST_F(FormParserTest, InvalidURL) {
   FormData form_data =
       GetFormDataAndExpectation(form_desc, &no_predictions, &dummy, &dummy);
   // URL comes from https://crbug.com/1075515.
-  form_data.url = GURL("FilEsysteM:htTp:E=/.");
+  form_data.set_url(GURL("FilEsysteM:htTp:E=/."));
   FormDataParser parser;
   EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
                             /*stored_usernames=*/{}));
@@ -3317,7 +3319,7 @@ TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
 TEST_F(FormParserTest, BaseHeuristicsFindUsernameFieldWithStoredUsername) {
   const std::u16string kUsername = u"the_username";
   FormData form_data;
-  form_data.url = GURL("https://www.example.com");
+  form_data.set_url(GURL("https://www.example.com"));
   form_data.fields.emplace_back(
       CreateField(FormControlType::kInputText, kUsername));
   form_data.fields.emplace_back(CreateField(FormControlType::kInputText, u""));

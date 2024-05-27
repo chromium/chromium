@@ -474,11 +474,15 @@ class ContentAutofillDriverWithMultiFrameCreditCardForm
     forms_[kCvc] = SeeFormWithField(rfh(kCvc), "csc");
 
     FormData main_form;
-    main_form.child_frames.resize(4);
-    main_form.child_frames[kName].token = form(kName).host_frame;
-    main_form.child_frames[kNumber].token = form(kNumber).host_frame;
-    main_form.child_frames[kExp].token = form(kExp).host_frame;
-    main_form.child_frames[kCvc].token = form(kCvc).host_frame;
+    main_form.set_child_frames([&] {
+      std::vector<FrameTokenWithPredecessor> child_frames;
+      child_frames.resize(4);
+      child_frames[kName].token = form(kName).host_frame();
+      child_frames[kNumber].token = form(kNumber).host_frame();
+      child_frames[kExp].token = form(kExp).host_frame();
+      child_frames[kCvc].token = form(kCvc).host_frame();
+      return child_frames;
+    }());
     SeeForm(main_frame(), main_form);
   }
 
@@ -548,20 +552,20 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
   FormData form2 = test_api(driver()).GetFormWithFrameAndFormMetaData(form);
   test_api(driver()).SetFrameAndFormMetaData(form, nullptr);
 
-  EXPECT_EQ(form.host_frame, frame_token());
-  EXPECT_EQ(form.url, GURL("https://hostname/path"));
-  EXPECT_EQ(form.full_url, GURL());
-  EXPECT_EQ(form.main_frame_origin,
+  EXPECT_EQ(form.host_frame(), frame_token());
+  EXPECT_EQ(form.url(), GURL("https://hostname/path"));
+  EXPECT_EQ(form.full_url(), GURL());
+  EXPECT_EQ(form.main_frame_origin(),
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  EXPECT_EQ(form.main_frame_origin,
+  EXPECT_EQ(form.main_frame_origin(),
             url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
   ASSERT_EQ(form.fields.size(), 1u);
   EXPECT_EQ(form.fields.front().host_frame(), frame_token());
 
-  EXPECT_EQ(form2.host_frame, form.host_frame);
-  EXPECT_EQ(form2.url, form.url);
-  EXPECT_EQ(form2.full_url, form.full_url);
-  EXPECT_EQ(form2.main_frame_origin, form.main_frame_origin);
+  EXPECT_EQ(form2.host_frame(), form.host_frame());
+  EXPECT_EQ(form2.url(), form.url());
+  EXPECT_EQ(form2.full_url(), form.full_url());
+  EXPECT_EQ(form2.main_frame_origin(), form.main_frame_origin());
   ASSERT_EQ(form2.fields.size(), 1u);
   EXPECT_EQ(form2.fields.front().host_frame(),
             form2.fields.front().host_frame());
@@ -575,7 +579,7 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_AboutScheme) {
   FormData form;
   test_api(driver()).SetFrameAndFormMetaData(form, nullptr);
 
-  EXPECT_TRUE(form.url.is_empty());
+  EXPECT_TRUE(form.url().is_empty());
 }
 
 // Tests that the FormData::version of forms passed to AutofillManager
@@ -588,11 +592,12 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_Version) {
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
   ASSERT_EQ(augmented_forms.size(), 1u);
-  FormVersion previous_version = augmented_forms[0].version;
-  EXPECT_CALL(manager(), OnFormsSeen(ElementsAre(Field("FormData::version",
-                                                       &FormData::version,
-                                                       Gt(previous_version))),
-                                     _));
+  FormVersion previous_version = augmented_forms[0].version();
+  EXPECT_CALL(
+      manager(),
+      OnFormsSeen(ElementsAre(Property("FormData::version", &FormData::version,
+                                       Gt(previous_version))),
+                  _));
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
 }
@@ -622,7 +627,7 @@ TEST_F(ContentAutofillDriverTest,
   FormData form;
   test_api(*grandchild_driver).SetFrameAndFormMetaData(form, nullptr);
 
-  EXPECT_EQ(form.url, GURL("https://hostname"));
+  EXPECT_EQ(form.url(), GURL("https://hostname"));
 }
 
 TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
@@ -637,7 +642,7 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
 
   EXPECT_NE(signature_without_meta_data, CalculateFormSignature(form));
   EXPECT_EQ(field.host_frame(), frame_token());
-  EXPECT_EQ(field.host_form_id(), form.renderer_id);
+  EXPECT_EQ(field.host_form_id(), form.renderer_id());
   EXPECT_EQ(field.host_form_signature(), CalculateFormSignature(form));
 
   EXPECT_EQ(field.host_frame(), form.fields.front().host_frame());
@@ -650,17 +655,18 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
 // Does not test multiple frames.
 TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedForm) {
   FormData form = test::CreateTestAddressFormData();
-  EXPECT_CALL(manager(),
-              OnFormsSeen(ElementsAre(AllOf(
-                              // The received form has some frame-specific meta
-                              // data set, which we don't test here.
-                              Field("FormData::frame_token",
-                                    &FormData::host_frame, frame_token()),
-                              Field("FormData::renderer_id",
-                                    &FormData::renderer_id, form.renderer_id),
-                              Field("FormData::fields", &FormData::fields,
-                                    SizeIs(form.fields.size())))),
-                          IsEmpty()));
+  EXPECT_CALL(
+      manager(),
+      OnFormsSeen(ElementsAre(AllOf(
+                      // The received form has some frame-specific meta
+                      // data set, which we don't test here.
+                      Property("FormData::frame_token", &FormData::host_frame,
+                               frame_token()),
+                      Property("FormData::renderer_id", &FormData::renderer_id,
+                               form.renderer_id()),
+                      Field("FormData::fields", &FormData::fields,
+                            SizeIs(form.fields.size())))),
+                  IsEmpty()));
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
 }
@@ -682,18 +688,19 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_RemovedForm) {
 TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedAndRemovedForm) {
   FormData form = test::CreateTestAddressFormData();
   FormRendererId other_form_renderer_id = test::MakeFormRendererId();
-  EXPECT_CALL(manager(),
-              OnFormsSeen(ElementsAre(AllOf(
-                              // The received form has some frame-specific meta
-                              // data set, which we don't test here.
-                              Field("FormData::frame_token",
-                                    &FormData::host_frame, frame_token()),
-                              Field("FormData::renderer_id",
-                                    &FormData::renderer_id, form.renderer_id),
-                              Field("FormData::fields", &FormData::fields,
-                                    SizeIs(form.fields.size())))),
-                          ElementsAre(FormGlobalId(frame_token(),
-                                                   other_form_renderer_id))));
+  EXPECT_CALL(
+      manager(),
+      OnFormsSeen(
+          ElementsAre(AllOf(
+              // The received form has some frame-specific meta
+              // data set, which we don't test here.
+              Property("FormData::frame_token", &FormData::host_frame,
+                       frame_token()),
+              Property("FormData::renderer_id", &FormData::renderer_id,
+                       form.renderer_id()),
+              Field("FormData::fields", &FormData::fields,
+                    SizeIs(form.fields.size())))),
+          ElementsAre(FormGlobalId(frame_token(), other_form_renderer_id))));
   driver().renderer_events().FormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{other_form_renderer_id});

@@ -111,7 +111,7 @@ PasswordForm GenerateExamplePasswordForm() {
   form.signon_realm = "http://www.google.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
   form.times_used_in_html_form = 1;
-  form.form_data.name = u"form_name";
+  form.form_data.set_name(u"form_name");
   form.date_last_used = base::Time::Now();
   form.date_password_modified = base::Time::Now() - base::Days(1);
   form.display_name = u"Mr. Smith";

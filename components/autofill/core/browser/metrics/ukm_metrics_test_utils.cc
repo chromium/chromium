@@ -61,7 +61,7 @@ void VerifyUkm(
   EXPECT_LE(entries.size(), expected_metrics.size());
   for (size_t i = 0; i < expected_metrics.size() && i < entries.size(); i++) {
     ukm_recorder->ExpectEntrySourceHasUrl(entries[i],
-                                          form.main_frame_origin.GetURL());
+                                          form.main_frame_origin().GetURL());
     EXPECT_THAT(entries[i]->metrics,
                 testing::UnorderedPointwise(
                     CompareMetricsIgnoringMillisecondsSinceFormParsed(),
@@ -85,7 +85,7 @@ void VerifyDeveloperEngagementUkm(
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder->ExpectEntrySourceHasUrl(
-        entry, GURL(form.main_frame_origin.GetURL()));
+        entry, GURL(form.main_frame_origin().GetURL()));
     EXPECT_EQ(4u, entry->metrics.size());
     ukm_recorder->ExpectEntryMetric(
         entry, UkmDeveloperEngagementType::kDeveloperEngagementName,

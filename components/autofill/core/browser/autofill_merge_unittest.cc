@@ -179,9 +179,9 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
 
   // Create a test form.
   FormData form;
-  form.name = u"MyTestForm";
-  form.url = GURL("https://www.example.com/origin.html");
-  form.action = GURL("https://www.example.com/action.html");
+  form.set_name(u"MyTestForm");
+  form.set_url(GURL("https://www.example.com/origin.html"));
+  form.set_action(GURL("https://www.example.com/action.html"));
 
   // Parse the input line by line.
   std::vector<std::string> lines = base::SplitString(

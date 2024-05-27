@@ -264,7 +264,7 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager(
     password_manager::PasswordStoreInterface* profile_store,
     password_manager::PasswordStoreInterface* account_store) {
   autofill::FormData observed_form;
-  observed_form.url = password_form_.url;
+  observed_form.set_url(password_form_.url);
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
   observed_form.fields.push_back(field);

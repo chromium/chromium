@@ -116,9 +116,9 @@ class PaymentMethodAccessoryControllerTest
 
   void SetFormOrigin(GURL origin) {
     FormData form;
-    form.renderer_id = FormRendererId(1);
-    form.action = origin;
-    form.main_frame_origin = url::Origin::Create(origin);
+    form.set_renderer_id(FormRendererId(1));
+    form.set_action(origin);
+    form.set_main_frame_origin(url::Origin::Create(origin));
     autofill_client().set_form_origin(origin);
     // Promo codes are filtered by the last_committed_primary_main_frame_url.
     autofill_client().set_last_committed_primary_main_frame_url(

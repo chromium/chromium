@@ -36,9 +36,9 @@ base::Value::Dict SerializeSignatureRelevantMembersInFormData(
   base::Value::Dict serialized_data;
   // Stored FormData is used only for signature calculations, therefore only
   // members that are used for signature calculation are stored.
-  serialized_data.Set(kNameKey, form_data.name);
-  serialized_data.Set(kUrlKey, form_data.url.spec());
-  serialized_data.Set(kActionKey, form_data.action.spec());
+  serialized_data.Set(kNameKey, form_data.name());
+  serialized_data.Set(kUrlKey, form_data.url().spec());
+  serialized_data.Set(kActionKey, form_data.action().spec());
 
   base::Value::List serialized_fields;
   for (const auto& field : form_data.fields) {
@@ -78,9 +78,9 @@ std::optional<FormData> DeserializeFormData(
     return std::nullopt;
   }
   FormData form_data;
-  form_data.name = base::UTF8ToUTF16(*form_name);
-  form_data.url = GURL(*form_url);
-  form_data.action = GURL(*form_action);
+  form_data.set_name(base::UTF8ToUTF16(*form_name));
+  form_data.set_url(GURL(*form_url));
+  form_data.set_action(GURL(*form_action));
 
   for (auto& serialized_field : *fields) {
     base::Value::Dict* serialized_field_dictionary =

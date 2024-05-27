@@ -213,10 +213,10 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     GURL psl_origin = GURL("https://myaccounts.google.com/a/ServiceLoginAuth");
     GURL psl_action = GURL("https://myaccounts.google.com/a/ServiceLogin");
 
-    observed_form_.url = origin;
-    observed_form_.action = action;
-    observed_form_.name = u"sign-in";
-    observed_form_.renderer_id = autofill::FormRendererId(1);
+    observed_form_.set_url(origin);
+    observed_form_.set_action(action);
+    observed_form_.set_name(u"sign-in");
+    observed_form_.set_renderer_id(autofill::FormRendererId(1));
 
     observed_form_only_password_fields_ = observed_form_;
 
@@ -692,8 +692,8 @@ TEST_P(PasswordSaveManagerImplTest, SaveNewCredentials) {
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 
   std::string expected_signon_realm =
-      submitted_form.url.DeprecatedGetOriginAsURL().spec();
-  EXPECT_EQ(submitted_form.url, saved_form.url);
+      submitted_form.url().DeprecatedGetOriginAsURL().spec();
+  EXPECT_EQ(submitted_form.url(), saved_form.url);
   EXPECT_EQ(expected_signon_realm, saved_form.signon_realm);
   EXPECT_EQ(new_username, saved_form.username_value);
   EXPECT_EQ(new_password, saved_form.password_value);
@@ -748,8 +748,8 @@ TEST_P(PasswordSaveManagerImplTest, SavePSLToAlreadySaved) {
 
   password_save_manager_impl()->Save(&observed_form_, Parse(submitted_form));
 
-  EXPECT_EQ(submitted_form.url, saved_form.url);
-  EXPECT_EQ(GetSignonRealm(submitted_form.url), saved_form.signon_realm);
+  EXPECT_EQ(submitted_form.url(), saved_form.url);
+  EXPECT_EQ(GetSignonRealm(submitted_form.url()), saved_form.signon_realm);
   EXPECT_EQ(psl_saved_match_.username_value, saved_form.username_value);
   EXPECT_EQ(psl_saved_match_.password_value, saved_form.password_value);
   EXPECT_EQ(psl_saved_match_.username_element, saved_form.username_element);

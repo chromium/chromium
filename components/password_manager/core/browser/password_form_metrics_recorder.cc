@@ -648,9 +648,9 @@ void PasswordFormMetricsRecorder::CalculatePasswordFillingAssistanceMetric(
     features_util::PasswordAccountStorageUsageLevel
         account_storage_usage_level) {
   CalculateJsOnlyInput(submitted_form);
-  if (is_main_frame_secure_ && submitted_form.action.is_valid() &&
-      !submitted_form.is_action_empty &&
-      !submitted_form.action.SchemeIsCryptographic()) {
+  if (is_main_frame_secure_ && submitted_form.action().is_valid() &&
+      !submitted_form.is_action_empty() &&
+      !submitted_form.action().SchemeIsCryptographic()) {
     is_mixed_content_form_ = true;
   }
 

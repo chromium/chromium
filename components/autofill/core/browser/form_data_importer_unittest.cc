@@ -174,7 +174,7 @@ FormData ConstructFormDateFromTypeValuePairs(
     TypeValuePairs type_value_pairs,
     std::string url = "https://www.foo.com") {
   FormData form;
-  form.url = GURL(url);
+  form.set_url(GURL(url));
 
   for (const auto& [type, value] : type_value_pairs) {
     const auto& [name, label] = GetLabelAndNameForType(type);
@@ -611,7 +611,7 @@ class FormDataImporterTest : public testing::Test {
                                     const char* month,
                                     const char* year) {
     FormData form;
-    form.url = GURL("https://www.foo.com");
+    form.set_url(GURL("https://www.foo.com"));
     AddFullCreditCardForm(&form, name, number, month, year);
     return form;
   }
@@ -957,7 +957,7 @@ TEST_F(FormDataImporterTest, PlusAddressesExcluded) {
 // ImportAddressProfiles tests.
 TEST_F(FormDataImporterTest, ImportStructuredNameProfile) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
 
   form.fields = {
       CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
@@ -998,7 +998,7 @@ TEST_F(FormDataImporterTest, ImportStructuredNameProfile) {
 TEST_F(FormDataImporterTest,
        ImportStructuredAddressProfile_StreetNameAndHouseNumber) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
                           FormControlType::kInputText),
@@ -1043,7 +1043,7 @@ TEST_F(
     FormDataImporterTest,
     ImportStructuredAddressProfile_StreetNameAndHouseNumberAndApartmentNumber) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
                           FormControlType::kInputText),
@@ -1089,7 +1089,7 @@ TEST_F(
 TEST_F(FormDataImporterTest,
        ImportStructuredAddressProfile_GermanStreetNameAndHouseNumber) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
                           FormControlType::kInputText),
@@ -1131,7 +1131,7 @@ TEST_F(FormDataImporterTest,
 
 TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormMX) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Nombre y apellidos:", "name", "Pablo Ruiz",
                           FormControlType::kInputText),
@@ -1173,7 +1173,7 @@ TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormMX) {
 
 TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormBR) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Nome:", "nome", "Pablo Ruiz",
                           FormControlType::kInputText),
@@ -1227,7 +1227,7 @@ TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormBR) {
 // ImportAddressProfiles tests.
 TEST_F(FormDataImporterTest, ImportStructuredNameAddressProfile) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
 
       CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
@@ -1796,7 +1796,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_ContainsSynthesizedTypes) {
 TEST_F(FormDataImporterTest,
        ImportAddressProfiles_CompleteComposedCountryName) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("First name:", "first_name", "George",
                           FormControlType::kInputText),
@@ -2031,7 +2031,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
 // This form has the expiration year as one field with MM/YY.
 TEST_F(FormDataImporterTest, ExtractCreditCard_Month2DigitYearCombination) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "John MMYY",
                           FormControlType::kInputText),
@@ -2047,7 +2047,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Month2DigitYearCombination) {
 // This form has the expiration year as one field with MM/YYYY.
 TEST_F(FormDataImporterTest, ExtractCreditCard_Month4DigitYearCombination) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "John MMYYYY",
                           FormControlType::kInputText),
@@ -2063,7 +2063,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Month4DigitYearCombination) {
 // This form has the expiration year as one field with M/YYYY.
 TEST_F(FormDataImporterTest, ExtractCreditCard_1DigitMonth4DigitYear) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "John MYYYY",
                           FormControlType::kInputText),
@@ -2079,7 +2079,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_1DigitMonth4DigitYear) {
 // This form has the expiration year as a 2-digit field.
 TEST_F(FormDataImporterTest, ExtractCreditCard_2DigitYear) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "John Smith",
                           FormControlType::kInputText),
@@ -2567,7 +2567,7 @@ TEST_F(FormDataImporterTest,
   // still be reset even if ExtractCreditCard is not called. Simulate a form
   // submission with no card.
   FormData form3;
-  form3.url = GURL("https://wwww.foo.com");
+  form3.set_url(GURL("https://wwww.foo.com"));
   form3.fields = {
       CreateTestFormField("First name:", "first_name", "George",
                           FormControlType::kInputText),
@@ -2821,7 +2821,7 @@ TEST_F(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_NoCard_NoCardOnForm) {
   // Simulate a form submission with no credit card on form.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("First name:", "first_name", "George",
                           FormControlType::kInputText),
@@ -3105,7 +3105,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_TwoAddressesOneCreditCard) {
 TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_NoIban) {
   // Simulate a form submission with no IBAN.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -3311,7 +3311,7 @@ TEST_F(FormDataImporterTest, DuplicateMaskedServerCard) {
   // A valid credit card form. A user re-enters one of their masked cards.
   // We should not offer to save locally.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "John Dillinger",
                           FormControlType::kInputText),
@@ -3334,7 +3334,7 @@ TEST_F(FormDataImporterTest, DuplicateMaskedServerCard) {
 // imports the card.
 TEST_F(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "Biggie Smalls",
                           FormControlType::kInputText),
@@ -3406,7 +3406,7 @@ TEST_F(FormDataImporterTest,
   // here, either. Since it's unmasked, we know for certain that it's the same
   // card.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
                           FormControlType::kInputText),
@@ -3454,7 +3454,7 @@ TEST_F(FormDataImporterTest,
   // A user fills/enters the card's information on a checkout form.  Ensure that
   // an expiration date match is recorded.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
                           FormControlType::kInputText),
@@ -3494,7 +3494,7 @@ TEST_F(FormDataImporterTest,
   // A user fills/enters the card's information on a checkout form with an empty
   // expiration date.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
                           FormControlType::kInputText),
@@ -3530,7 +3530,7 @@ TEST_F(FormDataImporterTest,
   // A user fills/enters the card's information on a checkout form with an empty
   // expiration date.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
                           FormControlType::kInputText),
@@ -3567,7 +3567,7 @@ TEST_F(
   // A user fills/enters the card's information on a checkout form with an empty
   // expiration date.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
                           FormControlType::kInputText),
@@ -3602,7 +3602,7 @@ TEST_F(FormDataImporterTest,
   // the expiration date of the card.  Ensure that an expiration date mismatch
   // is recorded.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
                           FormControlType::kInputText),
@@ -3641,7 +3641,7 @@ TEST_F(FormDataImporterTest,
   // A user fills/enters the card's information on a checkout form.  Ensure that
   // an expiration date match is recorded.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
                           FormControlType::kInputText),
@@ -3681,7 +3681,7 @@ TEST_F(FormDataImporterTest,
   // the expiration date of the card.  Ensure that an expiration date mismatch
   // is recorded.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
                           FormControlType::kInputText),
@@ -3727,7 +3727,7 @@ TEST_F(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
 
   // Simulate a form submission with conflicting info.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("First name:", "first_name", "Marion",
                           FormControlType::kInputText),
@@ -3776,7 +3776,7 @@ TEST_F(
 
   // Simulate a form submission with conflicting info.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("First name:", "first_name", "Marion",
                           FormControlType::kInputText),
@@ -3824,7 +3824,7 @@ TEST_F(FormDataImporterTest, UnusableIncompleteProfile) {
 
   // Simulate a form submission with conflicting info.
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("First name:", "first_name", "Marion",
                           FormControlType::kInputText),
@@ -3964,13 +3964,13 @@ TEST_F(FormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
 // merged.
 TEST_F(FormDataImporterTest, MultiStepImport_DifferentOrigin) {
   FormData form = ConstructSplitDefaultFormData(/*part=*/1);
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
 
   form = ConstructSplitDefaultFormData(/*part=*/2);
-  form.url = GURL("https://wwww.bar.com");
+  form.set_url(GURL("https://wwww.bar.com"));
   form_structure = ConstructFormStructureFromFormData(form);
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }

@@ -89,8 +89,8 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   base::HistogramTester histogram_tester;
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
-  form_data.main_frame_origin =
-      url::Origin::Create(GURL(last_committed_origin_url));
+  form_data.set_main_frame_origin(
+      url::Origin::Create(GURL(last_committed_origin_url)));
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
@@ -192,8 +192,8 @@ TEST_F(MerchantPromoCodeManagerTest,
   std::string promo_code = SetUpPromoCodeOffer(
       last_committed_origin_url, GURL("https://offer-details-url.com/"));
   FormData form_data;
-  form_data.main_frame_origin =
-      url::Origin::Create(GURL(last_committed_origin_url));
+  form_data.set_main_frame_origin(
+      url::Origin::Create(GURL(last_committed_origin_url)));
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
@@ -234,8 +234,8 @@ TEST_F(MerchantPromoCodeManagerTest,
   base::HistogramTester histogram_tester;
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
-  form_data.main_frame_origin =
-      url::Origin::Create(GURL(last_committed_origin_url));
+  form_data.set_main_frame_origin(
+      url::Origin::Create(GURL(last_committed_origin_url)));
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
@@ -279,8 +279,8 @@ TEST_F(MerchantPromoCodeManagerTest, NoPromoCodeOffers) {
   personal_data_manager_->test_payments_data_manager()
       .SetAutofillPaymentMethodsEnabled(true);
   FormData form_data;
-  form_data.main_frame_origin =
-      url::Origin::Create(GURL(last_committed_origin_url));
+  form_data.set_main_frame_origin(
+      url::Origin::Create(GURL(last_committed_origin_url)));
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
@@ -322,8 +322,8 @@ TEST_F(MerchantPromoCodeManagerTest, AutofillWalletImportDisabled) {
   base::HistogramTester histogram_tester;
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
-  form_data.main_frame_origin =
-      url::Origin::Create(GURL(last_committed_origin_url));
+  form_data.set_main_frame_origin(
+      url::Origin::Create(GURL(last_committed_origin_url)));
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
@@ -369,8 +369,8 @@ TEST_F(MerchantPromoCodeManagerTest, AutofillCreditCardDisabled) {
   base::HistogramTester histogram_tester;
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
-  form_data.main_frame_origin =
-      url::Origin::Create(GURL(last_committed_origin_url));
+  form_data.set_main_frame_origin(
+      url::Origin::Create(GURL(last_committed_origin_url)));
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
@@ -415,8 +415,8 @@ TEST_F(MerchantPromoCodeManagerTest, PrefixMatched) {
   base::HistogramTester histogram_tester;
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
-  form_data.main_frame_origin =
-      url::Origin::Create(GURL(last_committed_origin_url));
+  form_data.set_main_frame_origin(
+      url::Origin::Create(GURL(last_committed_origin_url)));
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
@@ -465,8 +465,8 @@ TEST_F(MerchantPromoCodeManagerTest,
   std::u16string test_promo_code = u"test_promo_code";
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
-  form_data.main_frame_origin =
-      url::Origin::Create(GURL(last_committed_origin_url));
+  form_data.set_main_frame_origin(
+      url::Origin::Create(GURL(last_committed_origin_url)));
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
@@ -526,8 +526,8 @@ TEST_F(MerchantPromoCodeManagerTest,
   std::u16string test_promo_code = u"test_promo_code";
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
-  form_data.main_frame_origin =
-      url::Origin::Create(GURL(last_committed_origin_url));
+  form_data.set_main_frame_origin(
+      url::Origin::Create(GURL(last_committed_origin_url)));
   FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;

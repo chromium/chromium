@@ -27,7 +27,7 @@ namespace {
 // Remove all information from |form| that is not required for signature
 // calculation.
 void SanitizeFormData(FormData* form) {
-  form->main_frame_origin = url::Origin();
+  form->set_main_frame_origin(url::Origin());
   for (FormFieldData& field : form->fields) {
     field.set_label({});
     field.set_value({});

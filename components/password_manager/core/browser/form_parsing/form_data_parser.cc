@@ -1040,9 +1040,9 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
 
   // Create the PasswordForm and set data not related to specific fields.
   auto result = std::make_unique<PasswordForm>();
-  result->url = form_data.url;
-  result->signon_realm = GetSignonRealm(form_data.url);
-  result->action = form_data.action;
+  result->url = form_data.url();
+  result->signon_realm = GetSignonRealm(form_data.url());
+  result->action = form_data.action();
   result->form_data = form_data;
   result->all_alternative_passwords = std::move(all_alternative_passwords);
   result->all_alternative_usernames = std::move(all_alternative_usernames);
@@ -1055,7 +1055,7 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
   result->is_new_password_reliable =
       significant_fields.is_new_password_reliable;
   result->only_for_fallback = significant_fields.is_fallback;
-  result->submission_event = form_data.submission_event;
+  result->submission_event = form_data.submission_event();
   result->accepts_webauthn_credentials =
       significant_fields.accepts_webauthn_credentials;
 
@@ -1091,7 +1091,7 @@ FormDataParser::ParseAndReturnUsernameDetection(
   if (form_data.fields.size() > kMaxParseableFields) {
     return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
   }
-  if (!form_data.url.is_valid()) {
+  if (!form_data.url().is_valid()) {
     return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
   }
 
@@ -1157,7 +1157,7 @@ FormDataParser::ParseAndReturnUsernameDetection(
     // analysis.
     if (!username_found_before_heuristic) {
       const FormFieldData* username_field_by_context =
-          FindUsernameInPredictions(form_data.username_predictions,
+          FindUsernameInPredictions(form_data.username_predictions(),
                                     processed_fields, username_max);
       if (username_field_by_context &&
           !(mode == FormDataParser::Mode::kSaving &&

@@ -11,7 +11,7 @@ namespace autofill::internal {
 void FormForestTestApi::ExpandForm(base::stack<FrameForm>& frontier,
                                    FrameForm frame_and_form) {
   for (const FrameTokenWithPredecessor& child :
-       frame_and_form.form->child_frames) {
+       frame_and_form.form->child_frames()) {
     std::optional<LocalFrameToken> local_child =
         frame_and_form.frame->driver->Resolve(child.token);
     FrameData* child_frame;
@@ -37,8 +37,8 @@ std::ostream& FormForestTestApi::PrintFrames(std::ostream& os) {
     os << "#Forms = " << frame->child_forms.size() << std::endl;
     for (const FormData& form : frame->child_forms) {
       os << "  Form = " << form.global_id() << ":" << std::endl;
-      os << "  #Frames " << form.child_frames.size() << ":" << std::endl;
-      for (const FrameTokenWithPredecessor& child : form.child_frames) {
+      os << "  #Frames " << form.child_frames().size() << ":" << std::endl;
+      for (const FrameTokenWithPredecessor& child : form.child_frames()) {
         os << "  ChildFrame = "
            << absl::visit([](auto x) { return x.ToString(); }, child.token)
            << " / " << child.predecessor << std::endl;
@@ -61,7 +61,7 @@ std::ostream& FormForestTestApi::PrintForest(std::ostream& os) {
   }
   TraverseTrees(frontier, [this, &os](const FormData& form) mutable {
     int level = [this, &form] {
-      LocalFrameToken frame = form.host_frame;
+      LocalFrameToken frame = form.host_frame();
       for (int level = 0;; ++level) {
         const FrameData* frame_data = GetFrameData(frame);
         if (!frame_data || !frame_data->parent_form) {
@@ -79,17 +79,18 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
                                            const FormData& form,
                                            int level) {
   std::string prefix(2 * level, ' ');
-  os << prefix << "Form " << *form.renderer_id << " at " << form.host_frame
-     << " at " << form.full_url.DeprecatedGetOriginAsURL() << " with "
+  os << prefix << "Form " << *form.renderer_id() << " at " << form.host_frame()
+     << " at " << form.full_url().DeprecatedGetOriginAsURL() << " with "
      << form.fields.size() << " fields" << std::endl;
-  os << prefix << "Origin " << form.main_frame_origin.Serialize() << std::endl;
-  if (!form.name.empty()) {
-    os << prefix << "Name " << form.name << std::endl;
+  os << prefix << "Origin " << form.main_frame_origin().Serialize()
+     << std::endl;
+  if (!form.name().empty()) {
+    os << prefix << "Name " << form.name() << std::endl;
   }
   int i = 0;
-  const FrameData* frame = GetFrameData(form.host_frame);
+  const FrameData* frame = GetFrameData(form.host_frame());
   if (frame) {
-    for (const FrameTokenWithPredecessor& child : form.child_frames) {
+    for (const FrameTokenWithPredecessor& child : form.child_frames()) {
       auto local_child = frame->driver->Resolve(child.token);
       os << prefix << std::setfill(' ') << std::setw(2) << ++i << ". Frame "
          << absl::visit([](auto x) { return x.ToString(); }, child.token)

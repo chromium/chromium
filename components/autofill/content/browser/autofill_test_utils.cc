@@ -18,13 +18,13 @@ namespace autofill::test {
 FormData CreateFormDataForRenderFrameHost(content::RenderFrameHost& rfh,
                                           std::vector<FormFieldData> fields) {
   FormData form;
-  form.url = rfh.GetLastCommittedURL();
-  form.action = form.url;
-  form.host_frame = LocalFrameToken(rfh.GetFrameToken().value());
-  form.renderer_id = MakeFormRendererId();
+  form.set_url(rfh.GetLastCommittedURL());
+  form.set_action(form.url());
+  form.set_host_frame(LocalFrameToken(rfh.GetFrameToken().value()));
+  form.set_renderer_id(MakeFormRendererId());
   form.fields = std::move(fields);
   for (FormFieldData& field : form.fields) {
-    field.set_host_frame(form.host_frame);
+    field.set_host_frame(form.host_frame());
   }
   return form;
 }

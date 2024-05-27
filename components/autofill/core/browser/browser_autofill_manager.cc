@@ -2503,7 +2503,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
             ->address_data_manager()
             .AreAddressSuggestionsBlocked(
                 CalculateFormSignature(form),
-                CalculateFieldSignatureForField(trigger_field), form.url);
+                CalculateFieldSignatureForField(trigger_field), form.url());
     base::UmaHistogramBoolean("Autofill.Suggestion.StrikeSuppression.Address",
                               should_suppress);
     if (should_suppress) {

@@ -127,9 +127,9 @@ class AutocompleteHistoryManagerTest : public testing::Test {
 // Tests that credit card numbers are not sent to the WebDatabase to be saved.
 TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   // Valid Visa credit card number pulled from the paypal help site.
   FormFieldData valid_cc;
@@ -151,9 +151,9 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
 // to the WebDatabase to be saved.
 TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   // Invalid credit card number.
   FormFieldData invalid_cc;
@@ -173,9 +173,9 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
 // Tests that SSNs are not sent to the WebDatabase to be saved.
 TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   FormFieldData ssn;
   ssn.set_label(u"Social Security Number");
@@ -194,9 +194,9 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
 // Verify that autocomplete text is saved for search fields.
 TEST_F(AutocompleteHistoryManagerTest, SearchField) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   // Search field.
   FormFieldData search_field;
@@ -215,9 +215,9 @@ TEST_F(AutocompleteHistoryManagerTest, SearchField) {
 
 TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   // Search field.
   FormFieldData search_field;
@@ -237,9 +237,9 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
 // Verify that we don't save invalid values in Autocomplete.
 TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   // Search field.
   FormFieldData search_field;
@@ -280,9 +280,9 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
 // See BrowserAutofillManagerTest.DontSaveCvcInAutocompleteHistory
 TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   // Field specifying autocomplete="off".
   FormFieldData field;
@@ -305,9 +305,9 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
   autocomplete_manager_->Init(web_data_service_, prefs_.get(),
                               /*is_off_the_record_=*/true);
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   // Search field.
   FormFieldData search_field;
@@ -330,9 +330,9 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
 // because |properties_mask| is not set on iOS.
 TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   // Search field.
   FormFieldData search_field;
@@ -355,9 +355,9 @@ TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
 // WebDatabase to be saved.
 TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   // Presentation field.
   FormFieldData field;
@@ -837,9 +837,9 @@ TEST_F(AutocompleteHistoryManagerTest,
 // Verify that no autocomplete suggestion is returned for a textarea.
 TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
 
   FormFieldData field =
       CreateTestFormField("Address", "address", "", FormControlType::kTextArea);

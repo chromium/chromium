@@ -842,7 +842,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
       ASSERT_TRUE(fake_driver_.called_dynamic_form_submission());
       ASSERT_TRUE(static_cast<bool>(fake_driver_.form_data_maybe_submitted()));
       form_data = *(fake_driver_.form_data_maybe_submitted());
-      EXPECT_EQ(expected_submission_event, form_data.submission_event);
+      EXPECT_EQ(expected_submission_event, form_data.submission_event());
     }
 
     size_t unchecked_masks = expected_properties_masks.size();
@@ -874,11 +874,11 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
       const std::u16string& password_value,
       const std::u16string& new_password_value,
       SubmissionIndicatorEvent event) {
-    EXPECT_EQ(form_renderer_id, form_data.renderer_id);
+    EXPECT_EQ(form_renderer_id, form_data.renderer_id());
     EXPECT_TRUE(FormHasFieldWithValue(form_data, username_value));
     EXPECT_TRUE(FormHasFieldWithValue(form_data, password_value));
     EXPECT_TRUE(FormHasFieldWithValue(form_data, new_password_value));
-    EXPECT_EQ(form_data.submission_event, event);
+    EXPECT_EQ(form_data.submission_event(), event);
   }
 
   void ExpectFormSubmittedWithUsernameAndPasswords(
@@ -4492,7 +4492,7 @@ TEST_F(PasswordAutofillAgentTest, GaiaReauthenticationFormIgnored) {
   const std::vector<autofill::FormData>& parsed_form_data =
       fake_driver_.form_data_parsed().value();
   ASSERT_EQ(1u, parsed_form_data.size());
-  EXPECT_TRUE(parsed_form_data[0].is_gaia_with_skip_save_password_form);
+  EXPECT_TRUE(parsed_form_data[0].is_gaia_with_skip_save_password_form());
 }
 
 TEST_F(PasswordAutofillAgentTest,
@@ -4983,7 +4983,7 @@ TEST_F(PasswordAutofillAgentTest,
 
   ASSERT_TRUE(fake_driver_.form_data_maybe_submitted().has_value());
   FormData submitted_form = fake_driver_.form_data_maybe_submitted().value();
-  EXPECT_EQ(submitted_form.name, u"shadyform");
+  EXPECT_EQ(submitted_form.name(), u"shadyform");
   EXPECT_TRUE(FormHasFieldWithValue(submitted_form, kAliceUsername16));
   EXPECT_TRUE(FormHasFieldWithValue(submitted_form, kAlicePassword16));
 }

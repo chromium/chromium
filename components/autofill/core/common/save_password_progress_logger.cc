@@ -46,7 +46,7 @@ std::string FormSignatureToDebugString(FormSignature form_signature) {
 void SavePasswordProgressLogger::LogFormData(
     SavePasswordProgressLogger::StringID label,
     const FormData& form_data) {
-  CHECK(!form_data.url.is_empty());
+  CHECK(!form_data.url().is_empty());
   std::string message = GetStringFromID(label) + ": {\n";
   message += GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
              FormSignatureToDebugString(CalculateFormSignature(form_data)) +
@@ -56,18 +56,19 @@ void SavePasswordProgressLogger::LogFormData(
       FormSignatureToDebugString(CalculateAlternativeFormSignature(form_data)) +
       "\n";
   message +=
-      GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form_data.url) + "\n";
-  message +=
-      GetStringFromID(STRING_ACTION) + ": " + ScrubURL(form_data.action) + "\n";
-  if (form_data.main_frame_origin.GetURL().is_valid())
+      GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form_data.url()) + "\n";
+  message += GetStringFromID(STRING_ACTION) + ": " +
+             ScrubURL(form_data.action()) + "\n";
+  if (form_data.main_frame_origin().GetURL().is_valid()) {
     message += GetStringFromID(STRING_MAIN_FRAME_ORIGIN) + ": " +
-               ScrubURL(form_data.main_frame_origin.GetURL()) + "\n";
+               ScrubURL(form_data.main_frame_origin().GetURL()) + "\n";
+  }
   message += GetStringFromID(STRING_FORM_NAME) + ": " +
-             ScrubElementID(form_data.name) + "\n";
+             ScrubElementID(form_data.name()) + "\n";
 
-  if (!form_data.renderer_id.is_null()) {
+  if (!form_data.renderer_id().is_null()) {
     message +=
-        "Form renderer id: " + NumberToString(form_data.renderer_id.value()) +
+        "Form renderer id: " + NumberToString(form_data.renderer_id().value()) +
         "\n";
   }
 

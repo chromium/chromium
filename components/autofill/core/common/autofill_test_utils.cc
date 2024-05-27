@@ -29,13 +29,13 @@ namespace {
 
 FormData ConstructFormWithNameRenderIdAndProtocol(bool is_https) {
   FormData form;
-  form.name = u"MyForm";
-  form.renderer_id = MakeFormRendererId();
+  form.set_name(u"MyForm");
+  form.set_renderer_id(MakeFormRendererId());
   std::string_view protocol = is_https ? "https://" : "http://";
-  form.url = GURL(base::StrCat({protocol, "myform.com/form.html"}));
-  form.action = GURL(base::StrCat({protocol, "myform.com/submit.html"}));
-  form.main_frame_origin = url::Origin::Create(
-      GURL(base::StrCat({protocol, "myform_root.com/form.html"})));
+  form.set_url(GURL(base::StrCat({protocol, "myform.com/form.html"})));
+  form.set_action(GURL(base::StrCat({protocol, "myform.com/submit.html"})));
+  form.set_main_frame_origin(url::Origin::Create(
+      GURL(base::StrCat({protocol, "myform_root.com/form.html"}))));
   return form;
 }
 
@@ -114,7 +114,7 @@ RemoteFrameToken MakeRemoteFrameToken(RandomizeFrame randomize) {
 }
 
 FormData CreateFormDataForFrame(FormData form, LocalFrameToken frame_token) {
-  form.host_frame = frame_token;
+  form.set_host_frame(frame_token);
   for (FormFieldData& field : form.fields) {
     field.set_host_frame(frame_token);
   }
@@ -136,9 +136,9 @@ FormData AsAutofilled(FormData form, bool is_autofilled) {
 }
 
 FormData WithoutUnserializedData(FormData form) {
-  form.url = {};
-  form.main_frame_origin = {};
-  form.host_frame = {};
+  form.set_url({});
+  form.set_main_frame_origin({});
+  form.set_host_frame({});
   for (FormFieldData& field : form.fields) {
     field = WithoutUnserializedData(std::move(field));
   }
@@ -316,7 +316,7 @@ FormData CreateTestIbanFormData(std::string_view value, bool is_https) {
 
 FormData CreateTestPasswordFormData() {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields.push_back(
       CreateTestFormField(/*label=*/"Username:", /*name=*/"username",
                           /*value=*/"", FormControlType::kInputText));
@@ -328,7 +328,7 @@ FormData CreateTestPasswordFormData() {
 
 FormData CreateTestUnclassifiedFormData() {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("unclassifiable label", "unclassifiable name",
                           "unclassifiable value", FormControlType::kInputText)};

@@ -314,7 +314,7 @@ ACTION_P2(InvokeConsumer, store, form) {
 }
 
 void SanitizeFormData(FormData* form) {
-  form->main_frame_origin = url::Origin();
+  form->set_main_frame_origin(url::Origin());
   for (FormFieldData& field : form->fields) {
     field.set_label({});
     field.set_value({});
@@ -516,10 +516,10 @@ class PasswordManagerTestBase : public testing::Test {
 
   FormData MakeSimpleFormData() {
     FormData form_data;
-    form_data.url = test_form_url_;
-    form_data.action = test_form_action_;
-    form_data.name = u"the-form-name";
-    form_data.renderer_id = FormRendererId(10);
+    form_data.set_url(test_form_url_);
+    form_data.set_action(test_form_action_);
+    form_data.set_name(u"the-form-name");
+    form_data.set_renderer_id(FormRendererId(10));
 
     FormFieldData field;
     field.set_name(u"Email");
@@ -543,7 +543,7 @@ class PasswordManagerTestBase : public testing::Test {
 
   PasswordForm MakeSimpleGAIAForm() {
     PasswordForm form = MakeSimpleForm();
-    form.form_data.url = GURL("https://accounts.google.com");
+    form.form_data.set_url(GURL("https://accounts.google.com"));
     form.url = GURL("https://accounts.google.com");
     form.signon_realm = form.url.spec();
     return form;
@@ -551,16 +551,16 @@ class PasswordManagerTestBase : public testing::Test {
 
   FormData MakeSimpleGAIAFormData() {
     FormData form_data = MakeSimpleFormData();
-    form_data.url = GURL("https://accounts.google.com");
+    form_data.set_url(GURL("https://accounts.google.com"));
     return form_data;
   }
 
   FormData MakeGAIAChangePasswordFormData() {
     FormData form_data(MakeSimpleFormData());
     form_data.fields[1].set_autocomplete_attribute("new-password");
-    form_data.url = GURL("https://accounts.google.com");
-    form_data.action = GURL("http://www.google.com/a/Login");
-    form_data.name = u"the-form-name";
+    form_data.set_url(GURL("https://accounts.google.com"));
+    form_data.set_action(GURL("http://www.google.com/a/Login"));
+    form_data.set_name(u"the-form-name");
     return form_data;
   }
 
@@ -600,9 +600,9 @@ class PasswordManagerTestBase : public testing::Test {
 
   FormData MakeSingleUsernameFormData() {
     FormData form_data;
-    form_data.name = u"username_only_form";
-    form_data.url = test_form_url_;
-    form_data.renderer_id = FormRendererId(30);
+    form_data.set_name(u"username_only_form");
+    form_data.set_url(test_form_url_);
+    form_data.set_renderer_id(FormRendererId(30));
 
     FormFieldData field;
     field.set_name(u"Email");
@@ -639,7 +639,7 @@ class PasswordManagerTestBase : public testing::Test {
     form.signon_realm = form.url.GetWithEmptyPath().spec();
     form.password_element = u"password_element";
     form.password_value = u"password_value";
-    form.form_data.url = form.url;
+    form.form_data.set_url(form.url);
 
     FormFieldData password_field;
     password_field.set_name(form.password_element);
@@ -666,9 +666,9 @@ class PasswordManagerTestBase : public testing::Test {
     form.url = test_form_url_;
     form.username_element = u"one-time-code";
     form.signon_realm = test_signon_realm_;
-    form.form_data.name = u"username_only_form";
-    form.form_data.url = form.url;
-    form.form_data.renderer_id = FormRendererId(50);
+    form.form_data.set_name(u"username_only_form");
+    form.form_data.set_url(form.url);
+    form.form_data.set_renderer_id(FormRendererId(50));
 
     FormFieldData otp_field;
     otp_field.set_name(form.username_element);
@@ -683,9 +683,9 @@ class PasswordManagerTestBase : public testing::Test {
 
   FormData MakeSearchBarFormData() {
     FormData form_data;
-    form_data.name = u"search-bar-field";
-    form_data.url = test_form_url_;
-    form_data.renderer_id = FormRendererId(505);
+    form_data.set_name(u"search-bar-field");
+    form_data.set_url(test_form_url_);
+    form_data.set_renderer_id(FormRendererId(505));
 
     FormFieldData search_field;
     search_field.set_name(u"search_bar");
@@ -708,7 +708,7 @@ class PasswordManagerTestBase : public testing::Test {
     form.password_value = u"password_value";
     form.username_element = u"surname_element";
     form.username_value = u"Surname";
-    form.form_data.url = form.url;
+    form.form_data.set_url(form.url);
 
     FormFieldData name_field;
     name_field.set_name(u"name");
@@ -746,7 +746,7 @@ class PasswordManagerTestBase : public testing::Test {
     form.password_element = u"cvc";
     form.username_value = u"1234567";
     form.password_value = u"123";
-    form.form_data.url = form.url;
+    form.form_data.set_url(form.url);
 
     FormFieldData field;
     field.set_name(form.username_element);
@@ -906,37 +906,37 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
 
   // The user is generating the password. The password has to be presaved.
   manager()->SetGenerationElementAndTypeForForm(
-      &driver_, form_data.renderer_id, generation_element,
+      &driver_, form_data.renderer_id(), generation_element,
       autofill::password_generation::PasswordGenerationType::kAutomatic);
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         generated_password);
   task_environment_.RunUntilIdle();
   EXPECT_THAT(
       store_->stored_passwords(),
-      ElementsAre(Pair(GetSignonRealm(form_data.url),
+      ElementsAre(Pair(GetSignonRealm(form_data.url()),
                        ElementsAre(FormUsernamePasswordAre(
                            form_data.fields[0].value(), generated_password)))));
 
   // Test when the user is changing the generated password, presaved credential
   // is updated.
   generated_password += u"1";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     generation_element, generated_password);
   task_environment_.RunUntilIdle();
   EXPECT_THAT(
       store_->stored_passwords(),
-      ElementsAre(Pair(GetSignonRealm(form_data.url),
+      ElementsAre(Pair(GetSignonRealm(form_data.url()),
                        ElementsAre(FormUsernamePasswordAre(
                            form_data.fields[0].value(), generated_password)))));
 
   // Test when the user is changing the username, presaved credential is
   // updated.
   username += u"1";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     username_element, username);
   task_environment_.RunUntilIdle();
   EXPECT_THAT(store_->stored_passwords(),
-              ElementsAre(Pair(GetSignonRealm(form_data.url),
+              ElementsAre(Pair(GetSignonRealm(form_data.url()),
                                ElementsAre(FormUsernamePasswordAre(
                                    username, generated_password)))));
 }
@@ -957,7 +957,7 @@ TEST_P(PasswordManagerTest, ShowHideManualFallbackOnIOS) {
   EXPECT_CALL(client_, ShowManualFallbackForSaving(_, false, false))
       .WillOnce(MoveArg<0>(&form_manager_to_save));
   std::u16string typed_password = u"password";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     password_element, typed_password);
   Mock::VerifyAndClearExpectations(&client_);
 
@@ -968,7 +968,7 @@ TEST_P(PasswordManagerTest, ShowHideManualFallbackOnIOS) {
   // Check that the saving manual is hidden when the user cleared the password
   // field value.
   EXPECT_CALL(client_, HideManualFallbackForSaving());
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     password_element, std::u16string());
 }
 
@@ -993,7 +993,7 @@ TEST_P(PasswordManagerTest,
   std::u16string typed_password = u"password";
   MockPasswordManagerDriver fake_driver;
   ASSERT_NE(&fake_driver, &driver_);
-  manager()->UpdateStateOnUserInput(&fake_driver, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&fake_driver, form_data.renderer_id(),
                                     password_element, typed_password);
 }
 
@@ -1008,7 +1008,8 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames) {
   FormData form_data = MakeSingleUsernameFormData();
   FieldRendererId username_renderer_id = form_data.fields[0].renderer_id();
 
-  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+  ON_CALL(driver_, GetLastCommittedURL)
+      .WillByDefault(ReturnRef(form_data.url()));
 
   // Register found form in PasswordManager.
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
@@ -1016,7 +1017,7 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames) {
 
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     username_renderer_id, typed_username);
 
   // Verify that the user input was cached as a possible username.
@@ -1032,7 +1033,7 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames) {
               Field(&PossibleUsernameData::is_likely_otp, false),
               Field(&PossibleUsernameData::renderer_id, username_renderer_id),
               Field(&PossibleUsernameData::signon_realm,
-                    GetSignonRealm(form_data.url)),
+                    GetSignonRealm(form_data.url())),
               Field(&PossibleUsernameData::driver_id, driver_.GetId()),
               Field(&PossibleUsernameData::form_predictions, _),
               Field(&PossibleUsernameData::last_change, base::Time::Now())))));
@@ -1051,7 +1052,8 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_BasedOnFieldId) {
   FormData form_data = MakeSingleUsernameFormData();
   FieldRendererId username_renderer_id = form_data.fields[0].renderer_id();
 
-  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+  ON_CALL(driver_, GetLastCommittedURL)
+      .WillByDefault(ReturnRef(form_data.url()));
 
   // Register found form in PasswordManager.
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
@@ -1084,7 +1086,8 @@ TEST_P(PasswordManagerTest,
   form_data.fields[0].set_autocomplete_attribute("username");
   FieldRendererId username_renderer_id = form_data.fields[0].renderer_id();
 
-  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+  ON_CALL(driver_, GetLastCommittedURL)
+      .WillByDefault(ReturnRef(form_data.url()));
 
   // Register found form in PasswordManager.
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
@@ -1092,7 +1095,7 @@ TEST_P(PasswordManagerTest,
 
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     username_renderer_id, typed_username);
 
   // Verify that that the autocomplete bit is correctly set in the possible
@@ -1119,7 +1122,8 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_LikelyOtp) {
   form_data.fields[0].set_name_attribute(u"onetime");
   FieldRendererId username_renderer_id = form_data.fields[0].renderer_id();
 
-  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+  ON_CALL(driver_, GetLastCommittedURL)
+      .WillByDefault(ReturnRef(form_data.url()));
 
   // Register found form in PasswordManager.
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
@@ -1127,7 +1131,7 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_LikelyOtp) {
 
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     username_renderer_id, typed_username);
 
   // Verify that the otp bit is correctly set.
@@ -1146,14 +1150,15 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_DisabledByDefault) {
   const FieldRendererId password_renderer_id =
       form_data.fields[1].renderer_id();
 
-  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+  ON_CALL(driver_, GetLastCommittedURL)
+      .WillByDefault(ReturnRef(form_data.url()));
 
   // Register found form in PasswordManager.
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
   // Take the user input in the password form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     password_renderer_id, u"test_password");
 
   // Verify that there was no user input cached as possible username because the
@@ -1173,14 +1178,15 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnPasswordInput) {
   const FieldRendererId password_renderer_id =
       form_data.fields[1].renderer_id();
 
-  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+  ON_CALL(driver_, GetLastCommittedURL)
+      .WillByDefault(ReturnRef(form_data.url()));
 
   // Register found form in PasswordManager.
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
   // Take the user input in the password form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     password_renderer_id, u"test_password");
 
   // Verify that there was no user input cached as possible username because the
@@ -1204,7 +1210,8 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnNonTextInput) {
   field.set_id_attribute(field.name());
   field.set_name_attribute(field.name());
 
-  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+  ON_CALL(driver_, GetLastCommittedURL)
+      .WillByDefault(ReturnRef(form_data.url()));
 
   const FieldRendererId element_renderer_id = form_data.fields[0].renderer_id();
 
@@ -1213,7 +1220,7 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnNonTextInput) {
   task_environment_.RunUntilIdle();
 
   // Take the user input in the password form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     element_renderer_id, u"on");
 
   // Verify that there was no user input cached as possible username because the
@@ -1236,7 +1243,8 @@ TEST_P(PasswordManagerTest,
   form_data.fields[0].set_name_attribute(u"a");
   form_data.fields[0].set_id_attribute(u"a");
 
-  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+  ON_CALL(driver_, GetLastCommittedURL)
+      .WillByDefault(ReturnRef(form_data.url()));
 
   const FieldRendererId username_renderer_id =
       form_data.fields[0].renderer_id();
@@ -1246,7 +1254,7 @@ TEST_P(PasswordManagerTest,
   task_environment_.RunUntilIdle();
 
   // Take the user input in the single username form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
                                     username_renderer_id, u"test_username");
 
   // Verify that there was no user input cached as possible username because the
@@ -1393,9 +1401,9 @@ TEST_P(PasswordManagerTest, DoNotSaveWhenUserDeletesPassword) {
 // Tests that on Chrome sign-in form credentials are not saved.
 TEST_P(PasswordManagerTest, DoNotSaveOnChromeSignInForm) {
   FormData form_data(MakeSimpleFormData());
-  form_data.is_gaia_with_skip_save_password_form = true;
+  form_data.set_is_gaia_with_skip_save_password_form(true);
   std::vector<FormData> observed = {form_data};
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
@@ -1545,7 +1553,7 @@ TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   OnPasswordFormSubmitted(form_data);
 
@@ -1582,7 +1590,7 @@ TEST_P(PasswordManagerTest,
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   OnPasswordFormSubmitted(form_data);
 
@@ -1616,7 +1624,7 @@ TEST_P(PasswordManagerTest,
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*client_.GetPasswordFeatureManager(), ShouldUpdateGmsCore)
       .WillOnce(Return(true));
@@ -1654,7 +1662,7 @@ TEST_P(PasswordManagerTest,
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*client_.GetPasswordFeatureManager(), ShouldUpdateGmsCore)
       .WillOnce(Return(false));
@@ -1745,15 +1753,15 @@ TEST_P(PasswordManagerTest, ClearSubmittedManagerIfSavingIsDisabled) {
 TEST_P(PasswordManagerTest, FormSubmitWithFormOnPreviousPage) {
   PasswordForm first_form(MakeSimpleForm());
   first_form.url = GURL("http://www.nytimes.com/");
-  first_form.form_data.url = first_form.url;
+  first_form.form_data.set_url(first_form.url);
   first_form.action = GURL("https://myaccount.nytimes.com/auth/login");
-  first_form.form_data.action = first_form.action;
+  first_form.form_data.set_action(first_form.action);
   first_form.signon_realm = "http://www.nytimes.com/";
   PasswordForm second_form(MakeSimpleForm());
   second_form.url = GURL("https://myaccount.nytimes.com/auth/login");
-  second_form.form_data.url = second_form.url;
+  second_form.form_data.set_url(second_form.url);
   second_form.action = GURL("https://myaccount.nytimes.com/auth/login");
-  second_form.form_data.action = second_form.action;
+  second_form.form_data.set_action(second_form.action);
   second_form.signon_realm = "https://myaccount.nytimes.com/";
 
   // Pretend that the form is hidden on the first page.
@@ -1878,9 +1886,10 @@ TEST_P(PasswordManagerTest, LoginFormReappearance) {
   // Simulate form reapperance with different path in url and different
   // renderer ids.
   FormData form_data_after_navigation = form_data;
-  form_data_after_navigation.renderer_id.value() += 1000;
-  form_data_after_navigation.url =
-      GURL("https://accounts.google.com/login/error?redirect_after_login");
+  form_data_after_navigation.set_renderer_id(
+      FormRendererId(form_data_after_navigation.renderer_id().value() + 1000));
+  form_data_after_navigation.set_url(
+      GURL("https://accounts.google.com/login/error?redirect_after_login"));
   for (auto& field : form_data_after_navigation.fields) {
     field.set_value({});
   }
@@ -1917,9 +1926,10 @@ TEST_P(PasswordManagerTest, ChangePasswordFormReappearance) {
   // Simulate form reapperance with different path in url and different
   // renderer ids.
   FormData form_data_after_navigation = form_data;
-  form_data_after_navigation.renderer_id.value() += 1000;
-  form_data_after_navigation.url =
-      GURL("https://accounts.google.com/login/error?redirect_after_login");
+  form_data_after_navigation.set_renderer_id(
+      FormRendererId(form_data_after_navigation.renderer_id().value() + 1000));
+  form_data_after_navigation.set_url(
+      GURL("https://accounts.google.com/login/error?redirect_after_login"));
   for (auto& field : form_data_after_navigation.fields) {
     field.set_value({});
   }
@@ -1953,7 +1963,7 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotSaved) {
       .WillByDefault(Return(true));
   EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
 
   client_.FilterAllResultsForSaving();
@@ -1973,10 +1983,10 @@ TEST_P(PasswordManagerTest, HashSavedOnGaiaFormWithSkipSavePassword) {
   FormData form_data(MakeSimpleGAIAFormData());
   // Simulate that this is Gaia form that should be ignored for
   // saving/filling.
-  form_data.is_gaia_with_skip_save_password_form = true;
+  form_data.set_is_gaia_with_skip_save_password_form(true);
   observed.push_back(form_data);
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
 
   manager()->OnPasswordFormsParsed(&driver_, observed);
@@ -2005,8 +2015,8 @@ TEST_P(PasswordManagerTest,
   FormData form_data(MakeSimpleGAIAFormData());
   // Simulate that this is Gaia form that should be ignored for
   // saving/filling.
-  form_data.is_gaia_with_skip_save_password_form = true;
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  form_data.set_is_gaia_with_skip_save_password_form(true);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
 
@@ -2160,8 +2170,8 @@ TEST_P(PasswordManagerTest, AttemptedSavePasswordSameOriginInsecureScheme) {
   PasswordForm secure_form(MakeSimpleForm());
   secure_form.url = GURL("https://example.com/login");
   secure_form.action = GURL("https://example.com/login");
-  secure_form.form_data.url = secure_form.url;
-  secure_form.form_data.action = secure_form.action;
+  secure_form.form_data.set_url(secure_form.url);
+  secure_form.form_data.set_action(secure_form.action);
   secure_form.signon_realm = "https://example.com/";
   secure_form.match_type = PasswordForm::MatchType::kExact;
 
@@ -2179,8 +2189,8 @@ TEST_P(PasswordManagerTest, AttemptedSavePasswordSameOriginInsecureScheme) {
   password_field.set_value(insecure_form.password_value);
   insecure_form.url = GURL("http://example.com/home");
   insecure_form.action = GURL("http://example.com/home");
-  insecure_form.form_data.url = insecure_form.url;
-  insecure_form.form_data.action = insecure_form.action;
+  insecure_form.form_data.set_url(insecure_form.url);
+  insecure_form.form_data.set_action(insecure_form.action);
   insecure_form.signon_realm = "http://example.com/";
   insecure_form.match_type = PasswordForm::MatchType::kExact;
 
@@ -2249,7 +2259,7 @@ TEST_P(PasswordManagerTest, DoNotSaveWithEmptyNewPasswordAndNonemptyPassword) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   OnPasswordFormSubmitted(form_data);
 
@@ -2326,8 +2336,8 @@ TEST_P(PasswordManagerTest, FillPasswordOnManyFrames_SameId) {
 
   // Two unrelated forms...
   FormData form_data1;
-  form_data1.url = first_form.url;
-  form_data1.action = first_form.action;
+  form_data1.set_url(first_form.url);
+  form_data1.set_action(first_form.action);
   form_data1.fields.resize(2);
   form_data1.fields[0].set_name(u"Email");
   form_data1.fields[0].set_renderer_id(FieldRendererId(1));
@@ -2339,16 +2349,16 @@ TEST_P(PasswordManagerTest, FillPasswordOnManyFrames_SameId) {
       autofill::FormControlType::kInputPassword);
 
   FormData form_data2 = form_data1;
-  form_data2.url = second_form.url;
-  form_data2.action = second_form.action;
+  form_data2.set_url(second_form.url);
+  form_data2.set_action(second_form.action);
   form_data2.fields[0].set_name(u"User");
   form_data2.fields[0].set_renderer_id(FieldRendererId(3));
   form_data2.fields[1].set_name(u"Pwd");
   form_data2.fields[1].set_renderer_id(FieldRendererId(4));
 
   // Make the forms be "similar".
-  form_data1.renderer_id = FormRendererId(7654);
-  form_data2.renderer_id = FormRendererId(7654);
+  form_data1.set_renderer_id(FormRendererId(7654));
+  form_data2.set_renderer_id(FormRendererId(7654));
 
   // Observe the form in the first frame.
   EXPECT_CALL(driver_, SetPasswordFillData);
@@ -2522,7 +2532,7 @@ TEST_P(PasswordManagerTest, PasswordGeneration_FailedSubmission) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value());
@@ -2556,7 +2566,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPasswordEdited_FailedSubmission) {
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value());
@@ -2597,7 +2607,7 @@ TEST_P(PasswordManagerTest,
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value());
@@ -2634,7 +2644,7 @@ TEST_P(PasswordManagerTest,
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value());
@@ -2670,7 +2680,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationUsernameChanged) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value());
@@ -2753,7 +2763,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword_NoFormManager) {
 
   // The user accepts a generated password.
   FormData form_data(MakeSignUpFormData());
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value());
@@ -2833,7 +2843,7 @@ TEST_P(PasswordManagerTest, SetGenerationElementAndTypeForForm) {
   manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
 
   manager()->SetGenerationElementAndTypeForForm(
-      &driver_, form.form_data.renderer_id,
+      &driver_, form.form_data.renderer_id(),
       form.form_data.fields[1].renderer_id(),
       autofill::password_generation::PasswordGenerationType::kAutomatic);
   manager()->OnPresaveGeneratedPassword(&driver_, form.form_data,
@@ -3010,7 +3020,7 @@ TEST_P(PasswordManagerTest, NotSavingSyncPasswordHash_NoUsername) {
   observed.push_back(form_data);
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
 
   // Simulate that this credentials which is similar to be sync credentials.
@@ -3030,7 +3040,7 @@ TEST_P(PasswordManagerTest, NotSavingSyncPasswordHash_NotSyncCredentials) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
@@ -3100,7 +3110,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving_SlowBackend) {
   std::vector<FormData> observed;
   FormData form_data(MakeSimpleFormData());
   observed.push_back(form_data);
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
@@ -3173,7 +3183,7 @@ TEST_P(PasswordManagerTest, SaveSyncPasswordHashOnChangePasswordPage) {
   task_environment_.RunUntilIdle();
 
   // Submit form and finish navigation.
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
 
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
@@ -3202,7 +3212,7 @@ TEST_P(PasswordManagerTest, SaveOtherGaiaPasswordHash) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
   // Submit form and finish navigation.
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(false));
 
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
@@ -3228,7 +3238,7 @@ TEST_P(PasswordManagerTest, SaveOtherGaiaPasswordHashOnChangePasswordPage) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
   // Submit form and finish navigation.
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
 
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
@@ -3256,7 +3266,7 @@ TEST_P(PasswordManagerTest, SaveEnterprisePasswordHash) {
   task_environment_.RunUntilIdle();
 
   // Submit form and finish navigation.
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
 
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveEnterprisePasswordHash(_))
@@ -3297,7 +3307,7 @@ TEST_P(PasswordManagerTest, CreatingFormManagers) {
   manager()->OnPasswordFormsParsed(&driver_, observed);
   // Check that the form manager is created.
   EXPECT_EQ(1u, manager()->form_managers().size());
-  EXPECT_TRUE(manager()->form_managers()[0]->DoesManage(form_data.renderer_id,
+  EXPECT_TRUE(manager()->form_managers()[0]->DoesManage(form_data.renderer_id(),
                                                         &driver_));
 
   // Check that receiving the same form the second time does not lead to
@@ -3375,7 +3385,7 @@ TEST_P(PasswordManagerTest, ProcessingOtherSubmissionTypes) {
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword)
       .WillOnce(MoveArgAndReturn<0>(&form_manager_to_save, true));
   manager()->OnDynamicFormSubmission(&driver_,
-                                     submitted_form_data.submission_event);
+                                     submitted_form_data.submission_event());
   EXPECT_TRUE(manager()->form_managers().empty());
 }
 
@@ -3388,7 +3398,7 @@ TEST_P(PasswordManagerTest, SubmittedGaiaFormWithoutVisiblePasswordField) {
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
 
   form_data.fields[0].set_value(u"username");
@@ -3396,17 +3406,17 @@ TEST_P(PasswordManagerTest, SubmittedGaiaFormWithoutVisiblePasswordField) {
   form_data.fields[1].set_is_focusable(false);
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
-  manager()->OnDynamicFormSubmission(&driver_, form_data.submission_event);
+  manager()->OnDynamicFormSubmission(&driver_, form_data.submission_event());
 }
 
 TEST_P(PasswordManagerTest, MetricForSchemeOfSuccessfulLogins) {
   for (bool origin_is_secure : {false, true}) {
     SCOPED_TRACE(testing::Message("origin_is_secure = ") << origin_is_secure);
     FormData form_data(MakeSimpleFormData());
-    form_data.url =
-        GURL(origin_is_secure ? "https://example.com" : "http://example.com");
+    form_data.set_url(
+        GURL(origin_is_secure ? "https://example.com" : "http://example.com"));
     std::vector<FormData> observed = {form_data};
-    EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+    EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
         .WillRepeatedly(Return(true));
     manager()->OnPasswordFormsParsed(&driver_, observed);
     manager()->OnPasswordFormsRendered(&driver_, observed);
@@ -3469,7 +3479,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSavingNewParser) {
 
 TEST_P(PasswordManagerTest, NoSavePromptWhenPasswordManagerDisabled) {
   FormData form_data(MakeSimpleFormData());
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(false));
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
 
@@ -3479,12 +3489,12 @@ TEST_P(PasswordManagerTest, NoSavePromptWhenPasswordManagerDisabled) {
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
   manager()->OnDynamicFormSubmission(&driver_,
-                                     submitted_form_data.submission_event);
+                                     submitted_form_data.submission_event());
 }
 
 TEST_P(PasswordManagerTest, NoSavePromptForNotPasswordForm) {
   FormData form_data(MakeSimpleFormData());
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
   // Make the form to be credit card form.
   form_data.fields[1].set_autocomplete_attribute("cc-csc");
@@ -3497,7 +3507,7 @@ TEST_P(PasswordManagerTest, NoSavePromptForNotPasswordForm) {
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
   manager()->OnDynamicFormSubmission(&driver_,
-                                     submitted_form_data.submission_event);
+                                     submitted_form_data.submission_event());
 }
 
 // Check that when autofill predictions are received before a form is found then
@@ -3758,7 +3768,8 @@ struct MissingFormManagerTestCase {
 TEST_P(PasswordManagerTest, ReportMissingFormManager) {
   const FormData form_data = MakeSimpleFormData();
   FormData other_form_data = MakeSimpleFormData();
-  other_form_data.renderer_id.value() += 1;
+  other_form_data.set_renderer_id(
+      FormRendererId(other_form_data.renderer_id().value() + 1));
 
   const MissingFormManagerTestCase kTestCases[] = {
       {
@@ -3889,7 +3900,8 @@ TEST_P(PasswordManagerTest, CreatePasswordFormManagerOnSaving) {
   // Simulate that JavaScript creates a new form, fills username/password and
   // submits it.
   auto submitted_form = form;
-  submitted_form.form_data.renderer_id.value() += 1000;
+  submitted_form.form_data.set_renderer_id(
+      FormRendererId(submitted_form.form_data.renderer_id().value() + 1000));
   submitted_form.username_value = u"username1";
   submitted_form.form_data.fields[0].set_value(submitted_form.username_value);
   submitted_form.password_value = u"password1";
@@ -4042,7 +4054,7 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnOtpFormWithoutUsername) {
   one_time_code_form.only_for_fallback = true;
   one_time_code_form.password_value = u"123456";
   one_time_code_form.password_element = u"one-time-code";
-  one_time_code_form.form_data.url = one_time_code_form.url;
+  one_time_code_form.form_data.set_url(one_time_code_form.url);
   FormFieldData field;
   field.set_name_attribute(one_time_code_form.password_element);
   field.set_value(one_time_code_form.password_value);
@@ -4163,7 +4175,7 @@ TEST_P(PasswordManagerTest, StartLeakDetection) {
       .WillOnce(MoveArgAndReturn<0>(&form_manager_to_save, true));
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(*check_instance,
-              Start(LeakDetectionInitiator::kSignInCheck, form_data.url,
+              Start(LeakDetectionInitiator::kSignInCheck, form_data.url(),
                     form_data.fields[0].value(), form_data.fields[1].value()));
   EXPECT_CALL(*weak_factory, TryCreateLeakCheck)
       .WillOnce(Return(ByMove(std::move(check_instance))));
@@ -4197,7 +4209,7 @@ TEST_P(PasswordManagerTest, FillSingleUsername) {
       &driver_, form_data,
       CreateServerPredictions(form_data, {{0, FieldType::SINGLE_USERNAME}}));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(form_data.renderer_id, fill_data.form_renderer_id);
+  EXPECT_EQ(form_data.renderer_id(), fill_data.form_renderer_id);
   EXPECT_EQ(saved_match.username_value,
             fill_data.preferred_login.username_value);
   EXPECT_EQ(form_data.fields[0].renderer_id(),
@@ -4238,7 +4250,7 @@ TEST_P(PasswordManagerTest, FillSingleUsernameForgotPassword) {
       CreateServerPredictions(
           form_data, {{0, FieldType::SINGLE_USERNAME_FORGOT_PASSWORD}}));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(form_data.renderer_id, fill_data.form_renderer_id);
+  EXPECT_EQ(form_data.renderer_id(), fill_data.form_renderer_id);
   EXPECT_EQ(saved_match.username_value,
             fill_data.preferred_login.username_value);
   EXPECT_EQ(form_data.fields[0].renderer_id(),
@@ -4265,8 +4277,8 @@ TEST_P(PasswordManagerTest,
   // Create FormdData for a form with 1 text field.
   FormData form_data;
   constexpr FormRendererId form_id(1001);
-  form_data.renderer_id = form_id;
-  form_data.url = GURL("http://example.com");
+  form_data.set_renderer_id(form_id);
+  form_data.set_url(GURL("http://example.com"));
 
   FormFieldData username_field;
   username_field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -5110,8 +5122,8 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
 
   // Create FormdData for a form with 1 password field and process it.
   FormData form_data;
-  form_data.renderer_id = FormRendererId();
-  form_data.url = GURL("http://www.testwebsite.com");
+  form_data.set_renderer_id(FormRendererId());
+  form_data.set_url(GURL("http://www.testwebsite.com"));
 
   FormFieldData old_password_field;
   old_password_field.set_form_control_type(
@@ -5163,8 +5175,8 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
 
   // Create FormData for a form with 3 password fields and process it.
   FormData form_data;
-  form_data.renderer_id = FormRendererId(1);
-  form_data.url = test_form_url_;
+  form_data.set_renderer_id(FormRendererId(1));
+  form_data.set_url(test_form_url_);
 
   FormFieldData old_password_field;
   old_password_field.set_form_control_type(
@@ -5220,8 +5232,8 @@ TEST_P(PasswordManagerTest,
 
   // Create FormData for a form with 1 password field and process it.
   FormData form_data;
-  form_data.renderer_id = FormRendererId(0);
-  form_data.url = test_form_url_;
+  form_data.set_renderer_id(FormRendererId(0));
+  form_data.set_url(test_form_url_);
 
   FormFieldData password_field;
   password_field.set_form_control_type(
@@ -5251,8 +5263,8 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
   store_->AddLogin(saved_match);
 
   FormData form_data;
-  form_data.renderer_id = FormRendererId(1);
-  form_data.url = test_form_url_;
+  form_data.set_renderer_id(FormRendererId(1));
+  form_data.set_url(test_form_url_);
 
   FormFieldData old_password_field;
   old_password_field.set_form_control_type(
@@ -5295,8 +5307,8 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
 
     // Create FormData for a form with 1 password field and process it.
     FormData form_data;
-    form_data.renderer_id = FormRendererId(0);
-    form_data.url = test_form_url_;
+    form_data.set_renderer_id(FormRendererId(0));
+    form_data.set_url(test_form_url_);
 
     FormFieldData old_password_field;
     old_password_field.set_form_control_type(
@@ -5361,8 +5373,8 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
 
     // Create FormData for a form with 1 password field and process it.
     FormData form_data;
-    form_data.renderer_id = FormRendererId(0);
-    form_data.url = test_form_url_;
+    form_data.set_renderer_id(FormRendererId(0));
+    form_data.set_url(test_form_url_);
 
     FormFieldData old_password_field;
     old_password_field.set_form_control_type(
@@ -5841,8 +5853,8 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
   PasswordForm one_time_code_form;
   one_time_code_form.url = test_form_url_;
   one_time_code_form.signon_realm = test_signon_realm_;
-  one_time_code_form.form_data.url = test_form_url_;
-  one_time_code_form.form_data.renderer_id = FormRendererId(10);
+  one_time_code_form.form_data.set_url(test_form_url_);
+  one_time_code_form.form_data.set_renderer_id(FormRendererId(10));
 
   const bool otp_form_has_username = one_time_code_form_username_value != u"";
   if (otp_form_has_username) {

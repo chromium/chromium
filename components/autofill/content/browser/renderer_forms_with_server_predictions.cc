@@ -48,7 +48,7 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
       token_rfh_map;
   for (FormData& form : renderer_forms) {
     content::GlobalRenderFrameHostId rfh_id;
-    if (auto it = token_rfh_map.find(form.host_frame);
+    if (auto it = token_rfh_map.find(form.host_frame());
         it != token_rfh_map.end()) {
       rfh_id = it->second;
     } else {
@@ -57,11 +57,11 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
       client.GetWebContents().ForEachRenderFrameHost(
           [&rfh_id, &form](content::RenderFrameHost* host) {
             if (LocalFrameToken(host->GetFrameToken().value()) ==
-                form.host_frame) {
+                form.host_frame()) {
               rfh_id = host->GetGlobalId();
             }
           });
-      token_rfh_map.insert({form.host_frame, rfh_id});
+      token_rfh_map.insert({form.host_frame(), rfh_id});
     }
     if (!rfh_id) {
       continue;

@@ -208,9 +208,10 @@ void BrowserSavePasswordProgressLogger::LogFormDataWithServerPredictions(
              FormSignatureToDebugString(
                  autofill::CalculateAlternativeFormSignature(form)) +
              "\n";
-  message += GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form.url) + "\n";
   message +=
-      GetStringFromID(STRING_ACTION) + ": " + ScrubURL(form.action) + "\n";
+      GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form.url()) + "\n";
+  message +=
+      GetStringFromID(STRING_ACTION) + ": " + ScrubURL(form.action()) + "\n";
   message += GetFormDataFieldsAndPredictionsLogString(form, predictions);
   message += "}";
   SendLog(message);

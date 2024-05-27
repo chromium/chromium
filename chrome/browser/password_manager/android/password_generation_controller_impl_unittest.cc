@@ -99,8 +99,8 @@ TestPasswordManagerClient::GetProfilePasswordStore() const {
 PasswordGenerationUIData GetTestGenerationUIData1() {
   PasswordGenerationUIData data;
 
-  data.form_data.action = GURL("http://www.example1.com/accounts/Login");
-  data.form_data.url = GURL("http://www.example1.com/accounts/LoginAuth");
+  data.form_data.set_action(GURL("http://www.example1.com/accounts/Login"));
+  data.form_data.set_url(GURL("http://www.example1.com/accounts/LoginAuth"));
 
   data.generation_element = u"testelement1";
   data.max_length = 10;
@@ -111,8 +111,8 @@ PasswordGenerationUIData GetTestGenerationUIData1() {
 PasswordGenerationUIData GetTestGenerationUIData2() {
   PasswordGenerationUIData data;
 
-  data.form_data.action = GURL("http://www.example2.com/accounts/Login");
-  data.form_data.url = GURL("http://www.example2.com/accounts/LoginAuth");
+  data.form_data.set_action(GURL("http://www.example2.com/accounts/Login"));
+  data.form_data.set_url(GURL("http://www.example2.com/accounts/LoginAuth"));
 
   data.generation_element = u"testelement2";
   data.max_length = 10;

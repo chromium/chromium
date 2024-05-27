@@ -1146,15 +1146,15 @@ TEST_F(FormFillerTest, FillPhoneNumber) {
   // In one form, rely on the max length attribute to imply US phone number
   // parts. In the other form, rely on the autocomplete type attribute.
   FormData form_with_us_number_max_length;
-  form_with_us_number_max_length.renderer_id = test::MakeFormRendererId();
-  form_with_us_number_max_length.name = u"MyMaxlengthPhoneForm";
-  form_with_us_number_max_length.url =
-      GURL("https://myform.com/phone_form.html");
-  form_with_us_number_max_length.action =
-      GURL("https://myform.com/phone_submit.html");
+  form_with_us_number_max_length.set_renderer_id(test::MakeFormRendererId());
+  form_with_us_number_max_length.set_name(u"MyMaxlengthPhoneForm");
+  form_with_us_number_max_length.set_url(
+      GURL("https://myform.com/phone_form.html"));
+  form_with_us_number_max_length.set_action(
+      GURL("https://myform.com/phone_submit.html"));
   FormData form_with_autocompletetype = form_with_us_number_max_length;
-  form_with_autocompletetype.renderer_id = test::MakeFormRendererId();
-  form_with_autocompletetype.name = u"MyAutocompletetypePhoneForm";
+  form_with_autocompletetype.set_renderer_id(test::MakeFormRendererId());
+  form_with_autocompletetype.set_name(u"MyAutocompletetypePhoneForm");
 
   struct {
     const char* label;

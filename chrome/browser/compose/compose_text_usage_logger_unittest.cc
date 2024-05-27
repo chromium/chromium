@@ -49,7 +49,7 @@ using content::WebContents;
 FormData CreateForm(
     FormControlType control_type = FormControlType::kInputText) {
   FormData form;
-  form.url = GURL("https://www.foo.com");
+  form.set_url(GURL("https://www.foo.com"));
   form.fields = {
       CreateTestFormField("Field one:", "text_value", /*value=*/"",
                           control_type),
