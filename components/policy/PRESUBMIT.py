@@ -823,6 +823,9 @@ def CheckDevicePolicies(input_api, output_api):
         policy_change['old_policy'] is not None):
       # Ignore existing policies
       continue
+    if policy.get('generate_device_proto', True):
+      # Ignore policies which will be generated automatically
+      continue
     policy_name = policy_change['policy']
 
     field_name = policy_name + ".value"
