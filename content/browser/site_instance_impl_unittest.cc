@@ -810,10 +810,14 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
     EXPECT_EQ(app_url, site_info.site_url());
   }
 
+  bool is_origin_keyed_processes_by_default =
+      base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault);
+  GURL expected_process_lock_url =
+      is_origin_keyed_processes_by_default ? test_url : nonapp_site_url;
   SiteInfo expected_site_info(
-      app_url /* site_url */, nonapp_site_url /* process_lock_url */,
-      /*requires_origin_keyed_process=*/false,
-      /*requires_origin_keyed_process_by_default=*/false,
+      app_url /* site_url */, expected_process_lock_url,
+      is_origin_keyed_processes_by_default,
+      is_origin_keyed_processes_by_default,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(),
@@ -1611,10 +1615,12 @@ TEST_F(SiteInstanceTest, OriginalURL) {
       SetBrowserClientForTesting(&modified_client);
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
 
+  bool is_origin_keyed_processes_by_default =
+      base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault);
   SiteInfo expected_site_info(
       app_url /* site_url */, original_url /* process_lock_url */,
-      /*requires_origin_keyed_process=*/false,
-      /*requires_origin_keyed_process_by_default=*/false,
+      is_origin_keyed_processes_by_default,
+      is_origin_keyed_processes_by_default,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(),
