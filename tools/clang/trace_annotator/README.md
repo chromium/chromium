@@ -39,8 +39,6 @@ The following might take approx. 2 hours depending on your computer.
 *  ```shell tools/clang/scripts/build.py --bootstrap --without-android
    --without-fuchsia --extra-tools trace_annotator```
    *  TODO how to build with plugin 'find-bad-constructs'?
-*  ```shell cp -R ~/llvm-build third_party``` This should enable goma support
-   again.
 
 ### Rebuild just the tool:
 

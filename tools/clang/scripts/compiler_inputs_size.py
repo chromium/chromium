@@ -21,10 +21,10 @@ information. On a fast machine, it should take less than a minute for the
 
 This currently doesnt work on Windows due to different deps handling.
 
-Example usage: (Set use_goma=false if you don't have goma access.)
+Example usage: (Set use_reclient=false if you don't have reclient access.)
 
 $ gn gen out/Debug --args="system_headers_in_deps=true enable_nacl=false
-      symbol_level=0 use_goma=true"
+      symbol_level=0 use_reclient=true"
 $ autoninja -C out/Debug chrome
 $ tools/clang/scripts/compiler_inputs_size.py out/Debug \
       <(ninja -C out/Debug -t commands chrome) <(ninja -C out/Debug -t deps)
@@ -171,7 +171,7 @@ def parse_commands(build_dir, commands_output):
   'bar.cc'}.
 
   >>> sorted(parse_commands('dir1/dir2',
-  ...  '/x/gomacc ../y/clang++ -a -b -c ../../foo.cc -o foo.o\n'
+  ...  '/x/rewrapper ../y/clang++ -a -b -c ../../foo.cc -o foo.o\n'
   ...  'clang -x blah -c ../../bar.c -o bar.o\n'
   ...  'clang-cl.exe /Fobaz.o /c baz.cc\n'.splitlines(keepends=True)))
   ['bar.c', 'dir1/dir2/baz.cc', 'foo.cc']

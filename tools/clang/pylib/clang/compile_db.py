@@ -14,8 +14,6 @@ _RSP_RE = re.compile(r' (@(.+?\.rsp)) ')
 _CLANG_WRAPPER_CMD_LINE_RE = re.compile(
     r'''
     (
-      (?P<gomacc>.*gomacc(\.exe)?"?\s+)
-      |
       (?P<rewrapper>.*rewrapper(\.exe)?"?\s+)
       # rewrapper may have args between it and clang.
       # Assume the args do not contain spaces.
@@ -64,8 +62,6 @@ def _FilterFlags(command, additional_filtered_flags):
       # This flag is only usable with -fprofile-sample-use excluded above.
       # Exclude it to avoid having an unused-command-line-argument error.
       '-fsample-profile-use-profi': 1,
-      # Remove goma compiler path, as this flag is not recognized by clang.
-      '--gomacc-path': 1,
   }
   # Add user-added flags. We only support flags with no parameters here.
   if additional_filtered_flags:
@@ -108,7 +104,7 @@ def _ProcessCommand(command, filtered_args, target_os):
   if _IsTargettingWindows(target_os) and '--driver-mode' not in command:
     driver_mode = '--driver-mode=cl'
 
-  # Removes gomacc/rewrapper(.exe). On Windows inserts --driver-mode=cl as the
+  # Removes rewrapper(.exe). On Windows inserts --driver-mode=cl as the
   # first arg.
   #
   # Deliberately avoid shlex.split() here, because it doesn't work predictably

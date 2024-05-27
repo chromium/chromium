@@ -3,11 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Linker wrapper that performs distributed ThinLTO on Goma or Reclient.
+# Linker wrapper that performs distributed ThinLTO on Reclient.
 #
 # Usage: Pass the original link command as parameters to this script.
 # E.g. original: clang++ -o foo foo.o
-# Becomes: goma-ld clang++ -o foo foo.o
+# Becomes: remote_ld clang++ -o foo foo.o
 
 import os
 import re

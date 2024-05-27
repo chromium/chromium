@@ -13,8 +13,8 @@ $ autoninja -C out/Debug -v chrome | tee /tmp/build_log
 $ analyze_includes.py --target=chrome --revision=$(git rev-parse --short HEAD) \
     --json-out=/tmp/include-analysis.js /tmp/build_log
 
-(If you have goma access, add use_goma=true to the gn args, but not on Windows
-due to crbug.com/1223741#c9)
+(If you have reclient access, add use_reclient=true to the gn args, but not on
+Windows due to crbug.com/1223741#c9)
 
 The script takes roughly half an hour on a fast machine for the chrome build
 target, which is considered fast enough for batch job purposes for now.

@@ -165,7 +165,7 @@ class RemoteLinkBase(object):
   Base class used by RemoteLinkUnix and RemoteLinkWindows.
   """
   # Defaults.
-  wrapper = 'gomacc'
+  wrapper = 'rewrapper'
   jobs = None
 
   # These constants should work across platforms.

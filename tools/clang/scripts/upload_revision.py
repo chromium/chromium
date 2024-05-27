@@ -391,7 +391,7 @@ def main():
       no_run=args.no_git)
 
   print('Please, wait until the try bots succeeded '
-        'and then push the binaries to goma.')
+        'and then push the binaries to RBE.')
   print()
   print('To regenerate BUILD.gn rules for Rust stdlib (needed if dep versions '
         'in the stdlib change for example), run:\n  tools/rust/gnrt_stdlib.py.')

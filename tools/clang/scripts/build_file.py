@@ -50,8 +50,8 @@ def BuildIt(record, prefix, compiler, suffix):
   """
   raw_args = shlex.split(record['command'])
   # The compile command might have some goop in front of it, e.g. if the build
-  # is using goma, so shift arguments off the front until raw_args[0] looks like
-  # a clang invocation.
+  # is using reclient, so shift arguments off the front until raw_args[0] looks
+  # like a clang invocation.
   while raw_args:
     if _PROBABLY_CLANG_RE.search(raw_args[0]):
       break
