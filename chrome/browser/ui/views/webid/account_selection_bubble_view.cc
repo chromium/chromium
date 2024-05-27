@@ -923,6 +923,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
                      weak_ptr_factory_.GetWeakPtr()),
       kMultiIdpIconSize, /*should_circle_crop=*/true);
   image_view->SetImageSize(gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
+  image_view->SetVisible(idp_metadata.brand_icon_url.is_valid());
   ConfigureBrandImageView(image_view.get(), idp_metadata.brand_icon_url);
 
   auto button = std::make_unique<HoverButton>(
@@ -967,10 +968,15 @@ void AccountSelectionBubbleView::UpdateHeader(
     bool show_back_button) {
   back_button_->SetVisible(show_back_button);
   if (header_icon_view_) {
-    if (show_back_button)
+    // The back button takes the place of the brand icon, if it is shown. By
+    // default, we show placeholder brand icon prior to brand icon being fetched
+    // so that header text wrapping does not change when brand icon is fetched.
+    // Therefore, we need to hide the brand icon if the URL is invalid.
+    if (show_back_button || !idp_metadata.brand_icon_url.is_valid()) {
       header_icon_view_->SetVisible(false);
-    else
+    } else {
       ConfigureBrandImageView(header_icon_view_, idp_metadata.brand_icon_url);
+    }
   }
   title_label_->SetText(subpage_title);
 
