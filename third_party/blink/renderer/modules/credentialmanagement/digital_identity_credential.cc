@@ -13,6 +13,8 @@
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
@@ -29,6 +31,8 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_utils.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/digital_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/to_blink_string.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -48,6 +52,36 @@ void AbortRequest(ScriptState* script_state) {
   }
 
   CredentialManagerProxy::From(script_state)->DigitalIdentityRequest()->Abort();
+}
+
+String ValidateAndStringifyObject(v8::Isolate* isolate,
+                                  const ScriptValue& input,
+                                  ExceptionState& exception_state) {
+  v8::Local<v8::String> value;
+  if (input.IsEmpty() || !input.V8Value()->IsObject() ||
+      !v8::JSON::Stringify(isolate->GetCurrentContext(),
+                           input.V8Value().As<v8::Object>())
+           .ToLocal(&value)) {
+    exception_state.ThrowTypeError(
+        "IdentityRequestProvider request objects should either by strings or "
+        "JSON-Serializable objects.");
+    return String();
+  }
+
+  String output = ToBlinkString<String>(isolate, value, kDoNotExternalize);
+
+  // Implementation defined constant controlling the allowed JSON length.
+  static constexpr size_t kMaxJSONStringLength = 1024 * 1024;
+
+  if (output.length() > kMaxJSONStringLength) {
+    exception_state.ThrowTypeError(
+        String::Format("JSON serialization of IdentityRequestProvider request "
+                       "objects should be no longer than %zu characters",
+                       kMaxJSONStringLength));
+    return String();
+  }
+
+  return output;
 }
 
 void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
@@ -102,6 +136,7 @@ bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
 ScriptPromise<IDLNullable<Credential>>
 DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
+    ExceptionState& exception_state,
     const CredentialRequestOptions& options) {
   CHECK(IsDigitalIdentityCredentialType(options));
   CHECK(RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
@@ -140,6 +175,23 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     return resolver->Promise();
   }
 
+  auto provider = options.digital()->providers()[0];
+  V8UnionObjectOrString* request_object_or_string = provider->request();
+
+  String stringified_request;
+  if (request_object_or_string->IsString()) {
+    stringified_request = request_object_or_string->GetAsString();
+  } else {
+    stringified_request = ValidateAndStringifyObject(
+        resolver->GetExecutionContext()->GetIsolate(),
+        request_object_or_string->GetAsObject(), exception_state);
+  }
+
+  if (exception_state.HadException()) {
+    resolver->Reject(exception_state);
+    return resolver->Promise();
+  }
+
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kIdentityDigitalCredentials);
 
@@ -161,9 +213,8 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
   blink::mojom::blink::DigitalCredentialProviderPtr
       digital_credential_provider =
           blink::mojom::blink::DigitalCredentialProvider::New();
-  auto provider = options.digital()->providers()[0];
   digital_credential_provider->protocol = provider->protocol();
-  digital_credential_provider->request = provider->request();
+  digital_credential_provider->request = stringified_request;
 
   auto* request =
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
