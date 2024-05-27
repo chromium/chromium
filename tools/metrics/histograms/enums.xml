@@ -31800,6 +31800,7 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="No reprompt: invalid version"/>
   <int value="4" label="No reprompt: Chrome too old"/>
   <int value="5" label="No reprompt: recent choice"/>
+  <int value="6" label="No reprompt: no reprompt parameter set"/>
 </enum>
 
 <enum name="SearchEngineChoiceScreenConditions">

@@ -1405,7 +1405,7 @@ TEST_F(SearchEngineChoiceServiceTest,
       kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 }
 
-// Test that the user is not reprompted is the reprompt parameter is not a valid
+// Test that the user is not reprompted if the reprompt parameter is not a valid
 // JSON string.
 TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
   // Set the reprompt parameters with invalid syntax.
@@ -1437,6 +1437,43 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceRepromptHistogram,
       RepromptResult::kInvalidDictionary, 1);
+}
+
+// Test that the user is not reprompted if the no reprompt parameter is set.
+TEST_F(SearchEngineChoiceServiceTest, NoRepromptWhenSpecified) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger,
+      {{switches::kSearchEngineChoiceTriggerRepromptParams.name,
+        kNoRepromptString}});
+  ASSERT_EQ(kNoRepromptString,
+            switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+
+  // Initialize the preference with some previous choice.
+  int64_t kPreviousTimestamp = 1;
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      kPreviousTimestamp);
+
+  // Trigger the creation of the service, which should check for the reprompt.
+  search_engine_choice_service();
+
+  // The user should not be reprompted.
+  EXPECT_EQ(kPreviousTimestamp,
+            pref_service()->GetInt64(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceWipeReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      search_engines::kSearchEngineChoiceRepromptWildcardHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceRepromptHistogram,
+      RepromptResult::kNoReprompt, 1);
+  histogram_tester_.ExpectBucketCount(
+      search_engines::kSearchEngineChoiceRepromptHistogram,
+      RepromptResult::kInvalidDictionary, 0);
 }
 
 // The user is reprompted if the version preference is missing.
