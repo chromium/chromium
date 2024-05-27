@@ -32,14 +32,14 @@ const size_t kHtmlTemplateStartSize = std::size(kHtmlTemplateStart) - 1;
 enum HtmlTemplateType { INVALID = 0, NONE = 1, VALID = 2 };
 
 struct HtmlTemplate {
-  base::StringPiece::size_type start;
-  base::StringPiece::size_type length;
+  std::string_view::size_type start;
+  std::string_view::size_type length;
   HtmlTemplateType type;
 };
 
 HtmlTemplate FindHtmlTemplate(std::string_view source) {
   HtmlTemplate out;
-  base::StringPiece::size_type found = source.find(kHtmlTemplateStart);
+  std::string_view::size_type found = source.find(kHtmlTemplateStart);
 
   // No template found, return early.
   if (found == std::string_view::npos) {
@@ -48,7 +48,7 @@ HtmlTemplate FindHtmlTemplate(std::string_view source) {
   }
 
   out.start = found + kHtmlTemplateStartSize;
-  base::StringPiece::size_type found_end =
+  std::string_view::size_type found_end =
       source.find(kHtmlTemplateEnd, out.start);
   // Template is not terminated.
   if (found_end == std::string_view::npos) {

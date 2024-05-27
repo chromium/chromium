@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 #include <xf86drmMode.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"

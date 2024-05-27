@@ -11,7 +11,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"

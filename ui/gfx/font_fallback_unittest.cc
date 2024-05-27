@@ -5,7 +5,6 @@
 #include <tuple>
 
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"

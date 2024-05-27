@@ -8,7 +8,6 @@
 
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "ui/display/util/gpu_info_util.h"
 

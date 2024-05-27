@@ -5,7 +5,6 @@
 #include "ui/display/win/uwp_text_scale_factor.h"
 
 #include <windows.h>
-
 #include <windows.ui.viewmanagement.h>
 #include <wrl/client.h>
 #include <wrl/event.h>
@@ -14,7 +13,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_com_initializer.h"

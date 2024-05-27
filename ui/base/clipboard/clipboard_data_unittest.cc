@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"

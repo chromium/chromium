@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui::clipboard_util::internal {
