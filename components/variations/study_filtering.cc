@@ -12,7 +12,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
@@ -435,10 +434,15 @@ std::vector<ProcessedStudy> FilterAndValidateStudies(
     if (!internal::ShouldAddStudy(processed_study, client_state, layers))
       continue;
 
-    if (!base::Contains(created_studies, processed_study.study()->name())) {
-      filtered_studies.push_back(processed_study);
-      created_studies.insert(processed_study.study()->name());
+    auto [it, inserted] =
+        created_studies.insert(processed_study.study()->name());
+    if (!inserted) {
+      // The study's name is already in `created_studies`, which means that a
+      // study with the same name was already added to `filtered_studies`.
+      continue;
     }
+
+    filtered_studies.push_back(processed_study);
   }
   return filtered_studies;
 }
