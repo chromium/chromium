@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -35,6 +36,14 @@
 
 namespace supervised_user {
 namespace {
+
+// When enabled the tests explicitly wait for sync invalidation to be ready.
+const char* kWaitForSyncInvalidationReadyFlag =
+    "supervised-tests-wait-for-sync-invalidation-ready";
+
+bool IsFeatureFlagEnabled(const char* flag) {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(flag);
+}
 
 // List of accounts specified in
 // chrome/browser/internal/resources/signin/test_accounts.json.
@@ -103,13 +112,18 @@ FamilyLiveTest::~FamilyLiveTest() = default;
   member.browser()->tab_strip_model()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 
-  // After turning the sync on, wait until this is fully initialized.
-  syncer::SyncServiceImpl* service =
-      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-          member.browser()->profile());
-  CHECK(SyncSetupChecker(service).Wait()) << "SyncSetupChecker timed out.";
-  CHECK(InvalidationsStatusChecker(service, /*expected_status=*/true).Wait())
-      << "Invalidation checker timed out.";
+  if (IsFeatureFlagEnabled(kWaitForSyncInvalidationReadyFlag)) {
+    // After turning the sync on, wait until this is fully initialized.
+    LOG(INFO) << "Waiting for sync service to set up invalidations.";
+    syncer::SyncServiceImpl* service =
+        SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+            member.browser()->profile());
+    service->SetInvalidationsForSessionsEnabled(true);
+    CHECK(SyncSetupChecker(service).Wait()) << "SyncSetupChecker timed out.";
+    CHECK(InvalidationsStatusChecker(service, /*expected_status=*/true).Wait())
+        << "Invalidation checker timed out.";
+    LOG(INFO) << "Invalidations ready.";
+  }
 }
 
 void FamilyLiveTest::SetUp() {
@@ -198,11 +212,16 @@ InteractiveFamilyLiveTest::WaitForStateSeeding(
     const BrowserState& state) {
   return Steps(
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: start"})),
-      Do([&]() { state.Seed(rpc_issuer, browser_user); }),
-      PollState(
-          id, [&]() { return state.Check(browser_user); },
-          /* polling_interval= */ base::Seconds(2)),
-      WaitForState(id, true), StopObservingState(id),
+      If([&]() { return !state.Check(browser_user); },
+         /*then_steps=*/
+         Steps(Do([&]() { state.Seed(rpc_issuer, browser_user); }),
+               PollState(
+                   id, [&]() { return state.Check(browser_user); },
+                   /*polling_interval=*/base::Seconds(2)),
+               WaitForState(id, true), StopObservingState(id)),
+         /*else_steps=*/
+         Steps(Log(base::StrCat(
+             {"WaitForState[", state.ToString(), "]: seeding skipped"})))),
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: completed"})));
 }
 
