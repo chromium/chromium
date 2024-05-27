@@ -308,11 +308,58 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+                       DeleteAccountDataInErrorState) {
+  // Add a profile to account storage.
+  AutofillProfile profile = BuildTestAccountProfile();
+  AddSpecificsToServer(AsContactInfoSpecifics(profile), GetFakeServer());
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(),
+                  UnorderedElementsAre(profile))
+                  .Wait());
+
+  // Trigger auth error, sync stops.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile(0));
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  ASSERT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(ContactInfoActiveChecker(GetSyncService(0),
+                                       /*expect_active=*/false)
+                  .Wait());
+
+  // The data has been deleted.
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(), IsEmpty())
+                  .Wait());
+
+  // Fix the error, data is re-downloaded.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      GoogleServiceAuthError::AuthErrorNone());
+
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(),
+                  UnorderedElementsAre(profile))
+                  .Wait());
+}
+
 // Account storage is not enabled when the user is in auth error.
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
                        AuthErrorState) {
   // Setup transport mode.
-  const AutofillProfile kProfile = BuildTestAccountProfile();
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
@@ -338,7 +385,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
   EXPECT_FALSE(GetPersonalDataManager()
                    ->address_data_manager()
                    .IsAutofillSyncToggleAvailable());
-  GetPersonalDataManager()->address_data_manager().AddProfile(kProfile);
 
   // Fix the authentication error, sync is available again.
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(

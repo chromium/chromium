@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_mode.h"
 #include "components/sync/service/model_type_controller.h"
 
 class PrefService;
@@ -65,6 +66,7 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<syncer::SyncService> sync_service_;
+  syncer::SyncMode sync_mode_ = syncer::SyncMode::kFull;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

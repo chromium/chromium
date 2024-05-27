@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -22,6 +23,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
@@ -32,6 +34,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/features.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
@@ -324,8 +327,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
-  // Make sure the password showed up in the account store and not in the
-  // profile store.
+  // Make sure the password showed up in the profile store and not in the
+  // account store.
   password_manager::PasswordStoreInterface* profile_store =
       passwords_helper::GetProfilePasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
@@ -548,6 +551,123 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // Now password sync should be active.
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 }
+
+class SingleClientPasswordsWithAccountStorageExplicitSigninSyncTest
+    : public SingleClientPasswordsWithAccountStorageSyncTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+};
+
+// In pending state, account storage is deleted and re-downloaded on reauth.
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPasswordsWithAccountStorageExplicitSigninSyncTest,
+    PendingState) {
+  AddTestPasswordToFakeServer();
+
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // Setup Sync in transport mode.
+  secondary_account_helper::SignInUnconsentedAccount(
+      GetProfile(0), &test_url_loader_factory_, "user@email.com");
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
+  // User is opted in to account-scoped password storage by default, wait for it
+  // to become active.
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+
+  // Make sure the password showed up in the account store.
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
+  ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
+
+  // Go to error state, sync stops.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile(0));
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  ASSERT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  PasswordSyncInactiveChecker(GetSyncService(0)).Wait();
+
+  // Make sure the password is gone from the store.
+  ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
+
+  // Fix the authentication error, sync is available again.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      GoogleServiceAuthError::AuthErrorNone());
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+
+  // Make sure the password is back.
+  ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPasswordsWithAccountStorageExplicitSigninSyncTest,
+    SyncPaused) {
+  // Setup Sync with 2 passwords.
+  ASSERT_TRUE(SetupClients());
+  PasswordForm form0 = CreateTestPasswordForm(0);
+  PasswordForm form1 = CreateTestPasswordForm(1);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
+  std::vector<sync_pb::SyncEntity> server_passwords =
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::PASSWORDS);
+  ASSERT_EQ(1ul, server_passwords.size());
+  sync_pb::SyncEntity entity0 = server_passwords[0];
+  GetProfilePasswordStoreInterface(0)->AddLogin(form1);
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 2).Wait());
+  server_passwords =
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::PASSWORDS);
+  ASSERT_EQ(2ul, server_passwords.size());
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
+
+  // Go to sync paused.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile(0));
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  ASSERT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  PasswordSyncInactiveChecker(GetSyncService(0)).Wait();
+
+  // Delete `form0` on the server.
+  GetFakeServer()->InjectEntity(
+      syncer::PersistentTombstoneEntity::CreateFromEntity(entity0));
+
+  // Update `form1` locally.
+  form1.password_value = u"updated_password";
+  form1.date_created = base::Time::Now();
+  GetProfilePasswordStoreInterface(0)->UpdateLogin(form1);
+
+  // The passwords are still existing locally.
+  PasswordFormsChecker(0, {form0, form1}).Wait();
+
+  // Fix the authentication error, sync is available again.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+      GoogleServiceAuthError::AuthErrorNone());
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+
+  // `form0` has been deleted locally, only `form1` remains.
+  PasswordFormsChecker(0, {form1}).Wait();
+
+  // `form1` was updated on the server.
+  EXPECT_TRUE(ServerPasswordsEqualityChecker(
+                  {form1},
+                  base::Base64Encode(GetFakeServer()->GetKeystoreKeys().back()),
+                  syncer::KeyDerivationParams::CreateForPbkdf2())
+                  .Wait());
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,

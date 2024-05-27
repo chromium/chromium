@@ -19,7 +19,10 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
+#include "components/sync/base/sync_mode.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/service/configure_context.h"
 #include "components/sync/service/sync_service.h"
 
 namespace password_manager {
@@ -53,12 +56,22 @@ void PasswordModelTypeController::LoadModels(
           syncer::kEnablePasswordsAccountStorageForSyncingUsers)) {
     overridden_context.sync_mode = syncer::SyncMode::kTransportOnly;
   }
+  sync_mode_ = overridden_context.sync_mode;
   ModelTypeController::LoadModels(overridden_context, model_load_callback);
 }
 
 void PasswordModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                        StopCallback callback) {
   DCHECK(CalledOnValidThread());
+  // In transport-only mode, storage is scoped to the Gaia account. That means
+  // it should be cleared if Sync is stopped for any reason (other than browser
+  // shutdown).
+  // In particular the data should be removed when the user is in pending state.
+  // This behavior is specific to autofill, and does not apply to other data
+  // types.
+  if (sync_mode_ == syncer::SyncMode::kTransportOnly) {
+    fate = syncer::SyncStopMetadataFate::CLEAR_METADATA;
+  }
   ModelTypeController::Stop(fate, std::move(callback));
 }
 
