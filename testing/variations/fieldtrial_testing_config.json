@@ -10467,6 +10467,21 @@
             ]
         }
     ],
+    "IOSSaveUsernameInUff": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IosSaveUsernameInUff"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSegmentationPlatformIosModuleRankerCaching": [
         {
             "platforms": [
