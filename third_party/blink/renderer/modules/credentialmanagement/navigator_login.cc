@@ -49,7 +49,7 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
       break;
   }
   request->SetIdpSigninStatus(context->GetSecurityOrigin(), status);
-  return ScriptPromise<IDLUndefined>();
+  return EmptyPromise();
 }
 
 void NavigatorLogin::Trace(Visitor* visitor) const {

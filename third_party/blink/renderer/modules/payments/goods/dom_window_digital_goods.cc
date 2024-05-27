@@ -68,7 +68,7 @@ DOMWindowDigitalGoods::GetDigitalGoodsService(ScriptState* script_state,
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromise<DigitalGoodsService>();
+    return EmptyPromise();
   }
 
   auto* resolver =

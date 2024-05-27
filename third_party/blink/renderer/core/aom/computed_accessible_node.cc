@@ -231,7 +231,7 @@ std::optional<float> ComputedAccessibleNode::valueNow() const {
 ScriptPromise<ComputedAccessibleNode> ComputedAccessibleNode::ensureUpToDate(
     ScriptState* script_state) {
   if (!GetDocument())
-    return ScriptPromise<ComputedAccessibleNode>();  // Empty promise.
+    return EmptyPromise();  // Empty promise.
   auto* resolver = MakeGarbageCollected<ComputedAccessibleNodePromiseResolver>(
       script_state, *GetDocument(), ax_id_);
   auto promise = resolver->Promise();

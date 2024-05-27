@@ -56,14 +56,14 @@ ScriptPromise<IDLUndefined> PressureObserver::observe(
   if (!base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Compute Pressure API is not available.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // Checks whether the document is allowed by Permissions Policy to call
@@ -73,7 +73,7 @@ ScriptPromise<IDLUndefined> PressureObserver::observe(
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       kFeaturePolicyBlocked);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   sample_interval_ = options->sampleInterval();

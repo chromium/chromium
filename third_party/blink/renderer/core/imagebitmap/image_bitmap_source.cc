@@ -25,7 +25,7 @@ ScriptPromise<ImageBitmap> ImageBitmapSource::FulfillImageBitmap(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The ImageBitmap could not be allocated.");
-    return ScriptPromise<ImageBitmap>();
+    return EmptyPromise();
   }
 
   // imageOrientation: 'from-image' will be used to replace imageOrientation:
@@ -47,7 +47,7 @@ ScriptPromise<ImageBitmap> ImageBitmapSource::CreateImageBitmap(
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
-  return ScriptPromise<ImageBitmap>();
+  return EmptyPromise();
 }
 
 }  // namespace blink

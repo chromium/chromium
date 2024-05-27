@@ -193,7 +193,7 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::abort(
   //     with a TypeError exception.
   if (!owner_writable_stream_) {
     exception_state.ThrowTypeError(CreateWriterLockReleasedMessage("aborted"));
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   //  3. Return ! WritableStreamDefaultWriterAbort(this, reason).
@@ -211,7 +211,7 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::close(
   //     exception.
   if (!stream) {
     exception_state.ThrowTypeError(CreateWriterLockReleasedMessage("closed"));
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   //  4. If ! WritableStreamCloseQueuedOrInFlight(stream) is true, return a
@@ -220,7 +220,7 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::close(
     exception_state.ThrowTypeError(
         "Cannot close a writable stream that has "
         "already been requested to be closed");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   //  5. Return ! WritableStreamDefaultWriterClose(this).
@@ -263,12 +263,12 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::write(
   if (!owner_writable_stream_) {
     exception_state.ThrowTypeError(
         CreateWriterLockReleasedMessage("written to"));
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowTypeError("invalid realm");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   //  3. Return ! WritableStreamDefaultWriterWrite(this, chunk).

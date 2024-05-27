@@ -329,7 +329,7 @@ ScriptPromise<IDLBoolean> Bluetooth::getAvailability(
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
 
   if (IsRequestDenied(window, exception_state)) {
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   // If Bluetooth is disallowed by Permissions Policy, getAvailability should
@@ -424,12 +424,12 @@ ScriptPromise<BluetoothDevice> Bluetooth::requestDevice(
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
 
   if (IsRequestDenied(window, exception_state)) {
-    return ScriptPromise<BluetoothDevice>();
+    return EmptyPromise();
   }
 
   if (!IsFeatureEnabled(window)) {
     exception_state.ThrowSecurityError(kPermissionsPolicyBlocked);
-    return ScriptPromise<BluetoothDevice>();
+    return EmptyPromise();
   }
 
   AddUnsupportedPlatformConsoleMessage(window);
@@ -441,7 +441,7 @@ ScriptPromise<BluetoothDevice> Bluetooth::requestDevice(
   DCHECK(frame);
   if (!LocalFrame::HasTransientUserActivation(frame)) {
     exception_state.ThrowSecurityError(kHandleGestureForPermissionRequest);
-    return ScriptPromise<BluetoothDevice>();
+    return EmptyPromise();
   }
 
   EnsureServiceConnection(window);
@@ -453,7 +453,7 @@ ScriptPromise<BluetoothDevice> Bluetooth::requestDevice(
                               exception_state);
 
   if (exception_state.HadException())
-    return ScriptPromise<BluetoothDevice>();
+    return EmptyPromise();
 
   // Subsequent steps are handled in the browser process.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<BluetoothDevice>>(
@@ -530,12 +530,12 @@ ScriptPromise<BluetoothLEScan> Bluetooth::requestLEScan(
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
 
   if (IsRequestDenied(window, exception_state)) {
-    return ScriptPromise<BluetoothLEScan>();
+    return EmptyPromise();
   }
 
   if (!IsFeatureEnabled(window)) {
     exception_state.ThrowSecurityError(kPermissionsPolicyBlocked);
-    return ScriptPromise<BluetoothLEScan>();
+    return EmptyPromise();
   }
 
   // Remind developers when they are using Web Bluetooth on unsupported
@@ -557,7 +557,7 @@ ScriptPromise<BluetoothLEScan> Bluetooth::requestLEScan(
   DCHECK(frame);
   if (!LocalFrame::HasTransientUserActivation(frame)) {
     exception_state.ThrowSecurityError(kHandleGestureForPermissionRequest);
-    return ScriptPromise<BluetoothLEScan>();
+    return EmptyPromise();
   }
 
   EnsureServiceConnection(window);
@@ -566,7 +566,7 @@ ScriptPromise<BluetoothLEScan> Bluetooth::requestLEScan(
   ConvertRequestLEScanOptions(options, scan_options, exception_state);
 
   if (exception_state.HadException())
-    return ScriptPromise<BluetoothLEScan>();
+    return EmptyPromise();
 
   // Subsequent steps are handled in the browser process.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<BluetoothLEScan>>(

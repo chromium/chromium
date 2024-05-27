@@ -33,7 +33,7 @@ ScriptPromise<IDLUndefined> NavigationPreloadManager::setHeaderValue(
     exception_state.ThrowTypeError(
         "The string provided to setHeaderValue ('" + value +
         "') is not a valid HTTP header field value.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver =

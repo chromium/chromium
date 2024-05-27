@@ -771,12 +771,12 @@ ScriptPromise<CropTarget> MediaDevices::ProduceCropTarget(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                     "Unsupported.");
-  return ScriptPromise<CropTarget>();
+  return EmptyPromise();
 #else
   if (!MayProduceSubCaptureTarget(script_state, element, exception_state,
                                   SubCaptureTarget::Type::kCropTarget)) {
     // Exception thrown by helper.
-    return ScriptPromise<CropTarget>();
+    return EmptyPromise();
   }
 
   if (const RegionCaptureCropId* id = element->GetRegionCaptureCropId()) {
@@ -835,12 +835,12 @@ ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                     "Unsupported.");
-  return ScriptPromise<RestrictionTarget>();
+  return EmptyPromise();
 #else
   if (!MayProduceSubCaptureTarget(script_state, element, exception_state,
                                   SubCaptureTarget::Type::kRestrictionTarget)) {
     // Exception thrown by helper.
-    return ScriptPromise<RestrictionTarget>();
+    return EmptyPromise();
   }
 
   if (const RestrictionTargetId* id = element->GetRestrictionTargetId()) {

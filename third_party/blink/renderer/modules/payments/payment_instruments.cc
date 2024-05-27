@@ -93,7 +93,7 @@ ScriptPromise<IDLUndefined> RejectNotAllowedToUsePaymentFeatures(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   ThrowNotAllowedToUsePaymentFeatures(exception_state);
-  return ScriptPromise<IDLUndefined>();
+  return EmptyPromise();
 }
 
 }  // namespace
@@ -108,13 +108,13 @@ ScriptPromise<IDLBoolean> PaymentInstruments::deleteInstrument(
     ExceptionState& exception_state) {
   if (!AllowedToUsePaymentFeatures(script_state)) {
     ThrowNotAllowedToUsePaymentFeatures(exception_state);
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   if (!payment_manager_->manager().is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
@@ -133,13 +133,13 @@ ScriptPromise<IDLAny> PaymentInstruments::get(ScriptState* script_state,
                                               ExceptionState& exception_state) {
   if (!AllowedToUsePaymentFeatures(script_state)) {
     ThrowNotAllowedToUsePaymentFeatures(exception_state);
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
   }
 
   if (!payment_manager_->manager().is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
@@ -184,13 +184,13 @@ ScriptPromise<IDLBoolean> PaymentInstruments::has(
     ExceptionState& exception_state) {
   if (!AllowedToUsePaymentFeatures(script_state)) {
     ThrowNotAllowedToUsePaymentFeatures(exception_state);
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   if (!payment_manager_->manager().is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
@@ -215,7 +215,7 @@ ScriptPromise<IDLUndefined> PaymentInstruments::set(
   if (!payment_manager_->manager().is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -251,7 +251,7 @@ ScriptPromise<IDLUndefined> PaymentInstruments::clear(
   if (!payment_manager_->manager().is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(

@@ -207,10 +207,10 @@ ScriptPromise<IDLUndefined> DecoderTemplate<Traits>::flush(
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ThrowIfCodecStateClosed(state_, "flush", exception_state))
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
 
   if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
 
   MarkCodecActive();
 

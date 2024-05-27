@@ -280,7 +280,7 @@ ScriptPromise<ServiceWorkerRegistration> ServiceWorkerRegistration::update(
         DOMExceptionCode::kInvalidStateError,
         "Failed to update a ServiceWorkerRegistration: No associated provider "
         "is available.");
-    return ScriptPromise<ServiceWorkerRegistration>();
+    return EmptyPromise();
   }
 
   auto* execution_context = ExecutionContext::From(script_state);
@@ -326,7 +326,7 @@ ScriptPromise<IDLBoolean> ServiceWorkerRegistration::unregister(
                                       "Failed to unregister a "
                                       "ServiceWorkerRegistration: No "
                                       "associated provider is available.");
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   auto* resolver =

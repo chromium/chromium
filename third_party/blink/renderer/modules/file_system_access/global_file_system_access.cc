@@ -386,18 +386,18 @@ ScriptPromise<FileSystemFileHandle> GlobalFileSystemAccess::showSaveFilePicker(
   if (options->hasTypes())
     accepts = ConvertAccepts(options->types(), exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<FileSystemFileHandle>();
+    return EmptyPromise();
 
   if (accepts.empty() && options->excludeAcceptAllOption()) {
     exception_state.ThrowTypeError("Need at least one accepted type");
-    return ScriptPromise<FileSystemFileHandle>();
+    return EmptyPromise();
   }
 
   String starting_directory_id = kDefaultStartingDirectoryId;
   if (options->hasId()) {
     starting_directory_id = VerifyIsValidId(options->id(), exception_state);
     if (exception_state.HadException())
-      return ScriptPromise<FileSystemFileHandle>();
+      return EmptyPromise();
   }
 
   mojom::blink::FilePickerStartInOptionsUnionPtr start_in_options;
@@ -407,7 +407,7 @@ ScriptPromise<FileSystemFileHandle> GlobalFileSystemAccess::showSaveFilePicker(
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<FileSystemFileHandle>();
+    return EmptyPromise();
 
   auto save_file_picker_options = mojom::blink::SaveFilePickerOptions::New(
       mojom::blink::AcceptsTypesInfo::New(std::move(accepts),
@@ -442,7 +442,7 @@ GlobalFileSystemAccess::showDirectoryPicker(
   if (options->hasId()) {
     starting_directory_id = VerifyIsValidId(options->id(), exception_state);
     if (exception_state.HadException())
-      return ScriptPromise<FileSystemDirectoryHandle>();
+      return EmptyPromise();
   }
 
   mojom::blink::FilePickerStartInOptionsUnionPtr start_in_options;
@@ -452,7 +452,7 @@ GlobalFileSystemAccess::showDirectoryPicker(
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<FileSystemDirectoryHandle>();
+    return EmptyPromise();
 
   bool request_writable =
       options->mode() == V8FileSystemPermissionMode::Enum::kReadwrite;

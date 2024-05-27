@@ -490,14 +490,14 @@ ScriptPromise<ServiceWorkerRegistration> ServiceWorkerContainer::ready(
     ScriptState* caller_state,
     ExceptionState& exception_state) {
   if (!GetExecutionContext())
-    return ScriptPromise<ServiceWorkerRegistration>();
+    return EmptyPromise();
 
   if (!caller_state->World().IsMainWorld()) {
     // FIXME: Support .ready from isolated worlds when
     // ScriptPromiseProperty can vend Promises in isolated worlds.
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "'ready' is only supported in pages.");
-    return ScriptPromise<ServiceWorkerRegistration>();
+    return EmptyPromise();
   }
 
   if (!ready_) {

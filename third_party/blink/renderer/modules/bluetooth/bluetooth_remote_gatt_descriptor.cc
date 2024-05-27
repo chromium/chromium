@@ -112,19 +112,19 @@ ScriptPromise<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
             BluetoothOperation::kGATT));
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!GetGatt()->device()->IsValidDescriptor(descriptor_->instance_id)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       CreateInvalidDescriptorErrorMessage());
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (value.IsDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Value buffer has been detached.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // Partial implementation of writeValue algorithm:
@@ -137,7 +137,7 @@ ScriptPromise<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
         "Value can't exceed 512 bytes.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // Let valueVector be a copy of the bytes held by value.

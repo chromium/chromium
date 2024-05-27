@@ -65,7 +65,7 @@ ScriptPromise<WakeLockSentinel> WakeLock::request(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The document has no associated browsing context");
-    return ScriptPromise<WakeLockSentinel>();
+    return EmptyPromise();
   }
 
   auto* context = ExecutionContext::From(script_state);
@@ -76,7 +76,7 @@ ScriptPromise<WakeLockSentinel> WakeLock::request(
     exception_state.ThrowTypeError(
         "The provided value 'system' is not a valid enum value of type "
         "WakeLockType.");
-    return ScriptPromise<WakeLockSentinel>();
+    return EmptyPromise();
   }
 
   // 2. If document is not allowed to use the policy-controlled feature named
@@ -93,7 +93,7 @@ ScriptPromise<WakeLockSentinel> WakeLock::request(
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Access to Screen Wake Lock features is "
                                       "disallowed by permissions policy");
-    return ScriptPromise<WakeLockSentinel>();
+    return EmptyPromise();
   }
 
   if (context->IsDedicatedWorkerGlobalScope()) {
@@ -108,7 +108,7 @@ ScriptPromise<WakeLockSentinel> WakeLock::request(
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotAllowedError,
           "Screen locks cannot be requested from workers");
-      return ScriptPromise<WakeLockSentinel>();
+      return EmptyPromise();
     }
   } else if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     // 1. Let document be this's relevant settings object's associated
@@ -118,7 +118,7 @@ ScriptPromise<WakeLockSentinel> WakeLock::request(
     if (!window->document()->IsActive()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "The document is not active");
-      return ScriptPromise<WakeLockSentinel>();
+      return EmptyPromise();
     }
     // 6. If the steps to determine the visibility state return hidden, return a
     //    promise rejected with "NotAllowedError" DOMException.
@@ -126,7 +126,7 @@ ScriptPromise<WakeLockSentinel> WakeLock::request(
         !window->GetFrame()->GetPage()->IsPageVisible()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "The requesting page is not visible");
-      return ScriptPromise<WakeLockSentinel>();
+      return EmptyPromise();
     }
 
     // Measure calls without sticky activation as proposed in

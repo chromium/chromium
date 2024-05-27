@@ -132,7 +132,7 @@ ScriptPromise<IDLAny> SubtleCrypto::encrypt(
   if (!NormalizeAlgorithm(script_state->GetIsolate(), raw_algorithm,
                           kWebCryptoOperationEncrypt, normalized_algorithm,
                           exception_state))
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
@@ -179,7 +179,7 @@ ScriptPromise<IDLAny> SubtleCrypto::decrypt(
   if (!NormalizeAlgorithm(script_state->GetIsolate(), raw_algorithm,
                           kWebCryptoOperationDecrypt, normalized_algorithm,
                           exception_state))
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
@@ -226,7 +226,7 @@ ScriptPromise<IDLAny> SubtleCrypto::sign(
   if (!NormalizeAlgorithm(script_state->GetIsolate(), raw_algorithm,
                           kWebCryptoOperationSign, normalized_algorithm,
                           exception_state))
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
@@ -278,7 +278,7 @@ ScriptPromise<IDLAny> SubtleCrypto::verifySignature(
   if (!NormalizeAlgorithm(script_state->GetIsolate(), raw_algorithm,
                           kWebCryptoOperationVerify, normalized_algorithm,
                           exception_state))
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
@@ -324,7 +324,7 @@ ScriptPromise<IDLAny> SubtleCrypto::digest(
   if (!NormalizeAlgorithm(script_state->GetIsolate(), raw_algorithm,
                           kWebCryptoOperationDigest, normalized_algorithm,
                           exception_state))
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
@@ -670,7 +670,7 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::deriveBits(
   if (!NormalizeAlgorithm(script_state->GetIsolate(), raw_algorithm,
                           kWebCryptoOperationDeriveBits, normalized_algorithm,
                           exception_state))
-    return ScriptPromise<DOMArrayBuffer>();
+    return EmptyPromise();
 
   // 14.3.8.7: If the name member of normalizedAlgorithm is not equal to the
   //           name attribute of the [[algorithm]] internal slot of baseKey

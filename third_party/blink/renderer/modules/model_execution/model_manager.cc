@@ -76,7 +76,7 @@ ScriptPromise<V8GenericModelAvailability> ModelManager::canCreateGenericSession(
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<V8GenericModelAvailability>();
+    return EmptyPromise();
   }
 
   base::UmaHistogramEnumeration(
@@ -114,7 +114,7 @@ ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<ModelGenericSession>();
+    return EmptyPromise();
   }
 
   base::UmaHistogramEnumeration(
@@ -174,7 +174,7 @@ ModelManager::defaultGenericSessionOptions(ScriptState* script_state,
                                            ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<ModelGenericSessionOptions>();
+    return EmptyPromise();
   }
 
   base::UmaHistogramEnumeration(

@@ -200,7 +200,7 @@ ScriptPromise<typename Consumer::ResolveType> Body::LoadAndConvertBody(
     OnNoBodyFunction on_no_body,
     ExceptionState& exception_state) {
   if (!ShouldLoadBody(script_state, exception_state)) {
-    return ScriptPromise<typename Consumer::ResolveType>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<
@@ -213,7 +213,7 @@ ScriptPromise<typename Consumer::ResolveType> Body::LoadAndConvertBody(
                               exception_state);
     if (exception_state.HadException()) {
       resolver->Detach();
-      return ScriptPromise<typename Consumer::ResolveType>();
+      return EmptyPromise();
     }
   } else {
     on_no_body(resolver);
@@ -271,7 +271,7 @@ ScriptPromise<FormData> Body::formData(ScriptState* script_state,
           script_state, create_loader, on_no_body_reject, exception_state);
     }
     if (!ShouldLoadBody(script_state, exception_state)) {
-      return ScriptPromise<FormData>();
+      return EmptyPromise();
     }
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<FormData>>(
         script_state, exception_state.GetContext());

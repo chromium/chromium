@@ -407,7 +407,7 @@ ScriptPromise<Response> CacheStorage::match(
       request_object = Request::Create(script_state, request->GetAsUSVString(),
                                        exception_state);
       if (exception_state.HadException()) {
-        return ScriptPromise<Response>();
+        return EmptyPromise();
       }
       break;
   }

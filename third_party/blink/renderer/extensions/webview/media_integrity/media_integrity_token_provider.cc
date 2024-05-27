@@ -52,7 +52,7 @@ ScriptPromise<IDLString> MediaIntegrityTokenProvider::requestToken(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidContext);
-    return ScriptPromise<IDLString>();
+    return EmptyPromise();
   }
   ScriptPromiseResolver<IDLString>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(

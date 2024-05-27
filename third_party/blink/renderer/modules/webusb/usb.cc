@@ -217,12 +217,12 @@ ScriptPromise<USBDevice> USB::requestDevice(
         DOMExceptionCode::kNotSupportedError,
         "The implementation did not support the requested type of object or "
         "operation.");
-    return ScriptPromise<USBDevice>();
+    return EmptyPromise();
   }
 
   if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
-    return ScriptPromise<USBDevice>();
+    return EmptyPromise();
   }
 
   EnsureServiceConnection();
@@ -230,7 +230,7 @@ ScriptPromise<USBDevice> USB::requestDevice(
   if (!LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame())) {
     exception_state.ThrowSecurityError(
         "Must be handling a user gesture to show a permission request.");
-    return ScriptPromise<USBDevice>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<USBDevice>>(

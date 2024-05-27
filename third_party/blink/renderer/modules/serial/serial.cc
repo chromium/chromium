@@ -210,13 +210,13 @@ ScriptPromise<SerialPort> Serial::requestPort(
     ExceptionState& exception_state) {
   if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
                                    GetExecutionContext(), &exception_state)) {
-    return ScriptPromise<SerialPort>();
+    return EmptyPromise();
   }
 
   if (!LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame())) {
     exception_state.ThrowSecurityError(
         "Must be handling a user gesture to show a permission request.");
-    return ScriptPromise<SerialPort>();
+    return EmptyPromise();
   }
 
   Vector<mojom::blink::SerialPortFilterPtr> filters;
@@ -225,7 +225,7 @@ ScriptPromise<SerialPort> Serial::requestPort(
       auto mojo_filter = CreateMojoFilter(filter, exception_state);
       if (!mojo_filter) {
         CHECK(exception_state.HadException());
-        return ScriptPromise<SerialPort>();
+        return EmptyPromise();
       }
 
       CHECK(!exception_state.HadException());

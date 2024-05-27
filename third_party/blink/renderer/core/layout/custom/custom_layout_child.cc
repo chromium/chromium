@@ -39,7 +39,7 @@ ScriptPromise<CustomIntrinsicSizes> CustomLayoutChild::intrinsicSizes(
   if (!node_ || !token_->IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidLayoutChild);
-    return ScriptPromise<CustomIntrinsicSizes>();
+    return EmptyPromise();
   }
 
   auto* resolver =
@@ -62,7 +62,7 @@ ScriptPromise<CustomLayoutFragment> CustomLayoutChild::layoutNextFragment(
   if (!node_ || !token_->IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidLayoutChild);
-    return ScriptPromise<CustomLayoutFragment>();
+    return EmptyPromise();
   }
 
   // Serialize the provided data if needed.
@@ -81,7 +81,7 @@ ScriptPromise<CustomLayoutFragment> CustomLayoutChild::layoutNextFragment(
           exception_state);
 
       if (exception_state.HadException())
-        return ScriptPromise<CustomLayoutFragment>();
+        return EmptyPromise();
     }
   }
 

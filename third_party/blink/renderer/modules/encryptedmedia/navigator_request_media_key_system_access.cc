@@ -142,7 +142,7 @@ NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
         kEncryptedMediaPermissionsPolicyConsoleWarning));
     exception_state.ThrowSecurityError(
         "requestMediaKeySystemAccess is disabled by permissions policy.");
-    return ScriptPromise<MediaKeySystemAccess>();
+    return EmptyPromise();
   }
 
   // From https://w3c.github.io/encrypted-media/#requestMediaKeySystemAccess
@@ -151,7 +151,7 @@ NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
   //    newly created TypeError.
   if (key_system.empty()) {
     exception_state.ThrowTypeError("The keySystem parameter is empty.");
-    return ScriptPromise<MediaKeySystemAccess>();
+    return EmptyPromise();
   }
 
   // 2. If supportedConfigurations is empty, return a promise rejected with
@@ -159,7 +159,7 @@ NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
   if (!supported_configurations.size()) {
     exception_state.ThrowTypeError(
         "The supportedConfigurations parameter is empty.");
-    return ScriptPromise<MediaKeySystemAccess>();
+    return EmptyPromise();
   }
 
   // 3. Let document be the calling context's Document.
@@ -168,7 +168,7 @@ NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The context provided is not associated with a page.");
-    return ScriptPromise<MediaKeySystemAccess>();
+    return EmptyPromise();
   }
 
   UseCounter::Count(*window, WebFeature::kEncryptedMediaSecureOrigin);

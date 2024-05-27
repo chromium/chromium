@@ -112,7 +112,7 @@ ScriptPromise<IDLUndefined> InternalsFedCm::selectFedCmAccount(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
         "A negative account index is not allowed");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());

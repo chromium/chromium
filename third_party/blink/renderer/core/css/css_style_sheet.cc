@@ -507,7 +507,7 @@ ScriptPromise<CSSStyleSheet> CSSStyleSheet::replace(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Can't call replace on non-constructed CSSStyleSheets.");
-    return ScriptPromise<CSSStyleSheet>();
+    return EmptyPromise();
   }
   SetText(text, CSSImportRules::kIgnoreWithWarning);
   probe::DidReplaceStyleSheetText(OwnerDocument(), this, text);

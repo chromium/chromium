@@ -40,7 +40,7 @@ ScriptPromise<IDLBoolean> PaymentManager::enableDelegations(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot enable payment delegations");
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   if (enable_delegations_resolver_) {
@@ -48,7 +48,7 @@ ScriptPromise<IDLBoolean> PaymentManager::enableDelegations(
         DOMExceptionCode::kInvalidStateError,
         "Cannot call enableDelegations() again until the previous "
         "enableDelegations() is finished");
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   using MojoPaymentDelegation = payments::mojom::blink::PaymentDelegation;

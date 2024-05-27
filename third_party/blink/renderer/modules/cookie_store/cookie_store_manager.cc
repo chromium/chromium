@@ -122,7 +122,7 @@ ScriptPromise<IDLUndefined> CookieStoreManager::subscribe(
                               exception_state);
     if (backend_subscription.is_null()) {
       DCHECK(exception_state.HadException());
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
     }
     backend_subscriptions.push_back(std::move(backend_subscription));
   }
@@ -148,7 +148,7 @@ ScriptPromise<IDLUndefined> CookieStoreManager::unsubscribe(
                               exception_state);
     if (backend_subscription.is_null()) {
       DCHECK(exception_state.HadException());
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
     }
     backend_subscriptions.push_back(std::move(backend_subscription));
   }

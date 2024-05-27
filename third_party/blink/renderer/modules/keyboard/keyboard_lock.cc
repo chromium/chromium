@@ -52,19 +52,19 @@ ScriptPromise<IDLUndefined> KeyboardLock::lock(
   if (!IsLocalFrameAttached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardLockFrameDetachedErrorMsg);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!CalledFromSupportedContext(ExecutionContext::From(state))) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardLockChildFrameErrorMsg);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!EnsureServiceConnected()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardLockRequestFailedErrorMsg);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   request_keylock_resolver_ =

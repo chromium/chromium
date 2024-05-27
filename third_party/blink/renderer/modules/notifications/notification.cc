@@ -460,7 +460,7 @@ ScriptPromise<V8NotificationPermission> Notification::requestPermission(
     ScriptState* script_state,
     V8NotificationPermissionCallback* deprecated_callback) {
   if (!script_state->ContextIsValid())
-    return ScriptPromise<V8NotificationPermission>();
+    return EmptyPromise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
 

@@ -45,7 +45,7 @@ ScriptPromise<V8TranslationAvailability> Translation::canTranslate(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromise<V8TranslationAvailability>();
+    return EmptyPromise();
   }
 
   auto* resolver =
@@ -83,7 +83,7 @@ ScriptPromise<LanguageTranslator> Translation::createTranslator(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromise<LanguageTranslator>();
+    return EmptyPromise();
   }
 
   auto* resolver =

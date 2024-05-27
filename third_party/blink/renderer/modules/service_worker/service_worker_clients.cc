@@ -118,7 +118,7 @@ ScriptPromise<ServiceWorkerClient> ServiceWorkerClients::get(
   // TODO(jungkees): May be null due to worker termination:
   // http://crbug.com/413518.
   if (!global_scope)
-    return ScriptPromise<ServiceWorkerClient>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<ServiceWorkerClient>>(
@@ -153,7 +153,7 @@ ScriptPromise<IDLUndefined> ServiceWorkerClients::claim(
 
   // FIXME: May be null due to worker termination: http://crbug.com/413518.
   if (!global_scope)
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);

@@ -841,7 +841,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
   String message;
   if (!IsValidMediaDecodingConfiguration(config, is_webrtc, &message)) {
     exception_state.ThrowTypeError(message);
-    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
+    return EmptyPromise();
   }
   // Validation errors should return above.
   DCHECK(message.empty());
@@ -1044,7 +1044,7 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
     exception_state.ThrowTypeError(
         "The provided value 'record' is not a valid enum value of type "
         "MediaEncodingType.");
-    return ScriptPromise<MediaCapabilitiesInfo>();
+    return EmptyPromise();
     ;
   }
 
@@ -1054,7 +1054,7 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
   String message;
   if (!IsValidMediaEncodingConfiguration(config, is_webrtc, &message)) {
     exception_state.ThrowTypeError(message);
-    return ScriptPromise<MediaCapabilitiesInfo>();
+    return EmptyPromise();
   }
   // Validation errors should return above.
   DCHECK(message.empty());
@@ -1240,7 +1240,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::GetEmeSupport(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The context provided is not associated with a page.");
-    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
+    return EmptyPromise();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -1260,21 +1260,21 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::GetEmeSupport(
     exception_state.ThrowSecurityError(
         "decodingInfo(): Creating MediaKeySystemAccess is disabled by feature "
         "policy.");
-    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
+    return EmptyPromise();
   }
 
   if (execution_context->IsWorkerGlobalScope()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Encrypted Media decoding info not available in Worker context.");
-    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
+    return EmptyPromise();
   }
 
   if (!execution_context->IsSecureContext()) {
     exception_state.ThrowSecurityError(
         "Encrypted Media decoding info can only be queried in a secure"
         " context.");
-    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
+    return EmptyPromise();
   }
 
   const MediaCapabilitiesKeySystemConfiguration* key_system_config =
@@ -1282,7 +1282,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::GetEmeSupport(
   if (!key_system_config->hasKeySystem() ||
       key_system_config->keySystem().empty()) {
     exception_state.ThrowTypeError("The key system String is not valid.");
-    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
+    return EmptyPromise();
   }
 
   MediaKeySystemConfiguration* eme_config =

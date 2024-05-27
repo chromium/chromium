@@ -43,7 +43,7 @@ class ScriptPromiseProperty final
 
   ScriptPromise<IDLResolvedType> Promise(DOMWrapperWorld& world) {
     if (!GetExecutionContext()) {
-      return ScriptPromise<IDLResolvedType>();
+      return EmptyPromise();
     }
 
     ScriptState* script_state = ToScriptState(execution_context_.Get(), world);

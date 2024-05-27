@@ -94,7 +94,7 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader cannot be used to read as the view has "
         "byte length equal to 0");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return EmptyPromise();
   }
 
   // 2. If view.[[ViewedArrayBuffer]].[[ArrayBufferByteLength]] is 0, return a
@@ -103,7 +103,7 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader cannot be used to read as the viewed "
         "array buffer has 0 byte length");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return EmptyPromise();
   }
 
   // 3. If ! IsDetachedBuffer(view.[[ViewedArrayBuffer]]) is true, return a
@@ -112,7 +112,7 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader cannot be used to read as the viewed "
         "array buffer is detached");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return EmptyPromise();
   }
 
   // 4. If this.[[stream]] is undefined, return a promise rejected with a
@@ -121,7 +121,7 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader has been released and cannot be used to "
         "read from its previous owner stream");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return EmptyPromise();
   }
 
   // 5. Let promise be a new promise.

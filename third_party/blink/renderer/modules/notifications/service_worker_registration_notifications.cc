@@ -42,7 +42,7 @@ ServiceWorkerRegistrationNotifications::showNotification(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "showNotification() is not allowed in fenced frames.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // If context object's active worker is null, reject the promise with a
@@ -53,7 +53,7 @@ ServiceWorkerRegistrationNotifications::showNotification(
     exception_state.ThrowTypeError(
         "No active registration available on "
         "the ServiceWorkerRegistration.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // If permission for notification's origin is not "granted", reject the
@@ -64,14 +64,14 @@ ServiceWorkerRegistrationNotifications::showNotification(
         PersistentNotificationDisplayResult::kPermissionNotGranted);
     exception_state.ThrowTypeError(
         "No notification permission has been granted for this origin.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // Validate the developer-provided options to get the NotificationData.
   mojom::blink::NotificationDataPtr data = CreateNotificationData(
       execution_context, title, options, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
 
   // Log number of actions developer provided in linear histogram:
   //     0    -> underflow bucket,

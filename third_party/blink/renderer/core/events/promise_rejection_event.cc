@@ -31,7 +31,7 @@ ScriptPromise<IDLAny> PromiseRejectionEvent::promise(
   // Return null when the promise is accessed by a different world than the
   // world that created the promise.
   if (!CanBeDispatchedInWorld(script_state->World())) {
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
   }
   return ScriptPromise<IDLAny>::FromV8Promise(
       script_state->GetIsolate(), promise_.Get(script_state->GetIsolate()));

@@ -77,7 +77,7 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     if (!script_state->ContextIsValid() || !execution_context) {
       // TODO(yhirano): Should this be moved to bindings?
       exception_state.ThrowTypeError("The global scope is shutting down.");
-      return ScriptPromise<Response>();
+      return EmptyPromise();
     }
 
     // "Let |r| be the associated request of the result of invoking the
@@ -85,7 +85,7 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     // arguments. If this throws an exception, reject |p| with it."
     Request* r = Request::Create(script_state, input, init, exception_state);
     if (exception_state.HadException())
-      return ScriptPromise<Response>();
+      return EmptyPromise();
 
     probe::WillSendXMLHttpOrFetchNetworkRequest(execution_context, r->url());
     FetchRequestData* request_data =
@@ -96,13 +96,13 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     // have been set to nullptr during Request::Create.
     if (!fetch_manager_->GetExecutionContext()) {
       exception_state.ThrowTypeError("The global scope is shutting down.");
-      return ScriptPromise<Response>();
+      return EmptyPromise();
     }
 
     auto promise = fetch_manager_->Fetch(script_state, request_data,
                                          r->signal(), exception_state);
     if (exception_state.HadException())
-      return ScriptPromise<Response>();
+      return EmptyPromise();
 
     return promise;
   }
@@ -220,7 +220,7 @@ ScriptPromise<Response> GlobalFetch::fetch(ScriptState* script_state,
   UseCounter::Count(window.GetExecutionContext(), WebFeature::kFetch);
   if (!window.GetFrame()) {
     exception_state.ThrowTypeError("The global scope is shutting down.");
-    return ScriptPromise<Response>();
+    return EmptyPromise();
   }
   return ScopedFetcher::From(window)->Fetch(script_state, input, init,
                                             exception_state);

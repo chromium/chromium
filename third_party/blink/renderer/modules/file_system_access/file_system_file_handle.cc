@@ -47,7 +47,7 @@ FileSystemFileHandle::createWritable(
     ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
-    return ScriptPromise<FileSystemWritableFileStream>();
+    return EmptyPromise();
   }
 
   auto* resolver =
@@ -101,7 +101,7 @@ ScriptPromise<File> FileSystemFileHandle::getFile(
     ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
-    return ScriptPromise<File>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<File>>(

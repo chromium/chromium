@@ -226,7 +226,7 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
         DOMExceptionCode::kInvalidStateError,
         "Internal error: window frame is missing (the navigator may be "
         "detached).");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
@@ -238,7 +238,7 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
     window->CountUse(WebFeature::kWebSharePolicyDisallow);
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Permission denied");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   window->CountUse(WebFeature::kWebSharePolicyAllow);
 
@@ -250,7 +250,7 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
   if (!clients_.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "An earlier share has not yet completed.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 #endif
 
@@ -259,20 +259,20 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Must be handling a user gesture to perform a share request.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (window->GetFrame()->IsInFencedFrameTree()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Web Share is not allowed in a fenced frame tree.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   KURL url;
   if (!CanShareInternal(*window, *data, url, &exception_state)) {
     DCHECK(exception_state.HadException());
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!service_remote_.is_bound()) {
@@ -293,7 +293,7 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
         mojom::blink::ConsoleMessageLevel::kWarning, "Share too large");
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Permission denied");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   bool has_files = HasFiles(*data);
@@ -310,7 +310,7 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
             mojom::blink::ConsoleMessageLevel::kWarning, "Unsafe file name");
         exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                           "Permission denied");
-        return ScriptPromise<IDLUndefined>();
+        return EmptyPromise();
       }
 
       total_bytes += file->size();
@@ -325,7 +325,7 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
           mojom::blink::ConsoleMessageLevel::kWarning, "Share too large");
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "Permission denied");
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
     }
   }
 

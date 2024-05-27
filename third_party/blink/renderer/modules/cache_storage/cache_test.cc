@@ -83,7 +83,7 @@ class ScopedFetcherForTests final
     }
     exception_state.ThrowTypeError(
         "Unexpected call to fetch, no response available.");
-    return ScriptPromise<Response>();
+    return EmptyPromise();
   }
 
   // This does not take ownership of its parameter. The provided sample object

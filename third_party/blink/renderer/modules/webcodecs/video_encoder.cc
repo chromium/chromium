@@ -1547,7 +1547,7 @@ ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
   auto* parsed_config = ParseConfigStatic(config, exception_state);
   if (!parsed_config) {
     DCHECK(exception_state.HadException());
-    return ScriptPromise<VideoEncoderSupport>();
+    return EmptyPromise();
   }
   auto* config_copy = CopyConfig(*config, *parsed_config);
 

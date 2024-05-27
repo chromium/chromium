@@ -1495,7 +1495,7 @@ ScriptPromise<Credential> AuthenticationCredentialsContainer::store(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Context is detached");
-    return ScriptPromise<Credential>();
+    return EmptyPromise();
   }
 
   auto* resolver =

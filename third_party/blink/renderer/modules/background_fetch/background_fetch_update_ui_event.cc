@@ -52,13 +52,13 @@ ScriptPromise<IDLUndefined> BackgroundFetchUpdateUIEvent::updateUI(
     // Return a rejected promise as the event is no longer active.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "ExtendableEvent is no longer active.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   if (update_ui_called_) {
     // Return a rejected promise as this method should only be called once.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "updateUI may only be called once.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   update_ui_called_ = true;
@@ -68,7 +68,7 @@ ScriptPromise<IDLUndefined> BackgroundFetchUpdateUIEvent::updateUI(
     // method on a BackgroundFetchSuccessEvent instance they created themselves.
     // TODO(crbug.com/872768): Figure out if this is the right thing to do
     // vs reacting eagerly.
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!ui_options->hasTitle() && ui_options->icons().empty()) {

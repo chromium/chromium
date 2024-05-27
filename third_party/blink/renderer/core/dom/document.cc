@@ -6553,7 +6553,7 @@ ScriptPromise<IDLBoolean> Document::hasPrivateToken(
     exception_state.ThrowTypeError(
         "hasPrivateToken: Private Token issuer origins must be both HTTP(S) "
         "and secure (\"potentially trustworthy\").");
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   scoped_refptr<const SecurityOrigin> top_frame_origin = TopFrameOrigin();
@@ -6561,7 +6561,7 @@ ScriptPromise<IDLBoolean> Document::hasPrivateToken(
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "hasPrivateToken: Cannot execute in "
                                       "documents lacking top-frame origins.");
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   DCHECK(top_frame_origin->IsPotentiallyTrustworthy());
@@ -6571,7 +6571,7 @@ ScriptPromise<IDLBoolean> Document::hasPrivateToken(
         DOMExceptionCode::kNotAllowedError,
         "hasPrivateToken: Cannot execute in "
         "documents without secure, HTTP(S), top-frame origins.");
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   if (!data_->trust_token_query_answerer_.is_bound()) {

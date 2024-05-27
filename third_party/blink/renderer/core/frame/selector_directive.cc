@@ -34,7 +34,7 @@ void RejectWithCode(ScriptPromiseResolverBase* resolver,
 ScriptPromise<Range> SelectorDirective::getMatchingRange(
     ScriptState* state) const {
   if (ExecutionContext::From(state)->IsContextDestroyed())
-    return ScriptPromise<Range>();
+    return EmptyPromise();
 
   // TODO(bokan): This method needs to be able to initiate the search since
   // author code can construct a TextDirective; if it then calls this method

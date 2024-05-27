@@ -274,7 +274,7 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidStateErrorMessage);
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
   }
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -289,7 +289,7 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
   if (!context->GetSecurityOrigin()->CanAccessLocks()) {
     exception_state.ThrowSecurityError(
         "Access to the Locks API is denied in this context.");
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
   }
   if (context->GetSecurityOrigin()->IsLocal()) {
     UseCounter::Count(context, WebFeature::kFileAccessedLocks);
@@ -302,7 +302,7 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
   if (name.StartsWith("-")) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Names cannot start with '-'.");
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
   }
 
   // 7. Otherwise, if both options’ steal dictionary member and option’s
@@ -312,7 +312,7 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The 'steal' and 'ifAvailable' options cannot be used together.");
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
   }
 
   // 8. Otherwise, if options’ steal dictionary member is true and option’s mode
@@ -322,7 +322,7 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The 'steal' option may only be used with 'exclusive' locks.");
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
   }
 
   // 9. Otherwise, if option’s signal dictionary member is present, and either
@@ -333,13 +333,13 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The 'signal' and 'ifAvailable' options cannot be used together.");
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
   }
   if (options->hasSignal() && options->steal()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The 'signal' and 'steal' options cannot be used together.");
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
   }
 
   // If options["signal"] exists and is aborted, then return a promise rejected
@@ -429,7 +429,7 @@ ScriptPromise<LockManagerSnapshot> LockManager::query(
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidStateErrorMessage);
-    return ScriptPromise<LockManagerSnapshot>();
+    return EmptyPromise();
   }
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -437,7 +437,7 @@ ScriptPromise<LockManagerSnapshot> LockManager::query(
   if (!context->GetSecurityOrigin()->CanAccessLocks()) {
     exception_state.ThrowSecurityError(
         "Access to the Locks API is denied in this context.");
-    return ScriptPromise<LockManagerSnapshot>();
+    return EmptyPromise();
   }
   if (context->GetSecurityOrigin()->IsLocal()) {
     UseCounter::Count(context, WebFeature::kFileAccessedLocks);

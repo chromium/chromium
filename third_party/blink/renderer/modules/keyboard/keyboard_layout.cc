@@ -78,7 +78,7 @@ ScriptPromise<KeyboardLayoutMap> KeyboardLayout::GetKeyboardLayoutMap(
   if (!IsLocalFrameAttached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardMapFrameDetachedErrorMsg);
-    return ScriptPromise<KeyboardLayoutMap>();
+    return EmptyPromise();
   }
 
   if (!EnsureServiceConnected()) {
@@ -90,7 +90,7 @@ ScriptPromise<KeyboardLayoutMap> KeyboardLayout::GetKeyboardLayoutMap(
 
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardMapRequestFailedErrorMsg);
-    return ScriptPromise<KeyboardLayoutMap>();
+    return EmptyPromise();
   }
 
   script_promise_resolver_ =

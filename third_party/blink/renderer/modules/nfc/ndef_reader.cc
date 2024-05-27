@@ -172,7 +172,7 @@ ScriptPromise<IDLUndefined> NDEFReader::scan(ScriptState* script_state,
   if (!DomWindow() || !DomWindow()->GetFrame()->IsMainFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kChildFrameErrorMessage);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (scan_signal_ && scan_abort_handle_) {
@@ -193,7 +193,7 @@ ScriptPromise<IDLUndefined> NDEFReader::scan(ScriptState* script_state,
   if (scan_resolver_ || nfc_proxy_->IsReading(this)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "A scan() operation is ongoing.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   scan_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -315,7 +315,7 @@ ScriptPromise<IDLUndefined> NDEFReader::write(
   if (!DomWindow() || !DomWindow()->GetFrame()->IsMainFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kChildFrameErrorMessage);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
@@ -334,7 +334,7 @@ ScriptPromise<IDLUndefined> NDEFReader::write(
   NDEFMessage* ndef_message =
       NDEFMessage::Create(script_state, write_message, exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto message = device::mojom::blink::NDEFMessage::From(ndef_message);
@@ -441,7 +441,7 @@ ScriptPromise<IDLUndefined> NDEFReader::makeReadOnly(
   if (!DomWindow() || !DomWindow()->GetFrame()->IsMainFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kChildFrameErrorMessage);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;

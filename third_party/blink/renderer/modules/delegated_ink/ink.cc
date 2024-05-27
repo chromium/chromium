@@ -33,7 +33,7 @@ ScriptPromise<DelegatedInkTrailPresenter> Ink::requestPresenter(
     exception_state.ThrowException(
         ToExceptionCode(ESErrorType::kError),
         "The object is no longer associated with a window.");
-    return ScriptPromise<DelegatedInkTrailPresenter>();
+    return EmptyPromise();
   }
 
   if (presenter_param->presentationArea() &&
@@ -42,7 +42,7 @@ ScriptPromise<DelegatedInkTrailPresenter> Ink::requestPresenter(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Presentation area element does not belong to the document.");
-    return ScriptPromise<DelegatedInkTrailPresenter>();
+    return EmptyPromise();
   }
 
   return ToResolvedPromise<DelegatedInkTrailPresenter>(

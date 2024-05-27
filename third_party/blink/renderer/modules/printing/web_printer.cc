@@ -96,14 +96,14 @@ ScriptPromise<WebPrinterAttributes> WebPrinter::fetchAttributes(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Context has shut down.");
-    return ScriptPromise<WebPrinterAttributes>();
+    return EmptyPromise();
   }
 
   if (fetch_attributes_resolver_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "A call to fetchAttributes() is already in progress.");
-    return ScriptPromise<WebPrinterAttributes>();
+    return EmptyPromise();
   }
 
   fetch_attributes_resolver_ =
@@ -124,11 +124,11 @@ ScriptPromise<WebPrintJob> WebPrinter::printJob(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Context has shut down.");
-    return ScriptPromise<WebPrintJob>();
+    return EmptyPromise();
   }
 
   if (!ValidatePrintJobTemplateAttributes(pjt_attributes, exception_state)) {
-    return ScriptPromise<WebPrintJob>();
+    return EmptyPromise();
   }
 
   auto attributes =

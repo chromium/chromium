@@ -61,7 +61,7 @@ ScriptPromise<ScreenDetails> WindowScreenDetails::GetScreenDetails(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromise<ScreenDetails>();
+    return EmptyPromise();
   }
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);

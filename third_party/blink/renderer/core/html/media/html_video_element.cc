@@ -641,13 +641,13 @@ ScriptPromise<ImageBitmap> HTMLVideoElement::CreateImageBitmap(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The provided element has not retrieved data.");
-    return ScriptPromise<ImageBitmap>();
+    return EmptyPromise();
   }
   if (!HasAvailableVideoFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The provided element's player has no current data.");
-    return ScriptPromise<ImageBitmap>();
+    return EmptyPromise();
   }
 
   return ImageBitmapSource::FulfillImageBitmap(

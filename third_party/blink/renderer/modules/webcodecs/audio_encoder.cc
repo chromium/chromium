@@ -651,7 +651,7 @@ ScriptPromise<AudioEncoderSupport> AudioEncoder::isConfigSupported(
   auto* parsed_config = ParseConfigStatic(config, exception_state);
   if (!parsed_config) {
     DCHECK(exception_state.HadException());
-    return ScriptPromise<AudioEncoderSupport>();
+    return EmptyPromise();
   }
 
   String unused_js_error_message;

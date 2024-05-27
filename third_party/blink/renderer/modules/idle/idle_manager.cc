@@ -54,7 +54,7 @@ ScriptPromise<V8PermissionState> IdleManager::RequestPermission(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Must be handling a user gesture to show a permission request.");
-    return ScriptPromise<V8PermissionState>();
+    return EmptyPromise();
   }
 
   // This interface is annotated with [SecureContext].

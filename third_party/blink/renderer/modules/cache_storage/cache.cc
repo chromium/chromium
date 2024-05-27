@@ -703,7 +703,7 @@ ScriptPromise<Response> Cache::match(ScriptState* script_state,
       request_object = Request::Create(script_state, request->GetAsUSVString(),
                                        exception_state);
       if (exception_state.HadException())
-        return ScriptPromise<Response>();
+        return EmptyPromise();
       break;
   }
   return MatchImpl(script_state, request_object, options, exception_state);
@@ -751,7 +751,7 @@ ScriptPromise<IDLUndefined> Cache::add(ScriptState* script_state,
       requests.push_back(Request::Create(
           script_state, request->GetAsUSVString(), exception_state));
       if (exception_state.HadException())
-        return ScriptPromise<IDLUndefined>();
+        return EmptyPromise();
       break;
   }
   return AddAllImpl(script_state, "Cache.add()", requests, exception_state);
@@ -771,7 +771,7 @@ ScriptPromise<IDLUndefined> Cache::addAll(
         request_objects.push_back(Request::Create(
             script_state, request->GetAsUSVString(), exception_state));
         if (exception_state.HadException())
-          return ScriptPromise<IDLUndefined>();
+          return EmptyPromise();
         break;
     }
   }
@@ -793,7 +793,7 @@ ScriptPromise<IDLBoolean> Cache::Delete(ScriptState* script_state,
       request_object = Request::Create(script_state, request->GetAsUSVString(),
                                        exception_state);
       if (exception_state.HadException())
-        return ScriptPromise<IDLBoolean>();
+        return EmptyPromise();
       break;
   }
   return DeleteImpl(script_state, request_object, options, exception_state);
@@ -816,13 +816,13 @@ ScriptPromise<IDLUndefined> Cache::put(ScriptState* script_state,
       request = Request::Create(script_state, request_info->GetAsUSVString(),
                                 exception_state);
       if (exception_state.HadException())
-        return ScriptPromise<IDLUndefined>();
+        return EmptyPromise();
       break;
   }
 
   ValidateRequestForPut(request, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
 
   auto* barrier_callback = MakeGarbageCollected<BarrierCallbackForPutResponse>(
       script_state, this, "Cache.put()",
@@ -1070,7 +1070,7 @@ ScriptPromise<IDLUndefined> Cache::AddAllImpl(
   for (wtf_size_t i = 0; i < request_list.size(); ++i) {
     ValidateRequestForPut(request_list[i], exception_state);
     if (exception_state.HadException())
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
   }
 
   auto* barrier_callback = MakeGarbageCollected<BarrierCallbackForPutResponse>(

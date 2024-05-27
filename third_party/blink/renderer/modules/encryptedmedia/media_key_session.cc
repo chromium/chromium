@@ -129,7 +129,7 @@ static ScriptPromise<IDLUndefined> CreateRejectedPromiseNotCallable(
     ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     "The session is not callable.");
-  return ScriptPromise<IDLUndefined>();
+  return EmptyPromise();
 }
 
 static void ThrowAlreadyClosed(ExceptionState& exception_state) {
@@ -497,14 +497,14 @@ ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
   //    rejected with an InvalidStateError.
   if (is_closing_ || is_closed_) {
     ThrowAlreadyClosed(exception_state);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 2. If this object's uninitialized value is false, return a promise
   //    rejected with an InvalidStateError.
   if (!is_uninitialized_) {
     ThrowAlreadyInitialized(exception_state);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 3. Let this object's uninitialized be false.
@@ -514,14 +514,14 @@ ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
   //    with a newly created TypeError.
   if (init_data_type_string.empty()) {
     exception_state.ThrowTypeError("The initDataType parameter is empty.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 5. If initData is an empty array, return a promise rejected with a
   //    newly created TypeError.
   if (!init_data.ByteLength()) {
     exception_state.ThrowTypeError("The initData parameter is empty.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 6. If the Key System implementation represented by this object's cdm
@@ -539,7 +539,7 @@ ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
                                       "The initialization data type '" +
                                           init_data_type_string +
                                           "' is not supported.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 7. Let init data be a copy of the contents of the initData parameter.
@@ -617,14 +617,14 @@ ScriptPromise<IDLBoolean> MediaKeySession::load(
   //    rejected with an InvalidStateError.
   if (is_closing_ || is_closed_) {
     ThrowAlreadyClosed(exception_state);
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   // 2. If this object's uninitialized value is false, return a promise
   //    rejected with an InvalidStateError.
   if (!is_uninitialized_) {
     ThrowAlreadyInitialized(exception_state);
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   // 3. Let this object's uninitialized value be false.
@@ -634,7 +634,7 @@ ScriptPromise<IDLBoolean> MediaKeySession::load(
   //    a newly created TypeError.
   if (session_id.empty()) {
     exception_state.ThrowTypeError("The sessionId parameter is empty.");
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   // 5. If the result of running the "Is persistent session type?" algorithm
@@ -642,7 +642,7 @@ ScriptPromise<IDLBoolean> MediaKeySession::load(
   //    with a newly created TypeError.
   if (!IsPersistentSessionType(session_type_)) {
     exception_state.ThrowTypeError("The session type is not persistent.");
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   // 6. Let origin be the origin of this object's Document.
@@ -754,7 +754,7 @@ ScriptPromise<IDLUndefined> MediaKeySession::update(
   //    rejected with an InvalidStateError.
   if (is_closing_ || is_closed_) {
     ThrowAlreadyClosed(exception_state);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 2. If this object's callable value is false, return a promise
@@ -766,7 +766,7 @@ ScriptPromise<IDLUndefined> MediaKeySession::update(
   //    newly created TypeError.
   if (!response.ByteLength()) {
     exception_state.ThrowTypeError("The response parameter is empty.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 4. Let response copy be a copy of the contents of the response parameter.
@@ -872,7 +872,7 @@ ScriptPromise<IDLUndefined> MediaKeySession::remove(
   //    rejected with an InvalidStateError.
   if (is_closing_ || is_closed_) {
     ThrowAlreadyClosed(exception_state);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 2. If this object's callable value is false, return a promise rejected

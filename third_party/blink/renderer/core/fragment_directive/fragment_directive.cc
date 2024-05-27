@@ -88,7 +88,7 @@ ScriptPromise<SelectorDirective> FragmentDirective::createSelectorDirective(
     ScriptState* state,
     const V8UnionRangeOrSelection* arg) {
   if (ExecutionContext::From(state)->IsContextDestroyed())
-    return ScriptPromise<SelectorDirective>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<SelectorDirective>>(state);

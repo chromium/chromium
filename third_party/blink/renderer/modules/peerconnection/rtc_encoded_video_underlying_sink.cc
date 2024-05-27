@@ -41,20 +41,20 @@ ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSink::write(
       script_state->GetIsolate(), chunk.V8Value());
   if (!encoded_frame) {
     exception_state.ThrowTypeError("Invalid frame");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!transformer_broker_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto webrtc_frame = encoded_frame->PassWebRtcFrame();
   if (!webrtc_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Empty frame");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   transformer_broker_->SendFrameToSink(std::move(webrtc_frame));

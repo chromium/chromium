@@ -952,7 +952,7 @@ ScriptPromise<IDLUndefined> ImageLoader::Decode(
   if (!script_state->ContextIsValid() || !execution_context) {
     exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
                                       "The source image cannot be decoded.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   UseCounter::Count(execution_context, WebFeature::kImageDecodeAPI);

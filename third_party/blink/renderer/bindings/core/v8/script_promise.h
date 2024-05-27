@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -208,6 +209,35 @@ ScriptPromise<IDLType> ToResolvedPromise(ScriptState*, BlinkType value);
 
 CORE_EXPORT ScriptPromise<IDLUndefined> ToResolvedUndefinedPromise(
     ScriptState*);
+
+// EmptyPromise() is a value similar to std::nullopt that can be used to return
+// an empty ScriptPromise of any type. It is intended to be used when throwing
+// an exception using an ExceptionState object, since in that case the bindings
+// ignore the contents of the returned promise.
+//
+// The usual patterns for usage are:
+//
+//   if (bad thing) {
+//     exception_state.ThrowRangeError("bad thing");
+//     return EmptyPromise();
+//   }
+//
+// or
+//
+//   FunctionThatMightThrow(script_state, exception_state);
+//   if (exception_state.HadException()) {
+//     return EmptyPromise();
+//   }
+class EmptyPromise {
+  STACK_ALLOCATED();
+
+ public:
+  template <typename IDLType>
+  // Intentionally permit implicit conversion. NOLINTNEXTLINE.
+  operator ScriptPromise<IDLType>() {
+    return ScriptPromise<IDLType>();
+  }
+};
 
 }  // namespace blink
 

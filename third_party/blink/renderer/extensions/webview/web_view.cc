@@ -74,7 +74,7 @@ WebView::getExperimentalMediaIntegrityTokenProvider(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidContext);
-    return ScriptPromise<MediaIntegrityTokenProvider>();
+    return EmptyPromise();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -86,7 +86,7 @@ WebView::getExperimentalMediaIntegrityTokenProvider(
         DOMExceptionCode::kNotSupportedError,
         "getExperimentalMediaIntegrityTokenProvider: "
         "can only be used from trustworthy http/https origins");
-    return ScriptPromise<MediaIntegrityTokenProvider>();
+    return EmptyPromise();
   }
 
   ScriptPromiseResolver<MediaIntegrityTokenProvider>* resolver =

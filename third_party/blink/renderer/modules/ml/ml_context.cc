@@ -156,13 +156,13 @@ ScriptPromise<MLComputeResult> MLContext::compute(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return ScriptPromise<MLComputeResult>();
+    return EmptyPromise();
   }
 
   if (graph->Context() != this) {
     exception_state.ThrowTypeError(
         "The graph isn't built within this context.");
-    return ScriptPromise<MLComputeResult>();
+    return EmptyPromise();
   }
 
   return graph->Compute(std::move(scoped_trace), inputs, outputs, script_state,
@@ -301,13 +301,13 @@ ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return ScriptPromise<DOMArrayBuffer>();
+    return EmptyPromise();
   }
 
   if (src_buffer->context() != this) {
     exception_state.ThrowTypeError(
         "The source buffer wasn't created with this context.");
-    return ScriptPromise<DOMArrayBuffer>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(

@@ -68,18 +68,18 @@ ScriptPromise<IDLUndefined> MediaStreamAudioTrackUnderlyingSink::write(
       V8AudioData::ToWrappable(script_state->GetIsolate(), chunk.V8Value());
   if (!audio_data) {
     exception_state.ThrowTypeError("Null audio data.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!audio_data->data()) {
     exception_state.ThrowTypeError("Empty or closed audio data.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!source_broker_->IsRunning()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   const auto& data = audio_data->data();
@@ -91,7 +91,7 @@ ScriptPromise<IDLUndefined> MediaStreamAudioTrackUnderlyingSink::write(
     audio_data->close();
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Invalid audio data");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   source_broker_->PushAudioData(audio_data->data());

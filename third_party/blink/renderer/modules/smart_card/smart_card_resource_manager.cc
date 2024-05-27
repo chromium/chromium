@@ -80,7 +80,7 @@ ScriptPromise<SmartCardContext> SmartCardResourceManager::establishContext(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (ShouldBlockSmartCardServiceCall(GetExecutionContext(), exception_state)) {
-    return ScriptPromise<SmartCardContext>();
+    return EmptyPromise();
   }
 
   auto* resolver =

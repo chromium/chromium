@@ -163,7 +163,7 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
         DOMExceptionCode::kInvalidStateError,
         "cannot call startRendering on an OfflineAudioContext in a stopped "
         "state.");
-    return ScriptPromise<AudioBuffer>();
+    return EmptyPromise();
   }
 
   // If the context is not in the suspended state (i.e. running), reject the
@@ -172,7 +172,7 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "cannot startRendering when an OfflineAudioContext is " + state());
-    return ScriptPromise<AudioBuffer>();
+    return EmptyPromise();
   }
 
   // Can't call startRendering more than once.  Return a rejected promise now.
@@ -180,7 +180,7 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "cannot call startRendering more than once");
-    return ScriptPromise<AudioBuffer>();
+    return EmptyPromise();
   }
 
   DCHECK(!is_rendering_started_);
@@ -202,7 +202,7 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
             String::Number(number_of_channels) + ", " +
             String::Number(total_render_frames_) + ", " +
             String::Number(sample_rate) + ")");
-    return ScriptPromise<AudioBuffer>();
+    return EmptyPromise();
   }
 
   // Start rendering and return the promise.
@@ -226,7 +226,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
   if (ContextState() == AudioContextState::kClosed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "the rendering is already finished");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // The specified suspend time is negative; reject the promise.
@@ -234,7 +234,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "negative suspend time (" + String::Number(when) + ") is not allowed");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // The suspend time should be earlier than the total render frame. If the
@@ -252,7 +252,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
             String::Number(total_render_frames_) + " frames (" +
             String::NumberToStringECMAScript(total_render_duration) +
             " seconds)");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // Find the sample frame and round up to the nearest render quantum
@@ -274,7 +274,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
             String::Number(frame) + " because it is earlier than the current " +
             "frame of " + String::Number(current_frame_clamped) + " (" +
             String::Number(current_time_clamped) + " seconds)");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   ScriptPromise<IDLUndefined> promise;
@@ -292,7 +292,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
           "cannot schedule more than one suspend at frame " +
               String::Number(frame) + " (" + String::Number(when) +
               " seconds)");
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
     }
 
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -320,7 +320,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::resumeContext(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "cannot resume an offline context that has not started");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // If the context is in a closed state or it really is closed (cleared),
@@ -328,7 +328,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::resumeContext(
   if (IsContextCleared() || ContextState() == AudioContextState::kClosed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "cannot resume a closed offline context");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // If the context is already running, resolve the promise without altering

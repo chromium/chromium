@@ -3474,7 +3474,7 @@ ScriptPromise<IDLAny> Internals::promiseCheck(ScriptState* script_state,
   }
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     "Thrown from the native implementation.");
-  return ScriptPromise<IDLAny>();
+  return EmptyPromise();
 }
 
 ScriptPromise<IDLAny> Internals::promiseCheckWithoutExceptionState(
@@ -4054,18 +4054,18 @@ ScriptPromise<IDLUndefined> Internals::exemptUrlFromNetworkRevocation(
     ScriptState* script_state,
     const String& url) {
   if (!blink::features::IsFencedFramesEnabled()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   if (!base::FeatureList::IsEnabled(
           blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   if (!base::FeatureList::IsEnabled(
           blink::features::kExemptUrlFromNetworkRevocationForTesting)) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   if (!GetFrame()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   LocalFrame* frame = GetFrame();
   DCHECK(frame->GetDocument());

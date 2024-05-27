@@ -73,14 +73,14 @@ ScriptPromise<PermissionStatus> Permissions::query(
       }
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "The document is not active");
-      return ScriptPromise<PermissionStatus>();
+      return EmptyPromise();
     }
   }
 
   PermissionDescriptorPtr descriptor =
       ParsePermissionDescriptor(script_state, raw_permission, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<PermissionStatus>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PermissionStatus>>(
@@ -106,7 +106,7 @@ ScriptPromise<PermissionStatus> Permissions::request(
   PermissionDescriptorPtr descriptor =
       ParsePermissionDescriptor(script_state, raw_permission, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<PermissionStatus>();
+    return EmptyPromise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
 
@@ -134,7 +134,7 @@ ScriptPromise<PermissionStatus> Permissions::revoke(
   PermissionDescriptorPtr descriptor =
       ParsePermissionDescriptor(script_state, raw_permission, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<PermissionStatus>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PermissionStatus>>(

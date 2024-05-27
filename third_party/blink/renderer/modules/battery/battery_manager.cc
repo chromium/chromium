@@ -23,7 +23,7 @@ ScriptPromise<BatteryManager> BatteryManager::getBattery(
     ScriptState* script_state,
     Navigator& navigator) {
   if (!navigator.DomWindow())
-    return ScriptPromise<BatteryManager>();
+    return EmptyPromise();
 
   // Check to see if this request would be blocked according to the Battery
   // Status API specification.

@@ -110,7 +110,7 @@ ScriptPromise<V8PermissionState> IdleDetector::requestPermission(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid())
-    return ScriptPromise<V8PermissionState>();
+    return EmptyPromise();
 
   auto* context = ExecutionContext::From(script_state);
   return IdleManager::From(context)->RequestPermission(script_state,
@@ -124,7 +124,7 @@ ScriptPromise<IDLUndefined> IdleDetector::start(
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Execution context is detached.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -134,20 +134,20 @@ ScriptPromise<IDLUndefined> IdleDetector::start(
           mojom::blink::PermissionsPolicyFeature::kIdleDetection,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (receiver_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Idle detector is already started.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (options->hasThreshold()) {
     auto threshold = base::Milliseconds(options->threshold());
     if (threshold < kMinimumThreshold) {
       exception_state.ThrowTypeError("Minimum threshold is 1 minute.");
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
     }
     threshold_ = threshold;
   }

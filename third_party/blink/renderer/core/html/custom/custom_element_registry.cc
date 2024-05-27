@@ -334,7 +334,7 @@ ScriptPromise<V8CustomElementConstructor> CustomElementRegistry::whenDefined(
     const AtomicString& name,
     ExceptionState& exception_state) {
   if (ThrowIfInvalidName(name, false, exception_state))
-    return ScriptPromise<V8CustomElementConstructor>();
+    return EmptyPromise();
   if (CustomElementDefinition* definition = DefinitionForName(name)) {
     return ToResolvedPromise<V8CustomElementConstructor>(
         script_state, definition->GetV8CustomElementConstructor());

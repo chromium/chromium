@@ -172,7 +172,7 @@ ScriptPromise<IDLAny> ScriptPromiseUntyped::Then(ScriptFunction* on_fulfilled,
   CHECK(!on_fulfilled || !on_rejected ||
         on_fulfilled->GetScriptState() == on_rejected->GetScriptState());
   if (promise_.IsEmpty())
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
 
   v8::Local<v8::Promise> promise = V8Promise();
   v8::Local<v8::Promise> result_promise;
@@ -181,19 +181,19 @@ ScriptPromise<IDLAny> ScriptPromiseUntyped::Then(ScriptFunction* on_fulfilled,
   if (!on_rejected) {
     if (!promise->Then(script_state->GetContext(), on_fulfilled->V8Function())
              .ToLocal(&result_promise)) {
-      return ScriptPromise<IDLAny>();
+      return EmptyPromise();
     }
   } else if (!on_fulfilled) {
     if (!promise->Catch(script_state->GetContext(), on_rejected->V8Function())
              .ToLocal(&result_promise)) {
-      return ScriptPromise<IDLAny>();
+      return EmptyPromise();
     }
   } else {
     if (!promise
              ->Then(script_state->GetContext(), on_fulfilled->V8Function(),
                     on_rejected->V8Function())
              .ToLocal(&result_promise)) {
-      return ScriptPromise<IDLAny>();
+      return EmptyPromise();
     }
   }
   return ScriptPromise<IDLAny>::FromV8Promise(script_state->GetIsolate(),

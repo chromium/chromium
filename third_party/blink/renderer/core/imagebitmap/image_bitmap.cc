@@ -994,7 +994,7 @@ ScriptPromise<ImageBitmap> ImageBitmap::CreateAsync(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The ImageBitmap could not be allocated.");
-    return ScriptPromise<ImageBitmap>();
+    return EmptyPromise();
   }
 
   scoped_refptr<Image> input = image->CachedImage()->GetImage();
@@ -1014,7 +1014,7 @@ ScriptPromise<ImageBitmap> ImageBitmap::CreateAsync(
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
           "The ImageBitmap could not be allocated.");
-      return ScriptPromise<ImageBitmap>();
+      return EmptyPromise();
     }
   }
 

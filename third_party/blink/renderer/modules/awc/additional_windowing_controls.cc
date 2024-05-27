@@ -177,7 +177,7 @@ ScriptPromise<IDLUndefined> AdditionalWindowingControls::maximize(
     LocalDOMWindow& window,
     ExceptionState& exception_state) {
   if (!CanUseWindowingControls(&window, exception_state)) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver =
@@ -194,7 +194,7 @@ ScriptPromise<IDLUndefined> AdditionalWindowingControls::minimize(
     LocalDOMWindow& window,
     ExceptionState& exception_state) {
   if (!CanUseWindowingControls(&window, exception_state)) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver =
@@ -211,7 +211,7 @@ ScriptPromise<IDLUndefined> AdditionalWindowingControls::restore(
     LocalDOMWindow& window,
     ExceptionState& exception_state) {
   if (!CanUseWindowingControls(&window, exception_state)) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver =
@@ -229,7 +229,7 @@ ScriptPromise<IDLUndefined> AdditionalWindowingControls::setResizable(
     bool resizable,
     ExceptionState& exception_state) {
   if (!CanUseWindowingControls(&window, exception_state)) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver =

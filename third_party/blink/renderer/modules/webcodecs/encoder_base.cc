@@ -178,10 +178,10 @@ ScriptPromise<IDLUndefined> EncoderBase<Traits>::flush(
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ThrowIfCodecStateClosed(state_, "flush", exception_state))
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
 
   if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
 
   MarkCodecActive();
 

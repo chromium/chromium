@@ -343,7 +343,7 @@ ScriptPromise<IDLBoolean> MediaKeys::setServerCertificate(
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The context provided is invalid.");
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   // From https://w3c.github.io/encrypted-media/#setServerCertificate
@@ -360,7 +360,7 @@ ScriptPromise<IDLBoolean> MediaKeys::setServerCertificate(
   //    with a new a newly created TypeError.
   if (!server_certificate.ByteLength()) {
     exception_state.ThrowTypeError("The serverCertificate parameter is empty.");
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   // 3. Let certificate be a copy of the contents of the serverCertificate
@@ -422,7 +422,7 @@ ScriptPromise<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The context provided is invalid.");
-    return ScriptPromise<V8MediaKeyStatus>();
+    return EmptyPromise();
   }
 
   // TODO(xhwang): Pass MediaKeysPolicy classes all the way to Chromium when

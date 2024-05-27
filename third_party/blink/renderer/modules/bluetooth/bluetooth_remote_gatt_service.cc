@@ -95,7 +95,7 @@ BluetoothRemoteGATTService::getCharacteristic(
   String characteristic_uuid =
       BluetoothUUID::getCharacteristic(characteristic, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<BluetoothRemoteGATTCharacteristic>();
+    return EmptyPromise();
 
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<BluetoothRemoteGATTCharacteristic>>(

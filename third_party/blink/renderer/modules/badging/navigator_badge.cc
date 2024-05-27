@@ -108,7 +108,7 @@ ScriptPromise<IDLUndefined> NavigatorBadge::SetAppBadgeHelper(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The badge API is not allowed in this context");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
@@ -153,7 +153,7 @@ ScriptPromise<IDLUndefined> NavigatorBadge::ClearAppBadgeHelper(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The badge API is not allowed in this context");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)

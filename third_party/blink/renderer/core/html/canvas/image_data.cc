@@ -296,7 +296,7 @@ ScriptPromise<ImageBitmap> ImageData::CreateImageBitmap(
   if (IsBufferBaseDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The source data has been detached.");
-    return ScriptPromise<ImageBitmap>();
+    return EmptyPromise();
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),

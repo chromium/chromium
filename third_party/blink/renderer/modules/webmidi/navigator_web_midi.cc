@@ -92,7 +92,7 @@ ScriptPromise<MIDIAccess> NavigatorWebMIDI::requestMIDIAccess(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "The frame is not working.");
-    return ScriptPromise<MIDIAccess>();
+    return EmptyPromise();
   }
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
@@ -121,7 +121,7 @@ ScriptPromise<MIDIAccess> NavigatorWebMIDI::requestMIDIAccess(
           ReportOptions::kReportOnFailure, kFeaturePolicyConsoleWarning)) {
     UseCounter::Count(window, WebFeature::kMidiDisabledByFeaturePolicy);
     exception_state.ThrowSecurityError(kFeaturePolicyErrorMessage);
-    return ScriptPromise<MIDIAccess>();
+    return EmptyPromise();
   }
 
   MIDIAccessInitializer* initializer =

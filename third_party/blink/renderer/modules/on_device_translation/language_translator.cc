@@ -42,7 +42,7 @@ ScriptPromise<IDLString> LanguageTranslator::translate(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromise<IDLString>();
+    return EmptyPromise();
   }
 
   ScriptPromiseResolver<IDLString>* resolver =

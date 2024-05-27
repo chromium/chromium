@@ -52,7 +52,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
     auto* buffer_source = V8BufferSource::Create(script_state_->GetIsolate(),
                                                  chunk, exception_state);
     if (exception_state.HadException())
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
 
     // This implements the "get a copy of the bytes held by the buffer source"
     // algorithm (https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy).
@@ -60,7 +60,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
     if (array_piece.ByteLength() > std::numeric_limits<uint32_t>::max()) {
       exception_state.ThrowRangeError(
           "Buffer size exceeds maximum heap object size.");
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
     }
     DecodeAndEnqueue(static_cast<char*>(array_piece.Data()),
                      static_cast<uint32_t>(array_piece.ByteLength()),

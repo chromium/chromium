@@ -54,7 +54,7 @@ ScriptPromise<IDLUndefined> Worklet::addModule(
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "This frame is already detached");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   UseCounter::Count(GetExecutionContext(),
                     mojom::WebFeature::kWorkletAddModule);

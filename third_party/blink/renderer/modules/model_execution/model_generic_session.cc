@@ -213,7 +213,7 @@ ScriptPromise<IDLString> ModelGenericSession::execute(
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<IDLString>();
+    return EmptyPromise();
   }
 
   base::UmaHistogramEnumeration(

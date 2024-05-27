@@ -1223,8 +1223,8 @@ ScriptPromise<XRSession> XRSystem::requestSession(
     // Document to get UkmRecorder anyway).
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kNavigatorDetachedError);
-    return ScriptPromise<XRSession>();  // Will be rejected by generated
-                                        // bindings
+    return EmptyPromise();  // Will be rejected by generated
+                            // bindings
   }
 
   device::mojom::blink::XRSessionMode session_mode = stringToSessionMode(mode);
@@ -1243,7 +1243,7 @@ ScriptPromise<XRSession> XRSystem::requestSession(
         .SetMode(static_cast<int64_t>(session_mode))
         .SetStatus(static_cast<int64_t>(SessionRequestStatus::kOtherError))
         .Record(DomWindow()->UkmRecorder());
-    return ScriptPromise<XRSession>();
+    return EmptyPromise();
   }
 
   // Parse required feature strings

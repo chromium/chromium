@@ -127,7 +127,7 @@ HandwritingRecognitionService::CreateHandwritingRecognizer(
     const HandwritingModelConstraint* blink_model_constraint,
     ExceptionState& exception_state) {
   if (!BootstrapMojoConnectionIfNeeded(script_state, exception_state)) {
-    return ScriptPromise<HandwritingRecognizer>();
+    return EmptyPromise();
   }
 
   auto* resolver =

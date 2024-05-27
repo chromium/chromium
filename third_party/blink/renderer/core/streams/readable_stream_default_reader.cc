@@ -89,12 +89,12 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamDefaultReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader has been released and cannot be used to "
         "read from its previous owner stream");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return EmptyPromise();
   }
 
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowTypeError("Context is detached");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return EmptyPromise();
   }
 
   // 2. Let promise be a new promise.

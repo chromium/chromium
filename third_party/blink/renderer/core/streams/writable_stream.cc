@@ -119,7 +119,7 @@ ScriptPromise<IDLUndefined> WritableStream::abort(
   //     with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot abort a locked stream");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   //  3. Return ! WritableStreamAbort(this, reason).
@@ -134,19 +134,19 @@ ScriptPromise<IDLUndefined> WritableStream::close(
   // with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot close a locked stream");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 3. If ! WritableStreamCloseQueuedOrInFlight(this) is true, return a promise
   // rejected with a TypeError exception.
   if (CloseQueuedOrInFlight(this)) {
     exception_state.ThrowTypeError("Cannot close a closed or closing stream");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowTypeError("invalid realm");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   return Close(script_state, this);

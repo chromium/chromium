@@ -146,7 +146,7 @@ ScriptPromise<IDLUndefined> ScreenOrientation::lock(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The object is no longer associated to a window.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (GetExecutionContext()->IsSandboxed(
@@ -158,7 +158,7 @@ ScriptPromise<IDLUndefined> ScreenOrientation::lock(
             ? "The window is in a fenced frame tree."
             : "The window is sandboxed and lacks the 'allow-orientation-lock' "
               "flag.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver =

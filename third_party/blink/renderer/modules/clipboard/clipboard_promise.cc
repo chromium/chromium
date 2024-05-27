@@ -134,7 +134,7 @@ ScriptPromise<IDLString> ClipboardPromise::CreateForReadText(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    return ScriptPromise<IDLString>();
+    return EmptyPromise();
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
       script_state, exception_state.GetContext());
@@ -152,7 +152,7 @@ ScriptPromise<IDLUndefined> ClipboardPromise::CreateForWrite(
     const HeapVector<Member<ClipboardItem>>& items,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
@@ -170,7 +170,7 @@ ScriptPromise<IDLUndefined> ClipboardPromise::CreateForWriteText(
     const String& data,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());

@@ -42,7 +42,7 @@ ScriptPromise<IDLUndefined> DocumentVideoPictureInPicture::exitPictureInPicture(
   if (!picture_in_picture_element) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kNoPictureInPictureElement);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(

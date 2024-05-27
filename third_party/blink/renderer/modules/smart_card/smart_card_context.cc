@@ -179,7 +179,7 @@ ScriptPromise<SmartCardConnectResult> SmartCardContext::connect(
     ExceptionState& exception_state) {
   if (!EnsureMojoConnection(exception_state) ||
       !EnsureNoOperationInProgress(exception_state)) {
-    return ScriptPromise<SmartCardConnectResult>();
+    return EmptyPromise();
   }
 
   auto* resolver =

@@ -58,7 +58,7 @@ ScriptPromise<BackgroundFetchRegistration> RejectWithTypeError(
   exception_state.ThrowTypeError("Refused to fetch '" +
                                  request_url.ElidedString() + "' because " +
                                  reason + ".");
-  return ScriptPromise<BackgroundFetchRegistration>();
+  return EmptyPromise();
 }
 
 // Returns whether the |request_url| should be blocked by the CSP. Must be
@@ -142,7 +142,7 @@ ScriptPromise<BackgroundFetchRegistration> BackgroundFetchManager::fetch(
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
-    return ScriptPromise<BackgroundFetchRegistration>();
+    return EmptyPromise();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -150,13 +150,13 @@ ScriptPromise<BackgroundFetchRegistration> BackgroundFetchManager::fetch(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "backgroundFetch is not allowed in fenced frames.");
-    return ScriptPromise<BackgroundFetchRegistration>();
+    return EmptyPromise();
   }
 
   Vector<mojom::blink::FetchAPIRequestPtr> fetch_api_requests =
       CreateFetchAPIRequestVector(script_state, requests, exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromise<BackgroundFetchRegistration>();
+    return EmptyPromise();
   }
 
   // Based on security steps from https://fetch.spec.whatwg.org/#main-fetch

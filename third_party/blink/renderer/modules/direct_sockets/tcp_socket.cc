@@ -153,7 +153,7 @@ ScriptPromise<IDLUndefined> TCPSocket::close(ScriptState*,
   if (GetState() == State::kOpening) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Socket is not properly initialized.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* script_state = GetScriptState();
@@ -165,7 +165,7 @@ ScriptPromise<IDLUndefined> TCPSocket::close(ScriptState*,
       writable_stream_wrapper_->Locked()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Close called on locked streams.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* reason = MakeGarbageCollected<DOMException>(

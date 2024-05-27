@@ -516,7 +516,7 @@ ScriptPromise<IDLUndefined> ReadableStream::cancel(
   //    with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot cancel a locked stream");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 3. Return ! ReadableStreamCancel(this, reason).
@@ -643,14 +643,14 @@ ScriptPromise<IDLUndefined> ReadableStream::pipeTo(
   //    with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot pipe a locked stream");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 2. If ! IsWritableStreamLocked(destination) is true, return a promise
   //    rejected with a TypeError exception.
   if (WritableStream::IsLocked(destination)) {
     exception_state.ThrowTypeError("Cannot pipe to a locked stream");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 3. Let signal be options["signal"] if it exists, or undefined otherwise.

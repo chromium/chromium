@@ -113,7 +113,7 @@ ScriptPromise<IDLBoolean> StorageManager::persist(
   DCHECK(window->IsSecureContext());  // [SecureContext] in IDL
   if (window->GetSecurityOrigin()->IsOpaque()) {
     exception_state.ThrowTypeError(kUniqueOriginErrorMessage);
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
@@ -138,7 +138,7 @@ ScriptPromise<IDLBoolean> StorageManager::persisted(
       execution_context->GetSecurityOrigin();
   if (security_origin->IsOpaque()) {
     exception_state.ThrowTypeError(kUniqueOriginErrorMessage);
-    return ScriptPromise<IDLBoolean>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
@@ -167,7 +167,7 @@ ScriptPromise<StorageEstimate> StorageManager::estimate(
       execution_context->GetSecurityOrigin();
   if (security_origin->IsOpaque()) {
     exception_state.ThrowTypeError(kUniqueOriginErrorMessage);
-    return ScriptPromise<StorageEstimate>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<StorageEstimate>>(

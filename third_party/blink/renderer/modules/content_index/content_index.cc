@@ -95,7 +95,7 @@ ScriptPromise<IDLUndefined> ContentIndex::add(
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -103,14 +103,14 @@ ScriptPromise<IDLUndefined> ContentIndex::add(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "ContentIndex is not allowed in fenced frames.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   WTF::String description_error =
       ValidateDescription(*description, registration_.Get());
   if (!description_error.IsNull()) {
     exception_state.ThrowTypeError(description_error);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -233,7 +233,7 @@ ScriptPromise<IDLUndefined> ContentIndex::deleteDescription(
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -241,7 +241,7 @@ ScriptPromise<IDLUndefined> ContentIndex::deleteDescription(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "ContentIndex is not allowed in fenced frames.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(

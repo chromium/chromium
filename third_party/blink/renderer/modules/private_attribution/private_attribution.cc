@@ -20,7 +20,7 @@ PrivateAttribution::getEncryptedMatchKey(ScriptState*,
                                          ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     "This function is not implemented.");
-  return ScriptPromise<PrivateAttributionEncryptedMatchKey>();
+  return EmptyPromise();
 }
 
 // static

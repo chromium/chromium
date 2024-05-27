@@ -376,7 +376,7 @@ ScriptPromise<IDLAny> SharedStorage::set(
         execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state))
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state, exception_state.GetContext());
@@ -441,7 +441,7 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
         execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state))
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state, exception_state.GetContext());
@@ -504,7 +504,7 @@ ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
         execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state))
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state, exception_state.GetContext());
@@ -557,7 +557,7 @@ ScriptPromise<IDLAny> SharedStorage::clear(ScriptState* script_state,
         execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state))
-    return ScriptPromise<IDLAny>();
+    return EmptyPromise();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state, exception_state.GetContext());
@@ -602,7 +602,7 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
         execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    return ScriptPromise<IDLString>();
+    return EmptyPromise();
   }
 
   ScriptPromiseResolver<IDLString>* resolver =
@@ -692,7 +692,7 @@ ScriptPromise<IDLUnsignedLong> SharedStorage::length(
   CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    return ScriptPromise<IDLUnsignedLong>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUnsignedLong>>(
@@ -740,7 +740,7 @@ ScriptPromise<IDLDouble> SharedStorage::remainingBudget(
   CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    return ScriptPromise<IDLDouble>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(

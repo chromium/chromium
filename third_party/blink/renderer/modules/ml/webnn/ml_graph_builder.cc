@@ -2258,7 +2258,7 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return ScriptPromise<MLGraph>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(

@@ -588,7 +588,7 @@ ScriptPromise<IDLUndefined> XRSession::updateTargetFrameRate(
     ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     kSessionNotHaveSetFrameRate);
-  return ScriptPromise<IDLUndefined>();
+  return EmptyPromise();
 }
 
 ScriptPromise<XRReferenceSpace> XRSession::requestReferenceSpace(
@@ -600,7 +600,7 @@ ScriptPromise<XRReferenceSpace> XRSession::requestReferenceSpace(
   if (ended_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kSessionEnded);
-    return ScriptPromise<XRReferenceSpace>();
+    return EmptyPromise();
   }
 
   device::mojom::blink::XRReferenceSpaceType requested_type =
@@ -610,7 +610,7 @@ ScriptPromise<XRReferenceSpace> XRSession::requestReferenceSpace(
       requested_type != device::mojom::blink::XRReferenceSpaceType::kViewer) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kReferenceSpaceNotSupported);
-    return ScriptPromise<XRReferenceSpace>();
+    return EmptyPromise();
   }
 
   // If the session feature required by this reference space type is not
@@ -619,7 +619,7 @@ ScriptPromise<XRReferenceSpace> XRSession::requestReferenceSpace(
   if (!type_as_feature) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kReferenceSpaceNotSupported);
-    return ScriptPromise<XRReferenceSpace>();
+    return EmptyPromise();
   }
 
   // Report attempt to use this feature
@@ -631,7 +631,7 @@ ScriptPromise<XRReferenceSpace> XRSession::requestReferenceSpace(
     DVLOG(2) << __func__ << ": feature not enabled, type=" << type;
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kReferenceSpaceNotSupported);
-    return ScriptPromise<XRReferenceSpace>();
+    return EmptyPromise();
   }
 
   XRReferenceSpace* reference_space = nullptr;
@@ -661,7 +661,7 @@ ScriptPromise<XRReferenceSpace> XRSession::requestReferenceSpace(
   if (!reference_space) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kReferenceSpaceNotSupported);
-    return ScriptPromise<XRReferenceSpace>();
+    return EmptyPromise();
   }
 
   DCHECK(reference_space);
@@ -681,7 +681,7 @@ ScriptPromise<XRAnchor> XRSession::CreateAnchorHelper(
   if (ended_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kSessionEnded);
-    return ScriptPromise<XRAnchor>();
+    return EmptyPromise();
   }
 
   // Reject the promise if device doesn't support the anchors API.
@@ -690,7 +690,7 @@ ScriptPromise<XRAnchor> XRSession::CreateAnchorHelper(
         DOMExceptionCode::kInvalidStateError,
         kFeatureNotSupportedByDevicePrefix +
             XRSessionFeatureToString(device::mojom::XRSessionFeature::ANCHORS));
-    return ScriptPromise<XRAnchor>();
+    return EmptyPromise();
   }
 
   auto maybe_native_origin_from_anchor_pose =
@@ -699,7 +699,7 @@ ScriptPromise<XRAnchor> XRSession::CreateAnchorHelper(
   if (!maybe_native_origin_from_anchor_pose) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kUnableToDecomposeMatrix);
-    return ScriptPromise<XRAnchor>();
+    return EmptyPromise();
   }
 
   DVLOG(3) << __func__
@@ -1300,7 +1300,7 @@ ScriptPromise<XRLightProbe> XRSession::requestLightProbe(
   if (ended_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kSessionEnded);
-    return ScriptPromise<XRLightProbe>();
+    return EmptyPromise();
   }
 
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
@@ -1309,7 +1309,7 @@ ScriptPromise<XRLightProbe> XRSession::requestLightProbe(
         kFeatureNotSupportedBySessionPrefix +
             XRSessionFeatureToString(
                 device::mojom::XRSessionFeature::LIGHT_ESTIMATION));
-    return ScriptPromise<XRLightProbe>();
+    return EmptyPromise();
   }
 
   if (light_probe_init->reflectionFormat() != "srgba8" &&
@@ -1319,7 +1319,7 @@ ScriptPromise<XRLightProbe> XRSession::requestLightProbe(
         "Reflection format \"" +
             IDLEnumAsString(light_probe_init->reflectionFormat()) +
             "\" not supported.");
-    return ScriptPromise<XRLightProbe>();
+    return EmptyPromise();
   }
 
   if (!world_light_probe_) {
@@ -1339,7 +1339,7 @@ ScriptPromise<IDLUndefined> XRSession::end(ScriptState* script_state,
   if (ended_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kSessionEnded);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   ForceEnd(ShutdownPolicy::kWaitForResponse);

@@ -71,7 +71,7 @@ ScriptPromise<PushSubscription> PushManager::subscribe(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Window is detached.");
-    return ScriptPromise<PushSubscription>();
+    return EmptyPromise();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -79,23 +79,23 @@ ScriptPromise<PushSubscription> PushManager::subscribe(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "subscribe() is not allowed in fenced frames.");
-    return ScriptPromise<PushSubscription>();
+    return EmptyPromise();
   }
 
   if (!registration_->active()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kAbortError,
         "Subscription failed - no active Service Worker");
-    return ScriptPromise<PushSubscription>();
+    return EmptyPromise();
   }
 
   PushSubscriptionOptions* options =
       PushSubscriptionOptions::FromOptionsInit(options_init, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<PushSubscription>();
+    return EmptyPromise();
 
   if (!ValidateOptions(options, exception_state))
-    return ScriptPromise<PushSubscription>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PushSubscription>>(
@@ -143,7 +143,7 @@ ScriptPromise<V8PermissionState> PushManager::permissionState(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Window is detached.");
-    return ScriptPromise<V8PermissionState>();
+    return EmptyPromise();
   }
 
   return PushMessagingBridge::From(registration_)

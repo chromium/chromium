@@ -147,13 +147,13 @@ ScriptPromise<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::write(
       V8VideoFrame::ToWrappable(script_state->GetIsolate(), chunk.V8Value());
   if (!video_frame) {
     exception_state.ThrowTypeError("Null video frame.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto media_frame = video_frame->frame();
   if (!media_frame) {
     exception_state.ThrowTypeError("Empty video frame.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (base::FeatureList::IsEnabled(
@@ -170,7 +170,7 @@ ScriptPromise<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::write(
   if (!source_broker_->IsRunning()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   base::TimeTicks estimated_capture_time = base::TimeTicks::Now();

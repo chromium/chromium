@@ -303,7 +303,7 @@ ScriptPromise<IDLUndefined> SmartCardConnection::disconnect(
     ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -325,12 +325,12 @@ ScriptPromise<DOMArrayBuffer> SmartCardConnection::transmit(
     ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise<DOMArrayBuffer>();
+    return EmptyPromise();
   }
 
   if (send_buffer.IsDetached() || send_buffer.IsNull()) {
     exception_state.ThrowTypeError("Invalid send buffer.");
-    return ScriptPromise<DOMArrayBuffer>();
+    return EmptyPromise();
   }
 
   device::mojom::blink::SmartCardProtocol protocol = active_protocol_;
@@ -341,7 +341,7 @@ ScriptPromise<DOMArrayBuffer> SmartCardConnection::transmit(
   if (protocol == device::mojom::blink::SmartCardProtocol::kUndefined) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "No active protocol.");
-    return ScriptPromise<DOMArrayBuffer>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(
@@ -365,7 +365,7 @@ ScriptPromise<SmartCardConnectionStatus> SmartCardConnection::status(
     ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise<SmartCardConnectionStatus>();
+    return EmptyPromise();
   }
 
   auto* resolver =
@@ -387,7 +387,7 @@ ScriptPromise<DOMArrayBuffer> SmartCardConnection::control(
     ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise<DOMArrayBuffer>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(
@@ -417,7 +417,7 @@ ScriptPromise<DOMArrayBuffer> SmartCardConnection::getAttribute(
     ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise<DOMArrayBuffer>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(
@@ -438,12 +438,12 @@ ScriptPromise<IDLUndefined> SmartCardConnection::setAttribute(
     ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (data.IsDetached() || data.IsNull()) {
     exception_state.ThrowTypeError("Invalid data.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -468,13 +468,13 @@ ScriptPromise<IDLUndefined> SmartCardConnection::startTransaction(
     ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (transaction_state_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kTransactionAlreadyExists);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   AbortSignal* signal = options->getSignalOr(nullptr);

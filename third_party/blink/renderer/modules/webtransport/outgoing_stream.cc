@@ -338,7 +338,7 @@ ScriptPromise<IDLUndefined> OutgoingStream::SinkWrite(
   auto* buffer_source = V8BufferSource::Create(
       script_state_->GetIsolate(), chunk.V8Value(), exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   DCHECK(buffer_source);
 
   if (!data_pipe_) {

@@ -293,7 +293,7 @@ ScriptPromise<VideoDecoderSupport> VideoDecoder::isConfigSupported(
       IsValidVideoDecoderConfig(*config, &js_error_message /* out */);
   if (!video_type) {
     exception_state.ThrowTypeError(js_error_message);
-    return ScriptPromise<VideoDecoderSupport>();
+    return EmptyPromise();
   }
 
   // Run the "Clone Configuration" algorithm.

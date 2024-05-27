@@ -48,7 +48,7 @@ HTMLVideoElementPictureInPicture::requestPictureInPicture(
     ExceptionState& exception_state) {
   CheckIfPictureInPictureIsAllowed(element, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise<PictureInPictureWindow>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PictureInPictureWindow>>(

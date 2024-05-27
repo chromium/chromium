@@ -138,17 +138,17 @@ ScriptPromise<MemoryMeasurement> MeasureMemoryController::StartMeasurement(
     case ApiStatus::kNotAvailableDueToResourceCoordinator:
       exception_state.ThrowSecurityError(
           "performance.measureUserAgentSpecificMemory is not available.");
-      return ScriptPromise<MemoryMeasurement>();
+      return EmptyPromise();
     case ApiStatus::kNotAvailableDueToDetachedContext:
       exception_state.ThrowSecurityError(
           "performance.measureUserAgentSpecificMemory is not supported"
           " in detached iframes.");
-      return ScriptPromise<MemoryMeasurement>();
+      return EmptyPromise();
     case ApiStatus::kNotAvailableDueToCrossOriginContext:
       exception_state.ThrowSecurityError(
           "performance.measureUserAgentSpecificMemory is not supported"
           " in cross-origin iframes.");
-      return ScriptPromise<MemoryMeasurement>();
+      return EmptyPromise();
   }
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Context> context = script_state->GetContext();

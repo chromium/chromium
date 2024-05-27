@@ -640,7 +640,7 @@ ScriptPromise<IDLUndefined> SourceBuffer::appendEncodedChunks(
                                         exception_state)) {
     TRACE_EVENT_NESTABLE_ASYNC_END0(
         "media", "SourceBuffer::appendEncodedChunks", TRACE_ID_LOCAL(this));
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // Convert |chunks| to a StreamParser::BufferQueue.
@@ -666,7 +666,7 @@ ScriptPromise<IDLUndefined> SourceBuffer::appendEncodedChunks(
             exception_state,
             "EncodedVideoChunk is missing duration, required for use with "
             "SourceBuffer.");
-        return ScriptPromise<IDLUndefined>();
+        return EmptyPromise();
       }
       buffer_queue->emplace_back(MakeVideoStreamParserBuffer(video_chunk));
       size += buffer_queue->back()->size();
@@ -692,7 +692,7 @@ ScriptPromise<IDLUndefined> SourceBuffer::appendEncodedChunks(
                   exception_state,
                   "EncodedVideoChunk is missing duration, required for use "
                   "with SourceBuffer.");
-              return ScriptPromise<IDLUndefined>();
+              return EmptyPromise();
             }
             buffer_queue->emplace_back(
                 MakeVideoStreamParserBuffer(video_chunk));
@@ -724,7 +724,7 @@ ScriptPromise<IDLUndefined> SourceBuffer::appendEncodedChunks(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "Worker MediaSource attachment is closing");
     append_encoded_chunks_resolver_ = nullptr;
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   return promise;

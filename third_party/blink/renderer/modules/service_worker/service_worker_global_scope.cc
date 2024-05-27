@@ -599,7 +599,7 @@ ScriptPromise<IDLUndefined> ServiceWorkerGlobalScope::skipWaiting(
   // FIXME: short-term fix, see details at:
   // https://codereview.chromium.org/535193002/.
   if (!execution_context)
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);

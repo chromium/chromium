@@ -70,7 +70,7 @@ ScriptPromise<IDLUndefined> FileSystemWritableFileStream::write(
   WritableStreamDefaultWriter* writer =
       WritableStream::AcquireDefaultWriter(script_state, this, exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   v8::Local<v8::Value> v8_data =
@@ -91,7 +91,7 @@ ScriptPromise<IDLUndefined> FileSystemWritableFileStream::truncate(
   WritableStreamDefaultWriter* writer =
       WritableStream::AcquireDefaultWriter(script_state, this, exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* options = WriteParams::Create();
@@ -112,7 +112,7 @@ ScriptPromise<IDLUndefined> FileSystemWritableFileStream::seek(
   WritableStreamDefaultWriter* writer =
       WritableStream::AcquireDefaultWriter(script_state, this, exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* options = WriteParams::Create();

@@ -46,7 +46,7 @@ ScriptPromise<IDLUndefined> ReadableStreamGenericReader::cancel(
     exception_state.ThrowTypeError(
         "This readable stream reader has been released and cannot be used to "
         "cancel its previous owner stream");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // 3. Return ! ReadableStreamReaderGenericCancel(this, reason).

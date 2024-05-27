@@ -521,7 +521,7 @@ ScriptPromise<IDLUndefined> CookieStore::DoWrite(
   if (!context->GetSecurityOrigin()->CanAccessCookies()) {
     exception_state.ThrowSecurityError(
         "Access to the CookieStore API is denied in this context.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   net::CookieInclusionStatus status;
@@ -530,7 +530,7 @@ ScriptPromise<IDLUndefined> CookieStore::DoWrite(
 
   if (!canonical_cookie) {
     DCHECK(exception_state.HadException());
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   // Since a canonical cookie exists, the status should have no exclusion
   // reasons associated with it.
@@ -539,7 +539,7 @@ ScriptPromise<IDLUndefined> CookieStore::DoWrite(
   if (!backend_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "CookieStore backend went away");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(

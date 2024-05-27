@@ -205,7 +205,7 @@ ScriptPromise<PresentationConnection> PresentationRequest::start(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The PresentationRequest is no longer associated to a frame.");
-    return ScriptPromise<PresentationConnection>();
+    return EmptyPromise();
   }
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
@@ -214,7 +214,7 @@ ScriptPromise<PresentationConnection> PresentationRequest::start(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         "PresentationRequest::start() requires user gesture.");
-    return ScriptPromise<PresentationConnection>();
+    return EmptyPromise();
   }
 
   PresentationController* controller = PresentationController::From(*window);
@@ -240,7 +240,7 @@ ScriptPromise<PresentationConnection> PresentationRequest::reconnect(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The PresentationRequest is no longer associated to a frame.");
-    return ScriptPromise<PresentationConnection>();
+    return EmptyPromise();
   }
 
   auto* resolver =
@@ -275,7 +275,7 @@ ScriptPromise<PresentationAvailability> PresentationRequest::getAvailability(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The PresentationRequest is no longer associated to a frame.");
-    return ScriptPromise<PresentationAvailability>();
+    return EmptyPromise();
   }
 
   if (!availability_property_) {

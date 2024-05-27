@@ -1489,7 +1489,7 @@ ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Cannot create ImageBitmap from closed VideoFrame.");
-    return ScriptPromise<ImageBitmap>();
+    return EmptyPromise();
   }
 
   // SkImages are always immutable, so we don't actually need to make a copy of
@@ -1534,7 +1534,7 @@ ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
         String(("Unsupported VideoFrame: " +
                 local_handle->frame()->AsHumanReadableString())
                    .c_str()));
-    return ScriptPromise<ImageBitmap>();
+    return EmptyPromise();
   }
 
   auto* image_bitmap =

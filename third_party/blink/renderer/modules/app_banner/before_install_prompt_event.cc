@@ -71,7 +71,7 @@ ScriptPromise<AppBannerPromptResult> BeforeInstallPromptEvent::userChoice(
   exception_state.ThrowDOMException(
       DOMExceptionCode::kInvalidStateError,
       "userChoice cannot be accessed on this event.");
-  return ScriptPromise<AppBannerPromptResult>();
+  return EmptyPromise();
 }
 
 ScriptPromise<AppBannerPromptResult> BeforeInstallPromptEvent::prompt(
@@ -82,7 +82,7 @@ ScriptPromise<AppBannerPromptResult> BeforeInstallPromptEvent::prompt(
   if (!banner_service_remote_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The prompt() method cannot be called.");
-    return ScriptPromise<AppBannerPromptResult>();
+    return EmptyPromise();
   }
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
@@ -91,7 +91,7 @@ ScriptPromise<AppBannerPromptResult> BeforeInstallPromptEvent::prompt(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The prompt() method must be called with a user gesture");
-    return ScriptPromise<AppBannerPromptResult>();
+    return EmptyPromise();
   }
 
   UseCounter::Count(window, WebFeature::kBeforeInstallPromptEventPrompt);

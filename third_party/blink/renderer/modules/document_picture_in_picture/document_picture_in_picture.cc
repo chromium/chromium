@@ -51,7 +51,7 @@ ScriptPromise<DOMWindow> DocumentPictureInPicture::requestWindow(
   if (!dom_window) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Internal error: no window");
-    return ScriptPromise<DOMWindow>();
+    return EmptyPromise();
   }
 
   if (dom_window->GetFrame() &&
@@ -59,20 +59,20 @@ ScriptPromise<DOMWindow> DocumentPictureInPicture::requestWindow(
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Opening a PiP window is only allowed "
                                       "from a top-level browsing context");
-    return ScriptPromise<DOMWindow>();
+    return EmptyPromise();
   }
 
   if (dom_window->IsPictureInPictureWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Opening a PiP window from a PiP window is not allowed");
-    return ScriptPromise<DOMWindow>();
+    return EmptyPromise();
   }
 
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "Document not attached");
-    return ScriptPromise<DOMWindow>();
+    return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMWindow>>(

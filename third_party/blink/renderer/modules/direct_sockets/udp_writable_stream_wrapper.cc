@@ -79,12 +79,12 @@ ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
   UDPMessage* message = UDPMessage::Create(GetScriptState()->GetIsolate(),
                                            chunk.V8Value(), exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!message->hasData()) {
     exception_state.ThrowTypeError("UDPMessage: missing 'data' field.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   std::optional<net::HostPortPair> dest_addr;
@@ -93,7 +93,7 @@ ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
       exception_state.ThrowTypeError(
           "UDPMessage: 'remoteAddress' and 'remotePort' must not be specified "
           "in 'connected' mode.");
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
     }
     dest_addr = net::HostPortPair(message->remoteAddress().Utf8(),
                                   message->remotePort());
@@ -101,12 +101,12 @@ ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
     exception_state.ThrowTypeError(
         "UDPMessage: either none or both 'remoteAddress' and 'remotePort' "
         "fields must be specified.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   } else if (mode_ == network::mojom::RestrictedUDPSocketMode::BOUND) {
     exception_state.ThrowTypeError(
         "UDPMessage: 'remoteAddress' and 'remotePort' must be specified "
         "in 'bound' mode.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   auto dns_query_type = net::DnsQueryType::UNSPECIFIED;
@@ -115,7 +115,7 @@ ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
       exception_state.ThrowTypeError(
           "UDPMessage: 'dnsQueryType' must not be specified "
           "in 'connected' mode.");
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
     }
     switch (message->dnsQueryType().AsEnum()) {
       case V8SocketDnsQueryType::Enum::kIpv4:

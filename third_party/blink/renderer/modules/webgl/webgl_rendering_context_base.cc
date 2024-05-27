@@ -879,7 +879,7 @@ ScriptPromise<IDLUndefined> WebGLRenderingContextBase::makeXRCompatible(
   if (isContextLost()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Context lost.");
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   // Return a resolved promise if we're already xr compatible. Once we're

@@ -43,7 +43,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
       ExceptionState& exception_state) override {
     V8StringResource<> input_resource{script_state_->GetIsolate(), chunk};
     if (!input_resource.Prepare(exception_state)) {
-      return ScriptPromise<IDLUndefined>();
+      return EmptyPromise();
     }
     const String input = input_resource;
     if (input.empty())

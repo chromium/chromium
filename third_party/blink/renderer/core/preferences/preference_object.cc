@@ -264,15 +264,15 @@ ScriptPromise<IDLUndefined> PreferenceObject::requestOverride(
     std::optional<AtomicString> value) {
   CHECK(RuntimeEnabledFeatures::WebPreferencesEnabled());
   if (!script_state || !script_state->ContextIsValid()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   auto* execution_context = ExecutionContext::From(script_state);
   if (!execution_context || execution_context->IsContextDestroyed()) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
   auto* window = DynamicTo<LocalDOMWindow>(execution_context);
   if (!window) {
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
   }
 
   if (!value.has_value() || value.value().empty()) {
