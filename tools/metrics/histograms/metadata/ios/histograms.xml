@@ -2838,6 +2838,17 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.PromosManager.EligiblePromosInQueueCount" units="count"
+    expires_after="2024-11-03">
+  <owner>gayane@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs number of eligible for display promos in the promos manager's queue
+    when next promo to display is identified. Recorded only if there is at least
+    1 eligible promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PromosManager.Promo" enum="IOSPromosManagerPromo"
     expires_after="2024-11-03">
   <owner>bwwilliams@google.com</owner>

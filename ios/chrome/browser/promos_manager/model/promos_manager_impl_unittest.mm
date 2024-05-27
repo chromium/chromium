@@ -11,6 +11,7 @@
 #import <vector>
 
 #import "base/json/values_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/simple_test_clock.h"
 #import "base/values.h"
@@ -1171,6 +1172,7 @@ TEST_F(PromosManagerImplTest,
 // and takes precedence over other active promos.
 TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
   base::test::ScopedFeatureList feature_list;
+  base::HistogramTester histogram_tester;
 
   CreatePromosManager();
 
@@ -1195,6 +1197,8 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
   // Mock the FET tracker to allow all promos.
   EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::_))
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_, WouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
 
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
@@ -1203,6 +1207,8 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
       promos_manager_->NextPromoForDisplay();
   ASSERT_TRUE(promo.has_value());
   EXPECT_EQ(promo.value(), promos_manager::Promo::CredentialProviderExtension);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PromosManager.EligiblePromosInQueueCount", 2, 1);
 }
 
 // Tests `NextPromoForDisplay` returns an active promo whose type has the
@@ -1211,6 +1217,7 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
 TEST_F(PromosManagerImplTest,
        NextPromoForDisplayReturnsActivePromoOfPrioritizedType) {
   base::test::ScopedFeatureList feature_list;
+  base::HistogramTester histogram_tester;
 
   CreatePromosManager();
 
@@ -1232,6 +1239,8 @@ TEST_F(PromosManagerImplTest,
   // Mock the FET tracker to allow all promos.
   EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::_))
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_, WouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
 
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
@@ -1241,11 +1250,14 @@ TEST_F(PromosManagerImplTest,
 
   ASSERT_TRUE(promo.has_value());
   EXPECT_EQ(promo.value(), promos_manager::Promo::PostRestoreSignInFullscreen);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PromosManager.EligiblePromosInQueueCount", 2, 1);
 }
 
 // Tests `NextPromoForDisplay` returns empty when non of the pending promos can
 // become active.
 TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsEmpty) {
+  base::HistogramTester histogram_tester;
   CreatePromosManager();
 
   promos_manager_->single_display_active_promos_ = {};
@@ -1262,4 +1274,6 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsEmpty) {
       promos_manager_->NextPromoForDisplay();
 
   EXPECT_FALSE(promo.has_value());
+  histogram_tester.ExpectTotalCount(
+      "IOS.PromosManager.EligiblePromosInQueueCount", 0);
 }

@@ -210,29 +210,45 @@ std::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
     return std::nullopt;
   }
 
-  for (promos_manager::Promo promo : sorted_promos) {
-    if (CanShowPromo(promo)) {
-      // TODO(crbug.com/330387623): Cleanup Docking Promo histograms.
-      if (base::FeatureList::IsEnabled(
-              kPromosManagerDockingPromoHistogramsKillswitch)) {
-        if (active_promos_with_context.contains(Promo::DockingPromo) &&
-            promo != Promo::DockingPromo) {
-          base::UmaHistogramEnumeration("IOS.DockingPromo.LostToCompetingPromo",
-                                        promo);
-        }
-        if (active_promos_with_context.contains(
-                Promo::DockingPromoRemindMeLater) &&
-            promo != Promo::DockingPromoRemindMeLater) {
-          base::UmaHistogramEnumeration(
-              "IOS.DockingPromoRemindMeLater.LostToCompetingPromo", promo);
-        }
-      }
+  // Get eligible promo count before ```GetFirstEligiblePromo``` otherwise the
+  // count might not be accurate.
+  int valid_promo_count = GetEligiblePromoCount(sorted_promos);
+  if (valid_promo_count == 0) {
+    return std::nullopt;
+  }
 
-      return promo;
+  std::optional<promos_manager::Promo> first_promo_opt =
+      GetFirstEligiblePromo(sorted_promos);
+  if (!first_promo_opt) {
+    return std::nullopt;
+  }
+
+  // If there is a promo eligible for display then record number of valid promos
+  // in the queue. This is to understand how often eligible promos don't get
+  // picked because of other promos.
+  base::UmaHistogramExactLinear("IOS.PromosManager.EligiblePromosInQueueCount",
+                                valid_promo_count,
+                                static_cast<int>(Promo::kMaxValue) + 1);
+
+  promos_manager::Promo promo = first_promo_opt.value();
+
+  // TODO(crbug.com/330387623): Cleanup Docking Promo histograms.
+  if (base::FeatureList::IsEnabled(
+          kPromosManagerDockingPromoHistogramsKillswitch)) {
+    if (active_promos_with_context.contains(Promo::DockingPromo) &&
+        promo != Promo::DockingPromo) {
+      base::UmaHistogramEnumeration("IOS.DockingPromo.LostToCompetingPromo",
+                                    promo);
+    }
+
+    if (active_promos_with_context.contains(Promo::DockingPromoRemindMeLater) &&
+        promo != Promo::DockingPromoRemindMeLater) {
+      base::UmaHistogramEnumeration(
+          "IOS.DockingPromoRemindMeLater.LostToCompetingPromo", promo);
     }
   }
 
-  return std::nullopt;
+  return first_promo_opt;
 }
 
 std::set<promos_manager::Promo> PromosManagerImpl::ActivePromos(
@@ -278,12 +294,16 @@ void PromosManagerImpl::InitializePendingPromos() {
   }
 }
 
-bool PromosManagerImpl::CanShowPromo(promos_manager::Promo promo) const {
-  return CanShowPromoUsingFeatureEngagementTracker(promo);
+bool PromosManagerImpl::CanShowPromoWithoutTrigger(
+    promos_manager::Promo promo) const {
+  const base::Feature* feature = FeatureForPromo(promo);
+  if (!feature) {
+    return false;
+  }
+  return tracker_->WouldTriggerHelpUI(*feature);
 }
 
-bool PromosManagerImpl::CanShowPromoUsingFeatureEngagementTracker(
-    promos_manager::Promo promo) const {
+bool PromosManagerImpl::CanShowPromo(promos_manager::Promo promo) const {
   const base::Feature* feature = FeatureForPromo(promo);
   if (!feature) {
     return false;
@@ -404,4 +424,25 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
   }
 
   return sorted_promos;
+}
+
+std::optional<promos_manager::Promo> PromosManagerImpl::GetFirstEligiblePromo(
+    const std::vector<promos_manager::Promo>& promo_queue) {
+  for (promos_manager::Promo promo : promo_queue) {
+    if (CanShowPromo(promo)) {
+      return promo;
+    }
+  }
+  return std::nullopt;
+}
+
+int PromosManagerImpl::GetEligiblePromoCount(
+    const std::vector<promos_manager::Promo>& promo_queue) {
+  int count = 0;
+  for (promos_manager::Promo promo : promo_queue) {
+    if (CanShowPromoWithoutTrigger(promo)) {
+      count++;
+    }
+  }
+  return count;
 }
