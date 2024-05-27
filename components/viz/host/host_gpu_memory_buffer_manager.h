@@ -76,8 +76,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // on requests. Must be called from UI thread.
   void Shutdown();
 
-  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id, int client_id);
-
   void DestroyAllGpuMemoryBufferForClient(int client_id);
 
   bool IsNativeGpuMemoryBufferConfiguration(gfx::BufferFormat format,
@@ -124,6 +122,8 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
       gpu::SurfaceHandle surface_handle,
       base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
       bool call_sync = false);
+
+  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id);
 
   struct PendingBufferInfo {
     PendingBufferInfo();

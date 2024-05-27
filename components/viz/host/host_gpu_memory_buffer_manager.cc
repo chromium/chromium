@@ -103,10 +103,9 @@ void HostGpuMemoryBufferManager::Shutdown() {
 }
 
 void HostGpuMemoryBufferManager::DestroyGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
-    int client_id) {
+    gfx::GpuMemoryBufferId id) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  auto client_iter = allocated_buffers_.find(client_id);
+  auto client_iter = allocated_buffers_.find(client_id_);
   if (client_iter == allocated_buffers_.end())
     return;
   auto& buffers = client_iter->second;
@@ -117,7 +116,7 @@ void HostGpuMemoryBufferManager::DestroyGpuMemoryBuffer(
   if (buffer_iter->second.type() != gfx::SHARED_MEMORY_BUFFER) {
     auto* gpu_service = GetGpuService();
     DCHECK(gpu_service);
-    gpu_service->DestroyGpuMemoryBuffer(id, client_id);
+    gpu_service->DestroyGpuMemoryBuffer(id, client_id_);
   }
   buffers.erase(buffer_iter);
 }
@@ -303,7 +302,7 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
       base::BindPostTask(
           task_runner_,
           base::BindOnce(&HostGpuMemoryBufferManager::DestroyGpuMemoryBuffer,
-                         weak_ptr_, id, client_id_)),
+                         weak_ptr_, id)),
       this, pool_);
 }
 
