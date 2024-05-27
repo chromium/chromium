@@ -221,6 +221,11 @@ use_remoteexec = true
 reclient_cfg_dir = "../../buildtools/reclient_cfgs/linux"
 ```
 
+*** note
+If you are building an older version of Chrome with reclient you will need to
+use `rbe_cfg_dir = "../../buildtools/reclient_cfgs_linux"`
+***
+
 That's it. Remember to always use `autoninja` for building Chromium as described
 below, which handles the startup and shutdown of the reproxy daemon process
 that's required during the build, instead of directly invoking `ninja`.
