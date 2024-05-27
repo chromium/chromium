@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/pagination_state.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/page_border_box_layout_algorithm.h"
@@ -117,6 +118,28 @@ const LayoutResult* PageContainerLayoutAlgorithm::Layout() {
   target_page_border_box_rect =
       SnappedBorderBoxRect(target_page_border_box_rect);
 
+  // The offset of the page border box is in the coordinate system of the target
+  // (fitting to the sheet of paper, if applicable, for instance), whereas the
+  // *size* of the page border box is in the coordinate system of layout (which
+  // honors @page size, and various sorts of scaling). We now need to help the
+  // fragment builder a bit, so that it ends up with the correct physical target
+  // offset in the end.
+  WritingModeConverter converter(Style().GetWritingDirection(),
+                                 GetConstraintSpace().AvailableSize());
+  PhysicalRect border_box_physical_rect =
+      converter.ToPhysical(target_page_border_box_rect);
+  // We have the correct physical offset in the target coordinate system here,
+  // but in order to calculate the corresponding logical offset, we need to
+  // convert it against the margin box size in the layout coordinate system, so
+  // that, when the fragment builder eventually wants to calculate the physical
+  // offset, it will get it right, by converting against the fragment's border
+  // box size (which is in the layout coordinate system), with the outer size
+  // being the target ("paper") size.
+  border_box_physical_rect.size =
+      converter.ToPhysical(unscaled_geometry.border_box_size);
+  LogicalOffset target_offset =
+      converter.ToLogical(border_box_physical_rect).offset;
+
   const ComputedStyle* content_scaled_style = &Style();
   if (layout_scale != 1 && !ignore_author_page_style_) {
     // Scaling shouldn't apply to @page borders etc. Apply a zoom property to
@@ -145,7 +168,7 @@ const LayoutResult* PageContainerLayoutAlgorithm::Layout() {
   // work to invoke on our own:
   page_border_box_node.FinishPageContainerLayout(result);
 
-  container_builder_.AddResult(*result, target_page_border_box_rect.offset,
+  container_builder_.AddResult(*result, target_offset,
                                /*margins=*/std::nullopt);
 
   fragmentainer_break_token_ = child_algorithm.FragmentainerBreakToken();

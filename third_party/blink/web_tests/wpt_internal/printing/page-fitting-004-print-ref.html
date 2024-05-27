@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner) {
+    testRunner.setShouldCenterAndShrinkToFitPaper(false);
+  }
+</script>
+<style>
+  @page {
+    size: 300px 400px;
+    margin: 50px;
+  }
+  html {
+    writing-mode: vertical-rl;
+  }
+  body {
+    margin: 0;
+    font-size: 3em;
+    background: yellow;
+  }
+</style>
+<div style="overflow:clip; width:200px; height:300px; background: yellow;">
+  <div style="scale:0.5; inline-size:200%; transform-origin:top right;">
+    First page. The margins should be the same on every side.
+  </div>
+</div>
+
+<div style="overflow:clip; width:200px; height:300px; background: yellow;">
+  <div style="scale:0.5; inline-size:200%; transform-origin:top right;">
+    Second page. The margins should be the same on every side.
+  </div>
+</div>
