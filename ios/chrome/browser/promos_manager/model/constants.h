@@ -51,16 +51,6 @@ enum class Promo {
 // Also update IOSPromosManagerPromo in
 // (/tools/metrics/histograms/metadata/ios/enums.xml).
 
-// Enum for IOS.PromosManager.Promo.ImpressionLimitEvaluation histogram.
-// Entries should not be renumbered and numeric values should never be reused.
-enum class IOSPromosManagerPromoImpressionLimitEvaluationType {
-  kValid = 0,
-  kInvalidPromoSpecificImpressionLimitTriggered = 1,
-  kInvalidPromoAgnosticImpressionLimitTriggered = 2,
-  kInvalidGlobalImpressionLimitTriggered = 3,
-  kMaxValue = kInvalidGlobalImpressionLimitTriggered,
-};
-
 // Enum for IOS.PromosManager.Promo.Type histogram.
 // Entries should not be renumbered and numeric values should never be reused.
 enum class IOSPromosManagerPromoType {

@@ -2861,7 +2861,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PromosManager.Promo.DisplayFailure"
-    enum="IOSPromosManagerPromo" expires_after="2024-06-30">
+    enum="IOSPromosManagerPromo" expires_after="2024-11-03">
   <owner>bwwilliams@google.com</owner>
   <owner>rkgibson@google.com</owner>
   <owner>huitingyu@google.com</owner>
@@ -2874,7 +2874,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PromosManager.Promo.ForcedDisplayFailure"
-    enum="IOSPromosManagerPromo" expires_after="2024-06-30">
+    enum="IOSPromosManagerPromo" expires_after="2024-11-03">
   <owner>bwwilliams@google.com</owner>
   <owner>rkgibson@google.com</owner>
   <owner>huitingyu@google.com</owner>
@@ -2883,19 +2883,6 @@ the generic promo launch. -->
     forced for display (via Experimental Settings toggle,) but isn't properly
     registered (via chrome://flags). This seldom happens in practice, but may
     happen during manual testing.
-  </summary>
-</histogram>
-
-<histogram name="IOS.PromosManager.Promo.ImpressionLimitEvaluation"
-    enum="IOSPromosManagerPromoImpressionLimitEvaluationType"
-    expires_after="2024-06-30">
-  <owner>bwwilliams@google.com</owner>
-  <owner>rkgibson@google.com</owner>
-  <owner>huitingyu@google.com</owner>
-  <summary>
-    Promo impression limit evaluations made by the Promos Manager. This
-    histograms logs the Promos Manager's assessment of each promos impression
-    limits when presented with the opportunity to display a given promo.
   </summary>
 </histogram>
 

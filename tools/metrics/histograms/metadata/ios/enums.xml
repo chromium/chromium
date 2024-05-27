@@ -640,13 +640,6 @@ the generic promo launch. -->
   <int value="15" label="Stay Safe default browser promo"/>
 </enum>
 
-<enum name="IOSPromosManagerPromoImpressionLimitEvaluationType">
-  <int value="0" label="Valid"/>
-  <int value="1" label="Invalid (Promo-specific limit triggered)"/>
-  <int value="2" label="Invalid (Promo-agnostic limit triggered)"/>
-  <int value="3" label="Invalid (Global limit triggered)"/>
-</enum>
-
 <enum name="IOSPromosManagerPromoType">
   <int value="0" label="StandardPromoViewProvider"/>
   <int value="1" label="BanneredPromoViewProvider"/>
