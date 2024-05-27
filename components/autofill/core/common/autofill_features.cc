@@ -645,12 +645,6 @@ BASE_FEATURE(kAutofillContentEditableChangeEvents,
              "AutofillContentEditableChangeEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether to favor credit card number that user typed into input field vs
-// input field value (which was potentially modified via JavaScript).
-BASE_FEATURE(kAutofillUseTypedCreditCardNumber,
-             "AutofillUseTypedCreditCardNumber",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 BASE_FEATURE(kAutofillEnableAblationStudy,
