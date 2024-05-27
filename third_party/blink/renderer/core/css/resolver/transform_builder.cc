@@ -219,7 +219,7 @@ TransformOperation* CreateTransformOperation(
     case TransformOperation::kRotateZ:
     case TransformOperation::kRotate: {
       const auto& first_value = To<CSSPrimitiveValue>(transform_value.Item(0));
-      double angle = first_value.ComputeDegrees();
+      double angle = first_value.ComputeDegrees(conversion_data);
       if (transform_value.length() == 1) {
         double x = transform_type == TransformOperation::kRotateX;
         double y = transform_type == TransformOperation::kRotateY;
