@@ -250,7 +250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.KeyedService.Count.SystemProfile{ProfileType}"
-    units="services" expires_after="2024-06-22">
+    units="services" expires_after="2024-11-27">
   <owner>droger@chromium.org</owner>
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Menu.ClickedActionableItem"
-    enum="ProfileMenuActionableItem" expires_after="2024-06-30">
+    enum="ProfileMenuActionableItem" expires_after="2024-11-27">
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
