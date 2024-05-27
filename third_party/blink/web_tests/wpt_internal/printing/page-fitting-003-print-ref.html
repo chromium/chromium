@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner) {
+    testRunner.setPrintingScaleFactor(1);
+    testRunner.setShouldCenterAndShrinkToFitPaper(false);
+  }
+</script>
+<style>
+  @page {
+    size: 400px 300px;
+    margin: 0;
+  }
+  body {
+    margin: 0;
+    font-size: 3em;
+  }
+</style>
+<div style="overflow:clip; width:400px; height:300px; background: yellow;">
+  <div style="scale:0.4; transform-origin:top left;">
+    First page.
+  </div>
+</div>
+<div style="overflow:clip; width:400px; height:300px; background: yellow;">
+  <div style="scale:0.4; transform-origin:top left;">
+    Second page.
+  </div>
+</div>

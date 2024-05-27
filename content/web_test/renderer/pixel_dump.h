@@ -6,21 +6,20 @@
 #define CONTENT_WEB_TEST_RENDERER_PIXEL_DUMP_H_
 
 #include "printing/page_range.h"
-#include "ui/gfx/geometry/size.h"
 
 class SkBitmap;
 
 namespace blink {
 class WebLocalFrame;
+struct WebPrintParams;
 }  // namespace blink
 
 namespace content {
 
 // Goes through a test-only path to dump the frame's pixel output as if it was
-// printed. Page size and margins are in CSS pixels.
+// printed.
 SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
-                            const gfx::Size& page_size,
-                            int default_margins,
+                            const blink::WebPrintParams& print_params,
                             const printing::PageRanges& pages);
 
 }  // namespace content

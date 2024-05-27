@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<link rel="match" href="page-fitting-002-print-ref.html">
+<script>
+  if (window.testRunner) {
+    testRunner.setPrintingSize(400, 300);
+    testRunner.setPrintingMargin(20);
+    // With a specified "paper size" above, fit each page to that. If the page
+    // is smaller than the paper, center it on "paper". If it is larger than the
+    // "paper", scale it down and center it on "paper". The orientation implied
+    // by the page size descriptor should be honored.
+    testRunner.setShouldCenterAndShrinkToFitPaper(true);
+  }
+</script>
+<style>
+  @page different {
+    size: 375px 500px;
+  }
+  body {
+    margin: 0;
+    background: yellow;
+  }
+</style>
+Default size.
+<div style="page:different;">
+  Scaled down, and in portrait mode.
+</div>

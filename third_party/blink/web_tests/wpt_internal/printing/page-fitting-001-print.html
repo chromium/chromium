@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link rel="match" href="page-fitting-001-print-ref.html">
+<script>
+  if (window.testRunner) {
+    testRunner.setPrintingSize(400, 300);
+    testRunner.setPrintingMargin(20);
+    // With a specified "paper size" above, fit each page to that. If the page
+    // is smaller than the paper, center it on "paper". If it is larger than the
+    // "paper", scale it down and center it on "paper".
+    testRunner.setShouldCenterAndShrinkToFitPaper(true);
+  }
+</script>
+<style>
+  @page :first {
+    size: 200px;
+  }
+  @page large {
+    size: 600px;
+  }
+  body {
+    margin: 0;
+    background: yellow;
+  }
+</style>
+Small, centered on "paper".
+<div style="break-before:page;">
+  The second page has the default size.
+</div>
+<div style="page:large;">
+  The third page is large, and scaled down and centered on "paper".
+</div>
