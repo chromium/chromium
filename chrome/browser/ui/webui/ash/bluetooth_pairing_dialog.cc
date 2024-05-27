@@ -21,6 +21,7 @@
 #include "chrome/grit/bluetooth_pairing_dialog_resources.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -57,6 +58,7 @@ void AddBluetoothStrings(content::WebUIDataSource* html_source) {
 // static
 SystemWebDialogDelegate* BluetoothPairingDialog::ShowDialog(
     std::optional<std::string_view> device_address) {
+  NET_LOG(EVENT) << "Attempting to display bluetooth pairing dialog";
   std::string dialog_id = chrome::kChromeUIBluetoothPairingURL;
   std::optional<std::string> canonical_device_address;
 
@@ -76,6 +78,7 @@ SystemWebDialogDelegate* BluetoothPairingDialog::ShowDialog(
       SystemWebDialogDelegate::FindInstance(dialog_id);
 
   if (existing_dialog) {
+    LOG(ERROR) << "Refocusing on the existing dialog";
     existing_dialog->Focus();
     return existing_dialog;
   }
