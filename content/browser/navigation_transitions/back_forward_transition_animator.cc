@@ -302,18 +302,31 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         // We are not allowed to cross-fade from a screenshot of A.com to a page
         // of B.com.
         bool land_on_error_page = navigation_request->DidEncounterError();
+        bool different_commit_origin = false;
+
         const auto& original_url = navigation_request->GetOriginalRequestURL();
-        std::optional<url::Origin> committed_origin =
-            navigation_request->GetOriginToCommit();
-        CHECK(committed_origin.has_value());
-        // NOTE: Converting from a URL to an Origin isn't always safe (see
-        // https://chromium.googlesource.com/chromium/src/+/main/docs/security/origin-vs-url.md#risky).
-        // It's okay to convert here because the edge cases either won't
-        // redirect (e.g., about:blank) or won't affect the animation decision
-        // (e.g., a sandboxed frame).
-        bool same_origin = url::Origin::Create(original_url)
-                               .IsSameOriginWith(*committed_origin);
-        if (!land_on_error_page && !same_origin) {
+        const auto& committed_url = navigation_request->GetURL();
+
+        // The origin comparison is tricky because we do not know the precise
+        // origin of the initial `NavigationRequest` (which depends on response
+        // headers like CSP sandbox). It is reasonable to allow the animation to
+        // proceed if the origins derived from the URL remains same-origin at
+        // the end of the navigation, even if there is a sandboxing difference
+        // that leads to an opaque origin. Also, URLs that can inherit origins
+        // (e.g., about:blank) do not generally redirect, so it should be safe
+        // to ignore inherited origins. Thus, we compare origins derived from
+        // the URLs, after first checking whether the URL itself remains
+        // unchanged (to account for URLs with opaque origins that won't appear
+        // equal to each other, like data: URLs). This addresses concerns about
+        // converting between URLs and origins (see
+        // https://chromium.googlesource.com/chromium/src/+/main/docs/security/origin-vs-url.md).
+        if (original_url != committed_url) {
+          different_commit_origin =
+              !url::Origin::Create(original_url)
+                   .IsSameOriginWith(url::Origin::Create(committed_url));
+        }
+
+        if (!land_on_error_page && different_commit_origin) {
           skip_all_animations_and_self_destroy = true;
           break;
         }

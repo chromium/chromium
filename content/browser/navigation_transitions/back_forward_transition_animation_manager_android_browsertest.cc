@@ -2385,6 +2385,46 @@ IN_PROC_BROWSER_TEST_P(
             GreenURL());
 }
 
+// Assert that the navigation back to a site with an opaque origin is not
+// considered as redirect. Such sites can be "chrome://newtabpage", "data:" or
+// "file://".
+IN_PROC_BROWSER_TEST_P(
+    BackForwardTransitionAnimationManagerWithRedirectBrowserTest,
+    OpaqueOriginsAreNotRedirects) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  constexpr char kGreenDataURL[] = R"(
+    data:text/html,<body style="background-color:green"></body>
+  )";
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), GURL(kGreenDataURL)));
+  WaitForCopyableViewInWebContents(web_contents());
+  ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
+  WaitForCopyableViewInWebContents(web_contents());
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::RunLoop invoke_played;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_played.QuitClosure());
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+
+  TestNavigationManager back_nav_to_data_url(web_contents(),
+                                             GURL(kGreenDataURL));
+
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  ASSERT_TRUE(back_nav_to_data_url.WaitForNavigationFinished());
+  invoke_played.Run();
+  destroyed.Run();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     BackForwardTransitionAnimationManagerWithRedirectBrowserTest,
