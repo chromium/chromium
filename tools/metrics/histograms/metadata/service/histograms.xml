@@ -1995,6 +1995,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Worker.TopLevelScript.Initialization2GlobalScopeCreation"
+    units="ms" expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time in ms from when a worker thread initialization starts until the
+    dedicated worker global scope is going to be made. This does not include the
+    global scope creation time. Unfortunately, this does not measure a time from
+    worker thread creation. It just measures from when the initialization
+    starts.
+  </summary>
+</histogram>
+
 <histogram name="Worker.TopLevelScript.LoadStartedTime" units="ms"
     expires_after="2024-10-01">
   <owner>yyanagisawa@chromium.org</owner>

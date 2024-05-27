@@ -600,6 +600,7 @@ void WorkerThread::InitializeOnWorkerThread(
     std::unique_ptr<GlobalScopeCreationParams> global_scope_creation_params,
     const std::optional<WorkerBackingThreadStartupData>& thread_startup_data,
     std::unique_ptr<WorkerDevToolsParams> devtools_params) {
+  base::ElapsedTimer timer;
   DCHECK(IsCurrentThread());
   backing_thread_weak_factory_.emplace(this);
   worker_reporting_proxy_.WillInitializeWorkerContext();
@@ -623,6 +624,12 @@ void WorkerThread::InitializeOnWorkerThread(
     const KURL url_for_debugger = global_scope_creation_params->script_url;
 
     console_message_storage_ = MakeGarbageCollected<ConsoleMessageStorage>();
+    // Record this only for the DedicatedWorker.
+    if (global_scope_creation_params->dedicated_worker_start_time.has_value()) {
+      base::UmaHistogramTimes(
+          "Worker.TopLevelScript.Initialization2GlobalScopeCreation",
+          timer.Elapsed());
+    }
     global_scope_ =
         CreateWorkerGlobalScope(std::move(global_scope_creation_params));
     worker_scheduler_->InitializeOnWorkerThread(global_scope_);
