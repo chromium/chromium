@@ -5,8 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_TEST_MOCK_PROJECTOR_CLIENT_H_
 #define ASH_PUBLIC_CPP_TEST_MOCK_PROJECTOR_CLIENT_H_
 
-#include "ash/public/cpp/projector/annotator_tool.h"
-#include "ash/public/cpp/projector/projector_annotator_controller.h"
+#include "ash/public/cpp/annotator/annotator_tool.h"
+#include "ash/public/cpp/annotator/annotator_tool_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
@@ -21,7 +21,7 @@ namespace ash {
 
 // A mock implementation of ProjectorClient for use in tests.
 class MockProjectorClient : public ProjectorClient,
-                            public ProjectorAnnotatorController {
+                            public AnnotatorToolController {
  public:
   MockProjectorClient();
   MockProjectorClient(const MockProjectorClient&) = delete;

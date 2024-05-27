@@ -5,7 +5,6 @@
 #ifndef ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
 #define ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
 
-#include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"

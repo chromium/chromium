@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_PROJECTOR_PROJECTOR_ANNOTATOR_CONTROLLER_H_
-#define ASH_PUBLIC_CPP_PROJECTOR_PROJECTOR_ANNOTATOR_CONTROLLER_H_
+#ifndef ASH_PUBLIC_CPP_ANNOTATOR_ANNOTATOR_TOOL_CONTROLLER_H_
+#define ASH_PUBLIC_CPP_ANNOTATOR_ANNOTATOR_TOOL_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
 
@@ -12,15 +12,16 @@ namespace ash {
 struct AnnotatorTool;
 
 // This controller provides an interface to control the annotator tools.
-class ASH_PUBLIC_EXPORT ProjectorAnnotatorController {
+class ASH_PUBLIC_EXPORT AnnotatorToolController {
  public:
-  static ProjectorAnnotatorController* Get();
 
-  ProjectorAnnotatorController();
-  ProjectorAnnotatorController(const ProjectorAnnotatorController&) = delete;
-  ProjectorAnnotatorController& operator=(const ProjectorAnnotatorController&) =
+  AnnotatorToolController();
+  AnnotatorToolController(const AnnotatorToolController&) = delete;
+  AnnotatorToolController& operator=(const AnnotatorToolController&) =
       delete;
-  virtual ~ProjectorAnnotatorController();
+  virtual ~AnnotatorToolController();
+
+  static AnnotatorToolController* Get();
 
   // ProjectorController will use the following functions to manipulate the
   // annotator.
@@ -37,4 +38,4 @@ class ASH_PUBLIC_EXPORT ProjectorAnnotatorController {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_PROJECTOR_PROJECTOR_ANNOTATOR_CONTROLLER_H_
+#endif  // ASH_PUBLIC_CPP_ANNOTATOR_ANNOTATOR_TOOL_CONTROLLER_H_

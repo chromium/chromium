@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/projector/projector_annotator_controller.h"
+#include "ash/public/cpp/annotator/annotator_tool_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
@@ -32,7 +32,7 @@ class SpeechRecognitionRecognizerClientImpl;
 // responsible for handling requests that have browser dependencies.
 class ProjectorClientImpl : public ash::ProjectorClient,
                             public SpeechRecognizerDelegate,
-                            public ash::ProjectorAnnotatorController,
+                            public ash::AnnotatorToolController,
                             drive::DriveIntegrationService::Observer,
                             session_manager::SessionManagerObserver {
  public:
@@ -78,7 +78,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
 
-  // ash::ProjectorAnnotatorController:
+  // ash::AnnotatorToolController:
   void SetTool(const ash::AnnotatorTool& tool) override;
   void Undo() override;
   void Redo() override;

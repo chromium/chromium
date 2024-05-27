@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/projector/projector_annotator_controller.h"
+#include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
 #include "base/memory/raw_ptr.h"

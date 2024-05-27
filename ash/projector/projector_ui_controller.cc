@@ -11,9 +11,9 @@
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
+#include "ash/public/cpp/annotator/annotator_tool.h"
+#include "ash/public/cpp/annotator/annotator_tool_controller.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/projector/annotator_tool.h"
-#include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/window_properties.h"
@@ -180,7 +180,7 @@ void ProjectorUiController::EnableAnnotatorTool() {
 }
 
 void ProjectorUiController::SetAnnotatorTool(const AnnotatorTool& tool) {
-  ash::ProjectorAnnotatorController::Get()->SetTool(tool);
+  ash::AnnotatorToolController::Get()->SetTool(tool);
   RecordMarkerColorMetrics(GetMarkerColorForMetrics(tool.color));
 }
 
@@ -188,7 +188,7 @@ void ProjectorUiController::ResetTools() {
   if (annotator_enabled_) {
     ToggleAnnotatorCanvas();
     annotator_enabled_ = false;
-    ash::ProjectorAnnotatorController::Get()->Clear();
+    ash::AnnotatorToolController::Get()->Clear();
   }
 }
 

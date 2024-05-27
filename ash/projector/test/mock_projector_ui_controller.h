@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/projector/projector_ui_controller.h"
-#include "ash/public/cpp/projector/annotator_tool.h"
+#include "ash/public/cpp/annotator/annotator_tool.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/projector/annotator_tool.h"
+#include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/projector_app/projector_app_client.h"

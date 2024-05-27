@@ -4,7 +4,7 @@
 
 #include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
 
-#include "ash/public/cpp/projector/annotator_tool.h"
+#include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
 #include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/projector_app/public/mojom/annotator_structs.mojom.h"
