@@ -45,8 +45,10 @@ namespace {
 NSString* const kTab1Title = @"Tab1";
 NSString* const kTab2Title = @"Tab2";
 
-// Put the number at the beginning to avoid issues with sentence case.
-NSString* const kGroupName = @"1group";
+// Put the number at the beginning to avoid issues with sentence case, as the
+// keyboard default can differ iPhone vs iPad, simulator vs device.
+NSString* const kGroup1Name = @"1group";
+NSString* const kGroup2Name = @"2group";
 
 // Displays the tab cell context menu by long pressing at the tab cell at
 // `tab_cell_index`.
@@ -323,7 +325,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
 
   // Open the creation view.
   OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
-  SetTabGroupCreationName(kGroupName);
+  SetTabGroupCreationName(kGroup1Name);
 
   // Valid the creation.
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButtonMatcher()]
@@ -332,7 +334,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
       waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
 
   // Open the group.
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroupName)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name)]
       performAction:grey_tap()];
 
   // Open the tab.
@@ -348,7 +350,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
 
   // Open the creation view.
   OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
-  SetTabGroupCreationName(kGroupName);
+  SetTabGroupCreationName(kGroup1Name);
 
   // Cancel the creation.
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCancelButtonMatcher()]
@@ -356,7 +358,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
 
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroupName)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -467,10 +469,10 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
       assertWithMatcher:grey_nil()];
 
-  RenameGroupAtIndex(0, kGroupName);
+  RenameGroupAtIndex(0, kGroup1Name);
 
   // Check the group's new name.
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroupName)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -727,15 +729,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
 }
 
 // Tests re-opening a group from Search in another window.
-// TODO:(crbug.com/339415297) Test fails on some iPad devices. Re-enable test
-// once fixed.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testReopenGroupFromAnotherWindow testReopenGroupFromAnotherWindow
-#else
-#define MAYBE_testReopenGroupFromAnotherWindow \
-  DISABLED_testReopenGroupFromAnotherWindow
-#endif
-- (void)MAYBE_testReopenGroupFromAnotherWindow {
+- (void)testReopenGroupFromAnotherWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
@@ -743,7 +737,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
   // Create a first group.
   [ChromeEarlGreyUI openTabGrid];
   OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
-  SetTabGroupCreationName(@"First group");
+  SetTabGroupCreationName(kGroup1Name);
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButtonMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -762,7 +756,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
-  SetTabGroupCreationName(@"Second group");
+  SetTabGroupCreationName(kGroup2Name);
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButtonMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -779,42 +773,42 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
-      performAction:grey_replaceText(@"first")];
+      performAction:grey_replaceText(@"1gr")];
 
   // Tap on it in the second window.
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(@"First group")]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name)]
       performAction:grey_tap()];
 
   // Verify that it opens in the first window.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:GroupViewMatcher()];
-  [[EarlGrey selectElementWithMatcher:GroupViewTitle(@"First group")]
+  [[EarlGrey selectElementWithMatcher:GroupViewTitle(kGroup1Name)]
       assertWithMatcher:grey_notNil()];
 
   // Tap on it again in the second window.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(@"First group")]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name)]
       performAction:grey_tap()];
 
   // Verify that it's still open in the first window.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:GroupViewMatcher()];
-  [[EarlGrey selectElementWithMatcher:GroupViewTitle(@"First group")]
+  [[EarlGrey selectElementWithMatcher:GroupViewTitle(kGroup1Name)]
       assertWithMatcher:grey_notNil()];
 
   // Search in the second window for the second group of the first window.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
-      performAction:grey_replaceText(@"second")];
+      performAction:grey_replaceText(@"2gr")];
 
   // Tap on it in the second window.
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(@"Second group")]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup2Name)]
       performAction:grey_tap()];
 
   // Verify that it opens in the first window.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:GroupViewMatcher()];
-  [[EarlGrey selectElementWithMatcher:GroupViewTitle(@"Second group")]
+  [[EarlGrey selectElementWithMatcher:GroupViewTitle(kGroup2Name)]
       assertWithMatcher:grey_notNil()];
 }
 
