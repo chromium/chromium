@@ -4,8 +4,11 @@
 
 #include "content/browser/preloading/preloading_data_impl.h"
 
+#include <algorithm>
+
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/public/browser/navigation_handle.h"
@@ -14,6 +17,8 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_web_contents.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content {
 
@@ -306,6 +311,66 @@ TEST_F(PreloadingDataImplTest, PreloadingAttemptPrecisionAndRecall) {
   histogram_tester.ExpectBucketCount(
       UmaAttemptRecall(predictor_3, PreloadingType::kPrefetch),
       PredictorConfusionMatrix::kFalseNegative, 0);
+}
+
+namespace {
+void RunSamplingTest(WebContents* web_contents,
+                     int num_predictions,
+                     int expected_sampling_amount_bucket) {
+  using Preloading_Prediction = ukm::builders::Preloading_Prediction;
+
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ukm::SourceId triggered_primary_page_source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  auto* preloading_data =
+      PreloadingDataImpl::GetOrCreateForWebContents(web_contents);
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kUrlPointerHoverOnAnchor,
+      base::BindRepeating(
+          [](NavigationHandle* /*navigation_handle*/) { return true; }));
+
+  // Add a number of predictions. If they're beyond the limit, we should only
+  // keep a random sample to stay within the limit.
+  preloading_data->SetMaxPredictionsToTenForTesting();
+  const size_t expected_predictions_size = std::min(10, num_predictions);
+  for (int i = 0; i < num_predictions; ++i) {
+    preloading_data->AddPreloadingPrediction(
+        preloading_predictor::kUrlPointerHoverOnAnchor,
+        PreloadingConfidence{100},
+        PreloadingData::GetSameURLMatcher(
+            GURL(base::StrCat({"https://www.example.com/page",
+                               base::NumberToString(i), ".html"}))),
+        triggered_primary_page_source_id);
+  }
+  EXPECT_EQ(expected_predictions_size,
+            preloading_data->GetPredictionsSizeForTesting());
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents, GURL("https://www.example.com/somewhere_else.html"));
+
+  std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> actual_ukm_entries =
+      test_ukm_recorder.GetEntries(
+          Preloading_Prediction::kEntryName,
+          {Preloading_Prediction::kSamplingAmountName});
+  EXPECT_EQ(expected_predictions_size, actual_ukm_entries.size());
+  for (const auto& entry : actual_ukm_entries) {
+    EXPECT_EQ(expected_sampling_amount_bucket,
+              entry.metrics.at(Preloading_Prediction::kSamplingAmountName));
+  }
+}
+}  // namespace
+
+TEST_F(PreloadingDataImplTest, MaxPredictions) {
+  constexpr double kBucketSpacing = 1.3;
+  RunSamplingTest(GetWebContents(), /*num_predictions=*/20,
+                  /*expected_sampling_amount_bucket=*/
+                  ukm::GetExponentialBucketMin(500'000, kBucketSpacing));
+}
+
+TEST_F(PreloadingDataImplTest, NoSamplingUnderMaxPredictions) {
+  RunSamplingTest(GetWebContents(), /*num_predictions=*/5,
+                  /*expected_sampling_amount_bucket=*/0);
 }
 
 }  // namespace content

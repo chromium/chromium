@@ -22981,6 +22981,20 @@ be describing additional metrics about the same event.
       content::PreloadingPredictor or ChromePreloadingPredictor.
     </summary>
   </metric>
+  <metric name="SamplingAmount">
+    <summary>
+      Indicates whether the number of preloading predictions for the associated
+      page was over a limit and needed to be downsampled. All events for a given
+      page logged at the same time have the same SamplingAmount. The value is
+      the exponentially bucketed value of (1,000,000 - (1,000,000 *
+      sampling_rate)). The multiplication by 1,000,000 is because we cannot log
+      floating point values in UKM, and we have larger values indicate more
+      sampling so that a lack of sampling can be unambiguous by having its own
+      bucket. For example, if the number of predictions was under the limit and
+      no sampling was done, then the value would be 0. If the number of
+      predictions was double the limit, the value would be 500,000.
+    </summary>
+  </metric>
   <metric name="TimeToNextNavigation">
     <summary>
       The amount of time the prediction took to reach the next navigation, in
@@ -23018,6 +23032,20 @@ be describing additional metrics about the same event.
     <summary>
       The type of preloading predictor which made the preloading prediction.
       Values are from content::PreloadingPredictor or ChromePreloadingPredictor.
+    </summary>
+  </metric>
+  <metric name="SamplingAmount">
+    <summary>
+      Indicates whether the number of preloading predictions for the associated
+      page was over a limit and needed to be downsampled. All events for a given
+      page logged at the same time have the same SamplingAmount. The value is
+      the exponentially bucketed value of (1,000,000 - (1,000,000 *
+      sampling_rate)). The multiplication by 1,000,000 is because we cannot log
+      floating point values in UKM, and we have larger values indicate more
+      sampling so that a lack of sampling can be unambiguous by having its own
+      bucket. For example, if the number of predictions was under the limit and
+      no sampling was done, then the value would be 0. If the number of
+      predictions was double the limit, the value would be 500,000.
     </summary>
   </metric>
   <metric name="TimeToNextNavigation">

@@ -36,7 +36,9 @@ class PreloadingPrediction {
   // is associated with the WebContents primary page that triggered the
   // preloading prediction. This is done to easily analyze the impact of the
   // preloading prediction on the primary visible page.
-  void RecordPreloadingPredictionUKMs(ukm::SourceId navigated_page_source_id);
+  void RecordPreloadingPredictionUKMs(
+      ukm::SourceId navigated_page_source_id,
+      std::optional<double> sampling_likelihood);
 
   // Sets `is_accurate_prediction_` to true if `navigated_url` matches the URL
   // predicate. It also records `time_to_next_navigation_`.
