@@ -21,6 +21,7 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
       android:layout_marginBottom="@dimen/list_item_default_margin"
+      android:src="@drawable/plus_addresses_logo"
       android:importantForAccessibility="no"
       android:adjustViewBounds="true"
       android:maxWidth="75dp" />
