@@ -147,16 +147,19 @@ void HttpServer::Close(int connection_id) {
   if (it == id_to_connection_.end())
     return;
 
-  std::unique_ptr<HttpConnection> connection = std::move(it->second);
+  closed_connections_.emplace_back(std::move(it->second));
   id_to_connection_.erase(it);
   delegate_->OnClose(connection_id);
 
   // The call stack might have callbacks which still have the pointer of
   // connection. Instead of referencing connection with ID all the time,
   // destroys the connection in next run loop to make sure any pending
-  // callbacks in the call stack return.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-      FROM_HERE, connection.release());
+  // callbacks in the call stack return. List of closed Connections is owned
+  // by `this` in case `this` is destroyed before the task runs. Connections may
+  // not outlive `this`.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&HttpServer::DestroyClosedConnections,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 int HttpServer::GetLocalAddress(IPEndPoint* address) {
@@ -520,6 +523,10 @@ HttpConnection* HttpServer::FindConnection(int connection_id) {
 // loop.
 bool HttpServer::HasClosedConnection(HttpConnection* connection) {
   return FindConnection(connection->id()) != connection;
+}
+
+void HttpServer::DestroyClosedConnections() {
+  closed_connections_.clear();
 }
 
 }  // namespace net

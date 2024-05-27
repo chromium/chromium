@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -128,12 +129,20 @@ class HttpServer {
   // Whether or not Close() has been called during delegate callback processing.
   bool HasClosedConnection(HttpConnection* connection);
 
+  void DestroyClosedConnections();
+
   const std::unique_ptr<ServerSocket> server_socket_;
   std::unique_ptr<StreamSocket> accepted_socket_;
   const raw_ptr<HttpServer::Delegate> delegate_;
 
   int last_id_ = 0;
   std::map<int, std::unique_ptr<HttpConnection>> id_to_connection_;
+
+  // Vector of connections whose destruction is pending. Connections may have
+  // WebSockets with raw pointers to `this`, so should not out live this, but
+  // also cannot safely be destroyed synchronously, so on connection close, add
+  // a Connection here, and post a task to destroy them.
+  std::vector<std::unique_ptr<HttpConnection>> closed_connections_;
 
   base::WeakPtrFactory<HttpServer> weak_ptr_factory_{this};
 };
