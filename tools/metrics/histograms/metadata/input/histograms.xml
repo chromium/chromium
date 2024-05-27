@@ -1003,8 +1003,8 @@ chromium-metrics-reviews@google.com.
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Types of actions performed by the user during handwriting, recorded when the
-    user performs a gesture action.
+    [Longform VK Handwriting] Types of actions performed by the user during
+    handwriting, recorded when the user performs a gesture action.
   </summary>
 </histogram>
 
@@ -1013,11 +1013,11 @@ chromium-metrics-reviews@google.com.
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Warning: this histogram was expired from 2022-03 to 2023-11; data may be
-    missing. The index of the selected suggestion from the handwriting
-    alternative suggestion menu. This metric is recorded when the handwriting
-    text highlighted is multiple words, and the selected suggestion is a single
-    word.
+    [Longform VK Handwriting] TWarning: this histogram was expired from 2022-03
+    to 2023-11; data may be missing. The index of the selected suggestion from
+    the handwriting alternative suggestion menu. This metric is recorded when
+    the handwriting text highlighted is multiple words, and the selected
+    suggestion is a single word.
   </summary>
 </histogram>
 
@@ -1026,10 +1026,10 @@ chromium-metrics-reviews@google.com.
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Warning: this histogram was expired from 2022-03 to 2023-11; data may be
-    missing. The index of the selected suggestion from the handwriting
-    alternative suggestion menu. The metric is recorded when the suggestion is
-    selected.
+    [Longform VK Handwriting] Warning: this histogram was expired from 2022-03
+    to 2023-11; data may be missing. The index of the selected suggestion from
+    the handwriting alternative suggestion menu. The metric is recorded when the
+    suggestion is selected.
   </summary>
 </histogram>
 
@@ -1038,11 +1038,11 @@ chromium-metrics-reviews@google.com.
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Warning: this histogram was expired from 2022-03 to 2023-11; data may be
-    missing. The index of the selected suggestion from the handwriting
-    alternative suggestion menu. This metric is recorded when the handwriting
-    text highlighted is a single word, and the selected suggestion is mutliple
-    words.
+    [Longform VK Handwriting] Warning: this histogram was expired from 2022-03
+    to 2023-11; data may be missing. The index of the selected suggestion from
+    the handwriting alternative suggestion menu. This metric is recorded when
+    the handwriting text highlighted is a single word, and the selected
+    suggestion is mutliple words.
   </summary>
 </histogram>
 
@@ -1051,8 +1051,8 @@ chromium-metrics-reviews@google.com.
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Number of characters written in a 10 second interval, recorded every 10s
-    while the handwriting keyboard is active.
+    [Longform VK Handwriting] Number of characters written in a 10 second
+    interval, recorded every 10s while the handwriting keyboard is active.
   </summary>
 </histogram>
 
@@ -1061,8 +1061,8 @@ chromium-metrics-reviews@google.com.
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Number of characters written in a 5 second interval, recorded every 5s while
-    the handwriting keyboard is active.
+    [Longform VK Handwriting] Number of characters written in a 5 second
+    interval, recorded every 5s while the handwriting keyboard is active.
   </summary>
 </histogram>
 
@@ -1071,8 +1071,8 @@ chromium-metrics-reviews@google.com.
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Number of characters written in a 60 second interval, recorded every 60s
-    while the handwriting keyboard is active.
+    [Longform VK Handwriting] Number of characters written in a 60 second
+    interval, recorded every 60s while the handwriting keyboard is active.
   </summary>
 </histogram>
 
@@ -1081,9 +1081,9 @@ chromium-metrics-reviews@google.com.
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The number of milliseconds taken to load the language model required for the
-    handwriting input method. Recorded every time a new language model is loaded
-    for the handwriting input method.
+    [Non-Longform VK Handwriting] The number of milliseconds taken to load the
+    language model required for the handwriting input method. Recorded every
+    time a new language model is loaded for the handwriting input method.
   </summary>
 </histogram>
 
@@ -1092,9 +1092,9 @@ chromium-metrics-reviews@google.com.
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The state of the requested language pack on initialization of the required
-    handwriting service connection. Recorded once whenever a new handwriting
-    service connection is requested.
+    [Non-Longform VK Handwriting] The state of the requested language pack on
+    initialization of the required handwriting service connection. Recorded once
+    whenever a new handwriting service connection is requested.
   </summary>
 </histogram>
 
@@ -2126,9 +2126,9 @@ chromium-metrics-reviews@google.com.
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Warning: this histogram was expired from 2021-12 to 2023-11; data may be
-    missing. What type of container was the virtual keyboard in when text was
-    committed from the handwriting input method.
+    [Longform VK Handwriting] Warning: this histogram was expired from 2021-12
+    to 2023-11; data may be missing. What type of container was the virtual
+    keyboard in when text was committed from the handwriting input method.
   </summary>
 </histogram>
 
@@ -2137,9 +2137,9 @@ chromium-metrics-reviews@google.com.
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    Warning: this histogram was expired from 2021-12 to 2023-11; data may be
-    missing. How wide was the keyboard container when text was committed from
-    the handwriting input method.
+    [Longform VK Handwriting] Warning: this histogram was expired from 2021-12
+    to 2023-11; data may be missing. How wide was the keyboard container when
+    text was committed from the handwriting input method.
   </summary>
 </histogram>
 
