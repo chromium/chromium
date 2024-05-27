@@ -1374,7 +1374,7 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, Migration) {
       prefs::kCookieClearOnExitMigrationNoticeComplete));
 }
 
-class DiceBrowserTextWithExplicitSignin : public DiceBrowserTest {
+class DiceBrowserTestWithExplicitSignin : public DiceBrowserTest {
  public:
   // Sets the user choice for Chrome Signin on `main_email_`.
   void SetChromeSigninChoice(ChromeSigninUserChoice choice) {
@@ -1395,7 +1395,7 @@ class DiceBrowserTextWithExplicitSignin : public DiceBrowserTest {
       switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
-IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
                        SigninWithChoiceRemembered_NoChoiceDefault) {
   // Sign in with no prior user action -- same as
   // `ChromeSigninUserChoice::kNoChoice`.
@@ -1409,7 +1409,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
       main_email_));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
                        SigninWithChoiceRemembered_NoChoice) {
   // Simulates no previous choice yet.
   SetChromeSigninChoice(ChromeSigninUserChoice::kNoChoice);
@@ -1424,7 +1424,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
       main_email_));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
                        SigninWithChoiceRemembered_DoNotSignin) {
   // Simulates a previous choice done with do not sign in.
   SetChromeSigninChoice(ChromeSigninUserChoice::kDoNotSignin);
@@ -1439,7 +1439,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
       main_email_));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
                        SigninWithChoiceRemembered_AlwaysAsk) {
   // Simulates a previous choice done with always ask, expecting the Chrome
   // Signin bubble to show.
@@ -1451,7 +1451,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
                        SigninWithChoiceRemembered_Signin) {
   base::HistogramTester histogram_tester;
 
