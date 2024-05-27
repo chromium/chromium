@@ -5,6 +5,7 @@
 #include "components/web_package/web_bundle_parser.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -76,9 +77,9 @@ class TestDataSource : public mojom::BundleDataSource {
     std::move(callback).Run(is_random_access_context_);
   }
 
-  base::StringPiece GetPayload(const mojom::BundleResponsePtr& response) {
-    return base::StringPiece(data_).substr(response->payload_offset,
-                                           response->payload_length);
+  std::string_view GetPayload(const mojom::BundleResponsePtr& response) {
+    return std::string_view(data_).substr(response->payload_offset,
+                                          response->payload_length);
   }
 
   void AddReceiver(mojo::PendingReceiver<mojom::BundleDataSource> receiver) {

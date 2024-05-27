@@ -4,6 +4,8 @@
 
 #include "components/web_package/web_bundle_builder.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/numerics/byte_conversions.h"
@@ -29,7 +31,7 @@ std::string GetTestFileContents(const base::FilePath& path) {
   return contents;
 }
 
-std::vector<uint8_t> GetStringAsBytes(base::StringPiece contents) {
+std::vector<uint8_t> GetStringAsBytes(std::string_view contents) {
   auto bytes = base::as_bytes(base::make_span(contents));
   return std::vector<uint8_t>(bytes.begin(), bytes.end());
 }

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -138,8 +139,8 @@ std::optional<ParsedHeaders> ConvertCBORValueToHeaders(
     if (!item.first.is_bytestring() || !item.second.is_bytestring()) {
       return std::nullopt;
     }
-    base::StringPiece name = item.first.GetBytestringAsString();
-    base::StringPiece value = item.second.GetBytestringAsString();
+    std::string_view name = item.first.GetBytestringAsString();
+    std::string_view value = item.second.GetBytestringAsString();
 
     // If name contains any upper-case or non-ASCII characters, return an error.
     // This matches the requirement in Section 8.1.2 of [RFC7540].
@@ -174,7 +175,7 @@ std::optional<ParsedHeaders> ConvertCBORValueToHeaders(
   return result;
 }
 
-GURL ParseExchangeURL(base::StringPiece str, const GURL& base_url) {
+GURL ParseExchangeURL(std::string_view str, const GURL& base_url) {
   DCHECK(base_url.is_empty() || base_url.is_valid());
 
   if (!base::IsStringUTF8(str)) {

@@ -4,6 +4,8 @@
 
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -57,7 +59,7 @@ std::string GetTestFileContents(const base::FilePath& path) {
   return contents;
 }
 
-std::vector<uint8_t> GetStringAsBytes(base::StringPiece contents) {
+std::vector<uint8_t> GetStringAsBytes(std::string_view contents) {
   return base::ToVector(base::as_byte_span(contents));
 }
 

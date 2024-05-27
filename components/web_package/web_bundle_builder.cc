@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <ostream>
+#include <string_view>
 
 #include "base/numerics/byte_conversions.h"
 
@@ -14,7 +15,7 @@ namespace web_package {
 
 namespace {
 
-cbor::Value CreateByteString(base::StringPiece s) {
+cbor::Value CreateByteString(std::string_view s) {
   return cbor::Value(base::as_bytes(base::make_span(s)));
 }
 
@@ -52,7 +53,7 @@ WebBundleBuilder::WebBundleBuilder(BundleVersion version,
 }
 WebBundleBuilder::~WebBundleBuilder() = default;
 
-cbor::Value WebBundleBuilder::GetCborValueOfURL(base::StringPiece url) {
+cbor::Value WebBundleBuilder::GetCborValueOfURL(std::string_view url) {
   if (writer_config_.allow_invalid_utf8_for_testing) {
     return cbor::Value::InvalidUTF8StringValueForTesting(url);
   }
@@ -61,19 +62,19 @@ cbor::Value WebBundleBuilder::GetCborValueOfURL(base::StringPiece url) {
 
 void WebBundleBuilder::AddExchange(const GURL& url,
                                    const Headers& response_headers,
-                                   base::StringPiece payload) {
+                                   std::string_view payload) {
   AddExchange(url.spec(), response_headers, payload);
 }
 
-void WebBundleBuilder::AddExchange(base::StringPiece url,
+void WebBundleBuilder::AddExchange(std::string_view url,
                                    const Headers& response_headers,
-                                   base::StringPiece payload) {
+                                   std::string_view payload) {
   AddIndexEntry(url, AddResponse(response_headers, payload));
 }
 
 WebBundleBuilder::ResponseLocation WebBundleBuilder::AddResponse(
     const Headers& headers,
-    base::StringPiece payload) {
+    std::string_view payload) {
   cbor::Value::ArrayValue response_array;
   response_array.emplace_back(Encode(CreateHeaderMap(headers)));
   response_array.emplace_back(CreateByteString(payload));
@@ -92,12 +93,12 @@ void WebBundleBuilder::AddIndexEntry(
 }
 
 void WebBundleBuilder::AddIndexEntry(
-    base::StringPiece url,
+    std::string_view url,
     const ResponseLocation& response_location) {
   delayed_index_.insert({std::string{url}, response_location});
 }
 
-void WebBundleBuilder::AddSection(base::StringPiece name, cbor::Value section) {
+void WebBundleBuilder::AddSection(std::string_view name, cbor::Value section) {
   section_lengths_.emplace_back(name);
   section_lengths_.emplace_back(EncodedLength(section));
   sections_.emplace_back(std::move(section));
@@ -107,7 +108,7 @@ void WebBundleBuilder::AddPrimaryURL(const GURL& url) {
   AddPrimaryURL(url.spec());
 }
 
-void WebBundleBuilder::AddPrimaryURL(base::StringPiece url) {
+void WebBundleBuilder::AddPrimaryURL(std::string_view url) {
   AddSection("primary", GetCborValueOfURL(url));
 }
 
@@ -134,7 +135,7 @@ std::vector<uint8_t> WebBundleBuilder::CreateBundle() {
 std::vector<uint8_t> WebBundleBuilder::CreateTopLevel() {
   cbor::Value::ArrayValue toplevel_array;
   toplevel_array.emplace_back(CreateByteString("🌐📦"));
-  toplevel_array.emplace_back(CreateByteString(base::StringPiece("b2\0\0", 4)));
+  toplevel_array.emplace_back(CreateByteString(std::string_view("b2\0\0", 4)));
   toplevel_array.emplace_back(Encode(cbor::Value(section_lengths_)));
   toplevel_array.emplace_back(sections_);
   // Put a dummy 8-byte bytestring.

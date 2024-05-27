@@ -4,6 +4,8 @@
 
 #include "components/web_package/web_bundle_utils.h"
 
+#include <string_view>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
@@ -70,7 +72,7 @@ bool IsValidUuidInPackageURL(const GURL& url) {
   std::string spec = url.spec();
   return base::StartsWith(
              spec, "uuid-in-package:", base::CompareCase::INSENSITIVE_ASCII) &&
-         base::Uuid::ParseCaseInsensitive(base::StringPiece(spec).substr(16))
+         base::Uuid::ParseCaseInsensitive(std::string_view(spec).substr(16))
              .is_valid();
 }
 

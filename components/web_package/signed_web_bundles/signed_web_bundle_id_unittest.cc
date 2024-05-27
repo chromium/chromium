@@ -6,12 +6,12 @@
 
 #include <array>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
