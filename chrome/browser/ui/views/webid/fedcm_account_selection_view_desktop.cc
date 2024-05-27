@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -31,18 +32,21 @@ std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
 }
 
 // static
-int AccountSelectionView::GetBrandIconMinimumSize() {
-  return 20 / FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
+int AccountSelectionView::GetBrandIconMinimumSize(
+    blink::mojom::RpMode rp_mode) {
+  return (rp_mode == blink::mojom::RpMode::kButton ? kModalIdpIconSize
+                                                   : kBubbleIdpIconSize) /
+         FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
 }
 
 // static
-int AccountSelectionView::GetBrandIconIdealSize() {
+int AccountSelectionView::GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) {
   // As only a single brand icon is selected and the user can have monitors with
   // different screen densities, make the ideal size be the size which works
   // with a high density display (if the OS supports high density displays).
   const float max_supported_scale =
       ui::GetScaleForMaxSupportedResourceScaleFactor();
-  return round(GetBrandIconMinimumSize() * max_supported_scale);
+  return round(GetBrandIconMinimumSize(rp_mode) * max_supported_scale);
 }
 
 FedCmAccountSelectionView::FedCmAccountSelectionView(

@@ -132,11 +132,11 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Returns the ideal size for the identity provider brand icon. The brand icon
   // is displayed in the accounts dialog.
-  virtual int GetBrandIconIdealSize();
+  virtual int GetBrandIconIdealSize(blink::mojom::RpMode rp_mode);
 
   // Returns the minimum size for the identity provider brand icon. The brand
   // icon is displayed in the accounts dialog.
-  virtual int GetBrandIconMinimumSize();
+  virtual int GetBrandIconMinimumSize(blink::mojom::RpMode rp_mode);
 
   // When this is true, the dialog should not be immediately auto-accepted.
   virtual void SetIsInterceptionEnabled(bool enabled);

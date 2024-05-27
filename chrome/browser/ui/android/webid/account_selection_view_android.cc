@@ -368,13 +368,14 @@ std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
 }
 
 // static
-int AccountSelectionView::GetBrandIconMinimumSize() {
+int AccountSelectionView::GetBrandIconMinimumSize(
+    blink::mojom::RpMode rp_mode) {
   return Java_AccountSelectionBridge_getBrandIconMinimumSize(
       base::android::AttachCurrentThread());
 }
 
 // static
-int AccountSelectionView::GetBrandIconIdealSize() {
+int AccountSelectionView::GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) {
   return Java_AccountSelectionBridge_getBrandIconIdealSize(
       base::android::AttachCurrentThread());
 }

@@ -18,12 +18,14 @@ IdentityDialogController::IdentityDialogController(
 
 IdentityDialogController::~IdentityDialogController() = default;
 
-int IdentityDialogController::GetBrandIconMinimumSize() {
-  return AccountSelectionView::GetBrandIconMinimumSize();
+int IdentityDialogController::GetBrandIconMinimumSize(
+    blink::mojom::RpMode rp_mode) {
+  return AccountSelectionView::GetBrandIconMinimumSize(rp_mode);
 }
 
-int IdentityDialogController::GetBrandIconIdealSize() {
-  return AccountSelectionView::GetBrandIconIdealSize();
+int IdentityDialogController::GetBrandIconIdealSize(
+    blink::mojom::RpMode rp_mode) {
+  return AccountSelectionView::GetBrandIconIdealSize(rp_mode);
 }
 
 void IdentityDialogController::ShowAccountsDialog(

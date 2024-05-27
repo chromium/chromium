@@ -40,8 +40,8 @@ inline constexpr int kDesiredAvatarSize = 30;
 // The desired size of the IDP icon used as badge for the user account avatar
 // when there are multiple IDPs.
 inline constexpr int kLargeAvatarBadgeSize = 16;
-// The desired size of the icon of the identity provider.
-inline constexpr int kDesiredIdpIconSize = 20;
+// The size of the icon of the identity provider in the bubble.
+inline constexpr int kBubbleIdpIconSize = 20;
 // The desired size of the icon for a "login to IDP" secondary view.
 inline constexpr int kIdpLoginIconSize = 20;
 // The desired size of the icon for the "Choose an account" button or the "sign
@@ -68,7 +68,7 @@ inline constexpr int kRightMargin = 40;
 // The size of the space between the top boundary of the WebContents and the top
 // boundary of the bubble.
 inline constexpr int kTopMargin = 16;
-// The size of the icon of the identity provider in the modal dialog.
+// The size of the icon of the identity provider in the modal.
 inline constexpr int kModalIdpIconSize = 32;
 // The size of avatars in the modal dialog.
 inline constexpr int kModalAvatarSize = 36;

@@ -1227,8 +1227,10 @@ bool FederatedAuthRequestImpl::HasPendingRequest() const {
 void FederatedAuthRequestImpl::FetchEndpointsForIdps(
     const std::set<GURL>& idp_config_urls,
     bool for_idp_signin) {
-  int icon_ideal_size = request_dialog_controller_->GetBrandIconIdealSize();
-  int icon_minimum_size = request_dialog_controller_->GetBrandIconMinimumSize();
+  int icon_ideal_size =
+      request_dialog_controller_->GetBrandIconIdealSize(rp_mode_);
+  int icon_minimum_size =
+      request_dialog_controller_->GetBrandIconMinimumSize(rp_mode_);
 
   {
     std::set<GURL> pending_idps = std::move(fetch_data_.pending_idps);

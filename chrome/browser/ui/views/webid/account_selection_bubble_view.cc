@@ -663,9 +663,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
     auto image_view = std::make_unique<BrandIconImageView>(
         base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                        weak_ptr_factory_.GetWeakPtr()),
-        kDesiredIdpIconSize, /*should_circle_crop=*/true);
-    image_view->SetImageSize(
-        gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
+        kBubbleIdpIconSize, /*should_circle_crop=*/true);
+    image_view->SetImageSize(gfx::Size(kBubbleIdpIconSize, kBubbleIdpIconSize));
     image_view->SetProperty(views::kMarginsKey,
                             gfx::Insets().set_right(kLeftRightPadding));
     header_icon_view_ = header->AddChildView(std::move(image_view));
@@ -724,7 +723,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
   SetLabelProperties(subtitle_label_);
   int leftPadding = 2 * kLeftRightPadding;
   if (has_idp_icon) {
-    leftPadding += kDesiredIdpIconSize;
+    leftPadding += kBubbleIdpIconSize;
   }
   subtitle_label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       -kTopBottomPadding, leftPadding, kTopBottomPadding, kLeftRightPadding)));
@@ -936,7 +935,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
       /*subtitle=*/std::u16string(),
       /*secondary_view=*/
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kOpenInNewIcon, ui::kColorMenuIcon, kDesiredIdpIconSize)));
+          kOpenInNewIcon, ui::kColorMenuIcon, kBubbleIdpIconSize)));
   button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
       /*vertical=*/kMultiIdpVerticalSpacing,
       /*horizontal=*/kLeftRightPadding)));

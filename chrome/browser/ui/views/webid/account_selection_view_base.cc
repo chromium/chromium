@@ -154,7 +154,7 @@ void BrandIconImageView::OnImageFetched(
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& metadata) {
   if (image.Width() != image.Height() ||
-      image.Width() < AccountSelectionView::GetBrandIconMinimumSize()) {
+      image.Width() < (image_size_ / kMaskableWebIconSafeZoneRatio)) {
     return;
   }
   gfx::ImageSkia skia_image = image.AsImageSkia();

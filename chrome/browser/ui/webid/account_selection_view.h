@@ -45,11 +45,11 @@ class AccountSelectionView {
 
   // Returns the brand icon minimum size. This includes the size of the
   // safe-zone defined in https://www.w3.org/TR/appmanifest/#icon-masks
-  static int GetBrandIconMinimumSize();
+  static int GetBrandIconMinimumSize(blink::mojom::RpMode rp_mode);
 
   // Returns the brand icon ideal size. This includes the size of the
   // safe-zone defined in https://www.w3.org/TR/appmanifest/#icon-masks
-  static int GetBrandIconIdealSize();
+  static int GetBrandIconIdealSize(blink::mojom::RpMode rp_mode);
 
   explicit AccountSelectionView(Delegate* delegate) : delegate_(delegate) {}
   AccountSelectionView(const AccountSelectionView&) = delete;

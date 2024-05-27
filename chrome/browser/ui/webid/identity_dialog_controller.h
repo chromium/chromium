@@ -35,8 +35,8 @@ class IdentityDialogController
   ~IdentityDialogController() override;
 
   // content::IdentityRequestDelegate
-  int GetBrandIconMinimumSize() override;
-  int GetBrandIconIdealSize() override;
+  int GetBrandIconMinimumSize(blink::mojom::RpMode rp_mode) override;
+  int GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) override;
 
   // content::IdentityRequestDialogController
   void ShowAccountsDialog(

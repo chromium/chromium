@@ -45,11 +45,13 @@ IdentityProviderData::IdentityProviderData(const IdentityProviderData& other) =
     default;
 IdentityProviderData::~IdentityProviderData() = default;
 
-int IdentityRequestDialogController::GetBrandIconIdealSize() {
+int IdentityRequestDialogController::GetBrandIconIdealSize(
+    blink::mojom::RpMode rp_mode) {
   return 0;
 }
 
-int IdentityRequestDialogController::GetBrandIconMinimumSize() {
+int IdentityRequestDialogController::GetBrandIconMinimumSize(
+    blink::mojom::RpMode rp_mode) {
   return 0;
 }
 
