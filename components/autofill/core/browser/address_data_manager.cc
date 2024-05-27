@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_data.h"
+#include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
@@ -104,7 +105,7 @@ AddressDataManager::AddressDataManager(
   // `IsAutofillProfileEnabled()` relies on the `pref_service_`, which is only
   // null when the `TestAddressDataManager` is used.
   if (pref_service_) {
-    AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
+    autofill_metrics::LogIsAutofillProfileEnabledAtStartup(
         IsAutofillProfileEnabled());
     address_data_cleaner_ = std::make_unique<AddressDataCleaner>(
         *this, sync_service, CHECK_DEREF(pref_service),

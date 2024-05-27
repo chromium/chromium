@@ -943,29 +943,6 @@ class AutofillMetrics {
   static void LogFormFillDuration(const std::string& metric,
                                   const base::TimeDelta& duration);
 
-  // This should be called each time a page containing forms is loaded.
-  static void LogIsAutofillEnabledAtPageLoad(bool enabled,
-                                             PaymentsSigninState sync_state);
-
-  // This should be called each time a page containing forms is loaded.
-  static void LogIsAutofillProfileEnabledAtPageLoad(
-      bool enabled,
-      PaymentsSigninState sync_state);
-
-  // This should be called each time a page containing forms is loaded.
-  static void LogIsAutofillCreditCardEnabledAtPageLoad(
-      bool enabled,
-      PaymentsSigninState sync_state);
-
-  // This should be called each time a new chrome profile is launched.
-  static void LogIsAutofillEnabledAtStartup(bool enabled);
-
-  // This should be called each time a new chrome profile is launched.
-  static void LogIsAutofillProfileEnabledAtStartup(bool enabled);
-
-  // This should be called each time a new chrome profile is launched.
-  static void LogIsAutofillCreditCardEnabledAtStartup(bool enabled);
-
   // Logs various metrics about the local and server cards associated with a
   // profile. This should be called each time a new chrome profile is launched.
   static void LogStoredCreditCardMetrics(

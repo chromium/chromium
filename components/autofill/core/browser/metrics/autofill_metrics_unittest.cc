@@ -4725,46 +4725,6 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   }
 }
 
-// Test that we log that Profile Autofill is enabled when filling a form.
-TEST_F(AutofillMetricsTest, AutofillProfileIsEnabledAtPageLoad) {
-  base::HistogramTester histogram_tester;
-  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, true);
-  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                 /*removed_forms=*/{});
-  histogram_tester.ExpectUniqueSample("Autofill.Address.IsEnabled.PageLoad",
-                                      true, 1);
-}
-
-// Test that we log that Profile Autofill is disabled when filling a form.
-TEST_F(AutofillMetricsTest, AutofillProfileIsDisabledAtPageLoad) {
-  base::HistogramTester histogram_tester;
-  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, false);
-  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                 /*removed_forms=*/{});
-  histogram_tester.ExpectUniqueSample("Autofill.Address.IsEnabled.PageLoad",
-                                      false, 1);
-}
-
-// Test that we log that CreditCard Autofill is enabled when filling a form.
-TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtPageLoad) {
-  base::HistogramTester histogram_tester;
-  autofill_manager().SetAutofillPaymentMethodsEnabled(*autofill_client_, true);
-  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                 /*removed_forms=*/{});
-  histogram_tester.ExpectUniqueSample("Autofill.CreditCard.IsEnabled.PageLoad",
-                                      true, 1);
-}
-
-// Test that we log that CreditCard Autofill is disabled when filling a form.
-TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtPageLoad) {
-  base::HistogramTester histogram_tester;
-  autofill_manager().SetAutofillPaymentMethodsEnabled(*autofill_client_, false);
-  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                 /*removed_forms=*/{});
-  histogram_tester.ExpectUniqueSample("Autofill.CreditCard.IsEnabled.PageLoad",
-                                      false, 1);
-}
-
 // Test that we log the days since last use of a credit card when it is used.
 TEST_F(AutofillMetricsTest, DaysSinceLastUse_CreditCard) {
   base::HistogramTester histogram_tester;
@@ -5930,29 +5890,6 @@ TEST_F(AutofillMetricsTest, OnAutocompleteSuggestionsShown) {
   histogram_tester.ExpectBucketCount(
       "Autocomplete.Events2", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
       /*expected_count=*/1);
-}
-
-// Verify that we correctly log the IsEnabled metrics with the appropriate sync
-// state.
-TEST_F(AutofillMetricsTest, LogIsAutofillEnabledAtPageLoad_BySyncState) {
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogIsAutofillEnabledAtPageLoad(
-        /*enabled=*/true, PaymentsSigninState::kSignedIn);
-    histogram_tester.ExpectBucketCount("Autofill.IsEnabled.PageLoad.SignedIn",
-                                       true, 1);
-    // Make sure the metric without the sync state is still recorded.
-    histogram_tester.ExpectBucketCount("Autofill.IsEnabled.PageLoad", true, 1);
-  }
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogIsAutofillEnabledAtPageLoad(
-        /*enabled=*/false, PaymentsSigninState::kSignedOut);
-    histogram_tester.ExpectBucketCount("Autofill.IsEnabled.PageLoad.SignedOut",
-                                       false, 1);
-    // Make sure the metric without the sync state is still recorded.
-    histogram_tester.ExpectBucketCount("Autofill.IsEnabled.PageLoad", false, 1);
-  }
 }
 
 TEST_F(AutofillMetricsTest, LogServerCardLinkClicked) {

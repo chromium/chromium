@@ -86,6 +86,7 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
@@ -818,11 +819,11 @@ bool BrowserAutofillManager::ShouldParseForms() {
                 .GetPaymentsSigninStateForMetrics()
           : AutofillMetrics::PaymentsSigninState::kUnknown;
   if (!has_logged_autofill_enabled_) {
-    AutofillMetrics::LogIsAutofillEnabledAtPageLoad(autofill_enabled,
-                                                    signin_state_for_metrics_);
-    AutofillMetrics::LogIsAutofillProfileEnabledAtPageLoad(
+    autofill_metrics::LogIsAutofillEnabledAtPageLoad(autofill_enabled,
+                                                     signin_state_for_metrics_);
+    autofill_metrics::LogIsAutofillProfileEnabledAtPageLoad(
         IsAutofillProfileEnabled(), signin_state_for_metrics_);
-    AutofillMetrics::LogIsAutofillCreditCardEnabledAtPageLoad(
+    autofill_metrics::LogIsAutofillCreditCardEnabledAtPageLoad(
         IsAutofillPaymentMethodsEnabled(), signin_state_for_metrics_);
     has_logged_autofill_enabled_ = true;
   }

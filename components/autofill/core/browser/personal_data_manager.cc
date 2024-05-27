@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -57,8 +58,7 @@ PersonalDataManager::PersonalDataManager(
   }
 
   Refresh();
-
-  AutofillMetrics::LogIsAutofillEnabledAtStartup(
+  autofill_metrics::LogIsAutofillEnabledAtStartup(
       address_data_manager_->IsAutofillProfileEnabled() ||
       payments_data_manager_->IsAutofillPaymentMethodsEnabled());
 
