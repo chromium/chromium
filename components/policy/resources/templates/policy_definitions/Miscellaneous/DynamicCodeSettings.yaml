@@ -7,7 +7,7 @@ desc: |-
 
   If the policy is set to 0 - Default or left unset then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will use the default settings.
 
-  If the policy is set to 1 - EnabledForBrowser then the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> browser process will be prevented from creating dynamic code.
+  If the policy is set to 1 - DisabledForBrowser then the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> browser process will be prevented from creating dynamic code.
 
   Note: Read more about process mitigation policies ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).
 example_value: 1
@@ -19,7 +19,7 @@ items:
   name: Default
   value: 0
 - caption: Prevent the browser process from creating dynamic code
-  name: EnabledForBrowser
+  name: DisabledForBrowser
   value: 1
 owners:
 - wfh@chromium.org
