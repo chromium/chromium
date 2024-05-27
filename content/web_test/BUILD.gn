@@ -369,10 +369,6 @@ static_library("web_test_renderer") {
   ]
 
   if (enable_printing || enable_printing_tests) {
-    sources += [
-      "renderer/pixel_dump.cc",
-      "renderer/pixel_dump.h",
-    ]
     deps += [ "//printing" ]
   }
 }

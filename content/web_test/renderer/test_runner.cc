@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
+#include "cc/paint/skia_paint_canvas.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/renderer/render_thread_impl.h"
@@ -33,7 +34,6 @@
 #include "content/web_test/renderer/app_banner_service.h"
 #include "content/web_test/renderer/blink_test_helpers.h"
 #include "content/web_test/renderer/fake_subresource_filter.h"
-#include "content/web_test/renderer/pixel_dump.h"
 #include "content/web_test/renderer/spell_check_client.h"
 #include "content/web_test/renderer/test_preferences.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
@@ -45,7 +45,11 @@
 #include "gin/wrappable.h"
 #include "mojo/public/mojom/base/text_direction.mojom-forward.h"
 #include "net/base/filename_util.h"
+#include "printing/metafile_skia.h"
+#include "printing/mojom/print.mojom.h"
+#include "printing/page_number.h"
 #include "printing/page_range.h"
+#include "printing/print_settings.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -2877,8 +2881,33 @@ SkBitmap TestRunner::PrintFrameToBitmap(blink::WebLocalFrame* frame) {
           ? printing::mojom::PrintScalingOption::kCenterShrinkToFitPaper
           : printing::mojom::PrintScalingOption::kSourceSize;
 
-  return content::PrintFrameToBitmap(frame, print_params,
-                                     GetPrintingPageRanges(frame));
+  auto* frame_widget = frame->LocalRoot()->FrameWidget();
+  frame_widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
+
+  uint32_t page_count = frame->PrintBegin(print_params, blink::WebNode());
+
+  const printing::PageRanges& page_ranges = GetPrintingPageRanges(frame);
+  blink::WebVector<uint32_t> pages(
+      printing::PageNumber::GetPages(page_ranges, page_count));
+  gfx::Size spool_size = frame->SpoolSizeInPixelsForTesting(pages);
+
+  bool is_opaque = false;
+
+  SkBitmap bitmap;
+  if (!bitmap.tryAllocN32Pixels(spool_size.width(), spool_size.height(),
+                                is_opaque)) {
+    LOG(ERROR) << "Failed to create bitmap width=" << spool_size.width()
+               << " height=" << spool_size.height();
+    return SkBitmap();
+  }
+
+  printing::MetafileSkia metafile(printing::mojom::SkiaDocumentType::kMSKP,
+                                  printing::PrintSettings::NewCookie());
+  cc::SkiaPaintCanvas canvas(bitmap);
+  canvas.SetPrintingMetafile(&metafile);
+  frame->PrintPagesForTesting(&canvas, spool_size, &pages);
+  frame->PrintEnd();
+  return bitmap;
 }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
