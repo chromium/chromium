@@ -45,6 +45,9 @@ declare_args() {
   # TODO(crbug.com/40240570): Default this to true and remove.
   msan_eager_checks = true
 
+  # TODO(crbug.com/40222690): evaluate and possibly enable
+  msan_check_use_after_dtor = false
+
   # Use dynamic libraries instrumented by one of the sanitizers instead of the
   # standard system libraries. Set this flag to build the libraries from source.
   use_locally_built_instrumented_libraries = false

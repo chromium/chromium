@@ -490,10 +490,12 @@ config("msan_flags") {
       "-fsanitize=memory",
       "-fsanitize-memory-track-origins=$msan_track_origins",
       "-fsanitize-ignorelist=$msan_ignorelist_path",
-
-      # TODO(crbug.com/40222690): evaluate and possibly enable
-      "-fno-sanitize-memory-use-after-dtor",
     ]
+
+    if (!msan_check_use_after_dtor) {
+      # TODO(crbug.com/40222690): evaluate and possibly enable
+      cflags += [ "-fno-sanitize-memory-use-after-dtor" ]
+    }
 
     if (!msan_eager_checks) {
       cflags += [ "-fno-sanitize-memory-param-retval" ]
