@@ -293,22 +293,38 @@ TransformOperation* CreateTransformOperation(
     }
     case TransformOperation::kMatrix3D: {
       auto matrix = gfx::Transform::ColMajor(
-          To<CSSPrimitiveValue>(transform_value.Item(0)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(1)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(2)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(3)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(4)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(5)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(6)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(7)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(8)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(9)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(10)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(11)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(12)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(13)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(14)).GetDoubleValue(),
-          To<CSSPrimitiveValue>(transform_value.Item(15)).GetDoubleValue());
+          To<CSSPrimitiveValue>(transform_value.Item(0))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(1))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(2))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(3))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(4))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(5))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(6))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(7))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(8))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(9))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(10))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(11))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(12))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(13))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(14))
+              .ComputeNumber(conversion_data),
+          To<CSSPrimitiveValue>(transform_value.Item(15))
+              .ComputeNumber(conversion_data));
       matrix.Zoom(conversion_data.Zoom());
       return MakeGarbageCollected<Matrix3DTransformOperation>(matrix);
     }
