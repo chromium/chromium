@@ -426,7 +426,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
         webStateList,
         WebStateSearchCriteria{.identifier = webStateID,
                                .pinned_state = PinnedState::kNonPinned});
-    if (index != WebStateList::kInvalidIndex) {
+    if (webStateList->ContainsIndex(index)) {
       return webStateList->GetGroupOfWebStateAt(index);
     }
   }

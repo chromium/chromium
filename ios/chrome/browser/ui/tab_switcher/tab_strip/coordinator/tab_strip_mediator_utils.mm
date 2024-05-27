@@ -50,6 +50,8 @@ void MoveGroupBeforeTabStripItem(const TabGroup* group,
         int web_state_index = GetWebStateIndex(
             web_state_list,
             WebStateSearchCriteria{.identifier = tab_switcher_item.identifier});
+        CHECK(web_state_list->ContainsIndex(web_state_index),
+              base::NotFatalUntil::M128);
         const TabGroup* group_of_web_state =
             web_state_list->GetGroupOfWebStateAt(web_state_index);
         // In case the WebState before which the group is being inserted is

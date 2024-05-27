@@ -413,20 +413,18 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     }
   }
 
+  // Determine the tab group, if any, of the active web state.
   const TabGroup* tabGroup = nullptr;
-
+  WebStateList* webStateList = nullptr;
   if (currentActivePage == TabGridPageRegularTabs) {
-    WebStateList* webStateList = self.regularBrowser->GetWebStateList();
-    int activeWebStateIndex =
-        webStateList->GetIndexOfWebState(webStateList->GetActiveWebState());
-    if (activeWebStateIndex != WebStateList::kInvalidIndex) {
-      tabGroup = webStateList->GetGroupOfWebStateAt(activeWebStateIndex);
-    }
+    webStateList = self.regularBrowser->GetWebStateList();
   } else if (currentActivePage == TabGridPageIncognitoTabs) {
-    WebStateList* webStateList = self.incognitoBrowser->GetWebStateList();
+    webStateList = self.incognitoBrowser->GetWebStateList();
+  }
+  if (webStateList) {
     int activeWebStateIndex =
         webStateList->GetIndexOfWebState(webStateList->GetActiveWebState());
-    if (activeWebStateIndex != WebStateList::kInvalidIndex) {
+    if (webStateList->ContainsIndex(activeWebStateIndex)) {
       tabGroup = webStateList->GetGroupOfWebStateAt(activeWebStateIndex);
     }
   }

@@ -803,6 +803,7 @@ const TabGroup* WebStateList::CreateGroupImpl(
   // Figure out the pivot index.
   int pivot_index = kInvalidIndex;
   const int first_index = *indices.begin();
+  CHECK(ContainsIndex(first_index), base::NotFatalUntil::M128);
   if (IsWebStatePinnedAt(first_index)) {
     // Move to the last pinned tab.
     pivot_index = pinned_tabs_count_;
@@ -924,6 +925,7 @@ void WebStateList::RemoveFromGroupsImpl(const std::set<int>& indices) {
   // keep ungrouped WebStates in the order they were in the group.
   for (auto it = indices.rbegin(); it != indices.rend(); ++it) {
     const int index = *it;
+    CHECK(ContainsIndex(index), base::NotFatalUntil::M128);
     const TabGroup* group = GetGroupOfWebStateAt(index);
     if (group) {
       const int to_index = group->range().range_end() - 1;

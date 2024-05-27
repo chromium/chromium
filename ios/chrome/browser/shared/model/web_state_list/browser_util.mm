@@ -7,6 +7,7 @@
 #import <memory>
 #import <ostream>
 
+#import "base/check.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -176,6 +177,8 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
   // Move tabs to the new browser.
   for (int destination_index_offset = 0; destination_index_offset < tab_count;
        destination_index_offset++) {
+    CHECK(source_web_state_list->ContainsIndex(source_web_state_start_index),
+          base::NotFatalUntil::M128);
     CHECK_EQ(source_web_state_list->GetGroupOfWebStateAt(
                  source_web_state_start_index),
              source_tab_group);

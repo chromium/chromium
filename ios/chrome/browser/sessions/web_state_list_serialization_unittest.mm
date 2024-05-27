@@ -147,6 +147,9 @@ void SerializeWebStateList(const WebStateList& web_state_list,
 // Checks that the given `tab_group_range` is present in the `web_state_list`.
 bool CheckWebStateListHasTabGroup(const WebStateList& web_state_list,
                                   TabGroupRange tab_group_range) {
+  if (!web_state_list.ContainsIndex(tab_group_range.range_begin())) {
+    return false;
+  }
   const TabGroup* group =
       web_state_list.GetGroupOfWebStateAt(tab_group_range.range_begin());
   return group && group->range() == tab_group_range;
