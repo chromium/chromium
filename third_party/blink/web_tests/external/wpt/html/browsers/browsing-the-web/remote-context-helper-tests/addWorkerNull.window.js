@@ -1,4 +1,4 @@
-// META: title=RemoteContextWrapper addWorker
+// META: title=RemoteContextWrapper addWorker no global variable
 // META: script=/common/dispatcher/dispatcher.js
 // META: script=/common/get-host-info.sub.js
 // META: script=/common/utils.js
@@ -8,6 +8,7 @@
 'use strict';
 
 // This tests that arguments passed to the constructor are respected.
+// Specifically `null` for the parameter `globalVariable`.
 promise_test(async t => {
   const rcHelper = new RemoteContextHelper();
 
@@ -16,14 +17,12 @@ promise_test(async t => {
   const headerName = 'x-wpt-test-header';
   const headerValue = 'test-escaping()';
   const worker = await main.addWorker(
-      'workerVar',
+    null,
       {
         scripts: ['/common/get-host-info.sub.js', './resources/test-script.js'],
         headers: [[headerName, headerValue]],
       },
   );
-
-  assert_true(await main.executeScript(() => workerVar instanceof Worker));
 
   await assertSimplestScriptRuns(worker);
   await assertFunctionRuns(worker, () => testFunction(), 'testFunction exists');
