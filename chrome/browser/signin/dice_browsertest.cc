@@ -1269,6 +1269,102 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Incognito) {
       incognito_browser->profile()));
 }
 
+class DiceExplicitSigninRollbackBrowserTest : public InProcessBrowserTest {
+ public:
+  struct AccountStorageStatus {
+    bool autofill_sync_toggle_available = false;
+    syncer::UserSelectableTypeSet user_selectable_type_set;
+  };
+
+  DiceExplicitSigninRollbackBrowserTest() {
+    std::vector<base::test::FeatureRef> features = {
+        syncer::kSyncEnableContactInfoDataTypeInTransportMode,
+        switches::kExplicitBrowserSigninUIOnDesktop};
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (content::IsPreTest()) {
+      // PRE_ test has explicit signin.
+      enabled_features = std::move(features);
+    } else {
+      // Non-PRE_ test has implicit signin.
+      disabled_features = std::move(features);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  signin::IdentityManager* GetIdentityManager() {
+    return IdentityManagerFactory::GetForProfile(browser()->profile());
+  }
+
+  AccountStorageStatus GetAccountStorageStatus() {
+    syncer::SyncUserSettings* settings =
+        SyncServiceFactory::GetForProfile(browser()->profile())
+            ->GetUserSettings();
+    return {.autofill_sync_toggle_available =
+                autofill::PersonalDataManagerFactory::GetForProfile(
+                    browser()->profile())
+                    ->address_data_manager()
+                    .IsAutofillSyncToggleAvailable(),
+            .user_selectable_type_set = settings->GetSelectedTypes()};
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest, PRE_Rollback) {
+  signin::AccountAvailabilityOptionsBuilder builder;
+  signin::MakeAccountAvailable(
+      GetIdentityManager(),
+      builder.AsPrimary(signin::ConsentLevel::kSignin)
+          .WithAccessPoint(signin_metrics::AccessPoint::
+                               ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE)
+          .Build(kMainGmailEmail));
+  ASSERT_EQ(signin::GetPrimaryAccountConsentLevel(GetIdentityManager()),
+            signin::ConsentLevel::kSignin);
+
+  ASSERT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kExplicitBrowserSignin));
+
+  // Butter for autofill is enabled.
+  AccountStorageStatus account_storage_status = GetAccountStorageStatus();
+  EXPECT_TRUE(account_storage_status.autofill_sync_toggle_available);
+  EXPECT_TRUE(account_storage_status.user_selectable_type_set.HasAll(
+      {syncer::UserSelectableType::kAutofill,
+       syncer::UserSelectableType::kPasswords}));
+  // Cookie migration is complete.
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest, Rollback) {
+  Profile* profile = browser()->profile();
+  // The user is now signed in implicitly.
+  ASSERT_EQ(signin::GetPrimaryAccountConsentLevel(GetIdentityManager()),
+            signin::ConsentLevel::kSignin);
+  ASSERT_TRUE(gaia::AreEmailsSame(
+      GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email,
+      kMainGmailEmail));
+  ASSERT_FALSE(profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  // Account storage is disabled.
+  AccountStorageStatus account_storage_status = GetAccountStorageStatus();
+  EXPECT_FALSE(account_storage_status.user_selectable_type_set.HasAny(
+      {syncer::UserSelectableType::kAutofill,
+       syncer::UserSelectableType::kPasswords}));
+  // Cookie migration is required.
+  EXPECT_FALSE(profile->GetPrefs()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+  // And cannot be completed by changing cookie settings.
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(profile).get();
+  settings->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
+  EXPECT_FALSE(profile->GetPrefs()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+}
+
 class DiceExplicitSigninBrowserTest : public InProcessBrowserTest {
  public:
   struct AccountStorageStatus {
