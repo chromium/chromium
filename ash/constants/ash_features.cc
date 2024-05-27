@@ -1304,13 +1304,6 @@ BASE_FEATURE(kGaiaRecordAccountCreation,
              "GaiaRecordAccountCreation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the Gaia reauth endpoint for all online reauth flows on login screen.
-// Note that the reauth endpoint is used when the user is a child user or in
-// potential recovery flows, regardless of the flag value.
-BASE_FEATURE(kGaiaReauthEndpoint,
-             "GaiaReauthEndpoint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Game Dashboard.
 BASE_FEATURE(kGameDashboard, "GameDashboard", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3625,10 +3618,6 @@ bool IsBlockFwupdClientEnabled() {
 
 bool IsGaiaRecordAccountCreationEnabled() {
   return base::FeatureList::IsEnabled(kGaiaRecordAccountCreation);
-}
-
-bool IsGaiaReauthEndpointEnabled() {
-  return base::FeatureList::IsEnabled(kGaiaReauthEndpoint);
 }
 
 bool IsGalleryAppPdfEditNotificationEnabled() {

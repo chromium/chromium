@@ -61,24 +61,10 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
          base::Contains(kPossibleReasons, reauth_reason.value());
 }
 
-bool ShouldUseReauthEndpoint(const AccountId& account_id,
-                             bool is_recovery_configured) {
-  if (!account_id.is_valid()) {
-    return false;
-  }
-  auto* user = user_manager::UserManager::Get()->FindUser(account_id);
-  DCHECK(user);
-  // Use reauth endpoint for child users.
-  if (user && user->IsChild()) {
-    return true;
-  }
-
-  // Use reauth endpoint in potential recovery flow.
-  if (ShouldPrepareForRecovery(account_id) && is_recovery_configured) {
-    return true;
-  }
-
-  return features::IsGaiaReauthEndpointEnabled();
+bool ShouldUseReauthEndpoint(const AccountId& account_id) {
+  // Use reauth endpoint when there is an existing user going through Gaia
+  // sign-in.
+  return account_id.is_valid();
 }
 
 }  // namespace
@@ -354,7 +340,7 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
   if (GaiaScreenHandler::GetGaiaScreenMode(account_id.GetUserEmail()) ==
       GaiaScreenHandler::GaiaScreenMode::GAIA_SCREEN_MODE_SAML_REDIRECT) {
     gaia_path = WizardContext::GaiaPath::kSamlRedirect;
-  } else if (ShouldUseReauthEndpoint(account_id, is_recovery_configured)) {
+  } else if (ShouldUseReauthEndpoint(account_id)) {
     gaia_path = WizardContext::GaiaPath::kReauth;
   }
 

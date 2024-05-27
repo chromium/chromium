@@ -1599,9 +1599,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SamlReauthWithSamlRedirect) {
 
   // Since this is a reauth of existing user, we expect them to use reauth
   // endpoint regardless of LoginAuthenticationBehavior policy.
-  EXPECT_EQ(GaiaPath(), features::IsGaiaReauthEndpointEnabled()
-                            ? WizardContext::GaiaPath::kReauth
-                            : WizardContext::GaiaPath::kSamlRedirect);
+  EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kReauth);
 }
 
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_PRE_TransferCookiesAffiliated) {

@@ -56,18 +56,6 @@ class LockScreenReauthDialogTestHelper {
   LockScreenReauthDialogTestHelper& operator=(
       LockScreenReauthDialogTestHelper&& other);
 
-  // Waits for the 'Verify Account' screen (the first screen the dialog shows)
-  // to be visible.
-  void WaitForVerifyAccountScreen();
-
-  // Clicks the 'Verify' button on the 'Verify Account' screen and wait for the
-  // authenticator page to be loaded.
-  // For SAML flows this proceeds to the SAML flow.
-  void ClickVerifyButton();
-
-  // Clicks the 'Cancel' button on the 'Verify Account' screen.
-  void ClickCancelButtonOnVerifyScreen();
-
   // Clicks the 'Cancel' button on the 'Error' screen.
   void ClickCancelButtonOnErrorScreen();
 
@@ -93,7 +81,6 @@ class LockScreenReauthDialogTestHelper {
   // Waits for sign-in webview to be shown.
   void WaitForSigninWebview();
 
-  void ExpectVerifyAccountScreenVisible();
   void ExpectVerifyAccountScreenHidden();
   void ExpectErrorScreenVisible();
   void ExpectSigninWebviewVisible();

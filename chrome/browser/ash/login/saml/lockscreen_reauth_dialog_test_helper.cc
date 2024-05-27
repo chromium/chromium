@@ -31,10 +31,6 @@ namespace {
 
 // Main dialog
 const test::UIPath kWebviewContainer = {"main-element", "body"};
-const test::UIPath kMainVerifyButton = {"main-element",
-                                        "nextButtonVerifyScreen"};
-const test::UIPath kMainCancelButton = {"main-element",
-                                        "cancelButtonVerifyScreen"};
 const test::UIPath kErrorCancelButton = {"main-element",
                                          "cancelButtonErrorScreen"};
 const test::UIPath kSamlCancelButton = {"main-element", "saml-close-button"};
@@ -93,24 +89,13 @@ LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad() {
     return std::nullopt;
   }
 
-  bool is_reauth_endpoint_used = features::IsGaiaReauthEndpointEnabled();
-
-  if (!is_reauth_endpoint_used) {
-    // Expect the native 'Verify Account' screen to be visible and proceed to
-    // the SAML page.
-    reauth_dialog_helper->WaitForVerifyAccountScreen();
-    reauth_dialog_helper->ClickVerifyButton();
-  }
-
   reauth_dialog_helper->WaitForSigninWebview();
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 
-  if (is_reauth_endpoint_used) {
-    // With reauth endpoint we start on a Gaia page where user needs to click
-    // "Next" before being redirected to SAML IdP page.
-    reauth_dialog_helper->WaitForPrimaryGaiaButtonToBeEnabled();
-    reauth_dialog_helper->ClickPrimaryGaiaButton();
-  }
+  // With reauth endpoint we start on a Gaia page where user needs to click
+  // "Next" before being redirected to SAML IdP page.
+  reauth_dialog_helper->WaitForPrimaryGaiaButtonToBeEnabled();
+  reauth_dialog_helper->ClickPrimaryGaiaButton();
 
   reauth_dialog_helper->WaitForIdpPageLoad();
   reauth_dialog_helper->ExpectGaiaButtonsHidden();
@@ -146,24 +131,6 @@ LockScreenReauthDialogTestHelper::InitForShownDialog() {
     return std::nullopt;
   }
   return dialog_test_helper;
-}
-
-void LockScreenReauthDialogTestHelper::WaitForVerifyAccountScreen() {
-  test::JSChecker js_checker = DialogJS();
-  js_checker.CreateVisibilityWaiter(true, kNativeVerifyScreen)->Wait();
-  js_checker.ExpectVisiblePath(kNativeVerifyScreen);
-}
-
-void LockScreenReauthDialogTestHelper::ClickVerifyButton() {
-  ExpectVerifyAccountScreenVisible();
-
-  // Expect the main screen to be visible and proceed to the SAML page.
-  DialogJS().TapOnPath(kMainVerifyButton);
-}
-
-void LockScreenReauthDialogTestHelper::ClickCancelButtonOnVerifyScreen() {
-  ExpectVerifyAccountScreenVisible();
-  DialogJS().TapOnPath(kMainCancelButton);
 }
 
 void LockScreenReauthDialogTestHelper::ClickCancelButtonOnErrorScreen() {
@@ -211,10 +178,6 @@ void LockScreenReauthDialogTestHelper::WaitForSigninWebview() {
   WaitForAuthenticatorToLoad();
   DialogJS().CreateVisibilityWaiter(true, kWebviewContainer)->Wait();
   DialogJS().ExpectVisiblePath(kWebviewContainer);
-}
-
-void LockScreenReauthDialogTestHelper::ExpectVerifyAccountScreenVisible() {
-  DialogJS().ExpectVisiblePath(kNativeVerifyScreen);
 }
 
 void LockScreenReauthDialogTestHelper::ExpectVerifyAccountScreenHidden() {
