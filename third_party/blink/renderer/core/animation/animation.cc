@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -97,7 +98,15 @@ bool SupportedTimeValue(double time_in_ms) {
                                     1000;
 }
 
-enum class PseudoPriority { kNone, kMarker, kBefore, kOther, kAfter };
+enum class PseudoPriority {
+  kNone,
+  kScrollMarkerBefore,
+  kMarker,
+  kBefore,
+  kOther,
+  kAfter,
+  kScrollMarkerAfter
+};
 
 unsigned NextSequenceNumber() {
   static unsigned next = 0;
@@ -107,12 +116,18 @@ unsigned NextSequenceNumber() {
 PseudoPriority ConvertPseudoIdtoPriority(const PseudoId& pseudo) {
   if (pseudo == kPseudoIdNone)
     return PseudoPriority::kNone;
+  if (pseudo == kPseudoIdScrollMarkerGroupBefore) {
+    return PseudoPriority::kScrollMarkerBefore;
+  }
   if (pseudo == kPseudoIdMarker)
     return PseudoPriority::kMarker;
   if (pseudo == kPseudoIdBefore)
     return PseudoPriority::kBefore;
   if (pseudo == kPseudoIdAfter)
     return PseudoPriority::kAfter;
+  if (pseudo == kPseudoIdScrollMarkerGroupAfter) {
+    return PseudoPriority::kScrollMarkerAfter;
+  }
   return PseudoPriority::kOther;
 }
 

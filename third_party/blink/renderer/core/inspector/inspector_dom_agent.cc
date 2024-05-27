@@ -229,6 +229,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
     case kPseudoIdScrollMarker:
       return protocol::DOM::PseudoTypeEnum::ScrollMarker;
     case kPseudoIdScrollMarkerGroup:
+    case kPseudoIdScrollMarkerGroupAfter:
+    case kPseudoIdScrollMarkerGroupBefore:
       return protocol::DOM::PseudoTypeEnum::ScrollMarkerGroup;
     case kPseudoIdResizer:
       return protocol::DOM::PseudoTypeEnum::Resizer;
@@ -1945,8 +1947,9 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
       }
     }
 
-    if (element->GetPseudoId()) {
-      value->setPseudoType(ProtocolPseudoElementType(element->GetPseudoId()));
+    if (element->IsPseudoElement()) {
+      value->setPseudoType(
+          ProtocolPseudoElementType(element->GetPseudoIdForStyling()));
       if (auto tag = To<PseudoElement>(element)->view_transition_name())
         value->setPseudoIdentifier(tag);
     } else {
@@ -2464,8 +2467,10 @@ void InspectorDOMAgent::PseudoElementCreated(PseudoElement* pseudo_element) {
   Element* parent = pseudo_element->ParentOrShadowHostElement();
   if (!parent)
     return;
-  if (!PseudoElement::IsWebExposed(pseudo_element->GetPseudoId(), parent))
+  if (!PseudoElement::IsWebExposed(pseudo_element->GetPseudoIdForStyling(),
+                                   parent)) {
     return;
+  }
   int parent_id = BoundNodeId(parent);
   if (!parent_id)
     return;

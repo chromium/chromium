@@ -452,6 +452,11 @@ Node* Node::PseudoAwareNextSibling() const {
 
   // See comments in PseudoAwarePreviousSibling.
   switch (GetPseudoId()) {
+    case kPseudoIdScrollMarkerGroupBefore:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdMarker)) {
+        return next;
+      }
+      [[fallthrough]];
     case kPseudoIdMarker:
       if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))
         return next;
@@ -465,6 +470,12 @@ Node* Node::PseudoAwareNextSibling() const {
         return next;
       [[fallthrough]];
     case kPseudoIdAfter:
+      if (Node* next =
+              parent->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollMarkerGroupAfter:
       if (Node* next = parent->GetPseudoElement(kPseudoIdViewTransition)) {
         return next;
       }
@@ -528,6 +539,10 @@ Node* Node::PseudoAwareFirstChild() const {
       return current_element->GetPseudoElement(kPseudoIdViewTransitionNew,
                                                name);
     }
+    if (Node* first = current_element->GetPseudoElement(
+            kPseudoIdScrollMarkerGroupBefore)) {
+      return first;
+    }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdMarker))
       return first;
     if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
@@ -535,6 +550,10 @@ Node* Node::PseudoAwareFirstChild() const {
     if (Node* first = current_element->firstChild())
       return first;
     if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
+      return first;
+    }
+    if (Node* first = current_element->GetPseudoElement(
+            kPseudoIdScrollMarkerGroupAfter)) {
       return first;
     }
     return current_element->GetPseudoElement(kPseudoIdViewTransition);
@@ -576,13 +595,20 @@ Node* Node::PseudoAwareLastChild() const {
             current_element->GetPseudoElement(kPseudoIdViewTransition)) {
       return last;
     }
+    if (Node* last = current_element->GetPseudoElement(
+            kPseudoIdScrollMarkerGroupAfter)) {
+      return last;
+    }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter))
       return last;
     if (Node* last = current_element->lastChild())
       return last;
     if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))
       return last;
-    return current_element->GetPseudoElement(kPseudoIdMarker);
+    if (Node* last = current_element->GetPseudoElement(kPseudoIdMarker)) {
+      return last;
+    }
+    return current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore);
   }
 
   return lastChild();

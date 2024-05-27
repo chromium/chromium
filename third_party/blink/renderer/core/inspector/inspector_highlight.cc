@@ -365,12 +365,16 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
     }
   }
   if (pseudo_element) {
-    if (pseudo_element->GetPseudoId() == kPseudoIdBefore)
+    if (pseudo_element->GetPseudoId() == kPseudoIdBefore) {
       class_names.Append("::before");
-    else if (pseudo_element->GetPseudoId() == kPseudoIdAfter)
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdAfter) {
       class_names.Append("::after");
-    else if (pseudo_element->GetPseudoId() == kPseudoIdMarker)
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdMarker) {
       class_names.Append("::marker");
+    } else if (pseudo_element->GetPseudoIdForStyling() ==
+               kPseudoIdScrollMarkerGroup) {
+      class_names.Append("::scroll-marker-group");
+    }
   }
   if (!class_names.empty())
     element_info->setString("className", class_names.ToString());
@@ -1808,7 +1812,8 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
         VisitAndCollectDistanceInfo(element->GetPseudoId(), layout_object);
     } else {
       for (PseudoId pseudo_id :
-           {kPseudoIdFirstLetter, kPseudoIdBefore, kPseudoIdAfter}) {
+           {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
+            kPseudoIdBefore, kPseudoIdAfter, kPseudoIdScrollMarkerGroupAfter}) {
         if (Node* pseudo_node = element->GetPseudoElement(pseudo_id))
           VisitAndCollectDistanceInfo(pseudo_node);
       }

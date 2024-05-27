@@ -2235,9 +2235,13 @@ static void AssertNodeClean(const Node& node) {
 }
 
 static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
-  WTF::Vector<PseudoId> pseudo_ids = {kPseudoIdFirstLetter, kPseudoIdBefore,
-                                      kPseudoIdAfter, kPseudoIdMarker,
-                                      kPseudoIdBackdrop};
+  WTF::Vector<PseudoId> pseudo_ids = {kPseudoIdFirstLetter,
+                                      kPseudoIdBefore,
+                                      kPseudoIdAfter,
+                                      kPseudoIdMarker,
+                                      kPseudoIdBackdrop,
+                                      kPseudoIdScrollMarkerGroupBefore,
+                                      kPseudoIdScrollMarkerGroupAfter};
   for (auto pseudo_id : pseudo_ids) {
     if (auto* pseudo_element = element.GetPseudoElement(pseudo_id))
       AssertNodeClean(*pseudo_element);

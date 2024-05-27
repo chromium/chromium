@@ -3903,15 +3903,17 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
     return true;
   }
 
-  // Include all parents of ::before/::after/::marker pseudo elements to help
-  // ClearChildren() find all children, and assist naming computation.
-  // It is unnecessary to include a rule for other types of pseudo elements:
-  // Specifically, ::first-letter/::backdrop are not visited by
+  // Include all parents of ::before/::after/::marker/::scroll-marker-group
+  // pseudo elements to help ClearChildren() find all children, and assist
+  // naming computation. It is unnecessary to include a rule for other types of
+  // pseudo elements: Specifically, ::first-letter/::backdrop are not visited by
   // LayoutTreeBuilderTraversal, and cannot be in the tree, therefore do not add
   // a special rule to include their parents.
   if (element && (element->GetPseudoElement(kPseudoIdBefore) ||
                   element->GetPseudoElement(kPseudoIdAfter) ||
-                  element->GetPseudoElement(kPseudoIdMarker))) {
+                  element->GetPseudoElement(kPseudoIdMarker) ||
+                  element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore) ||
+                  element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter))) {
     return true;
   }
 

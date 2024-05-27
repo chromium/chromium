@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CSS Test: scroll-markers dynamic change</title>
+    <link rel="author" href="mailto:sakhapov@chromium.org">
+    <link rel="match" href="scroll-marker-group-005-ref.tentative.html">
+    <link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-marker">
+    <style>
+        div.scroll-markers-before {
+            scroll-markers: before;
+        }
+
+        div.scroll-markers-after {
+            scroll-markers: after;
+        }
+
+        div::before {
+            background: red;
+            content: "";
+            border-radius: 50%;
+            display: flex;
+            height: 30px;
+            width: 30px;
+        }
+
+        div::after {
+            background: yellow;
+            content: "";
+            border-radius: 50%;
+            display: flex;
+            height: 30px;
+            width: 30px;
+        }
+
+        div::scroll-marker-group {
+            background: green;
+            border-radius: 50%;
+            display: flex;
+            height: 30px;
+            width: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Test passes if there are <strong>three circles filled red, yellow, green</strong>.
+    <div id="target"></div>
+</body>
+<script>
+    document.documentElement.offsetTop;
+    target.className = "scroll-markers-before";
+    document.documentElement.offsetTop;
+    target.className = "scroll-markers-after";
+    document.documentElement.offsetTop;
+    target.className = "";
+    document.documentElement.offsetTop;
+    target.className = "scroll-markers-before";
+    target.className = "scroll-markers-after";
+</script>
+
+</html>

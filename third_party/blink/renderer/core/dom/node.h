@@ -351,6 +351,15 @@ class CORE_EXPORT Node : public EventTarget {
   DISABLE_CFI_PERF bool IsAfterPseudoElement() const {
     return GetPseudoId() == kPseudoIdAfter;
   }
+  DISABLE_CFI_PERF bool IsScrollMarkerGroupPseudoElement() const {
+    return GetPseudoIdForStyling() == kPseudoIdScrollMarkerGroup;
+  }
+  DISABLE_CFI_PERF bool IsScrollMarkerGroupBeforePseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollMarkerGroupBefore;
+  }
+  DISABLE_CFI_PERF bool IsScrollMarkerGroupAfterPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollMarkerGroupAfter;
+  }
   DISABLE_CFI_PERF bool IsMarkerPseudoElement() const {
     return GetPseudoId() == kPseudoIdMarker;
   }
@@ -364,6 +373,7 @@ class CORE_EXPORT Node : public EventTarget {
     return IsTransitionPseudoElement(GetPseudoId());
   }
   virtual PseudoId GetPseudoId() const { return kPseudoIdNone; }
+  virtual PseudoId GetPseudoIdForStyling() const { return kPseudoIdNone; }
 
   CustomElementState GetCustomElementState() const {
     return static_cast<CustomElementState>(node_flags_ &

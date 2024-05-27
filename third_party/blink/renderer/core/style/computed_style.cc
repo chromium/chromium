@@ -359,6 +359,9 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
   if (old_style->HasTextCombine() != new_style->HasTextCombine()) {
     return true;
   }
+  if (!old_style->ScrollMarkersEqual(*new_style)) {
+    return true;
+  }
   // line-clamping is currently only handled by LayoutDeprecatedFlexibleBox,
   // so that if line-clamping changes then the LayoutObject needs to be
   // recreated.

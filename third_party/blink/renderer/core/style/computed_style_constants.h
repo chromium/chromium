@@ -91,6 +91,8 @@ enum PseudoId : uint8_t {
   kPseudoIdScrollbarTrack,
   kPseudoIdScrollbarTrackPiece,
   kPseudoIdScrollbarCorner,
+  kPseudoIdScrollMarkerGroupAfter,
+  kPseudoIdScrollMarkerGroupBefore,
   kPseudoIdResizer,
   kPseudoIdInputListButton,
   // Special values follow:

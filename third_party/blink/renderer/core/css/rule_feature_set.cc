@@ -143,6 +143,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoScrollbarThumb:
     case CSSSelector::kPseudoScrollbarTrack:
     case CSSSelector::kPseudoScrollbarTrackPiece:
+    case CSSSelector::kPseudoScrollMarkerGroup:
     case CSSSelector::kPseudoWindowInactive:
     case CSSSelector::kPseudoSelection:
     case CSSSelector::kPseudoCornerPresent:

@@ -85,6 +85,11 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
     DCHECK(parent_element);
   }
   switch (pseudo_id) {
+    case kPseudoIdScrollMarkerGroupBefore:
+      if (Node* next = parent_element->GetPseudoElement(kPseudoIdMarker)) {
+        return next;
+      }
+      [[fallthrough]];
     case kPseudoIdMarker:
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdBefore))
         return next;
@@ -105,6 +110,12 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
         return next;
       [[fallthrough]];
     case kPseudoIdAfter:
+      if (Node* next = parent_element->GetPseudoElement(
+              kPseudoIdScrollMarkerGroupAfter)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollMarkerGroupAfter:
       return nullptr;
     case kPseudoIdViewTransition:
       return nullptr;
@@ -149,6 +160,11 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
     DCHECK(parent_element);
   }
   switch (pseudo_id) {
+    case kPseudoIdScrollMarkerGroupAfter:
+      if (Node* previous = parent_element->GetPseudoElement(kPseudoIdAfter)) {
+        return previous;
+      }
+      [[fallthrough]];
     case kPseudoIdAfter:
       if (Node* previous = FlatTreeTraversal::LastChild(*parent_element))
         return previous;
@@ -169,6 +185,12 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
         return previous;
       [[fallthrough]];
     case kPseudoIdMarker:
+      if (Node* previous = parent_element->GetPseudoElement(
+              kPseudoIdScrollMarkerGroupBefore)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollMarkerGroupBefore:
       return nullptr;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -181,13 +203,20 @@ Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
   if (!current_element)
     return FlatTreeTraversal::LastChild(node);
 
+  if (Node* last =
+          current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
+    return last;
+  }
   if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter))
     return last;
   if (Node* last = FlatTreeTraversal::LastChild(*current_element))
     return last;
   if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))
     return last;
-  return current_element->GetPseudoElement(kPseudoIdMarker);
+  if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
+    return last;
+  }
+  return current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore);
 }
 
 Node* LayoutTreeBuilderTraversal::Previous(const Node& node,
@@ -208,13 +237,20 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
   if (!current_element)
     return FlatTreeTraversal::FirstChild(node);
 
+  if (Node* first =
+          current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
+    return first;
+  }
   if (Node* first = current_element->GetPseudoElement(kPseudoIdMarker))
     return first;
   if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
     return first;
   if (Node* first = FlatTreeTraversal::FirstChild(node))
     return first;
-  return current_element->GetPseudoElement(kPseudoIdAfter);
+  if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
+    return first;
+  }
+  return current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter);
 }
 
 static Node* NextAncestorSibling(const Node& node, const Node* stay_within) {
@@ -268,13 +304,16 @@ static Node* NextLayoutSiblingInternal(Node* node, int32_t& limit) {
 Node* LayoutTreeBuilderTraversal::NextLayoutSibling(const Node& node,
                                                     int32_t& limit) {
   DCHECK_NE(limit, -1);
-  if (Node* sibling = NextLayoutSiblingInternal(NextSibling(node), limit))
+  if (Node* sibling = NextLayoutSiblingInternal(NextSibling(node), limit)) {
     return sibling;
+  }
 
   Node* parent = LayoutTreeBuilderTraversal::Parent(node);
   while (limit != -1 && parent && HasDisplayContentsStyle(*parent)) {
-    if (Node* sibling = NextLayoutSiblingInternal(NextSibling(*parent), limit))
+    if (Node* sibling =
+            NextLayoutSiblingInternal(NextSibling(*parent), limit)) {
       return sibling;
+    }
     parent = LayoutTreeBuilderTraversal::Parent(*parent);
   }
 
@@ -302,14 +341,16 @@ Node* LayoutTreeBuilderTraversal::PreviousLayoutSibling(const Node& node,
                                                         int32_t& limit) {
   DCHECK_NE(limit, -1);
   if (Node* sibling =
-          PreviousLayoutSiblingInternal(PreviousSibling(node), limit))
+          PreviousLayoutSiblingInternal(PreviousSibling(node), limit)) {
     return sibling;
+  }
 
   Node* parent = LayoutTreeBuilderTraversal::Parent(node);
   while (limit != -1 && parent && HasDisplayContentsStyle(*parent)) {
     if (Node* sibling =
-            PreviousLayoutSiblingInternal(PreviousSibling(*parent), limit))
+            PreviousLayoutSiblingInternal(PreviousSibling(*parent), limit)) {
       return sibling;
+    }
     parent = LayoutTreeBuilderTraversal::Parent(*parent);
   }
 

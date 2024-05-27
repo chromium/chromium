@@ -267,9 +267,9 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
     if (auto* option_element = DynamicTo<HTMLOptionElement>(*element))
       value->setOptionSelected(option_element->Selected());
 
-    if (element->GetPseudoId()) {
-      value->setPseudoType(
-          InspectorDOMAgent::ProtocolPseudoElementType(element->GetPseudoId()));
+    if (element->IsPseudoElement()) {
+      value->setPseudoType(InspectorDOMAgent::ProtocolPseudoElementType(
+          element->GetPseudoIdForStyling()));
     }
     value->setPseudoElementIndexes(
         VisitPseudoElements(element, index, include_event_listeners,
@@ -376,7 +376,7 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
   if (!layout_object)
     return -1;
 
-  if (node->GetPseudoId()) {
+  if (node->IsPseudoElement()) {
     // For pseudo elements, visit the children of the layout object.
     for (LayoutObject* child = layout_object->SlowFirstChild(); child;
          child = child->NextSibling()) {

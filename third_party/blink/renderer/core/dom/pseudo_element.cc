@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
@@ -53,7 +54,27 @@ namespace blink {
 
 using mojom::blink::FormControlType;
 
-bool PseudoElementLayoutObjectIsNeeded(const DisplayStyle& pseudo_style,
+namespace {
+
+// ::scroll-marker-group is represented internally as
+// kPseudoIdScrollMarkerGroupBefore or kPseudoIdScrollMarkerGroupAfter,
+// depending on scroll-marker property of originating element.
+// But the have to resolve to kPseudoIdScrollMarkerGroup to
+// correctly match CSS rules to the ::scroll-marker-group element.
+PseudoId ResolvePseudoIdAlias(PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdScrollMarkerGroupBefore:
+    case kPseudoIdScrollMarkerGroupAfter:
+      return kPseudoIdScrollMarkerGroup;
+    default:
+      return pseudo_id;
+  }
+}
+
+}  // namespace
+
+bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
+                                       const DisplayStyle& pseudo_style,
                                        const Element* originating_element);
 
 PseudoElement* PseudoElement::Create(Element* parent,
@@ -69,7 +90,9 @@ PseudoElement* PseudoElement::Create(Element* parent,
                                            view_transition_name);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
-         pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker);
+         pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker ||
+         pseudo_id == kPseudoIdScrollMarkerGroupBefore ||
+         pseudo_id == kPseudoIdScrollMarkerGroupAfter);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
                                              view_transition_name);
 }
@@ -97,6 +120,11 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
     case kPseudoIdMarker: {
       DEFINE_STATIC_LOCAL(QualifiedName, marker, (AtomicString("::marker")));
       return marker;
+    }
+    case kPseudoIdScrollMarkerGroup: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker_group,
+                          (AtomicString("::scroll-marker-group")));
+      return scroll_marker_group;
     }
     case kPseudoIdViewTransition: {
       DEFINE_STATIC_LOCAL(QualifiedName, transition,
@@ -134,7 +162,7 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
 
 AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {
   DCHECK(element);
-  auto pseudo_id = element->GetPseudoId();
+  auto pseudo_id = element->GetPseudoIdForStyling();
   switch (pseudo_id) {
     case kPseudoIdNone:
       return g_null_atom;
@@ -157,6 +185,10 @@ AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {
   return PseudoElementTagName(pseudo_id).LocalName();
 }
 
+PseudoId PseudoElement::GetPseudoIdForStyling() const {
+  return ResolvePseudoIdAlias(pseudo_id_);
+}
+
 bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
   switch (pseudo_id) {
     case kPseudoIdMarker:
@@ -171,7 +203,7 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
 PseudoElement::PseudoElement(Element* parent,
                              PseudoId pseudo_id,
                              const AtomicString& view_transition_name)
-    : Element(PseudoElementTagName(pseudo_id),
+    : Element(PseudoElementTagName(ResolvePseudoIdAlias(pseudo_id)),
               &parent->GetDocument(),
               kCreateElement),
       pseudo_id_(pseudo_id),
@@ -206,7 +238,7 @@ const ComputedStyle* PseudoElement::CustomStyleForLayoutObject(
   Element* parent = ParentOrShadowHostElement();
   return parent->StyleForPseudoElement(
       style_recalc_context,
-      StyleRequest(pseudo_id_, parent->GetComputedStyle(),
+      StyleRequest(GetPseudoIdForStyling(), parent->GetComputedStyle(),
                    /* originating_element_style */ nullptr,
                    view_transition_name_));
 }
@@ -221,7 +253,7 @@ const ComputedStyle* PseudoElement::LayoutStyleForDisplayContents(
           style);
   builder.SetContent(style.GetContentData());
   builder.SetDisplay(EDisplay::kInline);
-  builder.SetStyleType(pseudo_id_);
+  builder.SetStyleType(GetPseudoIdForStyling());
   return builder.TakeStyle();
 }
 
@@ -289,7 +321,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   DCHECK(CanHaveGeneratedChildren(*layout_object->Parent()));
 
   const ComputedStyle& style = layout_object->StyleRef();
-  switch (pseudo_id_) {
+  switch (GetPseudoId()) {
     case kPseudoIdMarker: {
       if (ListMarker* marker = ListMarker::Get(layout_object))
         marker->UpdateMarkerContentIfNeeded(*layout_object);
@@ -301,6 +333,8 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     }
     case kPseudoIdBefore:
     case kPseudoIdAfter:
+    case kPseudoIdScrollMarkerGroupBefore:
+    case kPseudoIdScrollMarkerGroupAfter:
       break;
     default: {
       context.counters_context.LeaveElement(*this);
@@ -308,7 +342,8 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     }
   }
 
-  DCHECK(!style.ContentBehavesAsNormal());
+  DCHECK(!style.ContentBehavesAsNormal() ||
+         GetPseudoIdForStyling() == kPseudoIdScrollMarkerGroup);
   DCHECK(!style.ContentPreventsBoxGeneration());
   for (const ContentData* content = style.GetContentData(); content;
        content = content->Next()) {
@@ -344,11 +379,12 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
 }
 
 bool PseudoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
-  return PseudoElementLayoutObjectIsNeeded(style, parentElement());
+  return PseudoElementLayoutObjectIsNeeded(GetPseudoId(), style,
+                                           parentElement());
 }
 
 bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
-  switch (pseudo_id_) {
+  switch (GetPseudoId()) {
     case kPseudoIdBefore:
     case kPseudoIdAfter:
       if (pseudo_id != kPseudoIdMarker)
@@ -386,20 +422,22 @@ Element* PseudoElement::OriginatingElement() const {
   return parent;
 }
 
-bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
+bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
+                                       const ComputedStyle* pseudo_style,
                                        const Element* originating_element) {
   if (!pseudo_style)
     return false;
-  return PseudoElementLayoutObjectIsNeeded(pseudo_style->GetDisplayStyle(),
-                                           originating_element);
+  return PseudoElementLayoutObjectIsNeeded(
+      pseudo_id, pseudo_style->GetDisplayStyle(), originating_element);
 }
 
-bool PseudoElementLayoutObjectIsNeeded(const DisplayStyle& pseudo_style,
+bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
+                                       const DisplayStyle& pseudo_style,
                                        const Element* originating_element) {
   if (pseudo_style.Display() == EDisplay::kNone) {
     return false;
   }
-  switch (pseudo_style.StyleType()) {
+  switch (pseudo_id) {
     case kPseudoIdFirstLetter:
     case kPseudoIdBackdrop:
     case kPseudoIdViewTransition:
@@ -408,6 +446,16 @@ bool PseudoElementLayoutObjectIsNeeded(const DisplayStyle& pseudo_style,
     case kPseudoIdViewTransitionNew:
     case kPseudoIdViewTransitionOld:
       return true;
+    case kPseudoIdScrollMarkerGroupBefore: {
+      const ComputedStyle* parent_style =
+          originating_element->GetComputedStyle();
+      return parent_style && parent_style->HasScrollMarkersBefore();
+    }
+    case kPseudoIdScrollMarkerGroupAfter: {
+      const ComputedStyle* parent_style =
+          originating_element->GetComputedStyle();
+      return parent_style && parent_style->HasScrollMarkersAfter();
+    }
     case kPseudoIdBefore:
     case kPseudoIdAfter:
       return !pseudo_style.ContentPreventsBoxGeneration();

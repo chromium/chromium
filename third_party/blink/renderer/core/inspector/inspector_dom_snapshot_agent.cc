@@ -568,10 +568,10 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
       }
     }
 
-    if (element->GetPseudoId()) {
-      SetRare(
-          nodes->getPseudoType(nullptr), index,
-          InspectorDOMAgent::ProtocolPseudoElementType(element->GetPseudoId()));
+    if (element->IsPseudoElement()) {
+      SetRare(nodes->getPseudoType(nullptr), index,
+              InspectorDOMAgent::ProtocolPseudoElementType(
+                  element->GetPseudoIdForStyling()));
       if (auto tag = To<PseudoElement>(element)->view_transition_name()) {
         SetRare(nodes->getPseudoIdentifier(nullptr), index, tag);
       }
@@ -703,7 +703,7 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(
                     : String();
   layout_tree_snapshot->getText()->emplace_back(AddString(text));
 
-  if (node->GetPseudoId()) {
+  if (node->GetPseudoIdForStyling()) {
     // For pseudo elements, visit the children of the layout object.
     // Combinding ::before { content: 'hello' } and ::first-letter would produce
     // two boxes for the ::before node, one for 'hello' and one for 'ello'.

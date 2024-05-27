@@ -48,6 +48,7 @@ std::optional<std::pair<unsigned, int>> DetermineCounterTypeAndValue(
     case kPseudoIdBefore:
     case kPseudoIdAfter:
     case kPseudoIdMarker:
+    case kPseudoIdScrollMarkerGroup:
       break;
     default:
       return std::nullopt;  // Counters are forbidden from all other pseudo

@@ -156,7 +156,7 @@ Element* GetPseudoIdAndTag(Element* element,
     if (!resolved_element)
       return nullptr;
 
-    element_pseudo_id = pseudo_element->GetPseudoId();
+    element_pseudo_id = pseudo_element->GetPseudoIdForStyling();
     view_transition_name = pseudo_element->view_transition_name();
   }
   return resolved_element;

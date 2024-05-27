@@ -2253,6 +2253,12 @@ class ComputedStyle final : public ComputedStyleBase {
     if (pseudo == kPseudoIdBackdrop && Overlay() == EOverlay::kNone) {
       return false;
     }
+    if (pseudo == kPseudoIdScrollMarkerGroupBefore) {
+      return ScrollMarkers() == EScrollMarkers::kBefore;
+    }
+    if (pseudo == kPseudoIdScrollMarkerGroupAfter) {
+      return ScrollMarkers() == EScrollMarkers::kAfter;
+    }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
     }
@@ -2263,6 +2269,22 @@ class ComputedStyle final : public ComputedStyleBase {
     // ::after, but the rest of the pseudo-elements should only be used for
     // elements with an actual layout object.
     return pseudo == kPseudoIdBefore || pseudo == kPseudoIdAfter;
+  }
+
+  bool HasScrollMarkersBefore() const {
+    return ScrollMarkers() == EScrollMarkers::kBefore;
+  }
+
+  bool HasScrollMarkersAfter() const {
+    return ScrollMarkers() == EScrollMarkers::kAfter;
+  }
+
+  bool ScrollMarkersNone() const {
+    return ScrollMarkers() == EScrollMarkers::kNone;
+  }
+
+  bool ScrollMarkersEqual(const ComputedStyle& other) const {
+    return ScrollMarkers() == other.ScrollMarkers();
   }
 
   // Returns true if the element is rendered in the top layer. That is the case

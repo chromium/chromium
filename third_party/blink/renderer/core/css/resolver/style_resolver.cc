@@ -330,7 +330,7 @@ bool TextAutosizingMultiplierChanged(const StyleResolverState& state,
 
 PseudoId GetPseudoId(const Element& element, ElementRuleCollector* collector) {
   if (element.IsPseudoElement()) {
-    return element.GetPseudoId();
+    return element.GetPseudoIdForStyling();
   }
 
   return collector ? collector->GetPseudoId() : kPseudoIdNone;
@@ -457,6 +457,22 @@ static CSSPropertyValueSet* UniversalOverlayUserAgentDeclaration() {
   if (decl->IsEmpty()) {
     decl->SetProperty(CSSPropertyID::kOverlay,
                       *CSSIdentifierValue::Create(CSSValueID::kNone),
+                      true /* important */);
+  }
+  return decl;
+}
+
+// UA rule: ::scroll-marker-group { contain: size !important; }
+// The generation of ::scroll-marker pseudo-elements
+// cannot invalidate layout outside of this pseudo-element.
+static CSSPropertyValueSet* ScrollMarkersGroupUserAgentDeclaration() {
+  DEFINE_STATIC_LOCAL(
+      Persistent<MutableCSSPropertyValueSet>, decl,
+      (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
+
+  if (decl->IsEmpty()) {
+    decl->SetProperty(CSSPropertyID::kContain,
+                      *CSSIdentifierValue::Create(CSSValueID::kSize),
                       true /* important */);
   }
   return decl;
@@ -1420,12 +1436,19 @@ void StyleResolver::ApplyBaseStyleNoCache(
     }
 
     // UA rule: * { overlay: none !important }
+    // and
+    // UA rule: ::scroll-marker-group { contain: size !important; }
     // Implemented here because DCHECKs ensures we don't add universal rules to
     // the UA sheets. Note that this is a universal rule in any namespace.
     // Adding this to the html.css would only do the override in the HTML
     // namespace since the sheet has a default namespace.
     cascade.MutableMatchResult().AddMatchedProperties(
         UniversalOverlayUserAgentDeclaration(), CascadeOrigin::kUserAgent);
+
+    if (element->IsScrollMarkerGroupPseudoElement()) {
+      cascade.MutableMatchResult().AddMatchedProperties(
+          ScrollMarkersGroupUserAgentDeclaration(), CascadeOrigin::kUserAgent);
+    }
 
     // This adds a CSSInitialColorValue to the cascade for the document
     // element. The CSSInitialColorValue will resolve to a color-scheme

@@ -65,6 +65,10 @@ class CORE_EXPORT PseudoElement : public Element {
   bool CanStartSelection() const override { return false; }
   bool CanContainRangeEndPoint() const override { return false; }
   PseudoId GetPseudoId() const override { return pseudo_id_; }
+  // PseudoId that can be alias, e.g. kPseudoScrollMarkerGroupAfter is
+  // unresolved = alias, kPseudoScrollMarkerGroup is resolved.
+  // For styling and selector matching, return resolved version.
+  PseudoId GetPseudoIdForStyling() const override;
   const ComputedStyle* LayoutStyleForDisplayContents(const ComputedStyle&);
 
   static AtomicString PseudoElementNameForEvents(Element*);
@@ -104,7 +108,8 @@ class CORE_EXPORT PseudoElement : public Element {
 
 CORE_EXPORT const QualifiedName& PseudoElementTagName(PseudoId);
 
-bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
+bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
+                                       const ComputedStyle* pseudo_style,
                                        const Element* originating_element);
 
 template <>
