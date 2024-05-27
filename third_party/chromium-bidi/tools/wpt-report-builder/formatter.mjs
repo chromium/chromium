@@ -63,7 +63,9 @@ export function flattenSingleTest(test) {
  *  as usual.
  */
 function removeWebDriverBiDiPrefix(name) {
-  return name.replace('/webdriver/tests/bidi/', '');
+  return name
+    .replace('/webdriver/tests/bidi/', '')
+    .replace('/webdriver/tests/interop/', '');
 }
 
 function excludeTentativeTests(test) {
