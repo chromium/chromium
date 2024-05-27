@@ -74,6 +74,32 @@ class ASH_EXPORT WindowRestoreTracker {
   base::WeakPtrFactory<WindowRestoreTracker> weak_ptr_factory_{this};
 };
 
+// ShelfTracker waits until all pinned shelf icons are loaded and then triggers
+// a callback.
+class ASH_EXPORT ShelfTracker {
+ public:
+  ShelfTracker();
+  ~ShelfTracker();
+  ShelfTracker(const ShelfTracker&) = delete;
+  ShelfTracker& operator=(const ShelfTracker&) = delete;
+
+  void Init(base::OnceClosure on_all_expected_icons_loaded);
+
+  void OnListInitialized(const ShelfModel* model);
+  void OnUpdated(const ShelfModel* model);
+  void IgnoreBrowserIcon();
+
+ private:
+  void MaybeRunClosure();
+
+  bool shelf_item_list_initialized_ = false;
+  bool has_pending_icon_ = false;
+  bool has_browser_icon_ = false;
+  bool should_check_browser_icon_ = true;
+
+  base::OnceClosure on_ready_;
+};
+
 class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
                                                  public LoginState::Observer {
  public:
@@ -210,11 +236,10 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   UiMetricsRecorder ui_recorder_;
 
   WindowRestoreTracker window_restore_tracker_;
+  ShelfTracker shelf_tracker_;
 
   std::optional<base::TimeTicks> timestamp_on_auth_success_;
   std::optional<base::TimeTicks> timestamp_primary_user_logged_in_;
-
-  bool shelf_initialized_ = false;
 
   // Session restore data comes from chrome::SessionRestore and ash::FullRestore
   // independently.

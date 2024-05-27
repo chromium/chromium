@@ -298,6 +298,43 @@ int WindowRestoreTracker::CountWindowsInState(State state) const {
       [state](const std::pair<int, State>& kv) { return kv.second == state; });
 }
 
+ShelfTracker::ShelfTracker() = default;
+ShelfTracker::~ShelfTracker() = default;
+
+void ShelfTracker::Init(base::OnceClosure on_all_expected_icons_loaded) {
+  on_ready_ = std::move(on_all_expected_icons_loaded);
+}
+
+void ShelfTracker::OnListInitialized(const ShelfModel* model) {
+  shelf_item_list_initialized_ = true;
+  OnUpdated(model);
+}
+
+void ShelfTracker::OnUpdated(const ShelfModel* model) {
+  has_browser_icon_ = HasBrowserIcon(model);
+  has_pending_icon_ = HasPendingIcon(model);
+  MaybeRunClosure();
+}
+
+void ShelfTracker::IgnoreBrowserIcon() {
+  should_check_browser_icon_ = false;
+  MaybeRunClosure();
+}
+
+void ShelfTracker::MaybeRunClosure() {
+  const bool browser_icon_ready =
+      !should_check_browser_icon_ || has_browser_icon_;
+  const bool all_icons_are_ready =
+      shelf_item_list_initialized_ && browser_icon_ready && !has_pending_icon_;
+  if (!all_icons_are_ready) {
+    return;
+  }
+
+  if (on_ready_) {
+    std::move(on_ready_).Run();
+  }
+}
+
 LoginUnlockThroughputRecorder::LoginUnlockThroughputRecorder()
     : post_login_deferred_task_runner_(
           base::MakeRefCounted<base::DeferredSequencedTaskRunner>(
@@ -312,6 +349,10 @@ LoginUnlockThroughputRecorder::LoginUnlockThroughputRecorder()
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&LoginUnlockThroughputRecorder::OnAllWindowsPresented,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  shelf_tracker_.Init(base::BindOnce(
+      &LoginUnlockThroughputRecorder::OnAllExpectedShelfIconsLoaded,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 LoginUnlockThroughputRecorder::~LoginUnlockThroughputRecorder() {
@@ -453,17 +494,12 @@ void LoginUnlockThroughputRecorder::OnBeforeRestoredWindowShown(
 }
 
 void LoginUnlockThroughputRecorder::InitShelfIconList(const ShelfModel* model) {
-  shelf_initialized_ = true;
-  UpdateShelfIconList(model);
+  shelf_tracker_.OnListInitialized(model);
 }
 
 void LoginUnlockThroughputRecorder::UpdateShelfIconList(
     const ShelfModel* model) {
-  const bool is_browser_icon_ready =
-      browser_windows_will_not_be_restored_ || HasBrowserIcon(model);
-  if (shelf_initialized_ && is_browser_icon_ready && !HasPendingIcon(model)) {
-    OnAllExpectedShelfIconsLoaded();
-  }
+  shelf_tracker_.OnUpdated(model);
 }
 
 void LoginUnlockThroughputRecorder::
@@ -571,9 +607,7 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
 }
 
 void LoginUnlockThroughputRecorder::OnAllExpectedShelfIconsLoaded() {
-  if (shelf_icons_loaded_) {
-    return;
-  }
+  DCHECK(!shelf_icons_loaded_);
   shelf_icons_loaded_ = true;
 
   if (timestamp_primary_user_logged_in_.has_value()) {
@@ -775,6 +809,7 @@ void LoginUnlockThroughputRecorder::MaybeRestoreDataLoaded() {
   // added to the tracker so far, we consider window restore has been done.
   if (window_restore_tracker_.NumberOfWindows() == 0) {
     browser_windows_will_not_be_restored_ = true;
+    shelf_tracker_.IgnoreBrowserIcon();
     ScheduleWaitForShelfAnimationEndIfNeeded();
   }
 }
