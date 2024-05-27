@@ -46,6 +46,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
@@ -299,7 +300,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
   const AccountId account_id_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
           kUserMail,
-          policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+          policy::DeviceLocalAccountType::kPublicSession));
   policy::UserPolicyBuilder device_local_account_policy_;
   const web_app::TestSignedWebBundle iwa_bundle_1_ =
       web_app::TestSignedWebBundleBuilder::BuildDefault(

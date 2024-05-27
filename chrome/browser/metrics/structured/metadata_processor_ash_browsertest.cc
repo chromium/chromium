@@ -40,6 +40,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -233,7 +234,7 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
 
   void SetDevicePolicy() {
     UploadAndInstallDeviceLocalAccountPolicy();
-    // Add an account with DeviceLocalAccount::Type::TYPE_PUBLIC_SESSION.
+    // Add an account with DeviceLocalAccountType::kPublicSession.
     AddPublicSessionToDevicePolicy(kAccountId1);
 
     std::optional<em::PolicyData::MarketSegment> market_segment =
@@ -372,11 +373,11 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
   const AccountId account_id_1_ =
       AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
           kAccountId1,
-          policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+          policy::DeviceLocalAccountType::kPublicSession));
   const AccountId account_id_2_ =
       AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
           kAppInstallUrl,
-          policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP));
+          policy::DeviceLocalAccountType::kWebKioskApp));
   // Not strictly necessary, but makes kiosk tests run much faster.
   base::AutoReset<bool> skip_splash_wait_override_ =
       ash::KioskTestHelper::SkipSplashScreenWait();

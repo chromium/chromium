@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -31,6 +30,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/ownership/mock_owner_key_util.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -143,7 +143,7 @@ class ChromeKioskCrashRestoreTest : public KioskCrashRestoreTest {
   const std::string GetTestAppUserId() const override {
     return policy::GenerateDeviceLocalAccountUserId(
         KioskAppsMixin::kEnterpriseKioskAccountId,
-        policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+        policy::DeviceLocalAccountType::kKioskApp);
   }
 };
 
@@ -161,7 +161,7 @@ class WebKioskCrashRestoreTest : public KioskCrashRestoreTest {
   const std::string GetTestAppUserId() const override {
     return policy::GenerateDeviceLocalAccountUserId(
         KioskAppsMixin::kEnterpriseWebKioskAccountId,
-        policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP);
+        policy::DeviceLocalAccountType::kWebKioskApp);
   }
 };
 

@@ -59,7 +59,7 @@ namespace ash {
 namespace {
 
 AccountId CreateDeviceLocalAccountId(const std::string& account_id,
-                                     policy::DeviceLocalAccount::Type type) {
+                                     policy::DeviceLocalAccountType type) {
   return AccountId::FromUserEmail(
       policy::GenerateDeviceLocalAccountUserId(account_id, type));
 }
@@ -74,7 +74,7 @@ const AccountId kAccountId1 =
     AccountId::FromUserEmailGaiaId("user1@example.com", "9012345678");
 const AccountId kKioskAccountId =
     CreateDeviceLocalAccountId(kDeviceLocalAccountId,
-                               policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+                               policy::DeviceLocalAccountType::kKioskApp);
 }  // namespace
 
 class UserManagerObserverTest : public user_manager::UserManager::Observer {
@@ -233,9 +233,9 @@ class UserManagerTest : public testing::Test {
         base::Value(base::Value::List().Append(
             base::Value::Dict()
                 .Set(kAccountsPrefDeviceLocalAccountsKeyId, account_id)
-                .Set(kAccountsPrefDeviceLocalAccountsKeyType,
-                     static_cast<int>(
-                         policy::DeviceLocalAccount::TYPE_KIOSK_APP))
+                .Set(
+                    kAccountsPrefDeviceLocalAccountsKeyType,
+                    static_cast<int>(policy::DeviceLocalAccountType::kKioskApp))
                 .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                      static_cast<int>(ephemeral_mode))
                 .Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId, ""))));
@@ -245,7 +245,7 @@ class UserManagerTest : public testing::Test {
   // `TYPE_SAML_PUBLIC_SESSION` types.
   void SetDeviceLocalPublicAccount(
       const std::string& account_id,
-      policy::DeviceLocalAccount::Type type,
+      policy::DeviceLocalAccountType type,
       policy::DeviceLocalAccount::EphemeralMode ephemeral_mode) {
     settings_helper_.Set(
         kAccountsPrefDeviceLocalAccounts,
@@ -372,12 +372,12 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForPublicAccountId) {
       /* ephemeral_users_enabled= */ false,
       /* owner= */ kOwnerAccountId.GetUserEmail());
   SetDeviceLocalPublicAccount(
-      kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION,
+      kDeviceLocalAccountId, policy::DeviceLocalAccountType::kPublicSession,
       policy::DeviceLocalAccount::EphemeralMode::kDisable);
   RetrieveTrustedDevicePolicies();
 
   const AccountId public_accout_id = CreateDeviceLocalAccountId(
-      kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+      kDeviceLocalAccountId, policy::DeviceLocalAccountType::kPublicSession);
   EXPECT_TRUE(IsEphemeralAccountId(public_accout_id));
 }
 
@@ -390,14 +390,13 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForSamlPublicAccountId) {
       /* ephemeral_users_enabled= */ false,
       /* owner= */ kOwnerAccountId.GetUserEmail());
   SetDeviceLocalPublicAccount(
-      kDeviceLocalAccountId,
-      policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION,
+      kDeviceLocalAccountId, policy::DeviceLocalAccountType::kSamlPublicSession,
       policy::DeviceLocalAccount::EphemeralMode::kDisable);
   RetrieveTrustedDevicePolicies();
 
   const AccountId saml_public_accout_id = CreateDeviceLocalAccountId(
       kDeviceLocalAccountId,
-      policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION);
+      policy::DeviceLocalAccountType::kSamlPublicSession);
   EXPECT_TRUE(IsEphemeralAccountId(saml_public_accout_id));
 }
 

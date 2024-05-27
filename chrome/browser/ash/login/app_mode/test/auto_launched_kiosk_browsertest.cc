@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -186,7 +185,7 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   const std::string GetTestAppUserId() const {
     return policy::GenerateDeviceLocalAccountUserId(
         KioskAppsMixin::kEnterpriseKioskAccountId,
-        policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+        policy::DeviceLocalAccountType::kKioskApp);
   }
 
   bool CloseAppWindow(const std::string& app_id) {

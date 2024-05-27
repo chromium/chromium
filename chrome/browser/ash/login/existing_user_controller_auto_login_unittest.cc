@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -20,6 +19,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/ownership/mock_owner_key_util.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -66,8 +66,9 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
 
     base::Value::Dict account;
     account.Set(kAccountsPrefDeviceLocalAccountsKeyId, auto_login_user_id_);
-    account.Set(kAccountsPrefDeviceLocalAccountsKeyType,
-                policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+    account.Set(
+        kAccountsPrefDeviceLocalAccountsKeyType,
+        static_cast<int>(policy::DeviceLocalAccountType::kPublicSession));
     base::Value::List accounts;
     accounts.Append(std::move(account));
     settings_helper_.Set(kAccountsPrefDeviceLocalAccounts,
@@ -130,7 +131,7 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   const AccountId auto_login_account_id_ =
       AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
           auto_login_user_id_,
-          policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+          policy::DeviceLocalAccountType::kPublicSession));
 
  private:
   std::unique_ptr<MockLoginDisplayHost> mock_login_display_host_;

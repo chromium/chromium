@@ -57,7 +57,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
@@ -67,6 +66,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"  // nogncheck
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "ui/events/event_constants.h"
@@ -1498,7 +1498,7 @@ class KioskBrowserSessionAshWithLacrosEnabledTest
  private:
   ash::KioskAppId CreateKioskAppId() {
     std::string email = policy::GenerateDeviceLocalAccountUserId(
-        kTestWebAppUrl, policy::DeviceLocalAccount::Type::TYPE_WEB_KIOSK_APP);
+        kTestWebAppUrl, policy::DeviceLocalAccountType::kWebKioskApp);
     AccountId account_id(AccountId::FromUserEmail(email));
     return ash::KioskAppId::ForWebApp(account_id);
   }

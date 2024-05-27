@@ -22,7 +22,7 @@ namespace {
 AccountId ToWebKioskAccountId(const std::string& app_install_url) {
   return AccountId(
       AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
-          app_install_url, policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP)));
+          app_install_url, policy::DeviceLocalAccountType::kWebKioskApp)));
 }
 
 }  // anonymous namespace
