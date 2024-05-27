@@ -564,12 +564,10 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
   CGRect keyboardFrameEnd = [[[notification userInfo]
       objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
   // If the `keyboardFrameEnd` height is below the threshold, that means we are
-  // only displaying the keyboard toolbar, so there is no need to hide the
-  // snapshots.
-  if (keyboardFrameEnd.size.height < kKeyboardToolbarHeightThreshold) {
-    return;
-  }
-  _keyboardDisplayed = YES;
+  // only displaying the keyboard toolbar.
+  _keyboardDisplayed =
+      keyboardFrameEnd.size.height > kKeyboardToolbarHeightThreshold;
+
   [self hideSnapshotsIfNeeded:YES];
 }
 
