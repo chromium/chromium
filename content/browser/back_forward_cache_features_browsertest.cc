@@ -1133,27 +1133,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
-// The parameter is used for switching
-// `kAllowBFCacheForClosedMediaStreamTrack`.
-class BackForwardCacheMediaTest : public BackForwardCacheBrowserTest,
-                                  public testing::WithParamInterface<bool> {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-      EnableFeatureAndSetParams(
-          blink::features::kAllowBFCacheWhenClosedMediaStreamTrack, "", "");
-    } else {
-      DisableFeature(blink::features::kAllowBFCacheWhenClosedMediaStreamTrack);
-    }
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled() { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All, BackForwardCacheMediaTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMediaTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DoesNotCacheIfRecordingAudio) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1185,26 +1165,15 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMediaTest,
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  if (IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-    // When the flag is enabled, a Media Stream Track that's in the live state
-    // will block BFCache.
-    ExpectNotRestored(
-        {NotRestoredReason::kBlocklistedFeatures},
-        {blink::scheduler::WebSchedulerTrackedFeature::kLiveMediaStreamTrack},
-        {}, {}, {}, FROM_HERE);
-  } else {
-    // Note that the reason for kWasGrantedMediaAccess occurs after
-    // MediaDevicesDispatcherHost is called, hence, both are reasons for the
-    // page not being restored.
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
-                       NotRestoredReason::kDisableForRenderFrameHostCalled},
-                      {}, {}, {reason}, {}, FROM_HERE);
-  }
+  // A MediaStreamTrack that's in the live state
+  // will block BFCache.
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kLiveMediaStreamTrack}, {},
+      {}, {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMediaTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DoesNotCacheIfSubframeRecordingAudio) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1237,28 +1206,15 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMediaTest,
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  if (IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-    // When the flag is enabled, a Media Stream Track that's in the live state
-    // blocks BFCache.
-    ExpectNotRestored(
-        {NotRestoredReason::kBlocklistedFeatures},
-        {blink::scheduler::WebSchedulerTrackedFeature::kLiveMediaStreamTrack},
-        {}, {}, {}, FROM_HERE);
-  } else {
-    // Note that the reason for kWasGrantedMediaAccess occurs after
-    // MediaDevicesDispatcherHost is called, hence, both are reasons for the
-    // page not being restored.
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
-                       NotRestoredReason::kDisableForRenderFrameHostCalled},
-                      {}, {}, {reason}, {}, FROM_HERE);
-  }
+  // A MediaStreamTrack that's in the live state blocks BFCache.
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kLiveMediaStreamTrack}, {},
+      {}, {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_P(
-    BackForwardCacheMediaTest,
-    DoesNotCacheIfMediaDeviceSubscribedButDoesCacheIfFlagEnabled) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheIfMediaDeviceSubscribedButDoesCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   BackForwardCacheDisabledTester tester;
@@ -1286,27 +1242,14 @@ IN_PROC_BROWSER_TEST_P(
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  if (IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-    // When the flag is enabled, ended Media Stream Track does not block
-    // BFCache.
-    ExpectRestored(FROM_HERE);
-  } else {
-    // The page was subscribed to media devices when we navigated away, so it
-    // shouldn't have been cached.
-    deleted.WaitUntilDeleted();
-
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
-                      {}, {reason}, {}, FROM_HERE);
-  }
+  // Ended MediaStreamTrack does not block BFCache.
+  ExpectRestored(FROM_HERE);
 }
 
-// Checks that the page is not restored from BFCache when it calls
-// mediaDevice.enumerateDevices() unless the flag is enabled.
-IN_PROC_BROWSER_TEST_P(
-    BackForwardCacheMediaTest,
-    DoesNotCacheIfDevicesEnumeratedButDoesCacheIfFlagEnabled) {
+// Checks that the page is restored from BFCache when it calls
+// mediaDevice.enumerateDevices().
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       RestoreIfDevicesEnumerated) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to an empty page.
@@ -1324,22 +1267,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
-  if (IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-    // 3) Go back. When the flag is enabled, MediaDevicesDispatcherHost does not
-    // block BFCache.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    ExpectRestored(FROM_HERE);
-  } else {
-    // The page shouldn't be cached when the flag is disabled.
-    ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
-
-    // 3) Go back.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
-                      {}, {reason}, {}, FROM_HERE);
-  }
+  // 3) Go back. MediaDevicesDispatcherHost does not block BFCache.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 // Checks that the page is not restored from BFCache when it calls
@@ -1347,7 +1277,7 @@ IN_PROC_BROWSER_TEST_P(
 // Since mediaDevice.getDisplayMedia() is not supported in Android, the tests
 // can't run on the OS.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMediaTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DoesNotCacheIfDisplayMediaAccessGranted) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1371,31 +1301,18 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMediaTest,
 
   ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 
-  if (IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-    // 3) Go back. When the flag is enabled, a Media Stream Track that's in the
-    // live state blocks BFCache.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    ExpectNotRestored(
-        {NotRestoredReason::kBlocklistedFeatures},
-        {blink::scheduler::WebSchedulerTrackedFeature::kLiveMediaStreamTrack},
-        {}, {}, {}, FROM_HERE);
-  } else {
-    // 3) Go back.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
-                       NotRestoredReason::kDisableForRenderFrameHostCalled},
-                      {}, {}, {reason}, {}, FROM_HERE);
-  }
+  // 3) Go back. A MediaStreamTrack that's in the live state blocks BFCache.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kLiveMediaStreamTrack}, {},
+      {}, {}, FROM_HERE);
 }
 
 // Checks that the page is successfully restored from BFCache after stopping the
-// media stream track that was caused by getDisplayMedia(). However, the page
-// should not be stored in BFCache if the flag is enabled.
-IN_PROC_BROWSER_TEST_P(
-    BackForwardCacheMediaTest,
-    DoesCacheIfMediaStreamTrackUsingGetDisplayMediaEndedButDoesNotWithoutFlags) {
+// MediaStreamTrack that was caused by getDisplayMedia().
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CacheIfMediaStreamTrackUsingGetDisplayMediaEnded) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to an empty page.
@@ -1422,22 +1339,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
-  if (IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-    // 3) Go back. When flag is enabled, an ended Media Stream Track doesn't
-    // block BFCache.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    ExpectRestored(FROM_HERE);
-  } else {
-    ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
-
-    // 3) Go back.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
-    ExpectNotRestored({NotRestoredReason::kWasGrantedMediaAccess,
-                       NotRestoredReason::kDisableForRenderFrameHostCalled},
-                      {}, {}, {reason}, {}, FROM_HERE);
-  }
+  // 3) Go back. an ended MediaStreamTrack doesn't
+  // block BFCache.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -4651,7 +4556,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // TODO(crbug.com/40183520): The test is consistently failing on some Mac
 // bots.
-// This test uses Media Stream Track, so the test class is
+// This test uses MediaStreamTrack, so the test class is
 // `BackForwardCacheMediaTest`.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_NonTrivialRTCPeerConnectionNotCached \
@@ -4660,7 +4565,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 #define MAYBE_NonTrivialRTCPeerConnectionNotCached \
   NonTrivialRTCPeerConnectionNotCached
 #endif
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMediaTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        MAYBE_NonTrivialRTCPeerConnectionNotCached) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
@@ -4726,18 +4631,12 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMediaTest,
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  if (IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-    // When the flag is enabled, a live Media Stream Track blocks BFCache.
-    ExpectNotRestored(
-        {NotRestoredReason::kBlocklistedFeatures},
-        {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC,
-         blink::scheduler::WebSchedulerTrackedFeature::kLiveMediaStreamTrack},
-        {}, {}, {}, FROM_HERE);
-  } else {
-    ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
-                      {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC},
-                      {}, {}, {}, FROM_HERE);
-  }
+  // A live MediaStreamTrack blocks BFCache.
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC,
+       blink::scheduler::WebSchedulerTrackedFeature::kLiveMediaStreamTrack},
+      {}, {}, {}, FROM_HERE);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

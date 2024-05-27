@@ -45,9 +45,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAdInterestGroupAPIRestrictedPolicyByDefault);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kAllowBFCacheWhenClosedMediaStreamTrack);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAlwaysAllowFledgeDeprecatedRenderURLReplacements);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowerHighResolutionTimerThreshold);
@@ -1645,8 +1642,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
 // ----------------------------------------------------------------------------
 // Helper functions for querying feature status. Please declare any features or
 // constants for features in the section above.
-
-BLINK_COMMON_EXPORT bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled();
 
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
 

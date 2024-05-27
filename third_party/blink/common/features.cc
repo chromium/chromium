@@ -51,12 +51,6 @@ BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
              "AdInterestGroupAPIRestrictedPolicyByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Make MediaDevicesDispatcherHost and ended MediaStreamTrack not block BFCache.
-// See https://crbug.com/1502395 for more details.
-BASE_FEATURE(kAllowBFCacheWhenClosedMediaStreamTrack,
-             "AllowBFCacheWhenClosedMediaStreamTrack",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allow DeprecatedRenderURLReplacements when
 // CookieDeprecationFacilitatedTesting is enabled.
 BASE_FEATURE(kAlwaysAllowFledgeDeprecatedRenderURLReplacements,
@@ -2569,11 +2563,6 @@ bool IsAllowURNsInIframeEnabled() {
 bool DisplayWarningDeprecateURNIframesUseFencedFrames() {
   return base::FeatureList::IsEnabled(
       blink::features::kDisplayWarningDeprecateURNIframesUseFencedFrames);
-}
-
-bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled() {
-  return base::FeatureList::IsEnabled(
-      blink::features::kAllowBFCacheWhenClosedMediaStreamTrack);
 }
 
 bool IsEnableMojoJSProtectedMemoryEnabled() {

@@ -104,8 +104,6 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::SCHEME_NOT_HTTP_OR_HTTPS;
     case Reason::kLoading:
       return ProtoEnum::LOADING;
-    case Reason::kWasGrantedMediaAccess:
-      return ProtoEnum::WAS_GRANTED_MEDIA_ACCESS;
     case Reason::kDisableForRenderFrameHostCalled:
       return ProtoEnum::DISABLE_FOR_RENDER_FRAME_HOST_CALLED;
     case Reason::kDomainNotAllowed:
@@ -343,8 +341,6 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "scheme is not HTTP or HTTPS";
     case Reason::kLoading:
       return "frame is not fully loaded";
-    case Reason::kWasGrantedMediaAccess:
-      return "frame was granted microphone or camera access";
     case Reason::kBlocklistedFeatures:
       return "blocklisted features: " +
              DescribeFeatures(blocklisted_features());
@@ -463,8 +459,6 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
       return "response-scheme-not-http-or-https";
     case Reason::kLoading:
       return "navigating";
-    case Reason::kWasGrantedMediaAccess:
-      return "granted-media-access";
     case Reason::kBlocklistedFeatures:
       // This should not be reported. Instead actual feature list will be
       // reported.

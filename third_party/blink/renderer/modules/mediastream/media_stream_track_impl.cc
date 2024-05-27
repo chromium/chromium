@@ -1097,12 +1097,8 @@ void MediaStreamTrackImpl::CloneInternal(MediaStreamTrackImpl* cloned_track) {
 
 void MediaStreamTrackImpl::EnsureFeatureHandleForScheduler() {
   // The two handlers must be in sync.
-  if (features::IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-    CHECK_EQ(!!feature_handle_for_scheduler_,
-             !!feature_handle_for_scheduler_on_live_media_stream_track_);
-  } else {
-    CHECK(!feature_handle_for_scheduler_on_live_media_stream_track_);
-  }
+  CHECK_EQ(!!feature_handle_for_scheduler_,
+           !!feature_handle_for_scheduler_on_live_media_stream_track_);
 
   if (feature_handle_for_scheduler_) {
     return;
@@ -1123,12 +1119,11 @@ void MediaStreamTrackImpl::EnsureFeatureHandleForScheduler() {
           SchedulingPolicy::Feature::kWebRTC,
           {SchedulingPolicy::DisableAggressiveThrottling(),
            SchedulingPolicy::DisableAlignWakeUps()});
-  if (features::IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-    feature_handle_for_scheduler_on_live_media_stream_track_ =
-        GetExecutionContext()->GetScheduler()->RegisterFeature(
-            SchedulingPolicy::Feature::kLiveMediaStreamTrack,
-            {SchedulingPolicy::DisableBackForwardCache()});
-  }
+
+  feature_handle_for_scheduler_on_live_media_stream_track_ =
+      GetExecutionContext()->GetScheduler()->RegisterFeature(
+          SchedulingPolicy::Feature::kLiveMediaStreamTrack,
+          {SchedulingPolicy::DisableBackForwardCache()});
 }
 
 void MediaStreamTrackImpl::AddObserver(MediaStreamTrack::Observer* observer) {

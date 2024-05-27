@@ -63,7 +63,7 @@ class BackForwardCacheMetrics
     // scripts have not run yet and pagehide/pageshow event handlers may not be
     // installed yet.
     kLoading = 5,
-    kWasGrantedMediaAccess = 6,
+    // 6: WasGrantedMediaAccess is no longer blocking.
     kBlocklistedFeatures = 7,
     kDisableForRenderFrameHostCalled = 8,
     kDomainNotAllowed = 9,

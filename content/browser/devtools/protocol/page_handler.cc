@@ -1606,8 +1606,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::SchemeNotHTTPOrHTTPS;
     case Reason::kLoading:
       return Page::BackForwardCacheNotRestoredReasonEnum::Loading;
-    case Reason::kWasGrantedMediaAccess:
-      return Page::BackForwardCacheNotRestoredReasonEnum::WasGrantedMediaAccess;
     case Reason::kDisableForRenderFrameHostCalled:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           DisableForRenderFrameHostCalled;
@@ -1963,7 +1961,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kHTTPStatusNotOK:
     case Reason::kSchemeNotHTTPOrHTTPS:
     case Reason::kLoading:
-    case Reason::kWasGrantedMediaAccess:
     case Reason::kDisableForRenderFrameHostCalled:
     case Reason::kDomainNotAllowed:
     case Reason::kHTTPMethodNotGET:

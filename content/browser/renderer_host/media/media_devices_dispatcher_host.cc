@@ -85,26 +85,6 @@ void MediaDevicesDispatcherHost::Create(
       std::make_unique<MediaDevicesDispatcherHost>(render_frame_host_id,
                                                    media_stream_manager),
       std::move(receiver));
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](GlobalRenderFrameHostId render_frame_host_id) {
-                       RenderFrameHost* render_frame_host =
-                           RenderFrameHost::FromID(render_frame_host_id);
-
-                       if (!render_frame_host)
-                         return;
-
-                       if (!blink::features::
-                               IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-                         BackForwardCache::DisableForRenderFrameHost(
-                             render_frame_host,
-                             BackForwardCacheDisable::DisabledReason(
-                                 BackForwardCacheDisable::DisabledReasonId::
-                                     kMediaDevicesDispatcherHost));
-                       }
-                     },
-                     render_frame_host_id));
 }
 
 MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(

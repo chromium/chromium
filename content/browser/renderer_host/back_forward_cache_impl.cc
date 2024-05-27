@@ -966,16 +966,6 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
     PopulateStickyReasonsForDocument(
         BackForwardCacheCanStoreDocumentResult& result,
         RenderFrameHostImpl* rfh) {
-  if (!blink::features::IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-    // `kWasGrantedMediaAccess` is no longer a BFCache blocker when the flag is
-    // enabled. With https://crbug.com/1502395, frames with only "live" Media
-    // Stream Track will be blocked from BFCache.
-    if (rfh->was_granted_media_access()) {
-      result.No(
-          BackForwardCacheMetrics::NotRestoredReason::kWasGrantedMediaAccess);
-    }
-  }
-
   if (rfh->IsBackForwardCacheDisabled() && !ShouldIgnoreBlocklists()) {
     result.NoDueToDisableForRenderFrameHostCalled(
         rfh->back_forward_cache_disabled_reasons());

@@ -299,9 +299,6 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
     ui_ = std::move(stream_ui);
   }
 
-  if (host && result == blink::mojom::MediaStreamRequestResult::OK)
-    host->OnGrantedMediaStreamAccess();
-
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaStreamUIProxy::ProcessAccessRequestResponse, proxy_,

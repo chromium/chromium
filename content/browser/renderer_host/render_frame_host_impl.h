@@ -1798,11 +1798,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns the last committed ServiceWorkerClient of this frame.
   base::WeakPtr<ServiceWorkerClient> GetLastCommittedServiceWorkerClient();
 
-  // Called to taint |this| so the pages which have requested MediaStream
-  // (audio/video/etc capture stream) access would not enter BackForwardCache.
-  void OnGrantedMediaStreamAccess();
-  bool was_granted_media_access() { return was_granted_media_access_; }
-
   // Request a new NavigationClient interface from the renderer and returns the
   // ownership of the mojo::AssociatedRemote. This is intended for use by the
   // NavigationRequest.
@@ -4864,9 +4859,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //    then the initial transient isolation info (i.e. the default value below)
   //    will be used.  This will match the opaque origin of such a frame.
   net::IsolationInfo isolation_info_ = net::IsolationInfo::CreateTransient();
-
-  // Tainted once MediaStream access was granted.
-  bool was_granted_media_access_ = false;
 
   // Salt for generating frame-specific media device IDs.
   std::string media_device_id_salt_base_;
