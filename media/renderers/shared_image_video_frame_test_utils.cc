@@ -91,11 +91,18 @@ scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
   }
   DCHECK_EQ(i, pixels_size);
 
+  // This SharedImage will be read by the raster interface to create
+  // intermediate copies in copy to canvas and 2-copy upload to WebGL. It may
+  // also be read by the GLES2 interface if the code creating the intermediate
+  // SharedImage decides that the VideoFrame can be wrapped directly as a GL
+  // texture and/or if raster is going over GLES2 in the context of the test.
+  constexpr auto kUsages =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
   auto* sii = context_provider->SharedImageInterface();
-  auto shared_image = sii->CreateSharedImage(
-      {viz::SinglePlaneFormat::kRGBA_8888, coded_size, gfx::ColorSpace(),
-       gpu::SHARED_IMAGE_USAGE_GLES2_READ, "RGBAVideoFrame"},
-      pixels);
+  auto shared_image =
+      sii->CreateSharedImage({viz::SinglePlaneFormat::kRGBA_8888, coded_size,
+                              gfx::ColorSpace(), kUsages, "RGBAVideoFrame"},
+                             pixels);
 
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_ABGR,
