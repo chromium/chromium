@@ -8467,11 +8467,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "uno-desktop",
-    "owners": [ "droger@chromium.org", "gabolvr@google.com", "uno-desktop@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "unsafely-treat-insecure-origin-as-secure",
     "owners": [ "security-dev@chromium.org" ],
     // This flag is supported for bypassing security restrictions on HTTP pages,
