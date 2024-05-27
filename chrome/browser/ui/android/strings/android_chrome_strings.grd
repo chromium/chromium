@@ -324,12 +324,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_TURN_OFF_SYNC" desc="The text for a preferences row that turns off sync without signing the user out.">
         Turn off sync
       </message>
-      <message name="IDS_SIGN_OUT" desc="The text for a preference row that signs out the user.">
-        Sign out
-      </message>
-      <message name="IDS_MANAGE_YOUR_GOOGLE_ACCOUNT" desc="Title for link to Google Account Page to manage account settings.">
-        Manage your Google Account
-      </message>
       <message name="IDS_SYNC_CATEGORY_TITLE" desc="Title for the group of Sync-related entries in Settings. This group contains preferences for data tied to user's Google Account.">
         Sync
       </message>
@@ -2364,15 +2358,20 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_DATA_DASHBOARD_TITLE" desc="Title for the cell to open 'Chrome and ChromeOS data in your account' web page where the user can control all their data data from sync.">
         Chrome data in your account
       </message>
-      <message name="IDS_ACCOUNT_DATA_DASHBOARD_SUBTITLE" desc="Subtitle for the cell to open 'Chrome and ChromeOS data in your account' web page where the user can control all their data data from sync.">
+      <message name="IDS_ACCOUNT_DATA_DASHBOARD_SUBTITLE" desc="Subtitle for the preference to open 'Data from Chromium sync' web page where the user can control all their data data from sync.">
         Review your account data
+      </message>
+      <message name="IDS_MANAGE_YOUR_GOOGLE_ACCOUNT" desc="Title for link to Google Account Page to manage account settings.">
+        Manage your Google Account
+      </message>
+      <message name="IDS_ACCOUNT_ANDROID_DEVICE_ACCOUNTS" desc="Title shown on the manage accounts on this device button item.">
+        Manage accounts on this device
+      </message>
+      <message name="IDS_SIGN_OUT" desc="The text for a preference row that signs out the user.">
+        Sign out
       </message>
       <message name="IDS_SYNC_REVIEW_DATA" desc="Title for link to https://chrome.google.com/sync Dashboard to manage sync data.">
         Review your synced data
-      </message>
-      <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
-      <message name="IDS_MANAGE_ACCOUNTS_ON_THIS_DEVICE" desc="Title of account management section." translateable="false">
-        Manage accounts on this device
       </message>
       <message name="IDS_SYNC_PASSPHRASE_TYPE_TITLE" desc="Title of sync passphrase type dialog. [CHAR_LIMIT=24]">
         Encryption

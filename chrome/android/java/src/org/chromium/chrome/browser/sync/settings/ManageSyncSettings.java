@@ -171,8 +171,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     public static final String PREF_MANAGE_YOUR_GOOGLE_ACCOUNT = "manage_your_google_account";
 
     @VisibleForTesting
-    public static final String PREF_MANAGE_ACCOUNTS_ON_THIS_DEVICE =
-            "manage_accounts_on_this_device";
+    public static final String PREF_ACCOUNT_ANDROID_DEVICE_ACCOUNTS =
+            "account_android_device_accounts";
 
     @VisibleForTesting
     public static final String PREF_SEARCH_AND_BROWSE_CATEGORY = "search_and_browse_category";
@@ -302,7 +302,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                             }));
 
             Preference manageAccountsOnThisDevice =
-                    findPreference(PREF_MANAGE_ACCOUNTS_ON_THIS_DEVICE);
+                    findPreference(PREF_ACCOUNT_ANDROID_DEVICE_ACCOUNTS);
             manageAccountsOnThisDevice.setOnPreferenceClickListener(
                     SyncSettingsUtils.toOnClickListener(
                             this, () -> SigninUtils.openSettingsForAllAccounts(getActivity())));
