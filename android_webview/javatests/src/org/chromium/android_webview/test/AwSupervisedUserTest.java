@@ -8,7 +8,6 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -37,8 +36,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -200,14 +197,15 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         return mWebServer.setResponse(path, makeTestPage(title, iFrameUrl), null);
     }
 
-    private void loadUrl(String requestUrl) throws TimeoutException {
-        InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync(() -> mAwContents.loadUrl(requestUrl, null));
+    private void loadUrl(String requestUrl) throws Exception {
+        // If the page is blocked, then it will never fire the onPageFinished callback so we can't
+        // use loadUrlSync(). Instead, use loadUrlAsync and wait for onProgressChanged().
+        mActivityTestRule.loadUrlAsync(mAwContents, requestUrl);
         mContentsClient.waitForFullLoad();
     }
 
-    private void assertPageTitle(String expectedTitle) {
-        Assert.assertEquals(expectedTitle, mAwContents.getTitle());
+    private void assertPageTitle(String expectedTitle) throws Exception {
+        Assert.assertEquals(expectedTitle, mActivityTestRule.getTitleOnUiThread(mAwContents));
     }
 
     private void assertIframeTitle(String expectedTitle) throws Exception {
@@ -216,13 +214,11 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     }
 
     private static class OnProgressChangedClient extends TestAwContentsClient {
-        private final List<Integer> mProgresses = new ArrayList<>();
         private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
         @Override
         public void onProgressChanged(int progress) {
             super.onProgressChanged(progress);
-            mProgresses.add(Integer.valueOf(progress));
             if (progress == 100 && mCallbackHelper.getCallCount() == 0) {
                 mCallbackHelper.notifyCalled();
             }
