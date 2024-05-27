@@ -616,8 +616,14 @@ void HardwareDisplayController::ResetCursor() {
 
 void HardwareDisplayController::ProbeValidCursorSizes() {
   gfx::Size max_cursor_size_supported = GetMaximumCursorSize(*GetDrmDevice());
-  int max_cursor_buffer_size = std::min(max_cursor_size_supported.width(),
-                                        max_cursor_size_supported.height());
+  // max_cursor_size_supported can be as large as 4096 depending on platform
+  // and driver capabilities, but we don't need huge buffer like that for the
+  // cursor.
+  // Using a moderate size e.g. 256 for the cursor is enough in most cases.
+  int max_cursor_buffer_size =
+      std::min(std::min(max_cursor_size_supported.width(),
+                        max_cursor_size_supported.height()),
+               256);
 
   // Only use dynamic cursor size on Intel GPUs.
   std::optional<std::string> driver = GetDrmDevice()->GetDriverName();
