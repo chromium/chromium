@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_SETTINGS_PLUS_ADDRESS_SETTING_SYNC_BRIDGE_H_
 #define COMPONENTS_PLUS_ADDRESSES_SETTINGS_PLUS_ADDRESS_SETTING_SYNC_BRIDGE_H_
 
+#include <memory>
+
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
@@ -17,7 +21,7 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
   explicit PlusAddressSettingSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory store_factory);
-  ~PlusAddressSettingSyncBridge() override = default;
+  ~PlusAddressSettingSyncBridge() override;
 
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
@@ -32,6 +36,25 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
   void GetAllDataForDebugging(DataCallback callback) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+
+ private:
+  // Callbacks for various asynchronous operations of the `store_`.
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
+                      std::unique_ptr<syncer::ModelTypeStore> store);
+  void StartSyncingWithMetadata(
+      const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+
+  // Storage layer used by this sync bridge. Asynchronously created through the
+  // `store_factory` injected through the constructor. Non-null if creation
+  // finished without an error.
+  std::unique_ptr<syncer::ModelTypeStore> store_;
+
+  // Sequence checker ensuring that callbacks from the `store_` happen on the
+  // bridge's thread.
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PlusAddressSettingSyncBridge> weak_factory_{this};
 };
 
 }  // namespace plus_addresses
