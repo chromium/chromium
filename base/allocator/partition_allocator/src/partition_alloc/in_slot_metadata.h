@@ -261,11 +261,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   PA_ALWAYS_INLINE bool ReleaseFromAllocator() {
     CheckCookieIfSupported();
 
-    // TODO(bartekn): Make the double-free check more effective. Once freed, the
-    // in-slot metadata is overwritten by an encoded freelist-next pointer.
     CountType old_count =
         count_.fetch_and(~kMemoryHeldByAllocatorBit, std::memory_order_release);
 
+    // If kMemoryHeldByAllocatorBit was already unset, it indicates a double
+    // free, but it could also be caused by a memory corruption. Note, this
+    // detection mechanism isn't perfect, because in-slot-metadata can be
+    // overwritten by the freelist pointer (or its shadow) for very small slots,
+    // thus masking the error away.
     if (PA_UNLIKELY(!(old_count & kMemoryHeldByAllocatorBit))) {
       DoubleFreeOrCorruptionDetected(old_count);
     }
