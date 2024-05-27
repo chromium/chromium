@@ -182,6 +182,11 @@ def UploadPDBsToSymbolServer(binaries):
       sys.exit(exit_code)
 
 
+def replace_version(want, version):
+  """Replaces $V with provided version."""
+  return set([w.replace('$V', version) for w in want])
+
+
 def main():
   parser = argparse.ArgumentParser(description='build and package clang')
   parser.add_argument('--upload', action='store_true',
@@ -264,27 +269,32 @@ def main():
 
   shutil.rmtree(pdir, ignore_errors=True)
 
+  # Track of all files that should be part of runtime package. '$V' is replaced
+  # by RELEASE_VERSION, and no glob is supported.
+  runtime_packages = None
+  runtime_package_name = None
+
   # Copy a list of files to the directory we're going to tar up.
   # This supports the same patterns that the fnmatch module understands.
   # '$V' is replaced by RELEASE_VERSION further down.
   exe_ext = '.exe' if sys.platform == 'win32' else ''
-  want = [
-    'bin/llvm-pdbutil' + exe_ext,
-    'bin/llvm-symbolizer' + exe_ext,
-    'bin/llvm-undname' + exe_ext,
-    # Copy built-in headers (lib/clang/3.x.y/include).
-    'lib/clang/$V/include/*',
-    'lib/clang/$V/share/asan_*list.txt',
-    'lib/clang/$V/share/cfi_*list.txt',
-  ]
+  want = set([
+      'bin/llvm-pdbutil' + exe_ext,
+      'bin/llvm-symbolizer' + exe_ext,
+      'bin/llvm-undname' + exe_ext,
+      # Copy built-in headers (lib/clang/3.x.y/include).
+      'lib/clang/$V/include/*',
+      'lib/clang/$V/share/asan_*list.txt',
+      'lib/clang/$V/share/cfi_*list.txt',
+  ])
   if sys.platform == 'win32':
-    want.extend([
+    want.update([
         'bin/clang-cl.exe',
         'bin/lld-link.exe',
         'bin/llvm-ml.exe',
     ])
   else:
-    want.extend([
+    want.update([
         'bin/clang',
 
         # Add LLD.
@@ -301,45 +311,45 @@ def main():
     ])
     if sys.platform != 'darwin':
       # The Fuchsia runtimes are only built on non-Mac platforms.
-      want.append(
-          'lib/clang/$V/lib/aarch64-unknown-fuchsia/libclang_rt.builtins.a')
-      want.append(
-          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.builtins.a')
-      want.append(
-          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.profile.a')
-      want.append('lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan.so')
-      want.append(
-          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan-preinit.a')
-      want.append(
-          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan_static.a')
+      want.update([
+          'lib/clang/$V/lib/aarch64-unknown-fuchsia/libclang_rt.builtins.a',
+          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.builtins.a',
+          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.profile.a',
+          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan.so',
+          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan-preinit.a',
+          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan_static.a',
+      ])
   if sys.platform == 'darwin':
-    want.extend([
-      # Add llvm-objcopy for its use as install_name_tool.
-      'bin/llvm-objcopy',
+    runtime_package_name = 'clang-mac-runtime-library'
+    runtime_packages = set([
+        # AddressSanitizer runtime.
+        'lib/clang/$V/lib/darwin/libclang_rt.asan_iossim_dynamic.dylib',
+        'lib/clang/$V/lib/darwin/libclang_rt.asan_osx_dynamic.dylib',
 
-      # AddressSanitizer runtime.
-      'lib/clang/$V/lib/darwin/libclang_rt.asan_iossim_dynamic.dylib',
-      'lib/clang/$V/lib/darwin/libclang_rt.asan_osx_dynamic.dylib',
+        # Builtin libraries for the _IsOSVersionAtLeast runtime function.
+        'lib/clang/$V/lib/darwin/libclang_rt.ios.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.iossim.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.osx.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.watchos.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.watchossim.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.xros.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.xrossim.a',
 
-      # Builtin libraries for the _IsOSVersionAtLeast runtime function.
-      'lib/clang/$V/lib/darwin/libclang_rt.ios.a',
-      'lib/clang/$V/lib/darwin/libclang_rt.iossim.a',
-      'lib/clang/$V/lib/darwin/libclang_rt.osx.a',
-      'lib/clang/$V/lib/darwin/libclang_rt.watchos.a',
-      'lib/clang/$V/lib/darwin/libclang_rt.watchossim.a',
-      'lib/clang/$V/lib/darwin/libclang_rt.xros.a',
-      'lib/clang/$V/lib/darwin/libclang_rt.xrossim.a',
+        # Profile runtime (used by profiler and code coverage).
+        'lib/clang/$V/lib/darwin/libclang_rt.profile_iossim.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.profile_osx.a',
 
-      # Profile runtime (used by profiler and code coverage).
-      'lib/clang/$V/lib/darwin/libclang_rt.profile_iossim.a',
-      'lib/clang/$V/lib/darwin/libclang_rt.profile_osx.a',
-
-      # UndefinedBehaviorSanitizer runtime.
-      'lib/clang/$V/lib/darwin/libclang_rt.ubsan_iossim_dynamic.dylib',
-      'lib/clang/$V/lib/darwin/libclang_rt.ubsan_osx_dynamic.dylib',
+        # UndefinedBehaviorSanitizer runtime.
+        'lib/clang/$V/lib/darwin/libclang_rt.ubsan_iossim_dynamic.dylib',
+        'lib/clang/$V/lib/darwin/libclang_rt.ubsan_osx_dynamic.dylib',
+    ])
+    want.update(runtime_packages)
+    want.update([
+        # Add llvm-objcopy for its use as install_name_tool.
+        'bin/llvm-objcopy',
     ])
   elif sys.platform.startswith('linux'):
-    want.extend([
+    want.update([
         # pylint: disable=line-too-long
 
         # Add llvm-objcopy for partition extraction on Android.
@@ -445,8 +455,10 @@ def main():
         # pylint: enable=line-too-long
     ])
   elif sys.platform == 'win32':
-    want.extend([
+    runtime_package_name = 'clang-win-runtime-library'
+    runtime_packages = set([
         # pylint: disable=line-too-long
+        'bin/llvm-symbolizer.exe',
 
         # AddressSanitizer C runtime (pure C won't link with *_cxx).
         'lib/clang/$V/lib/windows/clang_rt.asan-x86_64.lib',
@@ -482,6 +494,7 @@ def main():
 
         # pylint: enable=line-too-long
     ])
+    want.update(runtime_packages)
 
   # reclient is a tool for executing programs remotely. When uploading the
   # binary to be executed, it needs to know which other files the binary depends
@@ -492,27 +505,28 @@ def main():
   # These paths are written relative to the package root, and will be rebased
   # to wherever the reclient config file is written when added to the file.
   reclient_inputs = {
-      'clang': [
-        # Note: These have to match the `want` list exactly. `want` uses
-        # a glob, so these must too.
-        'lib/clang/$V/share/asan_*list.txt',
-        'lib/clang/$V/share/cfi_*list.txt',
-      ],
+      'clang':
+      set([
+          # Note: These have to match the `want` list exactly. `want` uses
+          # a glob, so these must too.
+          'lib/clang/$V/share/asan_*list.txt',
+          'lib/clang/$V/share/cfi_*list.txt',
+      ]),
   }
   if sys.platform == 'win32':
     # TODO(crbug.com/335997052): Remove this again once we have a compiler
     # flag that tells clang-cl to not auto-add it (and then explicitly pass
     # it via GN).
-    reclient_inputs['clang'].extend([
+    reclient_inputs['clang'].update([
         'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone-x86_64.lib',
         'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone_cxx-x86_64.lib',
         'lib/clang/$V/lib/windows/clang_rt.profile-i386.lib',
         'lib/clang/$V/lib/windows/clang_rt.profile-x86_64.lib',
         'lib/clang/$V/lib/windows/clang_rt.profile-aarch64.lib',
-        ])
+    ])
 
   # Check that all non-glob wanted files exist on disk.
-  want = [w.replace('$V', RELEASE_VERSION) for w in want]
+  want = replace_version(want, RELEASE_VERSION)
   found_all_wanted_files = True
   for w in want:
     if '*' in w: continue
@@ -525,9 +539,9 @@ def main():
 
   # Check that all reclient inputs are in the package.
   for tool in reclient_inputs:
-    reclient_inputs[tool] = [i.replace('$V', RELEASE_VERSION)
-                             for i in reclient_inputs[tool]]
-    missing = set(reclient_inputs[tool]) - set(want)
+    reclient_inputs[tool] = set(
+        [i.replace('$V', RELEASE_VERSION) for i in reclient_inputs[tool]])
+    missing = reclient_inputs[tool] - want
     if missing:
       print('reclient inputs not part of package: ', missing, file=sys.stderr)
       return 1
@@ -613,6 +627,19 @@ def main():
               gcs_platform,
               extra_gsutil_args=['-z', 'txt'])
   os.remove(pdir + '-buildlog.txt')
+
+  # Zip up runtime libraries, if specified.
+  if runtime_package_name and len(runtime_packages) > 0:
+    runtime_dir = f'{runtime_package_name}-{stamp}'
+    shutil.rmtree(runtime_dir, ignore_errors=True)
+    for f in sorted(replace_version(runtime_packages, RELEASE_VERSION)):
+      os.makedirs(os.path.dirname(os.path.join(runtime_dir, f)), exist_ok=True)
+      shutil.copy(
+          os.path.join(pdir, f),
+          os.path.join(runtime_dir, f),
+      )
+    PackageInArchive(runtime_dir, runtime_dir)
+    MaybeUpload(args.upload, args.bucket, f'{runtime_dir}.t*z', gcs_platform)
 
   # Zip up llvm-code-coverage for code coverage.
   code_coverage_dir = 'llvm-code-coverage-' + stamp

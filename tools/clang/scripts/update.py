@@ -37,7 +37,7 @@ import zlib
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
 CLANG_REVISION = 'llvmorg-19-init-10646-g084e2b53'
-CLANG_SUB_REVISION = 1
+CLANG_SUB_REVISION = 6
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '19'
@@ -205,16 +205,13 @@ def DownloadAndUnpackPackage(package_file,
 
 
 def DownloadAndUnpackClangMacRuntime(output_dir):
-  cds_file = "clang-%s.tar.xz" % PACKAGE_VERSION
+  cds_file = "clang-mac-runtime-library-%s.tar.xz" % PACKAGE_VERSION
   # We run this only for the runtime libraries, and 'mac' and 'mac-arm64' both
   # have the same (universal) runtime libraries. It doesn't matter which one
   # we download here.
   cds_full_url = GetPlatformUrlPrefix('mac') + cds_file
-  path_prefixes = [
-      'lib/clang/' + RELEASE_VERSION + '/lib/darwin', 'include/c++/v1'
-  ]
   try:
-    DownloadAndUnpack(cds_full_url, output_dir, path_prefixes)
+    DownloadAndUnpack(cds_full_url, output_dir)
   except urllib.error.URLError:
     print('Failed to download prebuilt clang %s' % cds_file)
     print('Use build.py if you want to build locally.')
@@ -222,15 +219,11 @@ def DownloadAndUnpackClangMacRuntime(output_dir):
     sys.exit(1)
 
 
-# TODO(hans): Create a clang-win-runtime package instead.
 def DownloadAndUnpackClangWinRuntime(output_dir):
-  cds_file = "clang-%s.tar.xz" % PACKAGE_VERSION
+  cds_file = "clang-win-runtime-library-%s.tar.xz" % PACKAGE_VERSION
   cds_full_url = GetPlatformUrlPrefix('win') + cds_file
-  path_prefixes = [
-      'lib/clang/' + RELEASE_VERSION + '/lib/windows', 'bin/llvm-symbolizer.exe'
-  ]
   try:
-    DownloadAndUnpack(cds_full_url, output_dir, path_prefixes)
+    DownloadAndUnpack(cds_full_url, output_dir)
   except urllib.error.URLError:
     print('Failed to download prebuilt clang %s' % cds_file)
     print('Use build.py if you want to build locally.')
