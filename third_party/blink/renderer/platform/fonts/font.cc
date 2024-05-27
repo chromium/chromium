@@ -575,12 +575,6 @@ int Font::EmphasisMarkHeight(const AtomicString& mark) const {
   return mark_font_data->GetFontMetrics().Height();
 }
 
-Vector<double> Font::IndividualCharacterAdvances(const TextRun& run) const {
-  FontCachePurgePreventer purge_preventer;
-  CachingWordShaper shaper(*this);
-  return shaper.IndividualCharacterAdvances(run);
-}
-
 float Font::TabWidth(const SimpleFontData* font_data,
                      const TabSize& tab_size,
                      float position) const {

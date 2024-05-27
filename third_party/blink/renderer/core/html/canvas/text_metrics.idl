@@ -29,7 +29,6 @@
 interface TextMetrics {
     // x-direction
     readonly attribute double width; // advance width
-    [RuntimeEnabled=ExtendedTextMetrics] readonly attribute FrozenArray<double> advances;
     readonly attribute double actualBoundingBoxLeft;
     readonly attribute double actualBoundingBoxRight;
 

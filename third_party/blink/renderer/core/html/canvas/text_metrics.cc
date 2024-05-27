@@ -83,14 +83,6 @@ void TextMetrics::Update(const Font& font,
   if (!font_data)
     return;
 
-  {
-    // TODO(kojii): Need to figure out the desired behavior of |advances| when
-    // bidi reorder occurs.
-    TextRun text_run(text, direction, false);
-    text_run.SetNormalizeSpace(true);
-    advances_ = font.IndividualCharacterAdvances(text_run);
-  }
-
   text_runs_.clear();
   font_ = font;
   text_length_ = text.length();

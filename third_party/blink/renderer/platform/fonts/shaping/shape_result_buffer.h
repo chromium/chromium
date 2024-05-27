@@ -43,9 +43,6 @@ class PLATFORM_EXPORT ShapeResultBuffer {
                                    float total_width,
                                    unsigned from,
                                    unsigned to) const;
-  Vector<double> IndividualCharacterAdvances(const StringView&,
-                                             TextDirection,
-                                             float total_width) const;
 
   HeapVector<ShapeResult::RunFontData> GetRunFontData() const;
 
@@ -53,10 +50,6 @@ class PLATFORM_EXPORT ShapeResultBuffer {
 
  private:
   friend class ShapeResultBloberizer;
-
-  static void AddRunInfoAdvances(const ShapeResult::RunInfo& run_info,
-                                 double offset,
-                                 Vector<double>& advances);
 
   // Empirically, cases where we get more than 50 ShapeResults are extremely
   // rare.

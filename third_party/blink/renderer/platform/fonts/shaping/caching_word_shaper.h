@@ -57,7 +57,6 @@ class PLATFORM_EXPORT CachingWordShaper final {
 
   void FillResultBuffer(const TextRunPaintInfo&, ShapeResultBuffer*);
   CharacterRange GetCharacterRange(const TextRun&, unsigned from, unsigned to);
-  Vector<double> IndividualCharacterAdvances(const TextRun&);
 
   HeapVector<ShapeResult::RunFontData> GetRunFontData(const TextRun&) const;
 
