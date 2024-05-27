@@ -387,11 +387,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
       case user_manager::UserType::kPublicAccount:
         user = fake_user_manager_->AddPublicAccountUser(account_id);
         break;
-      case user_manager::UserType::kArcKioskApp:
-        user = fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-            account_id, false /*is_affiliated*/,
-            user_manager::UserType::kArcKioskApp, nullptr /*profile*/);
-        break;
       default:
         ADD_FAILURE() << "Unexpected user type " << user_type;
         return;

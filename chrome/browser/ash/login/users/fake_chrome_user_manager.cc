@@ -477,10 +477,7 @@ bool FakeChromeUserManager::IsLoggedInAsKioskApp() const {
 }
 
 bool FakeChromeUserManager::IsLoggedInAsArcKioskApp() const {
-  const user_manager::User* active_user = GetActiveUser();
-  return active_user
-             ? active_user->GetType() == user_manager::UserType::kArcKioskApp
-             : false;
+  return false;
 }
 
 bool FakeChromeUserManager::IsLoggedInAsWebKioskApp() const {

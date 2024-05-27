@@ -141,15 +141,7 @@ void StubAuthenticator::LoginAsKioskAccount(
 void StubAuthenticator::LoginAsArcKioskAccount(
     const AccountId& /* app_account_id */,
     bool /* ephemeral */) {
-  UserContext user_context(user_manager::UserType::kArcKioskApp,
-                           expected_user_context_.GetAccountId());
-  user_context.SetIsUsingOAuth(false);
-  user_context.SetMountState(UserContext::MountState::kExistingPersistent);
-  user_context.SetUserIDHash(
-      expected_user_context_.GetAccountId().GetUserEmail() + kUserIdHashSuffix);
-  user_context.GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
-                                   "some-salt");
-  consumer_->OnAuthSuccess(user_context);
+  NOTREACHED_NORETURN();
 }
 
 void StubAuthenticator::LoginAsWebKioskAccount(

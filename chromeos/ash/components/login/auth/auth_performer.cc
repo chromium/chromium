@@ -43,7 +43,6 @@ namespace {
 
 bool IsKioskUserType(user_manager::UserType type) {
   return type == user_manager::UserType::kKioskApp ||
-         type == user_manager::UserType::kArcKioskApp ||
          type == user_manager::UserType::kWebKioskApp;
 }
 

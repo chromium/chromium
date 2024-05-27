@@ -446,8 +446,7 @@ void AshTestBase::SimulateGuestLogin() {
 }
 
 void AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
-  DCHECK(user_type == user_manager::UserType::kArcKioskApp ||
-         user_type == user_manager::UserType::kKioskApp ||
+  DCHECK(user_type == user_manager::UserType::kKioskApp ||
          user_type == user_manager::UserType::kWebKioskApp);
 
   GetSessionControllerClient()->SetIsRunningInAppMode(true);

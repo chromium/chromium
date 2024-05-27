@@ -648,9 +648,6 @@ mojom::SessionType GetSessionType() {
       return mojom::SessionType::kPublicSession;
     case user_manager::UserType::kKioskApp:
       return mojom::SessionType::kAppKioskSession;
-    case user_manager::UserType::kArcKioskApp:
-      LOG(WARNING) << "Starting as ARC Kiosk App session.";
-      return mojom::SessionType::kRegularSession;
     case user_manager::UserType::kWebKioskApp:
       return mojom::SessionType::kWebKioskSession;
   }
@@ -1221,7 +1218,6 @@ policy::CloudPolicyCore* GetCloudPolicyCoreForUser(
       return broker ? broker->core() : nullptr;
     }
     case user_manager::UserType::kGuest:
-    case user_manager::UserType::kArcKioskApp:
       return nullptr;
   }
 }
@@ -1243,7 +1239,6 @@ policy::ComponentCloudPolicyService* GetComponentCloudPolicyServiceForUser(
       return broker ? broker->component_policy_service() : nullptr;
     }
     case user_manager::UserType::kGuest:
-    case user_manager::UserType::kArcKioskApp:
       return nullptr;
   }
 }

@@ -220,7 +220,6 @@ bool UserCanBecomeOwner(const user_manager::User* user) {
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kPublicAccount:
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       return false;
   }

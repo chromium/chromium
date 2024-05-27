@@ -106,7 +106,6 @@ class ScopedLogIn {
         return;
       case user_manager::UserType::kPublicAccount:
       case user_manager::UserType::kKioskApp:
-      case user_manager::UserType::kArcKioskApp:
       case user_manager::UserType::kWebKioskApp:
         EXPECT_FALSE(IsGaiaAccount());
         return;
@@ -128,8 +127,6 @@ class ScopedLogIn {
       case user_manager::UserType::kKioskApp:
         fake_user_manager_->AddKioskAppUser(account_id_);
         return;
-      case user_manager::UserType::kArcKioskApp:
-        NOTREACHED_NORETURN();
       case user_manager::UserType::kWebKioskApp:
         fake_user_manager_->AddWebKioskAppUser(account_id_);
         return;

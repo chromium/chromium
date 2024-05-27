@@ -355,7 +355,6 @@ class CaptureModeTest : public AshTestBase {
     wm::SetModalParent(child.get(), transient_parent);
     return child;
   }
-
 };
 
 class CaptureSessionWidgetClosed {
@@ -6524,7 +6523,6 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
       {"guest", user_manager::UserType::kGuest, false},
       {"public account", user_manager::UserType::kPublicAccount, false},
       {"kiosk app", user_manager::UserType::kKioskApp, false},
-      {"arc kiosk app", user_manager::UserType::kArcKioskApp, false},
       {"web kiosk app", user_manager::UserType::kWebKioskApp, false},
   };
 

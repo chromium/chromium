@@ -342,7 +342,6 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
       break;
 
     case UserType::kKioskApp:
-    case UserType::kArcKioskApp:
     case UserType::kWebKioskApp:
       KioskAppLoggedIn(user);
       break;
@@ -831,8 +830,8 @@ bool UserManagerBase::IsLoggedInAsKioskApp() const {
 }
 
 bool UserManagerBase::IsLoggedInAsArcKioskApp() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return IsUserLoggedIn() && active_user_->GetType() == UserType::kArcKioskApp;
+  // TODO(b/336756417): Remove this method
+  return false;
 }
 
 bool UserManagerBase::IsLoggedInAsWebKioskApp() const {

@@ -108,7 +108,6 @@ class LoginLogoutTestHelper {
         return CreateKioskAppProfile();
       case user_manager::UserType::kWebKioskApp:
         return CreateWebKioskAppProfile();
-      case user_manager::UserType::kArcKioskApp:
       default:
         NOTREACHED_IN_MIGRATION();
         return nullptr;

@@ -69,8 +69,6 @@ FatalCrashTelemetry::SessionType GetSessionType(
       return FatalCrashTelemetry::SESSION_TYPE_PUBLIC_ACCOUNT;
     case user_manager::UserType::kKioskApp:
       return FatalCrashTelemetry::SESSION_TYPE_KIOSK_APP;
-    case user_manager::UserType::kArcKioskApp:
-      return FatalCrashTelemetry::SESSION_TYPE_ARC_KIOSK_APP;
     case user_manager::UserType::kWebKioskApp:
       return FatalCrashTelemetry::SESSION_TYPE_WEB_KIOSK_APP;
     default:

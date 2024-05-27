@@ -133,7 +133,6 @@ void AddAndLoginUser(const AccountId& account_id, user_manager::UserType type) {
       break;
     case user_manager::UserType::kPublicAccount:
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       break;
   }
@@ -295,7 +294,6 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
         break;
       case user_manager::UserType::kPublicAccount:
       case user_manager::UserType::kKioskApp:
-      case user_manager::UserType::kArcKioskApp:
       case user_manager::UserType::kWebKioskApp:
         profile_ = profile_manager_.CreateTestingProfile(name);
         break;

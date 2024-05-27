@@ -708,8 +708,6 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
     case user_manager::UserType::kChild:
       fake_user_manager_->AddChildUser(account_id);
       break;
-    case user_manager::UserType::kArcKioskApp:
-      NOTREACHED_NORETURN();
     default:
       FAIL() << "Invalid test setup. Unexpected user type.";
   }

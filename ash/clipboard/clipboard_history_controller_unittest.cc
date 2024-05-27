@@ -336,7 +336,6 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
                     {user_manager::UserType::kPublicAccount, false},
                     {user_manager::UserType::kKioskApp, false},
                     {user_manager::UserType::kChild, true},
-                    {user_manager::UserType::kArcKioskApp, false},
                     {user_manager::UserType::kWebKioskApp, false}};
 
   UserSession session;

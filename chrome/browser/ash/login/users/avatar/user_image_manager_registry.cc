@@ -95,7 +95,6 @@ void UserImageManagerRegistry::OnUserLoggedIn(const user_manager::User& user) {
       break;
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       // Ignore these users.
       return;

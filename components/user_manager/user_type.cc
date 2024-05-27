@@ -19,8 +19,6 @@ const char* UserTypeToString(UserType user_type) {
       return "managed-guest-session";
     case UserType::kKioskApp:
       return "chrome-app-kiosk";
-    case UserType::kArcKioskApp:
-      return "arc-kiosk";
     case UserType::kWebKioskApp:
       return "web-kiosk";
   }

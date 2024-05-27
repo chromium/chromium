@@ -677,7 +677,6 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
     case user_manager::UserType::kPublicAccount:
       return "ManagedGuestSession";
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       return "Kiosk";
     case user_manager::UserType::kGuest:

@@ -42,8 +42,7 @@ enum class UserType {
   // Ephemeral for demo mode only.
   // Kiosk type for Chrome apps.
   kKioskApp = 5,
-  // Kiosk type for Android apps.
-  kArcKioskApp = 7,
+  // kArcKioskApp = 7, deprecated
   // Kiosk type for Web apps (aka PWA - Progressive Web Apps).
   kWebKioskApp = 9,
 

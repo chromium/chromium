@@ -445,12 +445,10 @@ bool IsArcBlockedDueToIncompatibleFileSystem(const Profile* profile) {
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
 
-  // Return true for public accounts as they only have ext4 and
-  // for ARC kiosk as migration to ext4 should always be triggered.
-  // Without this check it fails to start after browser crash as
-  // compatibility info is stored in RAM.
-  if (user && (user->GetType() == user_manager::UserType::kPublicAccount ||
-               user->GetType() == user_manager::UserType::kArcKioskApp)) {
+  // Do not block ARC for public accounts as they only have ext4.
+  // Without this check it fails to start after browser crash as compatibility
+  // info is stored in RAM.
+  if (user && user->GetType() == user_manager::UserType::kPublicAccount) {
     return false;
   }
 

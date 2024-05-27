@@ -252,8 +252,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         /*is_new_user_locally=*/::testing::Bool(),
         /*is_managed_user=*/::testing::Bool(),
-        ::testing::Values(user_manager::UserType::kArcKioskApp,
-                          user_manager::UserType::kChild,
+        ::testing::Values(user_manager::UserType::kChild,
                           user_manager::UserType::kGuest,
                           user_manager::UserType::kKioskApp,
                           user_manager::UserType::kPublicAccount,

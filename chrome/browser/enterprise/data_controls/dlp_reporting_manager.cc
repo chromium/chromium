@@ -105,7 +105,6 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
     case user_manager::UserType::kPublicAccount:
       return DlpPolicyEvent_UserType_MANAGED_GUEST;
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       return DlpPolicyEvent_UserType_KIOSK;
     case user_manager::UserType::kGuest:

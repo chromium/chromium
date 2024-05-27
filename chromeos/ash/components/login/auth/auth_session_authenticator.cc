@@ -668,8 +668,8 @@ void AuthSessionAuthenticator::LoginAsKioskAccount(
 void AuthSessionAuthenticator::LoginAsArcKioskAccount(
     const AccountId& app_account_id,
     bool ephemeral) {
-  LoginAsKioskImpl(app_account_id, user_manager::UserType::kArcKioskApp,
-                   /*force_dircrypto=*/true, /*ephemeral=*/ephemeral);
+  // TODO(b/336756417): Remove this method
+  NOTREACHED_NORETURN();
 }
 
 void AuthSessionAuthenticator::LoginAsWebKioskAccount(

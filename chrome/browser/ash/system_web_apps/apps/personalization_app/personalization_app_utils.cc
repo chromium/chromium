@@ -86,7 +86,6 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
   }
   switch (user->GetType()) {
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       return false;
     case user_manager::UserType::kRegular:
@@ -149,7 +148,6 @@ bool IsEligibleForSeaPen(Profile* profile) {
   DVLOG(1) << __func__ << " user_type=" << user->GetType();
   switch (user->GetType()) {
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
     case user_manager::UserType::kChild:
     // Demo mode retail devices are type kPublicAccount and may have been
