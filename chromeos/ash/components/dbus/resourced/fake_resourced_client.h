@@ -78,14 +78,8 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   void RemoveObserver(Observer* observer) override;
 
-  void AddArcVmObserver(ArcVmObserver* observer) override;
-  void RemoveArcVmObserver(ArcVmObserver* observer) override;
-
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
-
-  void FakeArcVmMemoryPressure(PressureLevelArcVm level,
-                               uint64_t reclaim_target_kb);
 
   void AddArcContainerObserver(ArcContainerObserver* observer) override;
   void RemoveArcContainerObserver(ArcContainerObserver* observer) override;
@@ -139,7 +133,6 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   base::TimeDelta set_thread_state_delay_;
 
   base::ObserverList<Observer> observers_;
-  base::ObserverList<ArcVmObserver> arcvm_observers_;
   base::ObserverList<ArcContainerObserver> arc_container_observers_;
 };
 

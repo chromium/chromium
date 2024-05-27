@@ -22,7 +22,6 @@
 #include "ash/components/arc/keyboard_shortcut/arc_keyboard_shortcut_bridge.h"
 #include "ash/components/arc/media_session/arc_media_session_bridge.h"
 #include "ash/components/arc/memory/arc_memory_bridge.h"
-#include "ash/components/arc/memory_pressure/arc_memory_pressure_bridge.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/midis/arc_midis_bridge.h"
 #include "ash/components/arc/net/arc_net_host_impl.h"
@@ -335,7 +334,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
 
   if (arc::IsArcVmEnabled()) {
     // ARCVM-only services.
-    ArcMemoryPressureBridge::GetForBrowserContext(profile);
     ArcVmmManager::GetForBrowserContext(profile)->set_user_id_hash(
         user_id_hash);
     ArcSystemStateBridge::GetForBrowserContext(profile);
@@ -471,7 +469,6 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   }
   ArcMediaSessionBridge::EnsureFactoryBuilt();
   ArcMemoryBridge::EnsureFactoryBuilt();
-  ArcMemoryPressureBridge::EnsureFactoryBuilt();
   ArcMetricsServiceFactory::GetInstance();
   ArcMetricsServiceProxy::EnsureFactoryBuilt();
   ArcMidisBridge::EnsureFactoryBuilt();

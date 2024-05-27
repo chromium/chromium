@@ -90,21 +90,6 @@ void FakeResourcedClient::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FakeResourcedClient::AddArcVmObserver(ArcVmObserver* observer) {
-  arcvm_observers_.AddObserver(observer);
-}
-
-void FakeResourcedClient::RemoveArcVmObserver(ArcVmObserver* observer) {
-  arcvm_observers_.RemoveObserver(observer);
-}
-
-void FakeResourcedClient::FakeArcVmMemoryPressure(PressureLevelArcVm level,
-                                                  uint64_t reclaim_target_kb) {
-  for (auto& observer : arcvm_observers_) {
-    observer.OnMemoryPressure(level, reclaim_target_kb);
-  }
-}
-
 bool FakeResourcedClient::TriggerServiceAvailable(bool available) {
   if (pending_service_available_.empty()) {
     return false;
