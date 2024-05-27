@@ -107,6 +107,7 @@ group("deps") {
     }
 
     if (is_win) {
+      deps += [ "//build/rust/tests/windows_sys_test" ]
       deps += [ "//build/rust/tests/test_control_flow_guard" ]
     }
   }

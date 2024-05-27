@@ -2,17 +2,45 @@
 # cargo-vet imports lock
 
 [[publisher.libc]]
-version = "0.2.154"
-when = "2024-04-29"
-user-id = 51017
-user-login = "JohnTitor"
-user-name = "Yuki Okushi"
-
-[[publisher.libc]]
 version = "0.2.155"
 when = "2024-05-17"
 user-id = 5820
 user-login = "the8472"
+
+[[publisher.windows-sys]]
+version = "0.52.0"
+when = "2023-11-15"
+user-id = 64539
+user-login = "kennykerr"
+user-name = "Kenny Kerr"
+
+[[publisher.windows-targets]]
+version = "0.52.5"
+when = "2024-04-12"
+user-id = 64539
+user-login = "kennykerr"
+user-name = "Kenny Kerr"
+
+[[publisher.windows_aarch64_msvc]]
+version = "0.52.5"
+when = "2024-04-12"
+user-id = 64539
+user-login = "kennykerr"
+user-name = "Kenny Kerr"
+
+[[publisher.windows_i686_msvc]]
+version = "0.52.5"
+when = "2024-04-12"
+user-id = 64539
+user-login = "kennykerr"
+user-name = "Kenny Kerr"
+
+[[publisher.windows_x86_64_msvc]]
+version = "0.52.5"
+when = "2024-04-12"
+user-id = 64539
+user-login = "kennykerr"
+user-name = "Kenny Kerr"
 
 [audits.chromeos.criteria.crypto-safe]
 description = """

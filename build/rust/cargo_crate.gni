@@ -220,11 +220,18 @@ template("cargo_crate") {
 
   if (defined(invoker.native_libs)) {
     _native_libs_action = "copy_${target_name}_native_libs"
+    _native_libs_config = "config_${target_name}_native_libs"
+    _native_libs_dir =
+        "${root_out_dir}/rustlib/${_crate_name}_${target_name}_${_epochlabel}"
+
     copy(_native_libs_action) {
       testonly = _testonly
       visibility = [ ":$target_name" ]
       sources = invoker.native_libs
-      outputs = [ "$root_out_dir/{{source_file_part}}" ]
+      outputs = [ "${_native_libs_dir}/{{source_file_part}}" ]
+    }
+    config(_native_libs_config) {
+      lib_dirs = [ "${_native_libs_dir}" ]
     }
   }
 
@@ -366,6 +373,7 @@ template("cargo_crate") {
       deps += [ ":${_build_script_name}_output" ]
       if (defined(_native_libs_action)) {
         deps += [ ":${_native_libs_action}" ]
+        configs += [ ":${_native_libs_config}" ]
       }
     }
   }

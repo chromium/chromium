@@ -1404,6 +1404,11 @@ Reviewed in https://crrev.com/c/5171063
 Previously reviewed during security review and the audit is grandparented in.
 """
 
+[[audits.winapi-util]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.6 -> 0.1.8"
+
 [[audits.wycheproof]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1416,7 +1421,7 @@ Previously reviewed during security review and the audit is grandparented in.
 
 [[trusted.libc]]
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-user-id = 51017 # Yuki Okushi (JohnTitor)
+user-id = 51017
 start = "2020-03-17"
 end = "2025-05-23"
 notes = """
@@ -1441,4 +1446,51 @@ Same justification as for the other `trusted.libc` entry above.
 
 user-id 5820 maps to https://crates.io/users/the8472 who has published
 https://crates.io/crates/libc/0.2.155
+"""
+
+[[trusted.windows-sys]]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+user-id = 64539 # Kenny Kerr (kennykerr)
+start = "2021-11-15"
+end = "9999-05-15"
+notes = """
+This crate and its deps are published by Microsoft as the official Rust SDK for Windows APIs at https://github.com/microsoft/windows-rs
+
+user-id 64539 maps to https://crates.io/users/kennykerr who has published version 0.52.0.
+"""
+
+[[trusted.windows-targets]]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+user-id = 64539 # Kenny Kerr (kennykerr)
+start = "2022-09-09"
+end = "9999-05-15"
+notes = """
+This crate is part of the official Rust SDK from Microsoft, see windows-sys.
+"""
+
+[[trusted.windows_aarch64_msvc]]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+user-id = 64539 # Kenny Kerr (kennykerr)
+start = "2021-11-05"
+end = "9999-05-15"
+notes = """
+This crate is part of the official Rust SDK from Microsoft, see windows-sys.
+"""
+
+[[trusted.windows_i686_msvc]]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+user-id = 64539 # Kenny Kerr (kennykerr)
+start = "2021-10-27"
+end = "9999-05-15"
+notes = """
+This crate is part of the official Rust SDK from Microsoft, see windows-sys.
+"""
+
+[[trusted.windows_x86_64_msvc]]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+user-id = 64539 # Kenny Kerr (kennykerr)
+start = "2021-10-27"
+end = "9999-05-15"
+notes = """
+This crate is part of the official Rust SDK from Microsoft, see windows-sys.
 """

@@ -266,16 +266,37 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."wasi:0.11.0+wasi-snapshot-preview1"]
 criteria = []
 
-[policy."winapi-i686-pc-windows-gnu:0.4.0"]
-criteria = []
-
-[policy."winapi-util:0.1.6"]
+[policy."winapi-util:0.1.8"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."winapi-x86_64-pc-windows-gnu:0.4.0"]
+[policy."windows-sys:0.52.0"]
+criteria = ["crypto-safe", "safe-to-run"]
+
+[policy."windows-targets:0.52.5"]
+criteria = ["crypto-safe", "safe-to-run"]
+
+[policy."windows_aarch64_gnullvm:0.52.5"]
 criteria = []
 
-[policy."winapi:0.3.9"]
+[policy."windows_aarch64_msvc:0.52.5"]
+criteria = ["crypto-safe", "safe-to-run"]
+
+[policy."windows_i686_gnu:0.52.5"]
+criteria = []
+
+[policy."windows_i686_gnullvm:0.52.5"]
+criteria = []
+
+[policy."windows_i686_msvc:0.52.5"]
+criteria = ["crypto-safe", "safe-to-run"]
+
+[policy."windows_x86_64_gnu:0.52.5"]
+criteria = []
+
+[policy."windows_x86_64_gnullvm:0.52.5"]
+criteria = []
+
+[policy."windows_x86_64_msvc:0.52.5"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."wycheproof:0.4.0"]

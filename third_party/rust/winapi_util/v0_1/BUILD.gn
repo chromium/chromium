@@ -12,23 +12,23 @@ cargo_crate("lib") {
   crate_name = "winapi_util"
   epoch = "0.1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/console.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/file.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/sysinfo.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/win.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/console.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/sysinfo.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/win.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.6"
+  cargo_pkg_version = "0.1.8"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "winapi-util"
   cargo_pkg_description =
-      "A dumping ground for high level safe wrappers over winapi."
+      "A dumping ground for high level safe wrappers over windows-sys."
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
@@ -37,7 +37,7 @@ cargo_crate("lib") {
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = []
   if (is_win) {
-    deps += [ "//third_party/rust/winapi/v0_3:lib" ]
+    deps += [ "//third_party/rust/windows_sys/v0_52:lib" ]
   }
 
   # Only for usage from third-party crates. Add the crate to
