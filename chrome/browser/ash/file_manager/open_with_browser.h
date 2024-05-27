@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -45,6 +46,13 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
                               const storage::FileSystemURL& file_system_url,
                               const std::string& action_id,
                               LaunchAppCallback callback = base::DoNothing());
+
+// Opens the hosted file specified by `file_path`, and its hosted path
+// `hosted_url`, with its app if it's installed or in the browser otherwise.
+bool OpenHostedFileInNewTabOrApp(Profile* profile,
+                                 const base::FilePath& file_path,
+                                 LaunchAppCallback callback,
+                                 const GURL& hosted_url);
 
 }  // namespace file_manager::util
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
+#include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -37,7 +38,6 @@
 #include "net/base/filename_util.h"
 #include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "url/gurl.h"
 
 using content::BrowserThread;
 
@@ -88,54 +88,17 @@ std::optional<std::string> GetAppIdFromFilePath(
     return std::nullopt;
   }
   const std::string& file_extension = file_path.FinalExtension();
-  if (file_extension == ".gdoc") {
+  if (file_extension == ".gdoc" ||
+      file_tasks::WordGroupExtensions().contains(file_extension)) {
     return web_app::kGoogleDocsAppId;
-  } else if (file_extension == ".gsheet") {
+  } else if (file_extension == ".gsheet" ||
+             file_tasks::ExcelGroupExtensions().contains(file_extension)) {
     return web_app::kGoogleSheetsAppId;
-  } else if (file_extension == ".gslides") {
+  } else if (file_extension == ".gslides" ||
+             file_tasks::PowerPointGroupExtensions().contains(file_extension)) {
     return web_app::kGoogleSlidesAppId;
   }
   return std::nullopt;
-}
-
-bool OpenHostedFileInNewTabOrApp(Profile* profile,
-                                 const base::FilePath& file_path,
-                                 LaunchAppCallback callback,
-                                 const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::optional<std::string> app_id = GetAppIdFromFilePath(url, file_path);
-  if (!app_id.has_value()) {
-    std::move(callback).Run(std::nullopt);
-    return OpenNewTab(url);
-  }
-  apps::AppServiceProxy* app_service =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  DCHECK(app_service);
-  const apps::AppRegistryCache& cache = app_service->AppRegistryCache();
-  bool is_app_available = false;
-  cache.ForOneApp(
-      app_id.value(), [&is_app_available](const apps::AppUpdate& update) {
-        is_app_available = update.Readiness() == apps::Readiness::kReady;
-      });
-
-  if (!is_app_available) {
-    std::move(callback).Run(std::nullopt);
-    return OpenNewTab(url);
-  }
-
-  auto chained_callback =
-      base::BindOnce([](apps::LaunchResult&& result) {
-        LOG_IF(ERROR, result.state != apps::LaunchResult::State::kSuccess)
-            << "Failed to launch hosted file via app despite "
-               "it being ready";
-        return result.state;
-      }).Then(std::move(callback));
-
-  app_service->LaunchAppWithUrl(app_id.value(), ui::EF_NONE, url,
-                                apps::LaunchSource::kFromFileManager, nullptr,
-                                std::move(chained_callback));
-  return true;
 }
 
 // Reads the alternate URL from a GDoc file. When it fails, returns a file URL
@@ -198,6 +161,47 @@ void OpenEncryptedDriveFsFile(const base::FilePath& file_path,
 }
 
 }  // namespace
+
+bool OpenHostedFileInNewTabOrApp(Profile* profile,
+                                 const base::FilePath& file_path,
+                                 LaunchAppCallback callback,
+                                 const GURL& hosted_url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  std::optional<std::string> app_id =
+      GetAppIdFromFilePath(hosted_url, file_path);
+  if (!app_id.has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return OpenNewTab(hosted_url);
+  }
+  apps::AppServiceProxy* app_service =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  DCHECK(app_service);
+  const apps::AppRegistryCache& cache = app_service->AppRegistryCache();
+  bool is_app_available = false;
+  cache.ForOneApp(
+      app_id.value(), [&is_app_available](const apps::AppUpdate& update) {
+        is_app_available = update.Readiness() == apps::Readiness::kReady;
+      });
+
+  if (!is_app_available) {
+    std::move(callback).Run(std::nullopt);
+    return OpenNewTab(hosted_url);
+  }
+
+  auto chained_callback =
+      base::BindOnce([](apps::LaunchResult&& result) {
+        LOG_IF(ERROR, result.state != apps::LaunchResult::State::kSuccess)
+            << "Failed to launch hosted file via app despite "
+               "it being ready";
+        return result.state;
+      }).Then(std::move(callback));
+
+  app_service->LaunchAppWithUrl(app_id.value(), ui::EF_NONE, hosted_url,
+                                apps::LaunchSource::kFromFileManager, nullptr,
+                                std::move(chained_callback));
+  return true;
+}
 
 bool OpenFileWithAppOrBrowser(Profile* profile,
                               const storage::FileSystemURL& file_system_url,

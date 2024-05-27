@@ -29,6 +29,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -92,6 +93,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
+#include "components/services/app_service/public/cpp/app_instance_waiter.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
@@ -1581,9 +1583,10 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackClosesUnexpectedly) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// Test that ExecuteFileTask() will open a DriveFs office file with a web Drive
-// office task.
-IN_PROC_BROWSER_TEST_F(DriveTest, OpenFileInDrive) {
+// Test that the open-web-drive-office-word task opens an Office file located on
+// Drive directly in the browser, if the Google Docs app isn't installed.
+IN_PROC_BROWSER_TEST_F(DriveTest,
+                       OpenDriveOfficeFileInBrowserWhenDocsAppNotInstalled) {
   // Add test file to fake DriveFs.
   SetUpTest();
 
@@ -1628,6 +1631,39 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OpenFileInDrive) {
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kDriveErrorMetricName,
       ash::cloud_upload::OfficeDriveOpenErrors::kSuccess, 1);
+}
+
+// Test that the open-web-drive-office-word task opens an Office file located on
+// Drive in the Google Docs app, if the app is installed.
+IN_PROC_BROWSER_TEST_F(DriveTest, OpenDriveOfficeFileInDocsAppWhenInstalled) {
+  // Add test file to fake DriveFs.
+  SetUpTest();
+
+  // Disable the setup flow for office files because we want the file to open
+  // without any dialogs.
+  SetWordFileHandlerToFilesSWA(profile(), kActionIdWebDriveOfficeWord);
+
+  // Set connection so that fallback dialog isn't triggered.
+  SetDriveConnectionStatusForTesting(ConnectionStatus::kConnected);
+
+  // Install Google Docs PWA.
+  webapps::AppId docs_app_id = web_app::test::InstallDummyWebApp(
+      profile(), "Google Docs",
+      GURL("https://docs.google.com/document/?usp=installed_webapp"));
+  ASSERT_EQ(docs_app_id, web_app::kGoogleDocsAppId);
+  apps::AppReadinessWaiter(profile(), web_app::kGoogleDocsAppId).Await();
+
+  // Check that the apps opens by waiting for it to be not only started and
+  // running, but also active and visible.
+  auto expected_state = apps::InstanceState(apps::kStarted | apps::kRunning |
+                                            apps::kActive | apps::kVisible);
+  apps::AppInstanceWaiter waiter(
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->InstanceRegistry(),
+      web_app::kGoogleDocsAppId, expected_state);
+  ExecuteFileTask(profile(), CreateWebDriveOfficeTask(), {drive_test_file_url_},
+                  base::DoNothing());
+  waiter.Await();
 }
 
 // Test that the setup flow for office files, that has never been run before,

@@ -111,16 +111,6 @@ enum class Microsoft365Availability {
   kMaxValue = kODFS,
 };
 
-// Opens the file specified by |url| in a new tab. |url| must be a
-// docs.google.com URL for an office file.
-void OpenDriveUrl(const GURL& url) {
-  DCHECK(url.host() == "docs.google.com");
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      net::AppendOrReplaceQueryParameter(url, "cros_files", "true"),
-      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
-}
-
 // Handle system error notification "Sign in" click.
 void HandleSignInClick(Profile* profile, std::optional<int> button_index) {
   // If the "Sign in" button was pressed, rather than a click to somewhere
@@ -613,7 +603,10 @@ void CloudOpenTask::OnGoogleDriveGetMetadata(
     LOG(ERROR) << "URL was not from docs.google.com";
     open_result = OfficeDriveOpenErrors::kUnexpectedAlternateUrl;
   } else {
-    OpenDriveUrl(hosted_url);
+    // TODO(b/242685536) add support for multiple files.
+    ::file_manager::util::OpenHostedFileInNewTabOrApp(
+        profile_, file_urls_.front().path(), base::DoNothing(),
+        net::AppendOrReplaceQueryParameter(hosted_url, "cros_files", "true"));
   }
   LogGoogleDriveOpenResultUMA(OfficeTaskResult::kOpened, open_result);
 }
@@ -622,10 +615,13 @@ void CloudOpenTask::OnGoogleDriveGetMetadata(
 // DriveFS. Check the file was successfully uploaded to DriveFS.
 void CloudOpenTask::OpenUploadedDriveUrl(const GURL& url,
                                          const OfficeTaskResult task_result) {
+  // TODO(b/242685536) add support for multiple files.
+  ::file_manager::util::OpenHostedFileInNewTabOrApp(
+      profile_, file_urls_.front().path(), base::DoNothing(),
+      net::AppendOrReplaceQueryParameter(url, "cros_files", "true"));
   // TODO(b/296950967): This function logs both open result and task result (but
   // only if open fails) metrics internally, pull them up to a higher level so
   // all the metrics are logged in one place.
-  OpenDriveUrl(url);
   LogGoogleDriveOpenResultUMA(task_result, OfficeDriveOpenErrors::kSuccess);
 }
 
