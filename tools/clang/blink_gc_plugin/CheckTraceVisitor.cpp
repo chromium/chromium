@@ -39,9 +39,15 @@ bool CheckTraceVisitor::VisitCallExpr(CallExpr* call) {
   // DependentScopeMemberExpr because the concrete trace call depends on the
   // instantiation of any shared template parameters. In this case the call is
   // "unresolved" and we resort to comparing the syntactic type names.
+#if defined(LLVM_FORCE_HEAD_REVISION)
+  if (DependentScopeDeclRefExpr* expr =
+          dyn_cast<DependentScopeDeclRefExpr>(callee)) {
+    CheckDependentScopeDeclRefExpr(call, expr);
+#else
   if (CXXDependentScopeMemberExpr* expr =
       dyn_cast<CXXDependentScopeMemberExpr>(callee)) {
     CheckCXXDependentScopeMemberExpr(call, expr);
+#endif
     return true;
   }
 
@@ -92,7 +98,11 @@ bool CheckTraceVisitor::IsTraceCallName(const std::string& name) {
 }
 
 CXXRecordDecl* CheckTraceVisitor::GetDependentTemplatedDecl(
+#if defined(LLVM_FORCE_HEAD_REVISION)
+    DependentScopeDeclRefExpr* expr) {
+#else
     CXXDependentScopeMemberExpr* expr) {
+#endif
   NestedNameSpecifier* qual = expr->getQualifier();
   if (!qual)
     return 0;
@@ -132,6 +142,12 @@ bool FindFieldVisitor::TraverseMemberExpr(MemberExpr* member) {
 
 }  // namespace
 
+#if defined(LLVM_FORCE_HEAD_REVISION)
+void CheckTraceVisitor::CheckDependentScopeDeclRefExpr(
+    CallExpr* call,
+    DependentScopeDeclRefExpr* expr) {
+  std::string fn_name = expr->getDeclName().getAsString();
+#else
 void CheckTraceVisitor::CheckCXXDependentScopeMemberExpr(
     CallExpr* call,
     CXXDependentScopeMemberExpr* expr) {
@@ -156,6 +172,7 @@ void CheckTraceVisitor::CheckCXXDependentScopeMemberExpr(
       }
     }
   }
+#endif
 
   // Check for T::Trace(visitor).
   if (NestedNameSpecifier* qual = expr->getQualifier()) {
