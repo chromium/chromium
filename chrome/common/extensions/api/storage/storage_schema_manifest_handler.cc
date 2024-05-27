@@ -12,6 +12,8 @@
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/policy/core/common/schema.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/install_warning.h"
@@ -31,9 +33,8 @@ StorageSchemaManifestHandler::StorageSchemaManifestHandler() {}
 StorageSchemaManifestHandler::~StorageSchemaManifestHandler() {}
 
 // static
-policy::Schema StorageSchemaManifestHandler::GetSchema(
-    const Extension* extension,
-    std::string* error) {
+base::expected<policy::Schema, std::string>
+StorageSchemaManifestHandler::GetSchema(const Extension* extension) {
   std::string path;
   if (const std::string* temp =
           extension->manifest()->FindStringPath(kStorageManagedSchema)) {
@@ -41,23 +42,20 @@ policy::Schema StorageSchemaManifestHandler::GetSchema(
   }
   base::FilePath file = base::FilePath::FromUTF8Unsafe(path);
   if (file.IsAbsolute() || file.ReferencesParent()) {
-    *error = base::StringPrintf("%s must be a relative path without ..",
-                                kStorageManagedSchema);
-    return policy::Schema();
+    return base::unexpected(base::StringPrintf(
+        "%s must be a relative path without ..", kStorageManagedSchema));
   }
   file = extension->path().AppendASCII(path);
   if (!base::PathExists(file)) {
-    *error = base::StringPrintf("File does not exist: %" PRFilePath,
-                                file.value().c_str());
-    return policy::Schema();
+    return base::unexpected(base::StringPrintf(
+        "File does not exist: %" PRFilePath, file.value().c_str()));
   }
   std::string content;
   if (!base::ReadFileToString(file, &content)) {
-    *error =
-        base::StringPrintf("Can't read %" PRFilePath, file.value().c_str());
-    return policy::Schema();
+    return base::unexpected(
+        base::StringPrintf("Can't read %" PRFilePath, file.value().c_str()));
   }
-  return policy::Schema::Parse(content, error);
+  return policy::Schema::Parse(content);
 }
 
 bool StorageSchemaManifestHandler::Parse(Extension* extension,
@@ -80,7 +78,12 @@ bool StorageSchemaManifestHandler::Validate(
     const Extension* extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
-  return GetSchema(extension, error).valid();
+  RETURN_IF_ERROR(GetSchema(extension), [&error](const auto& e) {
+    *error = e;
+    return false;
+  });
+
+  return true;
 }
 
 base::span<const char* const> StorageSchemaManifestHandler::Keys() const {
