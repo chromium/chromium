@@ -97,6 +97,9 @@ inline constexpr char kEmojiPickerGifSupportEnabled[] =
 // contain a "text" field indicating the inputted emoji/symbol/emoticon.
 inline constexpr char kEmojiPickerHistory[] = "emoji_picker.history";
 
+// A dictionary storing user preferences for emoji picker.
+inline constexpr char kEmojiPickerPreferences[] = "emoji_picker.preferences";
+
 // Pref which stores a list of Embedded Universal Integrated Circuit Card
 // (EUICC) D-Bus paths which have had their installed profiles refreshed from
 // Hermes. Each path is stored as a string.

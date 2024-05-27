@@ -294,6 +294,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kOrcaConsentWindowDismissCount, 0);
   registry->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled, true);
   registry->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
+  registry->RegisterDictionaryPref(prefs::kEmojiPickerPreferences);
   registry->RegisterDictionaryPref(
       ::prefs::kLanguageInputMethodSpecificSettings);
   registry->RegisterBooleanPref(prefs::kLastUsedImeShortcutReminderDismissed,

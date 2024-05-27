@@ -448,4 +448,18 @@ void EmojiPageHandler::UpdateHistoryInPrefs(
   update->Set(ConvertCategoryToPrefString(category), std::move(history_value));
 }
 
+void EmojiPageHandler::UpdatePreferredVariantsInPrefs(
+    std::vector<emoji_picker::mojom::EmojiVariantPtr> preferred_variants) {
+  static constexpr std::string_view kPreferredVariantsName =
+      "preferred_variants";
+
+  base::Value::Dict value;
+  for (const auto& variant : preferred_variants) {
+    value.Set(variant->base, variant->variant);
+  }
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                              prefs::kEmojiPickerPreferences);
+  update->Set(kPreferredVariantsName, std::move(value));
+}
+
 }  // namespace ash

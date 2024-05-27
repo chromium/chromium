@@ -67,6 +67,11 @@ struct GifUrls {
   url.mojom.Url preview_image;
 };
 
+struct EmojiVariant {
+  string base;
+  string variant;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -127,6 +132,9 @@ interface PageHandler {
   // Find out the initial query to search for in the emoji picker
   GetInitialQuery() => (string query);
 
-  // Update Emoji picker history in chrome prefs
+  // Update emoji picker history in chrome prefs
   UpdateHistoryInPrefs(Category category, array<string> history);
+
+  // Update preferred emoji variants in chrome prefs.
+  UpdatePreferredVariantsInPrefs(array<EmojiVariant> preferred_variants);
 };

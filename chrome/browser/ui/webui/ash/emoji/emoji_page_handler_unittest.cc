@@ -15,6 +15,10 @@
 namespace ash {
 namespace {
 
+using ::emoji_picker::mojom::EmojiVariant;
+using ::emoji_picker::mojom::EmojiVariantPtr;
+using ::emoji_picker::mojom::Category::kEmojis;
+
 class EmojiPageHandlerTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -33,18 +37,35 @@ class EmojiPageHandlerTest : public ::testing::Test {
 TEST_F(EmojiPageHandlerTest, UpdatesEmojiHistoryInPrefs) {
   mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver;
   EmojiPageHandler handler(std::move(receiver), &web_ui_, nullptr, false, false,
-                           emoji_picker::mojom::Category::kEmojis, "");
+                           kEmojis, "");
 
-  handler.UpdateHistoryInPrefs(emoji_picker::mojom::Category::kEmojis,
-                               {"abc", "xyz"});
+  handler.UpdateHistoryInPrefs(kEmojis, {"abc", "xyz"});
 
   const base::Value::Dict& history =
-      profile_->GetPrefs()->GetDict(ash::prefs::kEmojiPickerHistory);
+      profile_->GetPrefs()->GetDict(prefs::kEmojiPickerHistory);
   const base::Value::List* emoji_history =
       history.FindListByDottedPath("emoji");
   EXPECT_EQ(emoji_history->size(), 2u);
   EXPECT_EQ((*emoji_history)[0].GetDict().Find("text")->GetString(), "abc");
   EXPECT_EQ((*emoji_history)[1].GetDict().Find("text")->GetString(), "xyz");
+}
+
+TEST_F(EmojiPageHandlerTest, UpdatesPerferredVariantsInPrefs) {
+  mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver;
+  EmojiPageHandler handler(std::move(receiver), &web_ui_, nullptr, false, false,
+                           kEmojis, "");
+
+  std::vector<EmojiVariantPtr> variants;
+  variants.push_back(EmojiVariant::New("abc", "123"));
+  variants.push_back(EmojiVariant::New("xyz", "456"));
+  handler.UpdatePreferredVariantsInPrefs(std::move(variants));
+
+  const base::Value::Dict& preference =
+      profile_->GetPrefs()->GetDict(prefs::kEmojiPickerPreferences);
+  const base::Value::Dict* preferred_variants =
+      preference.FindDictByDottedPath("preferred_variants");
+  EXPECT_EQ(preferred_variants->Find("abc")->GetString(), "123");
+  EXPECT_EQ(preferred_variants->Find("xyz")->GetString(), "456");
 }
 
 }  // namespace

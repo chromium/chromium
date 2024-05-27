@@ -109,6 +109,7 @@ export class RecentlyUsedStore {
     }
 
     this.store.save();
+    this.updatePreferredVariantsInPrefs();
     return true;
   }
 
@@ -209,6 +210,13 @@ export class RecentlyUsedStore {
       EmojiPickerApiProxy.getInstance().updateHistoryInPrefs(
           convertCategoryEnum(this.category),
           this.store.data.history.map(x => x.base.string!));
+    }
+  }
+
+  updatePreferredVariantsInPrefs() {
+    if (this.category === CategoryEnum.EMOJI) {
+      EmojiPickerApiProxy.getInstance().updatePreferredVariantsInPrefs(
+          this.store.data.preference);
     }
   }
 
