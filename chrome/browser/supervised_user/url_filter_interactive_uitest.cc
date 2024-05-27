@@ -131,8 +131,7 @@ class UrlFilterUiTest : public InteractiveFamilyLiveTest,
   }
 };
 
-// TODO(https://crbug.com/328036610): fails on win-live-tests-tester-rel
-IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DISABLED_ParentBlocksPage) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kSetSafeSitesStateObserverId);
@@ -168,8 +167,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DISABLED_ParentBlocksPage) {
 
 // Sanity test, if it fails it means that resetting the test state is not
 // functioning properly.
-// TODO(https://crbug.com/328036610): fails on win-live-tests-tester-rel
-IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DISABLED_ClearFamilyLinkSettings) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer, kObserverId);
 
   TurnOnSyncFor(head_of_household());
@@ -180,9 +178,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DISABLED_ClearFamilyLinkSettings) {
                                       BrowserState::Reset()));
 }
 
-// TODO(https://crbug.com/328036610): fails on win-live-tests-tester-rel
-IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
-                       DISABLED_ParentAllowsPageBlockedBySafeSites) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kDefineStateObserverId);
@@ -211,9 +207,8 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")));
 }
 
-// TODO(https://crbug.com/328036610): fails on win-live-tests-tester-rel
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
-                       DISABLED_ParentAprovesPermissionRequestForBlockedSite) {
+                       ParentAprovesPermissionRequestForBlockedSite) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentApprovalTab);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
