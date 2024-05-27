@@ -34,12 +34,6 @@ has_memory_tagging =
     current_cpu == "arm64" && is_clang && !is_asan && (is_linux || is_android)
 
 declare_args() {
-  # Those configurations are used by the embedder to remove/add specific
-  # configurations to every targets partition_alloc. For instance, chromium is
-  # defining an "optimized debug" configuration through those configurations.
-  partition_alloc_add_configs = []
-  partition_alloc_remove_configs = []
-
   # Causes all the allocations to be routed via allocator_shim.cc. Usually,
   # the allocator shim will, in turn, route them to PartitionAlloc, but
   # other allocators are also supported by the allocator shim.

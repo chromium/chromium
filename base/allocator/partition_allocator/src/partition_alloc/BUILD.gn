@@ -5,6 +5,16 @@
 import("../../partition_alloc.gni")
 import("buildflag_header.gni")
 
+# //build_overrides/partition_alloc.gni should define partition_alloc_{
+# add,remove}_configs. But if not defined (e.g. the embedder misses the config),
+# define them here.
+if (!defined(partition_alloc_add_configs)) {
+  partition_alloc_add_configs = []
+}
+if (!defined(partition_alloc_remove_configs)) {
+  partition_alloc_remove_configs = []
+}
+
 # Add partition_alloc.gni and import it for partition_alloc configs.
 
 # TODO(crbug.com/40276913): Split PartitionAlloc into a public and
