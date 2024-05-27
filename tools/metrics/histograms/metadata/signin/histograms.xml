@@ -527,6 +527,24 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.BoundSessionCredentials.CookieRotationGenerateAssertionResult.Attempt{Count}"
+    enum="BoundSessionCredentialsCookieRotationGenerateAssertionResult"
+    expires_after="2024-07-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the result of the assertion generation for the cookie rotation
+    request in a bound session. Recorded at the {Count} attempt to sign a given
+    server-challenge in order to rotate bound cookies.
+  </summary>
+  <token key="Count">
+    <variant name="0" summary="first"/>
+    <variant name="1" summary="second"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.BoundSessionCredentials.CookieRotationNetError"
     enum="NetErrorCodes" expires_after="2024-09-22">
   <owner>alexilin@chromium.org</owner>

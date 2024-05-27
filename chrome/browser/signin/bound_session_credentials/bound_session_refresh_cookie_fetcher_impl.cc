@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -41,6 +42,7 @@ constexpr char kRotationDebugHeader[] =
 constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kSessionIdItemKey[] = "session_id";
 const size_t kMaxAssertionRequestsAllowed = 5;
+const size_t kMaxVerifySignatureFailuresAllowed = 1;
 
 bool IsExpectedCookie(
     const GURL& url,
@@ -353,7 +355,8 @@ void BoundSessionRefreshCookieFetcherImpl::
 }
 
 void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
-    const std::string& challenge) {
+    const std::string& challenge,
+    size_t generate_assertion_attempt) {
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge",
               perfetto::Flow::FromPointer(this));
@@ -361,26 +364,44 @@ void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
       challenge, GetRefreshUrl(),
       base::BindOnce(
           &BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion,
-          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer()));
+          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(), challenge,
+          generate_assertion_attempt));
 }
 
 void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
     base::ElapsedTimer generate_assertion_timer,
-    std::string assertion) {
+    const std::string& challenge,
+    size_t generate_assertion_attempt,
+    base::expected<std::string, SessionBindingHelper::Error>
+        assertion_or_error) {
   base::UmaHistogramMediumTimes(
       "Signin.BoundSessionCredentials.CookieRotationGenerateAssertionDuration",
       generate_assertion_timer.Elapsed());
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Signin.BoundSessionCredentials."
+                    "CookieRotationGenerateAssertionResult."
+                    "Attempt",
+                    base::NumberToString(generate_assertion_attempt)}),
+      assertion_or_error.error_or(SessionBindingHelper::kNoErrorForMetrics));
   TRACE_EVENT(
       "browser",
       "BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion",
-      perfetto::Flow::FromPointer(this), "success", !assertion.empty());
+      perfetto::Flow::FromPointer(this), "error",
+      assertion_or_error.error_or(SessionBindingHelper::kNoErrorForMetrics));
 
-  if (assertion.empty()) {
+  if (!assertion_or_error.has_value()) {
+    if (assertion_or_error.error() ==
+            SessionBindingHelper::Error::kVerifySignatureFailure &&
+        generate_assertion_attempt < kMaxVerifySignatureFailuresAllowed) {
+      RefreshWithChallenge(challenge, generate_assertion_attempt + 1);
+      return;
+    }
+
     CompleteRequestAndReportRefreshResult(Result::kSignChallengeFailed);
     return;
   }
 
-  StartRefreshRequest(std::move(assertion));
+  StartRefreshRequest(std::move(assertion_or_error).value());
 }
 
 void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(

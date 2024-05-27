@@ -13,8 +13,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -24,8 +26,6 @@ namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
-
-class SessionBindingHelper;
 
 class BoundSessionRefreshCookieFetcherImpl
     : public BoundSessionRefreshCookieFetcher,
@@ -80,10 +80,14 @@ class BoundSessionRefreshCookieFetcherImpl
   void HandleBindingKeyAssertionRequired(
       const std::string& challenge_header_value);
   void CompleteRequestAndReportRefreshResult(Result result);
-  void RefreshWithChallenge(const std::string& challenge);
+  void RefreshWithChallenge(const std::string& challenge,
+                            size_t generate_assertion_attempt = 0);
   void OnGenerateBindingKeyAssertion(
       base::ElapsedTimer generate_assertion_timer,
-      std::string assertion);
+      const std::string& challenge,
+      size_t generate_assertion_attempt,
+      base::expected<std::string, SessionBindingHelper::Error>
+          assertion_or_error);
 
   // network::mojom::CookieAccessObserver:
   void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
