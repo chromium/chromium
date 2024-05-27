@@ -20,10 +20,10 @@
 
 #include <cstddef>
 #include <memory>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
@@ -44,8 +44,8 @@ class FakeSSLClientSocket : public net::StreamSocket {
   ~FakeSSLClientSocket() override;
 
   // Exposed for testing.
-  static base::StringPiece GetSslClientHello();
-  static base::StringPiece GetSslServerHello();
+  static std::string_view GetSslClientHello();
+  static std::string_view GetSslServerHello();
 
   // net::StreamSocket implementation.
   int Read(net::IOBuffer* buf,

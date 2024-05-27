@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -79,14 +80,14 @@ scoped_refptr<net::DrainableIOBuffer> NewDrainableIOBufferWithSize(int size) {
 
 }  // namespace
 
-base::StringPiece FakeSSLClientSocket::GetSslClientHello() {
-  return base::StringPiece(reinterpret_cast<const char*>(kSslClientHello),
-                           std::size(kSslClientHello));
+std::string_view FakeSSLClientSocket::GetSslClientHello() {
+  return std::string_view(reinterpret_cast<const char*>(kSslClientHello),
+                          std::size(kSslClientHello));
 }
 
-base::StringPiece FakeSSLClientSocket::GetSslServerHello() {
-  return base::StringPiece(reinterpret_cast<const char*>(kSslServerHello),
-                           std::size(kSslServerHello));
+std::string_view FakeSSLClientSocket::GetSslServerHello() {
+  return std::string_view(reinterpret_cast<const char*>(kSslServerHello),
+                          std::size(kSslServerHello));
 }
 
 FakeSSLClientSocket::FakeSSLClientSocket(
