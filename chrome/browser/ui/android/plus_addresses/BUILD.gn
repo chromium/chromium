@@ -32,7 +32,10 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/layout/plus_address_creation_prompt.xml" ]
+  sources = [
+    "java/res/layout/plus_address_creation_prompt.xml",
+    "java/res/layout/plus_address_creation_prompt_v2.xml",
+  ]
   deps = [
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",

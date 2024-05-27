@@ -50,7 +50,12 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
             GURL errorReportUrl) {
         View layout =
                 LayoutInflater.from(activity)
-                        .inflate(R.layout.plus_address_creation_prompt, /* root= */ null);
+                        .inflate(
+                                ChromeFeatureList.isEnabled(
+                                                ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)
+                                        ? R.layout.plus_address_creation_prompt_v2
+                                        : R.layout.plus_address_creation_prompt,
+                                /* root= */ null);
         assert (layout instanceof ViewGroup) : "layout is not a ViewGroup!";
         mContentView = (ViewGroup) layout;
         mLoadingView = new LoadingView(activity);
@@ -114,9 +119,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
                 });
 
         Button plusAddressCancelButton = mContentView.findViewById(R.id.plus_address_cancel_button);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
-            mContentView.removeView(plusAddressCancelButton);
-        } else {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
             plusAddressCancelButton.setText(plusAddressModalCancelText);
             plusAddressCancelButton.setOnClickListener((View _view) -> mDelegate.onCanceled());
         }
