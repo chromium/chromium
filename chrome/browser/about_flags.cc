@@ -8206,10 +8206,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"exo-ordinal-motion", flag_descriptions::kExoOrdinalMotionName,
      flag_descriptions::kExoOrdinalMotionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kExoOrdinalMotion)},
-    {"exo-surrounding-text-offset",
-     flag_descriptions::kExoSurroundingTextOffsetName,
-     flag_descriptions::kExoSurroundingTextOffsetDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kExoSurroundingTextOffset)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"heavy-ad-privacy-mitigations",

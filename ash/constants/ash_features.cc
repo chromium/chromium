@@ -952,12 +952,6 @@ BASE_FEATURE(kExoOrdinalMotion,
              "ExoOrdinalMotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables to check KeyEvent flag to see if the event is consumed by IME
-// or not (=decides using heuristics based on key code etc.).
-BASE_FEATURE(kExoSurroundingTextOffset,
-             "ExoSurroundingTextOffset",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allows RGB Keyboard to test new animations/patterns.
 BASE_FEATURE(kExperimentalRgbKeyboardPatterns,
              "ExperimentalRgbKeyboardPatterns",

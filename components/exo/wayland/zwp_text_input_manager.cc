@@ -341,18 +341,10 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
       return;
     }
 
-    if (base::FeatureList::IsEnabled(
-            ash::features::kExoSurroundingTextOffset)) {
-      std::vector<size_t> offsets{range.GetMin(), range.GetMax()};
-      base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
-      zcr_extended_text_input_v1_send_set_autocorrect_range(
-          extended_text_input_, offsets[0], offsets[1]);
-    } else {
-      // Fallback to the old implementation for transition.
-      // TODO(crbug.com/40251329): Remove once new way is widely distributed.
-      zcr_extended_text_input_v1_send_set_autocorrect_range(
-          extended_text_input_, range.GetMin(), range.GetMax());
-    }
+    std::vector<size_t> offsets{range.GetMin(), range.GetMax()};
+    base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
+    zcr_extended_text_input_v1_send_set_autocorrect_range(
+        extended_text_input_, offsets[0], offsets[1]);
     wl_client_flush(client());
   }
 
@@ -539,9 +531,7 @@ void SetSurroundingTextImpl(TextInput* text_input,
   // Original implementation did not convert the range. Guard this by the
   // feature flag to be reverted to old behavior just in case for transition
   // period.
-  // TODO(crbug.com/40251329): Remove the guard once transition is done.
-  if (autocorrect_info.has_value() &&
-      base::FeatureList::IsEnabled(ash::features::kExoSurroundingTextOffset)) {
+  if (autocorrect_info.has_value()) {
     size_t index = grammar_fragment.has_value() ? 4u : 2u;
     autocorrect_info->range = gfx::Range(offsets[index] + offset_utf16,
                                          offsets[index + 1] + offset_utf16);

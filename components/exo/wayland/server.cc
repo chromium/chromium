@@ -140,25 +140,13 @@ void wayland_log(const char* fmt, va_list argp) {
 }
 
 int GetTextInputExtensionV1Version() {
-  if (base::FeatureList::IsEnabled(ash::features::kExoSurroundingTextOffset)) {
-    // set_surrounding_text_offset_utf16 + new surrounding_text_support
-    // strategy enabled once at version 10 was reverted (crbug.com/1451324).
-    //
-    // Now, the new API to fix the issue is introduced in version 12.
-    // We cannot enable confirm-composition only, because it will be hitting
-    // the same issue at version 10. Thus, we'll set version 12 (including
-    // all fixes + confirm-composition), or 9 (before everything).
-
-    // If GIF support is also enabled, we need version 13.
-    if (base::FeatureList::IsEnabled(
-            ash::features::kImeSystemEmojiPickerGIFSupport)) {
-      return 13;
-    }
-
-    return 12;
+  // If GIF support is also enabled, we need version 13.
+  if (base::FeatureList::IsEnabled(
+          ash::features::kImeSystemEmojiPickerGIFSupport)) {
+    return 13;
   }
 
-  return 9;
+  return 12;
 }
 
 }  // namespace
