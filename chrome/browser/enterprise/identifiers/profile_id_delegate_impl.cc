@@ -9,6 +9,7 @@
 #include "base/uuid.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
 #include "components/prefs/pref_service.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -28,17 +29,74 @@ namespace enterprise {
 namespace {
 
 // Creates and persists the profile GUID if one does not already exist
-void CreateProfileGUID(PrefService* prefs) {
-  if (prefs->GetString(kProfileGUIDPref).empty()) {
-    prefs->SetString(kProfileGUIDPref,
-                     base::Uuid::GenerateRandomV4().AsLowercaseString());
+void CreateProfileGUID(Profile* profile, const base::FilePath& profile_path) {
+  auto* prefs = profile->GetPrefs();
+  if (!prefs->GetString(kProfileGUIDPref).empty()) {
+    return;
   }
+
+  auto* preset_profile_management_data =
+      PresetProfileManagmentData::Get(profile);
+  std::string preset_profile_guid = preset_profile_management_data->GetGuid();
+
+  std::string new_profile_guid =
+      (preset_profile_guid.empty())
+          ? base::Uuid::GenerateRandomV4().AsLowercaseString()
+          : std::move(preset_profile_guid);
+
+  prefs->SetString(kProfileGUIDPref, new_profile_guid);
+  preset_profile_management_data->ClearGuid();
+}
+
+}  // namespace
+
+PresetProfileManagmentData* PresetProfileManagmentData::Get(Profile* profile) {
+  CHECK(profile);
+
+  if (!profile->GetUserData(kPresetProfileManagementData)) {
+    profile->SetUserData(
+        kPresetProfileManagementData,
+        std::make_unique<PresetProfileManagmentData>(std::string()));
+  }
+
+  return static_cast<PresetProfileManagmentData*>(
+      profile->GetUserData(kPresetProfileManagementData));
+}
+
+void PresetProfileManagmentData::SetGuid(std::string guid) {
+  CHECK(!guid.empty());
+  CHECK(guid_.empty());
+
+  guid_ = guid;
+}
+
+std::string PresetProfileManagmentData::GetGuid() {
+  return guid_;
+}
+
+void PresetProfileManagmentData::ClearGuid() {
+  guid_ = std::string();
+}
+
+PresetProfileManagmentData::PresetProfileManagmentData(std::string preset_guid)
+    : guid_(preset_guid) {}
+
+ProfileIdDelegateImpl::ProfileIdDelegateImpl(Profile* profile)
+    : profile_(profile) {
+  CHECK(profile_);
+  CreateProfileGUID(profile_, profile->GetPath());
+}
+
+ProfileIdDelegateImpl::~ProfileIdDelegateImpl() = default;
+
+std::string ProfileIdDelegateImpl::GetDeviceId() {
+  return ProfileIdDelegateImpl::GetId();
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID)
 // Gets the device ID from the BrowserDMTokenStorage.
-std::string GetId() {
+std::string ProfileIdDelegateImpl::GetId() {
   std::string device_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 
@@ -56,7 +114,7 @@ std::string GetId() {
 }
 #else
 // Gets the device ID from cloud policy.
-std::string GetId() {
+std::string ProfileIdDelegateImpl::GetId() {
   std::string device_id = policy::GetDeviceName();
 
 // On LACROS, the GetDeviceName method returns the host name when the device
@@ -70,18 +128,5 @@ std::string GetId() {
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_ANDROID)
-
-}  // namespace
-
-ProfileIdDelegateImpl::ProfileIdDelegateImpl(Profile* profile)
-    : profile_(profile) {
-  DCHECK(profile_);
-  CreateProfileGUID(profile_->GetPrefs());
-}
-ProfileIdDelegateImpl::~ProfileIdDelegateImpl() = default;
-
-std::string ProfileIdDelegateImpl::GetDeviceId() {
-  return GetId();
-}
 
 }  // namespace enterprise

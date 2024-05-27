@@ -43,6 +43,10 @@ class ProfileIdService : public KeyedService {
   // Creates and returns the profile identifier for the current profile.
   std::optional<std::string> GetProfileId();
 
+  std::optional<std::string> GetProfileIdWithGuidAndDeviceId(
+      const std::string profile_guid,
+      const std::string device_id);
+
  private:
   std::unique_ptr<ProfileIdDelegate> delegate_;
   raw_ptr<PrefService> profile_prefs_;

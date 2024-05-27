@@ -7,6 +7,14 @@
 #include "base/base64url.h"
 #include "base/hash/sha1.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/uuid.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_delegate_impl.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
@@ -19,7 +27,6 @@
     !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #if BUILDFLAG(IS_WIN)
-#include "base/strings/utf_string_conversions.h"
 #include "base/win/wmi.h"
 #endif  // BUILDFLAG(IS_WIN)
 #else
@@ -43,7 +50,8 @@ constexpr char kFakeDeviceID[] = "fake-id";
 
 }  // namespace
 
-class ProfileIdServiceFactoryTest : public testing::Test {
+class ProfileIdServiceFactoryTest : public testing::Test,
+                                    public ProfileManagerObserver {
  public:
   ProfileIdServiceFactoryTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
@@ -76,6 +84,8 @@ class ProfileIdServiceFactoryTest : public testing::Test {
 
     service_ = ProfileIdServiceFactory::GetForProfile(profile_);
     EXPECT_TRUE(service_);
+
+    profile_manager_observer_.Observe(profile_manager_.profile_manager());
   }
 
   Profile* CreateProfile(const std::string& profile_name) {
@@ -101,10 +111,47 @@ class ProfileIdServiceFactoryTest : public testing::Test {
     service_ = ProfileIdServiceFactory::GetForProfile(profile);
   }
 
+  void OnProfileCreationStarted(Profile* profile) override {
+    if (!preset_guid_.empty()) {
+      enterprise::PresetProfileManagmentData::Get(profile)->SetGuid(
+          preset_guid_);
+    }
+  }
+
+// TODO(b/341267441): Enable this test for chrome os ash when
+// `OnProfileCreationStarted` is fixed for `FakeProfileManager`.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+  Profile* CreateNewProfileWithPresetGuid(std::string preset_guid) {
+    Profile* new_profile = nullptr;
+    // Making sure no two profiles have duplicate names/paths.
+    std::string new_profile_name =
+        "Profile " + base::Uuid::GenerateRandomV4().AsLowercaseString();
+    preset_guid_ = preset_guid;
+
+    base::RunLoop run_loop;
+
+    ProfileManager::CreateMultiProfileAsync(
+        base::UTF8ToUTF16(new_profile_name), /*icon_index=*/0,
+        /*is_hidden=*/false,
+        base::BindLambdaForTesting([&new_profile, &run_loop](Profile* profile) {
+          ASSERT_TRUE(profile);
+          new_profile = profile;
+          run_loop.Quit();
+        }));
+
+    run_loop.Run();
+    return new_profile;
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   raw_ptr<ProfileIdService> service_;
+  std::string preset_guid_;
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observer_{this};
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID) ||                                         \
     BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&         \
@@ -164,5 +211,47 @@ TEST_F(ProfileIdServiceFactoryTest, GetProfileId_Incognito_Profile) {
   SetProfileIdService(otr_profile);
   EXPECT_FALSE(service_);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+TEST_F(ProfileIdServiceFactoryTest, GetProfileIdWithPresetGuid) {
+  std::string random_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  std::string device_id = kFakeDeviceID;
+#if BUILDFLAG(IS_WIN)
+  device_id +=
+      base::WideToUTF8(base::win::WmiComputerSystemInfo::Get().serial_number());
+#endif  // (BUILDFLAG(IS_WIN)
+  std::string expected_profile_id =
+      service_->GetProfileIdWithGuidAndDeviceId(random_guid, device_id).value();
+
+  auto* new_profile = CreateNewProfileWithPresetGuid(random_guid);
+  SetProfileIdService(new_profile);
+
+  auto new_profile_id = service_->GetProfileId();
+  EXPECT_EQ(new_profile_id, expected_profile_id);
+}
+
+TEST_F(ProfileIdServiceFactoryTest, PresetGuidIdUniqueness) {
+  auto old_profile_id = service_->GetProfileId();
+  std::string random_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  auto* new_profile = CreateNewProfileWithPresetGuid(random_guid);
+  SetProfileIdService(new_profile);
+
+  EXPECT_NE(service_->GetProfileId(), old_profile_id);
+}
+
+TEST_F(ProfileIdServiceFactoryTest, PresetGuidDataIsOneOff) {
+  std::string random_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  auto* preset_guid_profile = CreateNewProfileWithPresetGuid(random_guid);
+  SetProfileIdService(preset_guid_profile);
+  auto preset_guid_profile_id = service_->GetProfileId();
+
+  auto* no_preset_guid_profile = CreateNewProfileWithPresetGuid(std::string());
+  SetProfileIdService(no_preset_guid_profile);
+
+  EXPECT_NE(service_->GetProfileId(), preset_guid_profile_id);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise

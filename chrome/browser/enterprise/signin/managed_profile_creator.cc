@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_delegate_impl.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
@@ -18,16 +19,22 @@ ManagedProfileCreator::ManagedProfileCreator(
     const std::string& id,
     const std::u16string& local_profile_name,
     std::unique_ptr<ManagedProfileCreationDelegate> delegate,
-    base::OnceCallback<void(base::WeakPtr<Profile>)> callback)
+    base::OnceCallback<void(base::WeakPtr<Profile>)> callback,
+    std::string preset_guid)
     : source_profile_(source_profile),
       id_(id),
       delegate_(std::move(delegate)),
       expected_profile_path_(g_browser_process->profile_manager()
                                  ->GetNextExpectedProfileDirectoryPath()),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      preset_guid_(preset_guid) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  profile_manager_observer_.Observe(profile_manager);
+
   ProfileAttributesStorage& storage =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+      profile_manager->GetProfileAttributesStorage();
   profile_observation_.Observe(&storage);
+
   auto icon_index = storage.ChooseAvatarIconIndexForNewProfile();
   std::u16string name = local_profile_name.empty()
                             ? storage.ChooseNameForNewProfile(icon_index)
@@ -75,6 +82,15 @@ void ManagedProfileCreator::OnProfileAdded(
     entry->SetProfileManagementId(id_);
   }
   delegate_->SetManagedAttributesForProfile(entry);
+}
+
+void ManagedProfileCreator::OnProfileCreationStarted(Profile* profile) {
+  if (expected_profile_path_ != profile->GetPath() || preset_guid_.empty()) {
+    return;
+  }
+
+  enterprise::PresetProfileManagmentData::Get(profile)->SetGuid(preset_guid_);
+  profile_manager_observer_.Reset();
 }
 
 void ManagedProfileCreator::OnNewProfileCreated(Profile* new_profile) {

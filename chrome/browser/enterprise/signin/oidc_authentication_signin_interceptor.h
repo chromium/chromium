@@ -42,8 +42,6 @@ enum class OidcInterceptionStatus {
 class Profile;
 class ProfileAttributesEntry;
 
-using ClientRegisterCallback =
-    base::OnceCallback<void(std::unique_ptr<policy::CloudPolicyClient>)>;
 using OidcInterceptionCallback = base::OnceCallback<void()>;
 using policy::CloudPolicyClient;
 
@@ -95,11 +93,12 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   void Reset();
 
   // Try to send OIDC tokens to DM server for registration.
-  void StartOidcRegistration(ClientRegisterCallback callback);
+  void StartOidcRegistration();
   // Called when OIDC registration finishes, the client should be registered
   // (aka has a dm token) and various information should be included, most
   // importantly, if the 3P user identity is sync-ed to Google or not.
-  void OnClientRegistered(std::unique_ptr<CloudPolicyClient> client);
+  void OnClientRegistered(std::unique_ptr<CloudPolicyClient> client,
+                          std::string preset_profile_guid);
 
   // Called when user makes a decision on the profile creation dialog.
   void OnProfileCreationChoice(SigninInterceptionResult create);
@@ -125,6 +124,7 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   // the IDP.
   std::string subject_id_;
   bool dasher_based_ = true;
+  std::string preset_profile_id_;
   raw_ptr<const ProfileAttributesEntry> switch_to_entry_ = nullptr;
   SkColor profile_color_;
   // TODO(b/319479021): utilize the status variable to have better error
