@@ -152,7 +152,9 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
   }
 
   if (source_browser == destination_browser) {
-    // TODO(crbug.com/341115504): Honor the destination index.
+    // This is a reorder operation within the same WebStateList.
+    destination_browser->GetWebStateList()->MoveGroup(
+        source_tab_group, destination_tab_group_index);
     return;
   }
 
