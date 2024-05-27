@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/peerconnection/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
-#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtls_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_sink_optimizer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_source_optimizer.h"
@@ -60,11 +59,11 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
       track_(track),
       streams_(std::move(streams)),
       encoded_audio_transformer_(
-          receiver_->GetEncodedAudioStreamTransformer()
+          track_->kind() == "audio"
               ? receiver_->GetEncodedAudioStreamTransformer()->GetBroker()
               : nullptr),
       encoded_video_transformer_(
-          receiver_->GetEncodedVideoStreamTransformer()
+          track_->kind() == "video"
               ? receiver_->GetEncodedVideoStreamTransformer()->GetBroker()
               : nullptr) {
   DCHECK(pc_);
@@ -72,13 +71,12 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
   DCHECK(track_);
   if (encoded_audio_transformer_) {
     RegisterEncodedAudioStreamCallback();
-  }
-  if (encoded_video_transformer_) {
+  } else {
+    CHECK(encoded_video_transformer_);
     RegisterEncodedVideoStreamCallback();
   }
 
-  if (!require_encoded_insertable_streams &&
-      (encoded_audio_transformer_ || encoded_video_transformer_)) {
+  if (!require_encoded_insertable_streams) {
     // We're not requiring JS to create encoded streams itself, so schedule a
     // task to shortcircuit the encoded transform if JS doesn't synchronously
     // create them - implementing
@@ -195,18 +193,6 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedAudioStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!encoded_audio_transformer_) {
-    // Should only happen if the killswitch
-    // kWebRtcEncodedTransformsPerStreamCreation is disabled and we go back to
-    // the old behaviour.
-    // TODO(crbug.com/1502781): Remove when cleaning up the feature.
-    DCHECK(!base::FeatureList::IsEnabled(
-        kWebRtcEncodedTransformsPerStreamCreation));
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Encoded audio streams not requested at PC initialization");
-    return nullptr;
-  }
   if (encoded_audio_streams_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Encoded audio streams already created");
@@ -221,18 +207,6 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedVideoStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!encoded_video_transformer_) {
-    // Should only happen if the killswitch
-    // kWebRtcEncodedTransformsPerStreamCreation is disabled and we go back to
-    // the old behaviour.
-    // TODO(crbug.com/1502781): Remove when cleaning up the feature.
-    DCHECK(!base::FeatureList::IsEnabled(
-        kWebRtcEncodedTransformsPerStreamCreation));
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Encoded video streams not requested at PC initialization");
-    return nullptr;
-  }
   if (encoded_video_streams_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Encoded video streams already created");
@@ -575,12 +549,12 @@ void RTCRtpReceiver::SetVideoUnderlyingSink(
 
 void RTCRtpReceiver::MaybeShortCircuitEncodedStreams() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (encoded_video_transformer_ && !encoded_video_streams_) {
+  if (kind() == MediaKind::kVideo && !encoded_video_streams_) {
     transform_shortcircuited_ = true;
     LogMessage("Starting short circuiting of video transform");
     encoded_video_transformer_->StartShortCircuiting();
   }
-  if (encoded_audio_transformer_ && !encoded_audio_streams_) {
+  if (kind() == MediaKind::kAudio && !encoded_audio_streams_) {
     transform_shortcircuited_ = true;
     LogMessage("Starting short circuiting of audio transform");
     encoded_audio_transformer_->StartShortCircuiting();

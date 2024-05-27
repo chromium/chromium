@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_source.h"
@@ -58,10 +60,20 @@ uintptr_t DummyRtpSenderInternal::last_id_ = 0;
 class DummyRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
  public:
   explicit DummyRTCRtpSenderPlatform(MediaStreamComponent* component)
-      : internal_(base::MakeRefCounted<DummyRtpSenderInternal>(component)) {}
+      : internal_(base::MakeRefCounted<DummyRtpSenderInternal>(component)),
+        audio_transformer_(std::make_unique<RTCEncodedAudioStreamTransformer>(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting())),
+        video_transformer_(std::make_unique<RTCEncodedVideoStreamTransformer>(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+            nullptr)) {}
   DummyRTCRtpSenderPlatform(const DummyRTCRtpSenderPlatform& other)
-      : internal_(other.internal_) {}
-  ~DummyRTCRtpSenderPlatform() override {}
+      : internal_(other.internal_),
+        audio_transformer_(std::make_unique<RTCEncodedAudioStreamTransformer>(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting())),
+        video_transformer_(std::make_unique<RTCEncodedVideoStreamTransformer>(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+            nullptr)) {}
+  ~DummyRTCRtpSenderPlatform() override = default;
 
   scoped_refptr<DummyRtpSenderInternal> internal() const { return internal_; }
 
@@ -94,8 +106,20 @@ class DummyRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
   void GetStats(RTCStatsReportCallback) override {}
   void SetStreams(const Vector<String>& stream_ids) override {}
 
+  RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer()
+      const override {
+    return audio_transformer_.get();
+  }
+
+  RTCEncodedVideoStreamTransformer* GetEncodedVideoStreamTransformer()
+      const override {
+    return video_transformer_.get();
+  }
+
  private:
   scoped_refptr<DummyRtpSenderInternal> internal_;
+  std::unique_ptr<RTCEncodedAudioStreamTransformer> audio_transformer_;
+  std::unique_ptr<RTCEncodedVideoStreamTransformer> video_transformer_;
 };
 
 class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
@@ -104,7 +128,12 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
 
  public:
   explicit DummyRTCRtpReceiverPlatform(MediaStreamSource::StreamType type)
-      : id_(++last_id_) {
+      : id_(++last_id_),
+        audio_transformer_(std::make_unique<RTCEncodedAudioStreamTransformer>(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting())),
+        video_transformer_(std::make_unique<RTCEncodedVideoStreamTransformer>(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+            nullptr)) {
     if (type == MediaStreamSource::StreamType::kTypeAudio) {
       auto* source = MakeGarbageCollected<MediaStreamSource>(
           String::FromUTF8("remoteAudioId"),
@@ -132,7 +161,13 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
     }
   }
   DummyRTCRtpReceiverPlatform(const DummyRTCRtpReceiverPlatform& other)
-      : id_(other.id_), component_(other.component_) {}
+      : id_(other.id_),
+        component_(other.component_),
+        audio_transformer_(std::make_unique<RTCEncodedAudioStreamTransformer>(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting())),
+        video_transformer_(std::make_unique<RTCEncodedVideoStreamTransformer>(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+            nullptr)) {}
   ~DummyRTCRtpReceiverPlatform() override = default;
 
   std::unique_ptr<RTCRtpReceiverPlatform> ShallowCopy() const override {
@@ -160,9 +195,21 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
   void SetJitterBufferMinimumDelay(
       std::optional<double> delay_seconds) override {}
 
+  RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer()
+      const override {
+    return audio_transformer_.get();
+  }
+
+  RTCEncodedVideoStreamTransformer* GetEncodedVideoStreamTransformer()
+      const override {
+    return video_transformer_.get();
+  }
+
  private:
   const uintptr_t id_;
   Persistent<MediaStreamComponent> component_;
+  std::unique_ptr<RTCEncodedAudioStreamTransformer> audio_transformer_;
+  std::unique_ptr<RTCEncodedVideoStreamTransformer> video_transformer_;
 };
 
 uintptr_t DummyRTCRtpReceiverPlatform::last_id_ = 0;

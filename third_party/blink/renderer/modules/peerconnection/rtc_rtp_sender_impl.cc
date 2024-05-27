@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
@@ -201,25 +200,19 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
         state_(std::move(state)) {
     DCHECK(track_map_);
     DCHECK(state_.is_initialized());
-    if (require_encoded_insertable_streams ||
-        base::FeatureList::IsEnabled(
-            kWebRtcEncodedTransformsPerStreamCreation)) {
-      if (webrtc_sender_->media_type() == cricket::MEDIA_TYPE_AUDIO) {
-        encoded_audio_transformer_ =
-            std::make_unique<RTCEncodedAudioStreamTransformer>(
-                main_task_runner_);
-        webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
-            encoded_audio_transformer_->Delegate());
-      }
-      if (webrtc_sender_->media_type() == cricket::MEDIA_TYPE_VIDEO) {
-        encoded_video_transformer_ =
-            std::make_unique<RTCEncodedVideoStreamTransformer>(
-                main_task_runner_, /*metronome=*/nullptr);
-        webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
-            encoded_video_transformer_->Delegate());
-      }
+    if (webrtc_sender_->media_type() == cricket::MEDIA_TYPE_AUDIO) {
+      encoded_audio_transformer_ =
+          std::make_unique<RTCEncodedAudioStreamTransformer>(main_task_runner_);
+      webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
+          encoded_audio_transformer_->Delegate());
+    } else {
+      CHECK(webrtc_sender_->media_type() == cricket::MEDIA_TYPE_VIDEO);
+      encoded_video_transformer_ =
+          std::make_unique<RTCEncodedVideoStreamTransformer>(
+              main_task_runner_, /*metronome=*/nullptr);
+      webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
+          encoded_video_transformer_->Delegate());
     }
-    DCHECK(!encoded_audio_transformer_ || !encoded_video_transformer_);
   }
 
   const RtpSenderState& state() const {
