@@ -275,20 +275,20 @@ TransformOperation* CreateTransformOperation(
                                                           transform_type);
     }
     case TransformOperation::kMatrix: {
-      double a =
-          To<CSSPrimitiveValue>(transform_value.Item(0)).GetDoubleValue();
-      double b =
-          To<CSSPrimitiveValue>(transform_value.Item(1)).GetDoubleValue();
-      double c =
-          To<CSSPrimitiveValue>(transform_value.Item(2)).GetDoubleValue();
-      double d =
-          To<CSSPrimitiveValue>(transform_value.Item(3)).GetDoubleValue();
-      double e =
-          conversion_data.Zoom() *
-          To<CSSPrimitiveValue>(transform_value.Item(4)).GetDoubleValue();
-      double f =
-          conversion_data.Zoom() *
-          To<CSSPrimitiveValue>(transform_value.Item(5)).GetDoubleValue();
+      double a = To<CSSPrimitiveValue>(transform_value.Item(0))
+                     .ComputeNumber(conversion_data);
+      double b = To<CSSPrimitiveValue>(transform_value.Item(1))
+                     .ComputeNumber(conversion_data);
+      double c = To<CSSPrimitiveValue>(transform_value.Item(2))
+                     .ComputeNumber(conversion_data);
+      double d = To<CSSPrimitiveValue>(transform_value.Item(3))
+                     .ComputeNumber(conversion_data);
+      double e = conversion_data.Zoom() *
+                 To<CSSPrimitiveValue>(transform_value.Item(4))
+                     .ComputeNumber(conversion_data);
+      double f = conversion_data.Zoom() *
+                 To<CSSPrimitiveValue>(transform_value.Item(5))
+                     .ComputeNumber(conversion_data);
       return MakeGarbageCollected<MatrixTransformOperation>(a, b, c, d, e, f);
     }
     case TransformOperation::kMatrix3D: {
