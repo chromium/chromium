@@ -510,8 +510,9 @@ void LoginUnlockThroughputRecorder::
 void LoginUnlockThroughputRecorder::OnCompositorAnimationFinished(
     base::TimeTicks start,
     const cc::FrameSequenceMetrics::CustomReportData& data) {
-  login_animation_throughput_received_ = true;
   ReportLoginTotalAnimationThroughput(start, data);
+
+  login_animation_throughput_received_ = true;
   MaybeReportLoginFinished();
 }
 
@@ -542,19 +543,13 @@ bool LoginUnlockThroughputRecorder::NeedReportArcAppListReady() const {
 }
 
 void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
-  const bool window_restore_done =
-      browser_windows_will_not_be_restored_ || all_restored_windows_presented_;
-
   // If not ready yet, do nothing this time.
-  if (!window_restore_done || !shelf_icons_loaded_) {
+  if (!window_restore_done_ || !shelf_icons_loaded_) {
     return;
   }
 
-  // If report was already scheduled, ignore.
-  if (shelf_animation_end_scheduled_) {
-    return;
-  }
-  shelf_animation_end_scheduled_ = true;
+  DCHECK(!dcheck_shelf_animation_end_scheduled_);
+  dcheck_shelf_animation_end_scheduled_ = true;
 
   scoped_throughput_reporter_blocker_.reset();
 
@@ -573,7 +568,10 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
 
   base::OnceCallback on_shelf_animation_end = base::BindOnce(
       [](base::WeakPtr<LoginUnlockThroughputRecorder> self) {
-        self->shelf_animation_finished_ = true;
+        if (!self) {
+          return;
+        }
+
         const base::TimeDelta duration_ms =
             base::TimeTicks::Now() -
             self->timestamp_primary_user_logged_in_.value();
@@ -585,6 +583,8 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
         ash::Shell::Get()
             ->login_unlock_throughput_recorder()
             ->AddLoginTimeMarker(kAshLoginSessionRestoreShelfLoginAnimationEnd);
+
+        self->shelf_animation_finished_ = true;
         self->MaybeReportLoginFinished();
       },
       weak_ptr_factory_.GetWeakPtr());
@@ -755,12 +755,10 @@ void LoginUnlockThroughputRecorder::SetLoginFinishedReportedForTesting() {
 }
 
 void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
-  if (login_finished_reported_) {
+  if (!login_animation_throughput_received_ || !shelf_animation_finished_) {
     return;
   }
-  if (!login_animation_throughput_received_ || !shelf_animation_finished_ ||
-      (!browser_windows_will_not_be_restored_ &&
-       !all_restored_windows_presented_)) {
+  if (login_finished_reported_) {
     return;
   }
   login_finished_reported_ = true;
@@ -808,7 +806,8 @@ void LoginUnlockThroughputRecorder::MaybeRestoreDataLoaded() {
   // Now the set of the windows to be restored should be fixed. If no window is
   // added to the tracker so far, we consider window restore has been done.
   if (window_restore_tracker_.NumberOfWindows() == 0) {
-    browser_windows_will_not_be_restored_ = true;
+    DCHECK(!window_restore_done_);
+    window_restore_done_ = true;
     shelf_tracker_.IgnoreBrowserIcon();
     ScheduleWaitForShelfAnimationEndIfNeeded();
   }
@@ -856,8 +855,8 @@ void LoginUnlockThroughputRecorder::OnAllWindowsPresented() {
     AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsPresented);
   }
 
-  DCHECK(!all_restored_windows_presented_);
-  all_restored_windows_presented_ = true;
+  DCHECK(!window_restore_done_);
+  window_restore_done_ = true;
   ScheduleWaitForShelfAnimationEndIfNeeded();
 }
 

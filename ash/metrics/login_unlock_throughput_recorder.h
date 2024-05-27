@@ -241,6 +241,11 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   std::optional<base::TimeTicks> timestamp_on_auth_success_;
   std::optional<base::TimeTicks> timestamp_primary_user_logged_in_;
 
+  // Whether ash is restarted (due to crash, or applying flags etc).
+  bool is_ash_restart_ = false;
+
+  bool user_logged_in_ = false;
+
   // Session restore data comes from chrome::SessionRestore and ash::FullRestore
   // independently.
 
@@ -250,30 +255,21 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   // This flag is true after FullRestore has finished loading its data.
   bool full_session_restore_data_loaded_ = false;
 
+  bool window_restore_done_ = false;
+
   // |shelf_icons_loaded_| is true when all shelf icons are considered loaded,
   // i.e. there is no pending icon on shelf after shelf is initialized.
   bool shelf_icons_loaded_ = false;
 
-  bool user_logged_in_ = false;
-
-  bool arc_app_list_ready_reported_ = false;
-
-  bool all_restored_windows_presented_ = false;
-
-  bool shelf_animation_end_scheduled_ = false;
+  bool dcheck_shelf_animation_end_scheduled_ = false;
 
   bool shelf_animation_finished_ = false;
+
+  bool arc_app_list_ready_reported_ = false;
 
   bool login_animation_throughput_received_ = false;
 
   bool login_finished_reported_ = false;
-
-  // |browser_windows_will_not_be_restored_| is true when session restore
-  // window list is empty.
-  bool browser_windows_will_not_be_restored_ = false;
-
-  // Whether ash is restarted (due to crash, or applying flags etc).
-  bool is_ash_restart_ = false;
 
   std::optional<base::TimeTicks> arc_opt_in_time_;
 
