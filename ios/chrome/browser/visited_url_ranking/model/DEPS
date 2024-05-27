@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/visited_url_ranking",
+  "+ios/chrome/browser/bookmarks/model",
+  "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/sync/model",
+]

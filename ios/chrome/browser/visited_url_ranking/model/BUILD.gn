@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ios_tab_model_url_visit_data_fetcher.h",
+    "ios_tab_model_url_visit_data_fetcher.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/sync_device_info",
+    "//components/visited_url_ranking/public",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/components/webui:url_constants",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_tab_model_url_visit_data_fetcher_unittest.mm" ]
+  deps = [
+    ":model",
+    "//components/tab_groups",
+    "//components/visited_url_ranking/public",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}
