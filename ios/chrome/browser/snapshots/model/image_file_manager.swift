@@ -107,7 +107,7 @@ let kJPEGImageQuality: CGFloat = 1.0
         return
       }
       do {
-        try data.write(to: imagePath)
+        try data.write(to: imagePath, options: [.atomic])
 
         // Encrypt the snapshot file (mostly for Incognito, but can't hurt to
         // always do it).
