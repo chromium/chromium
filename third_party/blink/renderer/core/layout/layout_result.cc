@@ -131,7 +131,7 @@ LayoutResult::LayoutResult(LineBoxFragmentBuilderPassKey passkey,
   }
   if (builder->clearance_after_line_) {
     EnsureRareData()->EnsureLineSmallData()->clearance_after_line =
-        builder->clearance_after_line_;
+        *builder->clearance_after_line_;
   }
   if (builder->trim_block_end_by_) {
     EnsureRareData()->EnsureLineSmallData()->trim_block_end_by =

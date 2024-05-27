@@ -108,12 +108,12 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   void PropagateChildrenDataFromLineItems(LogicalLineItems& children);
 
   std::optional<LayoutUnit> line_box_bfc_block_offset_;
+  std::optional<LayoutUnit> clearance_after_line_;
   std::optional<LayoutUnit> trim_block_end_by_;
   LayoutUnit annotation_block_offset_adjustment_;
   FontHeight metrics_ = FontHeight::Empty();
   FontHeight intrinsic_metrics_ = FontHeight::Empty();
   LayoutUnit hang_inline_size_;
-  LayoutUnit clearance_after_line_;
   PhysicalLineBoxFragment::LineBoxType line_box_type_;
   TextDirection base_direction_;
 

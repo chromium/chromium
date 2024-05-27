@@ -310,12 +310,9 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
   // Return the amount of clearance that we have to add after the fragment. This
   // is used for BR clear elements.
-  LayoutUnit ClearanceAfterLine() const {
-    if (!rare_data_) {
-      return LayoutUnit();
-    }
-    const RareData::LineSmallData* data = rare_data_->GetLineSmallData();
-    return data ? data->clearance_after_line : LayoutUnit();
+  std::optional<LayoutUnit> ClearanceAfterLine() const {
+    return UNLIKELY(rare_data_) ? rare_data_->ClearanceAfterLine()
+                                : std::nullopt;
   }
 
   // Return the amount to trim the block size by the `text-box-trim` property.
@@ -672,11 +669,14 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     // `LineSmallData` can save allocations When only fields in it are needed.
     struct LineSmallData {
+      std::optional<LayoutUnit> ClearanceAfterLine() const {
+        return clearance_after_line.NullOptIfMin();
+      }
       std::optional<LayoutUnit> TrimBlockEndBy() const {
         return trim_block_end_by.NullOptIfMin();
       }
 
-      LayoutUnit clearance_after_line;
+      LayoutUnit clearance_after_line = LayoutUnit::Min();
       LayoutUnit trim_block_end_by = LayoutUnit::Min();
     };
 
@@ -915,6 +915,11 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       if (!line_box_bfc_block_offset_is_set())
         return std::nullopt;
       return line_box_bfc_block_offset;
+    }
+
+    std::optional<LayoutUnit> ClearanceAfterLine() const {
+      const RareData::LineSmallData* data = GetLineSmallData();
+      return data ? data->ClearanceAfterLine() : std::nullopt;
     }
 
     std::optional<LayoutUnit> TrimBlockEndBy() const {

@@ -2511,7 +2511,7 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     bool self_collapsing_child_had_clearance) {
   // Determine the child's end logical offset, for the next child to use.
   LayoutUnit logical_block_offset;
-  LayoutUnit clearance_after_line;
+  std::optional<LayoutUnit> clearance_after_line;
   std::optional<LayoutUnit> trim_block_end_by;
 
   const bool is_self_collapsing = layout_result.IsSelfCollapsing();
@@ -2584,7 +2584,7 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
       if (clearance_after_line) {
         // `<br>` with clearance is an exception. It still pushes down, after
         // all other objects are trimmed. See `AddAnyClearanceAfterLine()`.
-        logical_block_offset += clearance_after_line;
+        logical_block_offset += *clearance_after_line;
       } else {
         logical_block_offset -= *trim_block_end_by;
       }
@@ -2598,7 +2598,8 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
       // See InlineLayoutAlgorithm::CreateLine() and
       // BlockLayoutAlgorithm::Layout().
       logical_block_offset +=
-          std::max(layout_result.AnnotationOverflow(), clearance_after_line);
+          std::max(layout_result.AnnotationOverflow(),
+                   clearance_after_line.value_or(LayoutUnit()));
     }
   }
 
@@ -2656,9 +2657,9 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
       DCHECK(!annotation_space);
       // Allow the portion of the annotation overflow that isn't also part of
       // clearance to overlap with certain types of subsequent content.
-      annotation_space =
-          -std::max(LayoutUnit(),
-                    layout_result.AnnotationOverflow() - clearance_after_line);
+      annotation_space = -std::max(
+          LayoutUnit(), layout_result.AnnotationOverflow() -
+                            clearance_after_line.value_or(LayoutUnit()));
     }
   }
 
