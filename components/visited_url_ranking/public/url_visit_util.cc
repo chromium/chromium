@@ -109,8 +109,10 @@ scoped_refptr<InputContext> AsInputContext(
         }
         break;
       case kHasAppId:
-        value =
-            ProcessedValue::FromFloat(history_data->last_app_id.has_value());
+        if (history_data) {
+          value =
+              ProcessedValue::FromFloat(history_data->last_app_id.has_value());
+        }
         break;
       default:
         NOTREACHED();
