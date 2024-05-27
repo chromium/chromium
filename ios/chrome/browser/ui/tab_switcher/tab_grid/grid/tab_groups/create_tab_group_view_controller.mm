@@ -622,7 +622,7 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
 
   NSLayoutConstraint* keyboardConstraint = [container.bottomAnchor
       constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor];
-  keyboardConstraint.priority = UILayoutPriorityDefaultLow;
+  keyboardConstraint.priority = UILayoutPriorityDefaultHigh + 1;
 
   _snapshotsViewDisplayedConstraint = [_colorsScrollView.topAnchor
       constraintEqualToAnchor:snapshotsContainerLayoutGuide.bottomAnchor
