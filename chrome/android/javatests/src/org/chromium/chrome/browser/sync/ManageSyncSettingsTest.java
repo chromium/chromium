@@ -435,6 +435,29 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testSyncAddressesWithCustomPasspharaseShowsWarningDialog() {
+        mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        SyncTestUtil.waitForSyncTransportActive();
+        SyncService syncService = mSyncTestRule.getSyncService();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        ChromeSwitchPreference addresses_toggle =
+                (ChromeSwitchPreference)
+                        fragment.findPreference(
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE);
+        mSyncTestRule.togglePreference(addresses_toggle);
+        onView(withText(R.string.sync_addresses_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
     public void testPressingSignOutAndTurnOffSyncShowsSignOutDialog() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();

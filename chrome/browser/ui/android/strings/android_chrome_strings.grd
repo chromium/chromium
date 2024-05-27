@@ -2343,6 +2343,18 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_ENCRYPTION" desc="Preference category name for sync encryption. [CHAR_LIMIT=32]">
         Encryption
       </message>
+      <message name="IDS_SYNC_ADDRESSES_TITLE" desc="Title of a dialog to enable saving addresses to the Google Account. This is shown to users who have chosen to encrypt their data with a custom passphrase. The dialog informs users that newly saved addresses will not be encrypted with their passphrase.">
+        Save without encryption
+      </message>
+      <message name="IDS_SYNC_ADDRESSES_BODY" desc="Message of a dialog to enable saving addresses to the Google Account. This is shown to users who have chosen to encrypt their data with a custom passphrase. The dialog informs users that newly saved addresses will not be encrypted with their passphrase.">
+        Addresses aren't encrypted with your passphrase. This lets you use them in other Google services.
+      </message>
+      <message name="IDS_SYNC_ADDRESSES_ACCEPT" desc="Button in a dialog to enable saving addresses to the Google Account. This is shown to users who have chosen to encrypt their data with a custom passphrase. The dialog informs users that newly saved addresses will not be encrypted with their passphrase.">
+        Continue
+      </message>
+      <message name="IDS_SYNC_ADDRESSES_CANCEL" desc="Button in a dialog to enable saving addresses to the Google Account. This is shown to users who have chosen to encrypt their data with a custom passphrase. The dialog informs users that newly saved addresses will not be encrypted with their passphrase.">
+        Cancel
+      </message>
       <message name="IDS_SYNC_REVIEW_DATA" desc="Title for link to https://chrome.google.com/sync Dashboard to manage sync data.">
         Review your synced data
       </message>
