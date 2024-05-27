@@ -213,10 +213,10 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
 
   const GURL kReferrer_ = GURL("https://referrer.com/");
 
-  // |store_| needs to outlive |service_|.
+  // `store_` and `reporting_service_` need to outlive `service_`.
   std::unique_ptr<MockPersistentNelStore> store_;
-  std::unique_ptr<NetworkErrorLoggingService> service_;
   std::unique_ptr<TestReportingService> reporting_service_;
+  std::unique_ptr<NetworkErrorLoggingService> service_;
 };
 
 void ExpectDictDoubleValue(double expected_value,
