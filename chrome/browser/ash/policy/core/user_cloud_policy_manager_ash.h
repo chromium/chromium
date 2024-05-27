@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -47,6 +48,7 @@ namespace policy {
 
 namespace local_user_files {
 class LocalFilesCleanup;
+class LocalFilesMigrationManager;
 }
 
 class ArcAppInstallEventLogUploader;
@@ -334,8 +336,13 @@ class UserCloudPolicyManagerAsh
   bool is_in_reregistration_state_ = false;
 
   // Tracks LocalUserDataEnabled policy changes and removes user files if
-  // needed.
+  // needed. Used for SkyVault TT version.
   std::unique_ptr<local_user_files::LocalFilesCleanup> local_files_cleanup_;
+
+  // Tracks LocalUserDataEnabled policy changes and migrates user files if
+  // needed. Used for SkyVault GA version.
+  std::unique_ptr<local_user_files::LocalFilesMigrationManager>
+      local_files_migration_manager_;
 };
 
 }  // namespace policy
