@@ -65,6 +65,10 @@
   return self;
 }
 
+- (void)updateButtonColorBasedOnStatus {
+  UpdateButtonColorOnEnableDisable(self.button);
+}
+
 - (void)didTapButton {
   [self.delegate didTapButton];
 }

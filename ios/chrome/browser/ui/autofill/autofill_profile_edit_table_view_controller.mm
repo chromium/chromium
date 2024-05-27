@@ -729,6 +729,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
           base::apple::ObjCCastStrict<AutofillEditProfileButtonFooterCell>(
               footer);
       buttonFooter.button.enabled = !shouldShowError;
+      [buttonFooter updateButtonColorBasedOnStatus];
 
       [_controller.tableView endUpdates];
     } else {

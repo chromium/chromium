@@ -34,6 +34,9 @@
 // Action button. Note: Set action method in the TableView datasource method.
 @property(nonatomic, strong) UIButton* button;
 
+// Updates the button color based on it's status.
+- (void)updateButtonColorBasedOnStatus;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_AUTOFILL_EDIT_PROFILE_BUTTON_FOOTER_ITEM_H_
