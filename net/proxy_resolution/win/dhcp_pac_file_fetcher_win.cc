@@ -341,6 +341,7 @@ void DhcpPacFileFetcherWin::CancelImpl() {
 
     fetchers_.clear();
   }
+  destination_string_ = nullptr;
 }
 
 void DhcpPacFileFetcherWin::OnGetCandidateAdapterNamesDone(
