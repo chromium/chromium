@@ -148,6 +148,12 @@ bool ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
   }
   // TODO - b/342376844 : Don't delay migration because of warning
   // acknowledgment if the access loss warning UI is active.
+
+  // There is no warning shown on automotive.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    return false;
+  }
+
   return !pref_service->GetBoolean(
       password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning);
 }
