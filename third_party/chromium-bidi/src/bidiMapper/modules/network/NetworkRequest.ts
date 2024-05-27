@@ -39,6 +39,7 @@ import {
   computeHeadersSize,
   bidiNetworkHeadersFromCdpNetworkHeaders,
   cdpToBiDiCookie,
+  bidiNetworkHeadersFromCdpNetworkHeadersEntries,
 } from './NetworkUtils.js';
 
 const REALM_REGEX = /(?<=realm=").*(?=")/;
@@ -72,6 +73,7 @@ export class NetworkRequest {
     info?: Protocol.Network.RequestWillBeSentEvent;
     extraInfo?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
     paused?: Protocol.Fetch.RequestPausedEvent;
+    overrides?: Omit<Protocol.Fetch.ContinueRequestRequest, 'requestId'>;
     auth?: Protocol.Fetch.AuthRequiredEvent;
   } = {};
 
@@ -136,6 +138,7 @@ export class NetworkRequest {
     const url =
       this.#response.info?.url ??
       this.#response.paused?.request.url ??
+      this.#request.overrides?.url ??
       this.#request.auth?.request.url ??
       this.#request.info?.request.url ??
       this.#request.paused?.request.url ??
@@ -146,6 +149,7 @@ export class NetworkRequest {
 
   get method(): string {
     return (
+      this.#request.overrides?.method ??
       this.#request.info?.request.method ??
       this.#request.paused?.request.method ??
       this.#request.auth?.request.method ??
@@ -405,21 +409,24 @@ export class NetworkRequest {
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
-  async continueRequest({
-    url,
-    method,
-    headers,
-    postData,
-  }: Omit<Protocol.Fetch.ContinueRequestRequest, 'requestId'> = {}) {
+  async continueRequest(
+    overrides: Omit<Protocol.Fetch.ContinueRequestRequest, 'requestId'> = {}
+  ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
     await this.cdpClient.sendCommand('Fetch.continueRequest', {
       requestId: this.#fetchId,
-      url,
-      method,
-      headers,
-      postData,
+      url: overrides.url,
+      method: overrides.method,
+      headers: overrides.headers,
+      postData: overrides.postData,
     });
+    // TODO: Store postData's size only
+    this.#request.overrides = {
+      url: overrides.url,
+      method: overrides.method,
+      headers: overrides.headers,
+    };
     this.#interceptPhase = undefined;
   }
 
@@ -560,10 +567,16 @@ export class NetworkRequest {
       this.#response.extraInfo = undefined;
     }
 
-    // TODO: get headers from Fetch.requestPaused
-    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
-      this.#response.info?.headers
-    );
+    const headers = [
+      ...bidiNetworkHeadersFromCdpNetworkHeaders(this.#response.info?.headers),
+      ...bidiNetworkHeadersFromCdpNetworkHeaders(
+        this.#response.extraInfo?.headers
+      ),
+      // TODO: Verify how to dedupe these
+      // ...bidiNetworkHeadersFromCdpNetworkHeadersEntries(
+      //   this.#response.paused?.responseHeaders
+      // ),
+    ];
 
     // TODO: get headers from Fetch.requestPaused
     const authChallenges = this.#authChallenges(
@@ -615,9 +628,23 @@ export class NetworkRequest {
       ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
       : [];
 
-    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
-      this.#request.info?.request.headers
-    );
+    let headers: Network.Header[] = [];
+    if (this.#request.overrides?.headers) {
+      headers = [
+        ...bidiNetworkHeadersFromCdpNetworkHeadersEntries(
+          this.#request.overrides?.headers
+        ),
+      ];
+    } else {
+      headers = [
+        ...bidiNetworkHeadersFromCdpNetworkHeaders(
+          this.#request.info?.request.headers
+        ),
+        ...bidiNetworkHeadersFromCdpNetworkHeaders(
+          this.#request.extraInfo?.headers
+        ),
+      ];
+    }
 
     return {
       request: this.#id,

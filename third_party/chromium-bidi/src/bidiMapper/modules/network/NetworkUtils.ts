@@ -35,7 +35,7 @@ export function computeHeadersSize(headers: Network.Header[]): number {
   return new TextEncoder().encode(requestHeaders).length;
 }
 
-/** Converts from CDP Network domain headers to Bidi network headers. */
+/** Converts from CDP Network domain headers to BiDi network headers. */
 export function bidiNetworkHeadersFromCdpNetworkHeaders(
   headers?: Protocol.Network.Headers
 ): Network.Header[] {
@@ -44,6 +44,23 @@ export function bidiNetworkHeadersFromCdpNetworkHeaders(
   }
 
   return Object.entries(headers).map(([name, value]) => ({
+    name,
+    value: {
+      type: 'string',
+      value,
+    },
+  }));
+}
+
+/** Converts from CDP Fetch domain headers to BiDi network headers. */
+export function bidiNetworkHeadersFromCdpNetworkHeadersEntries(
+  headers?: Protocol.Fetch.HeaderEntry[]
+): Network.Header[] {
+  if (!headers) {
+    return [];
+  }
+
+  return headers.map(({name, value}) => ({
     name,
     value: {
       type: 'string',
