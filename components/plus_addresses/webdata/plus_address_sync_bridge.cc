@@ -162,9 +162,9 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
   notify_data_changed_by_sync_.Run(std::move(profile_changes));
 }
 
-void PlusAddressSyncBridge::GetData(StorageKeyList storage_keys,
-                                    DataCallback callback) {
-  // PLUS_ADDRESS is read-only, so `GetData()` is not needed.
+void PlusAddressSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                             DataCallback callback) {
+  // PLUS_ADDRESS is read-only, so `GetDataForCommit()` is not needed.
   NOTREACHED_IN_MIGRATION();
 }
 
