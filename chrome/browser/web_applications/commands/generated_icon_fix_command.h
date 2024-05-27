@@ -61,7 +61,7 @@ class GeneratedIconFixCommand
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 
   std::unique_ptr<WebAppIconDownloader> icon_downloader_;
-  WebAppInstallInfo install_info_;
+  std::unique_ptr<WebAppInstallInfo> install_info_;
 
   base::Location stop_location_;
 

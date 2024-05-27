@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 
+#include <memory>
 #include <string_view>
 
 #include "base/files/file_util.h"
@@ -18,10 +19,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/common/constants.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -146,12 +149,12 @@ constexpr char kOnlyUseOfflineManifest[] = "only_use_offline_manifest";
 // is infeasible to run outside of the renderer process.
 constexpr char kOfflineManifest[] = "offline_manifest";
 
-// "name" manifest value to use for offline install. Cannot be updated.
-// TODO(crbug.com/40145613): Allow updating of name.
+// "name" manifest value to use for offline install.
 constexpr char kOfflineManifestName[] = "name";
 
-// "start_url" manifest value to use for offline install. Cannot be updated.
-// TODO(crbug.com/40145613): Allow updating of start_url.
+// "start_url" manifest value to use for offline install. Can be updated from a
+// live manifest if the manifest ID field is specified to match the offline
+// start_url.
 constexpr char kOfflineManifestStartUrl[] = "start_url";
 
 // "scope" manifest value to use for offline install.
@@ -523,7 +526,28 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     const base::FilePath& file,
     const base::Value& offline_manifest) {
   const base::Value::Dict& offline_manifest_dict = offline_manifest.GetDict();
-  WebAppInstallInfo app_info;
+
+  // start_url
+  const std::string* start_url_string =
+      offline_manifest_dict.FindString(kOfflineManifestStartUrl);
+  if (!start_url_string) {
+    return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
+                         kOfflineManifestStartUrl, " missing or invalid."});
+  }
+  GURL start_url = GURL(*start_url_string);
+  if (!start_url.is_valid()) {
+    return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
+                         kOfflineManifestStartUrl,
+                         " invalid: ", *start_url_string});
+  }
+
+  // Offline manifest doesn't have a way to specify a manifest ID so all offline
+  // manifests use start_url to derive their identity. If any offline manifest
+  // needs to change start_url then a separate manifest_id will need to be
+  // specified and loaded here.
+  webapps::ManifestId manifest_id =
+      GenerateManifestIdFromStartUrlOnly(start_url);
+  auto app_info = std::make_unique<WebAppInstallInfo>(manifest_id, start_url);
 
   // name
   const std::string* name_string =
@@ -533,24 +557,10 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
                          kOfflineManifestName, " missing or invalid."});
   }
   if (!base::UTF8ToUTF16(name_string->data(), name_string->size(),
-                         &app_info.title) ||
-      app_info.title.empty()) {
+                         &app_info->title) ||
+      app_info->title.empty()) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestName, " invalid: ", *name_string});
-  }
-
-  // start_url
-  const std::string* start_url_string =
-      offline_manifest_dict.FindString(kOfflineManifestStartUrl);
-  if (!start_url_string) {
-    return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                         kOfflineManifestStartUrl, " missing or invalid."});
-  }
-  app_info.start_url = GURL(*start_url_string);
-  if (!app_info.start_url.is_valid()) {
-    return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                         kOfflineManifestStartUrl,
-                         " invalid: ", *start_url_string});
   }
 
   // scope
@@ -560,17 +570,17 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestScope, " missing or invalid."});
   }
-  app_info.scope = GURL(*scope_string);
-  if (!app_info.scope.is_valid()) {
+  app_info->scope = GURL(*scope_string);
+  if (!app_info->scope.is_valid()) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestScope, " invalid: ", *scope_string});
   }
-  if (!base::StartsWith(app_info.start_url.path(), app_info.scope.path(),
+  if (!base::StartsWith(app_info->start_url.path(), app_info->scope.path(),
                         base::CompareCase::SENSITIVE)) {
-    return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                         kOfflineManifestScope, " (", app_info.start_url.spec(),
-                         ") not within ", kOfflineManifestScope, " (",
-                         app_info.scope.spec(), ")."});
+    return base::StrCat(
+        {file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", kOfflineManifestScope,
+         " (", app_info->start_url.spec(), ") not within ",
+         kOfflineManifestScope, " (", app_info->scope.spec(), ")."});
   }
 
   // display
@@ -586,7 +596,7 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
                          kOfflineManifestDisplay,
                          " invalid: ", *display_string});
   }
-  app_info.display_mode = display;
+  app_info->display_mode = display;
 
   // icon_any_pngs || icon_maskable_pngs
   const base::Value::List* icon_any_files =
@@ -607,7 +617,7 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
                            kOfflineManifestIconAnyPngs, " empty."});
     }
 
-    ASSIGN_OR_RETURN(app_info.icon_bitmaps.any,
+    ASSIGN_OR_RETURN(app_info->icon_bitmaps.any,
                      ParseOfflineManifestIconBitmaps(
                          file_utils, dir, file, kOfflineManifestIconAnyPngs,
                          *icon_any_files));
@@ -620,7 +630,7 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     }
 
     ASSIGN_OR_RETURN(
-        app_info.icon_bitmaps.maskable,
+        app_info->icon_bitmaps.maskable,
         ParseOfflineManifestIconBitmaps(file_utils, dir, file,
                                         kOfflineManifestIconMaskablePngs,
                                         *icon_maskable_files));
@@ -640,12 +650,12 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
                            kOfflineManifestThemeColorArgbHex,
                            " invalid: ", theme_color_value->DebugString()});
     }
-    app_info.theme_color = SkColorSetA(theme_color, SK_AlphaOPAQUE);
+    app_info->theme_color = SkColorSetA(theme_color, SK_AlphaOPAQUE);
   }
 
   return base::BindRepeating(
-      [](const WebAppInstallInfo& original) {
-        return std::make_unique<WebAppInstallInfo>(original.Clone());
+      [](const std::unique_ptr<WebAppInstallInfo>& original) {
+        return std::make_unique<WebAppInstallInfo>(original->Clone());
       },
       std::move(app_info));
 }

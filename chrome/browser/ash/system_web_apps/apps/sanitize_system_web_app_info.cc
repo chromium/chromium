@@ -22,9 +22,9 @@ const int kSanitizeWindowHeight = 672;
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForSanitizeSystemWebApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUISanitizeAppURL);
+  GURL start_url = GURL(ash::kChromeUISanitizeAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUISanitizeAppURL);
 
   info->title = l10n_util::GetStringUTF16(IDS_OS_SANITIZE_APP_NAME);

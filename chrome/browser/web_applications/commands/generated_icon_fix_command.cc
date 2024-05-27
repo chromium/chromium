@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -69,14 +70,15 @@ void GeneratedIconFixCommand::StartWithLock(
   // Refresh WebApp pointer as the above mutation destroys the previous one.
   app = lock_->registrar().GetAppById(app_id_);
 
+  install_info_ =
+      std::make_unique<WebAppInstallInfo>(app->manifest_id(), app->start_url());
   icon_downloader_ = lock_->web_contents_manager().CreateIconDownloader();
   IconUrlSizeSet icon_urls;
-  install_info_.manifest_icons = app->manifest_icons();
+  install_info_->manifest_icons = app->manifest_icons();
   // Set title and start_url for PopulateProductIcons() in case it tries to
   // generate icons again.
-  install_info_.title = base::UTF8ToUTF16(app->untranslated_name());
-  install_info_.start_url = app->start_url();
-  for (const apps::IconInfo& icon_info : install_info_.manifest_icons) {
+  install_info_->title = base::UTF8ToUTF16(app->untranslated_name());
+  for (const apps::IconInfo& icon_info : install_info_->manifest_icons) {
     icon_urls.emplace(IconUrlWithSize::CreateForUnspecifiedSize(icon_info.url));
   }
   icon_downloader_->Start(
@@ -94,15 +96,15 @@ void GeneratedIconFixCommand::OnIconsDownloaded(
     return;
   }
 
-  PopulateProductIcons(&install_info_, &icons_map);
-  if (install_info_.is_generated_icon) {
+  PopulateProductIcons(install_info_.get(), &icons_map);
+  if (install_info_->is_generated_icon) {
     Stop(GeneratedIconFixResult::kStillGenerated, FROM_HERE);
     return;
   }
 
   // Note: Empty params are noops, WriteData() never deletes icons.
   lock_->icon_manager().WriteData(
-      app_id_, install_info_.icon_bitmaps, /*shortcuts_menu_icons=*/{},
+      app_id_, install_info_->icon_bitmaps, /*shortcuts_menu_icons=*/{},
       /*other_icons_map=*/{},
       base::BindOnce(&GeneratedIconFixCommand::OnIconsWritten,
                      weak_factory_.GetWeakPtr()));
@@ -116,7 +118,7 @@ void GeneratedIconFixCommand::OnIconsWritten(bool success) {
 
   {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
-    SetWebAppProductIconFields(install_info_, *update->UpdateApp(app_id_));
+    SetWebAppProductIconFields(*install_info_, *update->UpdateApp(app_id_));
   }
   lock_->install_manager().NotifyWebAppManifestUpdated(app_id_);
   Stop(GeneratedIconFixResult::kSuccess, FROM_HERE);

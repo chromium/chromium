@@ -50,6 +50,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/management/management_api.h"
@@ -222,9 +223,17 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    // GenerateAppForLink API doesn't allow a manifest ID to be specified, so
+    // just use the launch_url for both manifest ID and start URL. This is a
+    // reasonable behavior for "DIY apps" generated for a specific URL but
+    // should be fixed if used for installing existing "Crafted Apps" (ie.
+    // apps with an existing manifest that should be used for updates).
+    GURL start_url = launch_url;
+    webapps::ManifestId manifest_id =
+        web_app::GenerateManifestIdFromStartUrlOnly(start_url);
+    auto web_app_info =
+        std::make_unique<web_app::WebAppInstallInfo>(manifest_id, start_url);
     web_app_info->title = base::UTF8ToUTF16(title);
-    web_app_info->start_url = launch_url;
     web_app_info->display_mode = web_app::DisplayMode::kBrowser;
     web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
 

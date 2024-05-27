@@ -10,9 +10,11 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -27,10 +29,12 @@ MallSystemAppDelegate::MallSystemAppDelegate(Profile* profile)
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 MallSystemAppDelegate::GetWebAppInfo() const {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
   const GURL url = GURL(ash::kChromeUIMallUrl);
-  info->start_url = url;
+  // `manifest_id` must remain fixed even if start_url changes.
+  webapps::ManifestId manifest_id =
+      web_app::GenerateManifestIdFromStartUrlOnly(url);
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>(manifest_id, url);
   info->scope = url;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;

@@ -354,8 +354,6 @@ WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
   return info;
 }
 
-WebAppInstallInfo::WebAppInstallInfo() = default;
-
 WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id)
     : manifest_id(manifest_id) {
   CHECK(manifest_id.is_valid());

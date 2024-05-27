@@ -9,6 +9,7 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_docs.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
@@ -117,10 +118,13 @@ ExternalInstallOptions GetConfigForGoogleCalendar() {
 
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
-    auto info = std::make_unique<WebAppInstallInfo>();
+    GURL start_url = GURL("https://calendar.google.com/calendar/r");
+    // `manifest_id` must remain fixed even if start_url changes.
+    webapps::ManifestId manifest_id = GenerateManifestIdFromStartUrlOnly(
+        GURL("https://calendar.google.com/calendar/r"));
+    auto info = std::make_unique<WebAppInstallInfo>(manifest_id, start_url);
     info->title = base::UTF8ToUTF16(
         GetTranslatedName("Google Calendar", kNameTranslations));
-    info->start_url = GURL("https://calendar.google.com/calendar/r");
     info->scope = GURL("https://calendar.google.com/calendar/");
     info->display_mode = DisplayMode::kStandalone;
     info->icon_bitmaps.any = LoadBundledIcons(

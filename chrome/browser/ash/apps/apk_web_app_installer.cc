@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -66,7 +67,7 @@ ApkWebAppInstaller::ApkWebAppInstaller(Profile* profile,
 ApkWebAppInstaller::~ApkWebAppInstaller() = default;
 
 void ApkWebAppInstaller::Start(const std::string& package_name,
-                               arc::mojom::WebAppInfoPtr web_app_info,
+                               arc::mojom::WebAppInfoPtr arc_web_app_info,
                                arc::mojom::RawIconPngDataPtr icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!weak_owner_.get()) {
@@ -75,9 +76,9 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
     return;
   }
 
-  // We can't install without |web_app_info| or |icon_png_data|. They
+  // We can't install without |arc_web_app_info| or |icon_png_data|. They
   // may be null if there was an error generating the data.
-  if (web_app_info.is_null() || !icon || !icon->icon_png_data ||
+  if (arc_web_app_info.is_null() || !icon || !icon->icon_png_data ||
       !icon->icon_png_data.has_value() || icon->icon_png_data->empty()) {
     LOG(ERROR) << "Insufficient data to install a web app";
     CompleteInstallation(webapps::AppId(),
@@ -86,14 +87,18 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
   }
 
   DCHECK(!web_app_install_info_);
-  web_app_install_info_ = std::make_unique<web_app::WebAppInstallInfo>();
+  auto start_url = GURL(arc_web_app_info->start_url);
+  // TODO(b:340994232): ARC-installed web apps should pass through a manifest ID
+  // and use it here instead of assuming it is not set and generating it from
+  // the start URL.
+  webapps::ManifestId manifest_id =
+      web_app::GenerateManifestIdFromStartUrlOnly(start_url);
+  web_app_install_info_ =
+      std::make_unique<web_app::WebAppInstallInfo>(manifest_id, start_url);
 
-  web_app_install_info_->title = base::UTF8ToUTF16(web_app_info->title);
+  web_app_install_info_->title = base::UTF8ToUTF16(arc_web_app_info->title);
 
-  web_app_install_info_->start_url = GURL(web_app_info->start_url);
-  DCHECK(web_app_install_info_->start_url.is_valid());
-
-  web_app_install_info_->scope = GURL(web_app_info->scope_url);
+  web_app_install_info_->scope = GURL(arc_web_app_info->scope_url);
   DCHECK(web_app_install_info_->scope.is_valid());
 
   web_app_install_info_->additional_policy_ids.push_back(package_name);
@@ -101,19 +106,19 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
   // The install_url and the start_url seem to be same in this case.
   // This is because inside OnWebAppCreated(), the start_url is
   // passed to the external prefs to be stored as the install_url.
-  web_app_install_info_->install_url = GURL(web_app_info->start_url);
+  web_app_install_info_->install_url = GURL(arc_web_app_info->start_url);
   DCHECK(web_app_install_info_->install_url.is_valid());
 
-  if (web_app_info->theme_color != kInvalidColor) {
+  if (arc_web_app_info->theme_color != kInvalidColor) {
     web_app_install_info_->theme_color = SkColorSetA(
-        static_cast<SkColor>(web_app_info->theme_color), SK_AlphaOPAQUE);
+        static_cast<SkColor>(arc_web_app_info->theme_color), SK_AlphaOPAQUE);
   }
   web_app_install_info_->display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_install_info_->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
-  is_web_only_twa_ = web_app_info->is_web_only_twa;
-  sha256_fingerprint_ = web_app_info->certificate_sha256_fingerprint;
+  is_web_only_twa_ = arc_web_app_info->is_web_only_twa;
+  sha256_fingerprint_ = arc_web_app_info->certificate_sha256_fingerprint;
 
   // Decode the image in a sandboxed process off the main thread.
   // base::Unretained is safe because this object owns itself.
