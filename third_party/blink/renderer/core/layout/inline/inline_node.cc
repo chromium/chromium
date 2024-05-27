@@ -1147,8 +1147,7 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
     return;
   }
 
-  if (RuntimeEnabledFeatures::LayoutSegmentationCacheEnabled() &&
-      previous_data && text_content == previous_data->text_content) {
+  if (previous_data && text_content == previous_data->text_content) {
     if (!previous_data->segments) {
       const auto it = base::ranges::find_if(
           previous_data->items,

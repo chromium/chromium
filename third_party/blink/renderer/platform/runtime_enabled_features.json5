@@ -2266,10 +2266,6 @@
       base_feature: "LayoutNGShapeCache",
     },
     {
-      name: "LayoutSegmentationCache",
-      status: "stable",
-    },
-    {
       name: "LayoutSegmentationFastPathForObjectReplacement",
       status: "stable",
     },
