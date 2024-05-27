@@ -257,25 +257,6 @@ Google employees can visit
 for more information. For external contributors, Reclient does not support
 Windows builds.
 
-#### Use Goma (deprecated)
-
-In addition, Google employees should use goma, a distributed compilation system.
-Detailed information is available internally but the relevant gn arg is:
-* `use_goma = true`
-
-To get any benefit from goma it is important to pass a large -j value to ninja.
-A good default is 10\*numCores to 20\*numCores. If you run autoninja then it
-will automatically pass an appropriate -j value to ninja for goma or not.
-
-```shell
-$ autoninja -C out\Default chrome
-```
-
-When invoking ninja, specify 'chrome' as the target to avoid building all test
-binaries as well.
-
-Still, builds will take many hours on many machines.
-
 #### Use SCCACHE
 
 You might be able to use [sccache](https://github.com/mozilla/sccache) for the

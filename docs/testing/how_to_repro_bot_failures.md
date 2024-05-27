@@ -83,7 +83,6 @@ On bot, there is a step named 'lookup GN args'.
 Apply the same gn args locally.
 Note: most of the time, some path based flags can be omitted. Examples:
 * coverage_instrumentation_input_file
-* goma_dir
 
 At the time of writing, some gn args can't be applied locally, like
 use_remoteexec.

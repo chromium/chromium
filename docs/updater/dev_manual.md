@@ -199,8 +199,6 @@ To get started on Reclient, and for more information on how to use it, see
 or [Google-internal documentation](go/building-chrome), if you are a Google
 employee.
 
-Goma can't be used anymore as of March, 2024.
-
 #### More release-like builds
 
 Chromium projects build in debug mode by default. Release builds (also called
@@ -457,8 +455,6 @@ see crbug.com/1491876 for a resolution or workaround.
 * **Dependencies are a fast-moving target.** Remember to run `gclient sync -D`
   after every pull from `origin/main` _and_ every branch change. If you aren't
   sure whether you ran it, just run it, it's fast if you don't need it.
-* **Is the Goma client ready?** If your build is failing quickly with a
-  bunch of errors related to Goma, run `goma_ctl ensure_start` and try again.
 * **Symbols too big?** If your build is failing during linking, check your
   `gn args` to verify that `symbol_level=1` (or `0`) is present. If it's not,
   you're running into a known issue where the default symbol level, `2`,

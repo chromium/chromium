@@ -417,7 +417,7 @@ is open before checking out. This will increase your chances of success.
 
 ### Debugging
 
-To help with deterministic builds, and to work with Goma, the path to source
+To help with deterministic builds, and to work with reclient, the path to source
 files in debugging symbols are relative to source directory. To allow Xcode
 to find the source files, you need to ensure to have an `~/.lldbinit-Xcode`
 file with the following lines into it (substitute {SRC} for your actual path

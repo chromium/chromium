@@ -17,7 +17,7 @@ An archive of all packages built so far is at https://is.gd/chromeclang
     successful it will copy the binaries from the staging bucket to the
     production one. Writing to this bucket requires special permissions. File a
     bug at g.co/bugatrooper if you don't have these already (e.g.,
-    https://crbug.com/1034081). Then it will push the packages to goma. If you
+    https://crbug.com/1034081). Then it will push the packages to RBE. If you
     do not have the necessary credentials to do the upload, ask
     clang@chromium.org to find someone who does.
     *   Alternatively, to create your own roll CL, you can manually run
@@ -31,7 +31,7 @@ An archive of all packages built so far is at https://is.gd/chromeclang
     `Cq-Include-Trybots:` lines for all needed bots, so it's sufficient to just
     run `git cl try` (or hit "CQ DRY RUN" on gerrit).
 1.  Commit the roll CL from the previous step.
-1.  The bots will now pull the prebuilt binary, and goma will have a matching
+1.  The bots will now pull the prebuilt binary, and RBE will have a matching
     binary, too.
 
 ## Performance regressions

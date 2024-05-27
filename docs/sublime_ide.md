@@ -504,7 +504,7 @@ replacing `out/Debug` with your output directory (on Windows, replace /'s with
 
 The file regex will allow you to click on errors to go to the error line.
 
-If you're using goma, add the -j parameter (replace out/Debug with your out directory):
+If you're using reclient, add the -j parameter (replace out/Debug with your out directory):
 ```
     "cmd": ["ninja", "-j", "1000", "-C", "out/Debug", "chrome"],
 ```

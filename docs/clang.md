@@ -29,7 +29,7 @@ If you're working on the plugin, you can build it locally like so:
 1.  Run `./tools/clang/scripts/build.py --without-android --without-fuchsia`
     to build the plugin.
 1.  Run `ninja -C third_party/llvm-build/Release+Asserts/` to build incrementally.
-1.  Build with clang like described above, but, if you use goma, disable it.
+1.  Build with clang like described above, but, if you use reclient, disable it.
 
 To test the FindBadConstructs plugin, run:
 

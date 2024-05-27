@@ -241,7 +241,7 @@ errors only show up partially in the Problems view and you'll want to look at
 the full error in the Console).
 
 (Eclipse 3.8 has a bug where the console scrolls too slowly if you're doing a
-fast build, e.g. with goma.  To work around, go to Window > Preferences and
+fast build, e.g. with reclient.  To work around, go to Window > Preferences and
 search for "console".  Under C/C++ console, set "Limit console output" to
 2147483647, the maximum value.)
 
