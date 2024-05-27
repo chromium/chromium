@@ -139,6 +139,11 @@ void AutofillPopupControllerImpl::Show(
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
+  suggestions_filling_product_ =
+      !suggestions.empty() && (!IsFooterSuggestionType(suggestions[0].type) ||
+                               (suggestions[0].type == SuggestionType::kScanCreditCard))
+          ? GetFillingProductFromSuggestionType(suggestions[0].type)
+          : FillingProduct::kNone;
   // Autofill popups should only be shown in focused windows because on Windows
   // the popup may overlap the focused window (see crbug.com/1239760).
   if (auto* rwhv = web_contents_->GetRenderWidgetHostView();
@@ -302,7 +307,10 @@ void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
   }
   key_press_observer_.Reset();
   popup_hide_helper_.reset();
-  AutofillMetrics::LogAutofillSuggestionHidingReason(reason);
+  // TODO(b/341916065): Consider only emitting this metric if the popup has been opened
+  // before. Today the show method can call `Hide()` before properly opening the popup.
+  AutofillMetrics::LogAutofillSuggestionHidingReason(
+      suggestions_filling_product_, reason);
   HideViewAndDie();
 }
 

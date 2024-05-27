@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -998,7 +999,8 @@ class AutofillMetrics {
   static void LogNumberOfAddressesSuppressedForDisuse(size_t num_profiles);
 
   // Log the reason for which the Autofill popup disappeared.
-  static void LogAutofillSuggestionHidingReason(SuggestionHidingReason reason);
+  static void LogAutofillSuggestionHidingReason(FillingProduct filling_product,
+                                                SuggestionHidingReason reason);
 
   // Log the number of days since an Autocomplete suggestion was last used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);

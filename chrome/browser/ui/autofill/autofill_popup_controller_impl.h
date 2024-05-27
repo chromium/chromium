@@ -243,6 +243,11 @@ class AutofillPopupControllerImpl
   // the `filter_` is set, otherwise it is an empty vector.
   std::vector<SuggestionFilterMatch> suggestion_filter_matches_;
 
+  // The `FillingProduct` that matches the suggestions shown in the popup.
+  // The first `IsStandaloneSuggestionType()` is used to define what the
+  // `FillingProduct` is.
+  FillingProduct suggestions_filling_product_ = FillingProduct::kNone;
+
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.
   base::WeakPtrFactory<AutofillPopupControllerImpl>

@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -1591,8 +1592,14 @@ void AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(
 
 // static
 void AutofillMetrics::LogAutofillSuggestionHidingReason(
+    FillingProduct filling_product,
     SuggestionHidingReason reason) {
   base::UmaHistogramEnumeration("Autofill.PopupHidingReason", reason);
+  base::UmaHistogramEnumeration(base::StrCat({
+                                    "Autofill.PopupHidingReason.",
+                                    FillingProductToString(filling_product),
+                                }),
+                                reason);
 }
 
 void AutofillMetrics::LogSectioningMetrics(

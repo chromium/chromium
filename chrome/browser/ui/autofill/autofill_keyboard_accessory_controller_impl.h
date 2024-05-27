@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -157,6 +158,11 @@ class AutofillKeyboardAccessoryControllerImpl
   // Used to facilitate testing.
   // TODO(crbug.com/40272324): Remove when the warning isn't needed anymore.
   ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback_;
+
+  // The `FillingProduct` that matches the suggestions shown in the popup.
+  // The first `IsStandaloneSuggestionType()` is used to define what the
+  // `FillingProduct` is.
+  FillingProduct suggestions_filling_product_ = FillingProduct::kNone;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryControllerImpl>
       self_deletion_weak_ptr_factory_{this};
