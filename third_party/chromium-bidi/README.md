@@ -28,7 +28,7 @@ at [WPT WebDriver BiDi status](https://wpt.fyi/results/webdriver/tests/bidi).
 ```cddl
 CdpSendCommandCommand = {
   method: "cdp.sendCommand",
-  params: ScriptEvaluateParameters,
+  params: CdpSendCommandParameters,
 }
 
 CdpSendCommandParameters = {
@@ -52,7 +52,7 @@ and returns the result.
 ```cddl
 CdpGetSessionCommand = {
    method: "cdp.getSession",
-   params: ScriptEvaluateParameters,
+   params: CdpGetSessionParameters,
 }
 
 CdpGetSessionParameters = {
@@ -71,7 +71,7 @@ The command returns the default CDP session for the selected browsing context.
 ```cddl
 CdpResolveRealmCommand = {
    method: "cdp.resolveRealm",
-   params: ScriptEvaluateParameters,
+   params: CdpResolveRealmParameters,
 }
 
 CdpResolveRealmParameters = {
