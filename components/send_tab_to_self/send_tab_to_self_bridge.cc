@@ -206,8 +206,8 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void SendTabToSelfBridge::GetData(StorageKeyList storage_keys,
-                                  DataCallback callback) {
+void SendTabToSelfBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                           DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& guid : storage_keys) {
