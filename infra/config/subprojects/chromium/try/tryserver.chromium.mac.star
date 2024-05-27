@@ -434,6 +434,8 @@ try_.builder(
             "ci/Mac Builder (dbg)",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
