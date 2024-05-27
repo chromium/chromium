@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
