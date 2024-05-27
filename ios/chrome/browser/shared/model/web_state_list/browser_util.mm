@@ -151,6 +151,11 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
     return;
   }
 
+  if (source_browser == destination_browser) {
+    // TODO(crbug.com/341115504): Honor the destination index.
+    return;
+  }
+
   // Get and lock `source_web_state_list` and `destination_web_state_list`.
   WebStateList* source_web_state_list = source_browser->GetWebStateList();
   WebStateList* destination_web_state_list =
