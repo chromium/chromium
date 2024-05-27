@@ -81,13 +81,6 @@ class ThreadProfilerConfiguration {
     // kProfileDisabled group).
     kProfileControl,
 
-#if BUILDFLAG(IS_ANDROID)
-    // Enabled within the experiment (and paired with equal-sized
-    // kProfileDisabled and kProfileControl groups). Java names will be
-    // hashed within this group.
-    kProfileEnabledWithJavaNameHashing,
-#endif  // BUILDFLAG(IS_ANDROID)
-
     // Enabled outside of the experiment.
     kProfileEnabled,
 

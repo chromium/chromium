@@ -76,14 +76,7 @@ DefaultPlatformConfiguration::GetEnableRates(
     // TODO(crbug.com/1497983): Ramp up enable rate on Non-Android platforms.
     return RelativePopulations{90, 0, 10};
   }
-#if BUILDFLAG(IS_ANDROID)
-  // This is temporary, in order to run the Java Name Hashing field trial.
-  //
-  // TODO(crbug.com/40279743): Remove this once the field trial is done.
-  return RelativePopulations{0, 1, 99};
-#else
   return RelativePopulations{0, 80, 20};
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
@@ -215,24 +208,19 @@ AndroidPlatformConfiguration::GetEnableRates(
         *release_channel == version_info::Channel::BETA);
 
   if (*release_channel == version_info::Channel::BETA) {
-    // For 25% of population always disable profiling.
-    // For 75% of population
-    // - 1/3 within the subgroup, i.e. 25% of total population, enable
+    // For 100% of population
+    // - 1/2 within the subgroup, i.e. 50% of total population, enable
     // profiling.
-    // - 1/3 within the subgroup, enable profiling with Java name hashing.
-    // - 1/3 within the subgroup, disable profiling.
+    // - 1/2 within the subgroup, disable profiling.
     // This results a total of 50% enable rate.
-    return RelativePopulations{25, 0, 75};
+    return RelativePopulations{0, 0, 100};
   }
-  // For 1% of population always enable profiling.
-  // For 99% of population
-  // - 1/3 within the subgroup, i.e. 33% of total population, enable profiling.
-  // - 1/3 within the subgroup, enable profiling with Java name hashing.
-  // - 1/3 within the subgroup, disable profiling.
-  // This results a total of 67% enable rate.
-  //
-  // TODO(crbug.com/40279743): Remove this once the field trial is done.
-  return RelativePopulations{0, 1, 99};
+
+  // For 100% of population
+  // - 1/2 within the subgroup, i.e. 50% of total population, enable profiling.
+  // - 1/2 within the subgroup, disable profiling.
+  // This results a total of 50% enable rate.
+  return RelativePopulations{0, 0, 100};
 }
 
 double AndroidPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(

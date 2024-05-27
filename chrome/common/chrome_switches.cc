@@ -711,10 +711,6 @@ const char kMarketUrlForTesting[] = "market-url-for-testing";
 
 // Force enable user agent overrides to request desktop sites in Clank.
 const char kRequestDesktopSites[] = "request-desktop-sites";
-
-// Hash names of Java functions in SSM. Only has an effect if SSM is enabled.
-const char kStartStackProfilerWithJavaNameHashing[] =
-    "start-stack-profiler-with-java-name-hashing";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
