@@ -33,6 +33,76 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Coarse and fine pointers"/>
 </enum>
 
+<enum name="HandwritingLanguagePackId">
+  <int value="0" label="(unknown)"/>
+  <int value="1" label="am"/>
+  <int value="2" label="ar"/>
+  <int value="3" label="be"/>
+  <int value="4" label="bg"/>
+  <int value="5" label="bn"/>
+  <int value="6" label="ca"/>
+  <int value="7" label="cs"/>
+  <int value="8" label="da"/>
+  <int value="9" label="de"/>
+  <int value="10" label="el"/>
+  <int value="11" label="en"/>
+  <int value="12" label="es"/>
+  <int value="13" label="et"/>
+  <int value="14" label="fa"/>
+  <int value="15" label="fi"/>
+  <int value="16" label="fil"/>
+  <int value="17" label="fr"/>
+  <int value="18" label="ga"/>
+  <int value="19" label="gu"/>
+  <int value="20" label="hi"/>
+  <int value="21" label="hr"/>
+  <int value="22" label="hu"/>
+  <int value="23" label="hy"/>
+  <int value="24" label="id"/>
+  <int value="25" label="is"/>
+  <int value="26" label="it"/>
+  <int value="27" label="iw"/>
+  <int value="28" label="ja"/>
+  <int value="29" label="ka"/>
+  <int value="30" label="kk"/>
+  <int value="31" label="km"/>
+  <int value="32" label="kn"/>
+  <int value="33" label="ko"/>
+  <int value="34" label="lo"/>
+  <int value="35" label="lt"/>
+  <int value="36" label="lv"/>
+  <int value="37" label="ml"/>
+  <int value="38" label="mn"/>
+  <int value="39" label="mr"/>
+  <int value="40" label="ms"/>
+  <int value="41" label="mt"/>
+  <int value="42" label="my"/>
+  <int value="43" label="ne"/>
+  <int value="44" label="nl"/>
+  <int value="45" label="no"/>
+  <int value="46" label="or"/>
+  <int value="47" label="pa"/>
+  <int value="48" label="pl"/>
+  <int value="49" label="pt"/>
+  <int value="50" label="ro"/>
+  <int value="51" label="ru"/>
+  <int value="52" label="si"/>
+  <int value="53" label="sk"/>
+  <int value="54" label="sl"/>
+  <int value="55" label="sr"/>
+  <int value="56" label="sv"/>
+  <int value="57" label="ta"/>
+  <int value="58" label="te"/>
+  <int value="59" label="th"/>
+  <int value="60" label="ti"/>
+  <int value="61" label="tr"/>
+  <int value="62" label="uk"/>
+  <int value="63" label="ur"/>
+  <int value="64" label="vi"/>
+  <int value="65" label="zh"/>
+  <int value="66" label="zh-HK"/>
+</enum>
+
 <enum name="IMEAssistiveDisabledReason">
   <int value="0" label="None"/>
   <int value="1" label="Feature flag off"/>

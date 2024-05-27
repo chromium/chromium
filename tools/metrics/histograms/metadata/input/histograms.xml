@@ -1098,6 +1098,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Handwriting.RecoResponseStatus.Error"
+    enum="HandwritingLanguagePackId" expires_after="M132">
+  <owner>tranbaoduy@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    [Non-Longform VK Handwriting] ERROR status received in response to a
+    non-Longform handwriting reco request that uses a particular language pack.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Handwriting.RecoResponseStatus.Ok"
+    enum="HandwritingLanguagePackId" expires_after="M132">
+  <owner>tranbaoduy@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    [Non-Longform VK Handwriting] OK status received in response to a
+    non-Longform handwriting reco request that uses a particular language pack.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Handwriting.RecoResponseStatus.Unprocessed"
+    enum="HandwritingLanguagePackId" expires_after="M132">
+  <owner>tranbaoduy@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    [Non-Longform VK Handwriting] UNPROCESSED status received in response to a
+    non-Longform handwriting reco request that uses a particular language pack.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.ID2" enum="InputMethodID2"
     expires_after="2024-11-01">
   <owner>tranbaoduy@chromium.org</owner>
