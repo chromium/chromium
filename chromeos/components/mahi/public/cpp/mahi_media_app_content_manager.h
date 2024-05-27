@@ -70,6 +70,26 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiMediaAppContentManager {
   base::UnguessableToken active_client_id_;
 };
 
+// A scoped object that set the global instance of
+// `chromeos::MahiMediaAppEventsProxy::Get()` to the provided object pointer.
+// The real instance will be restored when this scoped object is destructed.
+// This class is used in testing and mocking.
+class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) ScopedMahiMediaAppContentManagerSetter {
+ public:
+  explicit ScopedMahiMediaAppContentManagerSetter(
+      MahiMediaAppContentManager* proxy);
+  ScopedMahiMediaAppContentManagerSetter(
+      const ScopedMahiMediaAppContentManagerSetter&) = delete;
+  ScopedMahiMediaAppContentManagerSetter& operator=(
+      const ScopedMahiMediaAppContentManagerSetter&) = delete;
+  ~ScopedMahiMediaAppContentManagerSetter();
+
+ private:
+  static ScopedMahiMediaAppContentManagerSetter* instance_;
+
+  raw_ptr<MahiMediaAppContentManager> real_content_manager_instance_ = nullptr;
+};
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_MAHI_PUBLIC_CPP_MAHI_MEDIA_APP_CONTENT_MANAGER_H_

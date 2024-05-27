@@ -104,10 +104,6 @@ void MahiMediaAppClient::OnPdfContextMenuHide() {
   chromeos::MahiMediaAppEventsProxy::Get()->OnPdfContextMenuHide();
 }
 
-void MahiMediaAppClient::OnPdfGetFocus() {
-  chromeos::MahiMediaAppEventsProxy::Get()->OnPdfGetFocus(client_id_);
-}
-
 void MahiMediaAppClient::GetPdfContent(GetContentCallback callback) {
   media_app_pdf_file_->GetPdfContent(
       kContentByteSizeLimit,

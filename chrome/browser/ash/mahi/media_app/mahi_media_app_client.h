@@ -41,17 +41,14 @@ class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedPageHandler,
   void OnPdfContextMenuShow(const ::gfx::RectF& anchor) override;
   void OnPdfContextMenuHide() override;
 
-  // Notifies Mahi that a media app pdf window is focused.
-  // This is driven by native window focus events, instead of media app.
-  void OnPdfGetFocus();
-
   // Exposes media_app_ui::mojom::MahiUntrustedPage interfaces:
   void GetPdfContent(GetContentCallback callback);
   void HideMediaAppContextMenu();
 
   // aura::client::FocusChangeObserver:
   // Compares `media_app_window_` against `gained_focus` to deduce whether it's
-  // the focused window.
+  // the focused window, and notifies Mahi if so.
+  // This is driven by native window focus events, instead of media app.
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
 

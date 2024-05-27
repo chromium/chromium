@@ -25,4 +25,35 @@ MahiMediaAppContentManager::~MahiMediaAppContentManager() {
   g_instance = nullptr;
 }
 
+// static
+ScopedMahiMediaAppContentManagerSetter*
+    ScopedMahiMediaAppContentManagerSetter::instance_ = nullptr;
+
+ScopedMahiMediaAppContentManagerSetter::ScopedMahiMediaAppContentManagerSetter(
+    MahiMediaAppContentManager* proxy) {
+  // Only allow one scoped instance at a time.
+  if (instance_) {
+    NOTREACHED_IN_MIGRATION();
+    return;
+  }
+  instance_ = this;
+
+  // Save the real manager instance and replace it with the fake one.
+  real_content_manager_instance_ = g_instance;
+  g_instance = proxy;
+}
+
+ScopedMahiMediaAppContentManagerSetter::
+    ~ScopedMahiMediaAppContentManagerSetter() {
+  if (instance_ != this) {
+    NOTREACHED_IN_MIGRATION();
+    return;
+  }
+
+  instance_ = nullptr;
+
+  g_instance = real_content_manager_instance_;
+  real_content_manager_instance_ = nullptr;
+}
+
 }  // namespace chromeos
