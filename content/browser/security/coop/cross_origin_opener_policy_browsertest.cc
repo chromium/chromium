@@ -3438,9 +3438,26 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
   EXPECT_NE(group_4, group_1);
 }
 
+// A subclass for tests incompatible with OriginKeyedProcessesByDefault.
+class CrossOriginOpenerPolicyNoOKPBrowserTest
+    : public CrossOriginOpenerPolicyBrowserTest {
+ public:
+  CrossOriginOpenerPolicyNoOKPBrowserTest() {
+    feature_list_
+        .InitWithFeatures(/*enabled_features=*/
+                          {}, /*disabled_features=*/{
+                              features::kOriginKeyedProcessesByDefault});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // A test to make sure that loading a page with COOP/COEP headers doesn't set
-// is_origin_keyed() on the SiteInstance's SiteInfo.
-IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+// is_origin_keyed() on the SiteInstance's SiteInfo. This test should be run
+// with OriginKeyedProcessesByDefault disabled, otherwise the SiteInfo will
+// be origin-keyed regardless of COOP/COEP.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyNoOKPBrowserTest,
                        CoopCoepNotOriginKeyed) {
   GURL isolated_page(
       https_server()->GetURL("a.test",
@@ -3683,7 +3700,15 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
     EXPECT_TRUE(iframe_si->IsCrossOriginIsolated());
     EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
-    EXPECT_EQ(iframe_si->GetProcess(), main_si->GetProcess());
+    if (base::FeatureList::IsEnabled(
+            features::kOriginKeyedProcessesByDefault)) {
+      // In this case, the main frame and the child frame have different
+      // origins, so when OriginKeyedProcessesByDefault is enabled they will
+      // be placed into different processes.
+      EXPECT_NE(iframe_si->GetProcess(), main_si->GetProcess());
+    } else {
+      EXPECT_EQ(iframe_si->GetProcess(), main_si->GetProcess());
+    }
   }
 }
 
@@ -4134,7 +4159,14 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
   EXPECT_TRUE(iframe_si->IsCrossOriginIsolated());
   EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
-  EXPECT_EQ(iframe_si->GetProcess(), main_si->GetProcess());
+  if (base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault)) {
+    // The main frame and the child frame have different origins, so when
+    // OriginKeyedProcessesByDefault is enabled they will be placed in different
+    // processes.
+    EXPECT_NE(iframe_si->GetProcess(), main_si->GetProcess());
+  } else {
+    EXPECT_EQ(iframe_si->GetProcess(), main_si->GetProcess());
+  }
 
   // Open an isolated popup, but cross-origin.
   {
@@ -4433,6 +4465,13 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // locked process back to an unlocked process, and hence require a process
     // swap.
     EXPECT_NE(rph_id_2, rph_id_3);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kOriginKeyedProcessesByDefault)) {
+    // With OriginKeyedProcessesByDefault, each unique origin will be placed in
+    // a separate process.
+    EXPECT_NE(rph_id_1, rph_id_2);
+    EXPECT_NE(rph_id_2, rph_id_3);
+    EXPECT_NE(rph_id_1, rph_id_3);
   } else {
     EXPECT_EQ(rph_id_1, rph_id_2);
     EXPECT_EQ(rph_id_2, rph_id_3);
@@ -4789,6 +4828,10 @@ static auto kTestParams =
                      testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          CrossOriginOpenerPolicyBrowserTest,
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         CrossOriginOpenerPolicyNoOKPBrowserTest,
                          kTestParams,
                          CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
