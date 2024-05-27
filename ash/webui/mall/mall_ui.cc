@@ -6,7 +6,9 @@
 
 #include "ash/webui/grit/ash_mall_cros_app_resources.h"
 #include "ash/webui/mall/url_constants.h"
+#include "base/strings/strcat.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -24,8 +26,17 @@ MallUI::MallUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       web_ui->GetWebContents()->GetBrowserContext(), ash::kChromeUIMallHost);
 
   source->SetDefaultResource(IDR_ASH_MALL_CROS_APP_INDEX_HTML);
+  source->AddResourcePath("index.js", IDR_ASH_MALL_CROS_APP_INDEX_JS);
   source->AddResourcePath("mall_icon_192.png",
                           IDR_ASH_MALL_CROS_APP_IMAGES_MALL_ICON_192_PNG);
+
+  // We need a CSP override to be able to embed the Mall website, and to handle
+  // cros-apps:// links to install apps.
+  std::string csp = base::StrCat({"frame-src ", chromeos::kAppMallBaseUrl, " ",
+                                  chromeos::kAppInstallUriScheme, ": ",
+                                  chromeos::kLegacyAppInstallUriScheme, ":;"});
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, csp);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MallUI)
