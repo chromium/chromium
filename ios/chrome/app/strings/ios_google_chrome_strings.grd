@@ -998,9 +998,6 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_SUBTITLE" desc="The subtitle of the User Policy notification dialog. [iOS only] [300em]">
         Your organization, <ph name="DOMAIN">$1<ex>doe.com</ex></ph>, manages the account you're signed in to and how Chrome is used.
       </message>
-      <message name="IDS_IOS_USER_POLICY_NOTIFICATION_TITLE" desc="The title of the User Policy notification dialog. [iOS only] [300em]">
-        Chrome now supports user policies for your managed account
-      </message>
       <message name="IDS_IOS_WHATS_CHROME_TIP_CHROME_DEFAULT_TITLE" desc="Use Chrome By Default title displayed in What's New. [iOS only]">
         Use Chrome By Default
       </message>
