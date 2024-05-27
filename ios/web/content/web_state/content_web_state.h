@@ -173,6 +173,7 @@ class ContentWebState : public WebState,
   void DidStopLoading() override;
   void LoadProgressChanged(double progress) override;
 
+  void OnVisibilityChanged(content::Visibility visibility) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
 
   void DidUpdateFaviconURL(
