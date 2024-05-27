@@ -40,6 +40,7 @@
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sync/password_model_type_controller.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
@@ -183,6 +184,7 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
     power_bookmarks::PowerBookmarkService* power_bookmark_service,
     supervised_user::SupervisedUserSettingsService*
         supervised_user_settings_service,
+    plus_addresses::PlusAddressSettingService* plus_address_setting_service,
     const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
         plus_address_webdata_service,
     commerce::ProductSpecificationsService* product_specifications_service,
@@ -204,6 +206,7 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
       account_bookmark_sync_service_(account_bookmark_sync_service),
       power_bookmark_service_(power_bookmark_service),
       supervised_user_settings_service_(supervised_user_settings_service),
+      plus_address_setting_service_(plus_address_setting_service),
       plus_address_webdata_service_(plus_address_webdata_service),
       product_specifications_service_(product_specifications_service),
       data_sharing_service_(data_sharing_service) {
@@ -456,6 +459,20 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
         plus_address_webdata_service_->GetSyncControllerDelegate(),
         /*delegate_for_transport_mode=*/
         plus_address_webdata_service_->GetSyncControllerDelegate()));
+  }
+
+  // `plus_address_setting_service_` is null on iOS WebView.
+  if (!disabled_types.Has(syncer::PLUS_ADDRESS_SETTING) &&
+      plus_address_setting_service_ &&
+      base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled) &&
+      base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
+    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+        syncer::PLUS_ADDRESS_SETTING,
+        /*delegate_for_full_sync_mode=*/
+        plus_address_setting_service_->GetSyncControllerDelegate(),
+        /*delegate_for_transport_mode=*/
+        plus_address_setting_service_->GetSyncControllerDelegate()));
   }
 
   if (!disabled_types.Has(syncer::PREFERENCES)) {

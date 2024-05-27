@@ -40,6 +40,7 @@ static_library("browser_sync") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
     "//components/plus_addresses:features",
+    "//components/plus_addresses/settings",
     "//components/plus_addresses/webdata",
     "//components/power_bookmarks/core",
     "//components/power_bookmarks/core:features",

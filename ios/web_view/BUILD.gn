@@ -334,6 +334,7 @@ ios_web_view_deps = [
   "//components/password_manager/core/browser/sharing",
   "//components/password_manager/core/common",
   "//components/password_manager/ios",
+  "//components/plus_addresses/settings",
   "//components/plus_addresses/webdata",
   "//components/pref_registry",
   "//components/prefs",

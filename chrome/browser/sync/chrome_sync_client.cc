@@ -25,6 +25,7 @@
 #include "chrome/browser/password_manager/password_receiver_service_factory.h"
 #include "chrome/browser/password_manager/password_sender_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -69,6 +70,7 @@
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
@@ -262,6 +264,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       AccountBookmarkSyncServiceFactory::GetForProfile(profile_),
       PowerBookmarkServiceFactory::GetForBrowserContext(profile_),
       supervised_user_settings_service,
+      PlusAddressSettingServiceFactory::GetForBrowserContext(profile_),
       WebDataServiceFactory::GetPlusAddressWebDataForProfile(
           profile_, ServiceAccessType::IMPLICIT_ACCESS),
       commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(

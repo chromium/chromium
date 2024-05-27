@@ -18,6 +18,7 @@ source_set("model") {
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model:model_type_store_service_factory",
     "//ios/chrome/browser/webdata_services/model",
   ]
 }

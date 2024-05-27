@@ -35,6 +35,7 @@ class PasswordStoreInterface;
 }
 
 namespace plus_addresses {
+class PlusAddressSettingService;
 class PlusAddressWebDataService;
 }
 
@@ -78,6 +79,7 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
       power_bookmarks::PowerBookmarkService* power_bookmark_service,
       supervised_user::SupervisedUserSettingsService*
           supervised_user_settings_service,
+      plus_addresses::PlusAddressSettingService* plus_address_setting_service,
       const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
           plus_address_webdata_service,
       commerce::ProductSpecificationsService* product_specifications_service,
@@ -151,6 +153,8 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
   const raw_ptr<power_bookmarks::PowerBookmarkService> power_bookmark_service_;
   const raw_ptr<supervised_user::SupervisedUserSettingsService>
       supervised_user_settings_service_;
+  const raw_ptr<plus_addresses::PlusAddressSettingService>
+      plus_address_setting_service_;
   const scoped_refptr<plus_addresses::PlusAddressWebDataService>
       plus_address_webdata_service_;
   const raw_ptr<commerce::ProductSpecificationsService>

@@ -183,12 +183,12 @@ class SyncServiceFactoryTest : public testing::Test {
     if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
       datatypes.Put(syncer::PLUS_ADDRESS);
     }
+    if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
+      datatypes.Put(syncer::PLUS_ADDRESS_SETTING);
+    }
 
     // TODO(b/318391357) add `syncer::COOKIES` (under IS_CHROMEOS) after adding
     // a corresponding controller.
-
-    // TODO(b/342089839): Add `syncer::PLUS_ADDRESS_SETTING` once it has a
-    // controller.
     return datatypes;
   }
 

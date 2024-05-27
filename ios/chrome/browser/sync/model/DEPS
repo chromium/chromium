@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/invalidation/model",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/passwords/model",
+  "+ios/chrome/browser/plus_addresses/model",
   "+ios/chrome/browser/power_bookmarks/model",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/search_engines/model",

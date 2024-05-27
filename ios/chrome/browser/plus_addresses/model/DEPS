@@ -2,5 +2,6 @@ include_rules = [
   "+components/plus_addresses",
   "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/webdata_services/model",
 ]

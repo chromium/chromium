@@ -3,6 +3,14 @@
 # found in the LICENSE file.
 
 source_set("settings") {
-  sources = [ "plus_address_setting_service.h" ]
-  public_deps = [ "//components/keyed_service/core" ]
+  sources = [
+    "plus_address_setting_service.cc",
+    "plus_address_setting_service.h",
+    "plus_address_setting_sync_bridge.cc",
+    "plus_address_setting_sync_bridge.h",
+  ]
+  public_deps = [
+    "//components/keyed_service/core",
+    "//components/sync",
+  ]
 }
