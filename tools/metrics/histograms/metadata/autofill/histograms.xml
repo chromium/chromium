@@ -505,25 +505,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".WithOnlyServerData" summary="only server autofill data"/>
 </variants>
 
-<variants name="FillingProduct">
-  <variant name=".Address"
-      summary="User chose to fill a form or field with an address profile."/>
-  <variant name=".Autocomplete"
-      summary="User chose to fill a field with autocomplete."/>
-  <variant name=".Compose"
-      summary="User chose to fill a field with a compose suggestion."/>
-  <variant name=".CreditCard"
-      summary="User chose to fill a form or field with a credit card profile."/>
-  <variant name=".Iban" summary="User chose to fill a field with an iban."/>
-  <variant name=".MerchantPromoCode"
-      summary="User chose to fill a field with a merchant promo code."/>
-  <variant name=".None" summary="No filling product matches."/>
-  <variant name=".Password"
-      summary="User chose to fill a form or field with password credentials."/>
-  <variant name=".PlusAddresses"
-      summary="User chose to fill a field with a plus addresses suggestion."/>
-</variants>
-
 <variants name="IbanRecordType">
   <variant name="Local" summary="Local IBAN"/>
   <variant name="Server" summary="Server IBAN"/>
@@ -2078,7 +2059,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.FieldByFieldFilling.FieldTypeUsed{FillingProduct}{ClassificationMatchesFillingProduct}"
+    name="Autofill.FieldByFieldFilling.FieldTypeUsed.{FillingProduct}{ClassificationMatchesFillingProduct}"
     enum="AutofillFieldByFieldFillingTypes" expires_after="2024-11-03">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2088,7 +2069,11 @@ chromium-metrics-reviews@google.com.
     classification. Recorded when a field-by-field filling suggestion is
     accepted by the user from an Autofill popup.
   </summary>
-  <token key="FillingProduct" variants="FillingProduct"/>
+  <token key="FillingProduct">
+    <variant name="Address"/>
+    <variant name="CreditCard"/>
+    <variant name="Password"/>
+  </token>
   <token key="ClassificationMatchesFillingProduct"
       variants="ClassificationMatchesFillingProduct"/>
 </histogram>
@@ -2272,7 +2257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.FillingMethodUsed{FillingProduct}{ClassificationMatchesFillingProduct}"
+    name="Autofill.FillingMethodUsed.{FillingProduct}{ClassificationMatchesFillingProduct}"
     enum="AutofillFillingMethodMetric" expires_after="2024-11-03">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2282,12 +2267,16 @@ chromium-metrics-reviews@google.com.
     field or a group of fields (address fields, phone fields, name fields or
     email fields).
   </summary>
-  <token key="FillingProduct" variants="FillingProduct"/>
+  <token key="FillingProduct">
+    <variant name="Address"/>
+    <variant name="CreditCard"/>
+    <variant name="Password"/>
+  </token>
   <token key="ClassificationMatchesFillingProduct"
       variants="ClassificationMatchesFillingProduct"/>
 </histogram>
 
-<histogram name="Autofill.FillingOperationCount{FillingProduct}" units="unit"
+<histogram name="Autofill.FillingOperationCount.{FillingProduct}" units="unit"
     expires_after="2024-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2297,7 +2286,10 @@ chromium-metrics-reviews@google.com.
     operations. Recorded on the destruction of BrowserAutofillManager if at
     least one autofill operation was performed.
   </summary>
-  <token key="FillingProduct" variants="FillingProduct"/>
+  <token key="FillingProduct">
+    <variant name="Address"/>
+    <variant name="CreditCard"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.FormEvents.Address" enum="AutofillFormEvent"
@@ -3882,7 +3874,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.PopupHidingReason{FillingProduct}"
+<histogram name="Autofill.PopupHidingReason.{FillingProduct}"
     enum="AutofillSuggestionHidingReason" expires_after="2024-09-22">
   <owner>brunobraga@google.com</owner>
   <owner>jkeitel@google.com</owner>
@@ -3891,7 +3883,26 @@ chromium-metrics-reviews@google.com.
     disappers or cannot be displayed. Recorded everytime an Autofill popup
     disappears or cannot be displayed.
   </summary>
-  <token key="FillingProduct" variants="FillingProduct"/>
+  <token key="FillingProduct">
+    <variant name="Address"
+        summary="User chose to fill a form or field with an address profile."/>
+    <variant name="Autocomplete"
+        summary="User chose to fill a field with autocomplete."/>
+    <variant name="Compose"
+        summary="User chose to fill a field with a compose suggestion."/>
+    <variant name="CreditCard"
+        summary="User chose to fill a form or field with a credit card
+                 profile."/>
+    <variant name="Iban" summary="User chose to fill a field with an iban."/>
+    <variant name="MerchantPromoCode"
+        summary="User chose to fill a field with a merchant promo code."/>
+    <variant name="None" summary="No filling product matches."/>
+    <variant name="Password"
+        summary="User chose to fill a form or field with password
+                 credentials."/>
+    <variant name="PlusAddresses"
+        summary="User chose to fill a field with a plus addresses suggestion."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.PreFilledFieldClassifications.{FormType}"
