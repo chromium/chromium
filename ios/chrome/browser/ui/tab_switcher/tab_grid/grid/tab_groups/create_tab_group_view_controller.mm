@@ -48,7 +48,7 @@ const CGFloat kColoredDotSize = 21;
 const CGFloat kSnapshotViewRatio = 0.83;
 const CGFloat kSnapshotViewMaxHeight = 190;
 const CGFloat kSnapshotViewCornerRadius = 18;
-const CGFloat kSnapshotViewVerticalMargin = 25;
+const CGFloat kSnapshotViewVerticalMargin = 24;
 const CGFloat kSingleSnapshotRatio = 0.7;
 const CGFloat kMultipleSnapshotsRatio = 0.90;
 const CGFloat kSnapshotViewAnimationTime = 0.3;
@@ -93,10 +93,14 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
 
   // Configured view that handle the snapshots dispositions.
   TabGroupSnapshotsView* _snapshotsView;
-  // Constraints for the snapshots view, depending on if we display one or
-  // multiple snapshots.
+  // Constraints for the `_snapshotsView`, depending on if multiple snapshots
+  // are displayed.
   NSArray<NSLayoutConstraint*>* _singleSnapshotConstraints;
   NSArray<NSLayoutConstraint*>* _multipleSnapshotsConstraints;
+  // Constraints for the top anchor of the `_colorsScrollView`, depending on if
+  // the `_snapshotsView` is displayed.
+  NSLayoutConstraint* _snapshotsViewDisplayedConstraint;
+  NSLayoutConstraint* _snapshotsViewHiddenConstraint;
 
   // Buttons to create or cancel the group creation.
   UIButton* _creationButton;
@@ -470,7 +474,7 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
 // Returns the configured view, which contains all the available colors.
 - (UIView*)listOfColorView {
   UIStackView* colorsView = [[UIStackView alloc] init];
-  colorsView.alignment = UIStackViewAlignmentCenter;
+  colorsView.alignment = UIStackViewAlignmentTop;
   colorsView.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIScrollView* scrollView = [[UIScrollView alloc] init];
@@ -552,11 +556,26 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
     return;
   }
 
-  __weak UIView* weakSnapshotsContainer = _snapshotsContainer;
-  [UIView animateWithDuration:animated ? kSnapshotViewAnimationTime : 0
-                   animations:^{
-                     [weakSnapshotsContainer setAlpha:updatedAlpha];
-                   }];
+  __weak __typeof(self) weakSelf = self;
+  [UIView
+      animateWithDuration:animated ? kSnapshotViewAnimationTime : 0
+               animations:^{
+                 [weakSelf hideSnapshotsIfNeededAnimationBlock:updatedAlpha];
+               }];
+}
+
+// Animation block for the `hideSnapshotsIfNeeded:` method.
+- (void)hideSnapshotsIfNeededAnimationBlock:(CGFloat)updatedAlpha {
+  [_snapshotsContainer setAlpha:updatedAlpha];
+
+  if (updatedAlpha != 1) {
+    _snapshotsViewDisplayedConstraint.active = NO;
+    _snapshotsViewHiddenConstraint.active = YES;
+  } else {
+    _snapshotsViewHiddenConstraint.active = NO;
+    _snapshotsViewDisplayedConstraint.active = YES;
+  }
+  [self.view layoutIfNeeded];
 }
 
 // Called when the virtual keyboard is shown.
@@ -605,7 +624,15 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
       constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor];
   keyboardConstraint.priority = UILayoutPriorityDefaultLow;
 
+  _snapshotsViewDisplayedConstraint = [_colorsScrollView.topAnchor
+      constraintEqualToAnchor:snapshotsContainerLayoutGuide.bottomAnchor
+                     constant:kSnapshotViewVerticalMargin];
+  _snapshotsViewHiddenConstraint = [_colorsScrollView.topAnchor
+      constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
+                     constant:kSnapshotViewVerticalMargin];
+
   _regularConstraints = @[
+    _snapshotsViewDisplayedConstraint,
     [dotAndFieldContainer.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:container.leadingAnchor
                                     constant:kHorizontalMargin],
@@ -623,9 +650,6 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
     [snapshotsContainerLayoutGuide.topAnchor
         constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
                        constant:kSnapshotViewVerticalMargin],
-    [snapshotsContainerLayoutGuide.bottomAnchor
-        constraintEqualToAnchor:_colorsScrollView.topAnchor
-                       constant:-kSnapshotViewVerticalMargin],
 
     [_snapshotsContainer.centerXAnchor
         constraintEqualToAnchor:snapshotsContainerLayoutGuide.centerXAnchor],
