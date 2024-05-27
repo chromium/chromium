@@ -4067,15 +4067,20 @@ CSSValue* ConsumeFilterFunctionList(CSSParserTokenRange& range,
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   do {
+    CSSParserSavePoint savepoint(range);
     CSSValue* filter_value = ConsumeUrl(range, context);
     if (!filter_value) {
       filter_value = ConsumeFilterFunction(range, context);
       if (!filter_value) {
-        return nullptr;
+        break;
       }
     }
+    savepoint.Release();
     list->Append(*filter_value);
   } while (!range.AtEnd());
+  if (list->length() == 0) {
+    return nullptr;
+  }
   return list;
 }
 
@@ -6819,8 +6824,8 @@ bool ConsumeGridTemplateRowsAndAreasAndColumns(
       template_rows_value_list->Append(*line_names);
     }
   } while (!range.AtEnd() && !(range.Peek().GetType() == kDelimiterToken &&
-                                (range.Peek().Delimiter() == '/' ||
-                                 range.Peek().Delimiter() == '!')));
+                               (range.Peek().Delimiter() == '/' ||
+                                range.Peek().Delimiter() == '!')));
 
   if (!range.AtEnd() && range.Peek().Delimiter() != '!') {
     if (!ConsumeSlashIncludingWhitespace(range)) {
