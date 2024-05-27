@@ -155,8 +155,15 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, RestoreTab) {
   }
 }
 
+// TODO(crbug.com/335421977): Times out on "Linux ChromiumOS MSan Tests"
+#if (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER))
+#define MAYBE_RestoredTabsAreLoadedGradually \
+  DISABLED_RestoredTabsAreLoadedGradually
+#else
+#define MAYBE_RestoredTabsAreLoadedGradually RestoredTabsAreLoadedGradually
+#endif
 IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest,
-                       RestoredTabsAreLoadedGradually) {
+                       MAYBE_RestoredTabsAreLoadedGradually) {
   // Open a new browser window by starting a new navigation; waiting for the
   // new tab to complete loading so that it is eligible for restoration when
   // the browser is closed below.
