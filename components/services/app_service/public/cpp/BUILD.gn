@@ -104,6 +104,19 @@ source_set("test_support") {
     "//third_party/abseil-cpp:absl",
     "//ui/gfx",
   ]
+
+  public_deps = []
+
+  if (is_chromeos_ash) {
+    sources += [
+      "app_instance_waiter.cc",
+      "app_instance_waiter.h",
+    ]
+    public_deps += [
+      ":instance_update",
+      "//base",
+    ]
+  }
 }
 
 # The following targets are used for internal code organization, and are not
