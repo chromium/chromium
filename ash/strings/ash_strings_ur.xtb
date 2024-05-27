@@ -48,6 +48,7 @@
 <translation id="1175572348579024023">اسکرول کریں</translation>
 <translation id="1175944128323889279">موجودہ بیٹری لیول <ph name="BATTERY_PERCENTAGE" />فیصد، <ph name="TIME" /> باقی ہے</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
+<translation id="1179776263021875437">ٹاسک پر فوکس کرنا روکیں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1182225749592316782">اس سے کیمرے اور مائیکروفون کی اجازتوں کے ساتھ تمام ایپس اور ویب سائٹس تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="1182876754474670069">گھر</translation>
@@ -119,6 +120,7 @@
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1391102559483454063">آن</translation>
 <translation id="1394698770495054737">پورا دھندلا</translation>
+<translation id="1404963891829069586">فوکس کی آوازیں</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />۔ تواریخ کے درمیان نیویگیٹ کرنے کے لیے تیر کے نشان والی کلیدوں کا استعمال کریں۔</translation>
 <translation id="141170878022560212">بیچ کا بٹن</translation>
@@ -180,6 +182,7 @@
 <translation id="1651914502370159744">سرگزشت کا صفحہ کھولیں</translation>
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
 <translation id="1668469839109562275">‏پہلے سے موجود VPN</translation>
+<translation id="1673232940951031776">فوکس ختم کریں۔ <ph name="REMAINING_TIME" /> باقی ہے۔</translation>
 <translation id="1675844249244994876">دائیں ونڈو کو اپ ڈیٹ کریں</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> منسلک نہیں ہے۔</translation>
@@ -223,6 +226,7 @@
 <translation id="1824922790784036530">مقام تک رسائی آن کریں</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> سے پن کو ختم کر دیا گیا</translation>
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> کھولنے کیلئے منتخب کریں۔</translation>
+<translation id="1838011306813517425">فوکس کی ترتیبات</translation>
 <translation id="1838895407229022812">نائٹ لائٹ آف ہے۔</translation>
 <translation id="1854180393107901205">کاسٹ کرنا بند کریں</translation>
 <translation id="1862077610023398675">کنٹرولز چھپائیں</translation>
@@ -310,6 +314,7 @@
 <translation id="2277103315734023688">آگے کریں</translation>
 <translation id="2282073721614284166">ٹیب میں لنک کھولیں</translation>
 <translation id="2292698582925480719">ڈسپلے اسکیل</translation>
+<translation id="2293443480080733021">آپ کس چیز پر فوکس کرنا چاہیں گے؟ ٹاکس شامل کرنے کے لیے اینٹر دبائیں۔</translation>
 <translation id="229397294990920565">موبائل ڈیٹا بند ہو رہا ہے...</translation>
 <translation id="2295777434187870477">مائیک آن ہے، ٹوگل کرنے سے ان پٹ خاموش ہو جائے گا۔</translation>
 <translation id="2298170939937364391">‏فُل اسکرین میگنیفائر فعال ہے۔ اسے ٹوگل کر کے بند کرنے کے لیے Ctrl+Search+M کو دوبارہ دبائیں۔</translation>
@@ -377,6 +382,7 @@
 <translation id="2509468283778169019">‏CAPS LOCK آن ہے</translation>
 <translation id="2514415433888497495">اسٹاپ <ph name="CAPTURE_MEDIUM" />۔ <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ہے</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516416533263263796">فوکس آن ہے، 10 منٹ باقی ہے</translation>
 <translation id="2516637483312286228">گیم کنٹرولز میں ترمیم کریں</translation>
 <translation id="2526581474998477112">ونڈوز غیر مقفل کریں</translation>
 <translation id="2528111225373402384">ہاٹ اسپاٹ کی ترتیبات</translation>
@@ -447,6 +453,7 @@
 <translation id="2798702144670138229">ٹیبلیٹ موڈ آن ہے۔ گیم ڈیش بورڈ دستیاب نہیں ہے۔</translation>
 <translation id="2801954693771979815">اسکرین کا سائز</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />، منتخب کیا گیا</translation>
+<translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="2814448776515246190">جزوی کیپچر</translation>
 <translation id="2819276065543622893">آپ اب سائن آؤٹ ہو جائیں گے۔</translation>
@@ -474,6 +481,7 @@
 <translation id="2914580577416829331">اسکرین کیپچرز</translation>
 <translation id="2924416280450782352">آئٹمز کو نہیں دکھا سکتے۔ اس پینل کو کھولنے کی دوبارہ کوشش کریں۔</translation>
 <translation id="2931572158271115754">اس کرنے کی فہرست پر کچھ نہیں۔</translation>
+<translation id="2932487126591186298">10 منٹ شامل کر دیے گئے۔ <ph name="REMAINING_TIME" /> باقی ہے۔</translation>
 <translation id="2935225303485967257">پروفائلز کا نظم کریں</translation>
 <translation id="2941112035454246133">کم</translation>
 <translation id="2942350706960889382">ڈاک کردہ میگنیفائر</translation>
@@ -649,6 +657,7 @@
 <translation id="3576141592585647168">ٹائم زون تبدیل کریں</translation>
 <translation id="3577473026931028326">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="3580650856351781466">اسپیچ فائلز ڈاؤن لوڈ کی جا رہی ہیں</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{منٹ}other{منٹ}}</translation>
 <translation id="3585296979871889131">اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھیں</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">سائیڈ بٹن</translation>
@@ -672,6 +681,7 @@
 <translation id="3631369015426612114">مندرجہ ذیل سے اطلاعات کی اجازت دیں</translation>
 <translation id="3633097874324966332">اپنے آلے کا جوڑا بنانے کے لیے بلوٹوتھ ترتیبات کھولیں</translation>
 <translation id="3633851487917460983">کلپ بورڈ کھولیں</translation>
+<translation id="363473492175527493">ٹاسک کو اس پر فوکس کرنے کے لیے سیٹ کیا گیا ہے: <ph name="TASK_NAME" />۔ ٹاسک میں ترمیم کرنے کے لیے اینٹر دبائیں۔</translation>
 <translation id="3638400994746983214">رازداری کا اسکرین ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="3649256019230929621">ونڈو کو کم از کم کریں</translation>
 <translation id="3649505501900178324">اپ ڈیٹ کرنا باقی ہے</translation>
@@ -707,6 +717,7 @@
 <translation id="3735740477244556633">ترتیب دیں بلحاظ</translation>
 <translation id="3738664582935948253">اب آپ اسکرین ریکارڈنگز میں کلکس اور کی بورڈ شارٹ کٹس دکھا سکتے ہیں</translation>
 <translation id="3742055079367172538">اسکرین شاٹ لی گئی</translation>
+<translation id="3743775386021959186">فوکس آن ہے، <ph name="REMAINING_TIME" /> باقی ہے</translation>
 <translation id="3756485814916578707">اسکرین کاسٹ ہو رہی ہے</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> شارٹ کٹ کو <ph name="OLD_SHORTCUT" /> سے <ph name="NEW_SHORTCUT" /> میں اپ ڈیٹ کیا گیا ہے</translation>
 <translation id="3765841986579723851">آج ترمیم کیا گیا</translation>
@@ -896,6 +907,7 @@
 <translation id="4477751544736611934">اس کے نتیجے میں ڈیٹا چارجز لگ سکتے ہیں۔
 1 آلہ منسلک ہو گیا۔</translation>
 <translation id="4477892968187500306">‏یہ آلہ ایسی ایپس پر مشتمل ہو سکتا ہے جو Google کے ذریعے تصدیق شدہ نہیں ہیں۔</translation>
+<translation id="4479130137987693286">اگر آپ کو ضرورت ہو تو آپ تھوڑا اور وقت شامل کر سکتے ہیں، یا اپنا فوکس سیشن ختم کر سکتے ہیں</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4481530544597605423">جوڑا ختم کیے ہوئے آلات</translation>
 <translation id="4485506555414638855">اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
@@ -1069,6 +1081,7 @@
 <translation id="5095136268899496849">ترتیبات میں اپنے <ph name="PRODUCT_NAME" /> کو حسب ضرورت اور ذاتی نوعیت کا بنائیں۔ اپنا وال پیپر تبدیل کرنے یا اسکرین سیور سیٹ کرنے کی کوشش کریں۔</translation>
 <translation id="509790653408515442">جب آپ اپنے فون کی ایپس کی سلسلہ بندی کریں گے تو وہ یہاں ظاہر ہوں گی</translation>
 <translation id="5098537242461068432">ڈیسک اور ونڈوز کو دوبارہ کھولا گیا</translation>
+<translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> بجے تک</translation>
 <translation id="5104236669533825617">اسکرین شاٹ تخلیق نہیں کیا جا سکتا</translation>
 <translation id="5107522548814527560">ویب</translation>
 <translation id="5111318697104479778"><ph name="DESC" />، <ph name="STRENGTH" /></translation>
@@ -1147,6 +1160,7 @@
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> کے اوپر <ph name="DRAGGED_APP_NAME" />، فولڈر بنانے کیلئے ریلیز کریں۔</translation>
 <translation id="5397578532367286026">‏اس صارف کے استعمال اور سرگزشت کا chrome.com پر مینیجر (<ph name="MANAGER_EMAIL" />) کے ذریعے جائزہ لیا جا سکتا ہے۔</translation>
 <translation id="540713187982329711">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آن ہے، کوئی آلہ منسلک نہیں ہے۔</translation>
+<translation id="5409208741270395213">ٹاس کو مکمل کے بطور نشان زد کریں</translation>
 <translation id="5413656666631274079">ترتیبات کا صفحہ</translation>
 <translation id="5414198321558177633">پروفائل کی فہرست ریفریش ہو رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5417965108047245734">اپنے <ph name="PRODUCT_NAME" /> کے استعمال کا طریقہ جاننے کے لیے ایک مختصر ٹؤر کریں</translation>
@@ -1178,6 +1192,7 @@
 <translation id="553675580533261935">سیشن سے باہر نکل رہے ہیں</translation>
 <translation id="5537725057119320332">کاسٹ کریں</translation>
 <translation id="554017492391497564">مکمل کے طور پر نشان زد نہیں کیا جا سکتا۔</translation>
+<translation id="5543778275214926792">سننے کیلئے منتخب کریں کو آن کریں؟</translation>
 <translation id="5546397813406633847">صارف کو بازیاب کریں</translation>
 <translation id="554893713779400387">ڈکٹیشن ٹوگل کریں</translation>
 <translation id="5550417424894892620">فائلز کو <ph name="HOLDING_SPACE_TITLE" /> میں شامل کرنے کے لیے ڈیسک ٹاپ پر ڈراپ کریں۔ آپ ڈیسک ٹاپ پر فائلز شامل نہیں کر سکتے۔</translation>
@@ -1201,6 +1216,7 @@
 <translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="5599242528220103262">کی بورڈ شارٹ کٹ آف ہے</translation>
+<translation id="5600415762228455511">فوکس آن ہے، <ph name="REMAINING_TIME" /> باقی ہے، اس پر فوکس کیا جا رہا ہے: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">‏صوتی تاثرات کو غیر فعال کرنے کے لیے Ctrl + Alt + Z دبائیں۔</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">ہم نے آپ کو بہتر نیٹ ورک پر سوئچ کر دیا ہے</translation>
@@ -1230,8 +1246,10 @@
 <translation id="5699366815052349604">سبھی ڈیسکس پر فعال ونڈو تفویض کریں</translation>
 <translation id="5701785125601597013">فون ہب کا استعمال کر کے اپنے فون کے پیغامات کو تیزی سے بھیجیں یا ان پیغامات کا تیزی سے جواب دیں</translation>
 <translation id="570390244361237317">سبھی ایپس، سبھی ایپس تک رسائی حاصل کرنے کے لیے تیر کے نشان والی کلیدوں ساتھ نیویگیٹ کریں</translation>
+<translation id="5705197514573687092">فوکس کی ترتیبات دکھائیں۔ ٹائمر <ph name="FOCUS_DURATION" /> پر سیٹ ہے۔</translation>
 <translation id="5707775774148071965">آپ کا آلہ آپ کی کیبل سے زیادہ ڈیٹا کی شرح کو سپورٹ کرتا ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
 <translation id="5710450975648804523">'ڈسٹرب نہ کریں' آن ہے</translation>
+<translation id="5711984160978177607"><ph name="REMAINING_TIME" /> باقی ہے</translation>
 <translation id="5712132663381964774">اپنے <ph name="PRODUCT_NAME" /> پر اپنی ضرورت کی ہر چیز کرنے کے لیے ایپس کا استعمال کریں۔ آپ لانچر میں اپنی ایپس تلاش کر سکتے ہیں۔</translation>
 <translation id="571295407079589142">موبائل ڈیٹا آف ہے</translation>
 <translation id="5727460725221669831">‏اگر آپ اپنا پاس ورڈ بھول گئے ہیں یا حال ہی میں اپنے Google اکاؤنٹ کا پاس ورڈ تبدیل کر دیا ہے تو اس صارف کو بازیاب کرنے کی کوشش کریں۔</translation>
@@ -1242,6 +1260,7 @@
 <translation id="5744083938413354016">گھسیٹنے پر تھپتھپائیں</translation>
 <translation id="5745612484876805746">غروب آفتاب کے وقت نائٹ لائٹ خودکار طور پر آن ہو جاتی ہے</translation>
 <translation id="5750765938512549687">بلوٹوتھ آف ہے</translation>
+<translation id="5758114525425072423">فوکس شروع کریں۔ ٹائمر <ph name="FOCUS_DURATION" /> پر سیٹ ہے۔</translation>
 <translation id="5760866832697883462">اپنا <ph name="NAME" /> منسلک کریں</translation>
 <translation id="5762420912707163638">مارکر ٹوگل کریں۔ <ph name="STATE_TEXT" /> اسکرین پر ڈرا کرنے کے لیے ٹریک پیڈ، ٹچ اسکرین یا اسٹائلس کا استعمال کریں۔</translation>
 <translation id="576341972084747908">خطرناک <ph name="FILENAME" /> ڈاؤن لوڈ کریں</translation>
@@ -1249,6 +1268,7 @@
 <translation id="5764569119212455782">منتخب کردہ آخری زبان پر جائیں</translation>
 <translation id="5767730327234918501">آپ کے منتظم نے ہاٹ اسپاٹ کو آف کر دیا ہے۔</translation>
 <translation id="5769373120130404283">رازداری کی اسکرین</translation>
+<translation id="5770004650349728202">سننے کیلئے منتخب کریں کو آن کریں</translation>
 <translation id="5773950591113557721">اس سے کیمرے اور مائیکروفون کی اجازتوں کے ساتھ <ph name="APP_NAME" /> اور تمام ایپس اور ویب سائٹس تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="5774295353725270860">فائلز ایپ کھولیں</translation>
 <translation id="5775936059231769503">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آف ہے۔</translation>
@@ -1343,8 +1363,10 @@
 <translation id="6119972796024789243">رنگ کی اصلاح</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ڈاؤن لوڈ کی توثیق کریں</translation>
 <translation id="612734058257491180">‏Google اسسٹنٹ مہمان سیشن میں دستیاب نہیں ہے۔</translation>
+<translation id="6127370444807669747">‏ذاتی نوعیت کی پلے لسٹس اور زیادہ فوکس والی موسیقی کے لیے، YouTube Music Premium آزمائیں</translation>
 <translation id="6129953537138746214">اسپیس</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> کے لئے اکاؤنٹ ہٹائیں کا ڈائیلاگ کھولیں</translation>
+<translation id="6141205840878048728">آپ کس چیز پر فوکس کرنا چاہیں گے؟</translation>
 <translation id="6141988275892716286">ڈاؤن لوڈ کی توثیق کریں</translation>
 <translation id="6143578372829139382">‏YouTube پر اشتراک کریں</translation>
 <translation id="6154006699632741460">پیریفرل تعاون یافتہ نہیں ہے</translation>
@@ -1405,11 +1427,13 @@
 <translation id="6381109794406942707">‏آلہ غیر مقفل کرنے کے لیے، اپنا PIN درج کریں۔</translation>
 <translation id="638716340450135524">کیمرا تک رسائی آن کریں</translation>
 <translation id="639644700271529076">‏CAPS LOCK آف ہے</translation>
+<translation id="6406458002328242616">ٹائمر میں ترمیم کریں۔ <ph name="FOCUS_DURATION" />۔</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">‏Google اسسٹنٹ</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">تمام اطلاعات صاف کریں</translation>
+<translation id="6430225033895752525">فوکس کی ترتیبات دکھائیں</translation>
 <translation id="643147933154517414">سب ہو گیا</translation>
 <translation id="6431865393913628856">اسکرین ریکارڈر</translation>
 <translation id="643593192654616063">کل <ph name="STORAGE_TOTAL_SIZE" /> میں سے <ph name="STORAGE_IN_USE_SIZE" /> اسٹوریج زیر استعمال ہے</translation>
@@ -1449,6 +1473,7 @@
 <translation id="655633303491376835">نئی انسٹال کردہ <ph name="APP_NAME" /></translation>
 <translation id="6559158502366839560">مزید ایپس اور گیمز دریافت کریں</translation>
 <translation id="6559976592393364813">منتظم سے پوچھیں</translation>
+<translation id="6562447480759345110">فوکس ختم کریں</translation>
 <translation id="6565007273808762236">‏eSIM کنکشن دستیاب نہیں ہے</translation>
 <translation id="6570831796530454248">{0,plural, =1{ایک گھنٹے کے اندر آلہ اپ ڈیٹ کریں}other{# گھنٹے کے اندر آلہ اپ ڈیٹ کریں}}</translation>
 <translation id="6570902864550063460">‏USB کے ذریعے چارج ہو رہا ہے</translation>
@@ -1458,6 +1483,7 @@
 <translation id="6585808820553845416">سیشن <ph name="SESSION_TIME_REMAINING" /> میں ختم ہو جائے گا۔</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">کیمرا نیچے بائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
+<translation id="6605415194043280389">فوکس آن ہے</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="6612802754306526077">اسکرین ریکارڈنگ موڈ کا انتخاب کیا گیا</translation>
 <translation id="6612889377159412215">ذیلی ٹاسک</translation>
@@ -1524,6 +1550,7 @@
 <translation id="6836499262298959512">خطرناک فائل</translation>
 <translation id="6837621009301897464">اسکرین شاٹ لینے کے لیے، دبائیں</translation>
 <translation id="6852052252232534364">کلک برائے فعال</translation>
+<translation id="6852628153543175788">10 منٹ شامل کریں</translation>
 <translation id="6855029042976311970">ابھی ابھی ترمیم کی گئی ہے</translation>
 <translation id="6856708615407876657">تلاش کے نتیجے کے زمرے کو ٹوگل کریں</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> سیکنڈ</translation>
@@ -1584,6 +1611,7 @@
 <translation id="7068360136237591149">فائلیں کھولیں</translation>
 <translation id="7076293881109082629">سائن ان کیا جا رہا ہے</translation>
 <translation id="7076878155205969899">آواز خاموش کریں</translation>
+<translation id="7083848064787091821">فوکس کریں</translation>
 <translation id="7084678090004350185">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آن ہے، <ph name="DEVICECOUNT" /> آلات منسلک ہیں۔</translation>
 <translation id="7086931198345821656">اس اپ ڈیٹ کے لیے آپ کے <ph name="DEVICE_TYPE" /> کی پاور واشنگ درکار ہے۔ تمام ڈیٹا حذف کر دیا جائے گا۔ تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں۔</translation>
 <translation id="7088960765736518739">سوئچ رسائی</translation>
@@ -1611,6 +1639,7 @@
 <translation id="7188494361780961876">مینیو کو اسکرین کے اوپر بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="7189412385142492784">‏Venus کتنا دور ہے</translation>
 <translation id="7198435252016571249">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
+<translation id="720981139652840573">‏کچھ مخصوص ٹیکسٹ کو بآواز بلند پڑھتے ہوئے سنیں۔ پہلے، اپنی اسکرین کے نیچے 'سننے کیلئے منتخب کریں' آئیکن کو منتخب کریں، پھر ٹیکسٹ کو نمایاں کریں۔ آپ کی بورڈ شارٹ کٹ بھی استعمال کر سکتے ہیں: ٹیکسٹ نمایاں کریں، پھر تلاش/لانچر + S دبائیں۔</translation>
 <translation id="7219573373513695352">کوئی آلات منسلک نہیں</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> میموری | کل <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% بیٹری باقی ہے۔ اپنے آلے کو پاور سے منسلک کریں۔</translation>
@@ -1620,6 +1649,7 @@
 <translation id="7258828758145722155">کل ترمیم کیا گیا</translation>
 <translation id="726276584504105859">اسپلٹ اسکرین استعمال کرنے کیلئے یہاں گھسیٹیں</translation>
 <translation id="7262906531272962081">یاد دہانی تخلیق کریں</translation>
+<translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> کم کریں</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">اسکرین شاٹس لینے کیلئے فوری ترتیبات میں اسکرین کیپچر ٹول استعمال کریں</translation>
 <translation id="7301826272005790482">ونڈو کی تجاویز مسترد کریں</translation>
@@ -1630,6 +1660,7 @@
 <translation id="7313193732017069507">کیمرا پھیلائیں</translation>
 <translation id="7330397557116570022">ڈکٹیشن استعمال کرنے کے لیے ٹیکسٹ فیلڈ میں جائیں</translation>
 <translation id="7331646370422660166">‏alt + نیچے تیر کا نشان</translation>
+<translation id="7337660433630200387">+10 منٹ</translation>
 <translation id="7340731148882810149">خودکار کلکس مینیو</translation>
 <translation id="7346909386216857016">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="7348093485538360975">آن اسکرین کی بورڈ</translation>
@@ -1649,6 +1680,7 @@
 <translation id="7386767620098596324">نیٹ ورک کنکشن ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="7392563512730092880">آپ ترتیبات سے بعد میں کسی بھی وقت سیٹ اپ کر سکتے ہیں۔</translation>
 <translation id="7401222354741467707">مکمل اسکرین شاٹ لیں یا مکمل اسکرین ریکارڈنگ کریں</translation>
+<translation id="7401788553834047908">فوسک کے دوران ڈسٹرب نہ کریں</translation>
 <translation id="7405710164030118432">‏آلہ کو غیر مقفل کرنے کیلئے، اپنے Family Link کا والدین کا رسائی کا کوڈ درج کریں</translation>
 <translation id="7406608787870898861">اپنے موبائل نیٹ ورک کو سیٹ اپ کرنا مکمل کریں</translation>
 <translation id="7406854842098869085"><ph name="MODIFIER_1" /> کو چھوئیں اور دبا کر رکھیں، <ph name="KEY" /> پر تھپتھپاتے رہیں یہاں تک کہ اس ونڈو تک پہنچ جائیں جسے آپ کھولنا چاہتے ہیں، پھر ریلیز کریں</translation>
@@ -1683,6 +1715,8 @@
 <translation id="7519649142417630956">شٹ ڈاؤن ہونے کے بعد منتظم کو لاگ آؤٹ کر دیا جائے گا اور آپ کے آلہ کو کنٹرول نہیں کر پائیں گے۔
 
 آلہ کو شٹ ڈاؤن کرنے کے لیے پاور بٹن کو آلہ پر دوبارہ چھوئیں اور دبائے رکھیں۔</translation>
+<translation id="7523420897035067483">فوکس میں رہتے ہوئے ڈسٹرب نہ کریں کو فعال کریں</translation>
+<translation id="7524043547948122239">‫Google Tasks</translation>
 <translation id="7526573455193969409">ممکن ہے نیٹ ورک کو مانیٹر کیا جا رہا ہو</translation>
 <translation id="7536035074519304529">‏IP پتہ: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">بائیں ونڈو کو اپ ڈیٹ کریں</translation>
@@ -1815,6 +1849,7 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> سے</translation>
 <translation id="7968693143708939792">فولڈر منتخب کریں...</translation>
 <translation id="7973756967040444713">ٹول بار بند کریں</translation>
+<translation id="797485111629834774">ٹاسک کو مکمل کے طور پر نشان زد کریں: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">مکمل اسکرین کے میگنیفائر کو آن یا آف کریں</translation>
 <translation id="7977927628060636163">موبائل نیٹ ورکس کو تلاش کیا جا رہا ہے…</translation>
 <translation id="7982789257301363584">نیٹ ورک</translation>
@@ -1828,6 +1863,7 @@
 <translation id="8000066093800657092">کوئی نیٹ ورک نہیں ہے</translation>
 <translation id="8001755249288974029">کرسر سے لائن کے آغاز تک ٹیکسٹ کو منتخب کریں</translation>
 <translation id="8004512796067398576">اضافہ</translation>
+<translation id="8005527720597583355">فوکس سیشن شروع کریں</translation>
 <translation id="8015361438441228492">ٹاسک میں ترمیم نہیں کی جا سکی۔</translation>
 <translation id="802782383769312836">گزشتہ ڈیسک: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک</translation>
 <translation id="8029247720646289474">ہاٹ سپاٹ کنکشن نہیں ملا</translation>
@@ -1843,6 +1879,7 @@
 <translation id="8054466585765276473">بیٹری کے وقت کا حساب لگایا جا رہا ہے۔</translation>
 <translation id="8079538659226626406">اسکرین کا اشتراک</translation>
 <translation id="8083540854303889870">بعد کیلئے محفوظ کردہ</translation>
+<translation id="8085765914647468715">‫YouTube Music</translation>
 <translation id="8088141034189573826">مزید اختیارات کے لیے ٹیب کا استعمال کریں۔ تمام ڈیسک تک رسائی کے لیے بائیں اور دائیں تیر کے نشانات کی کلیدوں کا استعمال کریں۔</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> کو شروع ہوگا</translation>
 <translation id="8091387634532529612">خودکار اپ ڈیٹس</translation>
@@ -1874,10 +1911,12 @@
 <translation id="8192727139462702395">جب آپ بلوٹوتھ کو آف کرتے ہیں، تو یہ بیرونی آلات آپ کے <ph name="DEVICE_TYPE" /> سے غیر منسلک ہو جائیں گے:</translation>
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
+<translation id="820256110035940528"><ph name="TITLE" /> آپ نے ابھی <ph name="FOCUSED_TIME" /> کے لیے فوکس کیا ہے۔ دوبارہ فوکس کرنے کے لیے فوری ترتیبات کھولیں۔</translation>
 <translation id="8203795194971602413">دائیں طرف کلک کریں</translation>
 <translation id="8209010265547628927">ری سیٹ کریں</translation>
 <translation id="8214996719228530800">‏Canary چینل</translation>
 <translation id="8219451629189078428">‏اس دوران آپ کے Chromebook کو آن اور پاور سے منسلک رہنے کی ضرورت ہے۔ یقینی بنائیں کہ چارجر یا ایڈاپٹر کیبلز آپ کے Chromebook اور پاور آؤٹ لیٹ دونوں میں مکمل طور پر پلگ کی ہوئی ہیں۔ اپنے Chromebook کو آف نہ کریں۔</translation>
+<translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> شامل کریں</translation>
 <translation id="8230305195727960608">رنگوں کی تقلیب کی وضع</translation>
 <translation id="8236042855478648955">وقفے کا وقت ہو گیا</translation>
 <translation id="8237964652943995219">اگلا ڈیسک: <ph name="DESK_NAME" /> <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک</translation>
@@ -1985,6 +2024,7 @@
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">جزوی اسکرین شاٹ کیپچر کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="8676770494376880701">کم پاور چارجر منسلک ہوگیا</translation>
+<translation id="8679158879996532670">فوکس کی ترتیبات دکھائیں۔ فوکس آن ہے، <ph name="REMAINING_TIME" /> باقی ہے۔</translation>
 <translation id="8683506306463609433">کارکردگی کا پتا لگانا فعال ہے</translation>
 <translation id="8703634754197148428">‏ریکارڈنگ شروع کریں۔ ریکارڈنگ شروع ہونے کے بعد، شیلف پر نیویگیٹ کرنے کیلئے Alt + Shift + L استعمال کریں اور 'ریکارڈنگ بند کریں' بٹن تلاش کریں</translation>
 <translation id="8704155109538237473">تصویر میں تصویر ونڈو پر فوکس کریں</translation>
@@ -2003,6 +2043,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: فعال کیا جا رہا ہے...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />،
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749787185286745219">وقت ختم ہو گیا۔ بہترین! 🎉</translation>
 <translation id="8755498163081687682">اپنی شناخت کی توثیق کریں: <ph name="ORIGIN_NAME" /> اس بات کی تصدیق کرنا چاہتی ہے کہ یہ آپ ہی ہیں</translation>
 <translation id="875593634123171288">‏VPN کی ترتیبات دکھائیں</translation>
 <translation id="8756799553341497810">اس منظر سے باہر نکلنے کے بعد آپ اپنے ایپ لے آؤٹ کو حسب ضرورت بنانا شروع کر سکتے ہیں۔</translation>
@@ -2041,6 +2082,7 @@
 <translation id="8877788021141246043">یاد دہانی سیٹ کریں</translation>
 <translation id="8878886163241303700">اسکرین کو پھیلایا جا رہا ہے</translation>
 <translation id="888982883502837004">آپ کے آلے کے لیے فرم ویئر اپ ڈیٹس دستیاب ہیں۔ جائزہ لینے اور اپ ڈیٹ کرنے کے لیے کلک کریں۔</translation>
+<translation id="8893479486525393799">اسٹوڈیو مائیک</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> کو مستقل طور پر حذف کر دیا جائے گا</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% بیٹری باقی ہے (تقریباََ <ph name="TIME_LEFT" />)۔ اپنے آلے کو پاور سے منسلک کریں۔</translation>
 <translation id="88986195241502842">صفحہ نیچے</translation>

@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Niet nu</translation>
 <translation id="100881991356161927">Sitenaam</translation>
 <translation id="1009663062402466586">Gamebediening nu beschikbaar</translation>
+<translation id="1010136228650201057">Versleuteling van gebruikersgegevens</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Pagina reageert niet}other{Pagina's reageren niet}}</translation>
 <translation id="1011003645819296594">Opgeslagen apparaten</translation>
 <translation id="1011355516189274711">Volume voor tekst-naar-spraak</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">&amp;Taalinstellingen</translation>
 <translation id="1050693411695664090">Slecht</translation>
+<translation id="1053776357096024725">Verbeter het geluid van je ingebouwde microfoon met verschillende effecten</translation>
 <translation id="1054048317165655285">Voltooi het instellen op je telefoon</translation>
 <translation id="1054153489933238809">Oorspronkelijke &amp;afbeelding openen op nieuw tabblad</translation>
 <translation id="1054187194995068149">Hallo. Dit is een voorbeeld.</translation>
@@ -833,6 +835,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1607139524282324606">Item wissen</translation>
 <translation id="1607499585984539560">Gebruiker is niet aangesloten bij het domein</translation>
 <translation id="1608668830839595724">Meer acties voor geselecteerde items</translation>
+<translation id="1608698493373028805">Deze extensie wordt binnenkort misschien niet meer ondersteund</translation>
 <translation id="1610272688494140697">App-instellingen</translation>
 <translation id="161042844686301425">Cyaan</translation>
 <translation id="1611432201750675208">Je apparaat is vergrendeld</translation>
@@ -2308,6 +2311,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2667144577800272420">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> ondersteunde links openen.</translation>
 <translation id="2667463864537187133">Spellingcontrole beheren</translation>
 <translation id="2668094785979141847">Klik om Google Lens af te sluiten</translation>
+<translation id="2668604389652548400">Verwijder de extensie of vervang deze door een vergelijkbare extensie uit de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Kan <ph name="APP_NAME" /> niet openen</translation>
 <translation id="2669454659051515572">Iedereen die dit apparaat gebruikt, kan gedownloade bestanden zien</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deelt een Chrome-tabblad.</translation>
@@ -2358,6 +2362,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2710101514844343743">Gebruiks- en diagnostische gegevens</translation>
 <translation id="271033894570825754">Nieuw</translation>
 <translation id="2710507903599773521">Je <ph name="DEVICE_TYPE" /> is nu ontgrendeld</translation>
+<translation id="2712141162840347885">Selecteer iets om te zoeken met Google Lens of druk op Escape om Google Lens te sluiten</translation>
 <translation id="2713106313042589954">Camera uitzetten</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2714180132046334502">Donkere achtergrond</translation>
@@ -2982,6 +2987,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3177914167275935955">Je apparaat bevat een Chrome Education Upgrade, maar je gebruikersnaam is niet gekoppeld aan een Google for Education-account. Ga op een secundair apparaat naar g.co/workspace/edusignup om een Google for Education-account te maken.</translation>
 <translation id="3179982752812949580">Lettertype</translation>
 <translation id="3180284704187420717">Sla je bookmarks, wachtwoorden en meer op met synchronisatie</translation>
+<translation id="3180716079618904608">Apps en games downloaden</translation>
 <translation id="3181954750937456830">Safe Browsing (hiermee worden jij en je apparaat beschermd tegen gevaarlijke sites)</translation>
 <translation id="3182749001423093222">Spellingcontrole</translation>
 <translation id="3183139917765991655">Profile Importer</translation>
@@ -4270,6 +4276,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4120817667028078560">Pad is te lang</translation>
 <translation id="4124823734405044952">Je beveiligingssleutel is gereset</translation>
 <translation id="4124935795427217608">Eenhoorn</translation>
+<translation id="4126375522951286587"><ph name="VM_NAME" /> uitzetten</translation>
 <translation id="412730574613779332">Superheld</translation>
 <translation id="4130199216115862831">Apparaatlogboek</translation>
 <translation id="4130750466177569591">Ik ga akkoord</translation>
@@ -4570,6 +4577,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4364327530094270451">Meloen</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deelt een venster.</translation>
 <translation id="4364830672918311045">Meldingen weergeven</translation>
+<translation id="4367027658822022112">Je kunt Google Lens vastzetten voor snelle toegang. Klik op de knop Vastzetten bovenaan het zijvenster.</translation>
 <translation id="4367513928820380646">Verwijderde rechten bekijken</translation>
 <translation id="4367971618859387374">Weergavenaam</translation>
 <translation id="4368960422722232719">Geheugengebruik tonen op voorbeelden voor pop-upkaarten voor tabbladen</translation>
@@ -4971,6 +4979,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4666911709726371538">Meer apps</translation>
 <translation id="4668279686271488041">De gegevens van advertentiemetingen worden regelmatig van je apparaat verwijderd</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">De pincode mag alleen uit cijfers bestaan</translation>
 <translation id="4670909875730475086"><ph name="APP_NAME" /> is geïnstalleerd op je apparaat</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> nu openen</translation>
 <translation id="4673442866648850031">Stylustools openen wanneer de stylus wordt verwijderd</translation>
@@ -5054,6 +5063,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="473936925429402449">Geselecteerd, extra content <ph name="CURRENT_ELEMENT" /> van <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4740546261986864539">Recent geopend</translation>
+<translation id="4741235124132242877">Vastgezet. Gebruik Google Lens opnieuw via de werkbalk</translation>
 <translation id="4742334355511750246">Geen toestemming om afbeeldingen te bekijken</translation>
 <translation id="4742795653798179840">Verwijderde Chrome-gegevens</translation>
 <translation id="4742970037960872810">Markering verwijderen</translation>
@@ -6747,6 +6757,7 @@ Als je dit uitzet, gebruikt Android alleen het IP-adres voor de locatie. Dit kan
 <translation id="6042308850641462728">Meer</translation>
 <translation id="604388835206766544">Parseren van configuratie mislukt</translation>
 <translation id="6043994281159824495">Nu uitloggen</translation>
+<translation id="604424701295382420">Vastgezet. Je krijgt weer toegang tot Google Lens via de nieuwe knop op de werkbalk</translation>
 <translation id="6045114302329202345">Primaire TrackPoint-knop</translation>
 <translation id="6047632800149092791">Synchronisatie werkt niet. Probeer uit en weer in te loggen.</translation>
 <translation id="6048747414605857443">Selecteer stemmen voor tekst-naar-spraak en pas ze aan voor ChromeVox en Selecteer om voor te lezen.</translation>
@@ -7578,6 +7589,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6686490380836145850">Tabbladen aan de rechterkant sluiten</translation>
 <translation id="6686665106869989887">Tabblad naar rechts verplaatst</translation>
 <translation id="6686817083349815241">Je wachtwoord opslaan</translation>
+<translation id="6687008241368170505">Pincode voor Google Wachtwoordmanager wijzigen</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> verbergen</translation>
 <translation id="6689714331348768690">Vraag <ph name="SUPERVISED_USER_NAME" /> om naar de computer te komen. Je kind leest een paar zinnen op dit scherm voor om een eigen spraakmodel te maken.
     <ph name="BR" />
@@ -8356,6 +8368,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" />: rechten gevraagd, druk op F6 om te reageren</translation>
 <translation id="7290242001003353852">Deze inlogservice wordt gehost door <ph name="SAML_DOMAIN" /> en heeft toegang tot je camera.</translation>
 <translation id="7292067737327289208">Je <ph name="BEGIN_LINK" />browser wordt beheerd<ph name="END_LINK" /> door je organisatie en je <ph name="BEGIN_LINK" />profiel wordt beheerd<ph name="END_LINK" /> door <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Vraag je ouder om toegang te geven in Instellingen</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Houd er rekening mee dat Android, Play en bijbehorende apps zijn onderworpen aan hun eigen beleid voor gegevensverzameling en -gebruik.</translation>
 <translation id="7296503797589217366">Map <ph name="FOLDER_TITLE" /> selecteren</translation>
@@ -8663,6 +8676,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7514239104543605883">Kopiëren naar je apparaat</translation>
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="7514417110442087199">Toewijzing toevoegen</translation>
+<translation id="7515191208480168435">Je kunt Google Lens vastzetten voor snelle toegang</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> is geblokkeerd door de beheerder. Vraag de beheerder toestemming om deze app te gebruiken.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10136,6 +10150,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8592141010104017453">Helemaal geen meldingen tonen</translation>
 <translation id="859246725979739260">Toegang tot je locatie is geblokkeerd voor deze site.</translation>
 <translation id="8593450223647418235">Je kunt pas bestanden openen in Microsoft 365 als het instellen is afgerond.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> is geblokkeerd op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Aangepaste bestanden</translation>
 <translation id="8597845839771543242">Notatie van property:</translation>
 <translation id="8598249292448297523">afdrukken</translation>
@@ -10556,6 +10571,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8890529496706615641">De naam van het profiel kan niet worden gewijzigd. Probeer het opnieuw of neem contact op met je provider voor technische support.</translation>
 <translation id="8892168913673237979">Helemaal klaar!</translation>
 <translation id="8892246501904593980">Check al je bookmarks in Bookmarks en lijsten</translation>
+<translation id="8893479486525393799">Studiomicrofoon</translation>
 <translation id="8893801527741465188">Verwijderen voltooid</translation>
 <translation id="8893928184421379330">Het apparaat <ph name="DEVICE_LABEL" /> kan niet worden herkend.</translation>
 <translation id="8894761918470382415">Beveiliging voor gegevenstoegang voor randapparaten</translation>

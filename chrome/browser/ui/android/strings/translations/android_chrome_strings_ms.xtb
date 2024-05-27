@@ -18,6 +18,7 @@
 <translation id="1080365971383768617">Kata laluan pada semua peranti anda</translation>
 <translation id="1082920045291562218">Berkongsi dengan helaian maklum balas ringkasan ditutup</translation>
 <translation id="1089606299949659462">Semakan selesai!</translation>
+<translation id="1094555143448724771">Untuk melihat tab daripada peranti anda yang lain, segerakkan tab dan sejarah anda</translation>
 <translation id="1095761715416917775">Pastikan anda dapat mengakses data penyegerakan anda pada bila-bila masa</translation>
 <translation id="1100066534610197918">Buka dlm tab baru dlm kumpulan</translation>
 <translation id="1103142993930332957">Bantu kami menambah baik Chrome?</translation>
@@ -33,6 +34,7 @@
 <translation id="115483310321669804">Gunakan kata laluan <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Namakan semula</translation>
 <translation id="1174479719160874822">Chrome akan meminta laman mudah alih apabila skrin sempit</translation>
+<translation id="1175241315203286684">Pentadbir anda boleh membuat perubahan pada profil dan penyemak imbas anda dari jauh, menganalisis maklumat tentang penyemak imbas melalui pelaporan dan melaksanakan tugas penting yang lain. Aktiviti pada peranti ini mungkin turut diurus di luar Chrome.</translation>
 <translation id="1177863135347784049">Tersuai</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1181366777303791449">pada <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -165,6 +167,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="185383612275551373">Segerakkan untuk mendapatkan kandungan yang paling berkaitan daripada Google</translation>
 <translation id="1871098866036088250">Buka dalam penyemak imbas Chrome</translation>
 <translation id="1877026089748256423">Chrome sudah usang</translation>
+<translation id="1877073879466606884">Profil yang anda log masuk ialah profil terurus. Pentadbir anda boleh membuat perubahan pada tetapan profil anda dari jauh, menganalisis maklumat tentang penyemak imbas melalui pelaporan dan melaksanakan tugas penting yang lain.</translation>
 <translation id="1883903952484604915">Fail Saya</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
 <translation id="1900260903084164610">Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_TOS_LINK" />Syarat Perkhidmatan<ph name="END_TOS_LINK" />.</translation>
@@ -807,6 +810,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="506254248375231072">Tiada tab</translation>
 <translation id="5062960805900435602">Kemaskinian tentang gabungan kata laluan telah ditutup</translation>
 <translation id="5081960376148623587">Pilih sama ada hendak mempramuatkan halaman</translation>
+<translation id="5085038751173179818">Log masuk ke laman ini dan Chrome untuk mendapatkan penanda halaman anda dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="5091199029769593641">Tidak lama lagi, anda akan melihat cerita daripada <ph name="SITE_NAME" /> apabila anda membuka tab baharu. Laman yang anda ikuti disimpan pada Google Account anda. Anda boleh mengurus laman tersebut dalam tetapan Discover.</translation>
 <translation id="509429900233858213">Ralat telah berlaku.</translation>
 <translation id="5097349930204431044">Laman yang anda lawati boleh menentukan perkara yang anda sukai dan mencadangkan iklan sambil anda meneruskan penyemakan imbas</translation>
@@ -835,6 +839,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Memuat turun fail…}other{Memuat turun # fail…}}</translation>
 <translation id="5210286577605176222">Lompat ke halaman sebelumnya</translation>
 <translation id="5210365745912300556">Tutup tab</translation>
+<translation id="5215957675041756913">Kawal data &amp; akaun anda</translation>
 <translation id="5222676887888702881">Log keluar</translation>
 <translation id="5226378907213531272">Anda akan membuka kunci skrin anda setiap kali anda menggunakan kereta</translation>
 <translation id="5227554086496586518">Ketik untuk melihat hasil carian</translation>
@@ -1553,6 +1558,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8562452229998620586">Kata laluan yang disimpan akan kelihatan di sini.</translation>
 <translation id="8570677896027847510">Fail tidak dapat dimuat turun dengan selamat</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
+<translation id="8582529315803410153">Anda dapat menemukan tab anda daripada peranti lain di sini</translation>
 <translation id="859046281437143747">Jejaki harga daripada butang Lagi pilihan</translation>
 <translation id="860043288473659153">Nama pemegang kad</translation>
 <translation id="8602358303461588329">Log masuk ke Chrome, ditutup.</translation>

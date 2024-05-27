@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />თქვენი დამსაქმებლისთვის ან სასწავლებლისთვის
           <ph name="LIST_ITEM" />თქვენი ინტერნეტ-პროვაიდერისთვის
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">ამ ერთეულისთვის თვალყურის დევნება</translation>
 <translation id="1337692097987160377">ამ ჩანართის გაზიარება</translation>
 <translation id="1339601241726513588">რეგისტრაციის დომენი:</translation>
 <translation id="1340482604681802745">წაღების მისამართი</translation>
@@ -2611,6 +2612,7 @@
 <translation id="6035491133925068289">მსუბუქი ათლეტიკა</translation>
 <translation id="6039846035001940113">თუ პრობლემა არ მოგვარდება, დაუკავშირდით საიტის მფლობელს.</translation>
 <translation id="6040143037577758943">დახურვა</translation>
+<translation id="6040539895181423374">ფასების ანალიზი</translation>
 <translation id="604124094241169006">ავტომატური</translation>
 <translation id="6041777658117377052">ღრუს ტემპერატურა</translation>
 <translation id="6042308850641462728">სხვა</translation>

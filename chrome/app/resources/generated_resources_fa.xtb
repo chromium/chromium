@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">حالا نه</translation>
 <translation id="100881991356161927">نام سایت</translation>
 <translation id="1009663062402466586">کنترل‌های بازی اکنون دردسترس است</translation>
+<translation id="1010136228650201057">رمزگذاری داده‌های کاربر</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{صفحه غیرپاسخگو}one{صفحه‌های غیرپاسخگو}other{صفحه‌های غیرپاسخگو}}</translation>
 <translation id="1011003645819296594">دستگاه‌های ذخیره‌شده</translation>
 <translation id="1011355516189274711">میزان صدای نوشتار به گفتار</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">ناشناس</translation>
 <translation id="1049795001945932310">&amp;تنظیمات زبان</translation>
 <translation id="1050693411695664090">ضعیف</translation>
+<translation id="1053776357096024725">صدای میکروفون داخلی را با جلوه‌های مختلف تقویت کنید</translation>
 <translation id="1054048317165655285">تکمیل راه‌اندازی در تلفن</translation>
 <translation id="1054153489933238809">باز کردن &amp;تصویر اصلی در برگه جدید</translation>
 <translation id="1054187194995068149">سلام. این پیش‌نمایش است</translation>
@@ -832,6 +834,7 @@
 <translation id="1607139524282324606">پاک کردن ورودی</translation>
 <translation id="1607499585984539560">کاربر به دامنه وابسته نیست</translation>
 <translation id="1608668830839595724">کنش‌های بیشتر برای مورد انتخابی</translation>
+<translation id="1608698493373028805">ممکن است به‌زودی از این افزونه دیگر پشتیبانی نشود</translation>
 <translation id="1610272688494140697">تنظیمات برنامه</translation>
 <translation id="161042844686301425">فیروزه‌ای</translation>
 <translation id="1611432201750675208">دستگاهتان قفل شده است</translation>
@@ -2318,6 +2321,7 @@
 <translation id="2667144577800272420">برنامه‌های دیگری تنظیم شده‌اند تا همان پیوندها را مثل <ph name="APP_NAME" /> باز کنند. با این کار <ph name="APP_NAME_2" /> و <ph name="APP_NAME_3" /> غیرفعال خواهند شد تا پیوندهای پشتیبانی‌شده را باز نکنند.</translation>
 <translation id="2667463864537187133">مدیریت غلط‌یاب املایی</translation>
 <translation id="2668094785979141847">‏برای خروج از «لنز Google»، کلیک کنید</translation>
+<translation id="2668604389652548400">‏این افزونه را بردارید یا آن را با افزونه‌های مشابه در <ph name="BEGIN_LINK" />نت‌بازار Chrome<ph name="END_LINK" /> جایگزین کنید</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> باز نشد</translation>
 <translation id="2669454659051515572">همه افرادی که از این دستگاه استفاده می‌کنند می‌توانند فایل‌های بارگیری‌شده را ببینند</translation>
 <translation id="2670102641511624474">‏<ph name="APP_NAME" /> درحال اشتراک‌گذاری یک برگه Chrome است.</translation>
@@ -2368,6 +2372,7 @@
 <translation id="2710101514844343743">داده‌های استفاده و عیب‌یابی</translation>
 <translation id="271033894570825754">جدید</translation>
 <translation id="2710507903599773521">اکنون <ph name="DEVICE_TYPE" /> شما قفل شده است</translation>
+<translation id="2712141162840347885">‏هرچیزی را که می‌خواهید برای جستجو با «لنز Google» انتخاب کنید یا کلید «گریز» را فشار دهید تا از «لنز Google» خارج شوید</translation>
 <translation id="2713106313042589954">خاموش کردن دوربین</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2714180132046334502">پس‌زمینه تاریک</translation>
@@ -2992,6 +2997,7 @@
 <translation id="3177914167275935955">‏Chrome Education Upgrade در دستگاهتان وجود دارد، اما نام کاربری شما با هیچ حساب Google for Education مرتبط نیست. لطفاً با رفتن به نشانی زیر در دستگاهی دیگر، حساب Google for Education بسازید: g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">قلم نوشتار</translation>
 <translation id="3180284704187420717">با همگام‌سازی، نشانک‌ها، گذرواژه‌ها، و اطلاعات دیگر را ذخیره کنید</translation>
+<translation id="3180716079618904608">دریافت برنامه و بازی</translation>
 <translation id="3181954750937456830">مرور ایمن (از شما و دستگاهتان درمقابل سایت‌های خطرناک محافظت می‌کند)</translation>
 <translation id="3182749001423093222">غلط‌یاب املایی</translation>
 <translation id="3183139917765991655">واردکننده نمایه</translation>
@@ -4283,6 +4289,7 @@
 <translation id="4120817667028078560">مسیر بیش از حد طولانی است</translation>
 <translation id="4124823734405044952">کلید ایمنی بازنشانی شد</translation>
 <translation id="4124935795427217608">تک‌شاخ</translation>
+<translation id="4126375522951286587">خاموش کردن <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">قهرمان</translation>
 <translation id="4130199216115862831">گزارش دستگاه</translation>
 <translation id="4130750466177569591">موافقم</translation>
@@ -4583,6 +4590,7 @@
 <translation id="4364327530094270451">خربزه</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> در حال اشتراک‌گذاری یک پنجره است.</translation>
 <translation id="4364830672918311045">نمایش اعلان‌ها</translation>
+<translation id="4367027658822022112">‏می‌توانید «لنز Google» را برای دسترسی آسان سنجاق کنید؛ روی دکمه «سنجاق کردن» در بالای پانل کناری کلیک کنید</translation>
 <translation id="4367513928820380646">مرور اجازه‌های برداشته‌شده</translation>
 <translation id="4367971618859387374">نام نمایشی</translation>
 <translation id="4368960422722232719">نمایش میزان استفاده از حافظه در کارت پیش‌نمایش نگه داشتن روی برگه</translation>
@@ -4985,6 +4993,7 @@
 <translation id="4666911709726371538">برنامه‌های بیشتر</translation>
 <translation id="4668279686271488041">داده‌های سنجش آگهی مرتباً از دستگاهتان حذف می‌شود</translation>
 <translation id="4668929960204016307">،</translation>
+<translation id="4668936527507421457">پین باید فقط حاوی اعداد باشد</translation>
 <translation id="4670909875730475086">تبریک! <ph name="APP_NAME" /> باموفقیت در دستگاهتان نصب شد</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> اکنون باز شود</translation>
 <translation id="4673442866648850031">وقتی قلم برداشته می‌شود، ابزار قلم باز می‌شود</translation>
@@ -5068,6 +5077,7 @@
 <translation id="473936925429402449">انتخاب‌شده، محتوای اضافی <ph name="CURRENT_ELEMENT" /> از <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">بلیت‌ها</translation>
 <translation id="4740546261986864539">تازه بازشده</translation>
+<translation id="4741235124132242877">‏سنجاق شد! دفعه بعد در نوارابزار از «لنز Google» استفاده کنید</translation>
 <translation id="4742334355511750246">اجازه ندارد تصاویر را نشان دهد</translation>
 <translation id="4742795653798179840">‏داده‌های Chrome حذف شد</translation>
 <translation id="4742970037960872810">برداشتن برجسته‌سازی</translation>
@@ -6765,6 +6775,7 @@
 <translation id="6042308850641462728">بیشتر</translation>
 <translation id="604388835206766544">پیکربندی تجزیه‌وتحلیل نشد</translation>
 <translation id="6043994281159824495">خروج از سیستم هم‌اکنون</translation>
+<translation id="604424701295382420">‏سنجاق شد! دفعه بعد می‌توانید ازطریق این دکمه جدید در نوارابزار به «لنز Google» دسترسی پیدا کنید</translation>
 <translation id="6045114302329202345">‏دکمه TrackPoint اصلی</translation>
 <translation id="6047632800149092791">همگام‌سازی کار نمی‌کند. تلاش کنید از سیستم خارج و دوباره وارد شوید.</translation>
 <translation id="6048747414605857443">‏انتخاب و سفارشی کردن صداهای نوشتار به گفتار برای ChromeVox و «انتخاب برای شنیدن»</translation>
@@ -7599,6 +7610,7 @@
 <translation id="6686490380836145850">بستن برگه‌های سمت راست</translation>
 <translation id="6686665106869989887">برگه به راست منتقل شد</translation>
 <translation id="6686817083349815241">ذخیره گذرواژه‌تان</translation>
+<translation id="6687008241368170505">‏تغییر پین «مدیر گذرواژه Google»</translation>
 <translation id="6687079240787935001">پنهان کردن <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">از <ph name="SUPERVISED_USER_NAME" /> بخواهید پای رایانه بیاید. فرزندتان چند عبارت را از روی صفحه می‌خواند تا مدل صوتی‌اش ایجاد شود.
     <ph name="BR" />
@@ -8378,6 +8390,7 @@
 <translation id="7289386924227731009">‏<ph name="WINDOW_TITLE" /> - درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید F6 را فشار دهید</translation>
 <translation id="7290242001003353852">این سرویس ورود به سیستم با میزبانی <ph name="SAML_DOMAIN" /> در حال دسترسی به دوربین شما است.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />مرورگرتان تحت مدیریت<ph name="END_LINK" /> سازمانتان و <ph name="BEGIN_LINK" />نمایه‌تان تحت مدیریت<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> است</translation>
+<translation id="7292147651179697920">از ولی‌تان بخواهید دسترسی را در «تنظیمات» مجاز کند</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">‏توجه داشته باشید Android، ‏Play و برنامه‌های مرتبط تحت‌کنترل خط‌مشی‌های جمع‌آوری و استفاده داده مربوط به خودشان هستند.</translation>
 <translation id="7296503797589217366">پوشه <ph name="FOLDER_TITLE" /> را انتخاب کنید</translation>
@@ -8686,6 +8699,7 @@
 <translation id="7514239104543605883">کپی در دستگاه</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7514417110442087199">افزودن تخصیص</translation>
+<translation id="7515191208480168435">‏می‌توانید «لنز Google» را برای دسترسی آسان سنجاق کنید</translation>
 <translation id="751523031290522286">سرپرست شما <ph name="APP_NAME" /> را مسدود کرده است. از سرپرست بخواهید اجازه دهد از این برنامه استفاده کنید.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">صفحه بعدی</translation>
@@ -10160,6 +10174,7 @@
 <translation id="8592141010104017453">هرگز اعلان نشان داده نشود</translation>
 <translation id="859246725979739260">دسترسی این سایت به مکان شما مسدود شده است.</translation>
 <translation id="8593450223647418235">‏تا وقتی راه‌اندازی تکمیل نشود، نمی‌توانید فایل‌ها را در Microsoft 365 باز کنید.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> در <ph name="DEVICE_TYPE" /> مسدود شده است</translation>
 <translation id="8596540852772265699">فایل‌های سفارشی</translation>
 <translation id="8597845839771543242">قالب محصول:</translation>
 <translation id="8598249292448297523">چاپ</translation>
@@ -10580,6 +10595,7 @@
 <translation id="8890529496706615641">نام نمایه تغییر نکرد. لطفاً دوباره امتحان کنید یا برای دریافت پشتیبانی فنی، با شرکت مخابراتی خود تماس بگیرید.</translation>
 <translation id="8892168913673237979">همه چیز آماده است!</translation>
 <translation id="8892246501904593980">همه نشانک‌هایتان را در «نشانک‌ها و فهرست‌ها» ببینید</translation>
+<translation id="8893479486525393799">میکروفون استودیویی</translation>
 <translation id="8893801527741465188">حذف نصب تکمیل شد</translation>
 <translation id="8893928184421379330">متأسفیم، دستگاه <ph name="DEVICE_LABEL" /> شناسایی نشد.</translation>
 <translation id="8894761918470382415">محافظت از دسترسی به داده‌ها برای لوازم جانبی</translation>

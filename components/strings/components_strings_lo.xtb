@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />ນາຍຈ້າງ ຫຼື ໂຮງຮຽນຂອງທ່ານ
           <ph name="LIST_ITEM" />ຜູ້ໃຫ້ບໍລິການອິນເຕີເນັດຂອງທ່ານ
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">ຕິດຕາມສິນຄ້ານີ້</translation>
 <translation id="1337692097987160377">ແບ່ງປັນແຖບນີ້</translation>
 <translation id="1339601241726513588">ໂດ​ເມນ​ການລົງທະບຽນ:</translation>
 <translation id="1340482604681802745">ທີ່ຢູ່ບ່ອນຮັບເຄື່ອງ</translation>
@@ -2611,6 +2612,7 @@
 <translation id="6035491133925068289">ແລ່ນ ແລະ ລານ</translation>
 <translation id="6039846035001940113">ຖ້າບັນຫາຍັງຢູ່, ກະລຸນາຕິດຕໍ່ຫາເຈົ້າຂອງເວັບໄຊ.</translation>
 <translation id="6040143037577758943">ປິດ</translation>
+<translation id="6040539895181423374">ຂໍ້ມູນເຈາະເລິກດ້ານລາຄາ</translation>
 <translation id="604124094241169006">ອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="6041777658117377052">ອຸນຫະພູມຕູ້</translation>
 <translation id="6042308850641462728">ເພີ່ມເຕີມ</translation>

@@ -191,6 +191,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
           <ph name="LIST_ITEM" />Ishxonangiz yoki ta’lim muassasidagi tizim administratori;
           <ph name="LIST_ITEM" />Internet provayderi.
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Narxini kuzatish</translation>
 <translation id="1337692097987160377">Bu varaqni ulashish</translation>
 <translation id="1339601241726513588">Ro‘yxatdan o‘tish domeni:</translation>
 <translation id="1340482604681802745">Olib ketish manzili</translation>
@@ -2606,6 +2607,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6035491133925068289">Yengil atletika</translation>
 <translation id="6039846035001940113">Agar muammo qaytarilsa, sayt egasi bilan bog‘laning.</translation>
 <translation id="6040143037577758943">Yopish</translation>
+<translation id="6040539895181423374">Narxlarni bilish</translation>
 <translation id="604124094241169006">Avtomatik</translation>
 <translation id="6041777658117377052">Kamera harorati</translation>
 <translation id="6042308850641462728">Yana</translation>

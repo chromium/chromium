@@ -468,6 +468,7 @@ Als je dit beleid instelt op PromptInTab, wordt na het verlopen van de verificat
       Het laden van een weggegooide pagina wordt ongedaan gemaakt en de bijbehorende resources worden volledig teruggeclaimd. Het tabblad waaraan de pagina is gekoppeld, blijft in de tabbladstrook staan, maar als je het tabblad zichtbaar maakt, wordt de pagina helemaal opnieuw geladen.
       </translation>
 <translation id="138847842893090358">OS-updatestatus rapporten</translation>
+<translation id="1389138080311956934">Maximale geheugenbesparingen.</translation>
 <translation id="1390529781843037070">Als je het beleid toepast of niet instelt, kunnen gebruikers naar <ph name="CLOUD_PRINT_NAME" /> afdrukken vanaf het <ph name="PRODUCT_NAME" />-afdrukdialoogvenster. <ph name="PRODUCT_NAME" /> kan documenten naar <ph name="CLOUD_PRINT_NAME" /> sturen om ze af te drukken. Dit voorkomt niet dat gebruikers afdruktaken op websites indienen.
 
       Als je dit beleid niet toepast, kunnen gebruikers niet naar <ph name="CLOUD_PRINT_NAME" /> afdrukken vanaf het <ph name="PRODUCT_NAME" />-afdrukdialoogvenster.
@@ -3883,6 +3884,7 @@ Voor <ph name="PRODUCT_OS_NAME" /> is dit beleid gerelateerd aan externe atteste
 Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="4070039109671307724">Overig</translation>
 <translation id="4072225853834793549">Snelkoppelingen voor toegankelijkheid op het inlogscherm uitzetten</translation>
+<translation id="4074922053013383215">Gemiddelde geheugenbesparingen.</translation>
 <translation id="4075675819066819571">De plank aan de linkerkant van het scherm plaatsen</translation>
 <translation id="4079306023113982053">Beheert de beschikbaarheid van <ph name="BOREALIS_NAME" /> voor deze gebruiker.
 
@@ -8575,6 +8577,7 @@ Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-e
       Als je het beleid instelt op False of niet instelt, kan <ph name="FLASH_PLUGIN_NAME" />-content van een andere herkomst of kleine content worden geblokkeerd.
 
       Opmerking: Zie de volgende beleidsregels als je wilt beheren welke websites <ph name="FLASH_PLUGIN_NAME" /> mogen uitvoeren: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> en <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801163363326128751">Besparingen in de modus Geheugenbesparing wijzigen</translation>
 <translation id="7804859754080118507">Netwerkverbindings- en signaalsterktegebeurtenissen rapporteren op ingeschreven apparaten.
 
       Als je het beleid instelt op False of niet instelt, worden de gegevens niet gerapporteerd.
@@ -9160,6 +9163,7 @@ Meer informatie over verouderde technologieën vind je op https://chromestatus.c
 <translation id="8274926413890711289">Opties voor gedetailleerde rapportage aanzetten</translation>
 <translation id="8275103737670730746">Toestaan dat API's voor bestands- of directorykiezers worden aangeroepen zonder eerder gebruikersgebaar</translation>
 <translation id="8278133379873210419">JavaScript-dialoogvensters onderdrukken als deze worden geactiveerd vanaf een subframe met een andere oorsprong</translation>
+<translation id="8284028944941138279">Gebalanceerde geheugenbesparingen.</translation>
 <translation id="8284296539558710573">Cross-origin-prompts voor HTTP-verificatie</translation>
 <translation id="8284527236880877730">Als <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> is uitgezet, stel je met <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> het percentage in waarmee de dimperiode van het scherm wordt geschaald als met het apparaat wordt gepresenteerd. Als de dimperiode van het scherm wordt geschaald, blijven de perioden tot het scherm uitgaat, het scherm wordt vergrendeld en inactiviteit wordt geactiveerd, gelijk aan de periode voor het dimmen van het scherm die je oorspronkelijk had ingesteld.
 
@@ -9824,6 +9828,17 @@ Dit beleid is niet van toepassing als het virtuele toetsenbord is uitgezet (bijv
 <translation id="8835322836315560274">Met dit beleid bepaal je welke opdracht moet worden gebruikt om URL's te openen in een alternatieve browser. Je kunt dit beleid instellen op <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> of een bestandspad. Als je dit beleid instelt op een bestandspad, wordt dat bestand als uitvoerbaar bestand gebruikt. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> is alleen beschikbaar op <ph name="MS_WIN_NAME" />. <ph name="SAFARI_VALUE_PLACEHOLDER" /> en <ph name="EDGE_VALUE_PLACEHOLDER" /> zijn alleen beschikbaar op <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" />.
 
       Als je het beleid niet instelt, wordt er een platformspecifieke standaard-app gebruikt: <ph name="IE_PRODUCT_NAME" /> voor <ph name="MS_WIN_NAME" /> en <ph name="SAFARI_PRODUCT_NAME" /> voor <ph name="MAC_OS_NAME" />. In <ph name="LINUX_OS_NAME" /> werkt het starten van een alternatieve browser niet.</translation>
+<translation id="8836227957461360521">Met dit beleid wijzig je het besparingsniveau van Geheugenbesparing.
+
+Dit is alleen van kracht als Geheugenbesparing is aangezet via de instellingen of via het beleid <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> en heeft invloed op hoe heuristieken worden gebruikt om te bepalen wanneer tabbladen moeten worden verwijderd. Als je bijvoorbeeld de levensduur van een inactief tabblad verkort voordat je het verwijdert, kun je geheugen besparen. Het betekent ook dat tabbladen vaker worden geladen, wat kan leiden tot een slechte gebruikerservaring en meer netwerkverkeer.
+
+Als je het beleid instelt op 0, zorgt Geheugenbesparing voor gemiddelde geheugenbesparingen. Tabbladen worden na een langere periode inactief.
+
+Als je het beleid instelt op 1, zorgt Geheugenbesparing voor gebalanceerde geheugenbesparingen. Je tabbladen worden na een optimale periode inactief.
+
+Als je het beleid instelt op 2, zorgt Geheugenbesparing voor maximale geheugenbesparingen. Je tabbladen worden na een kortere periode inactief.
+
+Als je dit beleid niet instelt, kan de eindgebruiker deze instelling beheren in chrome://settings/performance.</translation>
 <translation id="8836975838488342340">Tijd dat de toegangscode geldig is (in seconden).</translation>
 <translation id="883744045558067826">Het gebruik van de Chrome Root Store is afhankelijk van het lanceringsproces van de functies.</translation>
 <translation id="8837957135252624017">Minstens 1 Chrome-tabblad open laten staan</translation>

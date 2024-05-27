@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">İndi yox</translation>
 <translation id="100881991356161927">Sayt adı</translation>
 <translation id="1009663062402466586">Oyun nəzarətləri indi əlçatandır</translation>
+<translation id="1010136228650201057">İstifadəçi datası şifrələməsi</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Səhifə Cavab vermir}other{Səhifələr Cavab vermir}}</translation>
 <translation id="1011003645819296594">Yadda saxlanmış cihazlar</translation>
 <translation id="1011355516189274711">Mətndən-nitqə səs səviyyəsi</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Gizli Rejim</translation>
 <translation id="1049795001945932310">&amp;Dil ayarları</translation>
 <translation id="1050693411695664090">Keyfiyyətsiz</translation>
+<translation id="1053776357096024725">Müxtəlif effektlərlə daxili mikrofon səsini təkmilləşdirin</translation>
 <translation id="1054048317165655285">Telefonunuzda ayarlamanı tamamlayın</translation>
 <translation id="1054153489933238809">Orijinal Təsviri Yeni Paneldə Açın</translation>
 <translation id="1054187194995068149">Salam. Bu, önizləmədir</translation>
@@ -829,6 +831,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1607139524282324606">Girişi silin</translation>
 <translation id="1607499585984539560">İstifadəçi domen ilə əlaqəli deyil</translation>
 <translation id="1608668830839595724">Seçilmiş elementlər üçün daha çox əməliyyat</translation>
+<translation id="1608698493373028805">Bu artırma tezliklə dəstəklənməyə bilər</translation>
 <translation id="1610272688494140697">Tətbiq Ayarları</translation>
 <translation id="161042844686301425">Firuzəyi</translation>
 <translation id="1611432201750675208">Cihazınız kilidlidir</translation>
@@ -2307,6 +2310,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2667144577800272420">Digər tətbiqlər <ph name="APP_NAME" /> ilə eyni keçidləri açmaq üçün ayarlanıb. Bununla <ph name="APP_NAME_2" /> və <ph name="APP_NAME_3" /> tətbiqinin dəstəklənən keçidləri açması deaktiv ediləcək.</translation>
 <translation id="2667463864537187133">Orfoqrafik yoxlanışı idarə edin</translation>
 <translation id="2668094785979141847">Klikləyərək Google Linzadan çıxın</translation>
+<translation id="2668604389652548400">Onu silin və ya <ph name="BEGIN_LINK" />Chrome Veb Marketdən<ph name="END_LINK" /> bənzər artırmalar ilə əvəz edin</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> açılmadı</translation>
 <translation id="2669454659051515572">Bu cihazdan istifadə edən hər kəs endirilmiş faylları görə bilər</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> tətbiqi Chrome panelini paylaşır.</translation>
@@ -2357,6 +2361,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2710101514844343743">İstifadə və diaqnostika datası</translation>
 <translation id="271033894570825754">Yeni</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> kilidi açılıb</translation>
+<translation id="2712141162840347885">Google Linza ilə axtarış etmək üçün istədiyinizi seçin və ya Google Linzadan çıxmaq üçün "escape" düyməsinə basın</translation>
 <translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2713444072780614174">Ağ</translation>
 <translation id="2714180132046334502">Tünd arxa fon</translation>
@@ -2981,6 +2986,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3177914167275935955">Cihazınıza Chrome Təhsil Güncəlləməsi daxildir, lakin istifadəçi adınız Google Təhsil hesabı ilə əlaqələndirilməyib. İkinci dərəcəli cihazda g.co/workspace/edusignup bölməsinə keçərək Google Təhsil hesabı yaradın.</translation>
 <translation id="3179982752812949580">Mətn şrifti</translation>
 <translation id="3180284704187420717">Sinxronlaşdırmaqla əlfəcin, parol və s. yadda saxlayın</translation>
+<translation id="3180716079618904608">Tətbiq və oyunlar əldə edin</translation>
 <translation id="3181954750937456830">Təhlükəsiz Axtarış (Sizi və cihazınızı təhlükəli saytlardan qoruyur)</translation>
 <translation id="3182749001423093222">Orfoqrafik yoxlanış</translation>
 <translation id="3183139917765991655">Profil İmporter</translation>
@@ -4270,6 +4276,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4120817667028078560">Yol çox uzundur</translation>
 <translation id="4124823734405044952">Güvənlik açarı sıfırlanıb</translation>
 <translation id="4124935795427217608">Tək buynuzlu at</translation>
+<translation id="4126375522951286587">Söndürün: <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Cihaz Qeydiyyatı</translation>
 <translation id="4130750466177569591">Razıyam</translation>
@@ -4570,6 +4577,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4364327530094270451">Yemiş</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> tətbiqi pəncərə paylaşır.</translation>
 <translation id="4364830672918311045">Bildirişləri görüntüləyin</translation>
+<translation id="4367027658822022112">Asan giriş üçün Google Linzanı bərkidə bilərsiniz; yan panelin yuxarısındakı Bərkitmə düyməsinə klikləyin</translation>
 <translation id="4367513928820380646">Silinmiş icazələri nəzərdən keçirin</translation>
 <translation id="4367971618859387374">Displey adı</translation>
 <translation id="4368960422722232719">Yaddaş istifadəsini tab üzərində popap önizləmə kartında göstərin</translation>
@@ -4972,6 +4980,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4666911709726371538">Daha çox tətbiq</translation>
 <translation id="4668279686271488041">Reklam ölçmə datası cihazınızdan müntəzəm olaraq silinir</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN yalnız rəqəmlərdən ibarət olmalıdır</translation>
 <translation id="4670909875730475086">Təbriklər! <ph name="APP_NAME" /> cihazınızda quraşdırıldı</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> faylını indi açın</translation>
 <translation id="4673442866648850031">Fırça silinərkən fırça alətlərini açın</translation>
@@ -5055,6 +5064,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="473936925429402449"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> əlavə məzmun seçilib</translation>
 <translation id="4739639199548674512">Biletlər</translation>
 <translation id="4740546261986864539">Ən son açılan</translation>
+<translation id="4741235124132242877">Bərkidildi! Alətlər panelindən giriş etməklə Google Linzadan yenidən istifadə edin</translation>
 <translation id="4742334355511750246">Şəkilləri göstərmək icazəsi verilməyib</translation>
 <translation id="4742795653798179840">Chrome datası silindi</translation>
 <translation id="4742970037960872810">Vurğulamanı silin</translation>
@@ -6750,6 +6760,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6042308850641462728">Daha çox</translation>
 <translation id="604388835206766544">Konfiqurasiyanı nəzərdən keçirmək alınmadı</translation>
 <translation id="6043994281159824495">Hesabdan çıxın</translation>
+<translation id="604424701295382420">Bərkidildi! Google Linzaya alətlər panelindəki yeni düymə ilə təkrar daxil ola bilərsiniz</translation>
 <translation id="6045114302329202345">Əsas TrackPoint düyməsi</translation>
 <translation id="6047632800149092791">Sinxronlaşdırma işləmir. Çıxın və yenidən daxil olun.</translation>
 <translation id="6048747414605857443">ChromeVox və Seçib danış üçün nitq sintezi səslərini seçin və fərdiləşdirin</translation>
@@ -7582,6 +7593,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6686490380836145850">Sağ panelləri bağlayın</translation>
 <translation id="6686665106869989887">Tab sağa köçürüldü</translation>
 <translation id="6686817083349815241">Parolunuzu yadda saxlayın</translation>
+<translation id="6687008241368170505">Google Parol Meneceri PIN-ni dəyişin</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> modulunu gizlədin</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> adlı istifadəçidən kompüterə keçməsini xahiş edin. Övladınız öz səs modelini yaratmaq üçün bu ekranda bir neçə cümlə səsləndirəcək.
     <ph name="BR" />
@@ -8360,6 +8372,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - İcazə tələb edilib, cavablandırmaq üçün F6 düyməsini basın</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> tərəfindən dəstəklənən bu daxilolma xidməti, kameranıza daxil olur.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Brauzeri<ph name="END_LINK" /> təşkilat, <ph name="BEGIN_LINK" />profili<ph name="END_LINK" /> isə <ph name="PROFILE_DOMAIN" /> idarə edir</translation>
+<translation id="7292147651179697920">Valideyndən Ayarlarda giriş imkanı verməsini istəyin</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Nəzərə alın ki, Android, Play və əlaqədar tətbiqlər datanın əldə edilməsi və istifadəsi üçün öz siyasətləri ilə idarə edilir.</translation>
 <translation id="7296503797589217366">Qovluq seçin: <ph name="FOLDER_TITLE" /></translation>
@@ -8668,6 +8681,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7514239104543605883">Cihazınıza kopyalayın</translation>
 <translation id="7514365320538308">Endirmə</translation>
 <translation id="7514417110442087199">Təyinat əlavə edin</translation>
+<translation id="7515191208480168435">Asan giriş üçün Google Linzanı bərkidə bilərsiniz</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> admin tərəfindən bloklanıb. Bu tətbiqdən istifadə etmək üçün admindən icazə istəyin.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10142,6 +10156,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8592141010104017453">Bildirişlər heç göstərilməsin</translation>
 <translation id="859246725979739260">Bu saytın məkanınıza girişi blok edilib.</translation>
 <translation id="8593450223647418235">Ayarlama tamamlanmadan faylları Microsoft 365-də aça bilməyəcəksiniz.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> <ph name="DEVICE_TYPE" /> cihazında bloklanıb</translation>
 <translation id="8596540852772265699">Fərdi fayllar</translation>
 <translation id="8597845839771543242">Funksiya formatı:</translation>
 <translation id="8598249292448297523">çap</translation>
@@ -10559,6 +10574,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8890529496706615641">Profilin adını dəyişmək mümkün olmadı. Yenidən cəhd edin və ya texniki dəstək üçün operatorunuz ilə əlaqə saxlayın.</translation>
 <translation id="8892168913673237979">Tam hazır!</translation>
 <translation id="8892246501904593980">Əlfəcinlər və siyahılar bölməsində bütün əlfəcinlərə baxın</translation>
+<translation id="8893479486525393799">Studio mikrofonu</translation>
 <translation id="8893801527741465188">Sistemdən silinmə bitdi</translation>
 <translation id="8893928184421379330">Üzr istəyirik, <ph name="DEVICE_LABEL" /> cihazı tanınmadı.</translation>
 <translation id="8894761918470382415">Kənar cihazların data girişinə qarşı müdafiə</translation>

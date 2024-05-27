@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">ابھی نہیں</translation>
 <translation id="100881991356161927">سائٹ کا نام</translation>
 <translation id="1009663062402466586">گیم کنٹرولز اب دستیاب ہے</translation>
+<translation id="1010136228650201057">صارف کے ڈیٹا کی مرموز کاری</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{صفحہ غیر اثرپذیر ہے}other{صفحات غیر اثرپذیر ہیں}}</translation>
 <translation id="1011003645819296594">محفوظ کردہ آلات</translation>
 <translation id="1011355516189274711">ٹیکسٹ ٹو اسپیچ کا والیوم</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">پوشیدگی</translation>
 <translation id="1049795001945932310">&amp;زبان کی ترتیبات</translation>
 <translation id="1050693411695664090">خراب</translation>
+<translation id="1053776357096024725">مختلف اثرات کے ساتھ اپنے پہلے سے شامل مائکروفون کی آواز کو بہتر بنائیں</translation>
 <translation id="1054048317165655285">اپنے فون پر سیٹ اپ مکمل کریں</translation>
 <translation id="1054153489933238809">اصل &amp;تصویر نئے ٹیب میں کھولیں</translation>
 <translation id="1054187194995068149">آداب. یہ ایک پیش منظر ہے</translation>
@@ -833,6 +835,7 @@
 <translation id="1607139524282324606">داخلہ صاف کریں</translation>
 <translation id="1607499585984539560">صارف ڈومین کے ساتھ الحاق یافتہ نہیں ہے</translation>
 <translation id="1608668830839595724">منتخب کردہ آئٹمز کیلئے مزید کارروائیاں</translation>
+<translation id="1608698493373028805">ممکن ہے کہ یہ ایکسٹینشن جلد ہی مزید تعاون یافتہ نہ ہو</translation>
 <translation id="1610272688494140697">ایپ کی ترتیبات</translation>
 <translation id="161042844686301425">سیان</translation>
 <translation id="1611432201750675208">آپ کا آلہ مقفل ہے</translation>
@@ -2310,6 +2313,7 @@
 <translation id="2667144577800272420">دیگر ایپس کو <ph name="APP_NAME" /> کی طرح لنکس کو کھولنے کے لیے سیٹ کیا گیا ہے۔ یہ <ph name="APP_NAME_2" /> <ph name="APP_NAME_3" /> تعاون یافتہ لنکس کھولنے سے غیر فعال کر دیں گی۔</translation>
 <translation id="2667463864537187133">املا کی جانچ کا نظم کریں</translation>
 <translation id="2668094785979141847">‏‫Google لینز سے باہر نکلنے کے لیے کلک کریں</translation>
+<translation id="2668604389652548400">‏<ph name="BEGIN_LINK" />Chrome ویب اسٹور<ph name="END_LINK" /> سے ملتے جلتے ایکسٹینشنز کے ساتھ اسے ہٹائیں یا تبدیل کریں</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> کھولی نہیں جا سکی</translation>
 <translation id="2669454659051515572">اس آلے کا استعمال کرنے والا کوئی بھی شخص ڈاؤن لوڈ کردہ فائلز کو دیکھ سکتا ہے</translation>
 <translation id="2670102641511624474">‏<ph name="APP_NAME" /> ایک Chrome ٹیب کا اشتراک کر رہی ہے۔</translation>
@@ -2360,6 +2364,7 @@
 <translation id="2710101514844343743">استعمال اور ڈائیگناسٹکس کا ڈیٹا</translation>
 <translation id="271033894570825754">نیا</translation>
 <translation id="2710507903599773521">آپ کا <ph name="DEVICE_TYPE" /> اب غیر مقفل ہے</translation>
+<translation id="2712141162840347885">‏‫Google لینز کے ساتھ تلاش کرنے کے لیے کچھ بھی منتخب کریں یا Google لینز سے باہر نکلنے کے لیے Escape کو دبائیں</translation>
 <translation id="2713106313042589954">کیمرا آف کریں</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2714180132046334502">گہرا پس منظر</translation>
@@ -2984,6 +2989,7 @@
 <translation id="3177914167275935955">‏آپ کے آلے میں Chrome Education اپ گریڈ شامل ہے، لیکن آپ کا صارف نام Google for Education اکاؤنٹ سے وابستہ نہیں ہے۔ براہ کرم ثانوی آلہ پر g.co/workspace/edusignup پر جا کر Google for Education اکاؤنٹ تخلیق کریں۔</translation>
 <translation id="3179982752812949580">متن کا فونٹ</translation>
 <translation id="3180284704187420717">مطابقت پذیری کے ساتھ اپنے بُک مارکس پاس ورڈز اور بہت کچھ کو محفوظ کریں</translation>
+<translation id="3180716079618904608">ایپس اور گیمز حاصل کریں</translation>
 <translation id="3181954750937456830">محفوظ براؤزنگ (آپ اور آپ کے آلہ کی خطرناک سائٹس سے حفاظت کرتی ہے)</translation>
 <translation id="3182749001423093222">املا کی جانچ</translation>
 <translation id="3183139917765991655">پروفائل درآمد کنندہ</translation>
@@ -4273,6 +4279,7 @@
 <translation id="4120817667028078560">پاتھ کافی لمبا ہے</translation>
 <translation id="4124823734405044952">آپ کی سیکیورٹی کلید کو دوبارہ ترتیب دے دیا گیا ہے</translation>
 <translation id="4124935795427217608">یونیکارن</translation>
+<translation id="4126375522951286587"><ph name="VM_NAME" /> کو شٹ ڈاؤن کریں</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">آلے کا لاگ</translation>
 <translation id="4130750466177569591">میں متفق ہوں</translation>
@@ -4573,6 +4580,7 @@
 <translation id="4364327530094270451">خربوزہ</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ایک ونڈو کا اشتراک کر رہی ہے۔</translation>
 <translation id="4364830672918311045">اطلاعات ڈسپلے کریں</translation>
+<translation id="4367027658822022112">‏آپ آسان رسائی کے لیے Google لینز کو پن کر سکتے ہیں؛ سائیڈ پینل کے اوپری حصے میں پن کریں بٹن پر کلک کریں</translation>
 <translation id="4367513928820380646">ہٹائی گئی اجازتوں کا جائزہ لیں</translation>
 <translation id="4367971618859387374">ڈسپلے نام</translation>
 <translation id="4368960422722232719">ٹیب ہوور پیش منظر کارڈ پر میموری کا استعمال دکھائیں</translation>
@@ -4975,6 +4983,7 @@
 <translation id="4666911709726371538">مزید ایپس</translation>
 <translation id="4668279686271488041">اشتہار کی اثرپذیری کی پیمائش ڈیٹا آپ کے آلے سے باقاعدگی سے ہو جاتا ہے</translation>
 <translation id="4668929960204016307">،</translation>
+<translation id="4668936527507421457">‏‫PIN کو صرف نمبر استعمال کرنا چاہیے</translation>
 <translation id="4670909875730475086">مبارک ہو! <ph name="APP_NAME" /> کامیابی کے ساتھ آپ کے آلے پر انسٹال ہو گئی ہے</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> ابھی کھولیں</translation>
 <translation id="4673442866648850031">اسٹائلس کو ہٹانے کے وقت اسٹائلس ٹولز کھولیں</translation>
@@ -5058,6 +5067,7 @@
 <translation id="473936925429402449">منتخب کردہ، <ph name="CURRENT_ELEMENT" /> میں سے اضافی مواد <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">ٹکٹیں</translation>
 <translation id="4740546261986864539">حال ہی میں کھولی گئی</translation>
+<translation id="4741235124132242877">‏پن کر دیا گیا! ٹول بار سے دوبارہ Google لینز استعمال کریں</translation>
 <translation id="4742334355511750246">تصاویر دکھانے کی اجازت نہیں ہے</translation>
 <translation id="4742795653798179840">‏Chrome کے ڈیٹا کو حذف کر دیا گیا ہے</translation>
 <translation id="4742970037960872810">ہائی لائٹ کو ہٹائیں</translation>
@@ -6753,6 +6763,7 @@
 <translation id="6042308850641462728">مزید</translation>
 <translation id="604388835206766544">کنفیگریشن پارس کرنے میں ناکام</translation>
 <translation id="6043994281159824495">ابھی سائن آؤٹ کریں</translation>
+<translation id="604424701295382420">‏پن کر دیا گیا! آپ ٹول بار پر نئے بٹن سے دوبارہ Google لینز تک رسائی حاصل کر سکتے ہیں</translation>
 <translation id="6045114302329202345">‏بنیادی TrackPoint بٹن</translation>
 <translation id="6047632800149092791">مطابقت پذیری کام نہیں کر رہی ہے۔ سائن آؤٹ اور پھر دوبارہ سائن ان کر کے دیکھیں۔</translation>
 <translation id="6048747414605857443">‏ChromeVox اور 'سننے کیلئے منتخب کریں' کے لیے ٹیکسٹ ٹو اسپیچ آوازوں کو منتخب کریں اور حسب ضرورت بنائیں</translation>
@@ -7585,6 +7596,7 @@
 <translation id="6686490380836145850">دائیں جانب والے ٹیبز بند کریں</translation>
 <translation id="6686665106869989887">ٹیب دائیں طرف منتقل کیا گیا</translation>
 <translation id="6686817083349815241">اپنا پاس ورڈ محفوظ کریں</translation>
+<translation id="6687008241368170505">‏‫Google پاس ورڈ مینیجر کا PIN تبدیل کریں</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> چھپائیں</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> کو کمپیوٹر پر آنے کیلئے کہیں۔ آپ کا بچہ اپنا صوتی ماڈل تخلیق کرنے کیلئے اس اسکرین پر کچھ فقرے پڑھے گا۔
     <ph name="BR" />
@@ -8363,6 +8375,7 @@
 <translation id="7289386924227731009">‏<ph name="WINDOW_TITLE" /> - اجازت کی درخواست کی گئی، جواب دینے کے ليے F6 دبائیں</translation>
 <translation id="7290242001003353852">یہ سائن ان سروس جس کی میزبانی <ph name="SAML_DOMAIN" /> کرتا ہے، آپ کے کیمرے تک رسائی حاصل کر رہی ہے۔</translation>
 <translation id="7292067737327289208">آپ کے <ph name="BEGIN_LINK" />براؤزر کا نظم<ph name="END_LINK" /> آپ کی تنظیم کرتی ہے اور آپ کی <ph name="BEGIN_LINK" />پروفائل کا نظم<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> کرتا ہے</translation>
+<translation id="7292147651179697920">اپنے والدین سے ترتیبات میں رسائی کی اجازت دینے کو کہیں</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">‏نوٹ کریں کہ Android, Play اور وابستہ ایپس ڈیٹا جمع اور استعمال کرنے کی اپنی ذاتی پالیسیوں کے زیر انتظام ہوتی ہیں۔</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> فولڈر منتخب کریں</translation>
@@ -8671,6 +8684,7 @@
 <translation id="7514239104543605883">اپنے آلہ پر کاپی کریں</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
 <translation id="7514417110442087199">تفویض شامل کریں</translation>
+<translation id="7515191208480168435">‏آپ آسان رسائی کے لیے Google لینز کو پن کر سکتے ہیں</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> منتظم کے ذریعے مسدود ہے۔ منتظم سے اس ایپ کا استعمال کرنے کی اجازت طلب کریں۔</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10145,6 +10159,7 @@
 <translation id="8592141010104017453">اطلاعات بالکل بھی نہ دکھائیں</translation>
 <translation id="859246725979739260">اس سائٹ کو آپ کے مقام تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="8593450223647418235">‏سیٹ اپ مکمل ہونے تک، آپ Microsoft 365 میں فائلیں نہیں کھول سکیں گے۔</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> کو آپ کے <ph name="DEVICE_TYPE" /> پر مسدود کر دیا گیا ہے</translation>
 <translation id="8596540852772265699">حسب ضرورت فائلز</translation>
 <translation id="8597845839771543242">خصوصیت فارمیٹ:</translation>
 <translation id="8598249292448297523">پرنٹ کریں</translation>
@@ -10564,6 +10579,7 @@
 <translation id="8890529496706615641">پروفائل کا نام تبدیل نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں یا تکنیکی سپورٹ کے لیے اپنے کیرئیر سے رابطہ کریں۔</translation>
 <translation id="8892168913673237979">سب کچھ تیار ہے!</translation>
 <translation id="8892246501904593980">اپنے تمام بک مارکس کو بُک مارکس اور فہرستوں میں دیکھیں</translation>
+<translation id="8893479486525393799">اسٹوڈیو مائیک</translation>
 <translation id="8893801527741465188">اَن انسٹال کرنے کا عمل مکمل</translation>
 <translation id="8893928184421379330">معذرت، آلہ <ph name="DEVICE_LABEL" /> پہچانا نہیں جا سکا۔</translation>
 <translation id="8894761918470382415">پیریفیرلز کیلئے ڈیٹا تک رسائی کا پروٹیکشن</translation>
