@@ -14,6 +14,8 @@
         "is_debug": true,
         "target_environment": "simulator",
         "target_os": "ios",
+        "use_reclient": false,
+        "use_remoteexec": true,
         "use_siso": true
       }
     },
