@@ -33,9 +33,9 @@ const std::set<int64_t> RamStorage::GetUrlIdsForTermId(int64_t term_id) const {
   return term_match->second;
 }
 
-int32_t RamStorage::AddToPostingList(int64_t term_id, int64_t url_id) {
+size_t RamStorage::AddToPostingList(int64_t term_id, int64_t url_id) {
   auto it = posting_lists_.find(term_id);
-  int32_t count;
+  size_t count;
   if (it == posting_lists_.end()) {
     posting_lists_.emplace(std::piecewise_construct,
                            std::forward_as_tuple(term_id),
@@ -49,9 +49,9 @@ int32_t RamStorage::AddToPostingList(int64_t term_id, int64_t url_id) {
   return count;
 }
 
-int32_t RamStorage::DeleteFromPostingList(int64_t term_id, int64_t url_id) {
+size_t RamStorage::DeleteFromPostingList(int64_t term_id, int64_t url_id) {
   auto it = posting_lists_.find(term_id);
-  int32_t count;
+  size_t count;
   if (it == posting_lists_.end()) {
     count = 0;
   } else {
@@ -161,18 +161,22 @@ int64_t RamStorage::DeleteFileInfo(int64_t url_id) {
   return url_id;
 }
 
-void RamStorage::AddTermIdsForUrl(const std::set<int64_t>& term_ids,
-                                  int64_t url_id) {
+size_t RamStorage::AddTermIdsForUrl(const std::set<int64_t>& term_ids,
+                                    int64_t url_id) {
+  size_t added_terms_count = 0;
   for (const int64_t term_id : term_ids) {
-    AddToPostingList(term_id, url_id);
+    added_terms_count += AddToPostingList(term_id, url_id);
   }
+  return added_terms_count;
 }
 
-void RamStorage::DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
-                                     int64_t url_id) {
+size_t RamStorage::DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
+                                       int64_t url_id) {
+  size_t deleted_terms_count = 0;
   for (const int64_t term_id : term_ids) {
-    DeleteFromPostingList(term_id, url_id);
+    deleted_terms_count += DeleteFromPostingList(term_id, url_id);
   }
+  return deleted_terms_count;
 }
 
 void RamStorage::AddToPlainIndex(int64_t url_id, int64_t term_id) {

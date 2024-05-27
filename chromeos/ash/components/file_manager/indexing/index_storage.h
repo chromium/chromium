@@ -52,23 +52,24 @@ class IndexStorage {
   virtual const std::set<int64_t> GetTermIdsForUrl(int64_t url_id) const = 0;
 
   // Adds association between terms and the file. This method assumes that the
-  // term list is not empty.
-  virtual void AddTermIdsForUrl(const std::set<int64_t>& term_ids,
-                                int64_t url_id) = 0;
+  // term list is not empty. Returns the number of terms added.
+  virtual size_t AddTermIdsForUrl(const std::set<int64_t>& term_ids,
+                                  int64_t url_id) = 0;
 
-  // Removes association between terms and the file.
-  virtual void DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
-                                   int64_t url_id) = 0;
+  // Removes association between terms and the file. Returns the number of
+  // terms deleted.
+  virtual size_t DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
+                                     int64_t url_id) = 0;
 
   // Adds to the posting list of the given `term_id` the given
   // `url_id`. This may be no-op if the `url_id` already is associated with the
   // given term_id. Returns the number of URL Ids added (1 or 0).
-  virtual int32_t AddToPostingList(int64_t term_id, int64_t url_id) = 0;
+  virtual size_t AddToPostingList(int64_t term_id, int64_t url_id) = 0;
 
   // This method removes the `url_id` from the posting lists of the specified
   // `term_id`. This may be a no-op if the url_id is not present on
   // the posting list for the given term. Returns the number of URLs removed.
-  virtual int32_t DeleteFromPostingList(int64_t term_id, int64_t url_id) = 0;
+  virtual size_t DeleteFromPostingList(int64_t term_id, int64_t url_id) = 0;
 
   // Returns the ID corresponding to the given term. If the term cannot be
   // located, the method returns -1.

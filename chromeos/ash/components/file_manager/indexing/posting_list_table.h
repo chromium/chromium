@@ -36,11 +36,11 @@ class PostingListTable {
 
   // Adds the given `url_id` to the posting list of the given
   // `term_id`. Returns true if successful, false otherwise.
-  int32_t AddToPostingList(int64_t term_id, int64_t url_id);
+  size_t AddToPostingList(int64_t term_id, int64_t url_id);
 
   // Deletes the given `url_id` to the posting list of the given
   // `term_id`. Returns true if successful, false otherwise.
-  int32_t DeleteFromPostingList(int64_t term_id, int64_t url_id);
+  size_t DeleteFromPostingList(int64_t term_id, int64_t url_id);
 
   // For the given term ID it returns all known URL IDs that are associated
   // with that term.

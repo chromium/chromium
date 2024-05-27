@@ -146,11 +146,11 @@ OpResults FileIndex::SetFileTerms(const std::vector<Term>& terms,
   DCHECK(!terms.empty());
 
   // Arrange terms by field and remove duplicates and convert to internal IDs.
-  std::set<int64_t> term_id_set = ConvertToTermIds(terms);
   int64_t url_id = storage_->GetUrlId(url);
   if (url_id == -1) {
     return OpResults::kFileMissing;
   }
+  std::set<int64_t> term_id_set = ConvertToTermIds(terms);
 
   // If the given url_id already had some terms associated with it, remove terms
   // not specified in terms vector. Say, if url_id had terms {t1, t3, t8}

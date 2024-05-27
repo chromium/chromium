@@ -68,13 +68,13 @@ class COMPONENT_EXPORT(FILE_MANAGER) SqlStorage : public IndexStorage {
   // file contains that term, or the user or some system assigned this term
   // to the file (labelled the file). Returns the number of added
   // associations.
-  int32_t AddToPostingList(int64_t term_id, int64_t url_id) override;
+  size_t AddToPostingList(int64_t term_id, int64_t url_id) override;
 
   // Removes the association between `term_id` and `url_id`. This
   // method is the opposite of the AddToPostingList() and means that a file
   // with the given `url_id` no longer "has" the given `term_id`.
   // Returns the number of deleted associations.
-  int32_t DeleteFromPostingList(int64_t term_id, int64_t url_id) override;
+  size_t DeleteFromPostingList(int64_t term_id, int64_t url_id) override;
 
   // Returns the ID corresponding to the given token bytes. If the token bytes
   // cannot be located, we return -1.
@@ -118,10 +118,10 @@ class COMPONENT_EXPORT(FILE_MANAGER) SqlStorage : public IndexStorage {
   int64_t DeleteFileInfo(int64_t url_id) override;
 
   // Miscellaneous.
-  void AddTermIdsForUrl(const std::set<int64_t>& term_ids,
-                        int64_t url_id) override;
-  void DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
-                           int64_t url_id) override;
+  size_t AddTermIdsForUrl(const std::set<int64_t>& term_ids,
+                          int64_t url_id) override;
+  size_t DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
+                             int64_t url_id) override;
 
   // Access to the actual SQL database. Tests only.
   sql::Database* GetDbForTests() { return &db_; }

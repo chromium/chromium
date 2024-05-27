@@ -116,7 +116,7 @@ bool PostingListTable::Init() {
   return true;
 }
 
-int32_t PostingListTable::AddToPostingList(int64_t term_id, int64_t url_id) {
+size_t PostingListTable::AddToPostingList(int64_t term_id, int64_t url_id) {
   sql::Statement add_association(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertAssociationQuery));
   DCHECK(add_association.is_valid())
@@ -131,8 +131,8 @@ int32_t PostingListTable::AddToPostingList(int64_t term_id, int64_t url_id) {
   return db_->GetLastChangeCount();
 }
 
-int32_t PostingListTable::DeleteFromPostingList(int64_t term_id,
-                                                int64_t url_id) {
+size_t PostingListTable::DeleteFromPostingList(int64_t term_id,
+                                               int64_t url_id) {
   sql::Statement delete_association(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAssociationQuery));
   DCHECK(delete_association.is_valid())

@@ -37,8 +37,8 @@ class COMPONENT_EXPORT(FILE_MANAGER) RamStorage : public IndexStorage {
   const std::set<int64_t> GetTermIdsForUrl(int64_t url_id) const override;
 
   // Posting list support.
-  int32_t AddToPostingList(int64_t term_id, int64_t url_id) override;
-  int32_t DeleteFromPostingList(int64_t term_id, int64_t url_id) override;
+  size_t AddToPostingList(int64_t term_id, int64_t url_id) override;
+  size_t DeleteFromPostingList(int64_t term_id, int64_t url_id) override;
 
   // Term ID management.
   int64_t GetTermId(const Term& term) const override;
@@ -59,10 +59,10 @@ class COMPONENT_EXPORT(FILE_MANAGER) RamStorage : public IndexStorage {
   int64_t DeleteFileInfo(int64_t url_id) override;
 
   // Miscellaneous.
-  void AddTermIdsForUrl(const std::set<int64_t>& term_ids,
-                        int64_t url_id) override;
-  void DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
-                           int64_t url_id) override;
+  size_t AddTermIdsForUrl(const std::set<int64_t>& term_ids,
+                          int64_t url_id) override;
+  size_t DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
+                             int64_t url_id) override;
 
  private:
   // Adds to the inverted posting lists the specified `term_id`. This may be

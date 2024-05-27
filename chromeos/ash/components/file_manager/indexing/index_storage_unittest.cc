@@ -192,9 +192,9 @@ TEST_P(IndexStorageTest, AddToPostingList) {
   int64_t pinned_id = storage_->GetOrCreateTermId(pinned_);
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
 
-  EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
+  EXPECT_EQ(1u, storage_->AddToPostingList(pinned_id, foo_url_id));
   // Second time adding the term does not change the database.
-  EXPECT_EQ(0, storage_->AddToPostingList(pinned_id, foo_url_id));
+  EXPECT_EQ(0u, storage_->AddToPostingList(pinned_id, foo_url_id));
 }
 
 TEST_P(IndexStorageTest, DeleteFromPostingList) {
@@ -205,13 +205,13 @@ TEST_P(IndexStorageTest, DeleteFromPostingList) {
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
 
   // Can delete something that was not added. Results in 0 changes.
-  EXPECT_EQ(0, storage_->DeleteFromPostingList(pinned_id, foo_url_id));
+  EXPECT_EQ(0u, storage_->DeleteFromPostingList(pinned_id, foo_url_id));
 
   // Add and delete, expect it to succeed.
-  EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
-  EXPECT_EQ(1, storage_->DeleteFromPostingList(pinned_id, foo_url_id));
+  EXPECT_EQ(1u, storage_->AddToPostingList(pinned_id, foo_url_id));
+  EXPECT_EQ(1u, storage_->DeleteFromPostingList(pinned_id, foo_url_id));
   // No more deletion after the first one.
-  EXPECT_EQ(0, storage_->DeleteFromPostingList(pinned_id, foo_url_id));
+  EXPECT_EQ(0u, storage_->DeleteFromPostingList(pinned_id, foo_url_id));
 }
 
 TEST_P(IndexStorageTest, GetUrlIdsForTerm) {
@@ -227,20 +227,20 @@ TEST_P(IndexStorageTest, GetUrlIdsForTerm) {
   EXPECT_TRUE(storage_->GetUrlIdsForTermId(pinned_id).empty());
 
   // Associate pinned with foo.
-  EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
+  EXPECT_EQ(1u, storage_->AddToPostingList(pinned_id, foo_url_id));
   EXPECT_THAT(storage_->GetUrlIdsForTermId(pinned_id),
               testing::UnorderedElementsAre(foo_url_id));
 
   // Associate downloaded_ with foo.
   int64_t downloaded_term_id = storage_->GetOrCreateTermId(downloaded_);
-  EXPECT_EQ(1, storage_->AddToPostingList(downloaded_term_id, foo_url_id));
+  EXPECT_EQ(1u, storage_->AddToPostingList(downloaded_term_id, foo_url_id));
   EXPECT_THAT(storage_->GetUrlIdsForTermId(pinned_id),
               testing::UnorderedElementsAre(foo_url_id));
   EXPECT_THAT(storage_->GetUrlIdsForTermId(downloaded_term_id),
               testing::UnorderedElementsAre(foo_url_id));
 
   // Associate downloaded with bar.
-  EXPECT_EQ(1, storage_->AddToPostingList(downloaded_term_id, bar_url_id));
+  EXPECT_EQ(1u, storage_->AddToPostingList(downloaded_term_id, bar_url_id));
   EXPECT_THAT(storage_->GetUrlIdsForTermId(pinned_id),
               testing::UnorderedElementsAre(foo_url_id));
   EXPECT_THAT(storage_->GetUrlIdsForTermId(downloaded_term_id),
@@ -259,11 +259,11 @@ TEST_P(IndexStorageTest, GetTermIdsForUrl) {
   // Before anything is associated with a given URL expect empty set.
   EXPECT_TRUE(storage_->GetTermIdsForUrl(foo_url_id).empty());
 
-  EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
+  EXPECT_EQ(1u, storage_->AddToPostingList(pinned_id, foo_url_id));
   EXPECT_THAT(storage_->GetTermIdsForUrl(foo_url_id),
               testing::UnorderedElementsAre(pinned_id));
 
-  EXPECT_EQ(1, storage_->AddToPostingList(downloaded_id, foo_url_id));
+  EXPECT_EQ(1u, storage_->AddToPostingList(downloaded_id, foo_url_id));
   std::set<int64_t> ids_of_foo = storage_->GetTermIdsForUrl(foo_url_id);
   EXPECT_THAT(ids_of_foo,
               testing::UnorderedElementsAre(pinned_id, downloaded_id));

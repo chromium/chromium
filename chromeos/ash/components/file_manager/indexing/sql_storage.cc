@@ -5,7 +5,6 @@
 #include "chromeos/ash/components/file_manager/indexing/sql_storage.h"
 
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "sql/error_delegate_util.h"
 #include "sql/statement.h"
@@ -136,18 +135,22 @@ void SqlStorage::Restart() {
   }
 }
 
-void SqlStorage::AddTermIdsForUrl(const std::set<int64_t>& term_ids,
-                                  int64_t url_id) {
+size_t SqlStorage::AddTermIdsForUrl(const std::set<int64_t>& term_ids,
+                                    int64_t url_id) {
+  size_t added_terms_count = 0;
   for (const int64_t term_id : term_ids) {
-    AddToPostingList(term_id, url_id);
+    added_terms_count += AddToPostingList(term_id, url_id);
   }
+  return added_terms_count;
 }
 
-void SqlStorage::DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
-                                     int64_t url_id) {
+size_t SqlStorage::DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
+                                       int64_t url_id) {
+  size_t deleted_terms_count = 0;
   for (const int64_t term_id : term_ids) {
-    DeleteFromPostingList(term_id, url_id);
+    deleted_terms_count += DeleteFromPostingList(term_id, url_id);
   }
+  return deleted_terms_count;
 }
 
 const std::set<int64_t> SqlStorage::GetUrlIdsForTermId(int64_t term_id) const {
@@ -158,14 +161,14 @@ const std::set<int64_t> SqlStorage::GetTermIdsForUrl(int64_t url_id) const {
   return posting_list_table_.GetTermIdsForUrl(url_id);
 }
 
-int32_t SqlStorage::AddToPostingList(int64_t term_id, int64_t url_id) {
+size_t SqlStorage::AddToPostingList(int64_t term_id, int64_t url_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(term_id != -1);
   DCHECK(url_id != -1);
   return posting_list_table_.AddToPostingList(term_id, url_id);
 }
 
-int32_t SqlStorage::DeleteFromPostingList(int64_t term_id, int64_t url_id) {
+size_t SqlStorage::DeleteFromPostingList(int64_t term_id, int64_t url_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(term_id != -1);
   DCHECK(url_id != -1);
