@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<title>InputEvent: Undo/Redo</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<textarea id="one"></textarea>
+<textarea id="two"></textarea>
+<script>
+function inputTextarea() {
+  one.focus();
+  one.value = '';
+  eventSender.keyDown('a');
+}
+
+let isUndo = true;
+let beforeinputDispatched = false;
+let inputDispatched = false;
+
+function onBeforeInput(event) {
+  beforeinputDispatched = true;
+  assert_equals(event.inputType, isUndo ? 'historyUndo' : 'historyRedo');
+}
+
+function onInput(event) {
+  inputDispatched = true;
+  assert_equals(event.inputType, isUndo ? 'historyUndo' : 'historyRedo');
+}
+
+function addEventListeners() {
+  one.addEventListener('beforeinput', onBeforeInput);
+  one.addEventListener('input', onInput);
+}
+
+function removeEventListeners() {
+  one.removeEventListener('beforeinput', onBeforeInput);
+  one.removeEventListener('input', onInput);
+}
+
+test(() => {
+  assert_not_equals(window.eventSender, undefined, 'This test requires eventSender.');
+  assert_not_equals(window.testRunner, undefined, 'This test requires testRunner.');
+
+  inputTextarea();
+  addEventListeners();
+
+  testRunner.execCommand('undo');
+  assert_equals(one.value, '');
+  assert_true(beforeinputDispatched);
+  assert_true(inputDispatched);
+
+  removeEventListeners();
+}, 'undo-on-focused-element');
+
+test(() => {
+  assert_not_equals(window.eventSender, undefined, 'This test requires eventSender.');
+  assert_not_equals(window.testRunner, undefined, 'This test requires testRunner.');
+
+  inputTextarea();
+  two.focus();
+  addEventListeners();
+
+  testRunner.execCommand('undo');
+  assert_equals(one.value, '');
+  assert_true(beforeinputDispatched);
+  assert_true(inputDispatched);
+
+  removeEventListeners();
+}, 'undo-on-unfocused-element');
+
+test(() => {
+  assert_not_equals(window.eventSender, undefined, 'This test requires eventSender.');
+  assert_not_equals(window.testRunner, undefined, 'This test requires testRunner.');
+
+  isUndo = false;
+  inputTextarea();
+  testRunner.execCommand('undo');
+  two.focus();
+  addEventListeners();
+
+  testRunner.execCommand('redo');
+  assert_equals(one.value, 'a');
+  assert_true(beforeinputDispatched);
+  assert_true(inputDispatched);
+
+  removeEventListeners();
+}, 'redo-on-unfocused-element');
+</script>

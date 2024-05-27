@@ -27,6 +27,8 @@
 
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 
+#include <iterator>
+
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -47,6 +49,7 @@
 #include "third_party/blink/renderer/core/editing/commands/remove_format_command.h"
 #include "third_party/blink/renderer/core/editing/commands/style_commands.h"
 #include "third_party/blink/renderer/core/editing/commands/typing_command.h"
+#include "third_party/blink/renderer/core/editing/commands/undo_stack.h"
 #include "third_party/blink/renderer/core/editing/commands/unlink_command.h"
 #include "third_party/blink/renderer/core/editing/editing_tri_state.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -79,8 +82,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-
-#include <iterator>
 
 namespace blink {
 
@@ -2038,10 +2039,28 @@ bool EditorCommand::Execute(const String& parameter,
     InputEvent::InputType input_type =
         InputTypeFromCommandType(command_->command_type, *frame_);
     if (input_type != InputEvent::InputType::kNone) {
-      if (DispatchBeforeInputEditorCommand(
-              EventTargetNodeForDocument(frame_->GetDocument()), input_type,
-              GetTargetRanges()) != DispatchEventResult::kNotCanceled)
+      UndoStep* undo_step = nullptr;
+      // The node associated with the Undo/Redo command may not necessarily be
+      // the currently focused node. See
+      // https://issues.chromium.org/issues/326117120 for more details.
+      if (RuntimeEnabledFeatures::
+              UseUndoStepElementDispatchBeforeInputEnabled()) {
+        if (command_->command_type == EditingCommandType::kUndo &&
+            frame_->GetEditor().CanUndo()) {
+          undo_step = *frame_->GetEditor().GetUndoStack().UndoSteps().begin();
+        } else if (command_->command_type == EditingCommandType::kRedo &&
+                   frame_->GetEditor().CanRedo()) {
+          undo_step = *frame_->GetEditor().GetUndoStack().RedoSteps().begin();
+        }
+      }
+      Node* target_node =
+          undo_step ? undo_step->StartingRootEditableElement()
+                    : EventTargetNodeForDocument(frame_->GetDocument());
+      if (DispatchBeforeInputEditorCommand(target_node, input_type,
+                                           GetTargetRanges()) !=
+          DispatchEventResult::kNotCanceled) {
         return true;
+      }
       // 'beforeinput' event handler may destroy target frame.
       if (frame_->GetDocument()->GetFrame() != frame_)
         return false;
