@@ -118,7 +118,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
   bool MaybeRetryAfterWriteError(int rv);
   void RetryPacketAfterNoBuffers();
   quic::WriteResult WritePacketToSocketImpl();
-  raw_ptr<DatagramClientSocket, DanglingUntriaged> socket_;  // Unowned.
+  raw_ptr<DatagramClientSocket> socket_;  // Unowned.
   raw_ptr<Delegate> delegate_ = nullptr;  // Unowned.
   // Reused for every packet write for the lifetime of the writer.  Is
   // moved to the delegate in the case of a write error.

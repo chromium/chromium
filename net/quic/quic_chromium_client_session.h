@@ -470,8 +470,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
    private:
     handles::NetworkHandle network_handle_;
-    std::unique_ptr<QuicChromiumPacketWriter> writer_;
     std::unique_ptr<QuicChromiumPacketReader> reader_;
+    std::unique_ptr<QuicChromiumPacketWriter> writer_;
   };
 
   // This class implements Chrome logic for path validation events associated

@@ -741,8 +741,8 @@ QuicChromiumClientSession::QuicChromiumPathValidationContext::
         std::unique_ptr<QuicChromiumPacketReader> reader)
     : QuicPathValidationContext(self_address, peer_address),
       network_handle_(network),
-      writer_(std::move(writer)),
-      reader_(std::move(reader)) {}
+      reader_(std::move(reader)),
+      writer_(std::move(writer)) {}
 
 QuicChromiumClientSession::QuicChromiumPathValidationContext::
     ~QuicChromiumPathValidationContext() = default;
@@ -2362,6 +2362,11 @@ void QuicChromiumClientSession::OnConnectionMigrationProbeSucceeded(
   DCHECK(writer);
   DCHECK(reader);
 
+  // Writer must be destroyed before reader, since it points to the socket owned
+  // by reader. C++ doesn't have any guarantees about destruction order of
+  // arguments.
+  std::unique_ptr<QuicChromiumPacketWriter> writer_moved = std::move(writer);
+
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_CONNECTIVITY_PROBING_FINISHED,
                     [&] {
                       return NetLogProbingResultParams(network, &peer_address,
@@ -2379,7 +2384,7 @@ void QuicChromiumClientSession::OnConnectionMigrationProbeSucceeded(
   // that was used for probing.
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_delegate(nullptr);
-  writer->set_delegate(this);
+  writer_moved->set_delegate(this);
 
   // Close streams that are not migratable to the probed |network|.
   ResetNonMigratableStreams();
@@ -2400,7 +2405,7 @@ void QuicChromiumClientSession::OnConnectionMigrationProbeSucceeded(
   // Migrate to the probed socket immediately: socket, writer and reader will
   // be acquired by connection and used as default on success.
   if (!MigrateToSocket(self_address, peer_address, std::move(reader),
-                       std::move(writer))) {
+                       std::move(writer_moved))) {
     LogMigrateToSocketStatus(false);
     net_log_.AddEvent(
         NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_AFTER_PROBING);
@@ -3842,6 +3847,11 @@ bool QuicChromiumClientSession::MigrateToSocket(
       packet_readers_.size() >= kMaxReadersPerQuicSession) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_TOO_MANY_CHANGES,
                                     connection_id(), "Too many changes");
+    // Must destroy `writer` before `reader`, as `writer` references the socket
+    // owned by `reader`. Destruction order of parameters is apparently not
+    // specified by the C++ standard, but Clang looks to destroy arguments from
+    // first to last.
+    writer.reset();
     return false;
   }
 
