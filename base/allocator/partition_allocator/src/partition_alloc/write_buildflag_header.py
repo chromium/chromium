@@ -92,8 +92,6 @@ def WriteHeader(options):
 
     for pair in options.flags:
       output_file.write('#define PA_BUILDFLAG_INTERNAL_%s() (%s)\n' % pair)
-      # TODO(https://crbug.com/41481467) Remove dependency on chromium:
-      output_file.write('#define BUILDFLAG_INTERNAL_%s() (%s)\n' % pair)
 
     output_file.write('\n#endif  // %s\n' % options.header_guard)
 
