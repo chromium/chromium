@@ -71,7 +71,8 @@ class TestPermissionManager : public MockPermissionManager {
 
   PermissionStatus GetPermissionStatusForCurrentDocument(
       PermissionType permission,
-      RenderFrameHost* render_frame_host) override {
+      RenderFrameHost* render_frame_host,
+      bool should_include_device_status) override {
     RenderFrameHost* top_frame = render_frame_host->GetParentOrOuterDocument();
     GURL url;
 

@@ -186,7 +186,8 @@ CastPermissionManager::GetPermissionResultForOriginWithoutContext(
 blink::mojom::PermissionStatus
 CastPermissionManager::GetPermissionStatusForCurrentDocument(
     blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
   return GetPermissionStatusInternal(
       permission, render_frame_host,
       render_frame_host->GetLastCommittedOrigin().GetURL());

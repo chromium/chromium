@@ -26,7 +26,8 @@ void TestFontAccessPermissionManager::RequestPermissionsFromCurrentDocument(
 blink::mojom::PermissionStatus
 TestFontAccessPermissionManager::GetPermissionStatusForCurrentDocument(
     blink::PermissionType permission,
-    RenderFrameHost* render_frame_host) {
+    RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
   return permission_status_for_current_document_;
 }
 

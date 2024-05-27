@@ -55,8 +55,9 @@ TEST_F(NFCHostTest, GetNFCTwice) {
   NavigateAndCommit(GURL(kTestUrl));
 
   EXPECT_CALL(mock_permission_manager(),
-              GetPermissionStatusForCurrentDocument(blink::PermissionType::NFC,
-                                                    main_rfh()))
+              GetPermissionStatusForCurrentDocument(
+                  blink::PermissionType::NFC, main_rfh(),
+                  /*should_include_device_status*/ false))
       .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED))
       .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED));
   EXPECT_CALL(mock_permission_manager(),

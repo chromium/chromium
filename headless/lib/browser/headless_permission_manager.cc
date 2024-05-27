@@ -73,7 +73,8 @@ HeadlessPermissionManager::GetPermissionResultForOriginWithoutContext(
 blink::mojom::PermissionStatus
 HeadlessPermissionManager::GetPermissionStatusForCurrentDocument(
     blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
   return blink::mojom::PermissionStatus::ASK;
 }
 

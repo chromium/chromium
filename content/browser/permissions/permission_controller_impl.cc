@@ -547,6 +547,29 @@ PermissionStatus PermissionControllerImpl::GetPermissionStatusInternal(
                                        embedding_origin);
 }
 
+PermissionStatus
+PermissionControllerImpl::GetPermissionStatusForCurrentDocumentInternal(
+    PermissionType permission,
+    RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
+  std::optional<PermissionStatus> status = permission_overrides_.Get(
+      render_frame_host->GetLastCommittedOrigin(), permission);
+  if (status) {
+    return *status;
+  }
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (!delegate) {
+    return PermissionStatus::DENIED;
+  }
+  if (VerifyContextOfCurrentDocument(permission, render_frame_host).status ==
+      PermissionStatus::DENIED) {
+    return PermissionStatus::DENIED;
+  }
+  return delegate->GetPermissionStatusForCurrentDocument(
+      permission, render_frame_host, should_include_device_status);
+}
+
 PermissionStatus PermissionControllerImpl::GetPermissionStatusForWorker(
     PermissionType permission,
     RenderProcessHost* render_process_host,
@@ -571,22 +594,8 @@ PermissionStatus
 PermissionControllerImpl::GetPermissionStatusForCurrentDocument(
     PermissionType permission,
     RenderFrameHost* render_frame_host) {
-  std::optional<PermissionStatus> status = permission_overrides_.Get(
-      render_frame_host->GetLastCommittedOrigin(), permission);
-  if (status) {
-    return *status;
-  }
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (!delegate) {
-    return PermissionStatus::DENIED;
-  }
-  if (VerifyContextOfCurrentDocument(permission, render_frame_host).status ==
-      PermissionStatus::DENIED) {
-    return PermissionStatus::DENIED;
-  }
-  return delegate->GetPermissionStatusForCurrentDocument(permission,
-                                                         render_frame_host);
+  return GetPermissionStatusForCurrentDocumentInternal(permission,
+                                                       render_frame_host);
 }
 
 PermissionResult
@@ -612,8 +621,8 @@ PermissionControllerImpl::GetPermissionResultForCurrentDocument(
     return result;
   }
 
-  return delegate->GetPermissionResultForCurrentDocument(permission,
-                                                         render_frame_host);
+  return delegate->GetPermissionResultForCurrentDocument(
+      permission, render_frame_host, /*should_include_device_status=*/false);
 }
 
 PermissionResult
@@ -677,6 +686,16 @@ PermissionControllerImpl::GetPermissionStatusForEmbeddedRequester(
 
   return delegate->GetPermissionStatusForEmbeddedRequester(
       permission, render_frame_host, requesting_origin);
+}
+
+PermissionStatus PermissionControllerImpl::GetCombinedPermissionAndDeviceStatus(
+    PermissionType permission,
+    RenderFrameHost* render_frame_host) {
+  CHECK(permission == blink::PermissionType::VIDEO_CAPTURE ||
+        permission == blink::PermissionType::AUDIO_CAPTURE ||
+        permission == blink::PermissionType::GEOLOCATION);
+  return GetPermissionStatusForCurrentDocumentInternal(
+      permission, render_frame_host, /*should_include_device_status=*/true);
 }
 
 void PermissionControllerImpl::ResetPermission(PermissionType permission,

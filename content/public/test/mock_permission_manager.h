@@ -36,10 +36,11 @@ class MockPermissionManager : public PermissionControllerDelegate {
                PermissionResult(blink::PermissionType permission,
                                 const url::Origin& requesting_origin,
                                 const url::Origin& embedding_origin));
-  MOCK_METHOD2(
+  MOCK_METHOD3(
       GetPermissionStatusForCurrentDocument,
       blink::mojom::PermissionStatus(blink::PermissionType permission,
-                                     RenderFrameHost* render_frame_host));
+                                     RenderFrameHost* render_frame_host,
+                                     bool should_include_device_status));
   MOCK_METHOD3(
       GetPermissionStatusForWorker,
       blink::mojom::PermissionStatus(blink::PermissionType permission,
