@@ -61,6 +61,7 @@ class NetworkConnectDelegate;
 class PickerClientImpl;
 class ProjectorAppClientImpl;
 class ProjectorClientImpl;
+class AnnotatorClientImpl;
 class ScreenOrientationDelegateChromeos;
 class SessionControllerClientImpl;
 class SystemTrayClientImpl;
@@ -141,6 +142,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   std::unique_ptr<ProjectorClientImpl> projector_client_;
   std::unique_ptr<ProjectorAppClientImpl> projector_app_client_;
+  std::unique_ptr<AnnotatorClientImpl> annotator_client_;
   std::unique_ptr<game_mode::GameModeController> game_mode_controller_;
   std::unique_ptr<ash::NetworkPortalNotificationController>
       network_portal_notification_controller_;

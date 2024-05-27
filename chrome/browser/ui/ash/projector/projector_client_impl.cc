@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
+#include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -315,7 +316,7 @@ void ProjectorClientImpl::OnLanguageIdentificationEvent(
 }
 
 void ProjectorClientImpl::SetTool(const ash::AnnotatorTool& tool) {
-  ash::ProjectorAppClient::Get()->SetTool(tool);
+  ash::AnnotatorClient::Get()->SetTool(tool);
 }
 
 // TODO(b/220202359): Implement undo.
@@ -325,7 +326,7 @@ void ProjectorClientImpl::Undo() {}
 void ProjectorClientImpl::Redo() {}
 
 void ProjectorClientImpl::Clear() {
-  ash::ProjectorAppClient::Get()->Clear();
+  ash::AnnotatorClient::Get()->Clear();
 }
 
 void ProjectorClientImpl::OnFileSystemMounted() {

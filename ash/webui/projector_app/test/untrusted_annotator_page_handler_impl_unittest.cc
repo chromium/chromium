@@ -8,7 +8,8 @@
 #include "ash/public/cpp/test/mock_projector_controller.h"
 #include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/projector_app/public/mojom/annotator_structs.mojom.h"
-#include "ash/webui/projector_app/test/mock_app_client.h"
+#include "ash/webui/projector_app/test/mock_annotator_client.h"
+#include "ash/webui/projector_app/test/mock_untrusted_annotator_page.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "content/public/test/test_web_ui.h"
@@ -19,49 +20,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
-
-namespace {
-
-// MOCK the annotator instance in the WebUI renderer.
-class MockUntrustedAnnotatorPage
-    : public annotator::mojom::UntrustedAnnotatorPage {
- public:
-  MockUntrustedAnnotatorPage() = default;
-  MockUntrustedAnnotatorPage(const MockUntrustedAnnotatorPage&) = delete;
-  MockUntrustedAnnotatorPage& operator=(const MockUntrustedAnnotatorPage&) =
-      delete;
-  ~MockUntrustedAnnotatorPage() override = default;
-
-  MOCK_METHOD0(Clear, void());
-  MOCK_METHOD0(Undo, void());
-  MOCK_METHOD0(Redo, void());
-  MOCK_METHOD1(SetTool, void(annotator::mojom::AnnotatorToolPtr tool));
-
-  void FlushReceiverForTesting() { receiver_.FlushForTesting(); }
-
-  void FlushRemoteForTesting() { remote_.FlushForTesting(); }
-
-  void SendUndoRedoAvailableChanged(bool undo_available, bool redo_available) {
-    remote_->OnUndoRedoAvailabilityChanged(undo_available, redo_available);
-  }
-
-  void SendCanvasInitialized(bool success) {
-    remote_->OnCanvasInitialized(success);
-  }
-
-  mojo::Receiver<annotator::mojom::UntrustedAnnotatorPage>& receiver() {
-    return receiver_;
-  }
-  mojo::Remote<annotator::mojom::UntrustedAnnotatorPageHandler>& remote() {
-    return remote_;
-  }
-
- private:
-  mojo::Receiver<annotator::mojom::UntrustedAnnotatorPage> receiver_{this};
-  mojo::Remote<annotator::mojom::UntrustedAnnotatorPageHandler> remote_;
-};
-
-}  // namespace
 
 class UntrustedAnnotatorPageHandlerImplTest : public testing::Test {
  public:
@@ -99,7 +57,7 @@ class UntrustedAnnotatorPageHandlerImplTest : public testing::Test {
   std::unique_ptr<MockUntrustedAnnotatorPage> annotator_;
   std::unique_ptr<UntrustedAnnotatorPageHandlerImpl> handler_;
   MockProjectorController controller_;
-  MockAppClient client_;
+  MockAnnotatorClient client_;
 };
 
 TEST_F(UntrustedAnnotatorPageHandlerImplTest, SetTool) {

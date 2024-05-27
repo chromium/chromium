@@ -8,8 +8,8 @@
 
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/webui/projector_app/annotator_client.h"
 #include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
-#include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/mojom/annotator_structs.mojom.h"
 #include "base/check.h"
 #include "base/json/values_util.h"
@@ -26,11 +26,11 @@ UntrustedAnnotatorPageHandlerImpl::UntrustedAnnotatorPageHandlerImpl(
     : annotator_remote_(std::move(annotator)),
       annotator_handler_receiver_(this, std::move(annotator_handler)),
       web_ui_(web_ui) {
-  ProjectorAppClient::Get()->SetAnnotatorPageHandler(this);
+  AnnotatorClient::Get()->SetAnnotatorPageHandler(this);
 }
 
 UntrustedAnnotatorPageHandlerImpl::~UntrustedAnnotatorPageHandlerImpl() {
-  ProjectorAppClient::Get()->ResetAnnotatorPageHandler(this);
+  AnnotatorClient::Get()->ResetAnnotatorPageHandler(this);
 }
 
 void UntrustedAnnotatorPageHandlerImpl::SetTool(const AnnotatorTool& tool) {

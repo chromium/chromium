@@ -51,6 +51,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
+#include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 #include "chrome/browser/ui/ash/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
 #include "chrome/browser/ui/ash/ash_shell_init.h"
@@ -304,6 +305,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // its internal initialization to succeed.
   g_browser_process->platform_part()->GetTimezoneResolverManager();
 
+  annotator_client_ = std::make_unique<AnnotatorClientImpl>();
   projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
   projector_client_ = std::make_unique<ProjectorClientImpl>();
 
@@ -454,6 +456,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   projector_client_.reset();
   projector_app_client_.reset();
+  annotator_client_.reset();
 
   wallpaper_controller_client_.reset();
   vpn_list_forwarder_.reset();

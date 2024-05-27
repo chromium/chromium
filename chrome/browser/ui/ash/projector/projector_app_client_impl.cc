@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
-#include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -159,28 +158,6 @@ void ProjectorAppClientImpl::GetVideo(
     ash::ProjectorAppClient::OnGetVideoCallback callback) const {
   screencast_manager_.GetVideo(video_file_id, resource_key,
                                std::move(callback));
-}
-
-void ProjectorAppClientImpl::SetAnnotatorPageHandler(
-    ash::UntrustedAnnotatorPageHandlerImpl* handler) {
-  annotator_handler_ = handler;
-}
-
-void ProjectorAppClientImpl::ResetAnnotatorPageHandler(
-    ash::UntrustedAnnotatorPageHandlerImpl* handler) {
-  if (annotator_handler_ == handler) {
-    annotator_handler_ = nullptr;
-  }
-}
-
-void ProjectorAppClientImpl::SetTool(const ash::AnnotatorTool& tool) {
-  DCHECK(annotator_handler_);
-  annotator_handler_->SetTool(tool);
-}
-
-void ProjectorAppClientImpl::Clear() {
-  DCHECK(annotator_handler_);
-  annotator_handler_->Clear();
 }
 
 void ProjectorAppClientImpl::NotifyAppUIActive(bool active) {
