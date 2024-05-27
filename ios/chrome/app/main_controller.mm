@@ -256,7 +256,7 @@ class MainControllerAuthenticationServiceDelegate
  public:
   MainControllerAuthenticationServiceDelegate(
       ChromeBrowserState* browser_state,
-      id<BrowsingDataCommands> dispatcher);
+      id<BrowsingDataCommands> browsing_data_handler);
 
   MainControllerAuthenticationServiceDelegate(
       const MainControllerAuthenticationServiceDelegate&) = delete;
@@ -272,21 +272,22 @@ class MainControllerAuthenticationServiceDelegate
 
  private:
   raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
-  __weak id<BrowsingDataCommands> dispatcher_ = nil;
+  __weak id<BrowsingDataCommands> browsing_data_handler_ = nil;
 };
 
 MainControllerAuthenticationServiceDelegate::
     MainControllerAuthenticationServiceDelegate(
         ChromeBrowserState* browser_state,
-        id<BrowsingDataCommands> dispatcher)
-    : browser_state_(browser_state), dispatcher_(dispatcher) {}
+        id<BrowsingDataCommands> browsing_data_handler)
+    : browser_state_(browser_state),
+      browsing_data_handler_(browsing_data_handler) {}
 
 MainControllerAuthenticationServiceDelegate::
     ~MainControllerAuthenticationServiceDelegate() = default;
 
 void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     base::OnceClosure completion) {
-  [dispatcher_
+  [browsing_data_handler_
       removeBrowsingDataForBrowserState:browser_state_
                              timePeriod:browsing_data::TimePeriod::ALL_TIME
                              removeMask:BrowsingDataRemoveMask::REMOVE_ALL
@@ -300,7 +301,7 @@ void MainControllerAuthenticationServiceDelegate::
 
   // If `kLastSigninTimestamp` has the default base::Time() value, data will be
   // cleared for all time, which is intended to happen in this case.
-  [dispatcher_
+  [browsing_data_handler_
       removeBrowsingDataInRangeForBrowserState:browser_state_
                                      startTime:last_signin_timestamp
                                        endTime:base::Time::Now()
