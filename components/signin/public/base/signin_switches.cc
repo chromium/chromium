@@ -16,7 +16,7 @@ namespace switches {
 // Feature to refactor how and when accounts are seeded on Android.
 BASE_FEATURE(kSeedAccountsRevamp,
              "SeedAccountsRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature to apply enterprise policies on signin regardless of sync status.
 BASE_FEATURE(kEnterprisePolicyOnSignin,
