@@ -35,7 +35,7 @@ declare_args() {
   use_reclient = use_remoteexec
 
   # The directory where the re-client tooling binaries are.
-  if (rbe_bin_dir != "") {
+  if (rbe_bin_dir != "" && current_toolchain == default_toolchain) {
     print(
         "WARNING: rbe_bin_dir is deprecated. Please use reclient_bin_dir instead.")
     reclient_bin_dir = rbe_bin_dir
@@ -44,7 +44,7 @@ declare_args() {
   }
 
   # The directory where the re-client configuration files are.
-  if (rbe_cfg_dir != "") {
+  if (rbe_cfg_dir != "" && current_toolchain == default_toolchain) {
     print(
         "WARNING: rbe_cfg_dir is deprecated. Please use reclient_cfg_dir instead.")
     reclient_cfg_dir = rbe_cfg_dir
@@ -107,7 +107,7 @@ declare_args() {
     # TODO: crbug.com/342270134 - Rename reclient_cros_cc_wrapper to reclient_cros_cc_wrapper.
     # Note that reclient_cros_cc_wrapper is referenced by CrOS's chromite.
     # Set to the path of the RBE recleint wrapper for ChromeOS.
-    if (rbe_cros_cc_wrapper != "") {
+    if (rbe_cros_cc_wrapper != "" && current_toolchain == default_toolchain) {
       print(
           "WARNING: rbe_cros_cc_wrapper is deprecated. Please use reclient_cros_cc_wrapper instead.")
       reclient_cros_cc_wrapper = rbe_cros_cc_wrapper
