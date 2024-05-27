@@ -54,10 +54,13 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
     public void readCached(Callback<List<SuggestionEntry>> callback) {
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
 
+        // TODO(b/337858147): handles showing local Tabs if returned from
+        // VisitedUrlRankingBackendJni.
         VisitedUrlRankingBackendJni.get()
                 .getRankedSuggestions(
                         mNativeVisitedUrlRankingBackend,
                         TabResumptionModuleUtils.getCurrentTimeMs(),
+                        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND.getValue(),
                         suggestions,
                         callback);
     }
@@ -99,6 +102,7 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
         void getRankedSuggestions(
                 long nativeVisitedUrlRankingBackend,
                 long beginTimeMs,
+                boolean fetchLocalTabs,
                 List<SuggestionEntry> suggestions,
                 Callback<List<SuggestionEntry>> callback);
 

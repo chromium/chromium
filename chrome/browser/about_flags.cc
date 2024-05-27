@@ -2512,6 +2512,12 @@ const FeatureEntry::FeatureParam
         {"show_see_more", "true"},
         {"use_salient_image", "true"},
 };
+const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_ml[] = {
+    {"enable_v2", "true"},
+    {"show_see_more", "true"},
+    {"use_salient_image", "true"},
+    {"fetch_local_tabs_backend", " true "},
+};
 const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
     {"Default app filter", kTabResumptionModules_defaul_app_filter,
      std::size(kTabResumptionModules_defaul_app_filter), nullptr},
@@ -2528,6 +2534,8 @@ const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
      kTabResumptionModule_v2_single_tile_with_salient_image,
      std::size(kTabResumptionModule_v2_single_tile_with_salient_image),
      nullptr},
+    {"V2 ML (collect data)", kTabResumptionModule_enable_v2_ml,
+     std::size(kTabResumptionModule_enable_v2_ml), nullptr},
 };
 const FeatureEntry::FeatureParam
     kNotificationPermissionRationale_show_dialog_next_start[] = {
