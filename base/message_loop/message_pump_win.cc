@@ -271,7 +271,7 @@ void MessagePumpForUI::DoRunLoop() {
     if (more_work_is_plausible)
       continue;
 
-    more_work_is_plausible = run_state_->delegate->DoIdleWork();
+    run_state_->delegate->DoIdleWork();
     // DoIdleWork() shouldn't end up in native nested loops, nor should it
     // permit native nested loops, and thus shouldn't have any chance of
     // reinstalling a native timer.
@@ -280,9 +280,6 @@ void MessagePumpForUI::DoRunLoop() {
     if (run_state_->should_quit) {
       break;
     }
-
-    if (more_work_is_plausible)
-      continue;
 
     WaitForWork(next_work_info);
   }
@@ -803,12 +800,9 @@ void MessagePumpForIO::DoRunLoop() {
     if (more_work_is_plausible)
       continue;
 
-    more_work_is_plausible = run_state_->delegate->DoIdleWork();
+    run_state_->delegate->DoIdleWork();
     if (run_state_->should_quit)
       break;
-
-    if (more_work_is_plausible)
-      continue;
 
     run_state_->delegate->BeforeWait();
     WaitForWork(next_work_info);

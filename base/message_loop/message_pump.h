@@ -94,10 +94,7 @@ class BASE_EXPORT MessagePump {
     virtual NextWorkInfo DoWork() = 0;
 
     // Called from within Run just before the message pump goes to sleep.
-    // Returns true to indicate that idle work was done; in which case Run()
-    // should resume with calling DoWork(). Returning false means the pump
-    // should now wait.
-    virtual bool DoIdleWork() = 0;
+    virtual void DoIdleWork() = 0;
 
     class ScopedDoWorkItem {
      public:
@@ -204,7 +201,7 @@ class BASE_EXPORT MessagePump {
   //     if (did_native_work || next_work_info.is_immediate())
   //       continue;
   //
-  //     bool did_idle_work = delegate_->DoIdleWork();
+  //     delegate_->DoIdleWork();
   //     if (should_quit_)
   //       break;
   //

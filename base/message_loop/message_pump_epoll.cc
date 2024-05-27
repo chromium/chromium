@@ -16,10 +16,12 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 
 namespace base {
@@ -111,12 +113,9 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
       continue;
     }
 
-    attempt_more_work = delegate->DoIdleWork();
+    delegate->DoIdleWork();
     if (run_state.should_quit) {
       break;
-    }
-    if (attempt_more_work) {
-      continue;
     }
 
     TimeDelta timeout = TimeDelta::Max();

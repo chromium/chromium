@@ -141,7 +141,7 @@ class MessagePumpAndroidStub : public base::MessagePumpAndroid {
       if (more_work_is_plausible)
         continue;
 
-      more_work_is_plausible = g_state->delegate->DoIdleWork();
+      g_state->delegate->DoIdleWork();
       if (g_state->should_quit)
         break;
 

@@ -160,7 +160,7 @@ void MessagePumpAndroid::DoDelayedLooperWork() {
     return;
   }
 
-  DoIdleWork();
+  delegate_->DoIdleWork();
   if (!next_work_info.delayed_run_time.is_max())
     ScheduleDelayedWork(next_work_info);
 }
@@ -267,18 +267,9 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
   // scheduled tasks before it quits. Also note that we can't just add an idle
   // callback to the java looper, as that will fire even if application tasks
   // are still queued up.
-  DoIdleWork();
+  delegate_->DoIdleWork();
   if (!next_work_info.delayed_run_time.is_max()) {
     ScheduleDelayedWork(next_work_info);
-  }
-}
-
-void MessagePumpAndroid::DoIdleWork() {
-  if (delegate_->DoIdleWork()) {
-    // If DoIdleWork() resulted in any work, we're not idle yet. We need to pump
-    // the loop here because we may in fact be idle after doing idle work
-    // without any new tasks being queued.
-    ScheduleWork();
   }
 }
 

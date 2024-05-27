@@ -95,7 +95,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void BeforeWait() override;
   void BeginNativeWorkBeforeDoWork() override;
   MessagePump::Delegate::NextWorkInfo DoWork() override;
-  bool DoIdleWork() override;
+  void DoIdleWork() override;
   int RunDepth() override;
 
   void OnBeginWorkItemImpl(LazyNow& lazy_now);

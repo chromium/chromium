@@ -81,7 +81,7 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
   void BeforeWait() override {}
   void BeginNativeWorkBeforeDoWork() override {}
   MOCK_METHOD0(DoWork, MessagePump::Delegate::NextWorkInfo());
-  MOCK_METHOD0(DoIdleWork, bool());
+  MOCK_METHOD0(DoIdleWork, void());
 
   // Functions invoked directly by the message pump.
   void OnBeginWorkItem() override {

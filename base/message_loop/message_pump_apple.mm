@@ -477,10 +477,7 @@ void MessagePumpCFRunLoopBase::RunIdleWork() {
   // objects if the app is not currently handling a UI event to ensure they're
   // released promptly even in the absence of UI events.
   OptionalAutoreleasePool autorelease_pool(this);
-  bool did_work = delegate_->DoIdleWork();
-  if (did_work) {
-    CFRunLoopSourceSignal(work_source_.get());
-  }
+  delegate_->DoIdleWork();
 }
 
 // Called from the run loop.

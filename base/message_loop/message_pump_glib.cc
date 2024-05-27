@@ -701,7 +701,7 @@ void MessagePumpGlib::Run(Delegate* delegate) {
     if (more_work_is_plausible)
       continue;
 
-    more_work_is_plausible = state_->delegate->DoIdleWork();
+    state_->delegate->DoIdleWork();
     if (state_->should_quit)
       break;
   }

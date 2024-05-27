@@ -372,7 +372,7 @@ class BASE_EXPORT ThreadController {
       TimeTicks last_phase_end_;
       // The end of the last kIdleWork phase. Used as a minimum for the next
       // kScheduled phase's begin (as it's possible that the next wake-up is
-      // scheduled during DoIdleWork adn we don't want overlapping phases).
+      // scheduled during DoIdleWork and we don't want overlapping phases).
       TimeTicks last_sleep_;
       // Assumes each kWorkItem is native unless OnApplicationTaskSelected() is
       // invoked in a given [OnWorkStarted, OnWorkEnded].

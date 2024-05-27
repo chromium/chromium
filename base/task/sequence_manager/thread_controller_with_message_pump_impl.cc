@@ -529,7 +529,7 @@ bool ThreadControllerWithMessagePumpImpl::RunsTasksByBatches() const {
          g_run_tasks_by_batches.load(std::memory_order_relaxed);
 }
 
-bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
+void ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   struct OnIdle {
     STACK_ALLOCATED();
 
@@ -581,7 +581,7 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
     // DoWork callback. For some message pumps returning true from here is
     // sufficient to do that but not on mac.
     pump_->ScheduleWork();
-    return false;
+    return;
   }
   work_id_provider_->IncrementWorkId();
   // This is mostly redundant with the identical call in BeforeWait (upcoming)
@@ -596,14 +596,12 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   if (main_thread_only().quit_runloop_after != TimeTicks::Max() &&
       main_thread_only().quit_runloop_after <= on_idle->lazy_now.Now()) {
     Quit();
-    return false;
+    return;
   }
 
   // RunLoop::Delegate knows whether we called Run() or RunUntilIdle().
   if (ShouldQuitWhenIdle())
     Quit();
-
-  return false;
 }
 
 int ThreadControllerWithMessagePumpImpl::RunDepth() {

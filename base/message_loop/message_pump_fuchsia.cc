@@ -300,13 +300,10 @@ void MessagePumpFuchsia::Run(Delegate* delegate) {
     if (attempt_more_work)
       continue;
 
-    attempt_more_work = delegate->DoIdleWork();
+    delegate->DoIdleWork();
     if (run_state.should_quit) {
       break;
     }
-
-    if (attempt_more_work)
-      continue;
 
     delegate->BeforeWait();
 

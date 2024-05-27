@@ -186,12 +186,9 @@ void MessagePumpKqueue::Run(Delegate* delegate) {
       if (do_more_work)
         continue;
 
-      do_more_work |= delegate->DoIdleWork();
+      delegate->DoIdleWork();
       if (!keep_running_)
         break;
-
-      if (do_more_work)
-        continue;
 
       DoInternalWork(delegate, &next_work_info);
     }
