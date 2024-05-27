@@ -65,7 +65,7 @@ try_.builder(
         configs = [
             "release",
             "official_optimize",
-            "reclient",
+            "remoteexec",
             "fuchsia",
             "arm64",
             "cast_receiver_size_optimized",
@@ -119,7 +119,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia_smart_display",
         ],
     ),

@@ -64,7 +64,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "chrome_for_testing",
             "chrome_with_codecs",
@@ -94,7 +94,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "chrome_for_testing",
             "chrome_with_codecs",
@@ -121,7 +121,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "chrome_for_testing",
             "chrome_with_codecs",

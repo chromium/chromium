@@ -93,7 +93,7 @@ ci.builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "x64",
         ],
@@ -132,7 +132,7 @@ ci.builder(
         configs = [
             "gpu_tests",
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "x64",
         ],
     ),
@@ -170,7 +170,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "arm64",
         ],
     ),
@@ -203,7 +203,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "arm64",
         ],
     ),
@@ -244,7 +244,7 @@ ci.builder(
             "arm64",
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
         ],
     ),
@@ -276,7 +276,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "x64",
         ],
     ),
@@ -594,7 +594,7 @@ ios_builder(
         configs = [
             "compile_only",
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
             "ios_catalyst",
             "x64",
             "asan",
@@ -638,7 +638,7 @@ ios_builder(
             "ios_google_cert",
             "ios_disable_code_signing",
             "release_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     cpu = cpu.ARM64,
@@ -681,7 +681,7 @@ ios_builder(
     gn_args = gn_args.config(
         configs = [
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
             "ios_simulator",
             "x64",
             "xctest",
@@ -728,7 +728,7 @@ ios_builder(
     gn_args = gn_args.config(
         configs = [
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
             "ios_simulator",
             "x64",
             "xctest",
@@ -771,7 +771,7 @@ ios_builder(
     gn_args = gn_args.config(
         configs = [
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
             "ios_simulator",
             "x64",
             "xctest",

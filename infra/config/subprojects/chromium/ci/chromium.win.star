@@ -96,7 +96,7 @@ ci.builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "x86",
             "no_symbols",
         ],
@@ -131,7 +131,7 @@ ci.builder(
         configs = [
             "gpu_tests",
             "debug_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     builderless = True,
@@ -193,7 +193,7 @@ ci.builder(
         configs = [
             "gpu_tests",
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "x86",
             "no_symbols",
         ],
@@ -240,7 +240,7 @@ ci.builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
         ],
     ),
@@ -345,7 +345,7 @@ ci.builder(
             "arm64",
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
         ],
     ),
@@ -421,7 +421,7 @@ ci.builder(
             "arm64",
             "gpu_tests",
             "debug_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     builderless = True,
@@ -473,7 +473,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "x86",
             "minimal_symbols",
         ],

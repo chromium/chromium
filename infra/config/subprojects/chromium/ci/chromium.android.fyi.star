@@ -54,7 +54,7 @@ ci.builder(
         configs = [
             "android_builder",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "x86",
             "strip_debug_info",
@@ -91,7 +91,7 @@ ci.builder(
         configs = [
             "android_builder",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "x86",
             "strip_debug_info",
@@ -128,7 +128,7 @@ ci.builder(
         configs = [
             "android_builder",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "x86",
             "strip_debug_info",
@@ -265,7 +265,7 @@ ci.builder(
         configs = [
             "android_builder",
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
             "x64",
             "webview_trichrome",
             "webview_shell",
@@ -306,7 +306,7 @@ ci.builder(
         configs = [
             "android_builder",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "x64",
             "strip_debug_info",
@@ -351,7 +351,7 @@ ci.builder(
         configs = [
             "android_builder",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "x64",
             "strip_debug_info",
@@ -392,7 +392,7 @@ ci.builder(
         configs = [
             "android_builder",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "arm64",
             "strip_debug_info",
@@ -517,7 +517,7 @@ ci.builder(
             "android_builder",
             "cronet_android",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "x86",
             "clang",
@@ -556,7 +556,7 @@ ci.builder(
         configs = [
             "android_builder",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "arm64",
             "strip_debug_info",

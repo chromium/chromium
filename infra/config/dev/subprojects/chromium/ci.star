@@ -122,7 +122,7 @@ ci_builder(
         configs = [
             "android_builder",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "arm64",
             "strip_debug_info",
@@ -146,7 +146,7 @@ ci_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "devtools_do_typecheck",
         ],
     ),
@@ -168,7 +168,7 @@ ci_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "devtools_do_typecheck",
         ],
     ),
@@ -192,7 +192,7 @@ ci_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "devtools_do_typecheck",
         ],
     ),
@@ -215,7 +215,7 @@ ci_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
         ],
     ),
@@ -237,7 +237,7 @@ ci_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
         ],
     ),
@@ -261,7 +261,7 @@ ci_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
         ],
     ),
@@ -285,7 +285,7 @@ ci_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
         ],
     ),
@@ -308,7 +308,7 @@ ci_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
         ],
     ),

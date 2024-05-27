@@ -33,7 +33,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
             "no_symbols",
             "devtools_do_typecheck",
             "chrome_for_testing",
@@ -50,7 +50,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
             "no_symbols",
             "chrome_for_testing",
             "x64",
@@ -69,7 +69,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
             # TODO(crbug.com/40099061) Delete this once coverage mode is enabled
             # on the standard Windows trybot and the dedicated coverage trybot
             # is no longer needed.

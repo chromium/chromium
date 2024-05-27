@@ -127,7 +127,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "amd64-generic",
             "ozone_headless",
             "asan",
@@ -171,7 +171,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "amd64-generic",
             "ozone_headless",
             "cfi_full",
@@ -224,7 +224,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "amd64-generic",
             "ozone_headless",
             "debug",
@@ -270,7 +270,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "amd64-generic-crostoolchain",
             "ozone_headless",
             "lacros",
@@ -322,7 +322,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "amd64-generic-vm",
             "ozone_headless",
             "use_fake_dbus_clients",
@@ -443,7 +443,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "arm-generic",
             "debug",
             "ozone_headless",
@@ -480,7 +480,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "arm-generic",
             "ozone_headless",
         ],
@@ -516,7 +516,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "chromeos_device",
-            "reclient",
+            "remoteexec",
             "arm64-generic-vm",
             "dcheck_always_on",
             "ozone_headless",
@@ -574,7 +574,7 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             "is_skylab",
             "jacuzzi",
             "ozone_headless",
-            "reclient",
+            "remoteexec",
         ],
     ),
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
@@ -632,7 +632,7 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             "is_skylab",
             "octopus",
             "ozone_headless",
-            "reclient",
+            "remoteexec",
         ],
     ),
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
@@ -680,7 +680,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "amd64-generic-crostoolchain",
             "ozone_headless",
             "lacros",
@@ -821,7 +821,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "amd64-generic-crostoolchain",
             "ozone_headless",
             "lacros",
@@ -869,7 +869,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "arm-generic-crostoolchain",
             "ozone_headless",
             "lacros",
@@ -917,7 +917,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "arm64-generic-crostoolchain",
             "ozone_headless",
             "lacros",
@@ -968,7 +968,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "arm-generic-crostoolchain",
             "ozone_headless",
             "lacros",
@@ -1017,7 +1017,7 @@ ci.builder(
         configs = [
             "chromeos_device",
             "dcheck_off",
-            "reclient",
+            "remoteexec",
             "arm64-generic-crostoolchain",
             "ozone_headless",
             "lacros",
@@ -1063,7 +1063,7 @@ ci.builder(
         configs = [
             "chromeos_with_codecs",
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "use_cups",
         ],
     ),
@@ -1111,7 +1111,7 @@ ci.builder(
         configs = [
             "chromeos_with_codecs",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "use_cups",
             "also_build_lacros_chrome",
         ],
@@ -1154,7 +1154,7 @@ ci.builder(
         configs = [
             "lacros_on_linux",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "also_build_ash_chrome",
             "use_cups",
         ],
@@ -1232,7 +1232,7 @@ ci.builder(
         configs = [
             "lacros_on_linux",
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "also_build_ash_chrome",
             "use_cups",
         ],
@@ -1275,7 +1275,7 @@ ci.builder(
         configs = [
             "cfm",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chromeos",
         ],
     ),

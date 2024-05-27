@@ -53,7 +53,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia_smart_display",
             "arm64_host",
         ],
@@ -96,7 +96,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia",
             "asan",
             "lsan",
@@ -136,7 +136,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia_smart_display",
         ],
     ),

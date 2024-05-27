@@ -141,7 +141,7 @@ ci.builder(
             "cfi_recover",
             "thin_lto",
             "release_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     console_view_entry = consoles.console_view_entry(

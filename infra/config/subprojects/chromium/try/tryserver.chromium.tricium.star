@@ -57,7 +57,7 @@ try_.builder(
         configs = [
             "android_builder",
             "release_try_builder",
-            "reclient",
+            "remoteexec",
             "strip_debug_info",
         ],
     ),
@@ -70,7 +70,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia",
         ],
     ),
@@ -84,7 +84,7 @@ try_.builder(
         configs = [
             "chromeos_with_codecs",
             "release_try_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     builderless = False,
@@ -98,7 +98,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     builderless = False,
@@ -113,7 +113,7 @@ try_.builder(
         configs = [
             "lacros_on_linux",
             "release_try_builder",
-            "reclient",
+            "remoteexec",
             "also_build_ash_chrome",
         ],
     ),
@@ -127,7 +127,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     cores = None,
@@ -145,7 +145,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     os = os.WINDOWS_DEFAULT,

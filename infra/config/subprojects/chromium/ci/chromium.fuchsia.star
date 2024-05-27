@@ -48,7 +48,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia_smart_display",
         ],
     ),
@@ -97,7 +97,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia",
             "arm64_host",
             "cast_receiver_size_optimized",
@@ -143,7 +143,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia",
             "cast_receiver_size_optimized",
         ],
@@ -188,7 +188,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia",
             "cast_receiver_size_optimized",
         ],

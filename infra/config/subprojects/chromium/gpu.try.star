@@ -143,7 +143,7 @@ gpu_android_builder(
             "android_builder",
             "release_builder",
             "try_builder",
-            "reclient",
+            "remoteexec",
             "arm64",
             "static_angle",
         ],

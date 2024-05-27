@@ -75,7 +75,7 @@ builder(
         configs = [
             "android_builder",
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
             "arm64",
         ],
     ),
@@ -130,7 +130,7 @@ builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
 )
@@ -178,7 +178,7 @@ builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     os = os.MAC_ANY,
@@ -226,7 +226,7 @@ builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "no_com_init_hooks",
             "chrome_with_codecs",

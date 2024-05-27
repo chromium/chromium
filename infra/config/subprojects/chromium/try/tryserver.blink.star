@@ -61,7 +61,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "minimal_symbols",
         ],
@@ -129,7 +129,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "x64",
             "minimal_symbols",
@@ -162,7 +162,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "arm64",
             "minimal_symbols",
@@ -195,7 +195,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "x64",
             "minimal_symbols",
@@ -227,7 +227,7 @@ blink_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "minimal_symbols",
         ],
@@ -256,7 +256,7 @@ blink_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "minimal_symbols",
         ],
@@ -287,7 +287,7 @@ blink_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "arm64",
             "minimal_symbols",
@@ -319,7 +319,7 @@ blink_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "minimal_symbols",
             "x64",
@@ -350,7 +350,7 @@ blink_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "arm64",
             "minimal_symbols",
@@ -382,7 +382,7 @@ blink_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "minimal_symbols",
             "x64",
@@ -433,7 +433,7 @@ blink_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "arm64",
             "minimal_symbols",
@@ -465,7 +465,7 @@ blink_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "arm64",
             "minimal_symbols",
@@ -498,7 +498,7 @@ blink_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "minimal_symbols",
             "x64",
@@ -533,7 +533,7 @@ blink_mac_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "arm64",
             "minimal_symbols",

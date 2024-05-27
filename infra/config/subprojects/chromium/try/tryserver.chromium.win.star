@@ -97,7 +97,7 @@ try_.builder(
             "libfuzzer",
             "asan",
             "release_try_builder",
-            "reclient",
+            "remoteexec",
             "chrome_with_codecs",
             "pdf_xfa",
             "mojo_fuzzer",
@@ -466,7 +466,7 @@ try_.gpu.optional_tests_builder(
         configs = [
             "gpu_fyi_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
         ],

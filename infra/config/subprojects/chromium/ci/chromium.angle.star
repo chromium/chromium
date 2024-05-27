@@ -71,7 +71,7 @@ ci.gpu.linux_builder(
             "android_builder_without_codecs",
             "release_try_builder",
             "minimal_symbols",
-            "reclient",
+            "remoteexec",
             "arm64",
             "static_angle",
             "android_fastbuild",
@@ -142,7 +142,7 @@ ci.gpu.linux_builder(
             "angle_deqp_tests",
             "shared",
             "release",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
             "fuchsia",
@@ -179,7 +179,7 @@ ci.gpu.linux_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
         ],
@@ -276,7 +276,7 @@ ci.gpu.mac_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
             "x64",
@@ -377,7 +377,7 @@ ci.gpu.mac_builder(
         configs = [
             "angle_deqp_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
             "ios_simulator",
@@ -452,7 +452,7 @@ ci.gpu.windows_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
         ],
@@ -549,7 +549,7 @@ ci.gpu.windows_builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
             "x86",

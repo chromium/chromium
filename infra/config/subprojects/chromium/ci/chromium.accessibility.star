@@ -56,7 +56,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia",
             "blink_symbol",
             "minimal_symbols",
@@ -107,7 +107,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder_blink",
-            "reclient",
+            "remoteexec",
             "dcheck_always_on",
         ],
     ),

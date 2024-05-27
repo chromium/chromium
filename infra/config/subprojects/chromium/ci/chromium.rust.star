@@ -54,7 +54,7 @@ ci.builder(
         configs = [
             "release_try_builder",
             "minimal_symbols",
-            "reclient",
+            "remoteexec",
             "enable_all_rust_features",
             "android_builder",
             "arm",
@@ -88,7 +88,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "enable_all_rust_features",
             "android_builder",
             "arm64",
@@ -123,7 +123,7 @@ ci.builder(
         configs = [
             "release_try_builder",
             "minimal_symbols",
-            "reclient",
+            "remoteexec",
             "enable_all_rust_features",
             "android_builder",
             "arm64",
@@ -152,7 +152,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "enable_all_rust_features",
             "x64",
         ],
@@ -183,7 +183,7 @@ ci.builder(
         configs = [
             "release_try_builder",
             "minimal_symbols",
-            "reclient",
+            "remoteexec",
             "enable_all_rust_features",
             "x64",
         ],
@@ -211,7 +211,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "enable_all_rust_features",
             "x64",
         ],
@@ -241,7 +241,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "enable_all_rust_features",
             "x64",
         ],
@@ -271,7 +271,7 @@ ci.builder(
         configs = [
             "release_try_builder",
             "minimal_symbols",
-            "reclient",
+            "remoteexec",
             "enable_all_rust_features",
             "x64",
         ],

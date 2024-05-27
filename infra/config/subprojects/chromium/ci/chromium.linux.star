@@ -73,7 +73,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "cast_receiver",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
         ],
     ),
@@ -115,7 +115,7 @@ ci.builder(
         configs = [
             "cast_receiver",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "arm64",
             "minimal_symbols",
         ],
@@ -137,7 +137,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
         ],
     ),
@@ -163,7 +163,7 @@ ci.builder(
     gn_args = {
         "local": "debug_builder",
         "reclient": gn_args.config(
-            configs = ["debug_builder", "reclient"],
+            configs = ["debug_builder", "remoteexec"],
         ),
     },
     cores = 32,
@@ -190,7 +190,7 @@ ci.builder(
         build_gs_bucket = "chromium-linux-archive",
     ),
     gn_args = gn_args.config(
-        configs = ["release_builder", "reclient"],
+        configs = ["release_builder", "remoteexec"],
     ),
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
@@ -232,7 +232,7 @@ ci.builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "devtools_do_typecheck",
         ],
     ),
@@ -269,7 +269,7 @@ ci.builder(
         configs = [
             "gpu_tests",
             "debug_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -311,7 +311,7 @@ ci.builder(
         configs = [
             "gpu_tests",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "linux_wayland",
             "ozone_headless",
         ],
@@ -570,7 +570,7 @@ ci.builder(
         build_gs_bucket = "chromium-linux-archive",
     ),
     gn_args = gn_args.config(
-        configs = ["release_builder", "reclient"],
+        configs = ["release_builder", "remoteexec"],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "release",
@@ -600,7 +600,7 @@ ci.builder(
         build_gs_bucket = "chromium-linux-archive",
     ),
     gn_args = gn_args.config(
-        configs = ["release_builder_blink", "reclient"],
+        configs = ["release_builder_blink", "remoteexec"],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
@@ -632,7 +632,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "reclient",
+            "remoteexec",
             "extended_tracing",
         ],
     ),
@@ -705,7 +705,7 @@ ci.builder(
             "v4l2_codec",
             "chrome_with_codecs",
             "release_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     tree_closing = False,

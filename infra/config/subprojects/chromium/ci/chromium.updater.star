@@ -64,7 +64,7 @@ ci.builder(
         configs = [
             "updater",
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     builderless = True,
@@ -95,7 +95,7 @@ ci.builder(
         configs = [
             "updater",
             "release_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     builderless = True,
@@ -174,7 +174,7 @@ ci.builder(
         configs = [
             "updater",
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
             "x64",
         ],
     ),
@@ -208,7 +208,7 @@ ci.builder(
         configs = [
             "updater",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "x64",
         ],
     ),
@@ -243,7 +243,7 @@ ci.builder(
             "arm64",
             "updater",
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     builderless = True,
@@ -277,7 +277,7 @@ ci.builder(
             "arm64",
             "updater",
             "release_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     builderless = True,
@@ -311,7 +311,7 @@ ci.builder(
             "updater",
             "asan",
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
             "x64",
         ],
     ),
@@ -585,7 +585,7 @@ ci.builder(
         configs = [
             "updater",
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     builderless = True,
@@ -617,7 +617,7 @@ ci.builder(
         configs = [
             "updater",
             "debug_static_builder",
-            "reclient",
+            "remoteexec",
             "x86",
             "no_symbols",
         ],
@@ -653,7 +653,7 @@ ci.builder(
         configs = [
             "updater",
             "release_builder",
-            "reclient",
+            "remoteexec",
         ],
     ),
     builderless = True,
@@ -685,7 +685,7 @@ ci.builder(
         configs = [
             "updater",
             "release_builder",
-            "reclient",
+            "remoteexec",
             "x86",
         ],
     ),
