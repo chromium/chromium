@@ -56,11 +56,9 @@ class NotificationPermissionsReviewService : public SafetyHubService,
     // TODO(crbug.com/40267370): Make methods private if they are not required
     // to be public.
 
-    void AddNotificationPermission(ContentSettingsPattern origin,
-                                   int notification_count);
+    void AddNotificationPermission(const NotificationPermissions&);
 
-    std::vector<std::pair<ContentSettingsPattern, int>>
-    GetNotificationPermissions() const;
+    std::vector<NotificationPermissions> GetSortedNotificationPermissions();
 
     std::set<ContentSettingsPattern> GetOrigins() const;
 
@@ -82,8 +80,7 @@ class NotificationPermissionsReviewService : public SafetyHubService,
     int GetNotificationCommandId() const override;
 
    private:
-    std::vector<std::pair<ContentSettingsPattern, int>>
-        notification_permissions_;
+    std::vector<NotificationPermissions> notification_permissions_;
   };
 
   explicit NotificationPermissionsReviewService(
@@ -127,6 +124,13 @@ class NotificationPermissionsReviewService : public SafetyHubService,
   // shown on the 'Review Notification Permissions' dialog. Those domains send a
   // lot of notifications, but have low site engagement.
   base::Value::List PopulateNotificationPermissionReviewData();
+
+  // Returns the list of all notification permissions that should be reviewed.
+  std::unique_ptr<Result> GetNotificationPermissions();
+
+  // Sets the notification permission for the given origin.
+  void SetNotificationPermissionsForOrigin(std::string origin,
+                                           ContentSetting setting);
 
  private:
   // SafetyHubService implementation

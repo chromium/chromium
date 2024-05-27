@@ -169,7 +169,7 @@ SafetyHubCardState GetOverallState(Profile* profile) {
     auto* result = static_cast<
         NotificationPermissionsReviewService::NotificationPermissionsResult*>(
         opt_npr_result.value().get());
-    if (!result->GetNotificationPermissions().empty()) {
+    if (!result->GetSortedNotificationPermissions().empty()) {
       return SafetyHubCardState::kWarning;
     }
   }

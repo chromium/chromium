@@ -54,6 +54,7 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest.h"
+#include "safety_hub_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
@@ -345,17 +346,15 @@ void SafetyHubHandler::HandleIgnoreOriginsForNotificationPermissionReview(
 void SafetyHubHandler::HandleResetNotificationPermissionForOrigins(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-
   const base::Value::List& origins = args[0].GetList();
 
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
+  NotificationPermissionsReviewService* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  CHECK(service);
 
   for (const auto& origin : origins) {
-    map->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromString(origin.GetString()),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        CONTENT_SETTING_DEFAULT);
+    service->SetNotificationPermissionsForOrigin(origin.GetString(),
+                                                 CONTENT_SETTING_DEFAULT);
   }
 
   SendNotificationPermissionReviewList();
@@ -386,13 +385,13 @@ void SafetyHubHandler::HandleBlockNotificationPermissionForOrigins(
   CHECK_EQ(1U, args.size());
   const base::Value::List& origins = args[0].GetList();
 
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
+  NotificationPermissionsReviewService* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  CHECK(service);
+
   for (const auto& origin : origins) {
-    map->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromString(origin.GetString()),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        CONTENT_SETTING_BLOCK);
+    service->SetNotificationPermissionsForOrigin(origin.GetString(),
+                                                 CONTENT_SETTING_BLOCK);
   }
 
   SendNotificationPermissionReviewList();
@@ -403,14 +402,13 @@ void SafetyHubHandler::HandleAllowNotificationPermissionForOrigins(
   CHECK_EQ(1U, args.size());
   const base::Value::List& origins = args[0].GetList();
 
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
+  NotificationPermissionsReviewService* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  CHECK(service);
 
   for (const auto& origin : origins) {
-    map->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromString(origin.GetString()),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        CONTENT_SETTING_ALLOW);
+    service->SetNotificationPermissionsForOrigin(origin.GetString(),
+                                                 CONTENT_SETTING_ALLOW);
   }
 
   SendNotificationPermissionReviewList();
