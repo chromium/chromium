@@ -87,6 +87,13 @@ public class TabResumptionModuleUtils {
                     TAB_RESUMPTION_USE_DEFAULT_APP_FILTER_PARAM,
                     false);
 
+    private static final String TAB_RESUMPTION_DISABLE_BLEND_PARAM = "disable_blend";
+    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_DISABLE_BLEND =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+                    TAB_RESUMPTION_DISABLE_BLEND_PARAM,
+                    false);
+
     private static FakeGetCurrentTimeMs sFakeGetCurrentTimeMs;
 
     /**

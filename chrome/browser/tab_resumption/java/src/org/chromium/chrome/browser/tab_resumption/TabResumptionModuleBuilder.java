@@ -184,7 +184,10 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                     new SyncDerivedTabResumptionDataProvider(
                             mSuggestionEntrySource, this::removeRefToSuggestionEntrySource);
         }
-        return new MixedTabResumptionDataProvider(localTabProvider, foreignSessionProvider);
+        return new MixedTabResumptionDataProvider(
+                localTabProvider,
+                foreignSessionProvider,
+                TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND.getValue());
     }
 
     private void maybeInitImageServiceBridge(Profile profile) {

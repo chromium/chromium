@@ -30,17 +30,17 @@ public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
             mSuggestionsCallback = suggestionsCallback;
         }
 
-        void onLocalTabResultAvailable(SuggestionsResult localTab) {
+        void onLocalTabResultAvailable(SuggestionsResult localTabResult) {
             if (!mIsAlive) return;
 
-            mLocalTabResult = localTab;
+            mLocalTabResult = localTabResult;
             maybeDispatch();
         }
 
-        void onSyncDerivedResultAvailable(SuggestionsResult foreignSession) {
+        void onSyncDerivedResultAvailable(SuggestionsResult foreignSessionResult) {
             if (!mIsAlive) return;
 
-            mSyncDerivedResult = foreignSession;
+            mSyncDerivedResult = foreignSessionResult;
             maybeDispatch();
         }
 
@@ -74,20 +74,25 @@ public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
 
     private final @Nullable LocalTabTabResumptionDataProvider mLocalTabProvider;
     private final @Nullable SyncDerivedTabResumptionDataProvider mSyncDerivedProvider;
+    private final boolean mDisableBlend;
     private boolean mIsAlive;
 
     /**
      * @param localTabProvider Sub-provider for Local Tab suggestions.
-     * @param foreignSessionProvider Sub-provider for Sync Derived suggestions.
+     * @param syncDerivedProvider Sub-provider for Sync Derived suggestions.
+     * @param disableBlend Whether to fetch suggestions one sub-provider at a time (Local Tab then
+     *     Sync Derived), and serves the first nonempty results encountered.
      */
     public MixedTabResumptionDataProvider(
             @Nullable LocalTabTabResumptionDataProvider localTabProvider,
-            @Nullable SyncDerivedTabResumptionDataProvider foreignSessionProvider) {
+            @Nullable SyncDerivedTabResumptionDataProvider syncDerivedProvider,
+            boolean disableBlend) {
         super();
         mIsAlive = true;
-        assert localTabProvider != null || foreignSessionProvider != null;
+        assert localTabProvider != null || syncDerivedProvider != null;
         mLocalTabProvider = localTabProvider;
-        mSyncDerivedProvider = foreignSessionProvider;
+        mSyncDerivedProvider = syncDerivedProvider;
+        mDisableBlend = disableBlend;
     }
 
     /** Implements {@link TabResumptionDataProvider} */
@@ -112,9 +117,20 @@ public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
         } else if (mSyncDerivedProvider == null) {
             mLocalTabProvider.fetchSuggestions(suggestionsCallback);
         } else {
-            ResultMixer mixer = new ResultMixer(suggestionsCallback);
-            mLocalTabProvider.fetchSuggestions(mixer::onLocalTabResultAvailable);
-            mSyncDerivedProvider.fetchSuggestions(mixer::onSyncDerivedResultAvailable);
+            if (mDisableBlend) {
+                mLocalTabProvider.fetchSuggestions(
+                        (SuggestionsResult localTabResult) -> {
+                            if (localTabResult.size() > 0) {
+                                suggestionsCallback.onResult(localTabResult);
+                                return;
+                            }
+                            mSyncDerivedProvider.fetchSuggestions(suggestionsCallback);
+                        });
+            } else {
+                ResultMixer mixer = new ResultMixer(suggestionsCallback);
+                mLocalTabProvider.fetchSuggestions(mixer::onLocalTabResultAvailable);
+                mSyncDerivedProvider.fetchSuggestions(mixer::onSyncDerivedResultAvailable);
+            }
         }
     }
 

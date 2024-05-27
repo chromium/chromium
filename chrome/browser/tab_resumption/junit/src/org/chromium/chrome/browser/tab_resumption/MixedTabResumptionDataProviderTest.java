@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -40,7 +41,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
 
     private MixedTabResumptionDataProvider mMixedProvider;
     private SuggestionsResult mResults;
-    private int mFetchCount;
+    private int mLocalTabFetchCount;
+    private int mSyncDerivedFetchCount;
     private int mFetchSuggestionsCallbackCounter;
 
     @Before
@@ -51,10 +53,13 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
     @Test
     @SmallTest
     public void testLocalTabOnlyEmpty() {
-        mMixedProvider = new MixedTabResumptionDataProvider(mLocalTabProvider, null);
+        mMixedProvider =
+                new MixedTabResumptionDataProvider(
+                        mLocalTabProvider, null, /* disableBlend= */ false);
 
         // Empty Local Tab result, which is necessarily FORCED_NULL.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ false);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ false);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.FORCED_NULL, mResults.strength);
@@ -65,10 +70,13 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
     @SmallTest
     public void testLocalTabOnlySingle() {
         Tab tab = makeMockBrowserTab();
-        mMixedProvider = new MixedTabResumptionDataProvider(mLocalTabProvider, null);
+        mMixedProvider =
+                new MixedTabResumptionDataProvider(
+                        mLocalTabProvider, null, /* disableBlend= */ false);
 
         // Non-empty Local Tab result, which is STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ false);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ false);
         mLocalTabCallback.onResult(makeLocalTabSuggestionResult(ResultStrength.STABLE, tab));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
@@ -76,7 +84,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         Assert.assertEquals(tab, ((LocalTabSuggestionEntry) mResults.suggestions.get(0)).tab);
 
         // Local Tab result becomes empty. This can happen if user closes the suggested tab.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ false);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ false);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.FORCED_NULL, mResults.strength);
@@ -86,24 +95,29 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
     @Test
     @SmallTest
     public void testSyncDerivedOnlyEmpty() {
-        mMixedProvider = new MixedTabResumptionDataProvider(null, mSyncDerivedProvider);
+        mMixedProvider =
+                new MixedTabResumptionDataProvider(
+                        null, mSyncDerivedProvider, /* disableBlend= */ false);
 
         // Empty Sync Derived result, initilaly TENTATIVE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ false, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.TENTATIVE, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         assertNoSuggestions();
 
         // Empty Sync Derived result becomes STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ false, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.STABLE, null));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
         assertNoSuggestions();
 
         // Sync Derived result becomes FORCED_NULL. This can happen if user disables sync.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ false, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(3, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.FORCED_NULL, mResults.strength);
@@ -113,24 +127,29 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
     @Test
     @SmallTest
     public void testSyncDerivedOnlyVarious() {
-        mMixedProvider = new MixedTabResumptionDataProvider(null, mSyncDerivedProvider);
+        mMixedProvider =
+                new MixedTabResumptionDataProvider(
+                        null, mSyncDerivedProvider, /* disableBlend= */ false);
 
         // Start from non-empty TENTATIVE Sync Derived result.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ false, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         assertOneSuggestionWithTitle("Google Dog");
 
         // Different non-empty Sync Derived result, now STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ false, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 1, 0));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
         assertTwoSuggestionsWithTitles("Google Cat", "Google Dog");
 
         // Sync Derived result becomes FORCED_NULL, e.g., if user disables sync.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ false, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(3, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.FORCED_NULL, mResults.strength);
@@ -141,10 +160,12 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
     @SmallTest
     public void testMixedEmpty() {
         mMixedProvider =
-                new MixedTabResumptionDataProvider(mLocalTabProvider, mSyncDerivedProvider);
+                new MixedTabResumptionDataProvider(
+                        mLocalTabProvider, mSyncDerivedProvider, /* disableBlend= */ false);
 
         // Empty results, with Sync Derived result TENTATIVE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         // Callback passed to MixedTabResumptionDataProvider.fetchSuggestions() only gets called
         // after the callback of both sub-providers' fetchSuggestions() are called.
@@ -155,7 +176,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         assertNoSuggestions();
 
         // Empty Sync Derived result now STABLE, swap order for variety,
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.STABLE, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
@@ -164,7 +186,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         assertNoSuggestions();
 
         // Everything is empty and FORCED_NULL.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
@@ -177,10 +200,12 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
     @SmallTest
     public void testMixedSingleSyncDerived() {
         mMixedProvider =
-                new MixedTabResumptionDataProvider(mLocalTabProvider, mSyncDerivedProvider);
+                new MixedTabResumptionDataProvider(
+                        mLocalTabProvider, mSyncDerivedProvider, /* disableBlend= */ false);
 
         // Non-empty Sync Derived result starts out TENTATIVE, no Local Tab result.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0));
         Assert.assertEquals(0, mFetchSuggestionsCallbackCounter);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
@@ -189,7 +214,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         assertOneSuggestionWithTitle("Google Dog");
 
         // Sync Derived result changes and becomes STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 1));
@@ -202,10 +228,12 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
     @SmallTest
     public void testMixedDoubleSyncDerived() {
         mMixedProvider =
-                new MixedTabResumptionDataProvider(mLocalTabProvider, mSyncDerivedProvider);
+                new MixedTabResumptionDataProvider(
+                        mLocalTabProvider, mSyncDerivedProvider, /* disableBlend= */ false);
 
         // Non-empty Sync Derived result starts out TENTATIVE, no Local Tab result.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(0, mFetchSuggestionsCallbackCounter);
         mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0, 1));
@@ -214,7 +242,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         assertTwoSuggestionsWithTitles("Google Dog", "Google Cat");
 
         // Non-empty Sync Derived result becomes STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 1, 0));
@@ -228,10 +257,12 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
     public void testMixedSingleLocalTabToSingleSyncDerived() {
         Tab tab = makeMockBrowserTab();
         mMixedProvider =
-                new MixedTabResumptionDataProvider(mLocalTabProvider, mSyncDerivedProvider);
+                new MixedTabResumptionDataProvider(
+                        mLocalTabProvider, mSyncDerivedProvider, /* disableBlend= */ false);
 
         // Non-empty Local Tab result starts out STABLE; empty Sync Derived result is TENTATIVE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mLocalTabCallback.onResult(makeLocalTabSuggestionResult(ResultStrength.STABLE, tab));
         Assert.assertEquals(0, mFetchSuggestionsCallbackCounter);
         // Empty Sync Derived result starts out TENTATIVE (gets ignored).
@@ -242,7 +273,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         Assert.assertEquals(tab, ((LocalTabSuggestionEntry) mResults.suggestions.get(0)).tab);
 
         // Local Tab result becomes empty, no change in Sync Derived results.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.TENTATIVE, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
@@ -251,7 +283,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         assertNoSuggestions();
 
         // Sync Derived result becomes non-empty and STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 0));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
@@ -268,10 +301,12 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
                 makeSuggestionResult(ResultStrength.STABLE, 1, 0);
 
         mMixedProvider =
-                new MixedTabResumptionDataProvider(mLocalTabProvider, mSyncDerivedProvider);
+                new MixedTabResumptionDataProvider(
+                        mLocalTabProvider, mSyncDerivedProvider, /* disableBlend= */ false);
 
         // Non-empty Sync Derived result starts out TENTATIVE, no Local Tab result.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0, 1));
         Assert.assertEquals(0, mFetchSuggestionsCallbackCounter);
         mLocalTabCallback.onResult(makeLocalTabSuggestionResult(ResultStrength.STABLE, tab));
@@ -281,7 +316,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         assertTwoSuggestionsWithTitles("Blue 1", "Google Dog");
 
         // Non-empty Sync Derived result change and becomes STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mLocalTabCallback.onResult(makeLocalTabSuggestionResult(ResultStrength.STABLE, tab));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         mSyncDerivedCallback.onResult(stableSyncDerivedResult);
@@ -291,7 +327,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         assertTwoSuggestionsWithTitles("Blue 1", "Google Cat");
 
         // Local Tab result becomes empty; no change to Sync Derived result.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        startFetchAndCaptureCallbacks(
+                /* expectLocalTabUsage= */ true, /* expectSyncDerivedUsage= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         mSyncDerivedCallback.onResult(stableSyncDerivedResult);
@@ -301,31 +338,107 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         assertTwoSuggestionsWithTitles("Google Cat", "Google Dog");
     }
 
-    /**
-     * @param hasLocalTab Whether to expect Local Tab Provider usage, and to capture callback as
-     *     `mLocalTabCallback` to inject suggestions.
-     * @param hasSyncDerived Whether to expect Sync Derived provider usage, and to capture callback
-     *     as `mSyncDerivedCallback` to inject suggestions.
-     */
-    private void startFetchAndCaptureCallbacks(boolean hasLocalTab, boolean hasSyncDerived) {
+    @Test
+    @SmallTest
+    public void testDisableBlend() {
+        Tab tab = makeMockBrowserTab();
+
+        mMixedProvider =
+                new MixedTabResumptionDataProvider(
+                        mLocalTabProvider, mSyncDerivedProvider, /* disableBlend= */ true);
+
+        // Not using startFetchAndCaptureCallbacks() since events are now more granular.
+
+        // Non-empty Local Tab result. Sync Derived won't have fetch request.
+        startFetch();
+        maybeCaptureLocalTabCallback(true);
+        mLocalTabCallback.onResult(makeLocalTabSuggestionResult(ResultStrength.TENTATIVE, tab));
+        maybeCaptureSyncDerivedCallback(false); // Sync Derived Provider elided.
+        Assert.assertNull(mSyncDerivedCallback);
+        Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
+        Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
+        // Only Local Tab results are shown, even though Sync Derived results are available.
+        assertOneSuggestionWithTitle("Blue 1");
+        Assert.assertEquals(tab, ((LocalTabSuggestionEntry) mResults.suggestions.get(0)).tab);
+
+        // Local Tab result becomes empty. Now Sync Derived results will be requested and used.
+        startFetch();
+        maybeCaptureLocalTabCallback(true);
+        mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.STABLE, null));
+        maybeCaptureSyncDerivedCallback(true);
+        mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0, 1));
+        Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
+        Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
+        assertTwoSuggestionsWithTitles("Google Dog", "Google Cat");
+
+        // Sync Derived results become STABLE.
+        startFetch();
+        maybeCaptureLocalTabCallback(true);
+        mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.STABLE, null));
+        maybeCaptureSyncDerivedCallback(true);
+        mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 1));
+        Assert.assertEquals(3, mFetchSuggestionsCallbackCounter);
+        Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
+        assertOneSuggestionWithTitle("Google Cat");
+    }
+
+    /** Initiate Mixed Provider fetch. Still need to capture and call callbacks to continue. */
+    private void startFetch() {
         mMixedProvider.fetchSuggestions(
                 (SuggestionsResult results) -> {
                     mResults = results;
                     ++mFetchSuggestionsCallbackCounter;
                 });
-        ++mFetchCount;
-        if (hasLocalTab) {
-            verify(mLocalTabProvider, times(mFetchCount))
+    }
+
+    /**
+     * Checks Local Tab Provider usage. If expected, capture callback as `mLocalTabCallback` to
+     * inject suggestions. Else nullifies the variable.
+     *
+     * @param expectUsage Whether to expect Local Tab Provider usage.
+     */
+    private void maybeCaptureLocalTabCallback(boolean expectUsage) {
+        if (expectUsage) {
+            ++mLocalTabFetchCount;
+            verify(mLocalTabProvider, times(mLocalTabFetchCount))
                     .fetchSuggestions(mLocalTabCallbackCaptor.capture());
             mLocalTabCallback = mLocalTabCallbackCaptor.getValue();
             Assert.assertNotNull(mLocalTabCallback);
+        } else {
+            verify(mLocalTabProvider, never()).fetchSuggestions(mLocalTabCallbackCaptor.capture());
+            mLocalTabCallback = null;
         }
-        if (hasSyncDerived) {
-            verify(mSyncDerivedProvider, times(mFetchCount))
+    }
+
+    /**
+     * Checks Sync Derived Provider usage. If expected, capture callback as `mSyncDerivedCallback`
+     * to inject suggestions. Else nullifies the variable.
+     *
+     * @param expectUsage Whether to expect Sync Derived Provider usage.
+     */
+    private void maybeCaptureSyncDerivedCallback(boolean expectUsage) {
+        if (expectUsage) {
+            ++mSyncDerivedFetchCount;
+            verify(mSyncDerivedProvider, times(mSyncDerivedFetchCount))
                     .fetchSuggestions(mSyncDerivedCallbackCaptor.capture());
             mSyncDerivedCallback = mSyncDerivedCallbackCaptor.getValue();
             Assert.assertNotNull(mSyncDerivedCallback);
+        } else {
+            verify(mSyncDerivedProvider, never())
+                    .fetchSuggestions(mSyncDerivedCallbackCaptor.capture());
+            mSyncDerivedCallback = null;
         }
+    }
+
+    /**
+     * @param expectLocalTabUsage Whether to expect Local Tab Provider usage.
+     * @param expectSyncDerivedUsage Whether to expect Sync Derived Provider usage.
+     */
+    private void startFetchAndCaptureCallbacks(
+            boolean expectLocalTabUsage, boolean expectSyncDerivedUsage) {
+        startFetch();
+        maybeCaptureLocalTabCallback(expectLocalTabUsage);
+        maybeCaptureSyncDerivedCallback(expectSyncDerivedUsage);
     }
 
     /** Helper to make a Local Tab suggestion result. */
@@ -333,12 +446,12 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         return new SuggestionsResult(strength, Arrays.asList(new LocalTabSuggestionEntry(tab)));
     }
 
-    /** Helper to make a Derived suggestion result with 1 suggestion. */
+    /** Helper to make a Sync Derived suggestion result with 1 suggestion. */
     private SuggestionsResult makeSuggestionResult(@ResultStrength int strength, int index1) {
         return new SuggestionsResult(strength, Arrays.asList(makeSyncDerivedSuggestion(index1)));
     }
 
-    /** Helper to make a Derived suggestion result with 2 suggestions. */
+    /** Helper to make a Sync Derived suggestion result with 2 suggestions. */
     private SuggestionsResult makeSuggestionResult(
             @ResultStrength int strength, int index1, int index2) {
         return new SuggestionsResult(
