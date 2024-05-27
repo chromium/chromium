@@ -672,3 +672,7 @@
 -CrossPlatformAccessibilityBrowserTest.SelectListWithOptgroupActiveDescendant
 -CrossPlatformAccessibilityBrowserTest.SelectSizeChangeWithOpenedPopupDoesNotCrash
 -CrossPlatformAccessibilityBrowserTest.SelectWithOptgroupActiveDescendant
+
+# TODO(crbug.com/342866174): The test has been failing since
+# https://crrev.com/c/5545059.
+-FoldableAPIsOriginTrialBrowserTest.ValidOriginTrialToken
