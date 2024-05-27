@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
