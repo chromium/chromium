@@ -551,7 +551,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   item.autofillFieldType = autofillType;
   item.textFieldValue = self.fieldValuesMap[item.autofillFieldType];
   item.textFieldEnabled = [self showEditView];
-  item.hideIcon = ![self showEditView];
+  item.hideIcon = (_dynamicallyLoadInputFieldsEnabled && !_settingsView) ||
+                  ![self showEditView];
   item.autoCapitalizationType = autoCapitalizationType;
   item.returnKeyType = _settingsView ? returnKeyType : UIReturnKeyDone;
   item.keyboardType = keyboardType;
