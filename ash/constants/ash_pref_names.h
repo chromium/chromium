@@ -91,6 +91,12 @@ inline constexpr char kOrcaConsentWindowDismissCount[] =
 inline constexpr char kEmojiPickerGifSupportEnabled[] =
     "emoji_picker.gif_support_enabled";
 
+// A dictionary storing the history of emoji picker inputs. The history is keyed
+// by the emoji picker categories, i.e. "emoji", "symbol" and "emoticon". The
+// history value for each category is a list of objects, each should at least
+// contain a "text" field indicating the inputted emoji/symbol/emoticon.
+inline constexpr char kEmojiPickerHistory[] = "emoji_picker.history";
+
 // Pref which stores a list of Embedded Universal Integrated Circuit Card
 // (EUICC) D-Bus paths which have had their installed profiles refreshed from
 // Hermes. Each path is stored as a string.

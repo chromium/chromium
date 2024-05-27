@@ -126,4 +126,7 @@ interface PageHandler {
 
   // Find out the initial query to search for in the emoji picker
   GetInitialQuery() => (string query);
+
+  // Update Emoji picker history in chrome prefs
+  UpdateHistoryInPrefs(Category category, array<string> history);
 };

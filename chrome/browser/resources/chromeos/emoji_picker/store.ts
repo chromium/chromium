@@ -2,12 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPickerApiProxy} from 'emoji_picker_api_proxy.js';
-
 import {EMOJI_PER_ROW} from './constants.js';
+import {Category} from './emoji_picker.mojom-webui.js';
+import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {CategoryEnum, Emoji, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
 
 const MAX_RECENTS = EMOJI_PER_ROW * 2;
+
+// Covert CategoryEnum to Category type.
+function convertCategoryEnum(category: CategoryEnum) {
+  switch (category) {
+    case CategoryEnum.EMOJI:
+      return Category.kEmojis;
+    case CategoryEnum.EMOTICON:
+      return Category.kEmoticons;
+    case CategoryEnum.SYMBOL:
+      return Category.kSymbols;
+    case CategoryEnum.GIF:
+      return Category.kGifs;
+  }
+}
 
 class Store<T> {
   data: T;
@@ -65,8 +79,9 @@ interface RecentlyUsed {
 export class RecentlyUsedStore {
   private store: Store<RecentlyUsed>;
 
-  constructor(name: string) {
-    this.store = new Store(name, {history: [], preference: {}});
+  constructor(private readonly category: CategoryEnum) {
+    this.store =
+        new Store(`${category}-recently-used`, {history: [], preference: {}});
   }
 
   /**
@@ -112,6 +127,7 @@ export class RecentlyUsedStore {
   clearRecents() {
     this.store.data.history = [];
     this.store.save();
+    this.updateHistoryInPrefs();
   }
 
   clearItem(category: CategoryEnum, item: EmojiVariants) {
@@ -127,6 +143,7 @@ export class RecentlyUsedStore {
           x => (x.base.string && x.base.string !== item.base.string));
     }
     this.store.save();
+    this.updateHistoryInPrefs();
   }
 
   /**
@@ -161,6 +178,7 @@ export class RecentlyUsedStore {
       history.length = MAX_RECENTS;
     }
     this.store.save();
+    this.updateHistoryInPrefs();
   }
 
   /**
@@ -184,6 +202,14 @@ export class RecentlyUsedStore {
     });
 
     this.store.save();
+  }
+
+  updateHistoryInPrefs() {
+    if (this.category !== CategoryEnum.GIF) {
+      EmojiPickerApiProxy.getInstance().updateHistoryInPrefs(
+          convertCategoryEnum(this.category),
+          this.store.data.history.map(x => x.base.string!));
+    }
   }
 
   /**

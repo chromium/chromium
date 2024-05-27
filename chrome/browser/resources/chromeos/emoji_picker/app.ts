@@ -1180,7 +1180,7 @@ export class EmojiPickerApp extends PolymerElement {
     // Load the history item for each category.
     for (const category of Object.values(CategoryEnum)) {
       this.categoriesHistory[category] =
-          incognito ? null : new RecentlyUsedStore(`${category}-recently-used`);
+          incognito ? null : new RecentlyUsedStore(category);
       this.categoryHistoryUpdated(category);
     }
   }
