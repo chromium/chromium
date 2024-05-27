@@ -299,8 +299,8 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   NOTREACHED_NORETURN();
 }
 
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-    didRequestContextMenuForItemWithID:(web::WebStateID)itemID {
+- (void)gridViewControllerDidRequestContextMenu:
+    (BaseGridViewController*)gridViewController {
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }

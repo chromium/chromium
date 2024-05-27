@@ -379,8 +379,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   [self presentSettings];
 }
 
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-    didRequestContextMenuForItemWithID:(web::WebStateID)itemID {
+- (void)gridViewControllerDidRequestContextMenu:
+    (BaseGridViewController*)gridViewController {
   // No-op.
 }
 

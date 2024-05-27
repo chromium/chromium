@@ -84,10 +84,9 @@ class WebStateID;
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
     (BaseGridViewController*)gridViewController;
 
-// Tells the delegate that the item with `itemID` has been long pressed to
-// request the context menu.
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-    didRequestContextMenuForItemWithID:(web::WebStateID)itemID;
+// Tells the delegate that a context menu has been requested.
+- (void)gridViewControllerDidRequestContextMenu:
+    (BaseGridViewController*)gridViewController;
 
 @end
 

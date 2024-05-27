@@ -1640,8 +1640,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.mutator dragAndDropSessionEnded];
 }
 
-- (void)pinnedViewController:(PinnedTabsViewController*)pinnedTabsViewController
-    didRequestContextMenuForItemWithID:(web::WebStateID)itemID {
+- (void)pinnedViewControllerDidRequestContextMenu:
+    (PinnedTabsViewController*)pinnedTabsViewController {
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
@@ -1838,9 +1838,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   NOTREACHED_IN_MIGRATION();
 }
 
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-    didRequestContextMenuForItemWithID:(web::WebStateID)itemID {
+- (void)gridViewControllerDidRequestContextMenu:
+    (BaseGridViewController*)gridViewController {
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
+  // The searchBar must relinquish its status as first responder to become
+  // interactable again.
+  [self.topToolbar unfocusSearchBar];
 }
 
 #pragma mark - TabGridToolbarsMainTabGridDelegate

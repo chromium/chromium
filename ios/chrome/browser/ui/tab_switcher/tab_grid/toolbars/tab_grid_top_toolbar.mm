@@ -530,6 +530,10 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
 #pragma mark - Public
 
+- (void)unfocusSearchBar {
+  [_searchBar resignFirstResponder];
+}
+
 - (void)respondBeforeResponder:(UIResponder*)nextResponder {
   _followingNextResponder = nextResponder;
 }
