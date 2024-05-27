@@ -244,16 +244,7 @@ class SystemIdentityManager {
       id<SystemIdentity> identity,
       NSArray<id<SystemIdentity>>* active_identities,
       id<RefreshAccessTokenError> error,
-      HandleMDMCallback callback);
-
-  // DEPRECATED, see:
-  // HandleMDMNotification(id<SystemIdentity>,
-  //                       id<SystemIdentity>,
-  //                       NSArray<id<SystemIdentity>>*,
-  //                       id<RefreshAccessTokenError>, HandleMDMCallback)
-  virtual bool HandleMDMNotification(id<SystemIdentity> identity,
-                                     id<RefreshAccessTokenError> error,
-                                     HandleMDMCallback callback);
+      HandleMDMCallback callback) = 0;
 
   // Returns whether the `error` associated with `identity` is due to MDM
   // (Mobile Device Management) or not.

@@ -135,21 +135,6 @@ void SystemIdentityManager::FireIdentityAccessTokenRefreshFailed(
   }
 }
 
-bool SystemIdentityManager::HandleMDMNotification(
-    id<SystemIdentity> identity,
-    NSArray<id<SystemIdentity>>* active_identities,
-    id<RefreshAccessTokenError> error,
-    HandleMDMCallback callback) {
-  return HandleMDMNotification(identity, error, std::move(callback));
-}
-
-bool SystemIdentityManager::HandleMDMNotification(
-    id<SystemIdentity> identity,
-    id<RefreshAccessTokenError> error,
-    HandleMDMCallback callback) {
-  NOTREACHED_NORETURN();
-}
-
 DismissViewCallback SystemIdentityManager::PresentAccountDetailsController(
     SystemIdentityManager::PresentDialogConfiguration configuration) {
   NOTREACHED_NORETURN();
