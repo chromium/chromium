@@ -58,20 +58,27 @@ bool HeadersContainFrameAncestorsCSP(
 RenderFrameHostImpl* GetParentForFrameAncestors(NavigationRequest* request,
                                                 RenderFrameHostImpl* frame) {
   bool allows_information_inflow = false;
-  if (request) {
-    allows_information_inflow =
-        !request->GetFencedFrameProperties().has_value() ||
-        request->GetFencedFrameProperties()->allows_information_inflow();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    if (request) {
+      allows_information_inflow =
+          !request->GetFencedFrameProperties().has_value() ||
+          request->GetFencedFrameProperties()->allows_information_inflow();
+    } else {
+      // We are in one of the navigated frame's ancestors.
+      allows_information_inflow =
+          !frame->frame_tree_node()->HasFencedFrameProperties() ||
+          frame->frame_tree_node()
+              ->GetFencedFrameProperties()
+              ->allows_information_inflow();
+    }
   } else {
-    // We are in one of the navigated frame's ancestors.
-    allows_information_inflow =
-        !frame->frame_tree_node()->HasFencedFrameProperties() ||
-        frame->frame_tree_node()
-            ->GetFencedFrameProperties()
-            ->allows_information_inflow();
+    allows_information_inflow = !frame->IsFencedFrameRoot();
   }
 
-  if (!allows_information_inflow && request) {
+  if (!allows_information_inflow && request &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
     request->AddDeferredConsoleMessage(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "'CSP frame-ancestors' and 'X-Frame-Options' directives will not look "
