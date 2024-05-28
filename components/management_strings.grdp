@@ -123,8 +123,8 @@
     <message name="IDS_MANAGEMENT_PROXY_SERVER_PRIVACY_DISCLOSURE" desc="Message stating that administrators can see user's traffic when connected to a proxy server.">
       Administrators of this device have configured your network connection, which may allow them to see your network traffic, including which websites you visit.
     </message>
-    <message name="IDS_MANAGEMENT_DEVICE_CONFIGURATION" desc="Message telling users that their administrator has set some specific policies on their device">
-      Your administrator can see:
+    <message name="IDS_MANAGEMENT_DEVICE_CONFIGURATION" desc="Message explaining to users what device policies their administrator has set to monitor the device">
+      Your administrator may be able to view:
     </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_USERS" desc="Message stating that administrators see all users that have used the device recently.">
       Who has used the device recently
@@ -260,8 +260,8 @@
     <message name="IDS_MANAGEMENT_BROWSER_REPORTING" desc="Title of the types of browser reporting section of the page" formatter_data="android_java">
       Browser
     </message>
-    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION" desc="Message explaining browser reporting" formatter_data="android_java">
-      Your administrator can see:
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION" desc="Message explaining to users what browser information is being reported that admins can access" formatter_data="android_java">
+      Your administrator may be able to view:
     </message>
     <message name="IDS_MANAGEMENT_EXTENSION_REPORT_MACHINE_NAME" desc="Message explaining that an extension currently reports the user's machine name">
       Your device name
