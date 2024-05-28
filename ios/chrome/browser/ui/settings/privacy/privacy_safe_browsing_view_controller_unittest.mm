@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_view_controller.h"
 
+#import "build/branding_buildflags.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -13,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -52,11 +55,6 @@ class PrivacySafeBrowsingViewControllerTest
 };
 
 TEST_F(PrivacySafeBrowsingViewControllerTest, TestModel) {
-  if (@available(iOS 16, *)) {
-    // TODO:(crbug.com/339424308): Failing on ios 16.7.1 and 16.7.2.
-    return;
-  }
-
   CreateController();
   CheckController();
 
@@ -69,12 +67,25 @@ TEST_F(PrivacySafeBrowsingViewControllerTest, TestModel) {
       l10n_util::GetNSString(
           IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY),
       0, 0);
+
+  NSInteger standard_protection_summary = 0;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (safe_browsing::hash_realtime_utils::
+          IsHashRealTimeLookupEligibleInSession()) {
+    standard_protection_summary =
+        IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY_PROXY;
+  }
+#endif
+
+  if (!standard_protection_summary) {
+    standard_protection_summary =
+        IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY;
+  }
+
   CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(
           IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE),
-      l10n_util::GetNSString(
-          IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY),
-      0, 1);
+      l10n_util::GetNSString(standard_protection_summary), 0, 1);
   CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE),
       l10n_util::GetNSString(

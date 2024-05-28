@@ -126,6 +126,7 @@ source_set("unit_tests") {
   ]
   deps = [
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/handoff",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
@@ -133,6 +134,7 @@ source_set("unit_tests") {
     "//components/prefs/ios",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/strings",
     "//components/sync:test_support",
     "//components/sync_preferences",
