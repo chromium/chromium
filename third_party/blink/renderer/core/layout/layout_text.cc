@@ -63,7 +63,6 @@
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/text/character.h"
@@ -943,46 +942,34 @@ std::pair<String, TextOffsetMap> LayoutText::SecureText(const String& plain,
   }
 
   int last_typed_character_offset_to_reveal = -1;
-  UChar revealed_text;
   if (auto* secure_text_timer = SecureTextTimer::ActiveInstanceFor(this)) {
     last_typed_character_offset_to_reveal =
         secure_text_timer->LastTypedCharacterOffset();
-    if (last_typed_character_offset_to_reveal >= 0)
-      revealed_text = plain[last_typed_character_offset_to_reveal];
   }
 
-  if (RuntimeEnabledFeatures::MaskingGraphemeClustersEnabled()) {
-    StringBuilder builder;
-    // `mask` always needs a 16bit buffer.
-    builder.Reserve16BitCapacity(plain.length());
-    TextOffsetMap offset_map;
-    for (unsigned offset = 0; offset < plain.length();) {
-      unsigned cluster_size = LengthOfGraphemeCluster(plain, offset);
-      unsigned next_offset = offset + cluster_size;
-      if (last_typed_character_offset_to_reveal >= 0) {
-        unsigned last_typed_offset =
-            base::checked_cast<unsigned>(last_typed_character_offset_to_reveal);
-        if (offset <= last_typed_offset && last_typed_offset < next_offset) {
-          builder.Append(StringView(plain, offset, cluster_size));
-          offset = next_offset;
-          continue;
-        }
-      }
-      builder.Append(mask);
-      offset = next_offset;
-      if (cluster_size != 1) {
-        offset_map.Append(offset, builder.length());
+  StringBuilder builder;
+  // `mask` always needs a 16bit buffer.
+  builder.Reserve16BitCapacity(plain.length());
+  TextOffsetMap offset_map;
+  for (unsigned offset = 0; offset < plain.length();) {
+    unsigned cluster_size = LengthOfGraphemeCluster(plain, offset);
+    unsigned next_offset = offset + cluster_size;
+    if (last_typed_character_offset_to_reveal >= 0) {
+      unsigned last_typed_offset =
+          base::checked_cast<unsigned>(last_typed_character_offset_to_reveal);
+      if (offset <= last_typed_offset && last_typed_offset < next_offset) {
+        builder.Append(StringView(plain, offset, cluster_size));
+        offset = next_offset;
+        continue;
       }
     }
-    return std::make_pair(builder.ToString(), offset_map);
+    builder.Append(mask);
+    offset = next_offset;
+    if (cluster_size != 1) {
+      offset_map.Append(offset, builder.length());
+    }
   }
-  String masked = plain;
-  masked.Fill(mask);
-  if (last_typed_character_offset_to_reveal >= 0) {
-    masked.replace(last_typed_character_offset_to_reveal, 1,
-                   String(&revealed_text, 1u));
-  }
-  return std::make_pair(masked, TextOffsetMap());
+  return std::make_pair(builder.ToString(), offset_map);
 }
 
 void LayoutText::SetVariableLengthTransformResult(

@@ -2354,11 +2354,6 @@
       status: "stable",
     },
     {
-      // crbug.com/40417720
-      name: "MaskingGraphemeClusters",
-      status: "stable",
-    },
-    {
       name:"MeasureMemory",
       status:"stable",
     },
