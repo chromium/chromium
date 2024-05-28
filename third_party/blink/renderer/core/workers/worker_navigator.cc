@@ -42,6 +42,13 @@ WorkerNavigator::~WorkerNavigator() = default;
 
 String WorkerNavigator::GetAcceptLanguages() {
   auto* global_scope = To<WorkerOrWorkletGlobalScope>(GetExecutionContext());
+  if (!global_scope) {
+    // Prospective fix for crbug.com/40945292 and crbug.com/40827704
+    // Return empty string since it is better than crashing here, and the return
+    // value is not that important since the worker context is already
+    // destroyed.
+    return "";
+  }
 
   return global_scope->GetAcceptLanguages();
 }
