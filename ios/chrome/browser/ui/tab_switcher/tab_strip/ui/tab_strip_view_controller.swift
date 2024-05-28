@@ -66,7 +66,13 @@ class TabStripViewController: UIViewController,
   /// `true` if the user is in incognito.
   public var isIncognito: Bool = false
 
-  private var numberOfTabs: Int = 0
+  /// A dictionary that maps each tab item identifier to its index,
+  /// either in the set of ungrouped tabs or in its group.
+  private var tabIndices: [TabStripItemIdentifier: Int] = [:]
+  /// A dictionary that maps each group item identifier to the number of tabs it contains.
+  private var numberOfTabsPerGroup: [TabStripItemIdentifier: Int] = [:]
+  /// The number of tabs that are not part of any group.
+  private var numberOfUngroupedTabs = 0
 
   /// Handles model updates.
   public weak var mutator: TabStripMutator?
@@ -197,6 +203,15 @@ class TabStripViewController: UIViewController,
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     self.ensureSelectedItemIsSelected()
+    NotificationCenter.default.addObserver(
+      self, selector: #selector(voiceOverChanged),
+      name: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil)
+  }
+
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    NotificationCenter.default.removeObserver(
+      self, name: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil)
   }
 
   // MARK: - TabStripConsumer
@@ -209,8 +224,6 @@ class TabStripViewController: UIViewController,
     guard let itemIdentifiers = itemIdentifiers else {
       return
     }
-    numberOfTabs = itemIdentifiers.lazy.filter { $0.itemType == .tab }.count
-
     var snapshot = NSDiffableDataSourceSectionSnapshot<TabStripItemIdentifier>()
     for itemIdentifier in itemIdentifiers {
       switch itemIdentifier.item {
@@ -360,8 +373,6 @@ class TabStripViewController: UIViewController,
   func removeItems(_ items: [TabStripItemIdentifier]?) {
     guard let items = items else { return }
 
-    numberOfTabs -= items.lazy.filter { $0.itemType == .tab }.count
-
     var snapshot = dataSource.snapshot(for: .tabs)
     snapshot.delete(items)
     itemData.removeObjects(forKeys: items)
@@ -467,6 +478,10 @@ class TabStripViewController: UIViewController,
 
     ensureSelectedItemIsSelected()
     updateVisibleCellIdentifiers()
+    if UIAccessibility.isVoiceOverRunning {
+      updateTabIndices()
+      updateVisibleCellTabIndices()
+    }
   }
 
   /// Creates and returns the data source for the collection view.
@@ -507,7 +522,7 @@ class TabStripViewController: UIViewController,
       guard let item = itemIdentifier.tabSwitcherItem else { return }
       let itemData = self.itemData[itemIdentifier] as? TabStripItemData
       cell.title = item.title
-      cell.setGroupStrokeColor(itemData?.groupStrokeColor)
+      cell.groupStrokeColor = itemData?.groupStrokeColor
       cell.isFirstTabInGroup = itemData?.isFirstTabInGroup == true
       cell.isLastTabInGroup = itemData?.isLastTabInGroup == true
       cell.loading = item.showsActivity
@@ -515,8 +530,15 @@ class TabStripViewController: UIViewController,
       cell.accessibilityIdentifier = self.tabTripTabCellAccessibilityIdentifier(
         index: indexPath.item)
       cell.item = item
-      cell.tabIndex = indexPath.item + 1
-      cell.numberOfTabs = self.numberOfTabs
+      if UIAccessibility.isVoiceOverRunning {
+        cell.tabIndex = self.tabIndices[itemIdentifier] ?? 0
+        let snapshot = self.dataSource.snapshot(for: .tabs)
+        if let parentGroup = snapshot.parent(of: itemIdentifier) {
+          cell.numberOfTabs = self.numberOfTabsPerGroup[parentGroup] ?? 0
+        } else {
+          cell.numberOfTabs = self.numberOfUngroupedTabs
+        }
+      }
 
       item.fetchFavicon { (item: TabSwitcherItem?, image: UIImage?) -> Void in
         if let item = item, item == cell.item {
@@ -549,7 +571,7 @@ class TabStripViewController: UIViewController,
       cell.title = item.rawTitle
       cell.titleContainerBackgroundColor = item.groupColor
       cell.collapsed = item.collapsed
-      cell.setGroupStrokeColor(itemData?.groupStrokeColor)
+      cell.groupStrokeColor = itemData?.groupStrokeColor
       cell.accessibilityIdentifier = self.tabTripGroupCellAccessibilityIdentifier(
         index: indexPath.item)
     }
@@ -577,20 +599,64 @@ class TabStripViewController: UIViewController,
     }
   }
 
-  // Update visible cells identifier, following a reorg of cells.
+  // Updates visible cells identifier, following a reorg of cells.
   func updateVisibleCellIdentifiers() {
     for indexPath in collectionView.indexPathsForVisibleItems {
       switch collectionView.cellForItem(at: indexPath) {
       case let tabCell as TabStripTabCell:
         tabCell.accessibilityIdentifier = tabTripTabCellAccessibilityIdentifier(
           index: indexPath.item)
-        tabCell.tabIndex = indexPath.item + 1
-        tabCell.numberOfTabs = numberOfTabs
       case let groupCell as TabStripGroupCell:
         groupCell.accessibilityIdentifier = tabTripGroupCellAccessibilityIdentifier(
           index: indexPath.item)
       default:
         continue
+      }
+    }
+  }
+
+  // Updates `tabIndex` and `numberOfTabs` for visible tab cells, according to `tabIndices`,
+  // `numberOfTabsPerGroup` and `numberOfUngroupedTabs`, following a reorg of cells.
+  func updateVisibleCellTabIndices() {
+    let snapshot = dataSource.snapshot(for: .tabs)
+    for indexPath in collectionView.indexPathsForVisibleItems {
+      if let tabCell = collectionView.cellForItem(at: indexPath) as? TabStripTabCell,
+        let itemIdentifier = dataSource.itemIdentifier(for: indexPath),
+        let tabIndex = tabIndices[itemIdentifier]
+      {
+        tabCell.tabIndex = tabIndex
+        if let parentGroup = snapshot.parent(of: itemIdentifier) {
+          tabCell.numberOfTabs = numberOfTabsPerGroup[parentGroup] ?? 0
+        } else {
+          tabCell.numberOfTabs = numberOfUngroupedTabs
+        }
+      }
+    }
+  }
+
+  // Updates `tabIndices`, `numberOfUngroupedTabs` and `numberOfTabsPerGroup` according to `dataSource`.
+  func updateTabIndices() {
+    let snapshot = dataSource.snapshot(for: .tabs)
+    var currentGroupItemIdentifier: TabStripItemIdentifier? = nil
+    // Updates `tabIndices` and counts grouped and ungrouped tabs.
+    tabIndices = [:]
+    numberOfTabsPerGroup = [:]
+    numberOfUngroupedTabs = 0
+    for itemIdentifier in snapshot.items {
+      if snapshot.level(of: itemIdentifier) == 0 {
+        currentGroupItemIdentifier = nil
+      }
+      switch itemIdentifier.item {
+      case .tab(_):
+        if let currentGroupItemIdentifier = currentGroupItemIdentifier {
+          numberOfTabsPerGroup[currentGroupItemIdentifier, default: 0] += 1
+          tabIndices[itemIdentifier] = numberOfTabsPerGroup[currentGroupItemIdentifier]
+        } else {
+          numberOfUngroupedTabs += 1
+          tabIndices[itemIdentifier] = numberOfUngroupedTabs
+        }
+      case .group(_):
+        currentGroupItemIdentifier = itemIdentifier
       }
     }
   }
@@ -644,8 +710,6 @@ class TabStripViewController: UIViewController,
   func insertItemsUsingSnapshot(
     _ snapshot: NSDiffableDataSourceSectionSnapshot<TabStripItemIdentifier>, insertedLast: Bool
   ) {
-    numberOfTabs = snapshot.items.lazy.filter { $0.itemType == .tab }.count
-
     applySnapshot(
       dataSource: dataSource, snapshot: snapshot,
       animatingDifferences: !UIAccessibility.isReduceMotionEnabled,
@@ -672,6 +736,13 @@ class TabStripViewController: UIViewController,
         layout.cellAnimatediOS16 = false
       }
     }
+  }
+
+  // Called when voice over is activated.
+  @objc func voiceOverChanged() {
+    guard UIAccessibility.isVoiceOverRunning else { return }
+    self.updateTabIndices()
+    self.updateVisibleCellTabIndices()
   }
 
   // MARK: - TabStripNewTabButtonDelegate

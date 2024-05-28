@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_group_stroke_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -38,6 +40,7 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
     [self addSubview:_groupStrokeView];
     [self setupConstraints];
     [self updateGroupStroke];
+    [self updateAccessibilityValue];
   }
   return self;
 }
@@ -92,6 +95,7 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
 }
 
 - (void)setGroupStrokeColor:(UIColor*)color {
+  [super setGroupStrokeColor:color];
   if ([_groupStrokeView.backgroundColor isEqual:color]) {
     return;
   }
@@ -114,6 +118,7 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
         }),
         base::Seconds(kCollapseUpdateGroupStrokeDelaySeconds));
   }
+  [self updateAccessibilityValue];
 }
 
 - (void)setIntersectsLeftEdge:(BOOL)intersectsLeftEdge {
@@ -284,6 +289,14 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
                    animations:^{
                      titleContainer.alpha = titleContainerAlpha;
                    }];
+}
+
+- (void)updateAccessibilityValue {
+  // Use the accessibility Value as there is a pause when using the
+  // accessibility hint.
+  self.accessibilityValue = l10n_util::GetNSString(
+      self.collapsed ? IDS_IOS_TAB_STRIP_GROUP_CELL_COLLAPSED_VOICE_OVER_VALUE
+                     : IDS_IOS_TAB_STRIP_GROUP_CELL_EXPANDED_VOICE_OVER_VALUE);
 }
 
 @end

@@ -26,8 +26,7 @@
 
 // Sets the color of this cell's group stroke.
 // Subclasses should override this method. Default implementation is no-op.
-- (void)setGroupStrokeColor:(UIColor*)groupStrokeColor
-    NS_SWIFT_NAME(setGroupStrokeColor(_:));
+@property(nonatomic, copy) UIColor* groupStrokeColor;
 
 @end
 

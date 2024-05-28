@@ -6,18 +6,12 @@
 
 @implementation TabStripCell
 
-#pragma mark - Public
-
-- (void)setGroupStrokeColor:(UIColor*)color {
-  // Subclasses should override.
-}
-
 #pragma mark - UICollectionViewCell
 
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.title = nil;
-  [self setGroupStrokeColor:nil];
+  self.groupStrokeColor = nil;
   self.intersectsLeftEdge = NO;
   self.intersectsRightEdge = NO;
 }

@@ -232,6 +232,7 @@ UIImage* DefaultFavicon() {
 }
 
 - (void)setGroupStrokeColor:(UIColor*)color {
+  [super setGroupStrokeColor:color];
   if (_groupStrokeView.backgroundColor == color) {
     return;
   }
@@ -996,10 +997,12 @@ UIImage* DefaultFavicon() {
 - (void)updateAccessibilityValue {
   // Use the accessibility Value as there is a pause when using the
   // accessibility hint.
-  _accessibilityContainerView.accessibilityValue =
-      l10n_util::GetNSStringF(IDS_IOS_TAB_STRIP_TAB_CELL_VOICE_OVER_VALUE,
-                              base::NumberToString16(self.tabIndex),
-                              base::NumberToString16(self.numberOfTabs));
+  BOOL grouped = self.groupStrokeColor != nil;
+  _accessibilityContainerView.accessibilityValue = l10n_util::GetNSStringF(
+      grouped ? IDS_IOS_TAB_STRIP_TAB_CELL_IN_GROUP_VOICE_OVER_VALUE
+              : IDS_IOS_TAB_STRIP_TAB_CELL_VOICE_OVER_VALUE,
+      base::NumberToString16(self.tabIndex),
+      base::NumberToString16(self.numberOfTabs));
 }
 
 @end
