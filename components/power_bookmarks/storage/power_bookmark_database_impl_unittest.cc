@@ -931,6 +931,10 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForGUIDs) {
   EXPECT_EQ(2u, stored_powers.size());
   EXPECT_EQ(kGoogleUrl, stored_powers[0]->url());
   EXPECT_EQ(kGoogleUrl, stored_powers[1]->url());
+
+  stored_powers = pbdb->GetPowersForGUIDs({guid1});
+  EXPECT_EQ(1u, stored_powers.size());
+  EXPECT_EQ(kGoogleUrl, stored_powers[0]->url());
 }
 
 TEST_F(PowerBookmarkDatabaseImplTest, GetPowerForGUID) {
