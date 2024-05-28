@@ -52,6 +52,8 @@ dictionary AudioSinkOptions {
     [HighEntropy=Direct, MeasureAs=AudioContextBaseLatency] readonly attribute double baseLatency;
     [HighEntropy=Direct, MeasureAs=AudioContextOutputLatency] readonly attribute double outputLatency;
 
+    [RuntimeEnabled=AudioContextPlayoutStats, SameObject] readonly attribute AudioPlayoutStats playoutStats;
+
     [RaisesException, MeasureAs=AudioContextCreateMediaElementSource] MediaElementAudioSourceNode createMediaElementSource(HTMLMediaElement mediaElement);
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamSource] MediaStreamAudioSourceNode createMediaStreamSource(MediaStream mediaStream);
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamDestination] MediaStreamAudioDestinationNode createMediaStreamDestination();

@@ -364,6 +364,12 @@
       base_feature: "none",
     },
     {
+      // AudioContext.playoutStats interface.
+      // https://chromestatus.com/feature/5172818344148992
+      name: "AudioContextPlayoutStats",
+      status: "experimental",
+    },
+    {
       name: "AudioContextSetSinkId",
       status: "stable",
     },
