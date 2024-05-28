@@ -58,6 +58,10 @@ class BirchKeyedService : public KeyedService,
   void WaitForRefreshTokens(base::OnceClosure callback) override;
   base::FilePath GetRemovedItemsFilePath() override;
 
+  void set_calendar_provider_for_test(BirchDataProvider* provider) {
+    calendar_provider_for_test_ = provider;
+  }
+
  private:
   void ShutdownBirch();
 
@@ -81,6 +85,11 @@ class BirchKeyedService : public KeyedService,
   base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 
   std::unique_ptr<RefreshTokenWaiter> refresh_token_waiter_;
+
+  // The test data provider is a separate member because it needs to be a
+  // generic BirchDataProvider and `calendar_provider_` cannot be changed to
+  // that type.
+  raw_ptr<BirchDataProvider> calendar_provider_for_test_;
 };
 
 }  // namespace ash

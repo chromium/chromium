@@ -54,6 +54,9 @@ void BirchKeyedService::OnShellDestroying() {
 }
 
 BirchDataProvider* BirchKeyedService::GetCalendarProvider() {
+  if (calendar_provider_for_test_) {
+    return calendar_provider_for_test_;
+  }
   return calendar_provider_.get();
 }
 
