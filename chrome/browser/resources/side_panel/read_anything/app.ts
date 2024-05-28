@@ -925,12 +925,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.setVoicePackStatus_(lang, VoicePackStatus.EXISTS);
       }
     } else if (voicePackStatus === VoicePackStatus.DOWNLOADED) {
-      // If we've never seen the voice pack for this language, then it was
-      // already downloaded so mark it as such.
-      if (!this.voicePackInstallStatus[voicePackLangauge]) {
-        this.setVoicePackStatus_(voicePackLangauge, voicePackStatus);
-      } else if (
-          this.voicePackInstallStatus[voicePackLangauge] ===
+      if (this.voicePackInstallStatus[voicePackLangauge] ===
           VoicePackStatus.INSTALLING) {
         const possibleLanguageConversion =
             convertLangToAnAvailableLangIfPresent(
@@ -939,8 +934,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
             possibleLanguageConversion :
             voicePackLangauge;
         this.showToast_();
-        this.setVoicePackStatus_(voicePackLangauge, voicePackStatus);
       }
+
+      this.setVoicePackStatus_(voicePackLangauge, voicePackStatus);
+
 
       // Force a refresh of the voices list since we might not get an update the
       // voices have changed.
