@@ -59,7 +59,7 @@ if (_build_ios_webkit || _build_mac_webkit) {
         # files, so find a way to properly rebuild when those change.
         "src/LayoutTests/TestExpectations",
         "src/Source/WebCore/WebCore.xcodeproj/project.pbxproj",
-        "src/LayoutTests/platform/ios-wk2/TestExpectations",
+        "src/LayoutTests/platform/ipad/TestExpectations",
         "src/LayoutTests/platform/mac-wk2/TestExpectations",
         "src/Source/WebKit/WebKit.xcodeproj/project.pbxproj",
         "src/LayoutTests/platform/mac-wk1/TestExpectations",
