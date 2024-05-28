@@ -121,31 +121,6 @@ void HostGpuMemoryBufferManager::DestroyGpuMemoryBuffer(
   buffers.erase(buffer_iter);
 }
 
-void HostGpuMemoryBufferManager::DestroyAllGpuMemoryBufferForClient(
-    int client_id) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  auto client_iter = allocated_buffers_.find(client_id);
-  if (client_iter != allocated_buffers_.end()) {
-    auto& buffers = client_iter->second;
-    for (const auto& pair : buffers) {
-      DCHECK_NE(gfx::EMPTY_BUFFER, pair.second.type());
-      if (pair.second.type() != gfx::SHARED_MEMORY_BUFFER) {
-        auto* gpu_service = GetGpuService();
-        DCHECK(gpu_service);
-        gpu_service->DestroyGpuMemoryBuffer(pair.first, client_id);
-      }
-    }
-    allocated_buffers_.erase(client_iter);
-  }
-  auto pending_client_iter = pending_buffers_.find(client_id);
-  if (pending_client_iter != pending_buffers_.end()) {
-    auto& buffers = pending_client_iter->second;
-    for (auto& pair : buffers)
-      std::move(pair.second.callback).Run(gfx::GpuMemoryBufferHandle());
-    pending_buffers_.erase(pending_client_iter);
-  }
-}
-
 void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
     gfx::GpuMemoryBufferId id,
     int client_id,

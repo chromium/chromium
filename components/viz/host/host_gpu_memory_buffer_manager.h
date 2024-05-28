@@ -76,8 +76,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // on requests. Must be called from UI thread.
   void Shutdown();
 
-  void DestroyAllGpuMemoryBufferForClient(int client_id);
-
   bool IsNativeGpuMemoryBufferConfiguration(gfx::BufferFormat format,
                                             gfx::BufferUsage usage) const;
 

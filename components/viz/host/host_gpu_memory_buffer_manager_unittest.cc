@@ -412,48 +412,6 @@ class HostGpuMemoryBufferManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that allocation requests from a client that goes away before allocation
-// completes are cleaned up correctly.
-TEST_P(HostGpuMemoryBufferManagerTest, AllocationRequestsForDestroyedClient) {
-  if (!IsNativePixmapConfigSupported())
-    return;
-
-  // Note: HostGpuMemoryBufferManager normally operates on a mojom::GpuService
-  // implementation over mojo. Which means the communication from HGMBManager to
-  // GpuService is asynchronous. In this test, the mojom::GpuService is not
-  // bound to a mojo pipe, which means those calls are all synchronous.
-
-  const auto buffer_id = static_cast<gfx::GpuMemoryBufferId>(1);
-  const int client_id = 2;
-  const gfx::Size size(10, 20);
-  const gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
-  const gfx::BufferUsage usage = gfx::BufferUsage::GPU_READ;
-  gpu_memory_buffer_manager()->AllocateGpuMemoryBuffer(
-      buffer_id, client_id, size, format, usage, gpu::kNullSurfaceHandle,
-      base::DoNothing());
-  EXPECT_EQ(1, gpu_service()->GetAllocationRequestsCount());
-  EXPECT_TRUE(gpu_service()->IsAllocationRequestAt(0, buffer_id, client_id));
-  EXPECT_EQ(0, gpu_service()->GetDestructionRequestsCount());
-
-  // Destroy the client. Since no memory has been allocated yet, there will be
-  // no request for freeing memory.
-  gpu_memory_buffer_manager()->DestroyAllGpuMemoryBufferForClient(client_id);
-  EXPECT_EQ(1, gpu_service()->GetAllocationRequestsCount());
-  EXPECT_EQ(0, gpu_service()->GetDestructionRequestsCount());
-
-  // When the host receives the allocated memory for the destroyed client, it
-  // should request the allocated memory to be freed.
-
-  // NOTE: This test is testing production flows that operate on native GMBs. To
-  // ensure that these tests are faithful, give the GMB a type that signals that
-  // it's a native buffer.
-  gpu_service()->SatisfyAllocationRequestAt(0, /*emulate_native_handle=*/true);
-
-  EXPECT_EQ(1, gpu_service()->GetAllocationRequestsCount());
-  EXPECT_EQ(1, gpu_service()->GetDestructionRequestsCount());
-  EXPECT_TRUE(gpu_service()->IsDestructionRequestAt(0, buffer_id, client_id));
-}
-
 // Verifies that requests for GMB creations with non-native-supported formats
 // are handled in the browser, and that either (a) no GMB is created if the
 // usages require a native GMB or (b) a shared-memory GMB is created otherwise.
