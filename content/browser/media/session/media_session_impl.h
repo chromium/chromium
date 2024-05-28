@@ -17,6 +17,7 @@
 #include "base/containers/id_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
@@ -349,6 +350,9 @@ class MediaSessionImpl : public MediaSession,
   // Returns the Audio Focus request ID associated with this media session.
   const base::UnguessableToken& GetRequestId() const;
 
+  // Returns a WeakPtr to `this`.
+  base::WeakPtr<MediaSessionImpl> GetWeakPtr();
+
   CONTENT_EXPORT bool HasImageCacheForTest(const GURL& image_url) const;
 
   // Make sure that all observers have received any pending callbacks from us,
@@ -657,6 +661,8 @@ class MediaSessionImpl : public MediaSession,
   // changes often enough to be considered live. See
   // `MaybeGuardDurationUpdate()` for details on duration changes.
   bool is_considered_live_ = false;
+
+  base::WeakPtrFactory<MediaSessionImpl> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
