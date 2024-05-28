@@ -828,6 +828,8 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
       return media::mojom::VideoCaptureError::kScreenCaptureKitResetStreamError;
     case media::VideoCaptureError::kWinMediaFoundationCameraBusy:
       return media::mojom::VideoCaptureError::kWinMediaFoundationCameraBusy;
+    case media::VideoCaptureError::kWebRtcStartCaptureFailed:
+      return media::mojom::VideoCaptureError::kWebRtcStartCaptureFailed;
   }
   NOTREACHED_NORETURN();
 }
@@ -1486,6 +1488,9 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
     case media::mojom::VideoCaptureError::kWinMediaFoundationCameraBusy:
       *output = media::VideoCaptureError::kWinMediaFoundationCameraBusy;
       return true;
+    case media::mojom::VideoCaptureError::kWebRtcStartCaptureFailed:
+      *output = media::VideoCaptureError::kWebRtcStartCaptureFailed;
+      return true;
   }
   NOTREACHED_NORETURN();
 }
@@ -1811,6 +1816,8 @@ EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi>::ToMojom(
       return media::mojom::VideoCaptureApi::VIRTUAL_DEVICE;
     case media::VideoCaptureApi::UNKNOWN:
       return media::mojom::VideoCaptureApi::UNKNOWN;
+    case media::VideoCaptureApi::WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE:
+      return media::mojom::VideoCaptureApi::WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE;
   }
   NOTREACHED_NORETURN();
 }
@@ -1873,6 +1880,9 @@ bool EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi>::
       return true;
     case media::mojom::VideoCaptureApi::UNKNOWN:
       *output = media::VideoCaptureApi::UNKNOWN;
+      return true;
+    case media::mojom::VideoCaptureApi::WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE:
+      *output = media::VideoCaptureApi::WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE;
       return true;
   }
   NOTREACHED_NORETURN();

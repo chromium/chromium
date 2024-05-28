@@ -4719,6 +4719,11 @@ extern const char kUIDebugToolsName[];
 extern const char kUIDebugToolsDescription[];
 #endif
 
+#if defined(WEBRTC_USE_PIPEWIRE)
+extern const char kWebrtcPipeWireCameraName[];
+extern const char kWebrtcPipeWireCameraDescription[];
+#endif  // #if defined(WEBRTC_USE_PIPEWIRE)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kChromeKioskEnableLacrosName[];
 extern const char kChromeKioskEnableLacrosDescription[];

@@ -92,7 +92,8 @@ enum VideoCaptureApi {
   ANDROID_API2_LIMITED,
   FUCHSIA_CAMERA3,
   VIRTUAL_DEVICE,
-  UNKNOWN
+  UNKNOWN,
+  [MinVersion=1] WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE,
 };
 
 [Stable, Extensible]
@@ -269,6 +270,7 @@ enum VideoCaptureError {
   [MinVersion=6] kVideoCaptureDeviceFactorySecondCreateDenied,
   [MinVersion=7] kScreenCaptureKitResetStreamError,
   [MinVersion=8] kWinMediaFoundationCameraBusy,
+  [MinVersion=9] kWebRtcStartCaptureFailed,
 };
 
 [Stable, Extensible]

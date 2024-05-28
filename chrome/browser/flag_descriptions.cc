@@ -8074,6 +8074,12 @@ const char kUIDebugToolsDescription[] =
     "Enables additional keyboard shortcuts to help debugging.";
 #endif
 
+#if defined(WEBRTC_USE_PIPEWIRE)
+const char kWebrtcPipeWireCameraName[] = "PipeWire Camera support";
+const char kWebrtcPipeWireCameraDescription[] =
+    "When enabled the PipeWire multimedia server will be used for cameras.";
+#endif  // #if defined(WEBRTC_USE_PIPEWIRE)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kChromeKioskEnableLacrosName[] =
     "Enables Lacros in the chrome app Kiosk";

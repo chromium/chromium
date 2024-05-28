@@ -69,6 +69,11 @@ class VideoCaptureServiceLauncher {
       options.WithChildFlags(ChildProcessHost::CHILD_PLUGIN);
     }
 #endif
+#if defined(WEBRTC_USE_PIPEWIRE)
+    // The PipeWire camera implementation in webrtc uses gdbus for portal
+    // handling, so the glib message loop must be used.
+    options.WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi});
+#endif
 
     ServiceProcessHost::Launch(std::move(receiver), options.Pass());
   }

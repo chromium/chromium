@@ -101,6 +101,8 @@ const char* VideoCaptureDeviceDescriptor::GetCaptureApiTypeString() const {
       return "Virtual Device";
     case VideoCaptureApi::UNKNOWN:
       return "Unknown";
+    case VideoCaptureApi::WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE:
+      return "WEBRTC Single Plane";
   }
 }
 

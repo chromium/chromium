@@ -41,3 +41,15 @@ bool IsMediaFoundationCameraUsageMonitoringEnabled() {
 #endif
 
 }  // namespace switches
+
+namespace features {
+
+#if defined(WEBRTC_USE_PIPEWIRE)
+// Controls whether the PipeWire support for cameras is enabled on the
+// Wayland display server.
+BASE_FEATURE(kWebRtcPipeWireCamera,
+             "WebRtcPipeWireCamera",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // defined(WEBRTC_USE_PIPEWIRE)
+
+}  // namespace features

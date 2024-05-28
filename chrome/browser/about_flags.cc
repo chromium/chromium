@@ -3967,6 +3967,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebrtcUseMinMaxVEADimensionsName,
      flag_descriptions::kWebrtcUseMinMaxVEADimensionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kWebRtcUseMinMaxVEADimensions)},
+#if defined(WEBRTC_USE_PIPEWIRE)
+    {"enable-webrtc-pipewire-camera",
+     flag_descriptions::kWebrtcPipeWireCameraName,
+     flag_descriptions::kWebrtcPipeWireCameraDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(features::kWebRtcPipeWireCamera)},
+#endif  // defined(WEBRTC_USE_PIPEWIRE)
 #if BUILDFLAG(ENABLE_NACL)
     {"enable-nacl", flag_descriptions::kNaclName,
      flag_descriptions::kNaclDescription, kOsAll,

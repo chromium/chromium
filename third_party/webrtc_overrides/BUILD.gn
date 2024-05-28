@@ -167,7 +167,11 @@ if (is_castos || is_cast_android || is_nacl) {
   webrtc_public_deps += [ ":field_trial" ]
 }
 if ((is_linux || is_chromeos) && rtc_use_pipewire) {
-  webrtc_public_deps += [ "//third_party/webrtc/modules/portal" ]
+  webrtc_public_deps += [
+    "//third_party/webrtc/modules/portal",
+    "//third_party/webrtc/modules/video_capture:video_capture_internal_impl",
+    "//third_party/webrtc/modules/video_capture:video_capture_module",
+  ]
 }
 
 component("webrtc_component") {

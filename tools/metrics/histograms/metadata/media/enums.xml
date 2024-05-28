@@ -1886,6 +1886,9 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="ANDROID_API2_LIMITED">ANDROID_API2_LIMITED</int>
   <int value="11" label="FUCHSIA_CAMERA3">FUCHSIA_CAMERA3</int>
   <int value="12" label="VIRTUAL_DEVICE">VIRTUAL_DEVICE</int>
+  <int value="13" label="LINUX_WEBRTC_SINGLE_PLANE">
+    LINUX_WEBRTC_SINGLE_PLANE
+  </int>
 </enum>
 
 <enum name="VideoCaptureError">
@@ -2059,6 +2062,7 @@ chromium-metrics-reviews@google.com.
   <int value="147" label="kVideoCaptureDeviceFactorySecondCreateDenied"/>
   <int value="148" label="kScreenCaptureKitResetStreamError"/>
   <int value="149" label="kWinMediaFoundationCameraBusy"/>
+  <int value="150" label="kWebRtcStartCaptureFailed"/>
 </enum>
 
 <enum name="VideoCaptureFrameDropReason">

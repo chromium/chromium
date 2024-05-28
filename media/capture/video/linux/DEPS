@@ -1,0 +1,4 @@
+include_rules = [
+  "+third_party/webrtc/common_video/libyuv",
+  "+third_party/webrtc/modules/video_capture",
+]
