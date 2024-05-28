@@ -2488,7 +2488,9 @@ void PdfViewWebPlugin::LoadAccessibility() {
       GetAccessibilityDocInfo());
 
   // Record whether the PDF is tagged when opened by an accessibility user.
-  metrics_handler_->RecordAccessibilityIsDocTagged(engine_->IsPDFDocTagged());
+  if (metrics_handler_) {
+    metrics_handler_->RecordAccessibilityIsDocTagged(engine_->IsPDFDocTagged());
+  }
 
   // If the document contents isn't accessible, don't send anything more.
   if (!(engine_->HasPermission(DocumentPermission::kCopy) ||
