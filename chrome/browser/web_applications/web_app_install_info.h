@@ -5,18 +5,19 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_INFO_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_INFO_H_
 
+#include <array>
 #include <functional>
-#include <iosfwd>
 #include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
@@ -26,7 +27,9 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/mojom/manifest/capture_links.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
