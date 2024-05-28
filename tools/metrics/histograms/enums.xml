@@ -30530,6 +30530,7 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Tutorial IPH"/>
   <int value="4" label="Custom Action"/>
   <int value="5" label="Legacy"/>
+  <int value="6" label="Rotating"/>
 </enum>
 
 <enum name="ProtoDatabaseInitState">
