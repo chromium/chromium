@@ -390,6 +390,16 @@ void OnWaitingForAndroidUnsupportedPathFallbackChoiceReceived(
   }
 }
 
+bool BringDialogToFrontIfItExists(const std::string& id) {
+  SystemWebDialogDelegate* existing_dialog =
+      SystemWebDialogDelegate::FindInstance(id);
+  if (!existing_dialog) {
+    return false;
+  }
+  existing_dialog->StackAtTop();
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -976,11 +986,11 @@ void CloudOpenTask::RecordUploadLatencyUMA() {
 // page.
 bool CloudOpenTask::InitAndShowSetupOrMoveDialog(
     SetupOrMoveDialogPage dialog_page) {
-  // Allow no more than one upload dialog at a time. In the case of multiple
-  // upload requests, they should either be handled simultaneously or queued.
-  SystemWebDialogDelegate* existing_dialog =
-      SystemWebDialogDelegate::FindInstance(chrome::kChromeUICloudUploadURL);
-  if (existing_dialog) {
+  // Allow no more than one upload dialog at a time. If one already exists,
+  // bring it to the front to prompt the user to keep going. In the case of
+  // multiple upload requests, they should either be handled simultaneously or
+  // queued.
+  if (BringDialogToFrontIfItExists(chrome::kChromeUICloudUploadURL)) {
     LOG(WARNING) << "Another cloud upload dialog is already being shown";
     if (dialog_page == SetupOrMoveDialogPage::kMoveConfirmationGoogleDrive ||
         dialog_page == SetupOrMoveDialogPage::kMoveConfirmationOneDrive) {
@@ -990,8 +1000,6 @@ bool CloudOpenTask::InitAndShowSetupOrMoveDialog(
       cloud_open_metrics_->LogTaskResult(
           OfficeTaskResult::kCannotShowSetupDialog);
     }
-    // Bring the existing dialog to the front to prompt the user to keep going.
-    existing_dialog->StackAtTop();
     return false;
   }
 
@@ -1521,11 +1529,11 @@ void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent) {
-  // Allow no more than one upload dialog at a time. Only one of either this
-  // dialog, or CloudOpenTask can be shown at a time because they use the same
-  // WebUI for dialogs.
-  if (SystemWebDialogDelegate::HasInstance(
-          GURL(chrome::kChromeUICloudUploadURL))) {
+  // Allow no more than one upload dialog at a time. If one already exists,
+  // bring it to the front to prompt the user to keep going. Only one of either
+  // this dialog, or CloudOpenTask can be shown at a time because they use the
+  // same WebUI for dialogs.
+  if (BringDialogToFrontIfItExists(chrome::kChromeUICloudUploadURL)) {
     LOG(WARNING) << "Another cloud upload dialog is already being shown";
     return false;
   }
