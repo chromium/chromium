@@ -26,7 +26,9 @@ enum class ModifierKeyUsageMetric {
   kBackspace = 9,
   kEscape = 10,
   kAssistant = 11,
-  kMaxValue = kAssistant
+  kFunction = 12,
+  kRightAlt = 13,
+  kMaxValue = kRightAlt
 };
 
 // Enum used to record the source of function key rewrites.
@@ -53,7 +55,8 @@ void RecordModifierKeyPressedBeforeRemapping(
 void RecordModifierKeyPressedAfterRemapping(
     const KeyboardCapability& keyboard_capability,
     int device_id,
-    DomCode dom_code);
+    DomCode dom_code,
+    bool is_right_alt_key);
 
 }  // namespace ui
 

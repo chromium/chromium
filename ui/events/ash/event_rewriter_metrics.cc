@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -28,6 +29,7 @@ constexpr auto kModifierKeyUsageMappings =
         {DomCode::ESCAPE, ModifierKeyUsageMetric::kEscape},
         {DomCode::CAPS_LOCK, ModifierKeyUsageMetric::kCapsLock},
         {DomCode::LAUNCH_ASSISTANT, ModifierKeyUsageMetric::kAssistant},
+        {DomCode::FN, ModifierKeyUsageMetric::kFunction},
     });
 
 // Returns the name to be used as a part of histogram name.
@@ -57,9 +59,10 @@ std::string_view GetDeviceNameForHistogram(
   }
 }
 
-void RecordModifierKeyPressedRemappingInternal(
+}  // namespace
+
+void RecordModifierKeyPressedBeforeRemapping(
     const KeyboardCapability& keyboard_capability,
-    const std::string_view metric_name,
     int device_id,
     DomCode dom_code) {
   auto it = kModifierKeyUsageMappings.find(dom_code);
@@ -73,27 +76,50 @@ void RecordModifierKeyPressedRemappingInternal(
     return;
   }
 
-  base::UmaHistogramEnumeration(base::StrCat({"ChromeOS.Inputs.Keyboard.",
-                                              metric_name, ".", device_name}),
-                                it->second);
-}
+  auto modifier_key = it->second;
 
-}  // namespace
+  if (modifier_key == ModifierKeyUsageMetric::kAssistant &&
+      keyboard_capability.HasRightAltKey(device_id)) {
+    modifier_key = ModifierKeyUsageMetric::kRightAlt;
+  }
 
-void RecordModifierKeyPressedBeforeRemapping(
-    const KeyboardCapability& keyboard_capability,
-    int device_id,
-    DomCode dom_code) {
-  RecordModifierKeyPressedRemappingInternal(
-      keyboard_capability, "ModifierPressed", device_id, dom_code);
+  if ((modifier_key == ModifierKeyUsageMetric::kFunction ||
+       modifier_key == ModifierKeyUsageMetric::kRightAlt) &&
+      !keyboard_capability.HasRightAltKey(device_id)) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ChromeOS.Inputs.Keyboard.ModifierPressed.", device_name}),
+      modifier_key);
 }
 
 void RecordModifierKeyPressedAfterRemapping(
     const KeyboardCapability& keyboard_capability,
     int device_id,
-    DomCode dom_code) {
-  RecordModifierKeyPressedRemappingInternal(
-      keyboard_capability, "RemappedModifierPressed", device_id, dom_code);
+    DomCode dom_code,
+    bool is_right_alt_key) {
+  auto it = kModifierKeyUsageMappings.find(dom_code);
+  if (it == kModifierKeyUsageMappings.end()) {
+    return;
+  }
+
+  auto device_name =
+      GetDeviceNameForHistogram(keyboard_capability.GetDeviceType(device_id));
+  if (device_name.empty()) {
+    return;
+  }
+
+  auto modifier_key = it->second;
+
+  if (modifier_key == ModifierKeyUsageMetric::kAssistant && is_right_alt_key) {
+    modifier_key = ModifierKeyUsageMetric::kRightAlt;
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"ChromeOS.Inputs.Keyboard.RemappedModifierPressed.", device_name}),
+      modifier_key);
 }
 
 }  // namespace ui

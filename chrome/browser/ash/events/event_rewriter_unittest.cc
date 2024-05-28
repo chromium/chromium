@@ -1839,6 +1839,47 @@ TEST_P(EventRewriterTest, TestRewriteToRightAlt) {
   }
 }
 
+TEST_P(EventRewriterTest, FnAndRightAltKeyPressedMetrics) {
+  if (!features::IsModifierSplitEnabled()) {
+    GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";
+  }
+  base::HistogramTester histogram_tester;
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kInputDeviceSettingsSplit);
+  SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
+  SendKeyEvent(KeyFunction::Pressed());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
+      ui::ModifierKeyUsageMetric::kFunction, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
+      ui::ModifierKeyUsageMetric::kFunction, 1);
+
+  SendKeyEvent(KeyRightAlt::Pressed());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
+      ui::ModifierKeyUsageMetric::kRightAlt, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
+      ui::ModifierKeyUsageMetric::kRightAlt, 1);
+
+  // Remap RightAlt to Assistant
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kRightAlt,
+                      ui::mojom::ModifierKey::kAssistant);
+
+  RunRewriter(KeyRightAlt::Typed());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
+      ui::ModifierKeyUsageMetric::kRightAlt, 2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
+      ui::ModifierKeyUsageMetric::kRightAlt, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
+      ui::ModifierKeyUsageMetric::kAssistant, 1);
+  scoped_feature_list_.Reset();
+}
+
 TEST_P(EventRewriterTest, TestRewriteToFunction) {
   if (!features::IsModifierSplitEnabled()) {
     GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";

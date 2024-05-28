@@ -1687,8 +1687,9 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
       // event is rewritten to ALTGR. A false return is not an error.
       if (RewriteModifierKeys(key_event, device_id, &state)) {
         if (should_record_modifier_key_press_metrics) {
-          RecordModifierKeyPressedAfterRemapping(*keyboard_capability_,
-                                                 device_id, state.code);
+          RecordModifierKeyPressedAfterRemapping(
+              *keyboard_capability_, device_id, state.code,
+              state.key_code == VKEY_RIGHT_ALT);
         }
         // Early exit with completed event.
         BuildRewrittenKeyEvent(key_event, state, rewritten_event);
@@ -1700,7 +1701,8 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
 
   if (should_record_modifier_key_press_metrics) {
     RecordModifierKeyPressedAfterRemapping(*keyboard_capability_, device_id,
-                                           state.code);
+                                           state.code,
+                                           state.key_code == VKEY_RIGHT_ALT);
   }
 
   if (delegate_ &&
