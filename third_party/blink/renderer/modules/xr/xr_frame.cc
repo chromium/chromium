@@ -209,7 +209,7 @@ XRCPUDepthInformation* XRFrame::getDepthInformation(
     return nullptr;
   }
 
-  return session_->GetCpuDepthInformation(this, exception_state);
+  return view->GetCpuDepthInformation(exception_state);
 }
 
 XRPose* XRFrame::getPose(XRSpace* space,

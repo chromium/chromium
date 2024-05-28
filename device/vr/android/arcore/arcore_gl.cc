@@ -1589,7 +1589,9 @@ void ArCoreGl::ProcessFrame(
   }
 
   if (IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
-    frame_data->depth_data = arcore_->GetDepthData();
+    // We only return a single view.
+    CHECK(frame_data->views.size() > 0);
+    frame_data->views[0]->depth_data = arcore_->GetDepthData();
   }
 
   if (IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {

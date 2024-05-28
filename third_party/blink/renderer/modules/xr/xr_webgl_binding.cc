@@ -256,7 +256,7 @@ XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
     return nullptr;
   }
 
-  return view->session()->GetWebGLDepthInformation(frame, exception_state);
+  return view->GetWebGLDepthInformation(exception_state);
 }
 
 void XRWebGLBinding::Trace(Visitor* visitor) const {

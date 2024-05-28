@@ -51,8 +51,11 @@ TEST(XRViewTest, ViewMatrices) {
   xr_view->mojo_from_view = mojo_from_view;
   xr_view->viewport = gfx::Rect(0, 0, kRenderSize, kRenderSize);
 
-  XRViewData* view_data =
-      MakeGarbageCollected<XRViewData>(xr_view, kDepthNear, kDepthFar);
+  auto device_config = device::mojom::blink::XRSessionDeviceConfig::New();
+  HashSet<device::mojom::XRSessionFeature> features = {
+      device::mojom::XRSessionFeature::REF_SPACE_VIEWER};
+  XRViewData* view_data = MakeGarbageCollected<XRViewData>(
+      std::move(xr_view), kDepthNear, kDepthFar, *device_config, features);
   XRView view(nullptr, view_data, ref_space_from_mojo);
 
   AssertMatrixEquals(GetMatrixDataForTest(view_data->MojoFromView()),

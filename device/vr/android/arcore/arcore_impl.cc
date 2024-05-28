@@ -1933,8 +1933,6 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
     // to send the latest information back:
     mojom::XRDepthDataUpdatedPtr result = mojom::XRDepthDataUpdated::New();
 
-    result->time_delta = time_delta;
-
     int32_t width = 0, height = 0;
     ArImage_getWidth(arcore_session_.get(), ar_image.get(), &width);
     ArImage_getHeight(arcore_session_.get(), ar_image.get(), &height);

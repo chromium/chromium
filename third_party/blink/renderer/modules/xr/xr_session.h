@@ -45,8 +45,6 @@ class V8XRFrameRequestCallback;
 class XRAnchor;
 class XRAnchorSet;
 class XRCanvasInputProvider;
-class XRCPUDepthInformation;
-class XRDepthManager;
 class XRDOMOverlayState;
 class XRHitTestOptionsInit;
 class XRHitTestSource;
@@ -63,7 +61,6 @@ class XRSystem;
 class XRTransientInputHitTestOptionsInit;
 class XRTransientInputHitTestSource;
 class XRViewData;
-class XRWebGLDepthInformation;
 class XRWebGLLayer;
 
 template <typename IDLType>
@@ -295,7 +292,7 @@ class XRSession final : public EventTarget,
   bool EmulatedPosition() const {
     // If we don't have display info then we should be using the identity
     // reference space, which by definition will be emulating the position.
-    if (pending_views_.empty()) {
+    if (views_.empty()) {
       return true;
     }
 
@@ -304,12 +301,8 @@ class XRSession final : public EventTarget,
 
   // Immersive sessions currently use two views for VR, and only a single view
   // for smartphone immersive AR mode.
-  bool StereoscopicViews() { return pending_views_.size() >= 2; }
+  bool StereoscopicViews() { return views_.size() >= 2; }
 
-  void UpdateViews(const Vector<device::mojom::blink::XRViewPtr>& views);
-  void UpdateStageParameters(
-      uint32_t stage_parameters_id,
-      const device::mojom::blink::VRStageParametersPtr& stage_parameters);
   // Incremented every time stage_parameters_ is changed, so that other objects
   // that depend on it can know when they need to update.
   uint32_t StageParametersId() const { return stage_parameters_id_; }
@@ -351,14 +344,6 @@ class XRSession final : public EventTarget,
   std::optional<gfx::Transform> GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType space_type) const;
 
-  XRCPUDepthInformation* GetCpuDepthInformation(
-      const XRFrame* xr_frame,
-      ExceptionState& exception_state) const;
-
-  XRWebGLDepthInformation* GetWebGLDepthInformation(
-      const XRFrame* xr_frame,
-      ExceptionState& exception_state) const;
-
   XRPlaneSet* GetDetectedPlanes() const;
 
   // Creates presentation frame based on current state of the session.
@@ -370,8 +355,7 @@ class XRSession final : public EventTarget,
   // presentation frames.
   void UpdatePresentationFrameState(
       double timestamp,
-      const device::mojom::blink::VRPosePtr& mojo_from_viewer_pose,
-      const device::mojom::blink::XRFrameDataPtr& frame_data,
+      device::mojom::blink::XRFrameDataPtr frame_data,
       int16_t frame_id,
       bool emulated_position);
 
@@ -415,6 +399,11 @@ class XRSession final : public EventTarget,
   void ProcessInputSourceEvents(
       base::span<const device::mojom::blink::XRInputSourceStatePtr>
           input_states);
+
+  void UpdateViews(Vector<device::mojom::blink::XRViewPtr> views);
+  void UpdateStageParameters(
+      uint32_t stage_parameters_id,
+      const device::mojom::blink::VRStageParametersPtr& stage_parameters);
 
   // Processes world understanding state for current frame:
   // - updates state of hit test sources & fills them out with results
@@ -475,12 +464,6 @@ class XRSession final : public EventTarget,
 
   void ExecuteVideoFrameCallbacks(double timestamp);
 
-  // Helper, creates an instance of depth manager if depth sensing API is
-  // enabled in the session configuration.
-  XRDepthManager* CreateDepthManagerIfEnabled(
-      const XRSessionFeatureSet& feature_set,
-      const device::mojom::blink::XRSessionDeviceConfig& device_config);
-
   const Member<XRSystem> xr_;
   const device::mojom::blink::XRSessionMode mode_;
   const bool environment_integration_;
@@ -490,6 +473,12 @@ class XRSession final : public EventTarget,
   XRVisibilityState visibility_state_ = XRVisibilityState::VISIBLE;
   String visibility_state_string_;
   Member<XRRenderState> render_state_;
+
+  // Put the device config fairly early in the list of members so that it can be
+  // used to initialize other members.
+  device::mojom::blink::XRSessionDeviceConfigPtr device_config_;
+  String depth_usage_string_;
+  String depth_data_format_string_;
 
   Member<XRLightProbe> world_light_probe_;
   HeapVector<Member<XRRenderStateInit>> pending_render_state_;
@@ -566,14 +555,12 @@ class XRSession final : public EventTarget,
   HashSet<uint64_t> hit_test_source_for_transient_input_ids_;
 
   Member<XRPlaneManager> plane_manager_;
-  Member<XRDepthManager> depth_manager_;
 
   // Populated iff the raw camera feature has been enabled and the session
   // received a frame from the device that contained the camera image.
   std::optional<gfx::Size> camera_image_size_;
 
   HeapVector<Member<XRViewData>> views_;
-  Vector<device::mojom::blink::XRViewPtr> pending_views_;
 
   Member<XRInputSourceArray> input_sources_;
   Member<XRWebGLLayer> prev_base_layer_;
@@ -605,7 +592,6 @@ class XRSession final : public EventTarget,
   bool resolving_frame_ = false;
   bool frames_throttled_ = false;
 
-  bool views_updated_this_frame_ = false;
   bool canvas_was_resized_ = false;
 
   // Indicates that we've already logged a metric, so don't need to log it
@@ -617,13 +603,8 @@ class XRSession final : public EventTarget,
   int output_width_ = 1;
   int output_height_ = 1;
 
-  float recommended_framebuffer_scale_ = 1.0;
-
   // Corresponds to mojo XRSession.supportsViewportScaling
   bool supports_viewport_scaling_ = false;
-
-  // Corresponds to mojo XRSessionOptions.enable_anti_aliasing
-  bool enable_anti_aliasing_ = true;
 
   std::unique_ptr<XRSessionViewportScaler> viewport_scaler_;
 

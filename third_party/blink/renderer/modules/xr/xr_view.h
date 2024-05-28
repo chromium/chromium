@@ -7,22 +7,25 @@
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/transform.h"
 
-#include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
-
 namespace blink {
 
 class XRCamera;
+class XRCPUDepthInformation;
+class XRDepthManager;
 class XRFrame;
 class XRSession;
 class XRViewData;
+class XRWebGLDepthInformation;
 
 class MODULES_EXPORT XRView final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -53,6 +56,12 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
   void Trace(Visitor*) const override;
 
+  XRCPUDepthInformation* GetCpuDepthInformation(
+      ExceptionState& exception_state) const;
+
+  XRWebGLDepthInformation* GetWebGLDepthInformation(
+      ExceptionState& exception_state) const;
+
  private:
   device::mojom::blink::XREye eye_;
   String eye_string_;
@@ -69,11 +78,14 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
  public:
   explicit XRViewData(device::mojom::blink::XREye eye, gfx::Rect viewport)
       : eye_(eye), viewport_(viewport) {}
-  XRViewData(const device::mojom::blink::XRViewPtr& view,
-             double depth_near,
-             double depth_far);
+  XRViewData(
+      device::mojom::blink::XRViewPtr view,
+      double depth_near,
+      double depth_far,
+      const device::mojom::blink::XRSessionDeviceConfig& device_config,
+      const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set);
 
-  void UpdateView(const device::mojom::blink::XRViewPtr& view,
+  void UpdateView(device::mojom::blink::XRViewPtr view,
                   double depth_near,
                   double depth_far);
 
@@ -101,6 +113,14 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   const gfx::Rect& Viewport() const { return viewport_; }
   bool IsFirstPersonObserver() const { return is_first_person_observer_; }
 
+  XRCPUDepthInformation* GetCpuDepthInformation(
+      const XRFrame* xr_frame,
+      ExceptionState& exception_state) const;
+
+  XRWebGLDepthInformation* GetWebGLDepthInformation(
+      const XRFrame* xr_frame,
+      ExceptionState& exception_state) const;
+
   std::optional<double> recommendedViewportScale() const;
   void SetRecommendedViewportScale(std::optional<double> scale) {
     recommended_viewport_scale_ = scale;
@@ -118,7 +138,7 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   }
   double RequestedViewportScale() const { return requested_viewport_scale_; }
 
-  void Trace(Visitor*) const {}
+  void Trace(Visitor*) const;
 
  private:
   const device::mojom::blink::XREye eye_;
@@ -132,6 +152,7 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   double requested_viewport_scale_ = 1.0;
   double current_viewport_scale_ = 1.0;
   bool viewport_modifiable_ = false;
+  Member<XRDepthManager> depth_manager_;
 };
 
 }  // namespace blink

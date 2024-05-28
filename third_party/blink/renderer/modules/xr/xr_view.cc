@@ -10,6 +10,7 @@
 #include <cmath>
 
 #include "third_party/blink/renderer/modules/xr/xr_camera.h"
+#include "third_party/blink/renderer/modules/xr/xr_depth_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
@@ -82,14 +83,38 @@ DOMFloat32Array* XRView::projectionMatrix() const {
   return projection_matrix_.Get();
 }
 
-XRViewData::XRViewData(const device::mojom::blink::XRViewPtr& view,
-                       double depth_near,
-                       double depth_far)
-    : eye_(view->eye), viewport_(view->viewport) {
-  UpdateView(view, depth_near, depth_far);
+XRCPUDepthInformation* XRView::GetCpuDepthInformation(
+    ExceptionState& exception_state) const {
+  return view_data_->GetCpuDepthInformation(frame(), exception_state);
 }
 
-void XRViewData::UpdateView(const device::mojom::blink::XRViewPtr& view,
+XRWebGLDepthInformation* XRView::GetWebGLDepthInformation(
+    ExceptionState& exception_state) const {
+  return view_data_->GetWebGLDepthInformation(frame(), exception_state);
+}
+
+XRViewData::XRViewData(
+    device::mojom::blink::XRViewPtr view,
+    double depth_near,
+    double depth_far,
+    const device::mojom::blink::XRSessionDeviceConfig& device_config,
+    const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set)
+    : eye_(view->eye), viewport_(view->viewport) {
+  if (base::Contains(enabled_feature_set,
+                     device::mojom::XRSessionFeature::DEPTH)) {
+    if (!device_config.depth_configuration) {
+      DCHECK(false)
+          << "The session reports that depth sensing is supported but "
+             "did not report depth sensing API configuration!";
+    }
+    depth_manager_ = MakeGarbageCollected<XRDepthManager>(
+        base::PassKey<XRViewData>{}, *device_config.depth_configuration);
+  }
+
+  UpdateView(std::move(view), depth_near, depth_far);
+}
+
+void XRViewData::UpdateView(device::mojom::blink::XRViewPtr view,
                             double depth_near,
                             double depth_far) {
   DCHECK_EQ(eye_, view->eye);
@@ -104,6 +129,9 @@ void XRViewData::UpdateView(const device::mojom::blink::XRViewPtr& view,
 
   viewport_ = view->viewport;
   is_first_person_observer_ = view->is_first_person_observer;
+  if (depth_manager_) {
+    depth_manager_->ProcessDepthInformation(std::move(view->depth_data));
+  }
 }
 
 void XRViewData::UpdateProjectionMatrixFromFoV(float up_rad,
@@ -190,6 +218,32 @@ void XRViewData::SetMojoFromView(const gfx::Transform& mojo_from_view) {
   mojo_from_view_ = mojo_from_view;
 }
 
+XRCPUDepthInformation* XRViewData::GetCpuDepthInformation(
+    const XRFrame* xr_frame,
+    ExceptionState& exception_state) const {
+  if (!depth_manager_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        XRSession::kDepthSensingFeatureNotSupported);
+    return nullptr;
+  }
+
+  return depth_manager_->GetCpuDepthInformation(xr_frame, exception_state);
+}
+
+XRWebGLDepthInformation* XRViewData::GetWebGLDepthInformation(
+    const XRFrame* xr_frame,
+    ExceptionState& exception_state) const {
+  if (!depth_manager_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        XRSession::kDepthSensingFeatureNotSupported);
+    return nullptr;
+  }
+
+  return depth_manager_->GetWebGLDepthInformation(xr_frame, exception_state);
+}
+
 XRRigidTransform* XRView::refSpaceFromView() const {
   return ref_space_from_view_.Get();
 }
@@ -251,6 +305,10 @@ void XRViewData::requestViewportScale(std::optional<double> scale) {
     return;
 
   requested_viewport_scale_ = std::clamp(*scale, kMinViewportScale, 1.0);
+}
+
+void XRViewData::Trace(Visitor* visitor) const {
+  visitor->Trace(depth_manager_);
 }
 
 }  // namespace blink

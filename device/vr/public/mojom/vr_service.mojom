@@ -358,6 +358,12 @@ struct XRView {
   // See https://immersive-web.github.io/webxr/#xrviewport
   gfx.mojom.Rect viewport;
 
+  // Depth data (if the device supports it and the environment integration is
+  // enabled). This assumes that depth information is provided from a single
+  // sensor. If for any reason the latest depth data could not be obtained, it
+  // will be set to null.
+  XRDepthData? depth_data;
+
   // A first person observer view is a secondary view typically used when
   // capturing from the camera of an AR device.
   // https://immersive-web.github.io/webxr-ar-module/#first-person-observer-view
@@ -638,10 +644,10 @@ struct XRDepthDataStillValid {};
 // Structure that signifies that the Depth data was updated. Provides
 // information about current depth data. See |XRDepthData| for more details.
 struct XRDepthDataUpdated {
-  // Timestamp of the returned data, in unspecified base.
-  mojo_base.mojom.TimeDelta time_delta;
-  // Array of 16-bit numbers representing depth in millimeters from the camera
-  // plane.
+  // Array of numbers representing depth from the camera plane.
+  // Size of the number is determined by the `XRDepthDataFormat` sent at session
+  // creation. The numbers can be converted to meters by multiplying by
+  // `raw_value_to_meters`.
   mojo_base.mojom.BigBuffer pixel_data;
   // Transform that needs to be applied when indexing into pixel_data when using
   // normalized view coordinates (with origin at bottom left corner of the
@@ -714,12 +720,6 @@ struct XRFrameData {
   gpu.mojom.ExportedSharedImage? camera_image_buffer_shared_image;
   gpu.mojom.SyncToken? camera_image_buffer_sync_token;
   gfx.mojom.Size? camera_image_size;
-
-  // Depth data (if the device supports it and the environment integration is
-  // enabled). This assumes that depth information is provided from a single
-  // sensor. If for any reason the latest depth data could not be obtained, it
-  // will be set to null.
-  XRDepthData? depth_data;
 
   // Indicates that there has been a significant discontinuity in the mojo space
   // coordinate system, and that poses from this point forward with the same
