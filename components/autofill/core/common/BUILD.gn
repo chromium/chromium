@@ -23,9 +23,6 @@ static_library("common") {
     "autofill_l10n_util.h",
     "autofill_prefs.cc",
     "autofill_prefs.h",
-    "autofill_regex_constants.h",
-    "autofill_regexes.cc",
-    "autofill_regexes.h",
     "autofill_switches.cc",
     "autofill_switches.h",
     "autofill_util.cc",
@@ -62,6 +59,7 @@ static_library("common") {
   ]
 
   public_deps = [
+    ":autofill_regex",
     ":features",
     "//base",
     "//base:i18n",
@@ -94,10 +92,22 @@ static_library("credit_card_number_validation") {
   ]
 
   deps = [
-    ":common",
+    ":autofill_regex",
     ":features",
     "//base",
   ]
+}
+
+static_library("autofill_regex") {
+  sources = [
+    "autofill_regex_constants.h",
+    "autofill_regexes.cc",
+    "autofill_regexes.h",
+  ]
+
+  public_deps = [ "//third_party/icu" ]
+
+  deps = [ "//base:i18n" ]
 }
 
 component("features") {
@@ -155,6 +165,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":autofill_regex",
     ":common",
     ":credit_card_number_validation",
     "//base",

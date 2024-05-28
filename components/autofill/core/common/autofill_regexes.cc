@@ -4,11 +4,7 @@
 
 #include "components/autofill/core/common/autofill_regexes.h"
 
-#include <map>
-#include <memory>
-#include <string>
-#include <string_view>
-#include <utility>
+#include <tuple>
 
 #include "base/check.h"
 #include "base/i18n/unicodestring.h"

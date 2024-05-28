@@ -26,6 +26,7 @@ static_library("common") {
   deps = [
     "//base",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:autofill_regex",
     "//sql",
     "//url",
   ]

@@ -274,6 +274,7 @@ if (!is_android) {
     deps = [
       "//chrome/browser/autofill:test_support_ui",
       "//chrome/test:test_support",
+      "//components/autofill/core/common:autofill_regex",
     ]
   }
 }

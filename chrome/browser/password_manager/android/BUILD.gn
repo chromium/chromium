@@ -100,7 +100,7 @@ source_set("backend") {
     ":jni_headers",
     ":unified_password_manager_proto",
     ":utils",
-    "//components/autofill/core/browser:browser",
+    "//components/autofill/core/common:autofill_regex",
     "//components/browser_sync",
     "//components/browser_ui/device_lock/android:android",
     "//components/password_manager/core/browser:browser",
