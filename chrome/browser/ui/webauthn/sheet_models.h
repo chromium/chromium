@@ -83,10 +83,8 @@ class AuthenticatorMechanismSelectorSheetModel
 
   // AuthenticatorSheetModelBase:
   bool IsActivityIndicatorVisible() const override;
-  bool IsManageDevicesButtonVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  void OnManageDevices() override;
 };
 
 class AuthenticatorInsertAndActivateUsbSheetModel
@@ -296,6 +294,9 @@ class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
   bool IsActivityIndicatorVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
+  bool IsOtherMechanismButtonVisible() const override;
+  bool IsManageDevicesButtonVisible() const override;
+  void OnManageDevices() override;
 };
 
 class AuthenticatorAndroidAccessorySheetModel

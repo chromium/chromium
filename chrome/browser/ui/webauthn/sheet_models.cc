@@ -204,24 +204,6 @@ std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepDescription()
   }
 }
 
-bool AuthenticatorMechanismSelectorSheetModel::IsManageDevicesButtonVisible()
-    const {
-  // If any phones are shown then also show a button that goes to the settings
-  // page to manage them.
-  return base::ranges::any_of(
-      dialog_model()->mechanisms,
-      [](const AuthenticatorRequestDialogModel::Mechanism& mechanism) {
-        return absl::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::Phone>(mechanism.type);
-      });
-}
-
-void AuthenticatorMechanismSelectorSheetModel::OnManageDevices() {
-  if (dialog_model()) {
-    dialog_model()->OnManageDevicesClicked();
-  }
-}
-
 // AuthenticatorInsertAndActivateUsbSheetModel ----------------------
 
 AuthenticatorInsertAndActivateUsbSheetModel::
@@ -745,6 +727,18 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
           base::UTF8ToUTF16(dialog_model()->selected_phone_name.value_or("")));
     }
   }
+}
+
+bool AuthenticatorPaaskSheetModel::IsOtherMechanismButtonVisible() const {
+  return false;
+}
+
+bool AuthenticatorPaaskSheetModel::IsManageDevicesButtonVisible() const {
+  return true;
+}
+
+void AuthenticatorPaaskSheetModel::OnManageDevices() {
+  dialog_model()->OnManageDevicesClicked();
 }
 
 // AuthenticatorAndroidAccessorySheetModel ------------------------------------
