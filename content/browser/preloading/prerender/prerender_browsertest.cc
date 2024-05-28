@@ -1035,6 +1035,59 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
       blink::mojom::SpeculationEagerness::kEager)});
 }
 
+// Tests that the speculationrules trigger works in the presence of
+// No-Vary-Search for inexact URL in the presence of main frame navigation.
+IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+                       InexactUrlMatchWithMainFrameNavigation) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/no_vary_search_a.html?prerender");
+  const GURL kPrerenderingNextUrl = GetUrl("/empty.html?next");
+  const GURL kNavigationUrl = GetUrl("/no_vary_search_a.html?prerender&a=3");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Start prerendering `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  int host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  // Navigate the prerendered page to `kPrerenderingNextUrl`.
+  NavigatePrerenderedPage(host_id, kPrerenderingNextUrl);
+  WaitForPrerenderLoadCompletion(host_id);
+
+  NavigationHandleObserver activation_observer(web_contents(), kNavigationUrl);
+  NavigatePrimaryPage(kNavigationUrl);
+  // Ensure the state has been propagated to renderer processes.
+  ASSERT_EQ(false, EvalJs(web_contents(), "document.prerendering"));
+
+  // The prerender host should be consumed.
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_FALSE(HasHostForUrl(kNavigationUrl));
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_EQ(GetRequestCount(kPrerenderingNextUrl), 1);
+
+  // Activating the prerendered page should not issue a request.
+  EXPECT_EQ(GetRequestCount(kNavigationUrl), 0);
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingNextUrl);
+  ASSERT_EQ(kPrerenderingNextUrl,
+            EvalJs(web_contents(), "window.location.href"));
+
+  // URL match was inexact but should be recorded as accurate.
+  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+      ukm_source_id, PreloadingType::kPrerender,
+      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+      PreloadingTriggeringOutcome::kSuccess,
+      PreloadingFailureReason::kUnspecified,
+      /*accurate=*/true,
+      /*ready_time=*/kMockElapsedTime,
+      blink::mojom::SpeculationEagerness::kEager)});
+}
+
 // Tests that the speculationrules trigger works.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
   const GURL kInitialUrl = GetUrl("/empty.html");

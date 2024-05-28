@@ -81,10 +81,11 @@ PrerenderNoVarySearchCommitDeferringCondition::WillCommitNavigation(
   // via No Vary Search to the prerender URL.
   PrerenderHost& prerender_host =
       PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
-  // If the prerender has been redirected we do not change URL. A prerendered
-  // page can navigate to another same-site URL during prerendering. E.g. a
-  // prerendered page navigates from URL-A-with-NoVarySearch to URL-B. The
-  // omnibox should reflect URL-B instead of URL-A-with-NoVarySearch.
+  // If the prerender has been redirected or navigated, we do not change URL.
+  // A prerendered page can navigate to another same-site URL during
+  // prerendering. E.g. a prerendered page navigates from
+  // URL-A-with-NoVarySearch to URL-B. The omnibox should reflect URL-B instead
+  // of URL-A-with-NoVarySearch.
   if (prerender_host.GetInitialUrl() !=
       prerender_host.GetPrerenderedMainFrameHost()->GetLastCommittedURL()) {
     return Result::kProceed;
