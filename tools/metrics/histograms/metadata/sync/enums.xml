@@ -341,7 +341,8 @@ chromium-metrics-reviews@google.com.
   <int value="100038" label="(obsolete) AccessibilityGreyscaleAmount"/>
   <int value="100039" label="(obsolete) AccessibilityHueRotationAmount"/>
   <int value="100040" label="(obsolete) AccessibilitySaturationAmount"/>
-  <int value="100041" label="AccessibilityScreenMagnifierCenterFocus"/>
+  <int value="100041"
+      label="(obsolete) AccessibilityScreenMagnifierCenterFocus"/>
   <int value="100042"
       label="AccessibilityScreenMagnifierFocusFollowingEnabled"/>
   <int value="100043" label="AccessibilityScreenMagnifierMouseFollowingMode"/>

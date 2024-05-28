@@ -78,7 +78,6 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityFaceGazeGesturesToMacros,
     ash::prefs::kAccessibilityFaceGazeGesturesToConfidence,
     ash::prefs::kAccessibilityHighContrastEnabled,
-    ash::prefs::kAccessibilityScreenMagnifierCenterFocus,
     ash::prefs::kAccessibilityScreenMagnifierEnabled,
     ash::prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
     ash::prefs::kAccessibilityMagnifierFollowsSts,

@@ -94,7 +94,7 @@ enum {
   // kAccessibilityGreyscaleAmount = 100038,  // deprecated
   // kAccessibilityHueRotationAmount = 100039,  // deprecated
   // kAccessibilitySaturationAmount = 100040,  // deprecated
-  kAccessibilityScreenMagnifierCenterFocus = 100041,
+  // kAccessibilityScreenMagnifierCenterFocus = 100041,  // deprecated
   kAccessibilityScreenMagnifierFocusFollowingEnabled = 100042,
   kAccessibilityScreenMagnifierMouseFollowingMode = 100043,
   kAccessibilitySelectToSpeakBackgroundShading = 100044,
@@ -583,10 +583,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityFloatingMenuPosition,
      {syncable_prefs_ids::kAccessibilityFloatingMenuPosition,
-      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {ash::prefs::kAccessibilityScreenMagnifierCenterFocus,
-     {syncable_prefs_ids::kAccessibilityScreenMagnifierCenterFocus,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,

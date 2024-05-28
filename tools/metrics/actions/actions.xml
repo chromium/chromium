@@ -27517,6 +27517,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Options_AccessibilityScreenMagnifierCenterFocus_Disable">
+  <obsolete>Deprecated 05/2024</obsolete>
   <owner>jennyz@chromium.org</owner>
   <description>
     Settings: Accessibility: Disable centering focus for text input in magnifier
@@ -27525,6 +27526,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Options_AccessibilityScreenMagnifierCenterFocus_Enable">
+  <obsolete>Deprecated 05/2024</obsolete>
   <owner>jennyz@chromium.org</owner>
   <description>
     Settings: Accessibility: Enable centering focus for text input in magnifier

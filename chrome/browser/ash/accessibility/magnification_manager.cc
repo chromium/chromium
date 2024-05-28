@@ -209,10 +209,6 @@ void MagnificationManager::SetProfile(Profile* profile) {
         base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
                             base::Unretained(this)));
     pref_change_registrar_->Add(
-        prefs::kAccessibilityScreenMagnifierCenterFocus,
-        base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
-                            base::Unretained(this)));
-    pref_change_registrar_->Add(
         prefs::kAccessibilityScreenMagnifierScale,
         base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
                             base::Unretained(this)));

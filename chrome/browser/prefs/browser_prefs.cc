@@ -1085,6 +1085,10 @@ inline constexpr char kAccessibilityMouseKeysShortcutToPauseEnabled[] =
 // text fields.
 inline constexpr char kAccessibilityMouseKeysDisableInTextFields[] =
     "settings.a11y.mouse_keys.disable_in_text_fields";
+// A boolean pref which determines whether screen magnifier should center
+// the text input focus.
+inline constexpr char kAccessibilityScreenMagnifierCenterFocus[] =
+    "settings.a11y.screen_magnifier_center_focus";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 05/2024.
@@ -1575,6 +1579,7 @@ void RegisterProfilePrefsForMigration(
                                 true);
   registry->RegisterBooleanPref(kAccessibilityMouseKeysDisableInTextFields,
                                 true);
+  registry->RegisterBooleanPref(kAccessibilityScreenMagnifierCenterFocus, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Deprecated 05/2024.
@@ -2949,6 +2954,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 05/2024.
   profile_prefs->ClearPref(kAccessibilityMouseKeysShortcutToPauseEnabled);
   profile_prefs->ClearPref(kAccessibilityMouseKeysDisableInTextFields);
+  profile_prefs->ClearPref(kAccessibilityScreenMagnifierCenterFocus);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 05/2024.

@@ -509,10 +509,6 @@ inline constexpr char kAccessibilityMagnifierFollowsSts[] =
 // magnifier. This maps to AccessibilityController::MagnifierMouseFollowingMode.
 inline constexpr char kAccessibilityScreenMagnifierMouseFollowingMode[] =
     "settings.a11y.screen_magnifier_mouse_following_mode";
-// A boolean pref which determines whether screen magnifier should center
-// the text input focus.
-inline constexpr char kAccessibilityScreenMagnifierCenterFocus[] =
-    "settings.a11y.screen_magnifier_center_focus";
 // A double pref which determines a zooming scale of the screen magnifier.
 inline constexpr char kAccessibilityScreenMagnifierScale[] =
     "settings.a11y.screen_magnifier_scale";
