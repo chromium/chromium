@@ -15448,6 +15448,26 @@
             ]
         }
     ],
+    "Prerender2EarlyDocumentLifecycleUpdate": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Prerender2EarlyDocumentLifecycleUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2EmbedderBlockedHosts": [
         {
             "platforms": [
