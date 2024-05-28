@@ -1246,6 +1246,11 @@ criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-0"]
 delta = "0.19.0 -> 0.19.1"
 notes = "Crate has `forbid_unsafe` and no unsafe code. Changes all appear font-related and safe."
 
+[[audits.skrifa]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.19.1 -> 0.19.2"
+
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

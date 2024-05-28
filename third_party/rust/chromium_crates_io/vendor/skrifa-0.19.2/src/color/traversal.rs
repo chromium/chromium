@@ -3,7 +3,6 @@ use std::{cmp::Ordering, ops::Range};
 use read_fonts::{
     tables::colr::{CompositeMode, Extend},
     types::{BoundingBox, GlyphId, Point},
-    ReadError,
 };
 
 use super::{
@@ -61,10 +60,9 @@ const MAX_TRAVERSAL_DEPTH: u32 = 64;
 pub(crate) fn get_clipbox_font_units(
     colr_instance: &ColrInstance,
     glyph_id: GlyphId,
-) -> Result<Option<BoundingBox<f32>>, ReadError> {
-    Ok((*colr_instance)
-        .v1_clip_box(glyph_id)?
-        .map(|clip_box| resolve_clip_box(colr_instance, &clip_box)))
+) -> Option<BoundingBox<f32>> {
+    let maybe_clipbox = (*colr_instance).v1_clip_box(glyph_id).ok().flatten()?;
+    Some(resolve_clip_box(colr_instance, &maybe_clipbox))
 }
 
 impl From<ResolvedColorStop> for ColorStop {
@@ -503,7 +501,7 @@ pub(crate) fn traverse_with_callbacks(
                 let result = match draw_result {
                     PaintCachedColorGlyph::Ok => Ok(()),
                     PaintCachedColorGlyph::Unimplemented => {
-                        let clipbox = get_clipbox_font_units(instance, *glyph_id)?;
+                        let clipbox = get_clipbox_font_units(instance, *glyph_id);
 
                         if let Some(rect) = clipbox {
                             painter.push_clip_box(rect);
@@ -654,7 +652,7 @@ mod tests {
             let axis_coordinate = (axis_test.0, axis_test.1);
             let location = font.axes().location([axis_coordinate]);
             let color_instance = ColrInstance::new(font.colr().unwrap(), location.coords());
-            let clip_box = get_clipbox_font_units(&color_instance, test_glyph_id).unwrap();
+            let clip_box = get_clipbox_font_units(&color_instance, test_glyph_id);
             assert!(clip_box.is_some());
             assert!(
                 clip_box.unwrap() == axis_test.2,

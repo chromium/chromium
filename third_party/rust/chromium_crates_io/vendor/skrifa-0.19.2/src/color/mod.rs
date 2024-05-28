@@ -307,7 +307,7 @@ impl<'a> ColorGlyph<'a> {
 
         match &self.root_paint_ref {
             ColorGlyphRoot::V1Paint(_paint, _paint_id, glyph_id, upem) => {
-                let resolved_bounding_box = get_clipbox_font_units(&instance, *glyph_id).ok()?;
+                let resolved_bounding_box = get_clipbox_font_units(&instance, *glyph_id);
                 resolved_bounding_box.map(|bounding_box| {
                     let scale_factor = size.linear_scale((*upem).clone().unwrap_or(0));
                     bounding_box.scale(scale_factor)
@@ -342,7 +342,7 @@ impl<'a> ColorGlyph<'a> {
         let instance = instance::ColrInstance::new(self.colr.clone(), location.into().coords());
         match &self.root_paint_ref {
             ColorGlyphRoot::V1Paint(paint, paint_id, glyph_id, _) => {
-                let clipbox = get_clipbox_font_units(&instance, *glyph_id)?;
+                let clipbox = get_clipbox_font_units(&instance, *glyph_id);
 
                 if let Some(rect) = clipbox {
                     painter.push_clip_box(rect);
@@ -490,5 +490,23 @@ mod tests {
             .paint(LocationRef::default(), &mut color_painter);
         // Expected to fail with an error as the glyph contains a paint cycle.
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn no_cliplist_test() {
+        let colr_font = font_test_data::COLRV1_NO_CLIPLIST;
+        let font = FontRef::new(colr_font).unwrap();
+        let cycle_glyph_id = GlyphId::new(1);
+        let colrv1_glyph = font
+            .color_glyphs()
+            .get_with_format(cycle_glyph_id, crate::color::ColorGlyphFormat::ColrV1);
+
+        assert!(colrv1_glyph.is_some());
+        let mut color_painter = DummyColorPainter::new();
+
+        let result = colrv1_glyph
+            .unwrap()
+            .paint(LocationRef::default(), &mut color_painter);
+        assert!(result.is_ok());
     }
 }

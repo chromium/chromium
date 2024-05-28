@@ -514,8 +514,8 @@ mod tests {
 
     impl<'a> Engine<'a> {
         fn set_font_code(&mut self, code: &'a [u8]) {
-            self.program.bytecode[0] = &code;
-            self.program.decoder.bytecode = &code;
+            self.program.bytecode[0] = code;
+            self.program.decoder.bytecode = code;
             self.program.current = Program::Font;
         }
     }
