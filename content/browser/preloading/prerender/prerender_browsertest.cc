@@ -412,6 +412,14 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return prerender_helper_->AddPrerender(prerendering_url, world_id);
   }
 
+  int AddPrerender(const GURL& prerendering_url,
+                   std::string no_vary_search_hint,
+                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) {
+    return prerender_helper_->AddPrerender(
+        prerendering_url, /*eagerness=*/std::nullopt, no_vary_search_hint,
+        /*target_hint=*/"", world_id);
+  }
+
   void AddPrerenderAsync(const GURL& prerendering_url) {
     prerender_helper_->AddPrerenderAsync(prerendering_url);
   }
@@ -841,6 +849,26 @@ class NoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
 
 }  // namespace
 
+// Tests that the speculationrules No-Vary-Search hint is populated for the
+// PrerenderHost.
+IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, HintIsPopulated) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/no_vary_search_a.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Start prerendering `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  int host_id = AddPrerender(kPrerenderingUrl, R"(params=(\\\"a\\\"))");
+  auto* host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
+          host_id);
+  ASSERT_TRUE(host);
+  ASSERT_TRUE(host->no_vary_search_expected().has_value());
+}
+
 // Tests that the speculationrules trigger works in the presence of
 // No-Vary-Search for same URL.
 IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, ExactUrlMatch) {
@@ -1033,6 +1061,26 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
       /*accurate=*/true,
       /*ready_time=*/kMockElapsedTime,
       blink::mojom::SpeculationEagerness::kEager)});
+}
+
+// Tests that the speculationrules No-Vary-Search hint is not populated for the
+// PrerenderHost if kPrerender2NoVarySearch feature is not enabled.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NoVarySearchHintIsNotPopulated) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/no_vary_search_a.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Start prerendering `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  int host_id = AddPrerender(kPrerenderingUrl, R"(params=(\\\"a\\\"))");
+  auto* host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
+          host_id);
+  ASSERT_TRUE(host);
+  ASSERT_FALSE(host->no_vary_search_expected().has_value());
 }
 
 // Tests that the speculationrules trigger works in the presence of

@@ -10871,6 +10871,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       /*target_hint=*/std::nullopt, content::Referrer(),
       /*eagerness=*/std::nullopt,
+      /*no_vary_search_expected=*/std::nullopt,
       /*initiator_origin=*/std::nullopt,
       content::ChildProcessHost::kInvalidUniqueID, GetWeakPtr(),
       /*initiator_frame_token=*/std::nullopt,

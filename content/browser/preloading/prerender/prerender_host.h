@@ -326,6 +326,11 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     return no_vary_search_;
   }
 
+  const std::optional<net::HttpNoVarySearchData>& no_vary_search_expected()
+      const {
+    return attributes_.no_vary_search_expected;
+  }
+
   bool IsInitialNavigation(const NavigationRequest& navigation_request) const;
 
  private:

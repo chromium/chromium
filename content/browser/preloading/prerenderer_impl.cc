@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
+#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
@@ -20,6 +22,7 @@
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -264,6 +267,14 @@ bool PrerendererImpl::MaybePrerender(
             url::Origin::Create(candidate->url).Serialize().c_str()));
   }
 
+  std::optional<net::HttpNoVarySearchData> no_vary_search_expected;
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch) &&
+      candidate->no_vary_search_hint) {
+    no_vary_search_expected =
+        no_vary_search::ParseHttpNoVarySearchDataFromMojom(
+            candidate->no_vary_search_hint);
+  }
+
   PrerenderAttributes attributes(
       candidate->url,
       PreloadingTriggerTypeFromSpeculationInjectionType(
@@ -271,10 +282,10 @@ bool PrerendererImpl::MaybePrerender(
       /*embedder_histogram_suffix=*/"",
       candidate->target_browsing_context_name_hint,
       Referrer{*candidate->referrer}, candidate->eagerness,
-      rfhi.GetLastCommittedOrigin(), rfhi.GetProcess()->GetID(),
-      web_contents->GetWeakPtr(), rfhi.GetFrameToken(),
-      rfhi.GetFrameTreeNodeId(), rfhi.GetPageUkmSourceId(),
-      ui::PAGE_TRANSITION_LINK,
+      no_vary_search_expected, rfhi.GetLastCommittedOrigin(),
+      rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
+      rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
+      rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
       rfhi.GetDevToolsNavigationToken());

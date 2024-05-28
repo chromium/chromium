@@ -447,9 +447,10 @@ int TestWebContents::AddPrerender(const GURL& url) {
       /*embedder_histogram_suffix=*/"",
       blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
       blink::mojom::SpeculationEagerness::kEager,
-      rfhi->GetLastCommittedOrigin(), rfhi->GetProcess()->GetID(), GetWeakPtr(),
-      rfhi->GetFrameToken(), rfhi->GetFrameTreeNodeId(),
-      rfhi->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      /*no_vary_search_expected=*/std::nullopt, rfhi->GetLastCommittedOrigin(),
+      rfhi->GetProcess()->GetID(), GetWeakPtr(), rfhi->GetFrameToken(),
+      rfhi->GetFrameTreeNodeId(), rfhi->GetPageUkmSourceId(),
+      ui::PAGE_TRANSITION_LINK,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{}));
 }

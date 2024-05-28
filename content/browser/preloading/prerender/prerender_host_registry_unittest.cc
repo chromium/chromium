@@ -199,6 +199,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
             blink::mojom::SpeculationTargetHint::kNoHint, Referrer(), eagerness,
+            /*no_vary_search_expected=*/std::nullopt,
             rfh->GetLastCommittedOrigin(), rfh->GetProcess()->GetID(),
             contents()->GetWeakPtr(), rfh->GetFrameToken(),
             rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
@@ -209,7 +210,9 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
             /*target_hint=*/std::nullopt, Referrer(),
-            /*eagerness=*/std::nullopt, /*initiator_origin=*/std::nullopt,
+            /*eagerness=*/std::nullopt,
+            /*no_vary_search_expected=*/std::nullopt,
+            /*initiator_origin=*/std::nullopt,
             /*initiator_process_id=*/ChildProcessHost::kInvalidUniqueID,
             contents()->GetWeakPtr(),
             /*initiator_frame_token=*/std::nullopt,

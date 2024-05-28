@@ -239,6 +239,8 @@ std::optional<net::HttpNoVarySearchData> ProcessHead(
     const GURL& url,
     RenderFrameHost* rfh);
 
+// TODO(crbug.com/331591646): This is used in both prerender and prefetch,
+// consider moving in a common location.
 // Parse No-Vary-Search from mojom structure received from network service.
 net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(
     const network::mojom::NoVarySearchPtr& no_vary_search_ptr);

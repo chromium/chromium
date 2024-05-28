@@ -54,6 +54,7 @@ std::string ConvertEagernessToString(
 std::string BuildScriptElementSpeculationRules(
     const std::vector<GURL>& prerendering_urls,
     std::optional<blink::mojom::SpeculationEagerness> eagerness,
+    std::optional<std::string> no_vary_search_hint,
     const std::string& target_hint) {
   std::stringstream ss;
 
@@ -78,6 +79,10 @@ std::string BuildScriptElementSpeculationRules(
     ss << base::StringPrintf(
         R"(, "eagerness": "%s")",
         ConvertEagernessToString(eagerness.value()).c_str());
+  }
+  if (no_vary_search_hint.has_value()) {
+    ss << base::StringPrintf(R"(, "expects_no_vary_search": "%s")",
+                             no_vary_search_hint.value().c_str());
   }
 
   // Add target_hint field.
@@ -412,6 +417,17 @@ int PrerenderTestHelper::AddPrerender(
     std::optional<blink::mojom::SpeculationEagerness> eagerness,
     const std::string& target_hint,
     int32_t world_id) {
+  return AddPrerender(prerendering_url, eagerness,
+                      /*no_vary_search_hint=*/std::nullopt, target_hint,
+                      world_id);
+}
+
+int PrerenderTestHelper::AddPrerender(
+    const GURL& prerendering_url,
+    std::optional<blink::mojom::SpeculationEagerness> eagerness,
+    std::optional<std::string> no_vary_search_hint,
+    const std::string& target_hint,
+    int32_t world_id) {
   TRACE_EVENT("test", "PrerenderTestHelper::AddPrerender", "prerendering_url",
               prerendering_url);
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -426,13 +442,15 @@ int PrerenderTestHelper::AddPrerender(
           prerender_web_contents = web_contents;
           run_loop.QuitClosure().Run();
         }));
-    AddPrerendersAsync({prerendering_url}, eagerness, target_hint, world_id);
+    AddPrerendersAsync({prerendering_url}, eagerness, no_vary_search_hint,
+                       target_hint, world_id);
     run_loop.Run();
   } else {
     // For other target hints, the initiator's WebContents will host a
     // prerendered page.
     prerender_web_contents = GetWebContents();
-    AddPrerendersAsync({prerendering_url}, eagerness, target_hint, world_id);
+    AddPrerendersAsync({prerendering_url}, eagerness, no_vary_search_hint,
+                       target_hint, world_id);
   }
 
   WaitForPrerenderLoadCompletion(*prerender_web_contents, prerendering_url);
@@ -451,15 +469,28 @@ void PrerenderTestHelper::AddPrerendersAsync(
     std::optional<blink::mojom::SpeculationEagerness> eagerness,
     const std::string& target_hint,
     int32_t world_id) {
-  TRACE_EVENT("test", "PrerenderTestHelper::AddPrerendersAsync",
-              "prerendering_urls", prerendering_urls, "eagerness",
-              eagerness.has_value()
-                  ? ConvertEagernessToString(eagerness.value())
-                  : "(empty)",
-              "target_hint", target_hint.empty() ? "(empty)" : target_hint);
+  AddPrerendersAsync(prerendering_urls, eagerness,
+                     /*no_vary_search_hint=*/std::nullopt, target_hint,
+                     world_id);
+}
+
+void PrerenderTestHelper::AddPrerendersAsync(
+    const std::vector<GURL>& prerendering_urls,
+    std::optional<blink::mojom::SpeculationEagerness> eagerness,
+    std::optional<std::string> no_vary_search_hint,
+    const std::string& target_hint,
+    int32_t world_id) {
+  TRACE_EVENT(
+      "test", "PrerenderTestHelper::AddPrerendersAsync", "prerendering_urls",
+      prerendering_urls, "eagerness",
+      eagerness.has_value() ? ConvertEagernessToString(eagerness.value())
+                            : "(empty)",
+      "expected_no_vary_search",
+      no_vary_search_hint.has_value() ? no_vary_search_hint.value() : "(empty)",
+      "target_hint", target_hint.empty() ? "(empty)" : target_hint);
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
   std::string script = BuildScriptElementSpeculationRules(
-      prerendering_urls, eagerness, target_hint);
+      prerendering_urls, eagerness, no_vary_search_hint, target_hint);
 
   if (world_id == ISOLATED_WORLD_ID_GLOBAL) {
     // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
