@@ -632,4 +632,4 @@ class MEDIA_GPU_EXPORT V4L2Queue
 
 }  //  namespace media
 
-#endif  // MEDIA_GPU_V4L2_V4L2_DEVICE_H_
+#endif  // MEDIA_GPU_V4L2_V4L2_QUEUE_H_

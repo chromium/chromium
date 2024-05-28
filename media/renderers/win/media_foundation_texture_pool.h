@@ -76,4 +76,4 @@ class MEDIA_EXPORT MediaFoundationTexturePool {
   base::flat_map<base::UnguessableToken, TextureInfo> texture_pool_;
 };
 }  // namespace media
-#endif
+#endif  // MEDIA_RENDERERS_WIN_MEDIA_FOUNDATION_TEXTURE_POOL_H_

@@ -279,4 +279,4 @@ inline void IsIFramesOnly(bool value,
 
 }  // namespace media::hls
 
-#endif
+#endif  // MEDIA_FORMATS_HLS_MEDIA_PLAYLIST_TEST_BUILDER_H_

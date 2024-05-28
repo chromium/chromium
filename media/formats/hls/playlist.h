@@ -75,4 +75,4 @@ class MEDIA_EXPORT Playlist : public base::RefCounted<Playlist> {
 
 }  // namespace media::hls
 
-#endif
+#endif  // MEDIA_FORMATS_HLS_PLAYLIST_H_

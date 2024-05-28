@@ -121,4 +121,4 @@ class MEDIA_EXPORT VariantStream {
 
 }  // namespace media::hls
 
-#endif
+#endif  // MEDIA_FORMATS_HLS_VARIANT_STREAM_H_

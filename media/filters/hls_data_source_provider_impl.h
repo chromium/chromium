@@ -68,4 +68,4 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
 
 }  // namespace media
 
-#endif  // #ifndef MEDIA_FILTERS_HLS_DATA_SOURCE_PROVIDER_IMPL_H_
+#endif  // MEDIA_FILTERS_HLS_DATA_SOURCE_PROVIDER_IMPL_H_

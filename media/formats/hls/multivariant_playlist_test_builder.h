@@ -281,4 +281,4 @@ inline void HasDefaultRendition(std::optional<std::string> name,
 
 }  // namespace media::hls
 
-#endif
+#endif  // MEDIA_FORMATS_HLS_MULTIVARIANT_PLAYLIST_TEST_BUILDER_H_

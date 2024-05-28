@@ -43,4 +43,4 @@ class MEDIA_MOJO_EXPORT MojoVideoEncoderMetricsProviderService
   std::map<uint64_t, EncoderMetricsHandler> encoders_;
 };
 }  // namespace media
-#endif  // MEDIA_MOJO_SERVICES_VIDEO_ENCODER_METRICS_PROVIDER_H_
+#endif  // MEDIA_MOJO_SERVICES_MOJO_VIDEO_ENCODER_METRICS_PROVIDER_SERVICE_H_

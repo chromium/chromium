@@ -136,4 +136,4 @@ class CAPTURE_EXPORT VideoCaptureEffectsProcessor {
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_POST_PROCESSOR_H_
+#endif  // MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_EFFECTS_PROCESSOR_H_

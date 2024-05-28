@@ -199,4 +199,4 @@ class MEDIA_EXPORT RenditionManager {
 
 }  // namespace media::hls
 
-#endif  // define MEDIA_FORMATS_HLS_RENDITION_MANAGER_H_
+#endif  // MEDIA_FORMATS_HLS_RENDITION_MANAGER_H_

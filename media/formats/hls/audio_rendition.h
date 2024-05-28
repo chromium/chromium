@@ -138,4 +138,4 @@ class MEDIA_EXPORT AudioRenditionGroup
 
 }  // namespace media::hls
 
-#endif
+#endif  // MEDIA_FORMATS_HLS_AUDIO_RENDITION_H_

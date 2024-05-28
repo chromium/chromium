@@ -58,4 +58,4 @@ inline testing::AssertionResult RoughlyEqual(
 
 }  // namespace media::hls
 
-#endif
+#endif  // MEDIA_FORMATS_HLS_TEST_UTIL_H_
