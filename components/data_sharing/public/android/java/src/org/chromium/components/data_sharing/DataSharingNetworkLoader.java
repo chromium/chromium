@@ -5,7 +5,6 @@
 package org.chromium.components.data_sharing;
 
 import org.chromium.base.Callback;
-import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
 /**
@@ -13,6 +12,7 @@ import org.chromium.url.GURL;
  * DataSharingNetworkLoader object in Java.
  */
 public interface DataSharingNetworkLoader {
+
     /**
      * Fetch data from the network. Callback will be invoked once the fetch completes.
      *
@@ -26,6 +26,6 @@ public interface DataSharingNetworkLoader {
             GURL url,
             String[] scopes,
             byte[] postData,
-            NetworkTrafficAnnotationTag networkAnnotationTag,
+            @DataSharingRequestType int requestType,
             Callback<String> callback);
 }

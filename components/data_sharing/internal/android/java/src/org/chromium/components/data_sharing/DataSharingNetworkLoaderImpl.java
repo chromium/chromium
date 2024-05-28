@@ -41,11 +41,16 @@ public class DataSharingNetworkLoaderImpl implements DataSharingNetworkLoader {
             GURL url,
             String[] scopes,
             byte[] postData,
-            NetworkTrafficAnnotationTag networkAnnotationTag,
+            @DataSharingRequestType int requestType,
             Callback<String> callback) {
         ThreadUtils.postOnUiThread(
                 () -> {
-                    loadUrlOnUiThread(url, scopes, postData, networkAnnotationTag, callback);
+                    loadUrlOnUiThread(
+                            url,
+                            scopes,
+                            postData,
+                            DataSharingNetworkUtils.getNetworkTrafficAnnotationTag(requestType),
+                            callback);
                 });
     }
 

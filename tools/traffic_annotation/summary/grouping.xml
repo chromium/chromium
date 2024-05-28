@@ -327,6 +327,10 @@ after discussions on the right group.
       <annotation id="personalized_recommended_apps_download"/>
       <annotation id="focus_sounds_configuration"/>
       <annotation id="device_image_downloader"/>
+      <annotation id="data_sharing_service_create_group"/>
+      <annotation id="data_sharing_service_read_groups"/>
+      <annotation id="data_sharing_service_delete_groups"/>
+      <annotation id="data_sharing_service_update_group"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

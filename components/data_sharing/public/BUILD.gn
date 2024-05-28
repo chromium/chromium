@@ -34,6 +34,8 @@ if (is_android) {
   android_library("public_java") {
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingRequestType.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingService.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingUIDelegate.java",
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",

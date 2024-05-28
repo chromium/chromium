@@ -21,7 +21,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,11 +41,7 @@ public class DataSharingNetworkLoaderImplTest {
     @Test
     public void testLoadUrl() {
         mDataSharingNetworkLoader.loadUrl(
-                GURL.emptyGURL(),
-                null,
-                null,
-                NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS,
-                null);
+                GURL.emptyGURL(), null, null, DataSharingRequestType.CREATE_GROUP, null);
         shadowOf(Looper.getMainLooper()).idle();
         verify(mDataSharingNetworkLoaderJniMock, times(1))
                 .loadUrl(
@@ -54,7 +49,9 @@ public class DataSharingNetworkLoaderImplTest {
                         GURL.emptyGURL(),
                         null,
                         null,
-                        NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS.getHashCode(),
+                        DataSharingNetworkUtils.getNetworkTrafficAnnotationTag(
+                                        DataSharingRequestType.CREATE_GROUP)
+                                .getHashCode(),
                         null);
     }
 }
