@@ -40,6 +40,8 @@ if (is_ios) {
   import("//ios/features.gni")
 }
 
+partition_alloc_enable_arc_config = "//build/config/compiler:enable_arc"
+
 declare_args() {
   # Turns on compiler optimizations in PartitionAlloc in Debug build. If
   # enabling PartitionAlloc-Everywhere in Debug build for tests in Debug build,

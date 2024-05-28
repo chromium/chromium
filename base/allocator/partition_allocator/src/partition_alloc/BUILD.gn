@@ -866,13 +866,7 @@ if (is_clang_or_gcc) {
 
         # Do not compile with ARC because this target has to interface with
         # low-level Objective-C and having ARC would interfere.
-        #
-        # TODO(crbug.com/41481467) Invert the dependency with chromium.
-        # PartitionAlloc shouldn't depend on chromium, it should be the
-        # opposite.
-        if (build_with_chromium) {
-          configs -= [ "//build/config/compiler:enable_arc" ]
-        }
+        configs -= [ partition_alloc_enable_arc_config ]
       }
     }
     if (is_chromeos || is_linux) {

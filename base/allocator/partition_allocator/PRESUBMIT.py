@@ -141,3 +141,6 @@ def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
     if errors:
         return [output_api.PresubmitPromptWarning('\n'.join(errors))]
     return []
+
+# TODO(crbug.com/41481467) Check we aren't introducing a dependency on chromium.
+# In particular, we should ban the string "//build/" in any file.
