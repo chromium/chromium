@@ -1635,6 +1635,8 @@ void PrefetchService::GetPrefetchToServe(
   // If there is at least one prefetch that we are waiting for the head then
   // stop.
   if (waiting_on_prefetch_head) {
+    DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key
+             << "): waiting on prefetch head";
     return;
   }
   // If not waiting on any prefetches it means there is no match. Let the
@@ -1666,12 +1668,20 @@ void PrefetchService::WaitOnPrefetchToServeHead(
   // Make sure we are not waiting on this prefetch_url anymore.
   CHECK(!prefetch_match_resolver->IsWaitingForPrefetch(prefetch_url));
 
+  if (!prefetch_container) {
+    DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead(" << key
+             << "): deleted while waiting for head";
+    ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
+    return;
+  }
+
   DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead(" << key
            << "): PrefetchContainer head received for " << prefetch_url << "!";
   // This method is registered with the prefetch_container as the
   // ReceivedHeadCallback. We only call this method immediately after
-  // requesting the ReceivedHeadCallback from the prefetch_container.
-  // The prefetch_container must be alive.
+  // requesting the ReceivedHeadCallback from `prefetch_container` (in which
+  // case it is alive) or during its destruction after invalidating weak
+  // pointers (in which case we should have bailed just now).
   CHECK(prefetch_container);
   prefetch_container->ResetBlockUntilHeadTimer();
 

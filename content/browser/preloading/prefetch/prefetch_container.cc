@@ -530,6 +530,18 @@ PrefetchContainer::~PrefetchContainer() {
   if (prefetch_document_manager_) {
     prefetch_document_manager_->PrefetchWillBeDestroyed(this);
   }
+
+  if (base::FeatureList::IsEnabled(features::kPrefetchUnblockOnCancel)) {
+    // Make this object appear to be dead from the perspective of other code.
+    // In particular, the on_received_head_callback_ checks a WeakPtr to this
+    // object.
+    weak_method_factory_.InvalidateWeakPtrs();
+
+    // If anything was blocked on head, it no longer is.
+    if (on_received_head_callback_) {
+      std::move(on_received_head_callback_).Run();
+    }
+  }
 }
 
 PrefetchContainer::Key::Key(
