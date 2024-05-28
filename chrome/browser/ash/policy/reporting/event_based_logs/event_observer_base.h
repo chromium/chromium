@@ -67,7 +67,7 @@ class EventObserverBase {
   EventObserverBase(const EventObserverBase&) = delete;
   EventObserverBase& operator=(const EventObserverBase&) = delete;
 
-  ~EventObserverBase();
+  virtual ~EventObserverBase();
 
   // Returns the event type that has triggered the log upload. Inheritors of
   // this class must add a new event type to `ash::reporting::TriggerEventType`
@@ -77,7 +77,8 @@ class EventObserverBase {
   // Returns the set of `support_tool::DataCollectorType`s that is related to
   // the event this observer is observing. Inheritors of this class must
   // override this to select which log files to upload.
-  virtual std::set<support_tool::DataCollectorType> GetDataCollectorTypes() = 0;
+  virtual std::set<support_tool::DataCollectorType> GetDataCollectorTypes()
+      const = 0;
 
   // Returns the event name of the event that the observer observes.
   std::string GetEventName() const;

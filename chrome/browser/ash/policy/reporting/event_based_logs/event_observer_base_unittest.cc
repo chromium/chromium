@@ -34,7 +34,8 @@ class TestEventObserver : public policy::EventObserverBase {
     return ash::reporting::TriggerEventType::TRIGGER_EVENT_TYPE_UNSPECIFIED;
   }
 
-  std::set<support_tool::DataCollectorType> GetDataCollectorTypes() override {
+  std::set<support_tool::DataCollectorType> GetDataCollectorTypes()
+      const override {
     return {support_tool::DataCollectorType::CHROME_INTERNAL,
             support_tool::DataCollectorType::CHROMEOS_NETWORK_HEALTH};
   }
