@@ -6,7 +6,6 @@
 
 #include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
-#include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
 #include "chromeos/ash/components/auth_panel/impl/views/auth_panel_views_utils.h"
 #include "chromeos/ash/components/auth_panel/impl/views/view_size_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -56,20 +55,6 @@ void LoginTextfield::OnFocus() {
 gfx::Size LoginTextfield::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return gfx::Size(kPasswordTotalWidthDp, kIconSizeDp);
-}
-
-void LoginTextfield::OnStateChanged(
-    const AuthFactorStore::State::LoginTextfieldState& login_textfield_state) {
-  SetReadOnly(login_textfield_state.is_read_only);
-
-  SetTextInputType(login_textfield_state.is_password_visible_
-                       ? ui::TEXT_INPUT_TYPE_NULL
-                       : ui::TEXT_INPUT_TYPE_PASSWORD);
-
-  if (auto new_text = base::UTF8ToUTF16(login_textfield_state.password_);
-      new_text != GetText()) {
-    SetText(new_text);
-  }
 }
 
 void LoginTextfield::SetDelegate(Delegate* delegate) {

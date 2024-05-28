@@ -114,6 +114,9 @@ class PasswordAuthView : public FactorAuthView,
   void OnDisplayPasswordButtonPressed();
   void SetCapsLockIconHighlighted(bool highlight);
 
+  void UpdateTextfield(
+      const AuthFactorStore::State::LoginTextfieldState& login_textfield_state);
+
   // LoginTextfield::Delegate:
   void OnTextfieldBlur() override;
   void OnTextfieldFocus() override;

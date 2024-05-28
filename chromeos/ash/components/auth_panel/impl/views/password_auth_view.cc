@@ -312,7 +312,7 @@ void PasswordAuthView::OnStateChanged(const AuthFactorStore::State& state) {
   CHECK(state.password_view_state_.has_value());
   const auto& password_view_state = state.password_view_state_.value();
 
-  login_textfield_->OnStateChanged(password_view_state.login_textfield_state_);
+  UpdateTextfield(password_view_state.login_textfield_state_);
 
   const auto& password = password_view_state.login_textfield_state_.password_;
 
@@ -350,6 +350,20 @@ void PasswordAuthView::OnTextfieldFocus() {
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::kPasswordTextfieldFocused,
       std::nullopt});
+}
+
+void PasswordAuthView::UpdateTextfield(
+    const AuthFactorStore::State::LoginTextfieldState& login_textfield_state) {
+  login_textfield_->SetReadOnly(login_textfield_state.is_read_only);
+
+  login_textfield_->SetTextInputType(login_textfield_state.is_password_visible_
+                                         ? ui::TEXT_INPUT_TYPE_NULL
+                                         : ui::TEXT_INPUT_TYPE_PASSWORD);
+
+  if (auto new_text = base::UTF8ToUTF16(login_textfield_state.password_);
+      new_text != login_textfield_->GetText()) {
+    login_textfield_->SetText(new_text);
+  }
 }
 
 BEGIN_METADATA(PasswordAuthView)
