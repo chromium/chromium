@@ -27,6 +27,7 @@ extern NSString* const kGoogleShieldSymbol;
 extern NSString* const kGoogleMapsSymbol;
 extern NSString* const kGooglePasswordManagerWidgetPromoImage;
 extern NSString* const kGooglePasswordManagerWidgetPromoDisabledImage;
+extern NSString* const kGooglePaySymbol;
 extern NSString* const kGooglePhotosSymbol;
 extern NSString* const kGoogleSettingsPasswordsInOtherAppsBannerImage;
 extern NSString* const kLensKeyboardAccessoryImage;

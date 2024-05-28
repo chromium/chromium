@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "build/branding_buildflags.h"
 #import "components/grit/components_scaled_resources.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -72,13 +73,11 @@ const CGFloat kAccountCellSpacing = 7;
   UIImageView* googlePayBadge = [[UIImageView alloc] init];
   googlePayBadge.translatesAutoresizingMaskIntoConstraints = NO;
   googlePayBadge.contentMode = UIViewContentModeScaleAspectFit;
-  googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
-// IDR_AUTOFILL_GOOGLE_PAY_DARK only exists in official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (UITraitCollection.currentTraitCollection.userInterfaceStyle ==
-      UIUserInterfaceStyleDark) {
-    googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK);
-  }
+  googlePayBadge.image = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kGooglePaySymbol, kAccountCellBadgeSize));
+#else
+  googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
 #endif
   [self.contentView addSubview:googlePayBadge];
 

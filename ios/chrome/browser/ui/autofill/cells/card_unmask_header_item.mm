@@ -9,6 +9,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -212,11 +213,9 @@ BOOL VirtualCardFeatureEnabled() {
 // Returns the google pay badge image corresponding to the current
 // UIUserInterfaceStyle (light/dark mode).
 - (UIImage*)googlePayBadgeImage {
-  // IDR_AUTOFILL_GOOGLE_PAY_DARK only exists in official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-             ? NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK)
-             : NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+  return MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayBadgeHeight));
 #else
   return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
 #endif

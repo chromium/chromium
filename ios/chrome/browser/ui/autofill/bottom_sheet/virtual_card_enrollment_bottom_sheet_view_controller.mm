@@ -8,6 +8,7 @@
 #import "components/autofill/core/browser/payments/payments_service_url.h"
 #import "components/grit/components_scaled_resources.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -172,11 +173,9 @@ CGFloat const kCreditCardCellHeight = 64;
 // Returns the google pay badge image corresponding to the current
 // UIUserInterfaceStyle (light/dark mode).
 - (UIImage*)googlePayBadgeImage {
-  // IDR_AUTOFILL_GOOGLE_PAY_DARK only exists in official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-             ? NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK)
-             : NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+  return MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      kGooglePaySymbol, kCreditCardCellHeight - 2 * kLogoPadding));
 #else
   return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
 #endif

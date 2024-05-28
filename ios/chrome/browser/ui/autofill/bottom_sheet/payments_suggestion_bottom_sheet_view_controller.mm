@@ -271,32 +271,13 @@ CGFloat const kTitleLogoHeight = 24;
 - (UIImage*)titleImage {
   UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kTitleLogoHeight));
+  image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      self.showGooglePayLogo ? kGooglePaySymbol : kMulticolorChromeballSymbol,
+      kTitleLogoHeight));
 #else
   image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                              kTitleLogoHeight);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-
-  if (self.showGooglePayLogo) {
-    image = self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-                ? NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK)
-                : NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
-
-    // Using kTitleLogoHeight (24pt) returns a GPay logo too small, so we are
-    // using 28pt to ressemble the mocks.
-    CGFloat gPayLogoSize = 28;
-    if (image.size.height > 0.0 && image.size.height < gPayLogoSize &&
-        image.scale > 1.0) {
-      // If the image is smaller than desired, but is scaled, reduce the scale
-      // (to a minimum of 1.0) in order to attempt to achieve the desired size.
-      image = [UIImage
-          imageWithCGImage:[image CGImage]
-                     scale:MAX((image.scale * image.size.height / gPayLogoSize),
-                               1.0)
-               orientation:(image.imageOrientation)];
-    }
-  }
 
   return image;
 }
