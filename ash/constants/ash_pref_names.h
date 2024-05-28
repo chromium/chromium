@@ -2080,6 +2080,9 @@ inline constexpr char kFocusModeSessionDuration[] =
 // off of the last session, if any.
 inline constexpr char kFocusModeDoNotDisturb[] =
     "ash.focus_mode.do_not_disturb";
+// A dictionary pref containing the data pertaining to the task selected by the
+// user for a focus session.
+inline constexpr char kFocusModeSelectedTask[] = "ash.focus_mode.selected_task";
 
 // An integer pref that holds enum value of current demo mode configuration.
 // Values are defined by DemoSession::DemoModeConfig enum.

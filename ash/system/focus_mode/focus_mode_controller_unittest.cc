@@ -23,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -127,13 +128,22 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
 TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
   constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(25);
   constexpr bool kDefaultDNDState = true;
+
   constexpr base::TimeDelta kUser2SessionDuration = base::Minutes(200);
   constexpr bool kUser2DNDState = false;
+
+  base::Value::Dict user2_task_dict;
+  const std::string task_list_id_2 = "task_list_id_2";
+  const std::string task_id_2 = "task_id_2";
+  user2_task_dict.Set(focus_mode_util::kTaskListIdKey, task_list_id_2);
+  user2_task_dict.Set(focus_mode_util::kTaskIdKey, task_id_2);
 
   // Set the secondary user2's Focus Mode prefs.
   user_2_prefs()->SetTimeDelta(prefs::kFocusModeSessionDuration,
                                kUser2SessionDuration);
   user_2_prefs()->SetBoolean(prefs::kFocusModeDoNotDisturb, kUser2DNDState);
+  user_2_prefs()->SetDict(prefs::kFocusModeSelectedTask,
+                          user2_task_dict.Clone());
 
   // Log in and check to see that the user1 prefs are the default values, since
   // there should have been nothing previously.
@@ -142,17 +152,21 @@ TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
             user_1_prefs()->GetTimeDelta(prefs::kFocusModeSessionDuration));
   EXPECT_EQ(kDefaultDNDState,
             user_1_prefs()->GetBoolean(prefs::kFocusModeDoNotDisturb));
+  EXPECT_TRUE(user_1_prefs()->GetDict(prefs::kFocusModeSelectedTask).empty());
 
   // Verify that `FocusModeController` has loaded the user prefs.
   auto* controller = FocusModeController::Get();
   EXPECT_EQ(kDefaultSessionDuration, controller->GetSessionDuration());
   EXPECT_EQ(kDefaultDNDState, controller->turn_on_do_not_disturb());
+  EXPECT_FALSE(controller->HasSelectedTask());
 
   // Switch users and verify that `FocusModeController` has loaded the new user
   // prefs.
   SwitchActiveUser(GetUser2AccountId());
   EXPECT_EQ(kUser2SessionDuration, controller->GetSessionDuration());
   EXPECT_EQ(kUser2DNDState, controller->turn_on_do_not_disturb());
+  EXPECT_EQ(task_list_id_2, controller->selected_task_list_id());
+  EXPECT_EQ(task_id_2, controller->selected_task_id());
 }
 
 TEST_F(FocusModeControllerMultiUserTest, ToggleClosesSystemBubble) {
@@ -190,7 +204,7 @@ TEST_F(FocusModeControllerMultiUserTest, FirstTimeUserFlow) {
   EXPECT_TRUE(controller->HasStartedSessionBefore());
 }
 
-// Tests adding and completing tasks.
+// Tests adding and completing tasks, and the changes for the user pref.
 TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
   SimulateUserLogin(GetUser1AccountId());
 
@@ -218,9 +232,24 @@ TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
   EXPECT_EQ(task_id, controller->selected_task_id());
   EXPECT_EQ(title, controller->selected_task_title());
 
-  // Complete the task, and verify that the task data is cleared.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  // Verify the selected task info is accurate in the user pref once we start a
+  // focus session.
+  base::Value::Dict task_dict =
+      user_1_prefs()->GetDict(prefs::kFocusModeSelectedTask).Clone();
+  EXPECT_FALSE(task_dict.empty());
+  EXPECT_EQ(task_list_id,
+            *(task_dict.FindString(focus_mode_util::kTaskListIdKey)));
+  EXPECT_EQ(task_id, *(task_dict.FindString(focus_mode_util::kTaskIdKey)));
+
+  // Complete the task during the session, and verify that the task data is
+  // cleared.
   controller->CompleteTask();
   EXPECT_FALSE(controller->HasSelectedTask());
+  task_dict = user_1_prefs()->GetDict(prefs::kFocusModeSelectedTask).Clone();
+  EXPECT_TRUE(task_dict.empty());
 }
 
 // Tests basic ending moment functionality. Includes starting a new session

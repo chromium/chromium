@@ -29,6 +29,9 @@ enum class SoundType {
   kYouTubeMusic,
 };
 
+constexpr std::string_view kTaskListIdKey = "taskListId";
+constexpr std::string_view kTaskIdKey = "taskId";
+
 constexpr base::TimeDelta kMinimumDuration = base::Minutes(1);
 constexpr base::TimeDelta kMaximumDuration = base::Minutes(300);
 constexpr base::TimeDelta kEndingMomentDuration = base::Seconds(9);

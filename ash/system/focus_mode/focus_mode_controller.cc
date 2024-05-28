@@ -176,6 +176,9 @@ void FocusModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kFocusModeDoNotDisturb,
       /*default_value=*/true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterDictionaryPref(
+      prefs::kFocusModeSelectedTask,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 void FocusModeController::AddObserver(Observer* observer) {
@@ -367,7 +370,10 @@ void FocusModeController::SetSelectedTask(const FocusModeTask& task) {
   }
 
   selected_task_ = task;
-  // TODO(b/305089077): Update user prefs.
+  if (in_focus_session() || in_ending_moment()) {
+    SaveSelectedTaskSettingsToUserPrefs();
+  }
+
   if (focus_mode_metrics_recorder_ && !selected_task_.empty()) {
     focus_mode_metrics_recorder_->IncrementTasksSelectedCount();
   }
@@ -517,6 +523,32 @@ void FocusModeController::UpdateFromUserPrefs() {
   if (session_duration_ <= base::TimeDelta()) {
     session_duration_ = kDefaultSessionDuration;
   }
+
+  UpdateSelectedTaskFromUserPrefs();
+}
+
+void FocusModeController::UpdateSelectedTaskFromUserPrefs() {
+  PrefService* active_user_prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!active_user_prefs) {
+    // Can be null in tests.
+    return;
+  }
+
+  // Get the selected task from the dict and also update `selected_task_` if
+  // there is a task.
+  const auto selected_task_dict =
+      active_user_prefs->GetDict(prefs::kFocusModeSelectedTask).Clone();
+  selected_task_ = {};
+  if (!selected_task_dict.empty()) {
+    // TODO(b/339914681): call the API to populate the rest of the
+    // `selected_task_` data. This will also verify if the task has already been
+    // completed or not.
+    selected_task_.task_list_id =
+        *(selected_task_dict.FindString(focus_mode_util::kTaskListIdKey));
+    selected_task_.task_id =
+        *(selected_task_dict.FindString(focus_mode_util::kTaskIdKey));
+  }
 }
 
 void FocusModeController::SaveSettingsToUserPrefs() {
@@ -526,6 +558,25 @@ void FocusModeController::SaveSettingsToUserPrefs() {
                                     session_duration_);
     active_user_prefs->SetBoolean(prefs::kFocusModeDoNotDisturb,
                                   turn_on_do_not_disturb_);
+    SaveSelectedTaskSettingsToUserPrefs();
+  }
+}
+
+void FocusModeController::SaveSelectedTaskSettingsToUserPrefs() {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    base::Value::Dict selected_task_dict;
+
+    // If there is a `selected_task_`, we will save its `task_list_id` and
+    // `task_id`; otherwise, we will store an empty dict.
+    if (HasSelectedTask()) {
+      selected_task_dict.Set(focus_mode_util::kTaskListIdKey,
+                             selected_task_.task_list_id);
+      selected_task_dict.Set(focus_mode_util::kTaskIdKey,
+                             selected_task_.task_id);
+    }
+    active_user_prefs->SetDict(prefs::kFocusModeSelectedTask,
+                               std::move(selected_task_dict));
   }
 }
 

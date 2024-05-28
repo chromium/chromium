@@ -339,6 +339,7 @@ enum {
   kDisplayAmbientLightSensorLastEnabled = 100280,
   kAccessibilityMainNodeAnnotationsEnabled = 100281,
   kSyncableVersionedWallpaperInfo = 100282,
+  kFocusModeSelectedTask = 100283,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -714,6 +715,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kFocusModeSessionDuration,
      {syncable_prefs_ids::kFocusModeSessionDuration, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kFocusModeSelectedTask,
+     {syncable_prefs_ids::kFocusModeSelectedTask, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kKeyboardDefaultChromeOSSettings,
