@@ -250,6 +250,8 @@ class FirmwareUpdateManagerTest : public testing::Test {
         .WillRepeatedly(
             Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
 
+    // Create a fake response for the call to SetFeatureFlags.
+    dbus_responses_.push_back(dbus::Response::CreateEmpty());
     FwupdClient::Initialize(bus_.get());
     dbus_client_ = FwupdClient::Get();
     fake_fwupd_download_client_ = std::make_unique<FakeFwupdDownloadClient>();
