@@ -230,8 +230,11 @@ blink_mac_builder(
             "remoteexec",
             "chrome_with_codecs",
             "minimal_symbols",
+            "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
 )
 
 blink_mac_builder(
