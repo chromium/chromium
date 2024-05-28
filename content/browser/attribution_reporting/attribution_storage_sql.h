@@ -133,15 +133,15 @@ class CONTENT_EXPORT AttributionStorageSql {
   std::optional<AttributionReport> GetReport(AttributionReport::Id);
   std::vector<StoredSource> GetActiveSources(int limit = -1);
   std::set<AttributionDataModel::DataKey> GetAllDataKeys();
-  void DeleteByDataKey(const AttributionDataModel::DataKey& datakey);
   bool DeleteReport(AttributionReport::Id report_id);
   bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                   base::Time new_report_time);
   std::optional<base::Time> AdjustOfflineReportTimes();
-  void ClearData(base::Time delete_begin,
-                 base::Time delete_end,
-                 StoragePartition::StorageKeyMatcherFunction filter,
-                 bool delete_rate_limit_data);
+  void ClearAllDataAllTime(bool delete_rate_limit_data);
+  void ClearDataWithFilter(base::Time delete_begin,
+                           base::Time delete_end,
+                           StoragePartition::StorageKeyMatcherFunction filter,
+                           bool delete_rate_limit_data);
   void SetDelegate(AttributionResolverDelegate*);
 
  private:
@@ -174,9 +174,6 @@ class CONTENT_EXPORT AttributionStorageSql {
     // Do not create the db if it does not exist.
     kIgnoreIfAbsent,
   };
-
-  void ClearAllDataAllTime(bool delete_rate_limit_data)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deactivates the given sources. Returns false on error.
   [[nodiscard]] bool DeactivateSources(

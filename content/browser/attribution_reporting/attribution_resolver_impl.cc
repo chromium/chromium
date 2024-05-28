@@ -7,11 +7,15 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -71,7 +75,11 @@ AttributionResolverImpl::GetAllDataKeys() {
 void AttributionResolverImpl::DeleteByDataKey(
     const AttributionDataModel::DataKey& datakey) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  storage_.DeleteByDataKey(datakey);
+  ClearData(base::Time::Min(), base::Time::Max(),
+            base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                                blink::StorageKey::CreateFirstParty(
+                                    datakey.reporting_origin())),
+            /*delete_rate_limit_data=*/true);
 }
 
 bool AttributionResolverImpl::DeleteReport(AttributionReport::Id report_id) {
@@ -97,8 +105,19 @@ void AttributionResolverImpl::ClearData(
     StoragePartition::StorageKeyMatcherFunction filter,
     bool delete_rate_limit_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  storage_.ClearData(delete_begin, delete_end, std::move(filter),
-                     delete_rate_limit_data);
+  SCOPED_UMA_HISTOGRAM_TIMER("Conversions.ClearDataTime");
+
+  if (filter.is_null() && (delete_begin.is_null() || delete_begin.is_min()) &&
+      delete_end.is_max()) {
+    storage_.ClearAllDataAllTime(delete_rate_limit_data);
+    return;
+  }
+
+  // Measure the time it takes to perform a clear with a filter separately from
+  // the above histogram.
+  SCOPED_UMA_HISTOGRAM_TIMER("Conversions.Storage.ClearDataWithFilterDuration");
+  storage_.ClearDataWithFilter(delete_begin, delete_end, std::move(filter),
+                               delete_rate_limit_data);
 }
 
 void AttributionResolverImpl::SetDelegate(

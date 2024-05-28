@@ -1898,7 +1898,7 @@ std::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes() {
   return GetNextReportTime(base::Time::Min());
 }
 
-void AttributionStorageSql::ClearData(
+void AttributionStorageSql::ClearDataWithFilter(
     base::Time delete_begin,
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter,
@@ -1907,17 +1907,6 @@ void AttributionStorageSql::ClearData(
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
     return;
   }
-
-  SCOPED_UMA_HISTOGRAM_TIMER("Conversions.ClearDataTime");
-  if (filter.is_null() && (delete_begin.is_null() || delete_begin.is_min()) &&
-      delete_end.is_max()) {
-    ClearAllDataAllTime(delete_rate_limit_data);
-    return;
-  }
-
-  // Measure the time it takes to perform a clear with a filter separately from
-  // the above histogram.
-  SCOPED_UMA_HISTOGRAM_TIMER("Conversions.Storage.ClearDataWithFilterDuration");
 
   // Delete the data in a transaction to avoid cases where the source part
   // of a report is deleted without deleting the associated report, or
@@ -1987,6 +1976,11 @@ void AttributionStorageSql::ClearData(
 }
 
 void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
+    return;
+  }
+
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return;
@@ -3319,14 +3313,6 @@ AttributionStorageSql::GetAllDataKeys() {
   return keys;
 }
 
-void AttributionStorageSql::DeleteByDataKey(
-    const AttributionDataModel::DataKey& key) {
-  ClearData(base::Time::Min(), base::Time::Max(),
-            base::BindRepeating(
-                std::equal_to<blink::StorageKey>(),
-                blink::StorageKey::CreateFirstParty(key.reporting_origin())),
-            /*delete_rate_limit_data=*/true);
-}
 
 void AttributionStorageSql::SetDelegate(AttributionResolverDelegate* delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
