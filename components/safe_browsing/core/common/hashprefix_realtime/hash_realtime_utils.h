@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -66,9 +65,7 @@ struct HashRealTimeSelectionConfiguringPrefs {
 };
 
 // Returns whether the |url| is eligible for hash-prefix real-time checks.
-// It's never eligible if the |request_destination| is not mainframe.
-bool CanCheckUrl(const GURL& url,
-                 network::mojom::RequestDestination request_destination);
+bool CanCheckUrl(const GURL& url);
 
 // Returns whether the full hash detail is relevant for hash-prefix real-time
 // lookups.

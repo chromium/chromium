@@ -2527,16 +2527,6 @@ chromium-metrics-reviews@google.com.
   <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.RequestDestinations.Requested"
-    enum="RequestDestination" expires_after="2024-09-22">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the request destination that was requested to be checked by Safe
-    Browsing real time URL lookup. Logged on each resource check.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.RT.Response.VerdictType.{UserPopulation}"
     enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2024-10-13">
   <owner>zackhan@chromium.org</owner>

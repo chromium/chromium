@@ -31,13 +31,11 @@ bool HasGoogleChromeBranding() {
 }
 }  // namespace
 
-bool CanCheckUrl(const GURL& url,
-                 network::mojom::RequestDestination request_destination) {
+bool CanCheckUrl(const GURL& url) {
   bool can_check_reputation = CanGetReputationOfUrl(url);
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.CanGetReputationOfUrl",
                             can_check_reputation);
-  return request_destination == network::mojom::RequestDestination::kDocument &&
-         can_check_reputation;
+  return can_check_reputation;
 }
 
 bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail) {

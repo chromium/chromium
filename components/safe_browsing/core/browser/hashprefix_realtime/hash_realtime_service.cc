@@ -24,7 +24,6 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -165,13 +164,11 @@ HashRealTimeService::HashRealTimeService(
 HashRealTimeService::~HashRealTimeService() = default;
 
 // static
-bool HashRealTimeService::CanCheckUrl(
-    const GURL& url,
-    network::mojom::RequestDestination request_destination) {
+bool HashRealTimeService::CanCheckUrl(const GURL& url) {
   if (VerdictCacheManager::has_artificial_cached_url()) {
     return true;
   }
-  return hash_realtime_utils::CanCheckUrl(url, request_destination);
+  return hash_realtime_utils::CanCheckUrl(url);
 }
 
 HashRealTimeService::SBThreatInfo::SBThreatInfo(SBThreatType threat_type,

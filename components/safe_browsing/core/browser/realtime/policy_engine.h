@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 
 class PrefService;
 
@@ -34,12 +33,6 @@ class RealTimePolicyEngine {
   // CanPerformFullURLLookupWithToken().
   using ClientConfiguredForTokenFetchesCallback =
       base::OnceCallback<bool(bool user_has_enabled_enhanced_protection)>;
-
-  // Return true if full URL lookups are enabled for |request_destination|.
-  // TODO(crbug.com/324108312): Remove this function as part of the cleanup
-  // after subresource checks are disabled.
-  static bool CanPerformFullURLLookupForRequestDestination(
-      network::mojom::RequestDestination request_destination);
 
   // Return true if the profile is not Incognito and real-time fetches are
   // available in the user's country, and the user has opted in to ESB or MBB.

@@ -520,16 +520,14 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
         PerformedCheck::kCheckSkipped);
   } else if (hash_realtime_selection_ ==
                  HashRealTimeSelection::kHashRealTimeService &&
-             HashRealTimeService::CanCheckUrl(
-                 url, network::mojom::RequestDestination::kDocument)) {
+             HashRealTimeService::CanCheckUrl(url)) {
     performed_check = PerformedCheck::kHashRealTimeCheck;
     lookup_mechanism = std::make_unique<HashRealTimeMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
         ui_task_runner_, hash_realtime_service_on_ui_);
   } else if (hash_realtime_selection_ ==
                  HashRealTimeSelection::kDatabaseManager &&
-             hash_realtime_utils::CanCheckUrl(
-                 url, network::mojom::RequestDestination::kDocument)) {
+             hash_realtime_utils::CanCheckUrl(url)) {
     performed_check = PerformedCheck::kHashRealTimeCheck;
     lookup_mechanism = std::make_unique<DatabaseManagerMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
@@ -628,8 +626,6 @@ bool SafeBrowsingUrlCheckerImpl::RunNextCallbackAndMaybeDeleteSelf(
 
 bool SafeBrowsingUrlCheckerImpl::CanPerformFullURLLookup(const GURL& url) {
   return url_real_time_lookup_enabled_ &&
-         RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
-             network::mojom::RequestDestination::kDocument) &&
          RealTimeUrlLookupServiceBase::CanCheckUrl(url);
 }
 

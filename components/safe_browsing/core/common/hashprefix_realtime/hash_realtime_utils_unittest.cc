@@ -26,20 +26,14 @@ TEST(HashRealTimeUtilsTest, TestGetHashPrefix) {
 }
 
 TEST(HashRealTimeUtilsTest, TestCanCheckUrl) {
-  auto can_check_url =
-      [](std::string url,
-         network::mojom::RequestDestination request_destination =
-             network::mojom::RequestDestination::kDocument) {
-        EXPECT_TRUE(GURL(url).is_valid());
-        return hash_realtime_utils::CanCheckUrl(GURL(url), request_destination);
-      };
+  auto can_check_url = [](std::string url) {
+    EXPECT_TRUE(GURL(url).is_valid());
+    return hash_realtime_utils::CanCheckUrl(GURL(url));
+  };
   // Yes: HTTPS and main-frame URL.
   EXPECT_TRUE(can_check_url("https://example.test/path"));
   // Yes: HTTP and main-frame URL.
   EXPECT_TRUE(can_check_url("http://example.test/path"));
-  // No: It's not a mainframe URL.
-  EXPECT_FALSE(can_check_url("https://example.test/path",
-                             network::mojom::RequestDestination::kFrame));
   // No: The URL scheme is not HTTP/HTTPS.
   EXPECT_FALSE(can_check_url("ftp://example.test/path"));
   // No: It's localhost.
