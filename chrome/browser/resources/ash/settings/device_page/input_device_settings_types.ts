@@ -191,6 +191,12 @@ export interface KeyboardBrightnessObserverInterface {
   onKeyboardBrightnessChanged(percent: number): void;
 }
 
+export interface KeyboardAmbientLightSensorObserverInterface {
+  // Fired when the keyboard ambient light sensor is changed.
+  onKeyboardAmbientLightSensorEnabledChanged(keyboardAmbientLightSensorEnabled:
+                                                 boolean): void;
+}
+
 export type ButtonPressObserverInterface =
     InputDeviceSettingsProviderTypes.ButtonPressObserverInterface;
 

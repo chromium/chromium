@@ -76,6 +76,15 @@ interface KeyboardBrightnessObserver {
   OnKeyboardBrightnessChanged(double brightness_percent);
 };
 
+// Interface for observing keyboard ambient light sensor settings changes in
+// OSSettings SWA.
+interface KeyboardAmbientLightSensorObserver {
+  // OnKeyboardAmbientLightSensorEnabledChanged calls are triggered when the
+  // keyboard ambient light sensor is enabled or disabled.
+  OnKeyboardAmbientLightSensorEnabledChanged(
+    bool keyboard_ambient_light_sensor_enabled);
+};
+
 // Interface for fetching and configuring input device settings in OSSettings.
 interface InputDeviceSettingsProvider {
   // Registers an observer which will be notified every time
@@ -116,6 +125,11 @@ interface InputDeviceSettingsProvider {
   // current state via its OnKeyboardBrightnessChanged function.
   ObserveKeyboardBrightness(
       pending_remote<KeyboardBrightnessObserver> observer);
+
+  // Registers an observer for keyboard ambient light sensor changes and
+  // returns whether the keyboard ambient light sensor is currently enabled.
+  ObserveKeyboardAmbientLightSensor(
+    pending_remote<KeyboardAmbientLightSensorObserver> observer);
 
   // Restore the keyboard remappings to default based on its id.
   RestoreDefaultKeyboardRemappings(uint32 device_id);
