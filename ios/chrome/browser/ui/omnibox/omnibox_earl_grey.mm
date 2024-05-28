@@ -93,4 +93,19 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   }
 }
 
+- (id<GREYMatcher>)isURLMatcher {
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    return [OmniboxAppInterface isElementURL:element];
+  };
+  NSString* descriptionString =
+      [NSString stringWithFormat:@"Element is a valid URL."];
+  GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
+    [description appendText:descriptionString];
+  };
+  id<GREYMatcher> URLMatcher =
+      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                           descriptionBlock:describe];
+  return URLMatcher;
+}
+
 @end

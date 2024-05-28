@@ -45,6 +45,10 @@ class EmbeddedTestServer;
 // N = `shortcutCount`.
 - (void)addShorcuts:(NSUInteger)shortcutCount
        toTestServer:(net::test_server::EmbeddedTestServer*)testServer;
+
+/// Returns a matcher for a valid URL.
+- (id<GREYMatcher>)isURLMatcher;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EARL_GREY_H_

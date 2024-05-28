@@ -1,0 +1,31 @@
+[
+    [
+      "Title 1",
+      [
+        "Title 1",
+      ],
+      [
+        ""
+      ],
+      [],
+      {
+        "google:clientdata": {
+          "bpc": false,
+          "tlw": false
+        },
+        "google:suggestdetail": [
+          {}
+        ],
+        "google:suggestrelevance": [
+          1253
+        ],
+        "google:suggestsubtypes": [
+          []
+        ],
+        "google:suggesttype": [
+          "QUERY"
+        ],
+        "google:verbatimrelevance": 1300
+      }
+  ],
+]

@@ -37,6 +37,9 @@
 // Returns the number of suggestions in the shortcuts database.
 + (NSInteger)numberOfShortcutsInDatabase;
 
+// Returns YES if `element` or `element.text` is a valid URL.
++ (BOOL)isElementURL:(id)element;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_APP_INTERFACE_H_
