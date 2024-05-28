@@ -586,6 +586,10 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
     EXPECT_TRUE(extension_pb->has_blocklist_state());
     EXPECT_EQ(extension_pb->blocklist_state(), ExtensionInfo::NOT_BLOCKLISTED);
 
+    EXPECT_TRUE(extension_pb->has_telemetry_blocklist_state());
+    EXPECT_EQ(extension_pb->telemetry_blocklist_state(),
+              ExtensionInfo::NOT_BLOCKLISTED);
+
     EXPECT_TRUE(extension_pb->has_disable_reasons());
     EXPECT_EQ(extension_pb->disable_reasons(), static_cast<uint32_t>(0));
   }
@@ -663,6 +667,21 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
     std::unique_ptr<ExtensionInfo> extension_pb = GetExtensionInfo(*extension);
     EXPECT_EQ(extension_pb->blocklist_state(),
               ExtensionInfo::BLOCKLISTED_SECURITY_VULNERABILITY);
+  }
+
+  {
+    // Test changing the telemetry blocklist state.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("blocklist")
+            .SetLocation(ManifestLocation::kInternal)
+            .Build();
+    add_extension(extension.get());
+    extensions::blocklist_prefs::SetExtensionTelemetryServiceBlocklistState(
+        extension->id(), extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE,
+        extension_prefs_);
+    std::unique_ptr<ExtensionInfo> extension_pb = GetExtensionInfo(*extension);
+    EXPECT_EQ(extension_pb->telemetry_blocklist_state(),
+              ExtensionInfo::BLOCKLISTED_MALWARE);
   }
 }
 

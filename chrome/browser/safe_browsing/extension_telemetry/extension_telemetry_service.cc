@@ -225,12 +225,8 @@ ExtensionInfo::InstallLocation GetInstallLocation(ManifestLocation location) {
   return ExtensionInfo::UNKNOWN_LOCATION;
 }
 
-ExtensionInfo::BlocklistState GetBlocklistState(
-    const extensions::ExtensionId extension_id,
-    extensions::ExtensionPrefs* extension_prefs) {
-  extensions::BitMapBlocklistState state =
-      extensions::blocklist_prefs::GetExtensionBlocklistState(extension_id,
-                                                              extension_prefs);
+ExtensionInfo::BlocklistState BitMapBlocklistStateToExtensionInfoBlocklistState(
+    const extensions::BitMapBlocklistState& state) {
   switch (state) {
     case extensions::BitMapBlocklistState::NOT_BLOCKLISTED:
       return ExtensionInfo::NOT_BLOCKLISTED;
@@ -245,6 +241,24 @@ ExtensionInfo::BlocklistState GetBlocklistState(
     default:
       return ExtensionInfo::BLOCKLISTED_UNKNOWN;
   }
+}
+
+ExtensionInfo::BlocklistState GetBlocklistState(
+    const extensions::ExtensionId extension_id,
+    extensions::ExtensionPrefs* extension_prefs) {
+  extensions::BitMapBlocklistState state =
+      extensions::blocklist_prefs::GetExtensionBlocklistState(extension_id,
+                                                              extension_prefs);
+  return BitMapBlocklistStateToExtensionInfoBlocklistState(state);
+}
+
+ExtensionInfo::BlocklistState GetExtensionTelemetryServiceBlocklistState(
+    const extensions::ExtensionId extension_id,
+    extensions::ExtensionPrefs* extension_prefs) {
+  extensions::BitMapBlocklistState state =
+      extensions::blocklist_prefs::GetExtensionTelemetryServiceBlocklistState(
+          extension_id, extension_prefs);
+  return BitMapBlocklistStateToExtensionInfoBlocklistState(state);
 }
 
 extensions::BlocklistState ConvertTelemetryResponseVerdictToBlocklistState(
@@ -1158,6 +1172,9 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
       GetInstallLocation(extension.location()));
   extension_info->set_blocklist_state(
       GetBlocklistState(extension.id(), extension_prefs_));
+  extension_info->set_telemetry_blocklist_state(
+      GetExtensionTelemetryServiceBlocklistState(extension.id(),
+                                                 extension_prefs_));
   extension_info->set_disable_reasons(
       extension_prefs_->GetDisableReasons(extension.id()));
 
