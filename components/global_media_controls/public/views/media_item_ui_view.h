@@ -76,6 +76,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
 
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // views::FocusChangeListener:
   void OnWillChangeFocus(views::View* focused_before,

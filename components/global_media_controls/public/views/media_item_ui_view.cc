@@ -41,14 +41,11 @@ namespace global_media_controls {
 namespace {
 
 constexpr int kWidth = 400;
-constexpr gfx::Size kNormalSize = gfx::Size(kWidth, 100);
-constexpr gfx::Size kExpandedSize = gfx::Size(kWidth, 150);
 constexpr gfx::Size kDismissButtonSize = gfx::Size(30, 30);
 constexpr int kDismissButtonIconSize = 20;
 constexpr int kDismissButtonBackgroundRadius = 15;
 constexpr gfx::Size kCrOSDismissButtonSize = gfx::Size(20, 20);
 constexpr int kCrOSDismissButtonIconSize = 12;
-constexpr int kDeviceSelectorSeparatorHeight = 22;
 constexpr gfx::Insets kSwipeableContainerInsets =
     gfx::Insets::TLBR(4, 16, 8, 16);
 
@@ -143,7 +140,6 @@ MediaItemUIView::MediaItemUIView(
     // Focus behavior will be set inside MediaItemUIDetailedView.
     SetFocusBehavior(views::View::FocusBehavior::NEVER);
 
-    SetPreferredSize(kCrOSMediaItemUpdatedUISize);
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     view_ = swipeable_container_->AddChildView(
@@ -190,7 +186,6 @@ MediaItemUIView::MediaItemUIView(
         std::u16string(), kWidth, /*should_show_icon=*/false,
         notification_theme);
     UpdateFooterView(std::move(footer_view));
-    SetPreferredSize(kNormalSize);
 
     view_ = swipeable_container_->AddChildView(std::move(view));
     UpdateDeviceSelector(std::move(device_selector_view));
@@ -230,6 +225,12 @@ void MediaItemUIView::OnGestureEvent(ui::GestureEvent* event) {
   if (scroll_view_ && event->IsScrollGestureEvent()) {
     scroll_view_->OnGestureEvent(event);
   }
+}
+
+gfx::Size MediaItemUIView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(
+      kWidth, GetLayoutManager()->GetPreferredHeightForWidth(this, kWidth));
 }
 
 void MediaItemUIView::OnDidChangeFocus(views::View* focused_before,
@@ -468,31 +469,9 @@ void MediaItemUIView::ContainerClicked(bool activate_original_media) {
 }
 
 void MediaItemUIView::OnSizeChanged() {
-  gfx::Size new_size;
-  if (use_updated_ui_) {
-    new_size = kCrOSMediaItemUpdatedUISize;
-  } else {
-    new_size = is_expanded_ ? kExpandedSize : kNormalSize;
-  }
-
-  // |new_size| does not contain the height for the device selector view.
-  // If this view is present, we should query it for its preferred height and
-  // include that in |new_size|.
   if (device_selector_view_) {
-    auto device_selector_view_size =
-        device_selector_view_->GetPreferredSize({});
-    CHECK(device_selector_view_size.width() == kWidth);
-    if (device_selector_view_size.height() > 0) {
-      new_size.set_height(new_size.height() +
-                          device_selector_view_size.height());
-      if (use_updated_ui_) {
-        new_size.set_height(new_size.height() + kDeviceSelectorSeparatorHeight);
-      }
-    }
     view_->UpdateDeviceSelectorVisibility(device_selector_view_->GetVisible());
   }
-
-  SetPreferredSize(new_size);
 
   for (auto& observer : observers_)
     observer.OnMediaItemUISizeChanged();
