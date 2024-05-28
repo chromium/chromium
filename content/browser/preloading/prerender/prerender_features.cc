@@ -41,4 +41,10 @@ BASE_FEATURE(kPrerender2EmbedderBlockedHosts,
 const base::FeatureParam<std::string> kPrerender2EmbedderBlockedHostsParam{
     &kPrerender2EmbedderBlockedHosts, "embedder_blocked_hosts", ""};
 
+// Enables fallback from prerender to prefetch for Speculation Rules.
+// See https://crbug.com/342089123 for more details.
+BASE_FEATURE(kPrerender2FallbackPrefetchSpecRules,
+             "Prerender2FallbackPrefetchSpecRules",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
