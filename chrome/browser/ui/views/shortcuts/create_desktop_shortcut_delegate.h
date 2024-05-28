@@ -35,6 +35,7 @@ class CreateDesktopShortcutDelegate : public ui::DialogModelDelegate,
                                       public content::WebContentsObserver {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateShortcutDialogOkButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateShortcutDialogTitleFieldId);
 
   CreateDesktopShortcutDelegate(content::WebContents* web_contents,
                                 CreateShortcutDialogCallback final_callback);

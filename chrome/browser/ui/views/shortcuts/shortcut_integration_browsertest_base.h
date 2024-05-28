@@ -1,0 +1,111 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_BROWSERTEST_BASE_H_
+#define CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_BROWSERTEST_BASE_H_
+
+#include <memory>
+#include <string>
+
+#include "base/base_paths.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
+
+namespace shortcuts {
+
+class ShortcutIntegrationBrowserTestPrivate;
+
+// API class that provides both base browser Kombucha functionality and
+// additional logic to facilitate writing tests for the "Create Shortcut"
+// feature.
+class ShortcutIntegrationBrowserTestApi : public InteractiveBrowserTestApi {
+ public:
+  ShortcutIntegrationBrowserTestApi();
+  ~ShortcutIntegrationBrowserTestApi() override;
+
+  // Triggers the "create shortcut" dialog and waits for the dialog to show.
+  MultiStep ShowCreateShortcutDialog();
+
+  // Triggers and accepts the "create shortcut" dialog.
+  MultiStep ShowAndAcceptCreateShortcutDialog();
+
+  // Same as `ShowAndAcceptCreateShortcutDialog()`, but sets the title in the
+  // dialog to `title` before accepting the dialog.
+  MultiStep ShowCreateShortcutDialogSetTitleAndAccept(
+      const std::u16string& title);
+
+  // Gives the next shortcut to be created an identifier, to allow interacting
+  // with it in subsequent steps. Make sure to not trigger a second copy of this
+  // step until the shortcut for the first copy has been created.
+  StepBuilder InstrumentNextShortcut(ui::ElementIdentifier identifier);
+
+  // Waits for the create shortcut dialog to signal creation (or failure to
+  // create) of a shortcut.
+  // Waiting for a instrumented "next" shortcut to be shown has almost the same
+  // effect, except that writing shortcuts to disk is not an atomic operation,
+  // so sometimes that could result in working with a shortcut that isn't fully
+  // written yet.
+  // TODO(https://crbug.com/343247628): Make it so that a newly created shortcut
+  // is not "shown" until the shortcut is actually fully written to disk.
+  StepBuilder WaitForShortcutCreated();
+
+  // Launches the given shortcut.
+  StepBuilder LaunchShortcut(ui::ElementIdentifier identifier);
+
+  // Gets the path from a tracked element as identified by
+  // `InstrumentNextShortcut`. Can for example be used with `CheckElement()` to
+  // check properties of the shortcut.
+  static base::FilePath GetShortcutPath(ui::TrackedElement* element);
+
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kShortcutsNotApps};
+
+  ShortcutIntegrationBrowserTestPrivate& test_impl();
+};
+
+// Template for adding ShortcutIntegrationBrowserTestApi to any test fixture
+// which is derived from InProcessBrowserTest.
+//
+// If you don't need to derive from some existing test class, prefer to use
+// ShortcutIntegrationBrowserTestBase.
+template <typename T>
+  requires std::derived_from<T, InProcessBrowserTest>
+class ShortcutIntegrationBrowserTestT
+    : public T,
+      public ShortcutIntegrationBrowserTestApi {
+ public:
+  template <typename... Args>
+  explicit ShortcutIntegrationBrowserTestT(Args&&... args)
+      : T(std::forward<Args>(args)...) {}
+
+  ~ShortcutIntegrationBrowserTestT() override = default;
+
+ protected:
+  void SetUpOnMainThread() override {
+    T::SetUpOnMainThread();
+    private_test_impl().DoTestSetUp();
+    if (Browser* browser = T::browser()) {
+      SetContextWidget(
+          BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
+    }
+    ASSERT_TRUE(T::embedded_https_test_server().Start());
+  }
+
+  void TearDownOnMainThread() override {
+    private_test_impl().DoTestTearDown();
+    T::TearDownOnMainThread();
+  }
+};
+
+// Convenience test fixture for shortcut integration tests. This is the
+// preferred base class for Kombucha tests unless you specifically need
+// something else.
+using ShortcutIntegrationBrowserTestBase =
+    ShortcutIntegrationBrowserTestT<InProcessBrowserTest>;
+
+}  // namespace shortcuts
+
+#endif  // CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_BROWSERTEST_BASE_H_

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "ui/base/interaction/element_tracker.h"
 
 namespace content {
 class WebContents;
@@ -40,6 +41,11 @@ void CreateShortcutForWebContents(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool shortcuts_created)>
         shortcut_creation_callback);
+
+// This event is sent for the BrowserView the create shortcut dialog was
+// created for upon completion of the created shortcut flow. When this event
+// fires creating the shortcut has either completed or failed.
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kShortcutCreatedEvent);
 
 }  // namespace shortcuts
 
