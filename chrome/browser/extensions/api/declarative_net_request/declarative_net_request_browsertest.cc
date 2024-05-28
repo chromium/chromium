@@ -199,8 +199,8 @@ class DeclarativeNetRequestBrowserTest
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/
         {// TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid
-         // having to disable this feature.
-         features::kHttpsUpgrades});
+         // having to disable these features.
+         features::kHttpsUpgrades, features::kHttpsFirstModeIncognito});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
   }
 

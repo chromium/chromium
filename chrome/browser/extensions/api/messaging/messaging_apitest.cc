@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -856,6 +857,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 // TODO(kalman): test messages from incognito extensions too.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIncognitoDenyApp) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.chromium.org"},
+                                                   profile()->GetPrefs());
+
   scoped_refptr<const Extension> app = LoadChromiumConnectableApp();
   ASSERT_TRUE(app->is_platform_app());
 
@@ -894,6 +899,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIncognitoDenyExtensionAndApp) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.chromium.org"},
+                                                   profile()->GetPrefs());
+
   scoped_refptr<const Extension> extension = LoadChromiumConnectableExtension();
   EXPECT_FALSE(util::IsIncognitoEnabled(extension->id(), profile()));
 
@@ -947,6 +956,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 // handler for the connection event.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIncognitoNoEventHandlerInApp) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.chromium.org"},
+                                                   profile()->GetPrefs());
+
   scoped_refptr<const Extension> app = LoadChromiumConnectableApp(false);
   ASSERT_TRUE(app->is_platform_app());
 
@@ -978,6 +991,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 // TODO(kalman): see comment above about split mode.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIncognitoAllowApp) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.chromium.org"},
+                                                   profile()->GetPrefs());
+
   scoped_refptr<const Extension> app = LoadChromiumConnectableApp();
   ASSERT_TRUE(app->is_platform_app());
 
@@ -1091,6 +1108,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, IllegalArguments) {
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIncognitoAllowExtension) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.chromium.org"},
+                                                   profile()->GetPrefs());
+
   scoped_refptr<const Extension> extension = LoadChromiumConnectableExtension();
   EXPECT_FALSE(util::IsIncognitoEnabled(extension->id(), profile()));
 

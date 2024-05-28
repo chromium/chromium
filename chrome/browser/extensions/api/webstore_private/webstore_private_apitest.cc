@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"  // nogncheck
 #include "chrome/browser/ui/browser.h"
@@ -255,6 +256,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, AppInstallBubble) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IsInIncognitoMode) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.example.com"},
+                                                   profile()->GetPrefs());
+
   GURL page_url = GetTestServerURL("incognito.html");
   ASSERT_TRUE(OpenTestURL(page_url, /*open_in_incognito=*/true));
 }

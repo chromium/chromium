@@ -310,6 +310,9 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiPrerenderTestWithContextType, GetFrame) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, GetFrameIncognito) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"a.com"},
+                                                   profile()->GetPrefs());
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   GURL url = embedded_test_server()->GetURL("a.com", "/empty.html");

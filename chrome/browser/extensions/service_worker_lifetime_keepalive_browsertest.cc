@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
@@ -104,7 +106,10 @@ using service_worker_test_utils::TestServiceWorkerContextObserver;
 
 class ServiceWorkerLifetimeKeepaliveBrowsertest : public ExtensionApiTest {
  public:
-  ServiceWorkerLifetimeKeepaliveBrowsertest() = default;
+  ServiceWorkerLifetimeKeepaliveBrowsertest() {
+    // TODO(crbug.com/40937027): Convert test to use HTTPS and then re-enable.
+    feature_list_.InitAndDisableFeature(features::kHttpsFirstModeIncognito);
+  }
 
   ServiceWorkerLifetimeKeepaliveBrowsertest(
       const ServiceWorkerLifetimeKeepaliveBrowsertest&) = delete;
@@ -143,6 +148,9 @@ class ServiceWorkerLifetimeKeepaliveBrowsertest : public ExtensionApiTest {
 
   base::SimpleTestTickClock tick_clock_opener_;
   base::SimpleTestTickClock tick_clock_receiver_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // The following tests are only relevant on ash.

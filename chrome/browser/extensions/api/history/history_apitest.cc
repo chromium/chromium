@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -232,6 +233,10 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, SearchAfterAdd) {
 // Test when History API is used from incognito mode, it has access to the
 // regular mode history and actual incognito navigation has no effect on it.
 IN_PROC_BROWSER_TEST_P(HistoryApiTest, Incognito) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.b.com"},
+                                                   profile()->GetPrefs());
+
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Setup.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());

@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
+#include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -68,6 +69,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
@@ -1622,7 +1624,20 @@ void CaptivePortalBrowserTest::Login(Browser* captive_portal_browser,
   int login_tab_index = tab_strip_model->active_index();
   EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_NONE,
             GetStateOfTabReloaderAt(captive_portal_browser, login_tab_index));
-  ASSERT_TRUE(IsLoginTab(tab_strip_model->GetWebContentsAt(login_tab_index)));
+  content::WebContents* login_tab =
+      tab_strip_model->GetWebContentsAt(login_tab_index);
+  ASSERT_TRUE(IsLoginTab(login_tab));
+
+  // If an HTTP interstitial is showing, click through that first so the login
+  // page is shown. (In testing, one case where this can occur is when
+  // HTTPS-First Mode is enabled in Incognito windows by default.)
+  if (chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          login_tab)) {
+    content::TestNavigationObserver nav_observer(login_tab, 1);
+    std::string javascript = "window.certificateErrorPageController.proceed();";
+    ASSERT_TRUE(content::ExecJs(login_tab, javascript));
+    nav_observer.Wait();
+  }
 
   // Trigger a navigation.
   content::ExecuteScriptAsync(tab_strip_model->GetActiveWebContents(),

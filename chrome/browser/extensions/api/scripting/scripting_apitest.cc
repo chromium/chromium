@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -626,6 +627,10 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
 // Regression test for https://crbug.com/1495191.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
                        PRE_DynamicContentScriptsInjectInIncognito) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"example.com"},
+                                                   profile()->GetPrefs());
+
   // Load up two extensions, one that's allowed in incognito and one that's
   // not.
   const Extension* incognito_allowed =
@@ -671,6 +676,10 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
 
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
                        DynamicContentScriptsInjectInIncognito) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"example.com"},
+                                                   profile()->GetPrefs());
+
   // Repeat the steps of navigating to an on-the-record and off-the-record page
   // to validate injection after a restart. This verifies the incognito bit
   // is properly set when restoring scripts after a restart.

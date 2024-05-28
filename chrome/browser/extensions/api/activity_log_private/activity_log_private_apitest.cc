@@ -7,10 +7,12 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_builder.h"
@@ -31,7 +33,10 @@ namespace extensions {
 
 class ActivityLogApiTest : public ExtensionApiTest {
  public:
-  ActivityLogApiTest() : saved_cmdline_(base::CommandLine::NO_PROGRAM) {}
+  ActivityLogApiTest() : saved_cmdline_(base::CommandLine::NO_PROGRAM) {
+    // TODO(crbug.com/40937027): Convert test to use HTTPS and then re-enable.
+    feature_list_.InitAndDisableFeature(features::kHttpsFirstModeIncognito);
+  }
 
   ~ActivityLogApiTest() override {
     *base::CommandLine::ForCurrentProcess() = saved_cmdline_;
@@ -58,6 +63,7 @@ class ActivityLogApiTest : public ExtensionApiTest {
 
  private:
   base::CommandLine saved_cmdline_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 #if !defined(NDEBUG)

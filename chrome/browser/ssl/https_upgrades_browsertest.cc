@@ -3151,7 +3151,9 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // initialized before browser startup). Used for testing pref tracking logic.
 class HttpsUpgradesPrefsBrowserTest : public InProcessBrowserTest {
  public:
-  HttpsUpgradesPrefsBrowserTest() = default;
+  HttpsUpgradesPrefsBrowserTest() {
+    feature_list_.InitAndDisableFeature(features::kHttpsFirstModeIncognito);
+  }
   ~HttpsUpgradesPrefsBrowserTest() override = default;
 
  protected:

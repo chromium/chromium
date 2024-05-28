@@ -277,7 +277,7 @@ void DnsProbeBrowserTest::SetFakeHostResolverResults(
 void DnsProbeBrowserTest::NavigateToDnsError() {
   ASSERT_TRUE(NavigateToURL(
       active_browser_,
-      URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED)));
+      URLRequestFailedJob::GetMockHttpsUrl(net::ERR_NAME_NOT_RESOLVED)));
 }
 
 void DnsProbeBrowserTest::NavigateToOtherError() {

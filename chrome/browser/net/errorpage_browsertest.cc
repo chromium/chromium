@@ -614,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, Incognito) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser,
-      URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED)));
+      URLRequestFailedJob::GetMockHttpsUrl(net::ERR_NAME_NOT_RESOLVED)));
 
   // Verify that the expected error page is being displayed.
   ExpectDisplayingErrorPage(incognito_browser, net::ERR_NAME_NOT_RESOLVED);
