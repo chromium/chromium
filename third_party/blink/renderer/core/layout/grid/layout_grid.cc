@@ -121,9 +121,16 @@ const MinMaxSizes& LayoutGrid::CachedSubgridMinMaxSizes() const {
   return **cached_subgrid_min_max_sizes_;
 }
 
-void LayoutGrid::SetSubgridMinMaxSizesCache(MinMaxSizes&& min_max_sizes) {
-  cached_subgrid_min_max_sizes_ =
-      MakeGarbageCollected<SubgridMinMaxSizesCache>(std::move(min_max_sizes));
+void LayoutGrid::SetSubgridMinMaxSizesCache(MinMaxSizes&& min_max_sizes,
+                                            const GridLayoutData& layout_data) {
+  cached_subgrid_min_max_sizes_ = MakeGarbageCollected<SubgridMinMaxSizesCache>(
+      std::move(min_max_sizes), layout_data);
+}
+
+bool LayoutGrid::ShouldInvalidateMinMaxSizesCacheFor(
+    const GridLayoutData& layout_data) const {
+  return HasCachedSubgridMinMaxSizes() &&
+         !cached_subgrid_min_max_sizes_->IsValidFor(layout_data);
 }
 
 void LayoutGrid::InvalidateSubgridMinMaxSizesCache() {
