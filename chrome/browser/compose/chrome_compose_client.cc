@@ -38,11 +38,15 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/compose/core/browser/config.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
@@ -75,6 +79,56 @@ std::u16string RemoveLastCharIfInvalid(std::u16string str) {
 
 }  // namespace
 
+// ChromeComposeClient::FieldChangeObserver
+ChromeComposeClient::FieldChangeObserver::FieldChangeObserver(
+    content::WebContents* web_contents)
+    : web_contents_(web_contents) {
+  autofill_managers_observation_.Observe(
+      web_contents, autofill::ScopedAutofillManagersObservation::
+                        InitializationPolicy::kObservePreexistingManagers);
+}
+
+ChromeComposeClient::FieldChangeObserver::~FieldChangeObserver() = default;
+
+void ChromeComposeClient::FieldChangeObserver::OnSuggestionsShown(
+    autofill::AutofillManager& manager) {
+  text_field_change_event_count_ = 0;
+}
+
+void ChromeComposeClient::FieldChangeObserver::OnAfterTextFieldDidChange(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form,
+    autofill::FieldGlobalId field,
+    const std::u16string& text_value) {
+  ++text_field_change_event_count_;
+  if (text_field_change_event_count_ >=
+      compose::GetComposeConfig().nudge_field_change_event_max) {
+    HideComposeNudges();
+    text_field_change_event_count_ = 0;
+  }
+}
+
+void ChromeComposeClient::FieldChangeObserver::HideComposeNudges() {
+  if (autofill::AutofillClient* autofill_client =
+          autofill::ContentAutofillClient::FromWebContents(web_contents_)) {
+    // Only hide open suggestions if they are of compose type.
+    base::span<const autofill::Suggestion> suggestions =
+        autofill_client->GetAutofillSuggestions();
+    if ((suggestions.size() == 1 &&
+         autofill::GetFillingProductFromSuggestionType(suggestions[0].type) ==
+             autofill::FillingProduct::kCompose) ||
+        skip_suggestion_type_for_test_) {
+      autofill_client->HideAutofillSuggestions(
+          autofill::SuggestionHidingReason::kFieldValueChanged);
+    }
+  }
+}
+
+void ChromeComposeClient::FieldChangeObserver::SetSkipSuggestionTypeForTest(
+    bool skip_suggestion_type) {
+  skip_suggestion_type_for_test_ = skip_suggestion_type;
+}
+
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ChromeComposeClient>(*web_contents),
@@ -83,7 +137,8 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
           Profile::FromBrowserContext(GetWebContents().GetBrowserContext())),
       nudge_tracker_(segmentation_platform::SegmentationPlatformServiceFactory::
                          GetForProfile(profile_),
-                     this) {
+                     this),
+      field_change_observer_(web_contents) {
   auto ukm_source_id =
       GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId();
   page_ukm_tracker_ = std::make_unique<compose::PageUkmTracker>(ukm_source_id);

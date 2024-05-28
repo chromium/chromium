@@ -279,6 +279,19 @@ void ProactiveNudgeTracker::OnAfterFocusOnFormField(
   ResetState();
 }
 
+void ProactiveNudgeTracker::OnAfterTextFieldDidChange(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form,
+    autofill::FieldGlobalId field,
+    const std::u16string& text_value) {
+  // Continue to delay the proactive nudge if the current field is being
+  // changed.
+  if (state_ && !state_->timer_complete && state_->timer.IsRunning() &&
+      MatchesCurrentField(form, field)) {
+    state_->timer.Reset();
+  }
+}
+
 bool ProactiveNudgeTracker::SegmentationStateIsValid() {
   return !compose::GetComposeConfig().proactive_nudge_segmentation ||
          segmentation_service_ != nullptr;
