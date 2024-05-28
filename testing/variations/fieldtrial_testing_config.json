@@ -8019,6 +8019,25 @@
             ]
         }
     ],
+    "ExtensionManifestV2Deprecation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_WarningOnly",
+                    "enable_features": [
+                        "ExtensionManifestV2DeprecationWarning"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtensionPageHats": [
         {
             "platforms": [
