@@ -256,7 +256,7 @@ Widget::~Widget() {
 Widget* Widget::CreateWindowWithParent(WidgetDelegate* delegate,
                                        gfx::NativeView parent,
                                        const gfx::Rect& bounds) {
-  Widget::InitParams params;
+  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.delegate = delegate;
   params.parent = parent;
   params.bounds = bounds;
@@ -273,7 +273,7 @@ Widget* Widget::CreateWindowWithParent(std::unique_ptr<WidgetDelegate> delegate,
 Widget* Widget::CreateWindowWithContext(WidgetDelegate* delegate,
                                         gfx::NativeWindow context,
                                         const gfx::Rect& bounds) {
-  Widget::InitParams params;
+  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.delegate = delegate;
   params.context = context;
   params.bounds = bounds;

@@ -264,7 +264,7 @@ class EventCountHandler : public ui::EventHandler {
 
 TEST_F(WidgetTest, WidgetInitParams) {
   // Widgets are not transparent by default.
-  Widget::InitParams init1;
+  Widget::InitParams init1(Widget::InitParams::CLIENT_OWNS_WIDGET);
   EXPECT_EQ(Widget::InitParams::WindowOpacity::kInferred, init1.opacity);
 }
 
@@ -1592,7 +1592,7 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Hide) {
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Init) {
-  Widget::InitParams params;
+  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   EXPECT_DCHECK_DEATH(widget()->Init(std::move(params)));
 }
 

@@ -118,7 +118,8 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
     gfx::NativeWindow context,
     gfx::NativeView parent,
     const gfx::Rect& bounds) {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.delegate = delegate;
   params.bounds = bounds;
   DialogDelegate* dialog = delegate->AsDialogDelegate();

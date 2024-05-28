@@ -114,10 +114,10 @@ class TestTooltipLacros : public Tooltip {
 
 views::Widget* CreateWidget(aura::Window* root) {
   views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.accept_events = true;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
   params.parent = root;
 #endif
