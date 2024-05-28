@@ -7,7 +7,10 @@ import type {CalendarEvent} from 'chrome://new-tab-page/google_calendar.mojom-we
 export function createEvents(num: number): CalendarEvent[] {
   const events: CalendarEvent[] = [];
   for (let i = 0; i < num; i++) {
-    events.push({title: `Test Event ${i}`});
+    events.push({
+      title: `Test Event ${i}`,
+      startTime: {internalValue: 123n},
+    });
   }
   return events;
 }

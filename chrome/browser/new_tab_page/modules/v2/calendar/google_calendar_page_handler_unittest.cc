@@ -89,5 +89,7 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
   EXPECT_EQ(response.size(), 3u);
   for (int i = 0; i < 3; ++i) {
     EXPECT_EQ(response[i]->title, "Calendar Event " + base::NumberToString(i));
+    EXPECT_EQ(response[i]->start_time,
+              base::Time::Now() + base::Minutes(i * 30));
   }
 }

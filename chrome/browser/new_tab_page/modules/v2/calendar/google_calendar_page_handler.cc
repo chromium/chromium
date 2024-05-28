@@ -23,6 +23,7 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(int index) {
   ntp::calendar::mojom::CalendarEventPtr event =
       ntp::calendar::mojom::CalendarEvent::New();
   event->title = "Calendar Event " + base::NumberToString(index);
+  event->start_time = base::Time::Now() + base::Minutes(index * 30);
   return event;
 }
 

@@ -130,6 +130,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Calendar) {
   RunTest("new_tab_page/modules/v2/calendar/calendar_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarEvent) {
+  RunTest("new_tab_page/modules/v2/calendar/calendar_event_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, GoogleCalendarModule) {
   RunTest("new_tab_page/modules/v2/calendar/google_calendar_module_test.js",
           "mocha.run()");

@@ -4,10 +4,14 @@
 
 module ntp.calendar.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // An event from the user's Google Calendar.
 struct CalendarEvent {
   // Title of event.
   string title;
+  // Start time of event.
+  mojo_base.mojom.Time start_time;
 };
 
 // Browser-side handler for requests from NTP Module UI.

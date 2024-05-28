@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 calendar_v2_test_files = [
+  "modules/v2/calendar/calendar_event_test.ts",
   "modules/v2/calendar/calendar_test.ts",
   "modules/v2/calendar/google_calendar_module_test.ts",
   "modules/v2/calendar/outlook_calendar_module_test.ts",
