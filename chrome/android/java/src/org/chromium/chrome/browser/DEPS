@@ -103,9 +103,6 @@ specific_include_rules = {
   "IncognitoNotificationServiceImpl\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "MultiInstanceChromeTabbedActivity\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-  ],
   "MultiInstanceManager\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],

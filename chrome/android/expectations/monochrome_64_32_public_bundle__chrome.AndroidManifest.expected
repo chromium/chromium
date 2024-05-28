@@ -307,14 +307,6 @@
         android:supportsPictureInPicture="true"
         android:theme="@style/Theme.Chromium.Activity">
     </activity>  # DIFF-ANCHOR: d706d96e
-    <activity  # DIFF-ANCHOR: 9023f153
-        android:name="org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation"
-        android:exported="false"
-        android:hardwareAccelerated="false"
-        android:theme="@style/Theme.Chromium.TabbedMode"
-        android:windowSoftInputMode="adjustResize">
-    </activity>  # DIFF-ANCHOR: 9023f153
     <activity  # DIFF-ANCHOR: e86e2b49
         android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$TrampolineActivity"
         android:autoRemoveFromRecents="true"

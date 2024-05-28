@@ -558,12 +558,6 @@ by a child template that "extends" this file.
             {{ self.supports_vr() }}
             {{ self.extra_web_rendering_activity_definitions() }}
         </activity>
-        <activity android:name="org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity"
-            android:theme="@style/Theme.Chromium.TabbedMode"
-            android:exported="false"
-            {{ self.chrome_activity_common() }}>
-            {{ self.extra_web_rendering_activity_definitions() }}
-        </activity>
 
         <!--
             TODO(crbug.com/40698801): investigate why
