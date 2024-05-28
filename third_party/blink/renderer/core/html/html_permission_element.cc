@@ -367,6 +367,16 @@ CascadeFilter HTMLPermissionElement::GetCascadeFilter() const {
   return CascadeFilter(CSSProperty::kValidForPermissionElement, false);
 }
 
+bool HTMLPermissionElement::CanGeneratePseudoElement(PseudoId id) const {
+  switch (id) {
+    case PseudoId::kPseudoIdAfter:
+    case PseudoId::kPseudoIdBefore:
+      return false;
+    default:
+      return Element::CanGeneratePseudoElement(id);
+  }
+}
+
 // static
 Vector<PermissionDescriptorPtr>
 HTMLPermissionElement::ParsePermissionDescriptorsForTesting(
