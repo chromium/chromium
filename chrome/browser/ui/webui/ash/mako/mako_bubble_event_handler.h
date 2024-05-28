@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,6 +25,9 @@ class MakoBubbleEventHandler : public ui::EventHandler {
     virtual const std::optional<SkRegion> GetDraggableRegion() = 0;
     virtual const gfx::Rect GetWidgetBoundsInScreen() = 0;
     virtual void SetWidgetBoundsConstrained(const gfx::Rect bounds) = 0;
+    virtual void SetCursor(const ui::Cursor& cursor) = 0;
+    virtual bool IsDraggingEnabled() = 0;
+    virtual bool IsResizingEnabled() = 0;
   };
 
   struct InitialState {};
@@ -31,7 +35,23 @@ class MakoBubbleEventHandler : public ui::EventHandler {
     gfx::Rect original_bounds_in_screen;
     gfx::Vector2d original_pointer_pos;
   };
-  using State = absl::variant<InitialState, DraggingState>;
+  enum class ResizingDirection {
+    kNone,
+    kTop,
+    kBottom,
+    kLeft,
+    kRight,
+    kTopLeft,
+    kTopRight,
+    kBottomLeft,
+    kBottomRight,
+  };
+  struct ResizingState {
+    ResizingDirection resizing_direction;
+    gfx::Rect original_bounds_in_screen;
+    gfx::Vector2d original_pointer_pos;
+  };
+  using State = absl::variant<InitialState, DraggingState, ResizingState>;
 
   explicit MakoBubbleEventHandler(Delegate* delegate);
 

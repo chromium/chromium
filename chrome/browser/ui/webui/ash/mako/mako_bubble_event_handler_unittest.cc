@@ -43,27 +43,73 @@ class DelegateForTest : public ash::MakoBubbleEventHandler::Delegate {
     widget_bounds = bounds;
   }
 
+  void SetCursor(const ui::Cursor& cursor) override {}
+
+  bool IsDraggingEnabled() override { return true; }
+
+  bool IsResizingEnabled() override { return true; }
+
   bool widget_bounds_updated = false;
   gfx::Rect widget_bounds;
 };
 
+enum EventLocation {
+  DRAGGABLE_REGION,
+  TOP,
+  BOTTOM,
+  LEFT,
+  RIGHT,
+  TOP_LEFT,
+  TOP_RIGHT,
+  BOTTOM_LEFT,
+  BOTTOM_RIGHT,
+  OTHER
+};
+
+gfx::PointF MakeLocation(EventLocation location) {
+  switch (location) {
+    case EventLocation::DRAGGABLE_REGION:
+      return gfx::PointF(150, 150);
+    case EventLocation::TOP:
+      return gfx::PointF(150, 2);
+    case EventLocation::BOTTOM:
+      return gfx::PointF(150, 298);
+    case EventLocation::LEFT:
+      return gfx::PointF(2, 150);
+    case EventLocation::RIGHT:
+      return gfx::PointF(298, 150);
+    case EventLocation::TOP_LEFT:
+      return gfx::PointF(2, 2);
+    case EventLocation::TOP_RIGHT:
+      return gfx::PointF(298, 2);
+    case EventLocation::BOTTOM_LEFT:
+      return gfx::PointF(2, 298);
+    case EventLocation::BOTTOM_RIGHT:
+      return gfx::PointF(298, 298);
+    case EventLocation::OTHER:
+      return gfx::PointF(50, 50);
+    default:
+      return gfx::PointF(0, 0);
+  }
+}
+
 std::unique_ptr<ui::TouchEvent> MakeTouchEvent(ui::EventType type,
-                                               bool in_draggable_region) {
+                                               EventLocation location) {
   return std::make_unique<ui::TouchEvent>(
       /*type=*/type,
       /*location=*/
-      in_draggable_region ? gfx::PointF(150, 150) : gfx::PointF(0, 0),
+      MakeLocation(location),
       /*root_location=*/gfx::PointF(0, 0),
       /*time_stamp=*/base::TimeTicks::Now(),
       /*pointer_details=*/ui::PointerDetails());
 }
 
-std::unique_ptr<ui::MouseEvent> makeMouseEvent(ui::EventType type,
-                                               bool in_draggable_region) {
+std::unique_ptr<ui::MouseEvent> MakeMouseEvent(ui::EventType type,
+                                               EventLocation location) {
   return std::make_unique<ui::MouseEvent>(
       /*type=*/type,
       /*location=*/
-      in_draggable_region ? gfx::PointF(150, 150) : gfx::PointF(0, 0),
+      MakeLocation(location),
       /*root_location=*/gfx::PointF(0, 0),
       /*time_stamp=*/base::TimeTicks::Now(),
       /*flag=*/0,
@@ -83,7 +129,7 @@ class MakoBubbleEventHandlerTest : public ChromeViewsTestBase {
 TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventStartsDragging) {
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
       /*type=*/ui::ET_TOUCH_PRESSED,
-      /*in_draggable_region=*/true);
+      /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnTouchEvent(event.get());
 
@@ -94,7 +140,7 @@ TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventStartsDragging) {
 TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventIsIgnored) {
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
       /*type=*/ui::ET_TOUCH_PRESSED,
-      /*in_draggable_region=*/false);
+      /*location=*/EventLocation::OTHER);
 
   handler_.OnTouchEvent(event.get());
 
@@ -103,9 +149,9 @@ TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventIsIgnored) {
 }
 
 TEST_F(MakoBubbleEventHandlerTest, MousePressedEventStartsDragging) {
-  std::unique_ptr<ui::MouseEvent> event = makeMouseEvent(
+  std::unique_ptr<ui::MouseEvent> event = MakeMouseEvent(
       /*type=*/ui::ET_MOUSE_PRESSED,
-      /*in_draggable_region=*/true);
+      /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnMouseEvent(event.get());
 
@@ -114,9 +160,9 @@ TEST_F(MakoBubbleEventHandlerTest, MousePressedEventStartsDragging) {
 }
 
 TEST_F(MakoBubbleEventHandlerTest, MousePressedEventIsIgnored) {
-  std::unique_ptr<ui::MouseEvent> event = makeMouseEvent(
+  std::unique_ptr<ui::MouseEvent> event = MakeMouseEvent(
       /*type=*/ui::ET_MOUSE_PRESSED,
-      /*in_draggable_region=*/false);
+      /*location=*/EventLocation::OTHER);
 
   handler_.OnMouseEvent(event.get());
 
@@ -139,7 +185,7 @@ TEST_F(MakoBubbleEventHandlerTest, TouchMovedEventProcceedsDragging) {
   });
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
       /*type=*/ui::ET_TOUCH_MOVED,
-      /*in_draggable_region=*/true);
+      /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnTouchEvent(event.get());
 
@@ -155,7 +201,7 @@ TEST_F(MakoBubbleEventHandlerTest, TouchMovedEventIsIgnored) {
   handler_.set_state_for_testing(MakoBubbleEventHandler::InitialState{});
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
       /*type=*/ui::ET_TOUCH_MOVED,
-      /*in_draggable_region=*/true);
+      /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnTouchEvent(event.get());
 
@@ -174,9 +220,9 @@ TEST_F(MakoBubbleEventHandlerTest, MouseDraggedEventProcceedsDragging) {
           /*height=*/300),
       // The original pointer position is relative to screen, so it's 140 + 50.
       .original_pointer_pos = gfx::Vector2d(/*x=*/140 + 50, /*y=*/140 + 50)});
-  std::unique_ptr<ui::MouseEvent> event = makeMouseEvent(
+  std::unique_ptr<ui::MouseEvent> event = MakeMouseEvent(
       /*type=*/ui::ET_MOUSE_DRAGGED,
-      /*in_draggable_region=*/true);
+      /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnMouseEvent(event.get());
 
@@ -190,9 +236,9 @@ TEST_F(MakoBubbleEventHandlerTest, MouseDraggedEventProcceedsDragging) {
 
 TEST_F(MakoBubbleEventHandlerTest, MouseDraggedEventIsIgnored) {
   handler_.set_state_for_testing(MakoBubbleEventHandler::InitialState{});
-  std::unique_ptr<ui::MouseEvent> event = makeMouseEvent(
+  std::unique_ptr<ui::MouseEvent> event = MakeMouseEvent(
       /*type=*/ui::ET_MOUSE_DRAGGED,
-      /*in_draggable_region=*/true);
+      /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnMouseEvent(event.get());
 
@@ -204,7 +250,7 @@ TEST_F(MakoBubbleEventHandlerTest, TouchReleasedEventStopsDragging) {
 
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
       /*type=*/ui::ET_TOUCH_RELEASED,
-      /*in_draggable_region=*/true);
+      /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnTouchEvent(event.get());
 
@@ -215,9 +261,9 @@ TEST_F(MakoBubbleEventHandlerTest, TouchReleasedEventStopsDragging) {
 TEST_F(MakoBubbleEventHandlerTest, MouseReleasedEventStopsDragging) {
   handler_.set_state_for_testing(MakoBubbleEventHandler::DraggingState{});
 
-  std::unique_ptr<ui::MouseEvent> event = makeMouseEvent(
+  std::unique_ptr<ui::MouseEvent> event = MakeMouseEvent(
       /*type=*/ui::ET_MOUSE_RELEASED,
-      /*in_draggable_region=*/true);
+      /*location=*/EventLocation::DRAGGABLE_REGION);
 
   handler_.OnMouseEvent(event.get());
 

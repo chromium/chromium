@@ -82,8 +82,13 @@ void MakoBubbleCoordinator::LoadEditorUI(
                                              "true");
   }
 
+  // With resizing support enabled, we should let web viewport resize according
+  // to dimension of web view rather than updating the dimension of web view
+  // based on inner web content.
+  const bool webui_resizes_host =
+      !base::FeatureList::IsEnabled(ash::features::kOrcaResizingSupport);
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<MakoUntrustedUI>>(
-      url, profile, IDS_ACCNAME_ORCA, /*webui_resizes_host=*/true,
+      url, profile, IDS_ACCNAME_ORCA, webui_resizes_host,
       /*esc_closes_ui=*/false);
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoRewriteView>(contents_wrapper_.get(),
