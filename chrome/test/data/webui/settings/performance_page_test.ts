@@ -226,7 +226,7 @@ suite('PerformancePageImprovements', function() {
         MemorySaverModeAggressiveness.MEDIUM);
   });
 
-  suite('EnterprisePolicy', function() {
+  test('testMemorySaverModeAggressiveness', function() {
     function assertMemorySaverModeAggressivenessPolicyIndicatorExists(
         mode: MemorySaverModeAggressiveness, el: HTMLElement) {
       performancePage.setPrefValue(MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, mode);
@@ -234,28 +234,23 @@ suite('PerformancePageImprovements', function() {
       assertTrue(!!el.shadowRoot!.querySelector('cr-policy-pref-indicator'));
     }
 
-    setup(function() {
-      performancePage.set(`prefs.${MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF}`, {
-        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-        controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
-        type: chrome.settingsPrivate.PrefType.NUMBER,
-        value: MemorySaverModeAggressiveness.MEDIUM,
-      });
+    performancePage.setPrefValue(
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
+    performancePage.set(`prefs.${MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF}`, {
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: MemorySaverModeAggressiveness.MEDIUM,
     });
 
-    test('testMemorySaverModeAggressiveness', function() {
-      performancePage.setPrefValue(
-          MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
+    assertMemorySaverModeAggressivenessPolicyIndicatorExists(
+        MemorySaverModeAggressiveness.CONSERVATIVE, conservativeButton);
 
-      assertMemorySaverModeAggressivenessPolicyIndicatorExists(
-          MemorySaverModeAggressiveness.CONSERVATIVE, conservativeButton);
+    assertMemorySaverModeAggressivenessPolicyIndicatorExists(
+        MemorySaverModeAggressiveness.MEDIUM, mediumButton);
 
-      assertMemorySaverModeAggressivenessPolicyIndicatorExists(
-          MemorySaverModeAggressiveness.MEDIUM, mediumButton);
-
-      assertMemorySaverModeAggressivenessPolicyIndicatorExists(
-          MemorySaverModeAggressiveness.AGGRESSIVE, aggressiveButton);
-    });
+    assertMemorySaverModeAggressivenessPolicyIndicatorExists(
+        MemorySaverModeAggressiveness.AGGRESSIVE, aggressiveButton);
   });
 
   test('testDiscardTingTreatmentChangeState', async function() {
