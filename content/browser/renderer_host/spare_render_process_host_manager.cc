@@ -101,9 +101,9 @@ void SpareRenderProcessHostManager::DeferredWarmupSpareRenderProcessHost(
       base::BindOnce(
           [](SpareRenderProcessHostManager* self,
              base::WeakPtr<BrowserContext> browser_context) {
-            // The browser context might have been destroyed when the timer
-            // fires.
-            if (browser_context) {
+            // Don't create spare process if the browser context is destroyed
+            // or the shutdown has started.
+            if (browser_context && !browser_context->ShutdownStarted()) {
               self->WarmupSpareRenderProcessHost(browser_context.get());
             }
           },
