@@ -174,13 +174,6 @@ const char kCoralFeatureKeyDescription[] =
     "Secret key for Coral feature. Incorrect values will cause chrome crashes.";
 #endif  // IS_CHROMEOS_ASH
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kCrOSLegacyMediaFormatsName[] = "Legacy media format support";
-const char kCrOSLegacyMediaFormatsDescription[] =
-    "Controls support for uncommon legacy media formats: AVI containers and "
-    "MPEG4 video streams.";
-#endif
-
 const char kCssGamutMappingName[] = "CSS Gamut Mapping";
 const char kCssGamutMappingDescription[] =
     "Enable experimental CSS gamut mapping implementation.";

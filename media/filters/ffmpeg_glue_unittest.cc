@@ -321,14 +321,6 @@ TEST_F(FFmpegGlueContainerTest, AAC) {
   InitializeAndOpen("sfx.adts");
   ExpectContainer(container_names::MediaContainerName::kContainerAAC);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(FFmpegGlueContainerTest, AVI) {
-  base::test::ScopedFeatureList scoped_enable(kCrOSLegacyMediaFormats);
-  InitializeAndOpen("bear.avi");
-  ExpectContainer(container_names::MediaContainerName::kContainerAVI);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Probe something unsupported to ensure we fall back to the our internal guess.

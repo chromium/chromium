@@ -1674,11 +1674,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "cros-legacy-media-formats",
-    "owners": [ "dalecurtis@chromium.org", "tapted@chromium.org" ],
-    "expiry_milestone": 126
-  },
-  {
     "name": "cros-locked-mode",
     "owners": [
       "//chrome/browser/chromeos/cros_apps/OWNERS"

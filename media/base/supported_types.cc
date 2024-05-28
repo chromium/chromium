@@ -297,14 +297,6 @@ bool IsAV1Supported(const VideoType& type) {
 #endif
 }
 
-bool IsMPEG4Supported() {
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-  return base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats);
-#else
-  return false;
-#endif
-}
-
 bool IsAACSupported(const AudioType& type) {
   if (type.profile != AudioCodecProfile::kXHE_AAC)
     return true;
@@ -373,13 +365,12 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
       return IsVp9ProfileSupported(type);
     case VideoCodec::kHEVC:
       return IsHevcProfileSupported(type);
-    case VideoCodec::kMPEG4:
-      return IsMPEG4Supported();
     case VideoCodec::kDolbyVision:
       return IsDolbyVisionProfileSupported(type);
     case VideoCodec::kUnknown:
     case VideoCodec::kVC1:
     case VideoCodec::kMPEG2:
+    case VideoCodec::kMPEG4:
       return false;
   }
 }

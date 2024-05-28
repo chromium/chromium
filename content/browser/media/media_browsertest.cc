@@ -55,10 +55,6 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     features::kLogJsConsoleMessages,
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-    media::kCrOSLegacyMediaFormats,
-#endif
-
 #if BUILDFLAG(ENABLE_HLS_DEMUXER) && BUILDFLAG(USE_PROPRIETARY_CODECS)
     media::kBuiltInHlsPlayer,
 #endif
@@ -408,19 +404,6 @@ IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_LoadManyVideos) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Mpeg4) {
-  PlayVideo("bear_mpeg4_mp3.avi");
-}
-
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Mpeg4Asp) {
-  PlayVideo("bear_mpeg4asp_mp3.avi");
-}
-
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Divx) {
-  PlayVideo("bear_divx_mp3.avi");
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlac) {

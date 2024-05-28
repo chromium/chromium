@@ -25,14 +25,6 @@ const bool kPropCodecsEnabled = true;
 const bool kPropCodecsEnabled = false;
 #endif
 
-bool IsMPEG4Supported() {
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-  return base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats);
-#else
-  return false;
-#endif
-}
-
 TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
   // Default to common 709.
   const VideoColorSpace kColorSpace = VideoColorSpace::REC709();
@@ -64,8 +56,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
   EXPECT_EQ(kPropCodecsEnabled,
             IsSupportedVideoType(
                 {VideoCodec::kH264, H264PROFILE_BASELINE, 1, kColorSpace}));
-  EXPECT_EQ(
-      IsMPEG4Supported(),
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kMPEG4, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
 

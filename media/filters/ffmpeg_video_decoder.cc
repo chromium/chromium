@@ -123,13 +123,6 @@ static void ReleaseVideoBufferImpl(void* opaque, uint8_t* data) {
 
 // static
 bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (codec == VideoCodec::kMPEG4 &&
-      !base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats)) {
-    return false;
-  }
-#endif
-
   return avcodec_find_decoder(VideoCodecToCodecID(codec)) != nullptr;
 }
 

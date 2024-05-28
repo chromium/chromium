@@ -1785,14 +1785,6 @@ BASE_FEATURE(kLibaomUseChromeThreads,
              "LibaomUseChromeThreads",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(IS_CHROMEOS)
-// Allows demuxing of AVI and decoding of MPEG4 streams. These should not be
-// allowed through the web in Chrome, but may be enabled by the local file app.
-BASE_FEATURE(kCrOSLegacyMediaFormats,
-             "CrOSLegacyMediaFormats",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_WIN)
 // Controls whether to use D3D12 video decoder instead of D3D11 when supported.
 BASE_FEATURE(kD3D12VideoDecoder,

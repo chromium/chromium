@@ -137,11 +137,6 @@ extern const char kCoralFeatureKeyName[];
 extern const char kCoralFeatureKeyDescription[];
 #endif  // IS_CHROMEOS_ASH
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kCrOSLegacyMediaFormatsName[];
-extern const char kCrOSLegacyMediaFormatsDescription[];
-#endif
-
 extern const char kCssGamutMappingName[];
 extern const char kCssGamutMappingDescription[];
 
