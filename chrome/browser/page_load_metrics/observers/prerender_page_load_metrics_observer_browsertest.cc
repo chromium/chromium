@@ -201,14 +201,8 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/40842862): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Activate_SpeculationRule DISABLED_Activate_SpeculationRule
-#else
-#define MAYBE_Activate_SpeculationRule Activate_SpeculationRule
-#endif
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       MAYBE_Activate_SpeculationRule) {
+                       Activate_SpeculationRule) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to an initial page.
