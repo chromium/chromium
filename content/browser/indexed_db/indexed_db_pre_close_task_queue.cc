@@ -40,12 +40,11 @@ IndexedDBPreCloseTaskQueue::IndexedDBPreCloseTaskQueue(
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 IndexedDBPreCloseTaskQueue::~IndexedDBPreCloseTaskQueue() = default;
 
-void IndexedDBPreCloseTaskQueue::Stop(StopReason reason) {
+void IndexedDBPreCloseTaskQueue::Stop() {
   if (!started_ || done_)
     return;
   DCHECK(!tasks_.empty());
   while (!tasks_.empty()) {
-    tasks_.front()->Stop(reason);
     tasks_.pop_front();
   }
   OnComplete();
@@ -82,7 +81,6 @@ void IndexedDBPreCloseTaskQueue::StopForTimout() {
   if (done_)
     return;
   while (!tasks_.empty()) {
-    tasks_.front()->Stop(StopReason::TIMEOUT);
     tasks_.pop_front();
   }
   OnComplete();
@@ -98,7 +96,6 @@ void IndexedDBPreCloseTaskQueue::StopForMetadataError(
       leveldb_env::GetLevelDBStatusUMAValue(status),
       leveldb_env::LEVELDB_STATUS_MAX);
   while (!tasks_.empty()) {
-    tasks_.front()->Stop(StopReason::METADATA_ERROR);
     tasks_.pop_front();
   }
   OnComplete();

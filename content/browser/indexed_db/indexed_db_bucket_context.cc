@@ -609,8 +609,7 @@ void IndexedDBBucketContext::ForceClose(bool doom) {
     // interrupted, so it can cause shutdown hangs.
     close_timer_.AbandonAndStop();
     if (pre_close_task_queue_) {
-      pre_close_task_queue_->Stop(
-          IndexedDBPreCloseTaskQueue::StopReason::FORCE_CLOSE);
+      pre_close_task_queue_->Stop();
       pre_close_task_queue_.reset();
     }
     skip_closing_sequence_ = true;
@@ -1155,8 +1154,7 @@ void IndexedDBBucketContext::OnHandleCreated() {
     closing_stage_ = ClosingState::kNotClosing;
     close_timer_.AbandonAndStop();
     if (pre_close_task_queue_) {
-      pre_close_task_queue_->Stop(
-          IndexedDBPreCloseTaskQueue::StopReason::NEW_CONNECTION);
+      pre_close_task_queue_->Stop();
       pre_close_task_queue_.reset();
     }
   }

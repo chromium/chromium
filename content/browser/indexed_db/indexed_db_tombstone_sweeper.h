@@ -14,17 +14,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/common/content_export.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
-
-namespace base {
-class TickClock;
-}
 
 namespace blink {
 struct IndexedDBDatabaseMetadata;
@@ -93,8 +87,6 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   void SetMetadata(
       const std::vector<blink::IndexedDBDatabaseMetadata>* metadata) override;
 
-  void Stop(IndexedDBPreCloseTaskQueue::StopReason reason) override;
-
   bool RunRound() override;
 
  private:
@@ -106,7 +98,7 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   friend class indexed_db_tombstone_sweeper_unittest::
       IndexedDBTombstoneSweeperTest;
 
-  enum class Status { SWEEPING, DONE_REACHED_MAX, DONE_ERROR, DONE_COMPLETE };
+  enum class Status { SWEEPING, DONE_ERROR, DONE };
 
   // Contains the current sweeping state and position for the sweeper.
   struct SweepState {
@@ -127,16 +119,6 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
     std::optional<IndexDataKey> index_it_key;
   };
 
-  // Accumulated metrics that are reported at the end of sweeping.
-  struct SweepMetrics {
-    int num_invalid_index_values = 0;
-    int num_errors_reading_exists_table = 0;
-    int num_invalid_exists_values = 0;
-
-    int seen_tombstones = 0;
-    uint64_t seen_tombstones_size = 0;
-  };
-
   void SetStartSeedsForTesting(size_t database_seed,
                                size_t object_store_seed,
                                size_t index_seed) {
@@ -144,18 +126,6 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
     sweep_state_.start_object_store_seed = object_store_seed;
     sweep_state_.start_index_seed = index_seed;
   }
-
-  void SetClockForTesting(const base::TickClock* clock) {
-    clock_for_testing_ = clock;
-  }
-
-  // Records UMA stats based on stop or completion status, as well as the mode
-  // of the sweeper.
-  // Exactly one optional argument must be populated.
-  void RecordUMAStats(
-      std::optional<IndexedDBPreCloseTaskQueue::StopReason> stop_reason,
-      std::optional<Status> status,
-      const leveldb::Status& leveldb_error);
 
   leveldb::Status FlushDeletions();
 
@@ -180,20 +150,14 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   int indices_scanned_ = 0;
   int total_indices_ = 0;
 
-  // Used to measure total time of the task.
-  raw_ptr<const base::TickClock> clock_for_testing_ = nullptr;
-  std::optional<base::TimeTicks> start_time_;
-
   bool has_writes_ = false;
   leveldb::WriteBatch round_deletion_batch_;
-  base::TimeDelta total_deletion_time_;
 
   raw_ptr<const std::vector<blink::IndexedDBDatabaseMetadata>>
       database_metadata_ = nullptr;
   std::unique_ptr<leveldb::Iterator> iterator_;
 
   SweepState sweep_state_;
-  SweepMetrics metrics_;
 
   base::WeakPtrFactory<IndexedDBTombstoneSweeper> ptr_factory_{this};
 };

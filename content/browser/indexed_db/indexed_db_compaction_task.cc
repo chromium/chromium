@@ -18,9 +18,6 @@ bool IndexedDBCompactionTask::RequiresMetadata() const {
   return false;
 }
 
-void IndexedDBCompactionTask::Stop(
-    IndexedDBPreCloseTaskQueue::StopReason reason) {}
-
 bool IndexedDBCompactionTask::RunRound() {
   TRACE_EVENT0("IndexedDB", "CompactRange");
   database()->CompactRange(nullptr, nullptr);

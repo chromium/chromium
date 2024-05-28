@@ -42,22 +42,9 @@ class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
   using MetadataFetcher = base::OnceCallback<leveldb::Status(
       std::vector<blink::IndexedDBDatabaseMetadata>*)>;
 
-  enum class StopReason {
-    // A new connection was made to the closing backing store.
-    NEW_CONNECTION,
-    // The maximum time for all tasks to complete as passed.
-    TIMEOUT,
-    // There was an error reading the database metadata.
-    METADATA_ERROR,
-    // Force closed due to shutdown.
-    FORCE_CLOSE,
-  };
-
   // Defines a task that will be run after closing an IndexedDB backing store
-  // instance. The task can be destructed at any time if the browser process is
-  // shutting down, otherwise Stop(...) will be called.
-  // Instances of this class are sequence-hostile. Each instance must only be
-  // used on the same SequencedTaskRunner.
+  // instance. Instances of this class are sequence-hostile. Each instance must
+  // only be used on the same SequencedTaskRunner.
   class CONTENT_EXPORT PreCloseTask {
    public:
     explicit PreCloseTask(leveldb::DB* database);
@@ -73,10 +60,6 @@ class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
     // Called before RunRound. |metadata| is guaranteed to outlive this task.
     virtual void SetMetadata(
         const std::vector<blink::IndexedDBDatabaseMetadata>* metadata);
-
-    // Tells the task to stop before completion. It will be destroyed after this
-    // call. Can be called at any time.
-    virtual void Stop(StopReason reason) = 0;
 
     // Runs a round of work. Tasks are expected to keep round execution time
     // small. Returns if the task is complete and can be destroyed.
@@ -111,7 +94,7 @@ class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
 
   // Stops all tasks and destroys them. The |on_complete| callback will be
   // immediately called.
-  void Stop(StopReason reason);
+  void Stop();
 
   // Starts running tasks. Can only be called once. MetadataFetcher is expected
   // to load the metadata from the database on disk.

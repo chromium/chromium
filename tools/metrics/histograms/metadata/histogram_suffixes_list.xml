@@ -4316,24 +4316,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="WebRTC.Stun.SuccessPercent.UnknownNAT"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SweeperCompletionTypes" separator=".">
-  <suffix name="Complete" label="All indexes are scanned."/>
-  <suffix name="ConnectionOpened"
-      label="Scanning is interrupted by an new connection to the database."/>
-  <suffix name="ForceClose" label="Scanning is stopped by force closing."/>
-  <suffix name="MaxIterations"
-      label="Scanning is stopped because the maximum record iteration count
-             was hit."/>
-  <suffix name="SweepError"
-      label="Scanning is stopped because a leveldb error was encountered
-             during sweeping."/>
-  <suffix name="TimeoutReached" label="Scanning is stopped by the timeout."/>
-  <affected-histogram
-      name="WebCore.IndexedDB.TombstoneSweeper.DeletedTombstonesSize"/>
-  <affected-histogram
-      name="WebCore.IndexedDB.TombstoneSweeper.NumDeletedTombstones"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SystemNotificationAgeType" separator=".">
   <suffix name="ClickToCall" label="Click To Call"/>
   <suffix name="PriceDropChromeManaged"

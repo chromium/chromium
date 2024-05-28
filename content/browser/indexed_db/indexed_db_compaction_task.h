@@ -21,8 +21,6 @@ class IndexedDBCompactionTask
 
   bool RequiresMetadata() const override;
 
-  void Stop(IndexedDBPreCloseTaskQueue::StopReason reason) override;
-
   bool RunRound() override;
 };
 
