@@ -322,7 +322,7 @@ public class MediaDrmBridge {
         try {
             mediaCryptoSessionDrmId = openSession();
         } catch (android.media.NotProvisionedException e) {
-            Log.d(TAG, "Not provisioned during openSession()");
+            Log.i(TAG, "Not provisioned during openSession()");
 
             if (!sMediaCryptoDeferrer.isProvisioning()) {
                 return startProvisioning();
@@ -460,14 +460,16 @@ public class MediaDrmBridge {
             byte[] schemeUUID,
             String securityOrigin,
             String securityLevel,
+            String message,
             boolean requiresMediaCrypto,
             long nativeMediaDrmBridge,
             long nativeMediaDrmStorageBridge) {
         Log.i(
                 TAG,
-                "Create MediaDrmBridge with level %s and origin %s",
+                "Create MediaDrmBridge with level %s and origin %s for %s",
                 securityLevel,
-                securityOrigin);
+                securityOrigin,
+                message);
 
         MediaDrmBridge mediaDrmBridge = null;
         try {
@@ -690,6 +692,7 @@ public class MediaDrmBridge {
     /** Destroy the MediaDrmBridge object. */
     @CalledByNative
     private void destroy() {
+        Log.i(TAG, "Destroying MediaDrmBridge for origin %s", mOrigin);
         mNativeMediaDrmBridge = INVALID_NATIVE_MEDIA_DRM_BRIDGE;
         if (mMediaDrm != null) {
             release();
@@ -704,6 +707,7 @@ public class MediaDrmBridge {
 
         // Close all open sessions.
         for (SessionId sessionId : mSessionManager.getAllSessionIds()) {
+            Log.i(TAG, "Force closing session %s", sessionId.toHexString());
             try {
                 // Some implementations don't have removeKeys, crbug/475632
                 mMediaDrm.removeKeys(sessionId.drmId());
@@ -782,8 +786,11 @@ public class MediaDrmBridge {
             Log.e(TAG, "Failed to getKeyRequest().", e);
         }
 
-        String result = (request != null) ? "succeeded" : "failed";
-        Log.d(TAG, "getKeyRequest %s!", result);
+        if (request == null) {
+            Log.e(TAG, "getKeyRequest(%s) failed", sessionId.toHexString());
+        } else {
+            Log.d(TAG, "getKeyRequest(%s) succeeded", sessionId.toHexString());
+        }
 
         return request;
     }
@@ -875,7 +882,11 @@ public class MediaDrmBridge {
         }
 
         // Success!
-        Log.d(TAG, "createSession(): Session (%s) created.", sessionId.toHexString());
+        Log.i(
+                TAG,
+                "createSession(): Session (%s) created for origin %s.",
+                sessionId.toHexString(),
+                mOrigin);
         onPromiseResolvedWithSession(promiseId, sessionId);
         onSessionMessage(sessionId, request);
         mSessionManager.put(sessionId, mime, keyType);
@@ -928,7 +939,6 @@ public class MediaDrmBridge {
      */
     @CalledByNative
     private void closeSession(byte[] emeSessionId, long promiseId) {
-        Log.d(TAG, "closeSession()");
         if (mMediaDrm == null) {
             onPromiseRejected(
                     promiseId,
@@ -946,6 +956,7 @@ public class MediaDrmBridge {
             return;
         }
 
+        Log.i(TAG, "closeSession(%s)", sessionId.toHexString());
         try {
             // Some implementations don't have removeKeys, crbug/475632
             mMediaDrm.removeKeys(sessionId.drmId());
@@ -957,14 +968,15 @@ public class MediaDrmBridge {
         mSessionManager.remove(sessionId);
         onPromiseResolved(promiseId);
         onSessionClosed(sessionId);
-        Log.d(TAG, "Session %s closed", sessionId.toHexString());
+        Log.i(TAG, "Session %s closed", sessionId.toHexString());
     }
 
     /**
-     * Close the session without worry about the exception, because some
-     * implementations let this method throw exception, crbug/611865.
+     * Close the session without worry about the exception, because some implementations let this
+     * method throw exception, crbug/611865.
      */
     private void closeSessionNoException(SessionId sessionId) {
+        Log.i(TAG, "Closing session %s", sessionId.toHexString());
         try {
             mMediaDrm.closeSession(sessionId.drmId());
         } catch (Exception e) {
@@ -981,7 +993,6 @@ public class MediaDrmBridge {
      */
     @CalledByNative
     private void updateSession(byte[] emeSessionId, byte[] response, final long promiseId) {
-        Log.d(TAG, "updateSession()");
         if (mMediaDrm == null) {
             onPromiseRejected(
                     promiseId,
@@ -1000,6 +1011,7 @@ public class MediaDrmBridge {
             return;
         }
 
+        Log.i(TAG, "updateSession(%s)", sessionId.toHexString());
         int systemCode = MediaDrmSystemCode.UPDATE_FAILED;
         try {
             SessionInfo sessionInfo = mSessionManager.get(sessionId);
@@ -1077,11 +1089,12 @@ public class MediaDrmBridge {
     }
 
     /**
-     * Load session back to memory with MediaDrm. Load persistent storage
-     * before calling this. It will fail if persistent storage isn't loaded.
+     * Load session back to memory with MediaDrm. Load persistent storage before calling this. It
+     * will fail if persistent storage isn't loaded.
      */
     private void loadSessionWithLoadedStorage(SessionId sessionId, final long promiseId) {
         byte[] drmId = null;
+        Log.i(TAG, "loadSession(%s)", sessionId.toHexString());
         try {
             drmId = openSession();
             if (drmId == null) {
@@ -1138,11 +1151,10 @@ public class MediaDrmBridge {
             mSessionEventDeferrer = null;
         } catch (android.media.NotProvisionedException e) {
             // If device isn't provisioned, storage loading should fail.
-            Log.w(TAG, "Persistent license load fail because origin isn't provisioned.");
-            onPersistentLicenseLoadFail(sessionId, promiseId);
+            onPersistentLicenseLoadFail(sessionId, promiseId, e);
         } catch (java.lang.IllegalStateException e) {
             assert sessionId.drmId() != null;
-            onPersistentLicenseLoadFail(sessionId, promiseId);
+            onPersistentLicenseLoadFail(sessionId, promiseId, e);
         }
     }
 
@@ -1154,7 +1166,9 @@ public class MediaDrmBridge {
 
     // If persistent license load fails, we want to clean the storage and report it to JS as license
     // doesn't exist.
-    private void onPersistentLicenseLoadFail(SessionId sessionId, final long promiseId) {
+    private void onPersistentLicenseLoadFail(
+            SessionId sessionId, final long promiseId, Exception e) {
+        Log.w(TAG, "Persistent license load failed for session %s", sessionId.toHexString(), e);
         closeSessionNoException(sessionId);
         mSessionManager.clearPersistentSessionInfo(
                 sessionId,
@@ -1171,21 +1185,20 @@ public class MediaDrmBridge {
     }
 
     /**
-     * Remove session from device. This will mark the key as released and
-     * generate a key release request. The license is removed from the device
-     * when the session is updated with a license release response.
+     * Remove session from device. This will mark the key as released and generate a key release
+     * request. The license is removed from the device when the session is updated with a license
+     * release response.
      */
     @CalledByNative
     private void removeSession(byte[] emeId, final long promiseId) {
-        Log.d(TAG, "removeSession()");
         SessionId sessionId = getSessionIdByEmeId(emeId);
-
         if (sessionId == null) {
             onPromiseRejected(
                     promiseId, MediaDrmSystemCode.INVALID_SESSION_ID, "Session doesn't exist");
             return;
         }
 
+        Log.i(TAG, "removeSession(%s)", sessionId.toHexString());
         final SessionInfo sessionInfo = mSessionManager.get(sessionId);
         if (sessionInfo == null) {
             assert false; // Should never happen.
@@ -1681,7 +1694,10 @@ public class MediaDrmBridge {
             MediaDrm.KeyRequest request = null;
             switch (event) {
                 case MediaDrm.EVENT_KEY_REQUIRED:
-                    Log.d(TAG, "MediaDrm.EVENT_KEY_REQUIRED");
+                    Log.d(
+                            TAG,
+                            "MediaDrm.EVENT_KEY_REQUIRED for session %s",
+                            sessionId.toHexString());
                     request =
                             getKeyRequest(
                                     sessionId,
@@ -1697,12 +1713,18 @@ public class MediaDrmBridge {
                     }
                     break;
                 case MediaDrm.EVENT_KEY_EXPIRED:
-                    Log.d(TAG, "MediaDrm.EVENT_KEY_EXPIRED");
+                    Log.d(
+                            TAG,
+                            "MediaDrm.EVENT_KEY_EXPIRED for session %s",
+                            sessionId.toHexString());
                     break;
                     // (b/271451225) This event is generated during ClearKey implementation in
                     // Android.
                 case MediaDrm.EVENT_VENDOR_DEFINED:
-                    Log.d(TAG, "MediaDrm.EVENT_VENDOR_DEFINED");
+                    Log.d(
+                            TAG,
+                            "MediaDrm.EVENT_VENDOR_DEFINED for session %s",
+                            sessionId.toHexString());
                     request =
                             getKeyRequest(
                                     sessionId,
@@ -1718,7 +1740,10 @@ public class MediaDrmBridge {
                     }
                     break;
                 default:
-                    Log.w(TAG, "Ignoring MediaDrm event " + event);
+                    Log.w(
+                            TAG,
+                            "Ignoring MediaDrm event %d for session %s" + event,
+                            sessionId.toHexString());
                     break;
             }
         }
@@ -1799,12 +1824,11 @@ public class MediaDrmBridge {
                             boolean isKeyRelease =
                                     sessionInfo.keyType() == MediaDrm.KEY_TYPE_RELEASE;
 
-                            Log.d(
+                            Log.i(
                                     TAG,
-                                    "KeysStatusChange: "
-                                            + sessionId.toHexString()
-                                            + ", "
-                                            + hasNewUsableKey);
+                                    "KeysStatusChange(%s): %b",
+                                    sessionId.toHexString(),
+                                    hasNewUsableKey);
                             onSessionKeysChange(
                                     sessionId,
                                     getKeysInfo(keyInformation).toArray(),
@@ -1834,12 +1858,12 @@ public class MediaDrmBridge {
                                 return;
                             }
 
-                            Log.d(
+                            Log.i(
                                     TAG,
-                                    "ExpirationUpdate: "
-                                            + sessionId.toHexString()
-                                            + ", "
-                                            + expirationTime);
+                                    "ExpirationUpdate(%s): %tF %tT",
+                                    sessionId.toHexString(),
+                                    expirationTime,
+                                    expirationTime);
                             onSessionExpirationUpdate(sessionId, expirationTime);
                         }
                     });
@@ -1867,7 +1891,7 @@ public class MediaDrmBridge {
                 return;
             }
 
-            Log.d(
+            Log.i(
                     TAG,
                     "Key successfully %s for session %s",
                     mIsKeyRelease ? "released" : "added",

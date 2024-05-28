@@ -97,7 +97,7 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
       const std::string& origin_id,
       MediaDrmBridge::SecurityLevel security_level) {
     media_drm_bridge_ = MediaDrmBridge::CreateWithoutSessionSupport(
-        key_system, origin_id, security_level,
+        key_system, origin_id, security_level, "Test",
         base::BindRepeating(&MediaDrmBridgeTest::CreateProvisionFetcher,
                             base::Unretained(this)));
   }
@@ -107,7 +107,7 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
       const std::string& origin_id,
       MediaDrmBridge::SecurityLevel security_level) {
     media_drm_bridge_ = MediaDrmBridge::CreateWithoutSessionSupport(
-        key_system, origin_id, security_level, base::NullCallback());
+        key_system, origin_id, security_level, "Test", base::NullCallback());
   }
 
   // ProvisionFetcher implementation. Done as a mock method so we can properly

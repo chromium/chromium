@@ -374,7 +374,8 @@ base::Version MediaDrmBridge::GetVersion(const std::string& key_system) {
   scoped_refptr<MediaDrmBridge> media_drm_bridge =
       MediaDrmBridge::CreateWithoutSessionSupport(
           key_system, /* origin_id= */ "",
-          MediaDrmBridge::SECURITY_LEVEL_DEFAULT, base::NullCallback());
+          MediaDrmBridge::SECURITY_LEVEL_DEFAULT, "GetVersion",
+          base::NullCallback());
   if (!media_drm_bridge) {
     DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system;
     return base::Version();
@@ -396,6 +397,7 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateInternal(
     const std::vector<uint8_t>& scheme_uuid,
     const std::string& origin_id,
     SecurityLevel security_level,
+    const std::string& message,
     bool requires_media_crypto,
     std::unique_ptr<MediaDrmStorageBridge> storage,
     CreateFetcherCB create_fetcher_cb,
@@ -410,7 +412,7 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateInternal(
   // that support it.
 
   scoped_refptr<MediaDrmBridge> media_drm_bridge(new MediaDrmBridge(
-      scheme_uuid, origin_id, security_level, requires_media_crypto,
+      scheme_uuid, origin_id, security_level, message, requires_media_crypto,
       std::move(storage), std::move(create_fetcher_cb), session_message_cb,
       session_closed_cb, session_keys_change_cb, session_expiration_update_cb));
 
@@ -425,6 +427,7 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateWithoutSessionSupport(
     const std::string& key_system,
     const std::string& origin_id,
     SecurityLevel security_level,
+    const std::string& message,
     CreateFetcherCB create_fetcher_cb) {
   DVLOG(1) << __func__;
 
@@ -436,7 +439,7 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateWithoutSessionSupport(
   const bool requires_media_crypto = false;
 
   return CreateInternal(
-      scheme_uuid, origin_id, security_level, requires_media_crypto,
+      scheme_uuid, origin_id, security_level, message, requires_media_crypto,
       std::make_unique<MediaDrmStorageBridge>(), std::move(create_fetcher_cb),
       SessionMessageCB(), SessionClosedCB(), SessionKeysChangeCB(),
       SessionExpirationUpdateCB());
@@ -944,6 +947,7 @@ MediaDrmBridge::MediaDrmBridge(
     const std::vector<uint8_t>& scheme_uuid,
     const std::string& origin_id,
     SecurityLevel security_level,
+    const std::string& message,
     bool requires_media_crypto,
     std::unique_ptr<MediaDrmStorageBridge> storage,
     const CreateFetcherCB& create_fetcher_cb,
@@ -978,9 +982,10 @@ MediaDrmBridge::MediaDrmBridge(
   // storage.
   ScopedJavaLocalRef<jstring> j_security_origin =
       ConvertUTF8ToJavaString(env, origin_id);
+  ScopedJavaLocalRef<jstring> j_message = ConvertUTF8ToJavaString(env, message);
 
   j_media_drm_.Reset(Java_MediaDrmBridge_create(
-      env, j_scheme_uuid, j_security_origin, j_security_level,
+      env, j_scheme_uuid, j_security_origin, j_security_level, j_message,
       requires_media_crypto, reinterpret_cast<intptr_t>(this),
       reinterpret_cast<intptr_t>(storage_.get())));
 }
