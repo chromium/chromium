@@ -22,6 +22,12 @@ ContentNotificationClient::~ContentNotificationClient() = default;
 
 void ContentNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
+  // Need to check if it is a content notification first to avoid conflicts with
+  // other clients.
+  if (![response.notification.request.content.categoryIdentifier
+          isEqualToString:kContentNotificationFeedbackCategoryIdentifier]) {
+    return;
+  }
   // In order to send delivered NAUs, the payload has been modified for it to be
   // processed on `HandleNotificationReception()`. Before reusing the payload,
   // remove the NAU body paramater from the payload to return it to its normal
@@ -55,7 +61,6 @@ void ContentNotificationClient::HandleNotificationInteraction(
     if (url.is_empty()) {
       base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
                                 false);
-      loadUrlInNewTab(GURL("chrome://newtab"));
     }
     base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
                               true);
