@@ -1452,8 +1452,8 @@
   {
     "name": "cloud-gaming-device",
     "owners": [
-      "dgrebenyuk@chromium.org",
-      "chenji@chromium.org"
+      "chenjih@google.com",
+      "chromeos-launcher-search@google.com"
     ],
     "expiry_milestone": 126
   },
@@ -5505,27 +5505,27 @@
   },
   {
     "name": "launcher-local-image-search",
-    "owners": ["dgrebenyuk@chromium.org", "nbowe@chromium.org"],
+    "owners": ["chenjih@google.com", "nbowe@chromium.org"],
     "expiry_milestone": 130
   },
   {
     "name": "launcher-local-image-search-confidence",
-    "owners": ["dgrebenyuk@chromium.org", "nbowe@chromium.org"],
+    "owners": ["chenjih@google.com", "nbowe@chromium.org"],
     "expiry_milestone": 130
   },
   {
     "name": "launcher-local-image-search-ica",
-    "owners": ["dgrebenyuk@chromium.org", "nbowe@chromium.org"],
+    "owners": ["chenjih@google.com", "nbowe@chromium.org"],
     "expiry_milestone": 130
   },
   {
     "name": "launcher-local-image-search-ocr",
-    "owners": ["dgrebenyuk@chromium.org", "nbowe@chromium.org"],
+    "owners": ["chenjih@google.com", "nbowe@chromium.org"],
     "expiry_milestone": 130
   },
   {
     "name": "launcher-local-image-search-relevance",
-    "owners": ["dgrebenyuk@chromium.org", "nbowe@chromium.org"],
+    "owners": ["chenjih@google.com", "nbowe@chromium.org"],
     "expiry_milestone": 130
   },
   {
@@ -5540,12 +5540,12 @@
   },
   {
     "name": "launcher-search-control",
-    "owners": ["chenjih@chromium.org", "dgrebenyuk@chromium.org"],
+    "owners": ["chenjih@google.com", "chromeos-launcher-search@google.com"],
     "expiry_milestone": 130
   },
   {
     "name": "launcher-system-info-answer-cards",
-    "owners": ["laurencom@chromium.org", "dgrebenyuk@chromium.org"],
+    "owners": ["laurencom@chromium.org", "chenjih@google.com"],
     "expiry_milestone": 130
   },
   {

@@ -434,7 +434,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.AnnotationStorage.DatabaseSize" units="MB"
     expires_after="2024-10-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.NumberOfRetries"
     units="count" expires_after="2024-10-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -458,7 +458,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.Status"
     enum="ImageContentAnnotatorStatus" expires_after="2024-10-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -470,7 +470,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.IndexingStatus"
     enum="ImageAnnotationWorkerIndexingStatus" expires_after="2024-10-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.QueueNumberOfObjectsToProcess"
     units="units" expires_after="2024-10-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -496,7 +496,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.QueueProcessingTime"
     units="ms" expires_after="2024-10-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -507,7 +507,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Status"
     enum="ImageAnnotationWorkerStatus" expires_after="2024-10-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -518,7 +518,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.AnnotationStorage.SqlDatabase.Status"
     enum="SqlDatabaseStatus" expires_after="2024-10-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.AnnotationStorage.Status"
     enum="AnnotationStorageStatus" expires_after="2024-10-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -709,7 +709,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.FileResult.DefaultRelevanceUsed"
     enum="BooleanUsage" expires_after="2024-11-30">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Whether or not the default relevance was used when calculating the relevance
@@ -732,7 +732,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.FileSearchProvider.Latency" units="ms"
     expires_after="2024-11-03">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -743,7 +743,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.FileSearchProvider.Relevance" units="score"
     expires_after="2024-12-04">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Relevance score for a local file result that was returned in response to a
@@ -753,7 +753,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.FileSearchProvider.TimedOut"
     enum="BooleanTimedOut" expires_after="2024-09-29">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -764,17 +764,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.GameProvider.SearchStatus"
     enum="GameProviderSearchStatus" expires_after="2024-09-29">
-  <owner>chenjih@chromium.org</owner>
-  <owner>dgrebenyuk@chromium.org</owner>
+  <owner>chenjih@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The outcome of a query for game results. Logged once per game search query.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.GameProvider.UpdateStatus" enum="DiscoveryError"
-    expires_after="2023-11-12">
-  <owner>chenjih@chromium.org</owner>
-  <owner>dgrebenyuk@chromium.org</owner>
+    expires_after="2024-11-12">
+  <owner>chenjih@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The outcome of an index update from the Discovery service. Logged once per
     update.
@@ -783,8 +783,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.GameResult.IconLoadStatus" enum="DiscoveryError"
     expires_after="2025-02-28">
-  <owner>chenjih@chromium.org</owner>
-  <owner>dgrebenyuk@chromium.org</owner>
+  <owner>chenjih@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The outcome of the icon load from the Discovery service. Logged once per
     icon loaded in game result.
@@ -806,8 +806,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.HelpAppProvider.QueryTime" units="ms"
     expires_after="2025-01-14">
-  <owner>dgrebenyuk@google.com</owner>
-  <owner>chenjih@chromium.org</owner>
+  <owner>chenjih@google.com</owner>
   <owner>zufeng@google.com</owner>
   <summary>
     The latency of a search in the HelpAppProvider. Recorded each time a search
@@ -852,7 +851,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.Keyword.NumberOfKeywordsInQuery" units="count"
     expires_after="2024-10-06">
   <owner>chenjih@chromium.org</owner>
-  <owner>dgrebenyuk@chromium.org</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records the number of keyword tokens that are detected in a user query.
     Reported once each time for each query generated.
@@ -874,7 +873,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.LocalImageSearchProvider.Latency" units="ms"
     expires_after="2024-10-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -955,8 +954,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
     enum="OsSettingsProviderStatus" expires_after="2025-01-14">
-  <owner>chenjih@chromium.org</owner>
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Various error states of the provider for OS settings in the cros launcher.
     Emitted either the case of an unexpected error or an successful non-empty
@@ -968,8 +967,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
     enum="OsSettingsProviderIconLoadStatus" expires_after="2025-01-14">
-  <owner>dgrebenyuk@google.com</owner>
-  <owner>chenjih@chromium.org</owner>
+  <owner>chenjih@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Various states of the icon related parameters for OS settings in the cros
     launcher. Emitted at each branch to help investigate the cause of icon load
@@ -1004,7 +1003,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.PersistentProto.WriteStatus"
     enum="PersistentProtoWriteStatus" expires_after="2024-11-03">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1036,9 +1035,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Scoring.ScoreAboveBestMatchThreshold{Type}"
-    enum="BooleanHit" expires_after="2024-04-28">
+    enum="BooleanHit" expires_after="2024-09-29">
   <owner>chenjih@chromium.org</owner>
-  <owner>dgrebenyuk@chromium.org</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The number of the results above the BestMatch threshold with {Type} case.
     Recorded once per result's score above the BestMatch threshold.
@@ -1086,7 +1085,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.ContinueResultCount.{Type}" units="count"
     expires_after="2024-11-17">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1131,7 +1130,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.DriveContinueResultsShown"
     enum="BooleanShown" expires_after="2024-09-01">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1143,7 +1142,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.Error" enum="AppListUserEventError"
     expires_after="2024-09-01">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1277,7 +1276,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.Search.Session2.QueryLength{SessionConclusion}"
     units="characters" expires_after="2024-10-06">
   <owner>amandadeacon@google.com</owner>
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>yulunwu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -1332,7 +1331,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.{SearchView}" enum="AppListSearchAction"
     expires_after="2024-09-29">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1359,7 +1358,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.{SearchView}.LaunchIndex" units="index"
     expires_after="2024-09-29">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1371,7 +1370,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.{SearchView}.{SearchAction}"
     enum="AppListSearchResult" expires_after="2024-09-29">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1424,7 +1423,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
     expires_after="2024-09-29">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1449,7 +1448,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.SearchSuccess.Apps" enum="AppListLaunchedFrom"
     expires_after="2024-07-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1515,7 +1514,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.SuggestedContent.Enabled" enum="BooleanEnabled"
     expires_after="2024-07-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1688,7 +1687,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ZeroStateFileProvider.Latency" units="ms"
     expires_after="2024-07-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -1709,7 +1708,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ZeroStateResults.LaunchedItemType"
     enum="ZeroStateResultType" expires_after="2024-07-31">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
