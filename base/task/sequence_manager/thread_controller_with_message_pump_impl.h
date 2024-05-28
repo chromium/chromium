@@ -177,6 +177,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
 
   WorkDeduplicator work_deduplicator_;
   bool do_work_needed_before_wait_ = false;
+  bool task_execution_allowed_in_native_nested_loop_ = false;
 
   ThreadControllerPowerMonitor power_monitor_;
 

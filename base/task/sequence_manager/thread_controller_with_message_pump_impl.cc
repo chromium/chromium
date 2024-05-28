@@ -189,6 +189,14 @@ void ThreadControllerWithMessagePumpImpl::BeginNativeWorkBeforeDoWork() {
     return;
   }
 
+  // Native nested loops don't guarantee that `DoWork()` will be called after
+  // executing native work. This is the invariant that is needed to avoid
+  // calls to `ScheduleWork()`. Since these calls can't be skipped there is
+  // nothing left to do in this function.
+  if (task_execution_allowed_in_native_nested_loop_) {
+    return;
+  }
+
   // Reuse the deduplicator facility to indicate that there is no need for
   // ScheduleWork() until the next time we look for work.
   work_deduplicator_.OnWorkStarted();
@@ -715,6 +723,7 @@ void ThreadControllerWithMessagePumpImpl::
       pump_->ScheduleWork();
     }
   }
+  task_execution_allowed_in_native_nested_loop_ = allowed;
   main_thread_only().task_execution_allowed = allowed;
 }
 
