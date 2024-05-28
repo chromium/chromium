@@ -228,9 +228,10 @@ void ChromePaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
 
 void ChromePaymentsAutofillClient::OnUnmaskOtpVerificationResult(
     OtpUnmaskResult unmask_result) {
-  CHECK(card_unmask_otp_input_dialog_controller_);
-  card_unmask_otp_input_dialog_controller_->OnOtpVerificationResult(
-      unmask_result);
+  if (card_unmask_otp_input_dialog_controller_) {
+    card_unmask_otp_input_dialog_controller_->OnOtpVerificationResult(
+        unmask_result);
+  }
 }
 
 PaymentsNetworkInterface*
