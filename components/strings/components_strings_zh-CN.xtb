@@ -2546,7 +2546,7 @@
 <translation id="5921639886840618607">将银行卡信息保存到 Google 账号中？</translation>
 <translation id="5921952831792678223">皮卡车</translation>
 <translation id="5922853866070715753">即将完成</translation>
-<translation id="5923492272538889093">不使用银行卡验证码 (CVC)，而是改用“设备解锁”？</translation>
+<translation id="5923492272538889093">要使用设备解锁来取代银行卡验证码 (CVC)吗？</translation>
 <translation id="5924510104057992926">打开前需要检查</translation>
 <translation id="5924782825030413055">上次用户意见征求更新的来源：</translation>
 <translation id="5925040402342933574">光盘（半光）</translation>
@@ -2824,7 +2824,7 @@
 <translation id="6433490469411711332">修改联系信息</translation>
 <translation id="6433501201775827830">选择搜索引擎</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> 拒绝了我们的连接请求。</translation>
-<translation id="6433797564277305076">从现在开始，您只需使用设备解锁便能更快速地显示银行卡信息</translation>
+<translation id="6433797564277305076">从现在开始，您可使用设备解锁更快速地确认银行卡信息</translation>
 <translation id="643917412048333145">连衣裙</translation>
 <translation id="6440503408713884761">已忽略</translation>
 <translation id="6443406338865242315">您已安装的扩展程序和插件</translation>
