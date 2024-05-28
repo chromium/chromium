@@ -85,6 +85,8 @@ class CONTENT_EXPORT MediaSessionServiceImpl
 
   const GlobalRenderFrameHostId render_frame_host_id_;
 
+  base::WeakPtr<MediaSessionImpl> media_session_;
+
   mojo::Remote<blink::mojom::MediaSessionClient> client_;
   blink::mojom::MediaSessionPlaybackState playback_state_;
   blink::mojom::SpecMediaMetadataPtr metadata_;
