@@ -624,10 +624,10 @@ void BrowserTestBase::SetUp() {
   ASSERT_TRUE(delegate);
   ASSERT_TRUE(GetContentClientForTesting());
 
+  delegate->CreateThreadPool("Browser");
+
   std::optional<int> startup_error = delegate->BasicStartupComplete();
   ASSERT_FALSE(startup_error.has_value());
-
-  delegate->CreateThreadPool("Browser");
 
   // We can only setup startup tracing after mojo is initialized above.
   tracing::EnableStartupTracingIfNeeded();

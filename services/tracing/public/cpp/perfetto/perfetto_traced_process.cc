@@ -201,7 +201,8 @@ PerfettoTracedProcess* PerfettoTracedProcess::Get() {
 
 PerfettoTracedProcess::PerfettoTracedProcess()
     : producer_client_(std::make_unique<ProducerClient>(GetTaskRunner())),
-      platform_(std::make_unique<base::tracing::PerfettoPlatform>()),
+      platform_(
+          std::make_unique<base::tracing::PerfettoPlatform>(GetTaskRunner())),
       tracing_backend_(std::make_unique<PerfettoTracingBackend>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -336,7 +337,7 @@ bool PerfettoTracedProcess::SetupStartupTracing(
 void PerfettoTracedProcess::RequestStartupTracing(
     const perfetto::TraceConfig& config,
     const perfetto::Tracing::SetupStartupTracingOpts& opts) {
-  if (platform_->did_start_task_runner()) {
+  if (thread_pool_started_) {
     perfetto::Tracing::SetupStartupTracingBlocking(config, opts);
   } else {
     saved_config_ = config;
@@ -389,18 +390,12 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
 }
 
 void PerfettoTracedProcess::OnThreadPoolAvailable(bool enable_consumer) {
+  thread_pool_started_ = true;
   SetupClientLibrary(enable_consumer);
-
-  // Create our task runner now, so that ProducerClient/SystemProducer are
-  // notified about future data source registrations and schedule any necessary
-  // startup tracing timeouts.
-  GetTaskRunner()->GetOrCreateTaskRunner();
 
   producer_client_->OnThreadPoolAvailable();
   if (system_producer_)
     system_producer_->OnThreadPoolAvailable();
-  if (!platform_->did_start_task_runner())
-    platform_->StartTaskRunner(GetTaskRunner()->GetOrCreateTaskRunner());
 
   if (startup_tracing_needed_) {
     perfetto::Tracing::SetupStartupTracingBlocking(saved_config_, saved_opts_);

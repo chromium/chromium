@@ -432,8 +432,7 @@ TracingUnitTest::TracingUnitTest()
           base::test::TaskEnvironment::MainThreadType::IO)),
       tracing_environment_(std::make_unique<base::test::TracingEnvironment>(
           *task_environment_,
-          base::SingleThreadTaskRunner::GetCurrentDefault(),
-          PerfettoTracedProcess::Get()->perfetto_platform_for_testing())) {}
+          base::SingleThreadTaskRunner::GetCurrentDefault())) {}
 
 TracingUnitTest::~TracingUnitTest() {
   CHECK(setup_called_ && teardown_called_);

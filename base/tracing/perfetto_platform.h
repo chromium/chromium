@@ -5,17 +5,18 @@
 #ifndef BASE_TRACING_PERFETTO_PLATFORM_H_
 #define BASE_TRACING_PERFETTO_PLATFORM_H_
 
+#include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/threading/thread_local_storage.h"
 #include "third_party/perfetto/include/perfetto/base/thread_utils.h"
 #include "third_party/perfetto/include/perfetto/tracing/platform.h"
 
-#include "base/base_export.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/threading/thread_local_storage.h"
-
 namespace base {
-class DeferredSequencedTaskRunner;
 
 namespace tracing {
+
+class PerfettoTaskRunner;
 
 class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
  public:
@@ -30,12 +31,8 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
     kThreadPool,
   };
 
-  explicit PerfettoPlatform(TaskRunnerType = TaskRunnerType::kThreadPool);
+  explicit PerfettoPlatform(PerfettoTaskRunner* task_runner);
   ~PerfettoPlatform() override;
-
-  SequencedTaskRunner* task_runner() const;
-  bool did_start_task_runner() const { return did_start_task_runner_; }
-  void StartTaskRunner(scoped_refptr<SequencedTaskRunner>);
 
   // perfetto::Platform implementation:
   ThreadLocalObject* GetOrCreateThreadLocalObject() override;
@@ -49,9 +46,8 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
   perfetto::base::PlatformThreadId GetCurrentThreadId() override;
 
  private:
-  const TaskRunnerType task_runner_type_;
-  scoped_refptr<DeferredSequencedTaskRunner> deferred_task_runner_;
-  bool did_start_task_runner_ = false;
+  const TaskRunnerType task_runner_type_ = TaskRunnerType::kThreadPool;
+  raw_ptr<PerfettoTaskRunner> task_runner_;
   ThreadLocalStorage::Slot thread_local_object_;
 };
 

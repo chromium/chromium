@@ -12,9 +12,6 @@
 #include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 
 namespace base {
-namespace tracing {
-class PerfettoPlatform;
-}
 
 namespace test {
 
@@ -31,8 +28,7 @@ class TracingEnvironment {
   // tracing platform.
   explicit TracingEnvironment(TaskEnvironment&,
                               scoped_refptr<SequencedTaskRunner> =
-                                  ThreadPool::CreateSequencedTaskRunner({}),
-                              base::tracing::PerfettoPlatform* = nullptr);
+                                  ThreadPool::CreateSequencedTaskRunner({}));
   ~TracingEnvironment();
 
   // Builds a default Perfetto trace config with track events enabled.

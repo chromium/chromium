@@ -72,15 +72,12 @@ TracingEnvironment::TracingEnvironment() {
 
 TracingEnvironment::TracingEnvironment(
     TaskEnvironment& task_environment,
-    scoped_refptr<SequencedTaskRunner> task_runner,
-    tracing::PerfettoPlatform* perfetto_platform)
+    scoped_refptr<SequencedTaskRunner> task_runner)
     : task_environment_(&task_environment) {
   // Since Perfetto's platform backend can only be initialized once in a
   // process, we give it a task runner that can outlive the per-test task
   // environment.
   auto* client_lib_task_runner = GetClientLibTaskRunner();
-  if (!perfetto_platform->did_start_task_runner())
-    perfetto_platform->StartTaskRunner(client_lib_task_runner);
   client_lib_task_runner->set_task_runner(std::move(task_runner));
 
   // Wait for any posted construction tasks to execute.

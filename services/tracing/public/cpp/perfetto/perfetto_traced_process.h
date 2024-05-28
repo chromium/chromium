@@ -333,6 +333,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   std::unique_ptr<PerfettoTracingBackend> tracing_backend_;
 
   bool startup_tracing_needed_ = false;
+  bool thread_pool_started_ = false;
   perfetto::TraceConfig saved_config_;
   perfetto::Tracing::SetupStartupTracingOpts saved_opts_;
 

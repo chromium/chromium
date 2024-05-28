@@ -309,8 +309,7 @@ class TracingConsumerTest : public testing::Test,
     task_environment_ = std::make_unique<base::test::TaskEnvironment>(
         base::test::TaskEnvironment::MainThreadType::IO);
     tracing_environment_ = std::make_unique<base::test::TracingEnvironment>(
-        *task_environment_, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        PerfettoTracedProcess::Get()->perfetto_platform_for_testing());
+        *task_environment_, base::SingleThreadTaskRunner::GetCurrentDefault());
     test_handle_ = tracing::PerfettoTracedProcess::SetupForTesting();
     PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
     threaded_service_ = std::make_unique<ThreadedPerfettoService>();
