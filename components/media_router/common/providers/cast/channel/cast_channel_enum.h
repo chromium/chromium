@@ -142,7 +142,7 @@ enum class WriteState {
 std::string ReadyStateToString(ReadyState ready_state);
 std::string ChannelErrorToString(ChannelError channel_error);
 
-constexpr int kNumCastChannelFlags = 8;
+constexpr int kNumCastChannelFlags = 9;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
