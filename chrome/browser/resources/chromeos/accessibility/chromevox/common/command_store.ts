@@ -52,9 +52,9 @@ export class CommandStore {
    */
   static commandForMessage(msgId: string): Command | void {
     for (const commandName in CommandStore.COMMAND_DATA) {
-      const command = CommandStore.COMMAND_DATA[commandName];
+      const command = CommandStore.COMMAND_DATA[commandName as Command];
       if (command.msgId === msgId) {
-        return commandName;
+        return commandName as Command;
       }
     }
   }
@@ -67,9 +67,9 @@ export class CommandStore {
   static commandsForCategory(category: CommandCategory): Command[] {
     const ret: Command[] = [];
     for (const cmd in CommandStore.COMMAND_DATA) {
-      const struct = CommandStore.COMMAND_DATA[cmd];
+      const struct = CommandStore.COMMAND_DATA[cmd as Command];
       if (category === struct.category) {
-        ret.push(cmd);
+        ret.push(cmd as Command);
       }
     }
     return ret;
@@ -548,6 +548,7 @@ export const COMMAND_DATA: Record<Command, DataEntry> = {
     msgId: 'next_object',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT]}},
   },
+  [Command.NEXT_PAGE]: {category: CommandCategory.NO_CATEGORY},
   [Command.NEXT_RADIO]: {
     category: CommandCategory.JUMP_COMMANDS,
     msgId: 'next_radio',
@@ -777,6 +778,7 @@ export const COMMAND_DATA: Record<Command, DataEntry> = {
     msgId: 'previous_object',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT]}},
   },
+  [Command.PREVIOUS_PAGE]: {category: CommandCategory.NO_CATEGORY},
   [Command.PREVIOUS_RADIO]: {
     category: CommandCategory.JUMP_COMMANDS,
     msgId: 'previous_radio',
