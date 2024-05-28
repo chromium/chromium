@@ -10,7 +10,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -19,6 +23,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -77,6 +82,79 @@ BOOL WaitForKeyboardToAppear() {
   return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
+// Simulates a keyboard event where a character is typed.
+void SimulateKeyboardEvent(NSString* letter) {
+  if ([letter isEqual:@"@"]) {
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:letter
+                                            flags:UIKeyModifierShift];
+    return;
+  }
+
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:letter flags:0];
+}
+
+// Simulates typing text on the keyboard and avoid having the first character
+// typed uppercased.
+//
+// TODO(crbug.com/40916974): This should be replaced by grey_typeText when
+// fixed.
+void TypeText(NSString* nsText) {
+  std::string text = base::SysNSStringToUTF8(nsText);
+  for (size_t i = 0; i < text.size(); ++i) {
+    // Type each character in the provided text.
+    NSString* letter = base::SysUTF8ToNSString(text.substr(i, 1));
+    SimulateKeyboardEvent(letter);
+    if (i == 0) {
+      // Undo and retype the first letter to not have it uppercased.
+      [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"z"
+                                              flags:UIKeyModifierCommand];
+      SimulateKeyboardEvent(letter);
+    }
+  }
+}
+
+// Waits for the bottom sheet and then re-opens the keyboard from there.
+void WaitForBottomSheetAndOpenKeyboard(NSString* username) {
+  id<GREYMatcher> buttonMatcher =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(username)];
+  [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+}
+
+// Types `text` on an input field with `fieldID`. Dismisses the password bottom
+// sheet if `dismissBottomSheet` is true.
+void TypeTextOnField(NSString* text,
+                     const std::string& fieldID,
+                     bool dismissBottomSheet = false) {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(fieldID)];
+  if (dismissBottomSheet) {
+    WaitForBottomSheetAndOpenKeyboard(text);
+  }
+  TypeText(text);
+}
+
+// Types the username and password on the UFF forms.
+void TypeUsernameAndPasswordOnUFF(NSString* username,
+                                  NSString* password,
+                                  bool dismissBottomSheetOnUsername = false) {
+  // Type username and dismiss the bottom sheet because it is the first login
+  // field to be focused on, which triggers the password bottom sheet. Once
+  // dismissed the bottom sheet isn't shown again when focusing on other login
+  // fields, as long as the page isn't reloaded.
+  TypeTextOnField(username, "single_un", dismissBottomSheetOnUsername);
+  TypeTextOnField(password, "single_pw");
+}
+
+// Taps on the login button in UFF for logging in.
+void LoginOnUff() {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("login_btn")];
+}
+
 }  // namespace
 
 @interface PasswordControllerEGTest : WebHttpServerChromeTestCase
@@ -94,11 +172,19 @@ BOOL WaitForKeyboardToAppear() {
   // Also reset the dismiss count pref to 0 to make sure the bottom sheet is
   // enabled by default.
   [PasswordSuggestionBottomSheetAppInterface setDismissCount:0];
+
+  // Clear credentials and autofill profile before starting the test in case
+  // there are some left over from a previous test case.
+  GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
+                 @"Clearing credentials wasn't done.");
+  [AutofillAppInterface clearProfilesStore];
 }
 
 - (void)tearDown {
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
+  [AutofillAppInterface clearProfilesStore];
+  [PasswordSuggestionBottomSheetAppInterface setDismissCount:0];
   [super tearDown];
 }
 
@@ -109,6 +195,12 @@ BOOL WaitForKeyboardToAppear() {
         password_manager::features::kIOSPasswordBottomSheet);
   } else if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
+  } else if ([self isRunningTest:@selector
+                   (testSaveCredentialWithAutofilledEmailInUFF)] ||
+             [self isRunningTest:@selector(testSaveTypedCredentialInUff)] ||
+             [self isRunningTest:@selector(testUpdateTypedCredentialInUff)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIosDetectUsernameInUff);
   }
   return config;
 }
@@ -120,6 +212,13 @@ BOOL WaitForKeyboardToAppear() {
   // Loads simple page. It is on localhost so it is considered a secure context.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_login_form.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+}
+
+- (void)loadUFFLoginPage {
+  // Loads simple page. It is on localhost so it is considered a secure context.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/uff_login_forms.html")];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"Step 1, Single username form."];
 }
 
 #pragma mark - Tests
@@ -463,6 +562,133 @@ BOOL WaitForKeyboardToAppear() {
   // Verify the suggest password chip is not shown.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the typed credentials are correctly saved in the sign-in UFF flow.
+- (void)testSaveTypedCredentialInUff {
+  NSString* usernameValue = @"test-username";
+  NSString* passwordValue = @"test-password";
+
+  [self loadUFFLoginPage];
+
+  // Type username and password in their respective fields.
+  TypeUsernameAndPasswordOnUFF(usernameValue, passwordValue);
+
+  LoginOnUff();
+
+  // Wait until the save password prompt becomes visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
+
+  [[EarlGrey selectElementWithMatcher:PasswordInfobarButton(
+                                          IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Wait until the save password infobar disappears.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
+
+  // Verify that the credential was correctly saved.
+  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(1, credentialsCount, @"Wrong number of stored credentials.");
+  [PasswordManagerAppInterface
+      verifyCredentialStoredWithUsername:@"test-username"
+                                password:@"test-password"];
+}
+
+// Tests that the autofilled email is correctly saved as the username in the
+// sign-in UFF flow.
+- (void)testSaveCredentialWithAutofilledEmailInUFF {
+  NSString* passwordValue = @"test-password";
+
+  // Add Autofill profile to store.
+  [AutofillAppInterface saveExampleProfile];
+
+  [self loadUFFLoginPage];
+
+  // Fill username field with the email from the autofill profile.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("single_un")];
+  NSString* email = base::SysUTF16ToNSString(
+      autofill::test::GetFullProfile().GetRawInfo(autofill::EMAIL_ADDRESS));
+  id<GREYMatcher> email_chip = grey_text(email);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:email_chip];
+  [[EarlGrey selectElementWithMatcher:email_chip] performAction:grey_tap()];
+
+  // Type password.
+  TypeTextOnField(passwordValue, "single_pw");
+
+  LoginOnUff();
+
+  // Wait until the save password prompt becomes visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
+
+  [[EarlGrey selectElementWithMatcher:PasswordInfobarButton(
+                                          IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Wait until the save password infobar disappears.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
+
+  // Verify that the credential was correctly saved.
+  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(1, credentialsCount, @"Wrong number of stored credentials.");
+  [PasswordManagerAppInterface
+      verifyCredentialStoredWithUsername:email
+                                password:passwordValue];
+}
+
+// Tests that the typed credentials are correctly updated in the sign-in UFF
+// flow when there is already a credential stored for the corresponding email.
+- (void)testUpdateTypedCredentialInUff {
+  NSString* usernameValue = @"test-username";
+  NSString* passwordValue = @"test-password";
+  NSString* passwordValueToBeReplaced = @"old-password";
+
+  [self loadUFFLoginPage];
+
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:usernameValue
+                         password:passwordValueToBeReplaced];
+  GREYAssertEqual(1, [PasswordManagerAppInterface storedCredentialsCount],
+                  @"Wrong number of initial credentials.");
+
+  // Load the page again to take into consideration the new saved credential.
+  [self loadUFFLoginPage];
+
+  // Type username and password in their respective fields.
+  TypeUsernameAndPasswordOnUFF(usernameValue, passwordValue,
+                               /*dismissBottomSheetOnUsername=*/true);
+
+  LoginOnUff();
+
+  // Wait until the update password prompt becomes visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
+
+  [[EarlGrey
+      selectElementWithMatcher:PasswordInfobarButton(
+                                   IDS_IOS_PASSWORD_MANAGER_UPDATE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Wait until the update password infobar disappears.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
+
+  // Verify that the credential was correctly saved.
+  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(1, credentialsCount, @"Wrong number of stored credentials.");
+  [PasswordManagerAppInterface
+      verifyCredentialStoredWithUsername:usernameValue
+                                password:passwordValue];
 }
 
 @end

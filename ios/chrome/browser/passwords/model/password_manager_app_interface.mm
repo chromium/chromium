@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 
+#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -27,6 +28,17 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreConsumer;
 using password_manager::PasswordStoreInterface;
+
+namespace {
+
+// Returns the password store corresponding to the main browser state.
+scoped_refptr<password_manager::PasswordStoreInterface> PasswordStore() {
+  return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+             chrome_test_util::GetOriginalBrowserState(),
+             ServiceAccessType::IMPLICIT_ACCESS);
+}
+
+}  // namespace
 
 class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
  public:
@@ -66,10 +78,7 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
                                  shared:(BOOL)shared {
   // Obtain a PasswordStore.
   scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
-      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState(),
-          ServiceAccessType::IMPLICIT_ACCESS)
-          .get();
+      PasswordStore();
   if (passwordStore == nullptr) {
     return testing::NSErrorWithLocalizedDescription(
         @"PasswordStore is unexpectedly null for BrowserState");
@@ -112,10 +121,7 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
 
 + (bool)clearCredentials {
   scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
-      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState(),
-          ServiceAccessType::IMPLICIT_ACCESS)
-          .get();
+      PasswordStore();
 
   // True when the callback was called.
   __block bool done = false;
@@ -145,6 +151,26 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
       consumer.WaitForResult();
 
   return credentials.size();
+}
+
++ (bool)verifyCredentialStoredWithUsername:(NSString*)username
+                                  password:(NSString*)password {
+  scoped_refptr<PasswordStoreInterface> passwordStore = PasswordStore();
+
+  PasswordStoreConsumerHelper consumer;
+  passwordStore->GetAllLogins(consumer.GetWeakPtr());
+
+  std::vector<std::unique_ptr<PasswordForm>> credentials =
+      consumer.WaitForResult();
+
+  std::u16string usernameStr = base::SysNSStringToUTF16(username);
+  std::u16string passwordStr = base::SysNSStringToUTF16(password);
+
+  return base::ranges::any_of(
+      credentials, [&](const std::unique_ptr<PasswordForm>& credential) {
+        return credential->username_value == usernameStr &&
+               credential->password_value == passwordStr;
+      });
 }
 
 @end

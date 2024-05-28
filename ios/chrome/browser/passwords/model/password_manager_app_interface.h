@@ -27,6 +27,11 @@
 + (NSError*)storeCredentialWithUsername:(NSString*)username
                                password:(NSString*)password;
 
+// Returns true if there is a stored credential matching the `username` and
+// `password`.
++ (bool)verifyCredentialStoredWithUsername:(NSString*)username
+                                  password:(NSString*)password;
+
 // Clears any credentials that were stored during a test run.
 + (bool)clearCredentials;
 
