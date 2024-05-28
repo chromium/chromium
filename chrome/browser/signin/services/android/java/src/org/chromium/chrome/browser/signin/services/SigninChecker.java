@@ -56,6 +56,9 @@ public class SigninChecker
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
             mAccountManagerFacade.addObserver(this);
+            if (mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
+                onCoreAccountInfosChanged();
+            }
         } else {
             mAccountTrackerService.addObserver(this);
         }
