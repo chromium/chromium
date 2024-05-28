@@ -17,7 +17,6 @@ import '../os_privacy_page/privacy_hub_geolocation_warning_text.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,8 +28,8 @@ import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
 import {Route, routes} from '../router.js';
 
+import {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
 import {TimeZoneAutoDetectMethod} from './date_time_types.js';
-import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 import {TimezoneSelectorElement} from './timezone_selector.js';
 import {getTemplate} from './timezone_subpage.html.js';
 
@@ -41,8 +40,8 @@ export interface TimezoneSubpageElement {
   };
 }
 
-const TimezoneSubpageElementBase = DeepLinkingMixin(RouteObserverMixin(
-    I18nMixin(PrefsMixin(WebUiListenerMixin(PolymerElement)))));
+const TimezoneSubpageElementBase =
+    DeepLinkingMixin(RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   static get is() {
@@ -99,15 +98,37 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
 
   activeTimeZoneDisplayName: string;
   private isGuest_: boolean;
-  private browserProxy_: TimeZoneBrowserProxy;
+  private browserProxy_: DateTimeBrowserProxy;
   private showEnableSystemGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
+
+  /**
+   * Returns the browser proxy page handler (to invoke functions).
+   */
+  get pageHandler(): DateTimePageHandlerRemote {
+    return this.browserProxy_.handler;
+  }
+
+  /**
+   * Returns the browser proxy callback router (to receive async messages).
+   */
+  get callbackRouter(): DateTimePageCallbackRouter {
+    return this.browserProxy_.observer;
+  }
 
   constructor() {
     super();
 
-    this.browserProxy_ = TimeZoneBrowserProxyImpl.getInstance();
+    this.browserProxy_ = DateTimeBrowserProxy.getInstance();
   }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    this.callbackRouter.onParentAccessValidationComplete.addListener(
+        this.enableTimeZoneSetting_.bind(this));
+  }
+
 
   /**
    * RouteObserverMixin
@@ -125,10 +146,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     // Check if should ask for parent access code.
     if (isChild()) {
       this.disableTimeZoneSetting_();
-      this.addWebUiListener(
-          'access-code-validation-complete',
-          this.enableTimeZoneSetting_.bind(this));
-      this.browserProxy_.showParentAccessForTimeZone();
+      this.pageHandler.showParentAccessForTimezone();
     }
 
     this.attemptDeepLink();

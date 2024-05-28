@@ -16,7 +16,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 
-import {TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
+import {DateTimeBrowserProxy, DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
 import {getTemplate} from './timezone_selector.html.js';
 
 const TimezoneSelectorElementBase = PrefsMixin(PolymerElement);
@@ -85,6 +85,13 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
   private timeZoneList_: DropdownMenuOptionList;
   private getTimeZonesRequestSent_: boolean;
 
+  /**
+   * Returns the browser proxy page handler (to invoke functions).
+   */
+  get pageHandler(): DateTimePageHandlerRemote {
+    return DateTimeBrowserProxy.getInstance().handler;
+  }
+
   constructor() {
     super();
 
@@ -105,7 +112,8 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
    * Fetches the list of time zones if necessary.
    * @param perUserTimeZoneMode Expected value of per-user time zone.
    */
-  private maybeGetTimeZoneList_(perUserTimeZoneMode?: boolean): void {
+  private async maybeGetTimeZoneList_(perUserTimeZoneMode?: boolean):
+      Promise<void> {
     if (typeof (perUserTimeZoneMode) !== 'undefined') {
       /* This method is called as observer. Skip if if current mode does not
        * match expected.
@@ -139,14 +147,12 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
     // Setting several preferences at once will trigger several
     // |maybeGetTimeZoneList_| calls, which we don't want.
     this.getTimeZonesRequestSent_ = true;
-    TimeZoneBrowserProxyImpl.getInstance()
-        .getTimeZones()
-        .then(timezones => {
-          this.setTimeZoneList_(timezones);
-        })
-        .finally(() => {
-          this.getTimeZonesRequestSent_ = false;
-        });
+    try {
+      const {timezones} = await this.pageHandler.getTimezones();
+      this.setTimeZoneList_(timezones);
+    } finally {
+      this.getTimeZonesRequestSent_ = false;
+    }
   }
 
   /**

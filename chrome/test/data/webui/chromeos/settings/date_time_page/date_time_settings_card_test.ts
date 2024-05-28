@@ -4,19 +4,18 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {DateTimeSettingsCardElement, TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl, TimezoneSelectorElement} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, CrSettingsPrefs, PrefsState, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {DateTimeSettingsCardElement, TimeZoneAutoDetectMethod, TimezoneSelectorElement} from 'chrome://os-settings/lazy_load.js';
+import {CrLinkRowElement, CrSettingsPrefs, DateTimeBrowserProxy, PrefsState, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestTimeZoneBrowserProxy} from './test_timezone_browser_proxy.js';
+import {TestDateTimeBrowserProxy} from './test_date_time_browser_proxy.js';
 
 // CrOS sends time zones as [id, friendly name] pairs.
-const FAKE_TIMEZONES = [
+const fakeTimezones = [
   ['Westeros/Highgarden', '(KNG-2:00) The Reach Time (Highgarden)'],
   ['Westeros/Winterfell', '(KNG-1:00) The North Time (Winterfell)'],
   [
@@ -91,18 +90,16 @@ suite('<date-time-settings-card>', () => {
       isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.DATETIME;
 
   let dateTimeSettingsCard: DateTimeSettingsCardElement;
-  let testBrowserProxy: TestTimeZoneBrowserProxy;
+  let testBrowserProxy: TestDateTimeBrowserProxy;
 
   setup(() => {
-    testBrowserProxy = new TestTimeZoneBrowserProxy();
-    testBrowserProxy.setTimeZones(FAKE_TIMEZONES);
-    TimeZoneBrowserProxyImpl.setInstanceForTesting(testBrowserProxy);
+    testBrowserProxy = new TestDateTimeBrowserProxy({fakeTimezones});
+    DateTimeBrowserProxy.setInstanceForTesting(testBrowserProxy);
     CrSettingsPrefs.resetForTesting();
   });
 
   teardown(() => {
     dateTimeSettingsCard.remove();
-    testBrowserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -110,7 +107,7 @@ suite('<date-time-settings-card>', () => {
     const initialTimezoneDisplayName = prefs['cros'].system.timezone.value;
 
     // Find the desired initial timezone by ID.
-    const timeZone = FAKE_TIMEZONES.find(
+    const timeZone = fakeTimezones.find(
         (timeZonePair) => timeZonePair[0] === initialTimezoneDisplayName);
     assertTrue(!!timeZone);
     const [timeZoneID, timeZoneName] = timeZone;
@@ -153,7 +150,7 @@ suite('<date-time-settings-card>', () => {
 
   function assertTimezonesPopulated(isPopulated: boolean): void {
     const timezoneDropdown = getUserTimezoneDropdown();
-    const numExpected = isPopulated ? FAKE_TIMEZONES.length : 1;
+    const numExpected = isPopulated ? fakeTimezones.length : 1;
     assertEquals(numExpected, timezoneDropdown.menuOptions.length);
   }
 
@@ -167,16 +164,19 @@ suite('<date-time-settings-card>', () => {
     assertFalse(isVisible(setDateTimeRow));
 
     // Make the date and time editable.
-    webUIListenerCallback('can-set-date-time-changed', true);
+    testBrowserProxy.observerRemote.onSystemClockCanSetTimeChanged(
+        /*is_allowed=*/ true);
     await flushTasks();
     assertTrue(isVisible(setDateTimeRow));
 
-    assertEquals(0, testBrowserProxy.getCallCount('showSetDateTimeUi'));
+    assertEquals(0, testBrowserProxy.handler.getCallCount('showSetDateTimeUI'));
     setDateTimeRow!.click();
-    assertEquals(1, testBrowserProxy.getCallCount('showSetDateTimeUi'));
+    assertEquals(1, testBrowserProxy.handler.getCallCount('showSetDateTimeUI'));
 
     // Make the date and time not editable.
-    webUIListenerCallback('can-set-date-time-changed', false);
+    testBrowserProxy.observerRemote.onSystemClockCanSetTimeChanged(
+        /*is_allowed=*/ false);
+    await flushTasks();
     assertFalse(isVisible(setDateTimeRow));
   });
 
@@ -263,7 +263,7 @@ suite('<date-time-settings-card>', () => {
     });
 
     test('Turning off timezone auto-detection loads timezones', async () => {
-      assertEquals(0, testBrowserProxy.getCallCount('getTimeZones'));
+      assertEquals(0, testBrowserProxy.handler.getCallCount('getTimezones'));
 
       const autodetectToggle = getTimezoneAutoDetectToggle();
       assertTrue(
@@ -273,7 +273,9 @@ suite('<date-time-settings-card>', () => {
       autodetectToggle.click();
       assertFalse(
           autodetectToggle.checked, 'Expected auto-detect toggle to be off');
-      await testBrowserProxy.whenCalled('getTimeZones');
+      assertEquals(1, testBrowserProxy.handler.getCallCount('getTimezones'));
+      await flushTasks();
+
       assertTimezonesPopulated(true);
     });
 

@@ -16,14 +16,6 @@
 
 namespace ash::settings {
 
-namespace {
-void OnParentAccessValidation(
-    NewDateTimeHandler::ShowParentAccessForTimezoneCallback callback,
-    bool success) {
-  std::move(callback).Run(success);
-}
-}  // namespace
-
 NewDateTimeHandler::NewDateTimeHandler(
     mojo::PendingReceiver<date_time::mojom::PageHandler> receiver,
     mojo::PendingRemote<date_time::mojom::Page> page,
@@ -42,19 +34,19 @@ NewDateTimeHandler::~NewDateTimeHandler() {
   scoped_observation_.Reset();
 }
 
-void NewDateTimeHandler::ShowParentAccessForTimezone(
-    ShowParentAccessForTimezoneCallback callback) {
+void NewDateTimeHandler::ShowParentAccessForTimezone() {
   DCHECK(user_manager::UserManager::Get()->GetActiveUser()->IsChild());
 
   if (!parent_access::ParentAccessService::IsApprovalRequired(
           SupervisedAction::kUpdateTimezone)) {
-    OnParentAccessValidation(std::move(callback), true);
+    OnParentAccessValidation(true);
     return;
   }
 
   ParentAccessController::Get()->ShowWidget(
       user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
-      base::BindOnce(&OnParentAccessValidation, std::move(callback)),
+      base::BindOnce(&NewDateTimeHandler::OnParentAccessValidation,
+                     weak_ptr_factory_.GetWeakPtr()),
       SupervisedAction::kUpdateTimezone, false /* extra_dimmer */,
       base::Time::Now());
 }
@@ -82,6 +74,12 @@ void NewDateTimeHandler::ShowSetDateTimeUI() {
 
 void NewDateTimeHandler::SystemClockCanSetTimeChanged(bool can_set_time) {
   page_->OnSystemClockCanSetTimeChanged(can_set_time);
+}
+
+void NewDateTimeHandler::OnParentAccessValidation(bool success) {
+  if (success) {
+    page_->OnParentAccessValidationComplete(true);
+  }
 }
 
 }  // namespace ash::settings

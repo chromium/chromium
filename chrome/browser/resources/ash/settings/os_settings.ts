@@ -143,6 +143,7 @@ export {PrefControlMixinInternal} from './controls/v2/pref_control_mixin_interna
 export {SettingsDropdownV2Element} from './controls/v2/settings_dropdown_v2.js';
 export {SettingsSliderV2Element} from './controls/v2/settings_slider_v2.js';
 export {SettingsToggleV2Element} from './controls/v2/settings_toggle_v2.js';
+export {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRemote, DateTimePageRemote} from './date_time_page/date_time_browser_proxy.js';
 export {SettingsAudioElement} from './device_page/audio.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {SettingsDevicePageElement} from './device_page/device_page.js';

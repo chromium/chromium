@@ -4,14 +4,14 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {DateTimeSettingsCardElement, SettingsDateTimePageElement, TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl, TimezoneSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {ControlledRadioButtonElement, CrSettingsPrefs, GeolocationAccessLevel, PrefsState, Router, routes, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {DateTimeSettingsCardElement, SettingsDateTimePageElement, TimeZoneAutoDetectMethod, TimezoneSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {ControlledRadioButtonElement, CrSettingsPrefs, DateTimeBrowserProxy, GeolocationAccessLevel, PrefsState, Router, routes, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestTimeZoneBrowserProxy} from './test_timezone_browser_proxy.js';
+import {TestDateTimeBrowserProxy} from './test_date_time_browser_proxy.js';
 
 function getFakePrefs() {
   return {
@@ -122,7 +122,7 @@ function updatePrefsWithPolicy(
 }
 
 // CrOS sends time zones as [id, friendly name] pairs.
-const fakeTimeZones = [
+const fakeTimezones = [
   ['Westeros/Highgarden', '(KNG-2:00) The Reach Time (Highgarden)'],
   ['Westeros/Winterfell', '(KNG-1:00) The North Time (Winterfell)'],
   [
@@ -144,7 +144,7 @@ function initializeDateTime(
     autoDetectPolicyValue?: boolean): SettingsDateTimePageElement|
     TimezoneSubpageElement {
   // Find the desired initial time zone by ID.
-  const timeZone = fakeTimeZones.find(
+  const timeZone = fakeTimezones.find(
       (timeZonePair) =>
           timeZonePair[0] === prefs['cros'].system.timezone.value);
 
@@ -182,12 +182,11 @@ function initializeDateTime(
 
 suite('<settings-date-time-page>', () => {
   let dateTime: SettingsDateTimePageElement|TimezoneSubpageElement;
-  let testBrowserProxy: TestTimeZoneBrowserProxy;
-
+  let testBrowserProxy: TestDateTimeBrowserProxy;
 
   setup(() => {
-    testBrowserProxy = new TestTimeZoneBrowserProxy();
-    TimeZoneBrowserProxyImpl.setInstanceForTesting(testBrowserProxy);
+    testBrowserProxy = new TestDateTimeBrowserProxy({fakeTimezones});
+    DateTimeBrowserProxy.setInstanceForTesting(testBrowserProxy);
     CrSettingsPrefs.resetForTesting();
   });
 
@@ -284,7 +283,7 @@ suite('<settings-date-time-page>', () => {
     assertTrue(!!userTimezoneDropdown);
     if (populated) {
       assertEquals(
-          fakeTimeZones.length, userTimezoneDropdown.menuOptions.length);
+          fakeTimezones.length, userTimezoneDropdown.menuOptions.length);
     } else {
       assertEquals(1, userTimezoneDropdown.menuOptions.length);
     }
@@ -298,7 +297,6 @@ suite('<settings-date-time-page>', () => {
   }
 
   test('auto-detect on', async () => {
-    testBrowserProxy.setTimeZones(fakeTimeZones);
     const prefs = getFakePrefs();
     dateTime = initializeDateTime(prefs, false);
     flush();
@@ -307,24 +305,23 @@ suite('<settings-date-time-page>', () => {
             '#timeZoneResolveMethodDropdown');
 
     assertTrue(!!resolveMethodDropdown);
-    assertEquals(0, testBrowserProxy.getCallCount('getTimeZones'));
+    assertEquals(0, testBrowserProxy.handler.getCallCount('getTimezones'));
 
     verifyAutoDetectSetting(true, false);
     assertFalse(resolveMethodDropdown.disabled);
     verifyTimeZonesPopulated(false);
 
     clickDisableAutoDetect();
-    flush();
+    assertEquals(1, testBrowserProxy.handler.getCallCount('getTimezones'));
+    await flushTasks();
 
     verifyAutoDetectSetting(false, false);
     assertTrue(resolveMethodDropdown.disabled);
-    await testBrowserProxy.whenCalled('getTimeZones');
 
     verifyTimeZonesPopulated(true);
   });
 
   test('auto-detect off', async () => {
-    testBrowserProxy.setTimeZones(fakeTimeZones);
     dateTime = initializeDateTime(getFakePrefs(), false);
     const resolveMethodDropdown =
         dateTime.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
@@ -337,7 +334,8 @@ suite('<settings-date-time-page>', () => {
         'prefs.generated.resolve_timezone_by_geolocation_method_short.value',
         TimeZoneAutoDetectMethod.DISABLED);
 
-    await testBrowserProxy.whenCalled('getTimeZones');
+    assertEquals(1, testBrowserProxy.handler.getCallCount('getTimezones'));
+    await flushTasks();
 
     verifyAutoDetectSetting(false, false);
     assertTrue(resolveMethodDropdown.disabled);
@@ -350,7 +348,6 @@ suite('<settings-date-time-page>', () => {
   });
 
   test('auto-detect forced on', async () => {
-    testBrowserProxy.setTimeZones(fakeTimeZones);
     const prefs = getFakePrefs();
     dateTime = initializeDateTime(prefs, true, true);
     flush();
@@ -359,7 +356,7 @@ suite('<settings-date-time-page>', () => {
             '#timeZoneResolveMethodDropdown');
 
     assertTrue(!!resolveMethodDropdown);
-    assertEquals(0, testBrowserProxy.getCallCount('getTimeZones'));
+    assertEquals(0, testBrowserProxy.handler.getCallCount('getTimezones'));
 
     verifyAutoDetectSetting(true, true);
     assertFalse(resolveMethodDropdown.disabled);
@@ -370,28 +367,31 @@ suite('<settings-date-time-page>', () => {
 
     verifyAutoDetectSetting(true, true);
     assertFalse(resolveMethodDropdown.disabled);
-    assertEquals(0, testBrowserProxy.getCallCount('getTimeZones'));
+    assertEquals(0, testBrowserProxy.handler.getCallCount('getTimezones'));
 
     // Update the policy: force auto-detect off.
     updatePolicy(dateTime, true, false);
+    assertEquals(1, testBrowserProxy.handler.getCallCount('getTimezones'));
+    await flushTasks();
 
     verifyAutoDetectSetting(false, true);
     assertTrue(resolveMethodDropdown.disabled);
 
-    await testBrowserProxy.whenCalled('getTimeZones');
     verifyTimeZonesPopulated(true);
   });
 
   test('auto-detect forced off', async () => {
-    testBrowserProxy.setTimeZones(fakeTimeZones);
     const prefs = getFakePrefs();
     dateTime = initializeDateTime(prefs, true, false);
+    assertEquals(1, testBrowserProxy.handler.getCallCount('getTimezones'));
+    await flushTasks();
+
     const resolveMethodDropdown =
         dateTime.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
             '#timeZoneResolveMethodDropdown');
 
     assertTrue(!!resolveMethodDropdown);
-    await testBrowserProxy.whenCalled('getTimeZones');
+    assertEquals(1, testBrowserProxy.handler.getCallCount('getTimezones'));
 
     verifyAutoDetectSetting(false, true);
     assertTrue(resolveMethodDropdown.disabled);
@@ -447,8 +447,12 @@ suite('<settings-date-time-page>', () => {
     assertTrue(timeZoneAutoDetectOn.disabled);
     assertTrue(timeZoneAutoDetectOff.disabled);
 
-    await testBrowserProxy.whenCalled('showParentAccessForTimeZone');
-    webUIListenerCallback('access-code-validation-complete');
+    assertEquals(
+        1,
+        testBrowserProxy.handler.getCallCount('showParentAccessForTimezone'));
+    testBrowserProxy.observerRemote.onParentAccessValidationComplete(
+        /*success=*/ true);
+    await flushTasks();
 
     // Verify elements are enabled.
     assertFalse(resolveMethodDropdown.disabled);
@@ -496,8 +500,12 @@ suite('<settings-date-time-page>', () => {
     assertTrue(timeZoneAutoDetectOn.disabled);
     assertTrue(timeZoneAutoDetectOff.disabled);
 
-    await testBrowserProxy.whenCalled('showParentAccessForTimeZone');
-    webUIListenerCallback('access-code-validation-complete');
+    assertEquals(
+        1,
+        testBrowserProxy.handler.getCallCount('showParentAccessForTimezone'));
+    testBrowserProxy.observerRemote.onParentAccessValidationComplete(
+        /*success=*/ true);
+    await flushTasks();
 
     // |resolveMethodDropdown| is disabled when auto detect off.
     assertTrue(resolveMethodDropdown.disabled);
