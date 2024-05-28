@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.ToolbarButtonClickToFullViewShownLatency"
-    units="ms" expires_after="2024-06-01">
+    units="ms" expires_after="2024-10-16">
   <owner>kerenzhu@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
