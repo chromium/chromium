@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
   view_controller()->OnStatusChanged(
       /*controls_visible=*/false,
       /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
-      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
+      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time(), /*features=*/{});
   waiter.Wait();
   EXPECT_EQ(bubble_view(), nullptr);
 }

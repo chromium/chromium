@@ -21,6 +21,7 @@
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -179,7 +180,8 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     bool protections_on,
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
-    base::Time expiration) {
+    base::Time expiration,
+    std::vector<privacy_sandbox::TrackingProtectionFeature> features) {
   protections_on_ = protections_on;
   blocking_status_ = blocking_status;
 
@@ -208,7 +210,6 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     case CookieControlsEnforcement::kEnforcedByPolicy:
     case CookieControlsEnforcement::kEnforcedByExtension:
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
-      // In 3PCD, tell the user if they allowed the current site in settings.
       bubble_view_->GetContentView()->SetContentLabelsVisible(
           enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting);
       bubble_view_->GetContentView()->SetFeedbackSectionVisibility(false);

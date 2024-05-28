@@ -197,7 +197,7 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
                           : base::Time();
     view_controller()->OnStatusChanged(controls_visible_, protections_on_,
                                        enforcement_, blocking_status_,
-                                       expiration);
+                                       expiration, /*features=*/{});
   }
 
  protected:

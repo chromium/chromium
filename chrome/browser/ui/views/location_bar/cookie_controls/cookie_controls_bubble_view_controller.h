@@ -36,7 +36,9 @@ class CookieControlsBubbleViewController
                        bool protections_on,
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,
-                       base::Time expiration) override;
+                       base::Time expiration,
+                       std::vector<privacy_sandbox::TrackingProtectionFeature>
+                           features) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
   void SetSubjectUrlNameForTesting(const std::u16string& name);

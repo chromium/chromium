@@ -112,8 +112,8 @@ class CookieControlsBubbleViewPixelTest
                           ? base::Time::Now() + base::Days(days_to_expiration)
                           : base::Time();
     view_controller()->OnStatusChanged(controls_visible, protections_on,
-                                       enforcement, blocking_status,
-                                       expiration);
+                                       enforcement, blocking_status, expiration,
+                                       /*features=*/{});
   }
 
   static base::Time GetReferenceTime() {

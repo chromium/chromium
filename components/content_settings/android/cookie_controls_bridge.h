@@ -54,7 +54,10 @@ class CookieControlsBridge : public CookieControlsObserver {
                        bool protections_on,
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,
-                       base::Time expiration) override;
+                       base::Time expiration,
+                       std::vector<privacy_sandbox::TrackingProtectionFeature>
+                           features) override;
+
   void OnCookieControlsIconStatusChanged(
       bool icon_visible,
       bool protections_on,

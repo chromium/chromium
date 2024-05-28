@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -80,11 +81,19 @@ class CookieControlsController final
 
  private:
   struct Status {
+    Status(bool controls_visible,
+           bool protections_on,
+           CookieControlsEnforcement enforcement,
+           CookieBlocking3pcdStatus blocking_status,
+           base::Time expiration,
+           std::vector<privacy_sandbox::TrackingProtectionFeature> features);
+    ~Status();
     bool controls_visible;
     bool protections_on;
     CookieControlsEnforcement enforcement;
     CookieBlocking3pcdStatus blocking_status;
     base::Time expiration;
+    std::vector<privacy_sandbox::TrackingProtectionFeature> features;
   };
 
   // The observed WebContents changes during the lifetime of the
@@ -147,6 +156,16 @@ class CookieControlsController final
   void OnCookieSettingChanged() override;
 
   Status GetStatus(content::WebContents* web_contents);
+
+  std::vector<privacy_sandbox::TrackingProtectionFeature>
+  CreateTrackingProtectionFeatureList(CookieControlsEnforcement enforcement,
+                                      bool are_3pcs_allowed);
+
+  CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
+      CookieBlocking3pcdStatus status,
+      const GURL url,
+      SettingInfo info,
+      bool is_allowed);
 
   bool HasOriginSandboxedTopLevelDocument() const;
 

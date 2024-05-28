@@ -60,7 +60,8 @@ void CookieControlsBridge::OnStatusChanged(
     bool protections_on,
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
-    base::Time expiration) {
+    base::Time expiration,
+    std::vector<privacy_sandbox::TrackingProtectionFeature> features) {
   // Only invoke the callback when there is a change.
   if (controls_visible_ == controls_visible &&
       protections_on_ == protections_on && enforcement_ == enforcement &&

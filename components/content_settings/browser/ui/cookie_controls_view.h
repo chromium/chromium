@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/tracking_protection_feature.h"
 
 namespace content_settings {
 
@@ -30,7 +31,12 @@ class CookieControlsObserver : public base::CheckedObserver {
       // 3PC blocking status for 3PCD: whether 3PC are limited or all blocked.
       CookieBlocking3pcdStatus blocking_status,
       // The expiration time of the active UB exception if it is present.
-      base::Time expiration) {}
+      base::Time expiration,
+      // Contains all information needed by the UI to render ACT feature states
+      // within in-context surfaces (user bypass, page info).
+      // TODO(https://b/340312239): Remove `enforcement` param once this list
+      // is being used.
+      std::vector<privacy_sandbox::TrackingProtectionFeature> features) {}
 
   // Called to update the user bypass entrypoint in the omnibox. This can impact
   // any property of the entrypoint (i.e. the visibility, label, or icon).
