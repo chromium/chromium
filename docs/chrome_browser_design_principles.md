@@ -232,7 +232,7 @@ class CarFactory {
 };
 ```
 
-Good, version 2: Remove delegation. CreateCar always create a car (fewer conditionals). State only flows from CarFactory to CarSalesPerson (and never backwards).
+Good, version 2: Remove delegation. CreateCar always creates a car (fewer conditionals). State only flows from CarFactory to CarSalesPerson (and never backwards).
 ```cpp
 class CarSalesPerson {
   // Can return nullptr, in which case no car is shown
