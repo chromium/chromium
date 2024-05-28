@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/css/media_query_set_owner.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css/style_sheet.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -297,7 +297,10 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
   Member<Node> owner_node_;
   WeakMember<Element> owner_parent_or_shadow_host_element_;
   Member<CSSRule> owner_rule_;
-  HeapHashSet<WeakMember<TreeScope>> adopted_tree_scopes_;
+  // Used for knowing which TreeScopes to invalidate when an adopted stylesheet
+  // is modified. The value is a count to keep track of the number of references
+  // to the same sheet in the adoptedStyleSheets array.
+  HeapHashMap<WeakMember<TreeScope>, size_t> adopted_tree_scopes_;
   // The Document this stylesheet was constructed for. Always non-null for
   // constructed stylesheets. Always null for other sheets.
   Member<Document> constructor_document_;

@@ -250,7 +250,7 @@ void CSSStyleSheet::DidMutate(Mutation mutation) {
         ownerNode()->GetTreeScope());
     invalidate_matched_properties_cache = true;
   } else if (!adopted_tree_scopes_.empty()) {
-    for (auto tree_scope : adopted_tree_scopes_) {
+    for (auto tree_scope : adopted_tree_scopes_.Keys()) {
       // It is currently required that adopted sheets can not be moved between
       // documents.
       DCHECK(tree_scope->GetDocument() == document);
@@ -314,11 +314,20 @@ bool CSSStyleSheet::MatchesMediaQueries(const MediaQueryEvaluator& evaluator) {
 }
 
 void CSSStyleSheet::AddedAdoptedToTreeScope(TreeScope& tree_scope) {
-  adopted_tree_scopes_.insert(&tree_scope);
+  auto add_result = adopted_tree_scopes_.insert(&tree_scope, 1u);
+  if (!add_result.is_new_entry) {
+    add_result.stored_value->value++;
+  }
 }
 
 void CSSStyleSheet::RemovedAdoptedFromTreeScope(TreeScope& tree_scope) {
-  adopted_tree_scopes_.erase(&tree_scope);
+  auto it = adopted_tree_scopes_.find(&tree_scope);
+  if (it != adopted_tree_scopes_.end()) {
+    CHECK_GT(it->value, 0u);
+    if (--it->value == 0) {
+      adopted_tree_scopes_.erase(&tree_scope);
+    }
+  }
 }
 
 bool CSSStyleSheet::IsAdoptedByTreeScope(TreeScope& tree_scope) {
