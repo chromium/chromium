@@ -4,6 +4,7 @@
 
 #include "net/http/http_cookie_indices.h"
 
+#include "net/cookies/cookie_util.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11,6 +12,7 @@
 namespace net {
 namespace {
 
+using cookie_util::ParsedRequestCookies;
 using ::testing::ElementsAre;
 using ::testing::Optional;
 
@@ -88,6 +90,61 @@ TEST(CookieIndicesTest, StringWithUnrecognizedParam) {
                      .Build();
   auto result = ParseCookieIndices(*headers);
   EXPECT_THAT(result, Optional(ElementsAre("session")));
+}
+
+TEST(CookieIndicesTest, HashIgnoresCookieOrder) {
+  const std::string cookie_indices[] = {"fruit", "vegetable"};
+  EXPECT_EQ(HashCookieIndices(cookie_indices,
+                              ParsedRequestCookies{{"fruit", "apple"},
+                                                   {"vegetable", "tomato"}}),
+            HashCookieIndices(cookie_indices,
+                              ParsedRequestCookies{{"vegetable", "tomato"},
+                                                   {"fruit", "apple"}}));
+}
+
+TEST(CookieIndicesTest, HashCaseSensitive) {
+  const std::string cookie_indices[] = {"fruit", "vegetable"};
+  EXPECT_NE(HashCookieIndices(cookie_indices,
+                              ParsedRequestCookies{{"fruit", "apple"},
+                                                   {"vegetable", "tomato"}}),
+            HashCookieIndices(cookie_indices,
+                              ParsedRequestCookies{{"Fruit", "apple"},
+                                                   {"vegetable", "tomato"}}));
+  EXPECT_NE(HashCookieIndices(cookie_indices,
+                              ParsedRequestCookies{{"fruit", "apple"},
+                                                   {"vegetable", "tomato"}}),
+            HashCookieIndices(cookie_indices,
+                              ParsedRequestCookies{{"fruit", "Apple"},
+                                                   {"vegetable", "tomato"}}));
+}
+
+TEST(CookieIndicesTest, HashNotJustConcatenated) {
+  // Any other simple delimiter would also be bad, but this is the most likely
+  // case to result by accident.
+  const std::string cookie_indices[] = {"fruit", "vegetable"};
+  EXPECT_NE(HashCookieIndices(cookie_indices,
+                              ParsedRequestCookies{{"fruit", "apple"},
+                                                   {"vegetable", "tomato"}}),
+            HashCookieIndices(cookie_indices,
+                              ParsedRequestCookies{{"fruit", "app"},
+                                                   {"vegetable", "letomato"}}));
+}
+
+TEST(CookieIndicesTest, HashDisregardsOtherCookies) {
+  const std::string cookie_indices[] = {"fruit"};
+  EXPECT_EQ(HashCookieIndices(cookie_indices,
+                              ParsedRequestCookies{{"fruit", "apple"},
+                                                   {"vegetable", "tomato"}}),
+            HashCookieIndices(cookie_indices,
+                              ParsedRequestCookies{{"bread", "pumpernickel"},
+                                                   {"fruit", "apple"}}));
+}
+
+TEST(CookieIndicesTest, HashDistinguishesEmptyAndAbsentCookies) {
+  const std::string cookie_indices[] = {"fruit"};
+  EXPECT_NE(
+      HashCookieIndices(cookie_indices, ParsedRequestCookies{{"fruit", ""}}),
+      HashCookieIndices(cookie_indices, ParsedRequestCookies{}));
 }
 
 }  // namespace

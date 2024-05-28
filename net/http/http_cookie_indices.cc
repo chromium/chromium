@@ -4,6 +4,12 @@
 
 #include "net/http/http_cookie_indices.h"
 
+#include <functional>
+
+#include "base/containers/span.h"
+#include "base/pickle.h"
+#include "base/ranges/algorithm.h"
+#include "crypto/sha2.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
@@ -84,6 +90,35 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
     cookie_names.push_back(name);
   }
   return cookie_names;
+}
+
+CookieIndicesHash HashCookieIndices(
+    base::span<const std::string> cookie_indices,
+    base::span<const std::pair<std::string, std::string>> cookies) {
+  CHECK(base::ranges::adjacent_find(cookie_indices, std::greater_equal<>()) ==
+        cookie_indices.end())
+      << "cookie indices must be sorted and unique";
+
+  std::vector<std::pair<std::string_view, std::string_view>> cookies_sorted(
+      cookies.begin(), cookies.end());
+  base::ranges::sort(cookies_sorted);
+
+  base::Pickle pickle;
+  auto cookies_it = cookies_sorted.begin();
+  for (const std::string& cookie_name : cookie_indices) {
+    while (cookies_it != cookies_sorted.end() &&
+           cookies_it->first < cookie_name) {
+      ++cookies_it;
+    }
+    if (cookies_it != cookies_sorted.end() &&
+        cookies_it->first == cookie_name) {
+      pickle.WriteBool(true);
+      pickle.WriteString(cookies_it->second);
+    } else {
+      pickle.WriteBool(false);
+    }
+  }
+  return crypto::SHA256Hash(pickle.payload_bytes());
 }
 
 }  // namespace net
