@@ -44,6 +44,7 @@
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "third_party/boringssl/src/pki/path_builder.h"
 #include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
@@ -227,7 +228,7 @@ class CertVerifyProcTrustStore {
 
   bool IsAdditionalTrustAnchor(
       const bssl::ParsedCertificate* trust_anchor) const {
-    return additional_trust_store_->Contains(trust_anchor);
+    return additional_trust_store_->GetTrust(trust_anchor).IsTrustAnchor();
   }
 
  private:
