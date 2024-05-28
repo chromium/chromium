@@ -236,13 +236,15 @@ std::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
   if (base::FeatureList::IsEnabled(
           kPromosManagerDockingPromoHistogramsKillswitch)) {
     if (active_promos_with_context.contains(Promo::DockingPromo) &&
-        promo != Promo::DockingPromo) {
+        promo != Promo::DockingPromo &&
+        CanShowPromoWithoutTrigger(Promo::DockingPromo)) {
       base::UmaHistogramEnumeration("IOS.DockingPromo.LostToCompetingPromo",
                                     promo);
     }
 
     if (active_promos_with_context.contains(Promo::DockingPromoRemindMeLater) &&
-        promo != Promo::DockingPromoRemindMeLater) {
+        promo != Promo::DockingPromoRemindMeLater &&
+        CanShowPromoWithoutTrigger(Promo::DockingPromoRemindMeLater)) {
       base::UmaHistogramEnumeration(
           "IOS.DockingPromoRemindMeLater.LostToCompetingPromo", promo);
     }
