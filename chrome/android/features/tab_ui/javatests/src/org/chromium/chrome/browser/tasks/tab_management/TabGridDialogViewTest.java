@@ -20,9 +20,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.a
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -590,6 +593,46 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
                     mTabGridDialogView.hideDialog();
                 });
         visibilityCallback.waitForNext();
+    }
+
+    @Test
+    @SmallTest
+    public void testDispatchTouchEvent() {
+        boolean[] isFocused = new boolean[] {false};
+        boolean[] isFocusCleared = new boolean[] {false};
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    EditText textView =
+                            new EditText(getActivity()) {
+                                @Override
+                                public boolean isFocused() {
+                                    return isFocused[0];
+                                }
+
+                                @Override
+                                public void clearFocus() {
+                                    isFocusCleared[0] = true;
+                                }
+                            };
+                    textView.setId(R.id.title);
+                    mTabGridDialogView.addView(textView);
+                });
+
+        long time = SystemClock.uptimeMillis();
+        MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, 0.f, 0.f, 0);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGridDialogView.dispatchTouchEvent(event);
+                });
+        assertFalse(isFocusCleared[0]);
+
+        isFocused[0] = true;
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGridDialogView.dispatchTouchEvent(event);
+                });
+        assertTrue(isFocusCleared[0]);
     }
 
     private void mockDialogStatus(boolean isShowing) {

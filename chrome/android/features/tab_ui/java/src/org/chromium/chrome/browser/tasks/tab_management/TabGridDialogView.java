@@ -16,6 +16,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -144,6 +145,21 @@ public class TabGridDialogView extends FrameLayout {
         mUngroupBarHoveredBackgroundColor =
                 TabUiThemeProvider.getTabGridDialogUngroupBarHoveredBackgroundColor(
                         mContext, false);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = findViewById(R.id.title);
+            if (v != null && v.isFocused()) {
+                Rect rect = new Rect();
+                v.getGlobalVisibleRect(rect);
+                if (!rect.contains((int) event.getRawX(), (int) event.getRawY())) {
+                    v.clearFocus();
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
     }
 
     @Override
