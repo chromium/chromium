@@ -57,6 +57,7 @@
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/integrity/misconfigured_user_cleaner.h"
+#include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_service.h"
@@ -244,6 +245,11 @@ void StartUserSession(user_manager::UserManager* user_manager,
   UserSessionManager::GetInstance()->ShowNotificationsIfNeeded(user_profile);
   UserSessionManager::GetInstance()->PerformPostBrowserLaunchOOBEActions(
       user_profile);
+
+  // If we have recently restarted in-session after a chrome crash, we need
+  // to initialize `AuthHub` in in-session mode.
+  // See documentation in `auth_hub.h` for more details.
+  AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);
 }
 
 void LaunchShimlessRma() {
