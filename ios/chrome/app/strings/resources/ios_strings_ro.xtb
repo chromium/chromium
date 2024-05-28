@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adresa a fost salvată numai pe acest dispozitiv</translation>
 <translation id="1449835205994625556">Ascunde parola</translation>
 <translation id="1450170672351507823">Protecția standard este activată. Pentru securitate sporită, folosește Protecția îmbunătățită.</translation>
+<translation id="1455492980583160269">Trimite mesajul</translation>
 <translation id="1469381646033328562">Contul tău este gestionat de un părinte.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Atinge de două ori ca să comuți setarea</translation>
@@ -861,6 +862,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="54401264925851789">Informații privind securitatea paginii</translation>
 <translation id="5443952882982198570">Carduri de credit</translation>
 <translation id="5444892875087332195">Marcaje</translation>
+<translation id="5453738961176844111">Codul de țară</translation>
 <translation id="5454211924362324495">Pentru a împiedica alte persoane să-ți folosească parola, <ph name="BEGIN_LINK" />schimb-o pe <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Deschide versiunea offline</translation>
 <translation id="5459548306731933777">Afișează detaliile</translation>
@@ -1189,6 +1191,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Poți și să atingi lung bara de adrese pentru a schimba poziția.</translation>
 <translation id="6988572888918530647">Gestionează-ți Contul Google</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">La</translation>
 <translation id="699954956411469731">Notificări pe dispozitivul mobil</translation>
 <translation id="699985840472413751">Închide descărcarea</translation>
@@ -1355,6 +1358,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7866872729285243843">Pentru a accesa lista de lecturi de pe toate dispozitivele, activează Lista de lecturi în setări.</translation>
 <translation id="7866993391592926595">Dacă ascunzi acest card, urmărirea coletelor va fi dezactivată, iar toate datele se vor elimina</translation>
 <translation id="7870750252270996949">Imaginea copiată din Lens</translation>
+<translation id="7877056713163921063">Adaugă în Agendă</translation>
 <translation id="7879275349003161544">Afișează descărcările</translation>
 <translation id="7883882164760409935">Ai parole refolosite.</translation>
 <translation id="7884694604461143138">Istoricul căutărilor (găsite: <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9000089900434778519">Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="9008201768610948239">Ignorați</translation>
 <translation id="9012585441087414258">Protejează împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase. Dacă o pagină face ceva suspect, adresele URL și fragmente din conținutul paginii sunt trimise la Navigarea sigură Google.</translation>
-<translation id="9025203546212508704">Glisează pentru a afla cum să personalizezi meniul</translation>
 <translation id="9029650858822697271">Te-ai deconectat</translation>
 <translation id="9034759925968272072">Nu vei fi deconectat(ă) de la Contul Google. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afișează versiunea originală</translation>

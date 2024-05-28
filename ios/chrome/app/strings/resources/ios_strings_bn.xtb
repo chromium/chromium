@@ -90,6 +90,7 @@
 <translation id="143681031165817424">শুধু এই ডিভাইসে ঠিকানা সেভ করা হবে</translation>
 <translation id="1449835205994625556">পাসওয়ার্ড লুকান</translation>
 <translation id="1450170672351507823">'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করা আছে। আরও উন্নত নিরাপত্তার জন্য 'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করুন।</translation>
+<translation id="1455492980583160269">মেসেজ পাঠান</translation>
 <translation id="1469381646033328562">তোমার অ্যাকাউন্ট তোমার অভিভাবক ম্যানেজ করেন।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">সেটিং টগল করতে দুবার আলতো চাপুন</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">পৃষ্ঠা নিরাপত্তা তথ্য</translation>
 <translation id="5443952882982198570">ক্রেডিট কার্ড</translation>
 <translation id="5444892875087332195">বুকমার্ক</translation>
+<translation id="5453738961176844111">দেশের কোড</translation>
 <translation id="5454211924362324495">আপনার পাসওয়ার্ড যাতে অন্যরা ব্যবহার করতে না পারে তার জন্য <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> সাইটে গিয়ে পাসওয়ার্ড পরিবর্তন করুন<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">ডাউনলোড করা অফলাইন পেজ খুলন</translation>
 <translation id="5459548306731933777">বিশদ বিবরণ দেখুন</translation>
@@ -1190,6 +1192,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">এছাড়াও, অ্যাড্রেস বারের অবস্থান পরিবর্তন করার জন্য আপনি এটি টাচ করে ধরে রাখতে পারবেন।</translation>
 <translation id="6988572888918530647">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">প্রাপক:</translation>
 <translation id="699954956411469731">মোবাইল বিজ্ঞপ্তি</translation>
 <translation id="699985840472413751">ডাউনলোড বন্ধ করুন</translation>
@@ -1356,6 +1359,7 @@
 <translation id="7866872729285243843">আপনার সব ডিভাইসে নিজের পড়ার তালিকা পেতে সেটিংসে গিয়ে “পড়ার তালিকা” চালু করুন।</translation>
 <translation id="7866993391592926595">এই কার্ড আড়াল করলে প্যাকেজ ট্র্যাকিং বন্ধ হয়ে যাবে ও আপনার সমস্ত ডেটা সরিয়ে দেওয়া হবে</translation>
 <translation id="7870750252270996949">লেন্স কপি করা ছবি</translation>
+<translation id="7877056713163921063">পরিচিতিতে যোগ করুন</translation>
 <translation id="7879275349003161544">ডাউনলোড দেখুন</translation>
 <translation id="7883882164760409935">আপনার কাছে একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে।</translation>
 <translation id="7884694604461143138">সার্চ ইতিহাস (<ph name="COUNT" />টি পাওয়া গেছে)</translation>
@@ -1593,7 +1597,6 @@
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> হল আপনার সার্চ ইঞ্জিনের নাম। এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মোছার জন্য সেটির নির্দেশাবলী দেখুন।</translation>
 <translation id="9008201768610948239">উপেক্ষা করুন</translation>
 <translation id="9012585441087414258">বিপজ্জনক হতে পারে এমন সাইট, ডাউনলোড ও এক্সটেনশন থেকে সুরক্ষিত রাখে। কোনও পৃষ্ঠাতে সন্দেহজনক কিছু পাওয়া গেলে, URL ও পৃষ্ঠার কন্টেন্টের কিছু অংশ Google Safe Browsing-এ পাঠানো হয়।</translation>
-<translation id="9025203546212508704">আপনার মেনু কীভাবে কাস্টমাইজ করতে হবে তা জানতে সোয়াইপ করুন</translation>
 <translation id="9029650858822697271">আপনি সাইন-আউট হয়ে গেছেন</translation>
 <translation id="9034759925968272072">আপনাকে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না। আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-এ থাকতে পারে।</translation>
 <translation id="9037965129289936994">প্রকৃত রূপ দেখান</translation>

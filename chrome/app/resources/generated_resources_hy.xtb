@@ -1612,8 +1612,6 @@
 <translation id="2165102982098084499">Դուք կապել եք այս սարքերը՝ սկանավորելով QR կոդ։</translation>
 <translation id="2165177462441582039">Ընտրեք, թե յուրաքանչյուր տարր որքան ժամանակ պետք է նշված մնա</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Այս սարքը (սերիական համար՝ <ph name="SERIAL_NUMBER" />) կողպվել է։<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Chrome սարքերի կառավարումը <ph name="MS_AD_NAME" />-ով այլևս չի աջակցվում։ Մուտք գործելու համար օգտագործեք այլ սարք կամ դիմեք ձեր սարքի ադմինիստրատորին։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Մուտք գործել</translation>
 <translation id="2173302385160625112">Ստուգեք կապը</translation>
 <translation id="2173801458090845390">Ավելացնել սարքին հայտի ID-ն</translation>
@@ -6902,7 +6900,6 @@
 <translation id="6154240335466762404">Հեռացնել բոլոր միացքները</translation>
 <translation id="615436196126345398">Հաղորդակարգ</translation>
 <translation id="6154739047827675957">Չհաջողվեց կարգավորել OneDrive-ը</translation>
-<translation id="6154820449290823443">Կառավարեք հավելվածների հասանելիությունը և արգելափակեք դրանք այս Chromebook-ում։</translation>
 <translation id="6155141482566063812">Ֆոնային ներդիրում օգտագործվում է ձեր էկրանը</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Ստեղծել մուտքի բանալի</translation>
@@ -7531,6 +7528,7 @@
 <translation id="6647690760956378579">Բնական ձայնի նախնական ունկնդրում</translation>
 <translation id="6648911618876616409">Առկա է կարևոր թարմացում։ Տեղադրելու համար մուտք գործեք:</translation>
 <translation id="6649018507441623493">Մի վայրկյան...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
 <translation id="6650206238642452078">Բաժանորդագրվեք ChromeOS համակարգի իրադարձություններին</translation>
 <translation id="6650584564768559994">Հիշողության ծավալի հավասարակշռված տնտեսում։ Ներդիրները ոչ ակտիվ են դառնում օպտիմալ ժամանակահատվածից հետո։</translation>
 <translation id="665061930738760572">Բացել &amp;նոր պատուհանում</translation>
@@ -8832,7 +8830,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# բաց պատուհան}one{# բաց պատուհան}other{# բաց պատուհան}}</translation>
 <translation id="7643932971554933646">Թույլ տա՞լ կայքին ֆայլեր դիտել</translation>
 <translation id="7644543211198159466">Գույն և թեմա</translation>
-<translation id="7644953783774050577">Չընտրել ոչ մեկը</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (սեփականատեր)</translation>
 <translation id="7645681574855902035">Լինուքսի պահուստավորումը չեղարկվում է</translation>
 <translation id="7646772052135772216">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>

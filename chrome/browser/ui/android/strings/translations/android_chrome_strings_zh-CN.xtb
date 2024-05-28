@@ -314,7 +314,6 @@
 <translation id="2650348088770008516">隐私保护指南说明已关闭</translation>
 <translation id="2650408372219180431">导出并删除此设备中保存的密码</translation>
 <translation id="2650751991977523696">是否重新下载文件？</translation>
-<translation id="2651465929321991146">历史记录和标签页</translation>
 <translation id="265156376773362237">标准预加载</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2656405586795711023">Web 应用</translation>
@@ -906,7 +905,6 @@
 <translation id="5626134646977739690">名字：</translation>
 <translation id="5628604359369369630">未读 - 可离线阅读</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />搜索记录<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活动记录<ph name="END_LINK2" />可能会保存在您的 Google 账号中</translation>
-<translation id="564667659802381754">隐私保护指南<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">过去 7 天</translation>
 <translation id="5655963694829536461">搜索您的下载内容</translation>
 <translation id="5657871969392618475">为确保您的信息安全，已为您开启个人资料锁定</translation>
@@ -985,6 +983,7 @@
 <translation id="6002122790816966947">您的设备</translation>
 <translation id="6011308810877101166">改进搜索建议</translation>
 <translation id="6013305291643746595">按从旧到新排序</translation>
+<translation id="6022659036123304283">定制您的专属 Chrome</translation>
 <translation id="6026538407078977628">展开为全屏</translation>
 <translation id="6030719887161080597">管理网站用于衡量广告效果的信息</translation>
 <translation id="6039379616847168523">跳转到下一个标签页</translation>
@@ -1144,6 +1143,7 @@
 <translation id="6734310707649923383">您可以查看自己访问过的网页，也可将网页从历史记录中删除</translation>
 <translation id="6738867403308150051">正在下载…</translation>
 <translation id="674388916582496364">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还能将您的兴趣信息存储在 Chrome 中。</translation>
+<translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6751521182688001123">快速打开一个新标签页。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="6756507620369789050">分享反馈</translation>
 <translation id="6762511428368667596"><ph name="NAME" />，<ph name="EMAIL" />。</translation>
@@ -1176,6 +1176,7 @@
 <translation id="686490460830618322">应用过滤器工作表</translation>
 <translation id="6865313869410766144">自动填充表单数据</translation>
 <translation id="6867400383614725881">打开新的无痕式标签页</translation>
+<translation id="686899695320434745">地址未使用您的口令加密，以便您在其他 Google 服务中使用。</translation>
 <translation id="6869056123412990582">计算机</translation>
 <translation id="6882836635272038266">针对已知危险网站、下载内容和扩展程序提供标准保护。</translation>
 <translation id="6883204995689174413">分享</translation>
@@ -1598,6 +1599,7 @@
 <translation id="885480114717186641">您可以请求访问 <ph name="HOST_NAME" /> 的桌面版网站</translation>
 <translation id="8856607253650333758">获取说明</translation>
 <translation id="8856931513242997049">通知权限流程已关闭</translation>
+<translation id="8865415417596392024">您账号中的 Chrome 数据</translation>
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8909135823018751308">分享…</translation>
 <translation id="8921980840204105660">同步即可获取您在其他设备上保存的书签</translation>

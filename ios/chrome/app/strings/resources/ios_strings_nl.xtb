@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adres alleen opgeslagen op dit apparaat</translation>
 <translation id="1449835205994625556">Wachtwoord verbergen</translation>
 <translation id="1450170672351507823">Standaardbeveiliging staat aan. Gebruik verbeterde beveiliging voor nog meer bescherming.</translation>
+<translation id="1455492980583160269">Bericht sturen</translation>
 <translation id="1469381646033328562">Je account wordt beheerd door je ouder.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Dubbeltik om de instelling aan of uit te zetten</translation>
@@ -861,6 +862,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="54401264925851789">Paginabeveiligingsinfo</translation>
 <translation id="5443952882982198570">Creditcards</translation>
 <translation id="5444892875087332195">Bookmarks</translation>
+<translation id="5453738961176844111">Landcode</translation>
 <translation id="5454211924362324495"><ph name="BEGIN_LINK" />Wijzig je wachtwoord op <ph name="WEBSITE" /><ph name="END_LINK" /> om te voorkomen dat anderen het gebruiken</translation>
 <translation id="5457226814769348910">Offline versie openen</translation>
 <translation id="5459548306731933777">Details tonen</translation>
@@ -1189,6 +1191,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Je kunt ook je vinger op de adresbalk houden om de positie te wijzigen.</translation>
 <translation id="6988572888918530647">Je Google-account beheren</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Aan</translation>
 <translation id="699954956411469731">Mobiele meldingen</translation>
 <translation id="699985840472413751">Download sluiten</translation>
@@ -1355,6 +1358,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7866872729285243843">Als je je leeslijst op al je apparaten wilt krijgen, zet je Leeslijst aan in de instellingen.</translation>
 <translation id="7866993391592926595">Als je deze kaart verbergt, wordt verzendstatus bijhouden uitgezet en worden al je gegevens verwijderd</translation>
 <translation id="7870750252270996949">Afbeelding gekopieerd door Lens</translation>
+<translation id="7877056713163921063">Toevoegen aan contacten</translation>
 <translation id="7879275349003161544">Downloads tonen</translation>
 <translation id="7883882164760409935">Je hebt hergebruikte wachtwoorden.</translation>
 <translation id="7884694604461143138">Zoekgeschiedenis (<ph name="COUNT" /> gevonden)</translation>
@@ -1592,7 +1596,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9000089900434778519">Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="9008201768610948239">Negeren</translation>
 <translation id="9012585441087414258">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als een pagina iets verdachts doet, worden URL's en delen van de paginacontent naar Google Safe Browsing gestuurd.</translation>
-<translation id="9025203546212508704">Swipe voor meer informatie over hoe je het menu aanpast</translation>
 <translation id="9029650858822697271">Je bent uitgelogd</translation>
 <translation id="9034759925968272072">Je wordt niet uitgelogd van je Google-account. Voor je Google-account kunnen andere vormen van browsegeschiedenis beschikbaar zijn via <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Origineel bekijken</translation>

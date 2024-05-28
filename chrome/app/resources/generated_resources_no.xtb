@@ -1614,8 +1614,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2165102982098084499">Du tilknyttet disse enhetene ved å skanne en QR-kode.</translation>
 <translation id="2165177462441582039">Velg hvor lenge hvert element skal fremheves</translation>
 <translation id="2166369534954157698">Høvdingens kjære squaw får litt pizza i Mexico by</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Denne enheten (SN: <ph name="SERIAL_NUMBER" />) ble låst.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Administrering av Chrome-enheter med <ph name="MS_AD_NAME" /> støttes ikke lenger. Logg på med en annen enhet, eller kontakt enhetsadministratoren.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Logg på likevel</translation>
 <translation id="2173302385160625112">Sjekk internettilkoblingen</translation>
 <translation id="2173801458090845390">Legg til en rekvisisjons-ID for denne enheten</translation>
@@ -6911,7 +6909,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6154240335466762404">Fjern alle porter</translation>
 <translation id="615436196126345398">Protokoll</translation>
 <translation id="6154739047827675957">OneDrive-konfigureringen mislyktes</translation>
-<translation id="6154820449290823443">Administrer tilgang til og blokker apper på denne Chromebooken.</translation>
 <translation id="6155141482566063812">En fane i bakgrunnen deler skjermen din</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Opprett en passnøkkel</translation>
@@ -7538,6 +7535,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6647690760956378579">Forhåndsvisning av naturlig stemme</translation>
 <translation id="6648911618876616409">En kritisk oppdatering er klar for installasjon. Logg på for å komme i gang.</translation>
 <translation id="6649018507441623493">Vent litt</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vil bekrefte at det er deg</translation>
 <translation id="6650206238642452078">Abonner på Chrome OS-systemhendelser</translation>
 <translation id="6650584564768559994">Balanserte minnebesparelser. Fanene dine blir inaktive etter en optimal periode.</translation>
 <translation id="665061930738760572">Åpne i &amp;nytt vindu</translation>
@@ -8840,7 +8838,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7643842463591647490">{0,plural, =1{# åpent vindu}other{# åpne vinduer}}</translation>
 <translation id="7643932971554933646">Vil du la nettstedet se filene?</translation>
 <translation id="7644543211198159466">Farge og tema</translation>
-<translation id="7644953783774050577">Velg ingen</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eier)</translation>
 <translation id="7645681574855902035">Avbryter sikkerhetskopiering av Linux</translation>
 <translation id="7646772052135772216">Passordsynkronisering fungerer ikke</translation>

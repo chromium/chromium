@@ -2224,15 +2224,6 @@ L'etichetta personalizzata non verrà tradotta.</translation>
 <translation id="2699836109975228367">Attiva l'audio in formato mono sulla schermata di accesso</translation>
 <translation id="2702023190395322609">Attiva consigli di contenuti multimediali</translation>
 <translation id="2702682139813393777">Forza l'avvio degli host di messaggistica nativi di Windows tramite cmd.exe</translation>
-<translation id="2703733412051211941">Consente di attivare un'azione quando il computer è inattivo.
-
-      Se questo criterio viene configurato, consente di specificare il periodo di tempo senza input utente (in minuti) prima che il browser esegua le azioni configurate tramite il criterio <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Se il criterio non viene configurato, non verrà eseguita alcuna azione.
-
-      La soglia minima è di 1 minuto.
-
-      "L'input utente" è definito dalle API del sistema operativo e include, ad esempio, lo spostamento del mouse o la digitazione tramite tastiera.</translation>
 <translation id="270582584528242502">Non mostrare una finestra di dialogo di avviso quando l'utente sta tentando di uscire</translation>
 <translation id="2706708761587205154">Consenti la stampa solo con PIN</translation>
 <translation id="2707733461906745082">Separazione profilo</translation>
@@ -3786,29 +3777,6 @@ Nota: se l'impostazione non restituisce metodi di autenticazione supportati sia 
 <translation id="3982465141749620677">Chiedi una nuova autorizzazione in una scheda</translation>
 <translation id="398294729592983401">Consenti agli utenti di attivare o disattivare l'impostazione Protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> sul proprio dispositivo.</translation>
 <translation id="3983162212222338509">La risoluzione DNS di sistema può essere essere eseguita nel processo di rete, all'esterno del processo di rete o parzialmente all'interno e all'esterno, a seconda della configurazione del sistema e dei flag funzionalità.</translation>
-<translation id="3984773186203819634">Elenco di azioni da eseguire quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Se il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non viene configurato, questo criterio non ha alcun effetto.
-
-      Quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />, il browser esegue le azioni configurate in questo criterio.
-
-      Se questo criterio è vuoto o se non viene configurato, il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non ha alcun effetto.
-
-      Le azioni supportate sono:
-
-      "<ph name="CLOSE_BROWSERS_ACTION" />": vengono chiuse tutte le finestre del browser e le PWA di questo profilo. Azione non supportata su Android e iOS.
-
-      "<ph name="CLOSE_TABS_ACTION" />": vengono chiuse tutte le schede nelle finestre aperte. Azione supportata solo su iOS.
-
-      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": viene mostrata la finestra Selettore profilo. Azione non supportata su Android e iOS.
-
-      "<ph name="SIGN_OUT_ACTION" />": l'utente che ha attualmente eseguito l'accesso viene disconnesso. Azione supportata solo su iOS.
-
-      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": vengono cancellati i dati di navigazione corrispondenti. Per maggiori informazioni, vedi il criterio <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />. I tipi di azione supportati su iOS sono: "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />" e "<ph name="CLEAR_AUTOFILL_ACTION" />"
-
-      "<ph name="RELOAD_PAGES_ACTION" />": vengono ricaricate tutte le pagine web. Per alcune pagine, all'utente potrebbe essere chiesto di confermare prima. Azione non supportata su iOS.
-
-      La configurazione delle azioni "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" e "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" comporta la disattivazione della sincronizzazione per i rispettivi tipi di dati se né il criterio "<ph name="CHROME_SYNC_NAME" />" viene disattivato impostando il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> né il criterio <ph name="BROWSER_SIGNIN_POLICY_NAME" /> viene disattivato.</translation>
 <translation id="3986700049001404598">Consenti agli utenti di terminare i processi con il Task Manager di Chrome</translation>
 <translation id="398884292557092447">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
 
@@ -3908,11 +3876,6 @@ Vecchio comportamento precedente: in "beforeunload", la chiamata di "event.preve
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
 <translation id="4052529125939620019">Carica l'estensione del componente CryptoToken all'avvio</translation>
 <translation id="4053157306171963473">Disattiva i report sul tempo di attività del dispositivo</translation>
-<translation id="4055758693679485627">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente. Tra i tipi di dati disponibili ci sono: cronologia di navigazione (<ph name="DATA_TYPE_BROWSING_HISTORY" />), cronologia dei download (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, compilazione automatica (<ph name="DATA_TYPE_AUTOFILL" />), password (<ph name="DATA_TYPE_PASSWORD" />), impostazioni sito (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dati di app ospitate (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Questo criterio non ha la precedenza su <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Fino a Chrome 114, questo criterio richiedeva l'impostazione del criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questo criterio disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivato impostando il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivato <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
-
-      Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso di arresto anomalo del browser o del sistema operativo), i dati di navigazione verranno cancellati al successivo caricamento del profilo.</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
 <translation id="4057442294431066708">Questo criterio consente di stabilire l'opzione della scorciatoia selezionata per la rimappatura degli eventi a
 F11/F12 nella pagina secondaria per rimappare i tasti. Queste impostazioni si applicano solo alle
@@ -4353,15 +4316,6 @@ Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name
 <translation id="4426986640594727372">Consenti l'accesso alla geolocalizzazione del sistema</translation>
 <translation id="4427173305799125784">Il visualizzatore PDF non può aggiungere annotazioni nei PDF</translation>
 <translation id="4432762137771104529">Attiva rapporti estesi su Navigazione sicura</translation>
-<translation id="4434531680131327140">Consente di configurare le impostazioni del periodo di validità dei dati di navigazione per <ph name="PRODUCT_NAME" />. Questo criterio consente agli amministratori di configurare (in base al tipo di dati) quando il browser dovrà eliminare i dati. Questa funzionalità è utile per i clienti che gestiscono dati dei clienti sensibili.
-
-      I tipi di dati disponibili sono i seguenti: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" /> non sono supportati su Android.
-
-      Il browser rimuoverà automaticamente i dati dei tipi selezionati che sono antecedenti al periodo indicato (<ph name="TIME_TO_LIVE_IN_HOURS" />). Il valore minimo impostabile è 1 ora.
-
-      I dati scaduti vengono eliminati 15 secondi dopo l'avvio del browser, dopodiché ogni 30 minuti mentre il browser è in esecuzione.
-
-      Fino a Chrome 114, questo criterio richiedeva l'impostazione del criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questo criterio disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivato impostando il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivato <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="443454694385851356">Precedente (non sicuro)</translation>
 <translation id="4435032708588431506">Consenti QUIC</translation>
 <translation id="443665821428652897">Cancella i dati del sito alla chiusura del browser (obsoleta)</translation>

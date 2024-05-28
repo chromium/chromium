@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adresa je sačuvana samo na ovom uređaju</translation>
 <translation id="1449835205994625556">Sakrijte lozinku</translation>
 <translation id="1450170672351507823">Standardna zaštita je uključena. Za još veću sigurnost koristite poboljšanu zaštitu.</translation>
+<translation id="1455492980583160269">Pošaljite poruku</translation>
 <translation id="1469381646033328562">Tvojim računom upravlja roditelj.
 <ph name="BEGIN_LINK" />Saznaj više<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Dodirnite dvaput da prebacite postavku</translation>
@@ -861,6 +862,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="54401264925851789">Informacije o sigurnosti stranice</translation>
 <translation id="5443952882982198570">Kreditne kartice</translation>
 <translation id="5444892875087332195">Oznake</translation>
+<translation id="5453738961176844111">Pozivni broj zemlje</translation>
 <translation id="5454211924362324495">Da spriječite druge da koriste vašu lozinku, <ph name="BEGIN_LINK" />promijenite lozinku na <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Otvori offline verziju</translation>
 <translation id="5459548306731933777">Prikaži detalje</translation>
@@ -1189,6 +1191,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6983306615164277634">Također možete dodirnuti i zadržati traku za adresu da promijenite položaj.</translation>
 <translation id="6988572888918530647">Upravljanje Google računom</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">U</translation>
 <translation id="699954956411469731">Obavještenja na mobilnom uređaju</translation>
 <translation id="699985840472413751">Zatvaranje preuzimanja</translation>
@@ -1355,6 +1358,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7866872729285243843">Da preuzmete listu za čitanje na sve svoje uređaje, uključite "Lista za čitanje" u postavkama.</translation>
 <translation id="7866993391592926595">Sakrivanje ove kartice će isključiti praćenje paketa i ukloniti sve podatke</translation>
 <translation id="7870750252270996949">Slika Objektiva koju ste kopirali</translation>
+<translation id="7877056713163921063">Dodajte u Kontakte</translation>
 <translation id="7879275349003161544">Prikaz preuzimanja</translation>
 <translation id="7883882164760409935">Imate već korištene lozinke.</translation>
 <translation id="7884694604461143138">Pretražite historiju (broj rezultata je <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="9000089900434778519">Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati historiju pretraživanja.</translation>
 <translation id="9008201768610948239">Zanemari</translation>
 <translation id="9012585441087414258">Štiti od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasni. Ako stranica uradi nešto sumnjivo, URL-ovi i dijelovi sadržaja stranice se šalju na Sigurno pregledanje na Googleu.</translation>
-<translation id="9025203546212508704">Prevucite da saznate kako prilagoditi meni</translation>
 <translation id="9029650858822697271">Odjavljeni ste</translation>
 <translation id="9034759925968272072">Nećete biti odjavljeni s Google računa. Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Prikaži original</translation>

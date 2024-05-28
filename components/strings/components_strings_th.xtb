@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />นายจ้างหรือโรงเรียน
           <ph name="LIST_ITEM" />ผู้ให้บริการอินเทอร์เน็ต
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">ติดตามรายการนี้</translation>
 <translation id="1337692097987160377">แชร์แท็บนี้</translation>
 <translation id="1339601241726513588">โดเมนการลงทะเบียน:</translation>
 <translation id="1340482604681802745">ที่อยู่ในการรับ</translation>
@@ -2610,6 +2611,7 @@
 <translation id="6035491133925068289">ลู่และลาน</translation>
 <translation id="6039846035001940113">หากยังคงพบปัญหา ให้ติดต่อเจ้าของเว็บไซต์</translation>
 <translation id="6040143037577758943">ปิด</translation>
+<translation id="6040539895181423374">ข้อมูลเชิงลึกด้านราคา</translation>
 <translation id="604124094241169006">อัตโนมัติ</translation>
 <translation id="6041777658117377052">อุณหภูมิตู้</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>

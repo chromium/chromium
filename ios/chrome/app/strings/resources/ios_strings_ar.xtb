@@ -90,6 +90,7 @@
 <translation id="143681031165817424">تم حفظ العنوان على هذا الجهاز فقط.</translation>
 <translation id="1449835205994625556">إخفاء كلمة المرور</translation>
 <translation id="1450170672351507823">الحماية العادية مفعَّلة. لزيادة مستوى الأمان، يمكنك استخدام "الحماية المُحسَّنة".</translation>
+<translation id="1455492980583160269">إرسال رسالة</translation>
 <translation id="1469381646033328562">يدير أحد والدَيك حسابك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">انقر مرّتين لتبديل الإعداد</translation>
@@ -863,6 +864,7 @@
 <translation id="54401264925851789">معلومات أمان الصفحة</translation>
 <translation id="5443952882982198570">بطاقات الائتمان</translation>
 <translation id="5444892875087332195">الإشارات المرجعية</translation>
+<translation id="5453738961176844111">رمز البلد</translation>
 <translation id="5454211924362324495">لمنع الآخرين من استخدام كلمة مرورك، <ph name="BEGIN_LINK" />عليك تغييرها من خلال<ph name="WEBSITE" /><ph name="END_LINK" />.</translation>
 <translation id="5457226814769348910">فتح نسخة بلا إنترنت</translation>
 <translation id="5459548306731933777">عرض التفاصيل</translation>
@@ -1191,6 +1193,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">يمكنك أيضًا النقر مع الاستمرار على شريط العناوين لتغيير مكانه.</translation>
 <translation id="6988572888918530647">‏إدارة حسابك على Google</translation>
+<translation id="6990519590575500580">‏استخدام Facetime</translation>
 <translation id="6998989275928107238">إلى</translation>
 <translation id="699954956411469731">إشعارات إلى الجهاز الجوّال</translation>
 <translation id="699985840472413751">إغلاق شريط التنزيل</translation>
@@ -1357,6 +1360,7 @@
 <translation id="7866872729285243843">يجب تفعيل ميزة "قائمة القراءة" من خلال الإعدادات لعرض هذه القائمة على جميع أجهزتك.</translation>
 <translation id="7866993391592926595">إخفاء هذه البطاقة سيؤدي إلى إيقاف تتبُّع الطرود وإزالة جميع بياناتك</translation>
 <translation id="7870750252270996949">‏البحث باستخدام "عدسة Google" عن الصورة المنسوخة</translation>
+<translation id="7877056713163921063">إضافة الرقم إلى جهات الاتصال</translation>
 <translation id="7879275349003161544">عرض مجلد عمليات التنزيل</translation>
 <translation id="7883882164760409935">لديك كلمات مرور مستخدَمة لحساب آخر.</translation>
 <translation id="7884694604461143138">سجلّ البحث (عدد النتائج المطابقة: <ph name="COUNT" />)</translation>
@@ -1594,7 +1598,6 @@
 <translation id="9000089900434778519">محرّك بحثك هو <ph name="DSE_NAME" />. اطّلِع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="9008201768610948239">تجاهل</translation>
 <translation id="9012585441087414258">‏يوفر لك هذا الوضع حماية من المواقع الإلكترونية وعمليات التنزيل والإضافات التي تبيّن أنها ضارة. فإذا تم رصد نشاط مريب في إحدى الصفحات، يتم إرسال عناوين URL وأجزاء من محتوى الصفحة إلى ميزة "التصفّح الآمن من Google".</translation>
-<translation id="9025203546212508704">مرِّر سريعًا لمعرفة كيفية تخصيص القائمة</translation>
 <translation id="9029650858822697271">تم تسجيل خروجك من الحساب</translation>
 <translation id="9034759925968272072">‏لن يتم تسجيل خروجك من حسابك في Google. قد يتضمن حسابك في Google نماذج أخرى من سجل التصفح في <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">عرض الصفحة الأصلية</translation>

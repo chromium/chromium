@@ -2198,15 +2198,6 @@ La etiqueta personalizada no se traducirá.</translation>
 <translation id="2699836109975228367">Habilitar el audio en mono en la pantalla de inicio de sesión</translation>
 <translation id="2702023190395322609">Habilitar recomendaciones de contenido multimedia</translation>
 <translation id="2702682139813393777">Forzar que los hosts de mensajería nativa de Windows se inicien mediante cmd.exe</translation>
-<translation id="2703733412051211941">Activa una acción cuando el ordenador está inactivo.
-
-      Si se establece, esta política especifica el tiempo (en minutos) que debe transcurrir sin ninguna entrada del usuario antes de que el navegador ejecute las acciones configuradas a través de la política <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Si no se establece esta política, no se ejecutará ninguna acción.
-
-      El umbral mínimo es 1 minuto.
-
-      Las APIs del sistema operativo definen qué es una "entrada del usuario" (por ejemplo, mover el ratón o escribir con el teclado).</translation>
 <translation id="270582584528242502">No mostrar un cuadro de diálogo de advertencia cuando el usuario intenta salir</translation>
 <translation id="2706708761587205154">Permitir imprimir solo con PIN</translation>
 <translation id="2707733461906745082">Separación de perfiles</translation>
@@ -3761,29 +3752,6 @@ Nota: Si el ajuste implica que ni el host ni el cliente admitan métodos de aute
 <translation id="3982465141749620677">Solicitar reautenticación en una pestaña</translation>
 <translation id="398294729592983401">Permitir que los usuarios activen o desactiven el ajuste de protección contra la recogida de huellas digitales de <ph name="PRIVACY_SANDBOX_NAME" /> en su dispositivo.</translation>
 <translation id="3983162212222338509">La resolución de DNS del sistema puede ejecutarse dentro o fuera del proceso de red, o bien parcialmente dentro y fuera de él, en función de la configuración del sistema y las marcas de funciones.</translation>
-<translation id="3984773186203819634">Lista de acciones que se ejecutarán cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Esta política no tendrá efecto si no se define la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, el navegador ejecutará las acciones configuradas en esta política.
-
-      Si esta política se deja vacía o no se establece, la política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> no tendrá efecto.
-
-      Estas son las acciones que se pueden realizar:
-
-      <ph name="CLOSE_BROWSERS_ACTION" />: cierra todas las ventanas del navegador y PWAs de este perfil. No se admite en Android ni en iOS.
-
-      <ph name="CLOSE_TABS_ACTION" />: cierra todas las pestañas abiertas en las ventanas abiertas. Solo se admite en iOS.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: muestra la ventana del selector de perfil. No se admite en Android ni en iOS.
-
-      <ph name="SIGN_OUT_ACTION" />: cierra la sesión del usuario que tiene la sesión iniciada. Solo se admite en iOS.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" /> y <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: borran los datos de navegación correspondientes. Consulta la política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> para obtener más información. Los tipos admitidos en iOS son <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" /> y <ph name="CLEAR_AUTOFILL_ACTION" />
-
-      <ph name="RELOAD_PAGES_ACTION" />: vuelve a cargar todas las páginas web. En algunas páginas, es posible que primero se solicite la confirmación del usuario. No se admite en iOS.
-
-      Si se definen <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> y <ph name="CLEAR_SITE_SETTINGS_ACTION" />, se inhabilitará la sincronización de los respectivos tipos de datos si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="3986700049001404598">Permitir que los usuarios finalicen procesos con el administrador de tareas de Chrome</translation>
 <translation id="398884292557092447">Si se asigna el valor "True" a esta política o no se le asigna ninguno, los usuarios podrán controlar las sugerencias de Autocompletar para la información de tarjetas de crédito en la interfaz.
 
@@ -3883,11 +3851,6 @@ Comportamiento antiguo: en beforeunload, si se llama a event.preventDefault(), n
 <translation id="4051723201852944592">Habilitar la oclusión de ventana</translation>
 <translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
 <translation id="4053157306171963473">Inhabilitar los informes sobre el tiempo de actividad del dispositivo</translation>
-<translation id="4055758693679485627">Configura una lista de los tipos de datos de navegación que se deben eliminar cuando el usuario cierra todas las ventanas del navegador. Los tipos de datos disponibles son los siguientes: historial de navegación (<ph name="DATA_TYPE_BROWSING_HISTORY" />), historial de descargas (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), caché <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, Autocompletar (<ph name="DATA_TYPE_AUTOFILL" />), contraseñas (<ph name="DATA_TYPE_PASSWORD" />), configuración de sitios (<ph name="DATA_TYPE_SITE_SETTINGS" />) y datos de aplicaciones alojadas (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política no prevalece sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Hasta Chrome 114, esta política requería que se asignara el valor true a la política <ph name="SYNC_DISABLED_POLICY_NAME" />. A partir de Chrome 115, si se define esta política, se inhabilitará la sincronización de los respectivos tipos de datos si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
-
-      Si <ph name="PRODUCT_NAME" /> no se cierra correctamente (por ejemplo, si el navegador o el SO fallan), los datos de navegación se borrarán la próxima vez que se cargue el perfil.</translation>
 <translation id="4056910949759281379">Inhabilitar protocolo SPDY</translation>
 <translation id="4057442294431066708">Esta política controla la opción de combinación de teclas seleccionada para reasignar eventos
 a F11/F12 en la subpágina de reasignación de teclas. Estos ajustes solo se aplican a los teclados de ChromeOS
@@ -4320,15 +4283,6 @@ Si se define esta política, los usuarios no podrán modificarla en <ph name="PR
 <translation id="4426986640594727372">Permitir el acceso a la geolocalización del sistema</translation>
 <translation id="4427173305799125784">El visor de PDF no puede anotar PDFs</translation>
 <translation id="4432762137771104529">Habilita los informes ampliados de Navegación segura</translation>
-<translation id="4434531680131327140">Configura los ajustes del periodo de vida de los datos de navegación de <ph name="PRODUCT_NAME" />. Esta política permite a los administradores configurar (por tipo de datos) cuándo eliminará el navegador los datos. Es útil para las personas que trabajan con datos sensibles de clientes.
-
-      Los tipos de datos disponibles son <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> y <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> y <ph name="DATA_TYPE_HOSTED_APP_DATA" /> no se admiten en Android.
-
-      El navegador eliminará automáticamente los datos de los tipos seleccionados que tengan una antigüedad superior a <ph name="TIME_TO_LIVE_IN_HOURS" />. El valor mínimo que se puede definir es 1 hora.
-
-      Los datos caducados se eliminarán 15 segundos después de iniciarse el navegador y, después, cada 30 minutos mientras se esté ejecutando el navegador.
-
-      Hasta Chrome 114, esta política requería que se asignara el valor true a la política <ph name="SYNC_DISABLED_POLICY_NAME" />. A partir de Chrome 115, si se define esta política, se inhabilitará la sincronización de los respectivos tipos de datos si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="443454694385851356">Antiguos (no seguro)</translation>
 <translation id="4435032708588431506">Permitir QUIC</translation>
 <translation id="443665821428652897">Borrar datos del sitio al cerrar el navegador (obsoleta)</translation>

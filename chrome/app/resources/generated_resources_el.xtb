@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Όχι τώρα</translation>
 <translation id="100881991356161927">Όνομα ιστοτόπου</translation>
 <translation id="1009663062402466586">Τα στοιχεία ελέγχου παιχνιδιού είναι πλέον διαθέσιμα</translation>
+<translation id="1010136228650201057">Κρυπτογράφηση δεδομένων χρήστη</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Μη ανταποκρίσιμη σελίδα}other{Μη ανταποκρίσιμες σελίδες}}</translation>
 <translation id="1011003645819296594">Αποθηκευμένες συσκευές</translation>
 <translation id="1011355516189274711">Ένταση ήχου μετατροπής κειμένου σε ομιλία</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Ανώνυμη περιήγηση</translation>
 <translation id="1049795001945932310">Ρυθμίσεις &amp;γλώσσας</translation>
 <translation id="1050693411695664090">Χαμηλό</translation>
+<translation id="1053776357096024725">Βελτιώστε τον ήχο του ενσωματωμένου μικροφώνου σας με διάφορα εφέ</translation>
 <translation id="1054048317165655285">Ολοκληρώστε τη ρύθμιση με το τηλέφωνό σας</translation>
 <translation id="1054153489933238809">Άνοιγμα αρχικής εικόνας σε νέα καρτέλα</translation>
 <translation id="1054187194995068149">Γεια σας. Αυτή είναι μια προεπισκόπηση</translation>
@@ -834,6 +836,7 @@
 <translation id="1607139524282324606">Διαγραφή καταχώρισης</translation>
 <translation id="1607499585984539560">Ο χρήστης δεν συσχετίζεται με τον τομέα</translation>
 <translation id="1608668830839595724">Περισσότερες ενέργειες για τα επιλεγμένα στοιχεία</translation>
+<translation id="1608698493373028805">Η υποστήριξη για αυτή την επέκταση ενδέχεται σύντομα να διακοπεί</translation>
 <translation id="1610272688494140697">Ρυθμίσεις εφαρμογής</translation>
 <translation id="161042844686301425">Κυανό</translation>
 <translation id="1611432201750675208">Η συσκευή σας είναι κλειωδωμένη</translation>
@@ -1620,8 +1623,6 @@
 <translation id="2165102982098084499">Συνδέσατε αυτές τις συσκευές με σάρωση κωδικού QR.</translation>
 <translation id="2165177462441582039">Επιλέξτε τη διάρκεια επισήμανσης κάθε στοιχείου</translation>
 <translation id="2166369534954157698">Η γρήγορη καφέ αλεπού πηδάει πάνω από το τεμπέλικο σκυλί</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Αυτή η συσκευή (σειριακός αριθμός: <ph name="SERIAL_NUMBER" />) κλειδώθηκε.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Η Διαχείριση συσκευών Chrome με <ph name="MS_AD_NAME" /> δεν υποστηρίζεται πλέον. Για να συνδεθείτε, χρησιμοποιήστε μια διαφορετική συσκευή ή επικοινωνήστε με τον διαχειριστή της συσκευής σας.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Σύνδεση</translation>
 <translation id="2173302385160625112">Ελέγξτε τη σύνδεσή σας στο διαδίκτυο</translation>
 <translation id="2173801458090845390">Προσθήκη αναγνωριστικού επίταξης σε αυτήν τη συσκευή</translation>
@@ -2321,6 +2322,7 @@
 <translation id="2667144577800272420">Άλλες εφαρμογές έχουν ρυθμιστεί να ανοίγουν τους ίδιους συνδέσμους με την εφαρμογή <ph name="APP_NAME" />. Με αυτή την ενέργεια, οι εφαρμογές <ph name="APP_NAME_2" /> και <ph name="APP_NAME_3" /> δεν θα μπορούν να ανοίγουν τους υποστηριζόμενους συνδέσμους.</translation>
 <translation id="2667463864537187133">Διαχείριση ορθογραφικού ελέγχου</translation>
 <translation id="2668094785979141847">Κάντε κλικ για έξοδο από το Google Lens</translation>
+<translation id="2668604389652548400">Καταργήστε ή αντικαταστήστε τη με παρόμοιες επεκτάσεις από το <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Δεν ήταν δυνατό το άνοιγμα της εφαρμογής <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Όλοι όσοι χρησιμοποιούν αυτήν τη συσκευή θα μπορούν να βλέπουν τα αρχεία που έχετε κατεβάσει</translation>
 <translation id="2670102641511624474">Η εφαρμογή <ph name="APP_NAME" /> μοιράζεται μια καρτέλα Chrome.</translation>
@@ -2371,6 +2373,7 @@
 <translation id="2710101514844343743">Δεδομένα χρήσης και διαγνωστικών</translation>
 <translation id="271033894570825754">Νέο</translation>
 <translation id="2710507903599773521">Η συσκευή <ph name="DEVICE_TYPE" /> έχει πλέον ξεκλειδωθεί</translation>
+<translation id="2712141162840347885">Επιλέξτε οτιδήποτε για αναζήτηση με το Google Lens ή πατήστε Escape για έξοδο από το Google Lens</translation>
 <translation id="2713106313042589954">Απενεργοποίηση κάμερας</translation>
 <translation id="2713444072780614174">Λευκό</translation>
 <translation id="2714180132046334502">Σκούρο φόντο</translation>
@@ -2995,6 +2998,7 @@
 <translation id="3177914167275935955">Η συσκευή σας περιλαμβάνει Αναβάθμιση του Chrome για εκπαιδευτικά ιδρύματα, αλλά το όνομα χρήστη σας δεν συσχετίζεται με έναν λογαριασμό Google for Education. Δημιουργήστε έναν λογαριασμό Google for Education μεταβαίνοντας στη διεύθυνση g.co/workspace/edusignup σε μια δευτερεύουσα συσκευή.</translation>
 <translation id="3179982752812949580">Γραμματοσειρά κειμένου</translation>
 <translation id="3180284704187420717">Αποθηκεύστε σελιδοδείκτες, κωδικούς πρόσβασης και άλλα κάνοντας συγχρονισμό</translation>
+<translation id="3180716079618904608">Λήψη εφαρμογών και παιχνιδιών</translation>
 <translation id="3181954750937456830">Ασφαλής περιήγηση (προστατεύει εσάς και τη συσκευή σας από επικίνδυνους ιστοτόπους)</translation>
 <translation id="3182749001423093222">Ορθογραφικός έλεγχος</translation>
 <translation id="3183139917765991655">Εργαλείο εισαγωγής προφίλ</translation>
@@ -4286,6 +4290,7 @@
 <translation id="4120817667028078560">Η διαδρομή είναι πάρα πολύ μεγάλη</translation>
 <translation id="4124823734405044952">Έγινε επαναφορά του κλειδιού ασφαλείας σας</translation>
 <translation id="4124935795427217608">Μονόκερος</translation>
+<translation id="4126375522951286587">Τερματισμός λειτουργίας <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Σπάντεξ</translation>
 <translation id="4130199216115862831">Αρχείο καταγραφής συσκευής</translation>
 <translation id="4130750466177569591">Συμφωνώ</translation>
@@ -4586,6 +4591,7 @@
 <translation id="4364327530094270451">Πεπόνι</translation>
 <translation id="4364567974334641491">Η εφαρμογή <ph name="APP_NAME" /> μοιράζεται ένα παράθυρο.</translation>
 <translation id="4364830672918311045">Εμφάνιση ειδοποιήσεων</translation>
+<translation id="4367027658822022112">Μπορείτε να καρφιτσώσετε το Google Lens για εύκολη πρόσβαση, κάνοντας κλικ στο κουμπί Καρφίτσωμα στο επάνω μέρους του πλαϊνού πλαισίου</translation>
 <translation id="4367513928820380646">Έλεγχος καταργημένων αδειών</translation>
 <translation id="4367971618859387374">Εμφανιζόμενο όνομα</translation>
 <translation id="4368960422722232719">Εμφάνιση χρήσης μνήμης στην κάρτα προεπισκόπησης κατά την τοποθέτηση του δείκτη στην καρτέλα</translation>
@@ -4988,6 +4994,7 @@
 <translation id="4666911709726371538">Περισσότερες εφαρμογές</translation>
 <translation id="4668279686271488041">Τα δεδομένα μέτρησης διαφημίσεων διαγράφονται τακτικά από τη συσκευή σας.</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">Το PIN πρέπει να περιέχει μόνο αριθμούς</translation>
 <translation id="4670909875730475086">Συγχαρητήρια! Η εφαρμογή <ph name="APP_NAME" /> εγκαταστάθηκε με επιτυχία στη συσκευή σας</translation>
 <translation id="4672759829555593783">Άνοιγμα αρχείου <ph name="FILE_NAME" /> τώρα</translation>
 <translation id="4673442866648850031">Άνοιγμα εργαλείων γραφίδας κατά την αφαίρεση της γραφίδας</translation>
@@ -5071,6 +5078,7 @@
 <translation id="473936925429402449">Επιλεγμένο, επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Εισιτήρια</translation>
 <translation id="4740546261986864539">Άνοιξε πρόσφατα</translation>
+<translation id="4741235124132242877">Καρφιτσώθηκε! Χρησιμοποιήστε ξανά το Google Lens από τη γραμμή εργαλείων</translation>
 <translation id="4742334355511750246">Δεν επιτρέπεται να εμφανίζουν εικόνες</translation>
 <translation id="4742795653798179840">Τα δεδομένα Chrome διαγράφηκαν</translation>
 <translation id="4742970037960872810">Κατάργηση επισήμανσης</translation>
@@ -6769,6 +6777,7 @@
 <translation id="6042308850641462728">Περισσότερα</translation>
 <translation id="604388835206766544">Η ανάλυση της διαμόρφωσης απέτυχε.</translation>
 <translation id="6043994281159824495">Έξοδος τώρα</translation>
+<translation id="604424701295382420">Καρφιτσώθηκε! Μπορείτε να αποκτήσετε ξανά πρόσβαση στο Google Lens από το νέο κουμπί στη γραμμή εργαλείων</translation>
 <translation id="6045114302329202345">Κύριο κουμπί TrackPoint</translation>
 <translation id="6047632800149092791">Ο συγχρονισμός δεν λειτουργεί. Δοκιμάστε να αποσυνδεθείτε και να συνδεθείτε ξανά.</translation>
 <translation id="6048747414605857443">Επιλέξτε και προσαρμόστε τις φωνές της λειτουργίας μετατροπής κειμένου σε ομιλία για το ChromeVox και για τη λειτουργία Επιλέξτε για αυτόματη ανάγνωση.</translation>
@@ -6921,7 +6930,6 @@
 <translation id="6154240335466762404">Κατάργηση όλων των θυρών</translation>
 <translation id="615436196126345398">Πρωτόκολλο</translation>
 <translation id="6154739047827675957">Η ρύθμιση του OneDrive απέτυχε</translation>
-<translation id="6154820449290823443">Διαχειριστείτε την πρόσβαση και αποκλείστε εφαρμογές σε αυτό το Chromebook.</translation>
 <translation id="6155141482566063812">Μια καρτέλα παρασκηνίου μοιράζεται την οθόνη σας</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Δημιουργία κλειδιού πρόσβασης</translation>
@@ -7548,6 +7556,7 @@
 <translation id="6647690760956378579">Προεπισκόπηση φυσικής φωνής</translation>
 <translation id="6648911618876616409">Μια σημαντική ενημέρωση είναι έτοιμη για εγκατάσταση. Συνδεθείτε για να ξεκινήσετε.</translation>
 <translation id="6649018507441623493">Περιμένετε μια στιγμή…</translation>
+<translation id="6650072551060208490">Το <ph name="ORIGIN_NAME" /> θέλει να επαληθεύσει την ταυτότητά σας.</translation>
 <translation id="6650206238642452078">Εγγραφή στα συμβάντα συστήματος Chrome OS</translation>
 <translation id="6650584564768559994">Εξασφαλίστε ισορροπημένη εξοικονόμηση μνήμης. Οι καρτέλες καθίστανται ανενεργές μετά από ένα βέλτιστο χρονικό διάστημα.</translation>
 <translation id="665061930738760572">Άνοιγμα σε &amp;Νέο Παράθυρο</translation>
@@ -7601,6 +7610,7 @@
 <translation id="6686490380836145850">Κλείσιμο καρτελών δεξιά</translation>
 <translation id="6686665106869989887">Η καρτέλα μεταφέρθηκε δεξιά</translation>
 <translation id="6686817083349815241">Αποθηκεύστε τον κωδικό πρόσβασής σας</translation>
+<translation id="6687008241368170505">Αλλαγή PIN του Διαχειριστή κωδικών πρόσβασης Google</translation>
 <translation id="6687079240787935001">Απόκρυψη <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Ζητήστε από το παιδί <ph name="SUPERVISED_USER_NAME" /> να έρθει στον υπολογιστή. Το παιδί σας θα διαβάζει ορισμένες φράσεις σε αυτή την οθόνη για τη δημιουργία του φωνητικού του μοντέλου.
     <ph name="BR" />
@@ -8380,6 +8390,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Ζητήθηκε άδεια, πατήστε F6 για απάντηση.</translation>
 <translation id="7290242001003353852">Η υπηρεσία σύνδεσης που φιλοξενείται από τον τομέα <ph name="SAML_DOMAIN" />, έχει πρόσβαση στην κάμερά σας.</translation>
 <translation id="7292067737327289208">Το <ph name="BEGIN_LINK" />πρόγραμμα περιήγησης είναι υπό τη διαχείριση<ph name="END_LINK" /> του οργανισμού σας και το <ph name="BEGIN_LINK" />προφίλ σας υπό τη διαχείριση<ph name="END_LINK" /> του τομέα <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Ζητήστε από τον γονέα σου να επιτρέψει την πρόσβαση από τις Ρυθμίσεις</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Λάβετε υπόψη ότι το Android, το Play και οι συσχετισμένες εφαρμογές, διέπονται από τις δικές τους πολιτικές συλλογής και χρήσης δεδομένων.</translation>
 <translation id="7296503797589217366">Επιλέξτε τον φάκελο <ph name="FOLDER_TITLE" /></translation>
@@ -8688,6 +8699,7 @@
 <translation id="7514239104543605883">Αντιγραφή στη συσκευή σας</translation>
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="7514417110442087199">Προσθήκη ανάθεσης</translation>
+<translation id="7515191208480168435">Μπορείτε να καρφιτσώσετε το Google Lens για εύκολη πρόσβαση</translation>
 <translation id="751523031290522286">Η εφαρμογή <ph name="APP_NAME" /> αποκλείστηκε από τον διαχειριστή. Ζητήστε άδεια από τον διαχειριστή για χρήση αυτής της εφαρμογής.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -8850,7 +8862,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# ανοιχτό παράθυρο}other{# ανοιχτά παράθυρα}}</translation>
 <translation id="7643932971554933646">Να επιτρέπεται στον ιστότοπο να βλέπει αρχεία;</translation>
 <translation id="7644543211198159466">Χρώμα και θέμα</translation>
-<translation id="7644953783774050577">Καμία επιλογή</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (κάτοχος)</translation>
 <translation id="7645681574855902035">Ακύρωση δημιουργίας αντιγράφου ασφαλείας Linux</translation>
 <translation id="7646772052135772216">Ο συγχρονισμός κωδικών πρόσβασης δεν λειτουργεί</translation>
@@ -10163,6 +10174,7 @@
 <translation id="8592141010104017453">Να μην εμφανίζονται ειδοποιήσεις</translation>
 <translation id="859246725979739260">Η πρόσβαση αυτού του ιστοτόπου στην τοποθεσία σας έχει αποκλειστεί.</translation>
 <translation id="8593450223647418235">Δεν θα μπορείτε να ανοίξετε αρχεία στο Microsoft 365 μέχρι να ολοκληρωθεί η ρύθμιση.</translation>
+<translation id="8593686980889923154">Η εφαρμογή <ph name="APP_NAME" /> έχει αποκλειστεί στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Προσαρμοσμένα αρχεία</translation>
 <translation id="8597845839771543242">Μορφή ιδιότητας:</translation>
 <translation id="8598249292448297523">εκτύπωση</translation>
@@ -10580,6 +10592,7 @@
 <translation id="8890529496706615641">Δεν ήταν δυνατή η μετονομασία του προφίλ. Δοκιμάστε ξανά ή επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας για τεχνική υποστήριξη.</translation>
 <translation id="8892168913673237979">Έτοιμο!</translation>
 <translation id="8892246501904593980">Προβολή όλων των σελιδοδεικτών σας στην ενότητα Σελιδοδείκτες και λίστες</translation>
+<translation id="8893479486525393799">Μικρόφωνο στούντιο</translation>
 <translation id="8893801527741465188">Η απεγκατάσταση ολοκληρώθηκε</translation>
 <translation id="8893928184421379330">Λυπούμαστε, δεν ήταν δυνατή η αναγνώριση της συσκευής <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Προστασία πρόσβασης δεδομένων για περιφερειακά</translation>

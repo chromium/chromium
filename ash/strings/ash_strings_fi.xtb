@@ -48,6 +48,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1175572348579024023">Vieritä</translation>
 <translation id="1175944128323889279">Akun varaustaso <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> jäljellä</translation>
 <translation id="1178581264944972037">Tauko</translation>
+<translation id="1179776263021875437">Lopeta tehtävään keskittyminen</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1182225749592316782">Sallii pääsyn kaikille sovelluksille ja verkkosivustoille, joilla on kamera- ja mikrofonilupa</translation>
 <translation id="1182876754474670069">koti</translation>
@@ -119,6 +120,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1391102559483454063">Päällä</translation>
 <translation id="1394698770495054737">Täysi sumennus</translation>
+<translation id="1404963891829069586">Keskittymisäänet</translation>
 <translation id="1407069428457324124">Tumma teema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Siirry päivästä toiseen nuolinäppäimillä.</translation>
 <translation id="141170878022560212">Keskipainike</translation>
@@ -180,6 +182,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1651914502370159744">Avaa Historia-sivu</translation>
 <translation id="1654477262762802994">Aloita puhekysely</translation>
 <translation id="1668469839109562275">Sisäänrakennettu VPN</translation>
+<translation id="1673232940951031776">Lopeta Keskittymistila. <ph name="REMAINING_TIME" /> jäljellä.</translation>
 <translation id="1675844249244994876">Päivitä oikeanpuoleinen ikkuna</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> jäljellä</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ei ole yhdistetty.</translation>
@@ -223,6 +226,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1824922790784036530">Laita sijainti päälle</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> irrotettiin</translation>
 <translation id="1831565490995294689">Avaa <ph name="APP_TO_OPEN" /> valitsemalla.</translation>
+<translation id="1838011306813517425">Keskittymistilan asetukset</translation>
 <translation id="1838895407229022812">Yövalo on pois päältä.</translation>
 <translation id="1854180393107901205">Lopeta suoratoisto</translation>
 <translation id="1862077610023398675">Piilota säätimet</translation>
@@ -310,6 +314,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2277103315734023688">Kelaa eteenpäin</translation>
 <translation id="2282073721614284166">Avaa linkki välilehdellä</translation>
 <translation id="2292698582925480719">Näytön skaalaus</translation>
+<translation id="2293443480080733021">Mihin asiaan haluaisit keskittyä? Lisää tehtävä painamalla Enter.</translation>
 <translation id="229397294990920565">Mobiilidataa laitetaan pois päältä…</translation>
 <translation id="2295777434187870477">Mikrofoni on päällä, asetuksen vaihtaminen mykistää äänitulon.</translation>
 <translation id="2298170939937364391">Koko näytön suurennus on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + M.</translation>
@@ -377,6 +382,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2509468283778169019">CAPS LOCK on päällä</translation>
 <translation id="2514415433888497495">Keskeytä <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> on <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516416533263263796">Keskittymistila on päällä, 10 minuuttia jäljellä</translation>
 <translation id="2516637483312286228">Muokkaa peliohjaimia</translation>
 <translation id="2526581474998477112">Avaa ikkunoiden lukitus</translation>
 <translation id="2528111225373402384">Hotspot-asetukset</translation>
@@ -447,6 +453,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2798702144670138229">Tablettitila on päällä. Pelipaneeli ei ole käytettävissä.</translation>
 <translation id="2801954693771979815">Näytön koko</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, valittu</translation>
+<translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2814448776515246190">Osittainen kuvakaappaus</translation>
 <translation id="2819276065543622893">Sinut kirjataan ulos nyt.</translation>
@@ -474,6 +481,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2914580577416829331">Kuvakaappaukset</translation>
 <translation id="2924416280450782352">Kohteita ei voi näyttää. Yritä avata paneeli uudelleen.</translation>
 <translation id="2931572158271115754">Tämä tehtävälista on tyhjä.</translation>
+<translation id="2932487126591186298">10 minuuttia lisätty. <ph name="REMAINING_TIME" /> jäljellä.</translation>
 <translation id="2935225303485967257">Ylläpidä profiileja</translation>
 <translation id="2941112035454246133">Matala</translation>
 <translation id="2942350706960889382">Kiinnitetty suurennus</translation>
@@ -649,6 +657,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3576141592585647168">Muuta aikavyöhykettä</translation>
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="3580650856351781466">Ladataan puhetiedostoja</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{minuutti}other{minuuttia}}</translation>
 <translation id="3585296979871889131">Katsele puhelimesi viimeaikaisia kuvia, mediaa, ilmoituksia ja sovelluksia</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Sivu-painike</translation>
@@ -672,6 +681,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3631369015426612114">Salli ilmoitukset seuraavista:</translation>
 <translation id="3633097874324966332">Avaa Bluetooth-asetukset ja muodosta laitepari</translation>
 <translation id="3633851487917460983">Avaa leikepöytä</translation>
+<translation id="363473492175527493">Tehtävä, johon keskitytään: <ph name="TASK_NAME" />. Muokkaa tehtävää painamalla Enter.</translation>
 <translation id="3638400994746983214">Yksityinen näkyvyys päälle/pois. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Pienennä ikkuna</translation>
 <translation id="3649505501900178324">Päivitys myöhässä</translation>
@@ -707,6 +717,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3735740477244556633">Lajitteluperuste</translation>
 <translation id="3738664582935948253">Voit nyt nähdä klikkaukset ja pikanäppäimet näyttötallenteissa</translation>
 <translation id="3742055079367172538">Kuvakaappaus otettu</translation>
+<translation id="3743775386021959186">Keskittymistila on päällä, <ph name="REMAINING_TIME" /> jäljellä</translation>
 <translation id="3756485814916578707">Striimataan näyttöä</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" />-pikakomento on päivitetty <ph name="NEW_SHORTCUT" /> ‑pikakomennoksi (vanha: <ph name="OLD_SHORTCUT" />)</translation>
 <translation id="3765841986579723851">Muokattu tänään</translation>
@@ -896,6 +907,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4477751544736611934">Tästä voidaan periä datansiirtomaksuja.
 Yksi laite yhdistetty.</translation>
 <translation id="4477892968187500306">Laitteessa voi olla sovelluksia, joita Google ei ole vahvistanut.</translation>
+<translation id="4479130137987693286">Voit tarvittaessa lisätä aikaa tai lopettaa keskittymisistunnon</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Laitteet ilman paria</translation>
 <translation id="4485506555414638855">Hylkää puhelimen viimeaikaisten kuvien, median, ilmoitusten ja sovellusten katselun käyttöönotto</translation>
@@ -1069,6 +1081,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="5095136268899496849"><ph name="PRODUCT_NAME" /> on itsesi näköinen, kun muokkaat ja personoit sitä asetusten kautta. Kokeile vaihtaa taustakuva tai lisätä näytönsäästäjä.</translation>
 <translation id="509790653408515442">Kun striimaat puhelimen sovelluksia, ne näkyvät täällä</translation>
 <translation id="5098537242461068432">Työpöytä ja ikkunat avattu uudelleen</translation>
+<translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> saakka</translation>
 <translation id="5104236669533825617">Ruutukaappausvideota ei voi luoda</translation>
 <translation id="5107522548814527560">Verkko</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
@@ -1147,6 +1160,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on sovelluksen <ph name="IN_PLACE_APP" /> päällä, päästä irti luodaksesi kansion.</translation>
 <translation id="5397578532367286026">Hallinnoija (<ph name="MANAGER_EMAIL" />) voi tarkkailla tämän käyttäjän käyttö- ja historiatietoja osoitteessa chrome.com.</translation>
 <translation id="540713187982329711">Laita hotspot päälle tai pois päältä. Hotspot on päällä, ei yhdistettyjä laitteita.</translation>
+<translation id="5409208741270395213">Merkitse tehtävä suoritetuksi</translation>
 <translation id="5413656666631274079">Asetukset-sivu</translation>
 <translation id="5414198321558177633">Päivitetään profiililistaa. Tämä voi kestää muutaman minuutin.</translation>
 <translation id="5417965108047245734">Katso lyhyt esittely siitä, miten <ph name="PRODUCT_NAME" /> toimii</translation>
@@ -1178,6 +1192,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="553675580533261935">Käyttökerran lopettaminen</translation>
 <translation id="5537725057119320332">Suoratoista</translation>
 <translation id="554017492391497564">Valmiiksi merkitseminen epäonnistui.</translation>
+<translation id="5543778275214926792">Laitetaanko Teksti puhuttuna päälle?</translation>
 <translation id="5546397813406633847">Palauta käyttäjä</translation>
 <translation id="554893713779400387">Laita sanelu päälle tai pois päältä</translation>
 <translation id="5550417424894892620">Pudota tiedostoja työpöydälle, niin ne lisätään tänne: <ph name="HOLDING_SPACE_TITLE" />. Et voi lisätä tiedostoja työpöydälle.</translation>
@@ -1201,6 +1216,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="5599242528220103262">Pikakomento on pois päältä</translation>
+<translation id="5600415762228455511">Keskittymistila on päällä, <ph name="REMAINING_TIME" /> jäljellä, keskittymisen kohde: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Poista äänipalaute käytöstä painamalla Ctrl+Alt+Z.</translation>
 <translation id="5601503069213153581">PIN-koodi</translation>
 <translation id="5618148318840095371">Olemme yhdistäneet laitteesi parempaan verkkoon</translation>
@@ -1230,8 +1246,10 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5699366815052349604">Lisää aktiivinen ikkuna kaikille työpöydille</translation>
 <translation id="5701785125601597013">Lähetä viestejä tai vastaa niihin nopeasti puhelinhubilla</translation>
 <translation id="570390244361237317">Kaikki sovellukset, siirry sovellusten välillä nuolinäppämillä</translation>
+<translation id="5705197514573687092">Näytä Keskittymistilan asetukset. Ajastin asetettu: <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Laitteesi tukee nopeampaa tiedonsiirtoa kuin johto</translation>
 <translation id="5710450975648804523">Älä häiritse -tila on päällä</translation>
+<translation id="5711984160978177607"><ph name="REMAINING_TIME" /> jäljellä</translation>
 <translation id="5712132663381964774">Sovellusten avulla <ph name="PRODUCT_NAME" /> voi tehdä kaiken tarvittavan. Löydät sovellukset käynnistysohjelmasta.</translation>
 <translation id="571295407079589142">Mobiilidata on poissa päältä</translation>
 <translation id="5727460725221669831">Jos olet unohtanut salasanasi tai vaihtanut äskettäin Google-tilisi salasanan, kokeile palauttaa kyseinen käyttäjä.</translation>
@@ -1242,6 +1260,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5744083938413354016">Napauttamalla vetäminen</translation>
 <translation id="5745612484876805746">Yövalo käynnistyy automaattisesti, kun aurinko laskee</translation>
 <translation id="5750765938512549687">Bluetooth on pois päältä</translation>
+<translation id="5758114525425072423">Aloita Keskittymistila. Ajastin asetettu: <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5760866832697883462">Yhdistä <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Piirtotyökalu päälle tai pois päältä. <ph name="STATE_TEXT" /> Piirrä näytölle ohjauslevyn, kosketusnäytön tai näyttökynän avulla.</translation>
 <translation id="576341972084747908">Lataa vaarallinen <ph name="FILENAME" /></translation>
@@ -1249,6 +1268,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5764569119212455782">Vaihda viimeksi valittuun kieleen</translation>
 <translation id="5767730327234918501">Järjestelmänvalvoja on laittanut hotspotin pois päältä.</translation>
 <translation id="5769373120130404283">Yksityinen näkyvyys</translation>
+<translation id="5770004650349728202">Laita Teksti puhuttuna päälle</translation>
 <translation id="5773950591113557721"><ph name="APP_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on joilla on kamera- ja mikrofonilupa, saavat pääsyn</translation>
 <translation id="5774295353725270860">Avaa Tiedostot-sovellus</translation>
 <translation id="5775936059231769503">Laita hotspot päälle tai pois päältä. Hotspot on pois päältä.</translation>
@@ -1343,8 +1363,10 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6119972796024789243">Värinkorjaus</translation>
 <translation id="6121838516699723042">Vahvista lataus: <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Assistantia ei voi käyttää Vierailija-käyttökerralla.</translation>
+<translation id="6127370444807669747">YouTube Music Premiumilla saat omia soittolistoja ja enemmän keskittymismusiikkia</translation>
 <translation id="6129953537138746214">Välilyönti</translation>
 <translation id="6137566720514957455">Avaa poiston valintaikkuna: <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141205840878048728">Mihin asiaan haluaisit keskittyä?</translation>
 <translation id="6141988275892716286">Vahvista lataus</translation>
 <translation id="6143578372829139382">Jaa YouTubeen</translation>
 <translation id="6154006699632741460">Lisälaitetta ei tueta</translation>
@@ -1405,11 +1427,13 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6381109794406942707">Avaa laitteen lukitus lisäämällä PIN-koodisi.</translation>
 <translation id="638716340450135524">Salli kameran käyttö</translation>
 <translation id="639644700271529076">CAPS LOCK on pois päältä</translation>
+<translation id="6406458002328242616">Muokkaa ajastinta. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641817663353603351">sivu ylös</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Tyhjennä kaikki ilmoitukset</translation>
+<translation id="6430225033895752525">Näytä Keskittymisasetukset</translation>
 <translation id="643147933154517414">Valmis</translation>
 <translation id="6431865393913628856">Näytön tallennus</translation>
 <translation id="643593192654616063">Tallennustilaa on käytössä <ph name="STORAGE_IN_USE_SIZE" />/<ph name="STORAGE_TOTAL_SIZE" /></translation>
@@ -1450,6 +1474,7 @@ Ei liitettyjä laitteita.</translation>
 Uusi asennus</translation>
 <translation id="6559158502366839560">Löydä lisää sovelluksia ja pelejä</translation>
 <translation id="6559976592393364813">Pyydä apua järjestelmänvalvojalta</translation>
+<translation id="6562447480759345110">Lopeta Keskittymistila</translation>
 <translation id="6565007273808762236">eSIM-yhteys ei ole käytettävissä</translation>
 <translation id="6570831796530454248">{0,plural, =1{Päivitä laite tunnin kuluessa}other{Päivitä laite # tunnin kuluessa}}</translation>
 <translation id="6570902864550063460">Ladataan USB:n kautta</translation>
@@ -1459,6 +1484,7 @@ Uusi asennus</translation>
 <translation id="6585808820553845416">Istunnon loppumiseen on <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera kohdistettu vasempaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
+<translation id="6605415194043280389">Keskittymistila on päällä</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6612802754306526077">Näytön tallentajatila valittu</translation>
 <translation id="6612889377159412215">alatehtävä</translation>
@@ -1525,6 +1551,7 @@ Uusi asennus</translation>
 <translation id="6836499262298959512">Vaarallinen tiedosto</translation>
 <translation id="6837621009301897464">Ota kuvakaappaus valitsemalla</translation>
 <translation id="6852052252232534364">Klikkaa: aktivoi</translation>
+<translation id="6852628153543175788">Lisää 10 minuuttia</translation>
 <translation id="6855029042976311970">Muokattu äsken</translation>
 <translation id="6856708615407876657">Hakutuloskategoriat päälle/pois</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -1585,6 +1612,7 @@ Uusi asennus</translation>
 <translation id="7068360136237591149">Avaa tiedostot</translation>
 <translation id="7076293881109082629">Kirjautuminen</translation>
 <translation id="7076878155205969899">Mykistä ääni</translation>
+<translation id="7083848064787091821">Keskittymistila</translation>
 <translation id="7084678090004350185">Laita hotspot päälle tai pois päältä. Hotspot on päällä, ja siihen on yhdistetty <ph name="DEVICECOUNT" /> laitetta.</translation>
 <translation id="7086931198345821656">Päivitys edellyttää laitteen (<ph name="DEVICE_TYPE" />) powerwashia. Kaikki data poistetaan. Lue lisää uusimmasta päivityksestä: <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Kytkimen käyttö</translation>
@@ -1612,6 +1640,7 @@ Uusi asennus</translation>
 <translation id="7188494361780961876">Valikko siirretty näytön vasempaan ylänurkkaan</translation>
 <translation id="7189412385142492784">Kuinka kaukana Venus on</translation>
 <translation id="7198435252016571249">Kamera kohdistettu oikeaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
+<translation id="720981139652840573">Kuuntele tietty teksti ääneen luettuna. Valitse ensin Teksti puhuttuna ‐kuvake näytön alareunasta ja korosta sitten tekstiä. Voit myös käyttää pikanäppäimiä: korosta tekstiä ja paina Haku/Käynnistysohjelma + S.</translation>
 <translation id="7219573373513695352">Ei liitettyjä laitteita</translation>
 <translation id="7229029500464092426">Muisti <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> yhteensä</translation>
 <translation id="7244725679040769470">Akkua jäljellä <ph name="PERCENTAGE" /> %. Yhdistä laite virtalähteeseen.</translation>
@@ -1621,6 +1650,7 @@ Uusi asennus</translation>
 <translation id="7258828758145722155">Muokattu eilen</translation>
 <translation id="726276584504105859">Jaa näyttö vetämällä tähän.</translation>
 <translation id="7262906531272962081">Luo muistutus</translation>
+<translation id="7264788308526527464">Vähennä <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + askelpalautin</translation>
 <translation id="7285232777292757180">Ota kuvakaappauksia pika-asetusten kuvakaappaustyökalulla</translation>
 <translation id="7301826272005790482">Hylkää ikkunaehdotukset</translation>
@@ -1631,6 +1661,7 @@ Uusi asennus</translation>
 <translation id="7313193732017069507">Laajenna kameran näkymää</translation>
 <translation id="7330397557116570022">Siirry tekstikenttään käyttääksesi sanelua</translation>
 <translation id="7331646370422660166">alt + alanuoli</translation>
+<translation id="7337660433630200387">yli 10 min</translation>
 <translation id="7340731148882810149">Automaattisten klikkausten valikko</translation>
 <translation id="7346909386216857016">Selvä</translation>
 <translation id="7348093485538360975">Näyttönäppäimistö</translation>
@@ -1650,6 +1681,7 @@ Uusi asennus</translation>
 <translation id="7386767620098596324">Laita verkkoyhteys päälle tai pois päältä. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Voit ottaa tämän käyttöön myöhemmin asetuksista.</translation>
 <translation id="7401222354741467707">Ota koko näytön kuvakaappaus tai tallennus koko näytöltä</translation>
+<translation id="7401788553834047908">Älä häiritse Keskittymistilassa</translation>
 <translation id="7405710164030118432">Avaa laitteen lukitus vanhemman Family Link ‑käyttökoodilla</translation>
 <translation id="7406608787870898861">Viimeistele mobiiliverkon käyttöönotto</translation>
 <translation id="7406854842098869085">Pidä <ph name="MODIFIER_1" />-näppäintä painettuna ja paina <ph name="KEY" />, kunnes olet haluamassasi ikkunassa, ja vapauta sitten näppäimet</translation>
@@ -1684,6 +1716,8 @@ Uusi asennus</translation>
 <translation id="7519649142417630956">Kun laite on sammutettu, järjestelmänvalvoja kirjataan ulos eikä hän voi ohjata laitetta.
 
 Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
+<translation id="7523420897035067483">Ota Älä häiritse ‐tila käyttöön, kun olet Keskittymistilassa</translation>
+<translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7526573455193969409">Verkkoa saatetaan valvoa</translation>
 <translation id="7536035074519304529">IP-osoite: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Päivitä vasemmanpuoleinen ikkuna</translation>
@@ -1816,6 +1850,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7963992254934562106">Lähde: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Valitse kansio…</translation>
 <translation id="7973756967040444713">Sulje yläpalkki</translation>
+<translation id="797485111629834774">Merkitse tehtävä suoritetuksi: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Laita koko näytön suurennus päälle tai pois päältä</translation>
 <translation id="7977927628060636163">Haetaan mobiiliverkkoja…</translation>
 <translation id="7982789257301363584">Verkko</translation>
@@ -1829,6 +1864,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8000066093800657092">Ei verkkoa</translation>
 <translation id="8001755249288974029">Valitse tekstiä kohdistimesta rivin alkuun</translation>
 <translation id="8004512796067398576">Lisää</translation>
+<translation id="8005527720597583355">Aloita Keskittymisistunto</translation>
 <translation id="8015361438441228492">Tehtävän muokkaaminen epäonnistui.</translation>
 <translation id="802782383769312836">Edellinen työpöytä: <ph name="DESK_NAME" />. Työpöytä <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Ei hotspot-yhteyttä</translation>
@@ -1844,6 +1880,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8054466585765276473">Lasketaan akun kesto.</translation>
 <translation id="8079538659226626406">Näytön jakaminen</translation>
 <translation id="8083540854303889870">Tallennettu myöhempää käyttöä varten</translation>
+<translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Katso lisää vaihtoehtoja sarkaimen avulla. Pääset kaikkiin työpöytiin vasemmalla ja oikealla nuolinäppäimellä.</translation>
 <translation id="8091153018031979607">Alkaa klo <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automaattiset päivitykset</translation>
@@ -1875,10 +1912,12 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8192727139462702395">Kun laitat Bluetoothin pois päältä, nämä ulkoiset laitteet katkaisevat yhteyden (<ph name="DEVICE_TYPE" />):</translation>
 <translation id="8198456017687137612">Välilehteä striimataan</translation>
 <translation id="8200772114523450471">Jatka</translation>
+<translation id="820256110035940528"><ph name="TITLE" /> Olet ollut keskittynyt <ph name="FOCUSED_TIME" />. Avaa Pika-asetukset ja keskity uudelleen.</translation>
 <translation id="8203795194971602413">Klikkaus kakkospainikkeella</translation>
 <translation id="8209010265547628927">Nollaa</translation>
 <translation id="8214996719228530800">Canary-versio</translation>
 <translation id="8219451629189078428">Chromebookin täytyy pysyä päällä ja yhdistettynä virtalähteeseen tänä aikana. Varmista, että laturin tai virtalähteen johdot on liitetty kunnolla sekä Chromebookiin että pistorasiaan. Älä sammuta Chromebookia.</translation>
+<translation id="8220076512072059941">Lisää <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8230305195727960608">Käänteiset värit ‑tila</translation>
 <translation id="8236042855478648955">Tauon paikka</translation>
 <translation id="8237964652943995219">Seuraava työpöytä: <ph name="DESK_NAME" />. Työpöytä <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
@@ -1986,6 +2025,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Ota osittainen kuvakaappaus painamalla Enter</translation>
 <translation id="8676770494376880701">Pienitehoinen laturi kytketty</translation>
+<translation id="8679158879996532670">Näytä Keskittymistilan asetukset. Keskittymistila on päällä, <ph name="REMAINING_TIME" /> jäljellä.</translation>
 <translation id="8683506306463609433">Tehokkuuden seuranta aktiivinen</translation>
 <translation id="8703634754197148428">Aloita tallentaminen. Kun tallentaminen on alkanut, avaa hylly painamalla Alt + Vaihto + L ja etsi tallennuksen lopetuspainike</translation>
 <translation id="8704155109538237473">Tarkenna pikkuruutu-ikkunaan</translation>
@@ -2003,6 +2043,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8735678380411481005">Näppäimistön taustavalon väri</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktivoidaan…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749787185286745219">Aika loppui. Hienoa! 🎉</translation>
 <translation id="8755498163081687682">Vahvista henkilöllisyytesi: <ph name="ORIGIN_NAME" /> haluaa vahvistaa henkilöllisyytesi</translation>
 <translation id="875593634123171288">Näytä VPN-asetukset</translation>
 <translation id="8756799553341497810">Voit aloittaa sovelluksen asettelun muokkaamisen, kun poistut tästä näkymästä.</translation>
@@ -2041,6 +2082,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8877788021141246043">Aseta muistutus</translation>
 <translation id="8878886163241303700">Laajennettu näyttö</translation>
 <translation id="888982883502837004">Laitteellesi on saatavilla laiteohjelmiston päivityksiä. Katso ja päivitä klikkaamalla.</translation>
+<translation id="8893479486525393799">Studiomikrofoni</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> poistetaan pysyvästi</translation>
 <translation id="889790758758811533">Akkua jäljellä <ph name="PERCENTAGE" /> % (noin <ph name="TIME_LEFT" />). Yhdistä laite virtalähteeseen.</translation>
 <translation id="88986195241502842">Sivu alas</translation>

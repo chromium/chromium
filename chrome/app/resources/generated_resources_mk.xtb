@@ -1621,8 +1621,6 @@
 <translation id="2165102982098084499">Ги поврзавте уредиве со скенирање QR-код.</translation>
 <translation id="2165177462441582039">Изберете колку долго да стои нагласувањето на секоја ставка</translation>
 <translation id="2166369534954157698">Ѓакон Гоце и Љутфи Хоџа ноќе ѕвезди бројат. Постоиш ли боже? Молчење.</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Уредов (SN: <ph name="SERIAL_NUMBER" />) беше заклучен.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Управувањето со уреди на Chrome со <ph name="MS_AD_NAME" /> веќе не е поддржано. За да се најавите, користете друг уред или контактирајте со администраторот на уреди.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Сепак, најави се</translation>
 <translation id="2173302385160625112">Проверете ја вашата интернет-врска</translation>
 <translation id="2173801458090845390">Додајте ID на барање на уредов</translation>
@@ -6921,7 +6919,6 @@
 <translation id="6154240335466762404">Отстрани ги сите порти</translation>
 <translation id="615436196126345398">Протокол</translation>
 <translation id="6154739047827675957">Поставувањето на OneDrive не успеа</translation>
-<translation id="6154820449290823443">Управувајте со пристапот и блокирајте апликации на овој Chromebook.</translation>
 <translation id="6155141482566063812">Картичка во заднина го споделува вашиот екран</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Создај криптографски клуч</translation>
@@ -7550,6 +7547,7 @@
 <translation id="6647690760956378579">Преглед на природен глас</translation>
 <translation id="6648911618876616409">Важно ажурирање е подготвено да се инсталира. Најавете се за да започнете.</translation>
 <translation id="6649018507441623493">Само момент…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> сака да потврдите дека сте вие</translation>
 <translation id="6650206238642452078">Претплатете се на системските настани на ChromeOS</translation>
 <translation id="6650584564768559994">Урамнотежена заштеда на меморија. Вашите картички стануваат неактивни по оптимален временски период.</translation>
 <translation id="665061930738760572">Отвори во &amp;нов прозорец</translation>
@@ -8851,7 +8849,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# oтворен прозорец}one{# отворен прозорец}other{# отворени прозорци}}</translation>
 <translation id="7643932971554933646">Дали да му се дозволи на сајтот да ги прикажува датотеките?</translation>
 <translation id="7644543211198159466">Боја и тема</translation>
-<translation id="7644953783774050577">Поништете го изборот</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (сопственик)</translation>
 <translation id="7645681574855902035">Се откажува бекапот на Linux</translation>
 <translation id="7646772052135772216">Синхронизацијата на лозинките не работи</translation>

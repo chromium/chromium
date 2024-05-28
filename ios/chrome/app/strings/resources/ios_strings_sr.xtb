@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Адреса је сачувана само на овом уређају</translation>
 <translation id="1449835205994625556">Сакријте лозинку</translation>
 <translation id="1450170672351507823">Стандардна заштита је укључена. Користите напредну заштиту да бисте се додатно заштитили.</translation>
+<translation id="1455492980583160269">Пошаљите поруку</translation>
 <translation id="1469381646033328562">Налогом управља родитељ.
 <ph name="BEGIN_LINK" />Сазнај више<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Двапут додирните да бисте укључили/искључили подешавање</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">Информације о безбедности странице</translation>
 <translation id="5443952882982198570">Кредитне картице</translation>
 <translation id="5444892875087332195">Обележивачи</translation>
+<translation id="5453738961176844111">Позивни број за земљу</translation>
 <translation id="5454211924362324495">Да бисте онемогућили другима да користе вашу лозинку, <ph name="BEGIN_LINK" />промените је на <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Отвори офлајн верзију</translation>
 <translation id="5459548306731933777">Прикажи детаље</translation>
@@ -1189,6 +1191,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6979158407327259162">Google диск</translation>
 <translation id="6983306615164277634">Можете и да додирнете и задржите траку за адресу да бисте променили позицију.</translation>
 <translation id="6988572888918530647">Управљајте Google налогом</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">До</translation>
 <translation id="699954956411469731">Мобилна обавештења</translation>
 <translation id="699985840472413751">Затворите преузимање</translation>
@@ -1355,6 +1358,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7866872729285243843">Да би вам листа за читање била доступна на свим уређајима, укључите Листу за читање у подешавањима.</translation>
 <translation id="7866993391592926595">Скривањем ове картице искључујете праћење пакета и уклањате све податке</translation>
 <translation id="7870750252270996949">Слика коју је копирао Објектив</translation>
+<translation id="7877056713163921063">Додајте у Контакте</translation>
 <translation id="7879275349003161544">Приказује преузимања</translation>
 <translation id="7883882164760409935">Имате лозинке које користите за више налога.</translation>
 <translation id="7884694604461143138">Историја претраге (пронађено је <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9000089900434778519">Ваш претраживач је <ph name="DSE_NAME" />. Погледајте упутства тог претраживача за брисање историје претраге ако је то примењиво.</translation>
 <translation id="9008201768610948239">Игнориши</translation>
 <translation id="9012585441087414258">Штити вас од сајтова, преузимања и додатака за које се зна да су штетни. Ако страница уради нешто сумњиво, URL-ови и делови садржаја странице се шаљу у Google безбедно прегледање.</translation>
-<translation id="9025203546212508704">Превуците да бисте сазнали како да прилагодите мени</translation>
 <translation id="9029650858822697271">Одјављени сте</translation>
 <translation id="9034759925968272072">Нећемо вас одјавити са Google налога. Google налог можда има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Прикажи оригинал</translation>

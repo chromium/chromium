@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Morada guardada apenas neste dispositivo</translation>
 <translation id="1449835205994625556">Ocultar a palavra-passe</translation>
 <translation id="1450170672351507823">A proteção padrão está ativada. Para desfrutar de ainda mais segurança, use a proteção melhorada.</translation>
+<translation id="1455492980583160269">Enviar mensagem</translation>
 <translation id="1469381646033328562">A conta é gerida pelos teus pais.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Toque duas vezes para ativar ou desativar a definição</translation>
@@ -861,6 +862,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="54401264925851789">Informações de Segurança da Página</translation>
 <translation id="5443952882982198570">Cartões de crédito</translation>
 <translation id="5444892875087332195">Marcadores</translation>
+<translation id="5453738961176844111">Código do país</translation>
 <translation id="5454211924362324495">Para impedir que outras pessoas usem a sua palavra-passe, <ph name="BEGIN_LINK" />altere-a em <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Abrir versão offline</translation>
 <translation id="5459548306731933777">Mostrar detalhes</translation>
@@ -1189,6 +1191,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Também pode tocar sem soltar na barra de endereço para alterar a posição.</translation>
 <translation id="6988572888918530647">Faça a gestão da sua Conta Google</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Para</translation>
 <translation id="699954956411469731">Notificações para dispositivos móveis</translation>
 <translation id="699985840472413751">Fechar transferência</translation>
@@ -1355,6 +1358,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7866872729285243843">Para obter a sua Lista de leitura em todos os dispositivos, ative a "Lista de leitura" nas definições.</translation>
 <translation id="7866993391592926595">Se ocultar este cartão, desativa o acompanhamento de encomendas e remove todos os seus dados</translation>
 <translation id="7870750252270996949">Imagem copiada do Lens</translation>
+<translation id="7877056713163921063">Adicione aos Contactos</translation>
 <translation id="7879275349003161544">Mostrar transferências</translation>
 <translation id="7883882164760409935">Tem palavras-passe reutilizadas.</translation>
 <translation id="7884694604461143138">Histórico de pesquisas (<ph name="COUNT" /> encontrado[s])</translation>
@@ -1592,7 +1596,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9000089900434778519">O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as instruções para eliminar o histórico de pesquisas.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Protege contra sites, transferências e extensões identificados como perigosos. Se uma página fizer algo suspeito, os URLs e partes do conteúdo da página são enviados para a Navegação segura do Google.</translation>
-<translation id="9025203546212508704">Deslize rapidamente para saber como personalizar o menu</translation>
 <translation id="9029650858822697271">A sua sessão foi terminada</translation>
 <translation id="9034759925968272072">A sessão na sua Conta Google não é terminada. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>

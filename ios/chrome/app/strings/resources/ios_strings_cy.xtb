@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Cyfeiriad wedi'i gadw ar y ddyfais hon yn unig</translation>
 <translation id="1449835205994625556">Cuddio'r Cyfrinair</translation>
 <translation id="1450170672351507823">Mae amddiffyniad safonol wedi'i droi ymlaen. Am fwy fyth o ddiogelwch, defnyddiwch Gwell amddiffyniad.</translation>
+<translation id="1455492980583160269">Anfon Neges</translation>
 <translation id="1469381646033328562">Mae dy borwr yn cael ei reoli gan dy riant.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Tapiwch ddwywaith i doglo'r gosodiad</translation>
@@ -861,6 +862,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="54401264925851789">Gwybodaeth am Ddiogelwch y Dudalen</translation>
 <translation id="5443952882982198570">Cardiau Credyd</translation>
 <translation id="5444892875087332195">Nodau tudalen</translation>
+<translation id="5453738961176844111">Cod Gwlad</translation>
 <translation id="5454211924362324495">I atal eraill rhag defnyddio'ch cyfrinair, <ph name="BEGIN_LINK" />newidiwch ef ar <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Agor Fersiwn All-lein</translation>
 <translation id="5459548306731933777">Dangos manylion</translation>
@@ -1189,6 +1191,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Gallwch hefyd gyffwrdd a dal y bar cyfeiriad i newid y safle.</translation>
 <translation id="6988572888918530647">Rheoli'ch Cyfrif Google</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">I</translation>
 <translation id="699954956411469731">Hysbysiadau Ffôn Symudol</translation>
 <translation id="699985840472413751">Cau'r Lawrlwytho</translation>
@@ -1355,6 +1358,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7866872729285243843">I gael eich rhestr ddarllen ar eich holl ddyfeisiau, trowch “Rhestr Ddarllen” ymlaen yn y gosodiadau.</translation>
 <translation id="7866993391592926595">Bydd Cuddio'r Cerdyn Hwn yn Diffodd Olrhain Pecynnau ac yn Tynnu Eich Holl Ddata</translation>
 <translation id="7870750252270996949">Llun Lens wedi'i Gopïo</translation>
+<translation id="7877056713163921063">Ychwanegu at Gysylltiadau</translation>
 <translation id="7879275349003161544">Dangos Lawrlwythiadau</translation>
 <translation id="7883882164760409935">Mae gennych gyfrineiriau sydd wedi'u hailddefnyddio.</translation>
 <translation id="7884694604461143138">Hanes Chwilio (Wedi dod o hyd i <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> yw eich peiriant chwilio. Gweler ei gyfarwyddiadau ar gyfer dileu eich hanes chwilio, os yw'n berthnasol.</translation>
 <translation id="9008201768610948239">Anwybyddu</translation>
 <translation id="9012585441087414258">Yn amddiffyn rhag gwefannau, lawrlwythiadau ac estyniadau y gwyddys eu bod yn beryglus. Os yw tudalen yn gwneud rhywbeth amheus, anfonir cyfeiriadau URL a darnau o gynnwys tudalen i Bori'n Ddiogel gyda Google.</translation>
-<translation id="9025203546212508704">Sweipiwch i ddysgu sut i addasu'ch dewislen</translation>
 <translation id="9029650858822697271">Cawsoch eich allgofnodi</translation>
 <translation id="9034759925968272072">Ni fyddwch wedi'ch allgofnodi o'ch Cyfrif Google. Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Dangos y Gwreiddiol</translation>

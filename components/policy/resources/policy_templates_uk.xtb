@@ -2230,15 +2230,6 @@ Keychain.
 <translation id="2699836109975228367">Увімкнути функцію "Монофонічне аудіо" на екрані входу</translation>
 <translation id="2702023190395322609">Увімкнути рекомендації мультимедійного контенту</translation>
 <translation id="2702682139813393777">Примусово запускати хости Windows для обміну повідомленнями з нативними додатками через cmd.exe</translation>
-<translation id="2703733412051211941">Запускає дію, коли комп’ютер неактивний.
-
-      Якщо це правило налаштувати, воно визначає час (у хвилинах), коли не відбувається ввід користувача й після якого веб-переглядач почне виконувати дії, задані в правилі <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Якщо це правило не налаштувати, дії не виконуватимуться.
-
-      Мінімальне порогове значення – 1 хвилина.
-
-      Що саме вважається вводом користувача, визначають API операційної системи (це може бути рух мишею або введення тексту на клавіатурі).</translation>
 <translation id="270582584528242502">Не показувати вікно з попередженням, коли користувач намагається закрити веб-переглядач</translation>
 <translation id="2706708761587205154">Дозволити друк лише з PIN-кодом</translation>
 <translation id="2707733461906745082">Розділення профілів</translation>
@@ -3792,29 +3783,6 @@ Keychain.
 <translation id="3982465141749620677">Пропонувати повторну автентифікацію на вкладці</translation>
 <translation id="398294729592983401">Дозволити користувачам вмикати й вимикати функцію захисту відбитків пальця <ph name="PRIVACY_SANDBOX_NAME" /> на своїх пристроях.</translation>
 <translation id="3983162212222338509">Перетворення системи доменних імен може відбуватися в мережевому процесі, поза ним або частково в ньому й частково поза ним – це залежить від конфігурації системи та експериментальних параметрів функцій.</translation>
-<translation id="3984773186203819634">Список дій, які виконуються, коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Якщо правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> не налаштовано, це правило не діє.
-
-      Коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />, вебпереглядач виконує дії, указані в цьому правилі.
-
-      Якщо це правило не налаштувати або не вказати для нього значення, правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> не діятиме.
-
-      Підтримуються наведені нижче дії.
-
-      <ph name="CLOSE_BROWSERS_ACTION" />: закрити всі вікна вебпереглядача й прогресивні вебдодатки для цього профілю. Не підтримується на пристроях Android та iOS.
-
-      <ph name="CLOSE_TABS_ACTION" />: закрити всі вкладки у відкритих вікнах. Підтримується лише на пристроях iOS.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: показати вікно засобу вибору профілю. Не підтримується на пристроях Android та iOS.
-
-      <ph name="SIGN_OUT_ACTION" />: вийти з поточного облікового запису користувача. Підтримується лише на пристроях iOS.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: очистити всі відповідні дані вебперегляду. Щоб дізнатися більше, перегляньте правило <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />. На пристроях iOS підтримуються такі типи: <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" /> і <ph name="CLEAR_AUTOFILL_ACTION" />.
-
-      <ph name="RELOAD_PAGES_ACTION" />: оновити всі вебсторінки. На деяких сторінках може знадобитися підтвердити дію. Не підтримується на iOS.
-
-      У разі налаштування дій <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> і <ph name="CLEAR_SITE_SETTINGS_ACTION" /> синхронізацію буде деактивовано для відповідних типів даних за умови, що функцію <ph name="CHROME_SYNC_NAME" /> не вимкнути за допомогою правила <ph name="SYNC_DISABLED_POLICY_NAME" /> і правило <ph name="BROWSER_SIGNIN_POLICY_NAME" /> також не вимкнути.</translation>
 <translation id="3986700049001404598">Дозволити користувачам завершувати процеси за допомогою Диспетчера завдань Chrome</translation>
 <translation id="398884292557092447">Якщо для цього правила вибрано значення True або його не налаштовано, користувачі можуть керувати підказками автозаповнення даних кредитних карток в інтерфейсі.
 
@@ -3913,11 +3881,6 @@ Keychain.
 <translation id="4051723201852944592">Увімкнути перекривання вікон</translation>
 <translation id="4052529125939620019">Завантажувати розширення компонента CryptoToken під час запуску</translation>
 <translation id="4053157306171963473">Вимкнути звіти про час дій на пристрої</translation>
-<translation id="4055758693679485627">Налаштовує список типів даних веб-перегляду, які потрібно видаляти, коли користувач закриває всі вікна веб-переглядача. Доступні типи даних: історія веб-перегляду (<ph name="DATA_TYPE_BROWSING_HISTORY" />), історія завантажень (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), файли cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), кеш <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, дані автозаповнення (<ph name="DATA_TYPE_AUTOFILL" />), паролі (<ph name="DATA_TYPE_PASSWORD" />), налаштування сайтів (<ph name="DATA_TYPE_SITE_SETTINGS" />) і дані розміщених додатків (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Це правило не має пріоритету над правилом <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-У Chrome 114 і старіших версіях це правило діє, якщо для правила <ph name="SYNC_DISABLED_POLICY_NAME" /> указано значення "правда". Починаючи з версії Chrome 115, це правило деактивуватиме синхронізацію для відповідних типів даних за умови, що функцію <ph name="CHROME_SYNC_NAME" /> не вимкнено за допомогою правила <ph name="SYNC_DISABLED_POLICY_NAME" /> і правило <ph name="BROWSER_SIGNIN_POLICY_NAME" /> також не вимкнено.
-
-      Якщо <ph name="PRODUCT_NAME" /> закривається неналежним чином (наприклад, унаслідок помилки чи збою ОС), дані веб-перегляду буде видалено під час наступного завантаження профілю.</translation>
 <translation id="4056910949759281379">Вимкнути протокол SPDY</translation>
 <translation id="4057442294431066708">Це правило керує вибраним варіантом комбінації клавіш для перепризначення подій для клавіш F11 і F12 на відповідний підсторінці налаштувань. Ці налаштування застосовуються лише до клавіатур ChromeOS. Якщо правило не налаштовано, їх буде вимкнено за умовчанням.</translation>
 <translation id="4061590579642538878">Повідомляти дані звітів про аварійне завершення роботи.</translation>
@@ -4344,15 +4307,6 @@ WebSQL було вилучено у версії M112.</translation>
 <translation id="4426986640594727372">Дозволити доступ системи до геолокації</translation>
 <translation id="4427173305799125784">Засіб перегляду PDF не може додавати примітки у файлах PDF</translation>
 <translation id="4432762137771104529">Вмикає Розширене звітування безпечного перегляду</translation>
-<translation id="4434531680131327140">Налаштовує період збереження даних веб-перегляду для <ph name="PRODUCT_NAME" />. Це правило дає змогу адміністраторам налаштувати, коли веб-переглядач видаляє дані (різних типів). Це корисно для клієнтів, які працюють із конфіденційною інформацією.
-
-      Доступні типи даних: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> і <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> і <ph name="DATA_TYPE_HOSTED_APP_DATA" /> не підтримуються на Android.
-
-      Веб-переглядач автоматично видалятиме вибрані типи даних, які зберігаються довше ніж <ph name="TIME_TO_LIVE_IN_HOURS" />. Мінімальне можливе значення – 1 година.
-
-      Дані, період збереження яких закінчився, видалятимуться через 15 секунд після запуску веб-переглядача, а потім – кожні 30 хвилин, доки він працює.
-
-      У Chrome 114 і старіших версіях це правило діє, якщо для правила <ph name="SYNC_DISABLED_POLICY_NAME" /> указано значення "правда". Починаючи з версії Chrome 115, це правило деактивуватиме синхронізацію для відповідних типів даних за умови, що функцію <ph name="CHROME_SYNC_NAME" /> не вимкнено за допомогою правила <ph name="SYNC_DISABLED_POLICY_NAME" /> і правило <ph name="BROWSER_SIGNIN_POLICY_NAME" /> також не вимкнено.</translation>
 <translation id="443454694385851356">Застарілий (небезпечно)</translation>
 <translation id="4435032708588431506">Увімкнути протокол QUIC</translation>
 <translation id="443665821428652897">Видаляти дані із сайтів, коли веб-переглядач закривається (не рекомендується)</translation>

@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Na-save lang sa device na ito ang address</translation>
 <translation id="1449835205994625556">Itago ang Password</translation>
 <translation id="1450170672351507823">Naka-on ang standard na proteksyon. Para sa higit pang seguridad, gamitin ang Pinahusay na proteksyon.</translation>
+<translation id="1455492980583160269">Magpadala ng Mensahe</translation>
 <translation id="1469381646033328562">Pinapamahalaan ng iyong magulang ang account mo.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">I-double tap upang i-toggle ang setting</translation>
@@ -861,6 +862,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="54401264925851789">Impormasyon sa Seguridad ng Pahina</translation>
 <translation id="5443952882982198570">Mga Credit Card</translation>
 <translation id="5444892875087332195">Mga Bookmark</translation>
+<translation id="5453738961176844111">Country Code</translation>
 <translation id="5454211924362324495">Para mapigilan ang ibang tao na gamitin ang iyong password, <ph name="BEGIN_LINK" />palitan ito sa <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Buksan sa Offline Version</translation>
 <translation id="5459548306731933777">Ipakita ang Mga Detalye</translation>
@@ -1189,6 +1191,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Puwede mo ring pindutin nang matagal ang address bar para baguhin ang posisyon.</translation>
 <translation id="6988572888918530647">Pamahalaan ang Iyong Google Account</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">Para sa</translation>
 <translation id="699954956411469731">Mga Notification sa Mobile</translation>
 <translation id="699985840472413751">Isara ang Download</translation>
@@ -1355,6 +1358,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7866872729285243843">Para makuha ang iyong listahan ng babasahin sa lahat ng device mo, i-on ang “Listahan ng Babasahin” sa mga setting.</translation>
 <translation id="7866993391592926595">Kapag Na-hide ang Card na Ito, Mao-off ang Pagsubaybay sa Package at Maaalis ang Lahat ng Iyong Data</translation>
 <translation id="7870750252270996949">Larawang Kinopya Gamit ang Lens</translation>
+<translation id="7877056713163921063">Idagdag Sa Mga Contact</translation>
 <translation id="7879275349003161544">Ipakita ang Mga Download</translation>
 <translation id="7883882164760409935">Mayroon kang mga password na ginamit ulit.</translation>
 <translation id="7884694604461143138">History ng Paghahanap (<ph name="COUNT" /> ang Nakita)</translation>
@@ -1592,7 +1596,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> ang iyong search engine. Tingnan ang mga tagubilin nito para sa pag-delete sa iyong history ng paghahanap, kung naaangkop.</translation>
 <translation id="9008201768610948239">Balewalain</translation>
 <translation id="9012585441087414258">Nagpoprotekta laban sa mga site, download, at extension na kilalang mapanganib. Kung may kahina-hinalang ginagawa ang isang page, ipinapadala sa Ligtas na Pag-browse sa Google ang mga URL at bit ng content ng page.</translation>
-<translation id="9025203546212508704">Mag-swipe para matutunan kung paano i-customize ang iyong menu</translation>
 <translation id="9029650858822697271">Na-sign out ka</translation>
 <translation id="9034759925968272072">Hindi ka masa-sign out sa iyong Google Account. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Ipakita Ang Orihinal</translation>

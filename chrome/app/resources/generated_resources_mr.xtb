@@ -1619,8 +1619,6 @@
 <translation id="2165102982098084499">तुम्ही QR कोड स्कॅन करून ही डिव्हाइस लिंक केली आहेत.</translation>
 <translation id="2165177462441582039">प्रत्येक आयटमवर किती वेळ हायलाइट रहावे ते निवडा</translation>
 <translation id="2166369534954157698">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावर उडी मारली</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />हे डिव्हाइस (SN: <ph name="SERIAL_NUMBER" />) लॉक केले होते.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> सह यापुढे Chrome डिव्हाइस व्यवस्थापकाला सपोर्ट नाही. साइन इन करण्यासाठी, वेगळे डिव्हाइस वापरा किंवा तुमच्या डिव्हाइस अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">तरीही साइन इन करा</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2173801458090845390">या डीव्हाइसवर मागणी आयडी जोडा</translation>
@@ -6918,7 +6916,6 @@
 <translation id="6154240335466762404">सर्व पोर्ट काढून टाका</translation>
 <translation id="615436196126345398">प्रोटोकॉल</translation>
 <translation id="6154739047827675957">OneDrive सेटअप करता आले नाही</translation>
-<translation id="6154820449290823443">या Chromebook वर अ‍ॅक्सेस व्यवस्थापित करा आणि ॲप्स ब्लॉक करा.</translation>
 <translation id="6155141482566063812">बॅकग्राउंड टॅब तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">पासकी तयार करा</translation>
@@ -7545,6 +7542,7 @@
 <translation id="6647690760956378579">नैसर्गिक आवाज पूर्वावलोकन</translation>
 <translation id="6648911618876616409">महत्वाचे अपडेट इंस्टॉल करण्यासाठी तयार आहे. सुरुवात करण्यासाठी साइन इन करा.</translation>
 <translation id="6649018507441623493">फक्त एक सेकंद…</translation>
+<translation id="6650072551060208490">हे तुम्हीच असल्याची <ph name="ORIGIN_NAME" /> ला खात्री करायची आहे</translation>
 <translation id="6650206238642452078">ChromeOS सिस्टीम इव्‍हेंटचे सदस्यत्व घ्या</translation>
 <translation id="6650584564768559994">मेमरीची संतुलीत बचत करा. योग्य कालावधीनंतर तुमचे टॅब इनॅक्टिव्ह होतात.</translation>
 <translation id="665061930738760572">&amp;नवीन विंडोमध्ये उघडा</translation>
@@ -8847,7 +8845,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# खुली विंडो}other{# खुल्या विंडो}}</translation>
 <translation id="7643932971554933646">साइटला फाइल वाचू द्यायच्या का?</translation>
 <translation id="7644543211198159466">रंग आणि थीम</translation>
-<translation id="7644953783774050577">काहीही निवडू नका</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालक)</translation>
 <translation id="7645681574855902035">Linux बॅकअप रद्द करत आहे</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक काम करत नाही</translation>

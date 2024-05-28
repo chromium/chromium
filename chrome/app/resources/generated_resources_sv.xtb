@@ -1620,8 +1620,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2165102982098084499">Du länkade de här enheterna genom att skanna en QR-kod.</translation>
 <translation id="2165177462441582039">Välj hur länge varje objekt ska markeras</translation>
 <translation id="2166369534954157698">Den snabba röda räven hoppar över den lata hunden</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Den här enheten (serienummer: <ph name="SERIAL_NUMBER" />) var låst.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Hantering av Chrome-enheter med <ph name="MS_AD_NAME" /> stöds inte längre. Använd en annan enhet eller kontakta enhetsadministratören om du vill logga in.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Logga in ändå</translation>
 <translation id="2173302385160625112">Kontrollera internetanslutningen</translation>
 <translation id="2173801458090845390">Lägg till rekvirerings-id på enheten</translation>
@@ -6920,7 +6918,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6154240335466762404">Ta bort alla portar</translation>
 <translation id="615436196126345398">Protokoll</translation>
 <translation id="6154739047827675957">Det gick inte att konfigurera OneDrive</translation>
-<translation id="6154820449290823443">Hantera åtkomst och blockera appar på denna Chromebook.</translation>
 <translation id="6155141482566063812">En flik i bakgrunden delar din skärm</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Skapa nyckel</translation>
@@ -7547,6 +7544,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6647690760956378579">Förhandsgranska naturlig röst</translation>
 <translation id="6648911618876616409">En viktig uppdatering är klar för installation. Logga in för att komma igång.</translation>
 <translation id="6649018507441623493">Ett ögonblick …</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
 <translation id="6650206238642452078">Prenumerera på systemhändelser för ChromeOS</translation>
 <translation id="6650584564768559994">Spara en balanserad mängd minne. Flikarna blir inaktiva efter en optimal tidsperiod.</translation>
 <translation id="665061930738760572">Öppna i &amp;nytt fönster</translation>
@@ -8849,7 +8847,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7643842463591647490">{0,plural, =1{# öppet fönster}other{# öppna fönster}}</translation>
 <translation id="7643932971554933646">Vill du ge webbplatsen läsbehörighet till filer?</translation>
 <translation id="7644543211198159466">Färg och tema</translation>
-<translation id="7644953783774050577">Markera inga</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ägare)</translation>
 <translation id="7645681574855902035">Säkerhetskopieringen av Linux avbryts …</translation>
 <translation id="7646772052135772216">Det går inte att synkronisera lösenord</translation>

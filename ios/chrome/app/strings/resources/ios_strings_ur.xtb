@@ -90,6 +90,7 @@
 <translation id="143681031165817424">پتہ صرف اس آلہ پر محفوظ ہے</translation>
 <translation id="1449835205994625556">پاس ورڈ چھپائیں</translation>
 <translation id="1450170672351507823">معیاری تحفظ آن ہے۔ اور بھی مزید سیکیورٹی کے لیے، بہتر تحفظ کا استعمال کریں۔</translation>
+<translation id="1455492980583160269">پیغام بھیجیں</translation>
 <translation id="1469381646033328562">آپ کا اکاؤنٹ آپ کے والد/والدہ کے زیر انتظام ہے۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">ترتیبات کو ٹوگل کرنے کیلئے دو بار تھپتھپائیں</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">صفحہ کی سیکیورٹی کی معلومات</translation>
 <translation id="5443952882982198570">کریڈٹ کارڈز</translation>
 <translation id="5444892875087332195">بُک مارکس</translation>
+<translation id="5453738961176844111">ملک کا کوڈ</translation>
 <translation id="5454211924362324495">دوسروں کو اپنا پاس ورڈ استعمال کرنے سے روکنے کے لیے، <ph name="BEGIN_LINK" />اسے <ph name="WEBSITE" /> پر تبدیل کریں<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">آف لائن ورژن کھولیں</translation>
 <translation id="5459548306731933777">تفصیلات دکھائیں</translation>
@@ -1189,6 +1191,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">آپ پوزیشن تبدیل کرنے کے لیے ایڈریس بار کو چھو سکتے ہیں اور دبا کر رکھ سکتے ہیں۔</translation>
 <translation id="6988572888918530647">‏اپنے Google اکاؤنٹ کا نظم کریں</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">بنام</translation>
 <translation id="699954956411469731">موبائل اطلاعات</translation>
 <translation id="699985840472413751">ڈاؤن لوڈ بند کریں</translation>
@@ -1355,6 +1358,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7866872729285243843">اپنے تمام آلات پر اپنی پڑھنے کی فہرست حاصل کرنے کے لیے، ترتیبات میں "پڑھنے کی فہرست" کو آن کریں۔</translation>
 <translation id="7866993391592926595">اس کارڈ کو چھپانے سے پیکیج ٹریکنگ آف ہو جائے گی اور آپ کا سارا ڈیٹا ہٹا دیا جائے گا</translation>
 <translation id="7870750252270996949">لینز نے تصویر کو کاپی کیا</translation>
+<translation id="7877056713163921063">رابطوں میں شامل کریں</translation>
 <translation id="7879275349003161544">ڈاؤن لوڈز دکھائیں</translation>
 <translation id="7883882164760409935">آپ کے پاس دوبارہ استعمال کردہ پاس ورڈز ہیں۔</translation>
 <translation id="7884694604461143138">تلاش کی سرگزشت (<ph name="COUNT" /> ملی)</translation>
@@ -1592,7 +1596,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9000089900434778519">آپ کا سرچ انجن <ph name="DSE_NAME" /> ہے۔ اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت حذف کرنے کے لیے ان کی ہدایات دیکھیں۔</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>
 <translation id="9012585441087414258">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ صفحے میں کچھ مشکوک لگنے پر، صفحے کے مواد کے کچھ حصے اور URLs کو Google محفوظ براؤزنگ پر بھیجا جاتا ہے۔</translation>
-<translation id="9025203546212508704">اپنے مینو کو حسب ضرورت بنانے کا طریقہ جاننے کے لیے سوائپ کریں</translation>
 <translation id="9029650858822697271">آپ کو سائن آؤٹ کر دیا گیا</translation>
 <translation id="9034759925968272072">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ ممکن ہے کہ ‎<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="9037965129289936994">اصل دکھائیں</translation>

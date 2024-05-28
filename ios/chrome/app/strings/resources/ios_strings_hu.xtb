@@ -90,6 +90,7 @@
 <translation id="143681031165817424">A cím csak erre az eszközre van mentve</translation>
 <translation id="1449835205994625556">Jelszó elrejtése</translation>
 <translation id="1450170672351507823">A Normál védelem be van kapcsolva. A még nagyobb biztonság érdekében használjon Speciális védelmet.</translation>
+<translation id="1455492980583160269">Üzenet küldése</translation>
 <translation id="1469381646033328562">A fiókodat az egyik szülőd kezeli.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">A beállítás módosításához koppintson duplán</translation>
@@ -861,6 +862,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="54401264925851789">Oldal biztonsági információi</translation>
 <translation id="5443952882982198570">Hitelkártyák</translation>
 <translation id="5444892875087332195">Könyvjelzők</translation>
+<translation id="5453738961176844111">Országkód</translation>
 <translation id="5454211924362324495">Ha nem szeretné, hogy mások használhassák az Ön jelszavát, <ph name="BEGIN_LINK" />módosítsa a következő webhelyen: <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Offline verzió megnyitása</translation>
 <translation id="5459548306731933777">Részletek megjelenítése</translation>
@@ -1189,6 +1191,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">A pozíció módosítására lehetőség van a címsáv lenyomva tartásával is.</translation>
 <translation id="6988572888918530647">Google-fiók kezelése</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Címzett</translation>
 <translation id="699954956411469731">Mobilértesítések</translation>
 <translation id="699985840472413751">Letöltés bezárása</translation>
@@ -1355,6 +1358,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7866872729285243843">Ha az összes eszközén szeretné elérni az olvasólistát, kapcsolja be a beállítások között az „Olvasólista” funkciót.</translation>
 <translation id="7866993391592926595">A kártya elrejtésével kikapcsolja a csomagkövetést, és eltávolítja az összes adatát</translation>
 <translation id="7870750252270996949">Lens-keresés a vágólapra másolt képen</translation>
+<translation id="7877056713163921063">Hozzáadás a névjegyekhez</translation>
 <translation id="7879275349003161544">Letöltések megjelenítése</translation>
 <translation id="7883882164760409935">Több helyen is felhasználja bizonyos jelszavait.</translation>
 <translation id="7884694604461143138">Keresési előzmények (<ph name="COUNT" /> elem található)</translation>
@@ -1592,7 +1596,6 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="9000089900434778519">Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
 <translation id="9008201768610948239">Mellőzés</translation>
 <translation id="9012585441087414258">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző elküldi az URL-eket és az oldal tartalmának egyes részeit a Google Biztonságos Böngészésnek.</translation>
-<translation id="9025203546212508704">Csúsztatással megismerheti, hogy hogyan szabhatja személyre a menüt</translation>
 <translation id="9029650858822697271">A rendszer kijelentkeztette Önt</translation>
 <translation id="9034759925968272072">A rendszer nem jelentkezteti ki Google-fiókjából. Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> címen.</translation>
 <translation id="9037965129289936994">Eredeti megjelenítése</translation>

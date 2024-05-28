@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Hindi Ngayon</translation>
 <translation id="100881991356161927">Pangalan ng site</translation>
 <translation id="1009663062402466586">Available na ngayon ang mga kontrol ng laro</translation>
+<translation id="1010136228650201057">Pag-encrypt ng data ng user</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Hindi Tumutugon ang Page}one{Hindi Tumutugon ang Mga Page}other{Hindi Tumutugon ang Mga Page}}</translation>
 <translation id="1011003645819296594">Mga na-save na device</translation>
 <translation id="1011355516189274711">Volume ng text-to-speech</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">&amp;Mga setting ng wika</translation>
 <translation id="1050693411695664090">Mahina</translation>
+<translation id="1053776357096024725">Pagandahin ang tunog ng iyong built-in na mikropono gamit ang iba't ibang effect</translation>
 <translation id="1054048317165655285">Kumpletuhin ang pag-set up sa iyong telepono</translation>
 <translation id="1054153489933238809">Buksan ang Or&amp;ihinal na Larawan sa Bagong Tab</translation>
 <translation id="1054187194995068149">Hi. Isa itong preview</translation>
@@ -835,6 +837,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1607139524282324606">I-clear ang entry</translation>
 <translation id="1607499585984539560">Hindi affiliated ang user sa domain</translation>
 <translation id="1608668830839595724">Higit pang pagkilos para sa mga napiling item</translation>
+<translation id="1608698493373028805">Posibleng hindi na suportahan ang extension na ito sa hinaharap</translation>
 <translation id="1610272688494140697">Mga Setting ng App</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Naka-lock ang iyong device</translation>
@@ -1621,8 +1624,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2165102982098084499">Ni-link mo ang mga device na ito sa pamamagitan ng pag-scan ng QR code.</translation>
 <translation id="2165177462441582039">Piliin kung gaano katagal iha-highlight ang bawat item</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Na-lock ang device na ito (SN: <ph name="SERIAL_NUMBER" />).<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Hindi na sinusuportahan ang pamamahala sa Chrome device na may <ph name="MS_AD_NAME" />. Para mag-sign in, gumamit ng ibang device o makipag-ugnayan sa administrator ng iyong device.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Mag-sign in pa rin</translation>
 <translation id="2173302385160625112">Suriin ang iyong koneksyon sa internet</translation>
 <translation id="2173801458090845390">Magdagdag ng requisition ID sa device na ito</translation>
@@ -1710,6 +1711,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2234827758954819389">Gabay sa Privacy</translation>
 <translation id="2234876718134438132">Sync at mga serbisyo ng Google</translation>
 <translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
+<translation id="2236949375853147973">Aking Aktibidad</translation>
 <translation id="2238379619048995541">Data ng Estado ng Dalas</translation>
 <translation id="2241053333139545397">Basahin at baguhin ang iyong data sa ilang website</translation>
 <translation id="2241634353105152135">Isang beses lang</translation>
@@ -2322,6 +2324,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2667144577800272420">May iba pang app na nakatakdang buksan ang mga link na kapareho ng sa <ph name="APP_NAME" />. Idi-disable nito ang kakayahan ng <ph name="APP_NAME_2" /> at <ph name="APP_NAME_3" /> na buksan ang mga sinusuportahang link.</translation>
 <translation id="2667463864537187133">Pamahalaan ang pang-check ng pagbabaybay</translation>
 <translation id="2668094785979141847">I-click para lumabas sa Google Lens</translation>
+<translation id="2668604389652548400">Alisin o palitan ito ng mga katulad na extension mula sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Hindi mabuksan ang <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
 <translation id="2670102641511624474">Nagbabahagi ang <ph name="APP_NAME" /> ng isang tab ng Chrome.</translation>
@@ -2372,6 +2375,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2710101514844343743">Data ng paggamit at mga diagnostic</translation>
 <translation id="271033894570825754">Bago</translation>
 <translation id="2710507903599773521">Naka-unlock na ngayon ang iyong <ph name="DEVICE_TYPE" /></translation>
+<translation id="2712141162840347885">Pumili ng kahit anong bagay na hahanapin gamit ang Google Lens o pindutin ang escape para lumabas sa Google Lens</translation>
 <translation id="2713106313042589954">I-off ang camera</translation>
 <translation id="2713444072780614174">Puti</translation>
 <translation id="2714180132046334502">Madilim na background</translation>
@@ -2996,6 +3000,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3177914167275935955">May kasamang Chrome Education Upgrade ang iyong device, pero hindi nauugnay sa isang Google for Education account ang username mo. Gumawa ng Google for Education account sa pamamagitan ng pagbisita sa g.co/workspace/edusignup gamit ang pangalawang device.</translation>
 <translation id="3179982752812949580">Font ng text</translation>
 <translation id="3180284704187420717">I-save ang iyong mga bookmark, password, at marami pa gamit ang pag-sync</translation>
+<translation id="3180716079618904608">Kumuha ng Mga App at Laro</translation>
 <translation id="3181954750937456830">Ligtas na Pag-browse (pinoprotektahan ka at ang iyong device mula sa mga mapanganib na site)</translation>
 <translation id="3182749001423093222">Pang-check ng pagbabaybay</translation>
 <translation id="3183139917765991655">Pang-import ng Profile</translation>
@@ -4287,6 +4292,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4120817667028078560">Masyadong mahaba ang path</translation>
 <translation id="4124823734405044952">Na-reset ang iyong security key</translation>
 <translation id="4124935795427217608">Unicorn</translation>
+<translation id="4126375522951286587">I-shut down ang <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Superhero</translation>
 <translation id="4130199216115862831">Log ng Device</translation>
 <translation id="4130750466177569591">Sumasang-ayon ako</translation>
@@ -4587,6 +4593,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491">Nagbabahagi ng window ang <ph name="APP_NAME" />.</translation>
 <translation id="4364830672918311045">Ipakita ang mga notification</translation>
+<translation id="4367027658822022112">Puwede mong i-pin ang Google Lens para sa madaling pag-access; i-click ang button na I-pin sa itaas ng panel sa gilid</translation>
 <translation id="4367513928820380646">Suriin ang mga inalis na pahintulot</translation>
 <translation id="4367971618859387374">Display name</translation>
 <translation id="4368960422722232719">Ipakita ang paggamit ng memory sa card ng preview na lalabas kapag nag-hover sa tab</translation>
@@ -4989,6 +4996,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4666911709726371538">Higit pang app</translation>
 <translation id="4668279686271488041">Regular na dine-delete sa iyong device ang data ng pagsukat ng ad</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">Dapat ay mga numero lang ang gamitin sa PIN</translation>
 <translation id="4670909875730475086">Congrats! Na-install na ang <ph name="APP_NAME" /> sa iyong device</translation>
 <translation id="4672759829555593783">Buksan ang <ph name="FILE_NAME" /> ngayon</translation>
 <translation id="4673442866648850031">Buksan ang mga stylus tool kapag inalis ang stylus</translation>
@@ -5072,6 +5080,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="473936925429402449">Pinili, karagdagang content na <ph name="CURRENT_ELEMENT" /> sa <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Mga Ticket</translation>
 <translation id="4740546261986864539">Kabubukas lang</translation>
+<translation id="4741235124132242877">Na-pin na! Gamitin ulit ang Google Lens mula sa toolbar</translation>
 <translation id="4742334355511750246">Hindi pinapayagang magpakita ng mga larawan</translation>
 <translation id="4742795653798179840">Na-delete na ang data sa Chrome</translation>
 <translation id="4742970037960872810">Alisin ang highlight</translation>
@@ -5219,6 +5228,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4853020600495124913">Buksan sa &amp;bagong window</translation>
 <translation id="4854317507773910281">Pumili ng account ng magulang para sa pag-apruba</translation>
 <translation id="485480310608090163">Higit pang setting at pahintulot</translation>
+<translation id="4858599593306712511">Parental controls ng app</translation>
 <translation id="4858913220355269194">Azkals</translation>
 <translation id="486213875233855629">Na-mute ng iyong administrator</translation>
 <translation id="4862642413395066333">Paglagda sa Mga Pagtugon sa OCSP</translation>
@@ -6769,6 +6779,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6042308850641462728">Marami pang iba</translation>
 <translation id="604388835206766544">Hindi na-parse ang configuration</translation>
 <translation id="6043994281159824495">Mag-sign out ngayon</translation>
+<translation id="604424701295382420">Na-pin na! Maa-access mo ulit ang Google Lens mula sa bagong button sa toolbar</translation>
 <translation id="6045114302329202345">Pangunahing button ng TrackPoint</translation>
 <translation id="6047632800149092791">Hindi gumagana ang pag-sync. Subukang mag-sign out at mag-sign in ulit.</translation>
 <translation id="6048747414605857443">Pumili at mag-customize ng mga boses ng text-to-speech para sa ChromeVox at Select-to-speak</translation>
@@ -6921,7 +6932,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6154240335466762404">Alisin ang lahat ng port</translation>
 <translation id="615436196126345398">Protocol</translation>
 <translation id="6154739047827675957">Hindi na-set up ang OneDrive</translation>
-<translation id="6154820449290823443">Pamahalaan ang access at mag-block ng mga app sa Chromebook na ito.</translation>
 <translation id="6155141482566063812">Ibinabahagi ng tab sa background ang iyong screen</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Gumawa ng passkey</translation>
@@ -7550,6 +7560,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6647690760956378579">Preview ng natural na boses</translation>
 <translation id="6648911618876616409">Handa nang ma-install ang isang mahalagang update. Mag-sign in para makapagsimula.</translation>
 <translation id="6649018507441623493">Sandali lang...</translation>
+<translation id="6650072551060208490">Gustong kumpirmahin ng <ph name="ORIGIN_NAME" /> na ikaw ito</translation>
 <translation id="6650206238642452078">Mag-subscribe sa mga ChromeOS system event</translation>
 <translation id="6650584564768559994">Gawin ang balanseng pagtitipid sa memory. Hindi na magiging aktibo ang iyong mga tab pagkalipas ng pinakaangkop na period.</translation>
 <translation id="665061930738760572">Buksan sa &amp;Bagong Window</translation>
@@ -7603,6 +7614,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6686490380836145850">Isara ang mga tab sa kanan</translation>
 <translation id="6686665106869989887">Inilipat sa kanan ang tab</translation>
 <translation id="6686817083349815241">I-save ang iyong password</translation>
+<translation id="6687008241368170505">Palitan ang PIN sa Google Password Manager</translation>
 <translation id="6687079240787935001">Itago ang <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Hilingin kay <ph name="SUPERVISED_USER_NAME" /> na lumapit sa computer. Magbabasa ang iyong anak ng ilang parirala sa screen na ito para gawin ang kanyang voice model.
     <ph name="BR" />
@@ -8382,6 +8394,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Humiling ng pahintulot, pindutin ang F6 para tumugon</translation>
 <translation id="7290242001003353852">Ina-access ng serbisyo sa pag-sign in na ito, na hino-host ng <ph name="SAML_DOMAIN" />, ang iyong camera.</translation>
 <translation id="7292067737327289208">Ang iyong <ph name="BEGIN_LINK" />browser ay pinapamahalaan<ph name="END_LINK" /> ng iyong organisasyon at ang iyong <ph name="BEGIN_LINK" />profile ay pinapamahalaan<ph name="END_LINK" /> ng <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Hilingin sa iyong magulang na payagan ang access sa Mga Setting</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Tandaang ang Android, Play, at mga nauugnay na app ay nasasaklawan ng sari-sarili nitong mga patakaran sa pagkolekta at paggamit ng data.</translation>
 <translation id="7296503797589217366">Piliin ang folder na <ph name="FOLDER_TITLE" /></translation>
@@ -8690,6 +8703,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7514239104543605883">Kopyahin sa iyong device</translation>
 <translation id="7514365320538308">I-download</translation>
 <translation id="7514417110442087199">Magdagdag ng pagkakatalaga</translation>
+<translation id="7515191208480168435">Puwede mong i-pin ang Google Lens para sa madaling pag-access</translation>
 <translation id="751523031290522286">Na-block ng admin ang <ph name="APP_NAME" />. Humiling sa admin ng pahintulot na gamitin ang app na ito.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -8852,7 +8866,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7643842463591647490">{0,plural, =1{# bukas na window}one{# bukas na window}other{# na bukas na window}}</translation>
 <translation id="7643932971554933646">Payagan ang site na tingnan ang mga file?</translation>
 <translation id="7644543211198159466">Kulay at tema</translation>
-<translation id="7644953783774050577">Huwag pumili</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (may-ari)</translation>
 <translation id="7645681574855902035">Kinakansela ang pag-back up ng Linux</translation>
 <translation id="7646772052135772216">Hindi gumagana ang pag-sync ng password</translation>
@@ -10166,6 +10179,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8592141010104017453">Huwag magpakita ng anumang notification</translation>
 <translation id="859246725979739260">Na-block ang site na ito sa pag-access sa iyong lokasyon.</translation>
 <translation id="8593450223647418235">Hindi mo mabubuksan ang mga file sa Microsoft 365 hanggang sa matapos ang pag-set up.</translation>
+<translation id="8593686980889923154">Naka-block ang <ph name="APP_NAME" /> sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Mga Custom na File</translation>
 <translation id="8597845839771543242">Format ng property:</translation>
 <translation id="8598249292448297523">mag-print</translation>
@@ -10587,6 +10601,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8890529496706615641">Hindi puwedeng i-rename ang profile. Pakisubukan ulit o makipag-ugnayan sa iyong carrier para sa technical support.</translation>
 <translation id="8892168913673237979">Handa na ang lahat!</translation>
 <translation id="8892246501904593980">Makita ang lahat ng iyong bookmark sa Mga Bookmark at Listahan</translation>
+<translation id="8893479486525393799">Pang-studio na mikropono</translation>
 <translation id="8893801527741465188">Tapos nang mag-uninstall</translation>
 <translation id="8893928184421379330">Paumanhin, hindi makilala ang device na <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Proteksyon sa pag-access ng data para sa mga peripheral</translation>

@@ -1613,8 +1613,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2165102982098084499">Associou estes dispositivos através da leitura de um código QR.</translation>
 <translation id="2165177462441582039">Escolha o tempo de realce de cada item</translation>
 <translation id="2166369534954157698">A ligeira raposa marrom salta sobre o cão preguiçoso</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Este dispositivo (NS: <ph name="SERIAL_NUMBER" />) foi bloqueado.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />A gestão de dispositivos Chrome com <ph name="MS_AD_NAME" /> já não é suportada. Para iniciar sessão, use um dispositivo diferente ou contacte o administrador do dispositivo.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Continuar com o início de sessão</translation>
 <translation id="2173302385160625112">Verifique a ligação à Internet</translation>
 <translation id="2173801458090845390">Adicionar ID de requisição a este dispositivo</translation>
@@ -1702,6 +1700,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2234827758954819389">Guia de privacidade</translation>
 <translation id="2234876718134438132">Sincronização e serviços Google</translation>
 <translation id="2235344399760031203">Os cookies de terceiros estão bloqueados</translation>
+<translation id="2236949375853147973">A minha atividade</translation>
 <translation id="2238379619048995541">Dados do estado de frequência</translation>
 <translation id="2241053333139545397">Ler e alterar os seus dados em vários Sites</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
@@ -5216,6 +5215,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4853020600495124913">Abrir numa &amp;nova janela</translation>
 <translation id="4854317507773910281">Escolhe a conta parental para aprovação</translation>
 <translation id="485480310608090163">Mais definições e autorizações</translation>
+<translation id="4858599593306712511">Controlos parentais de apps</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Som desativado pelo seu administrador</translation>
 <translation id="4862642413395066333">Respostas OCSP de assinatura</translation>
@@ -6920,7 +6920,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6154240335466762404">Remover todas as portas</translation>
 <translation id="615436196126345398">Protocolo</translation>
 <translation id="6154739047827675957">Falha na configuração do OneDrive</translation>
-<translation id="6154820449290823443">Faça a gestão do acesso e bloqueie apps neste Chromebook.</translation>
 <translation id="6155141482566063812">O separador em segundo plano está a partilhar o seu ecrã.</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Criar chave de acesso</translation>
@@ -7547,6 +7546,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6647690760956378579">Pré-visualização da voz natural</translation>
 <translation id="6648911618876616409">Existe uma nova atualização crítica pronta para instalação. Inicie sessão para começar.</translation>
 <translation id="6649018507441623493">Aguarde um momento...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quer confirmar a sua identidade</translation>
 <translation id="6650206238642452078">Subscrever eventos do sistema ChromeOS</translation>
 <translation id="6650584564768559994">Poupe uma quantidade equilibrada de memória. Os separadores ficam inativos após um período ideal.</translation>
 <translation id="665061930738760572">Abrir numa &amp;Nova Janela</translation>
@@ -8852,7 +8852,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7643842463591647490">{0,plural, =1{# janela aberta}other{# janelas abertas}}</translation>
 <translation id="7643932971554933646">Permite que o site veja ficheiros?</translation>
 <translation id="7644543211198159466">Cor e tema</translation>
-<translation id="7644953783774050577">Não selecionar nada</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietário)</translation>
 <translation id="7645681574855902035">A cancelar a cópia de segurança do Linux…</translation>
 <translation id="7646772052135772216">A sincronização de palavras-passe não está a funcionar</translation>

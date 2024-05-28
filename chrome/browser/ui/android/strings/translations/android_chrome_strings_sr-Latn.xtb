@@ -317,7 +317,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2650348088770008516">Objašnjenje vodiča za privatnost je zatvoreno</translation>
 <translation id="2650408372219180431">Izvezite i izbrišite lozinke sačuvane na ovom uređaju</translation>
 <translation id="2650751991977523696">Preuzimate datoteku ponovo?</translation>
-<translation id="2651465929321991146">Istorija i kartice</translation>
 <translation id="265156376773362237">Standardno predučitavanje</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2656405586795711023">Veb-aplikacije</translation>
@@ -911,7 +910,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5626134646977739690">Ime:</translation>
 <translation id="5628604359369369630">Nije pročitano. Dostupno je oflajn</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Istorija pretrage<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />drugi oblici aktivnosti<ph name="END_LINK2" /> mogu da budu sačuvani na Google nalogu</translation>
-<translation id="564667659802381754">Vodič za privatnost <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Poslednjih 7 dana</translation>
 <translation id="5655963694829536461">Pretražite preuzimanja</translation>
 <translation id="5657871969392618475">Informacije su zaštićene zaključavanjem profila</translation>
@@ -990,6 +988,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="6002122790816966947">Uređaji</translation>
 <translation id="6011308810877101166">Poboljšajte predloge za pretragu</translation>
 <translation id="6013305291643746595">Sortira se prema najstarijem</translation>
+<translation id="6022659036123304283">Prilagodite Chrome sebi</translation>
 <translation id="6026538407078977628">Proširite na prikaz preko celog ekrana</translation>
 <translation id="6030719887161080597">Upravljajte informacijama koje sajtovi koriste za merenje učinka oglasa</translation>
 <translation id="6039379616847168523">Prelazak na sledeću karticu</translation>
@@ -1149,6 +1148,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6734310707649923383">Možete da vidite stranice koje ste posetili ili da ih izbrišete iz istorije</translation>
 <translation id="6738867403308150051">Preuzima se...</translation>
 <translation id="674388916582496364">Uobičajeno je da sajtovi koje posećujete pamte stvari koje vas zanimaju radi personalizacije doživljaja. Sajtovi mogu i da čuvaju informacije o vašim interesovanjima u Chrome-u.</translation>
+<translation id="6746338529702829275">Pregledajte podatke o nalogu</translation>
 <translation id="6751521182688001123">Brzo otvorite novu karticu. Da biste izmenili ovu prečicu, dodirnite i zadržite.</translation>
 <translation id="6756507620369789050">Delite povratne informacije</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1181,6 +1181,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="686490460830618322">Tabela sa filterima aplikacija</translation>
 <translation id="6865313869410766144">Podaci Automatskog popunjavanja za obrasce</translation>
 <translation id="6867400383614725881">Nova kartica bez arhiviranja</translation>
+<translation id="686899695320434745">Adrese nisu šifrovane pomoću pristupne fraze. To vam omogućava da ih koristite u drugim Google uslugama.</translation>
 <translation id="6869056123412990582">računaru</translation>
 <translation id="6882836635272038266">Standardna zaštita od veb-sajtova, preuzimanja i dodataka za koje se zna da su štetni.</translation>
 <translation id="6883204995689174413">Delite</translation>
@@ -1606,6 +1607,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="885480114717186641">Možete da zatražite verziju sajta za računar za <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Preuzimaj opise</translation>
 <translation id="8856931513242997049">Tok dozvole za obaveštenja je zatvoren</translation>
+<translation id="8865415417596392024">Chrome podaci na nalogu</translation>
 <translation id="8898822736010347272">Šalje Google-u URL-ove nekih stranica koje posećujete, ograničene informacije o sistemu i određeni sadržaj stranica da bi se otkrile nove pretnje i zaštitili svi širom veba.</translation>
 <translation id="8909135823018751308">Deli...</translation>
 <translation id="8921980840204105660">Sinhronizujte podatke da biste preuzeli obeleživače sa drugih uređaja</translation>

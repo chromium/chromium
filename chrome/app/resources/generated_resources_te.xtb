@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">ఇప్పుడు కాదు</translation>
 <translation id="100881991356161927">సైట్ పేరు</translation>
 <translation id="1009663062402466586">గేమ్ కంట్రోల్స్ ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
+<translation id="1010136228650201057">యూజర్ డేటా ఎన్‌క్రిప్షన్</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{పేజీ ప్రతిస్పందించడం లేదు}other{పేజీలు ప్రతిస్పందించడం లేదు}}</translation>
 <translation id="1011003645819296594">సేవ్ చేసిన పరికరాలు</translation>
 <translation id="1011355516189274711">టెక్ట్స్-టు-స్పీచ్ వాల్యూమ్</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">అజ్ఞాత మోడ్</translation>
 <translation id="1049795001945932310">&amp;భాష సెట్టింగ్‌లు</translation>
 <translation id="1050693411695664090">బలహీనంగా ఉంది</translation>
+<translation id="1053776357096024725">పలు రకాల ఎఫెక్ట్‌లతో మీ బిల్ట్-ఇన్ మైక్రోఫోన్ సౌండ్‌ను మెరుగుపరచండి</translation>
 <translation id="1054048317165655285">మీ ఫోన్‌లో సెటప్‌ను పూర్తి చేయండి</translation>
 <translation id="1054153489933238809">అసలు &amp;చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="1054187194995068149">హాయ్. ఇది ప్రివ్యూ</translation>
@@ -834,6 +836,7 @@
 <translation id="1607139524282324606">నమోదును తీసివేయండి</translation>
 <translation id="1607499585984539560">యూజర్ డొమైన్‌తో అనుబంధించబడలేదు</translation>
 <translation id="1608668830839595724">ఎంపిక చేసిన అంశాల కోసం మరిన్ని చర్యలు</translation>
+<translation id="1608698493373028805">ఈ ఎక్స్‌టెన్షన్ ఇకపై సపోర్ట్ చేయకపోవచ్చు</translation>
 <translation id="1610272688494140697">యాప్ సెట్టింగ్‌లు</translation>
 <translation id="161042844686301425">నీలి ఆకుపచ్చ</translation>
 <translation id="1611432201750675208">మీ పరికరం లాక్ చేయబడింది</translation>
@@ -1618,8 +1621,6 @@
 <translation id="2165102982098084499">మీరు QR కోడ్‌ను స్కాన్ చేయడం ద్వారా ఈ పరికరాలను లింక్ చేశారు.</translation>
 <translation id="2165177462441582039">ప్రతి ఐటెమ్ ఎంత సమయం హైలైట్‌గా ఉండాలో ఎంచుకోండి</translation>
 <translation id="2166369534954157698">దేశ భాషలందు తెలుగు లెస్స</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />ఈ పరికరం (SN: <ph name="SERIAL_NUMBER" />) లాక్ చేయబడింది.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" />‌తో ఉన్న Chrome పరికర మేనేజ్‌మెంట్ ఇకపై సపోర్ట్ చేయదు. సైన్ ఇన్ చేయడానికి, వేరే పరికరాన్ని ఉపయోగించండి లేదా మీ పరికర అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">ఏదేమైనా సైన్ ఇన్ చేయండి</translation>
 <translation id="2173302385160625112">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="2173801458090845390">ఈ పరికరానికి రిక్వెస్ట్‌ IDని జోడించండి</translation>
@@ -1707,6 +1708,7 @@
 <translation id="2234827758954819389">గోప్యతా గైడ్</translation>
 <translation id="2234876718134438132">సింక్, Google సర్వీసులు</translation>
 <translation id="2235344399760031203">థర్డ్-పార్టీ కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
+<translation id="2236949375853147973">నా యాక్టివిటీ</translation>
 <translation id="2238379619048995541">తరచుదనం స్థితి డేటా</translation>
 <translation id="2241053333139545397">అనేక వెబ్‌సైట్‌ల్లో ఉన్న మీ డేటాను చదవడం మరియు మార్చడం</translation>
 <translation id="2241634353105152135">ఒకసారి మాత్రమే</translation>
@@ -2319,6 +2321,7 @@
 <translation id="2667144577800272420">ఇతర యాప్‌లు, <ph name="APP_NAME" /> తెరిచిన అవే లింక్‌లను తెరవడానికి సిద్ధంగా ఉన్నాయి. ఇది సపోర్ట్ చేయబడిన లింక్‌లను తెరవకుండా <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />ను డిజేబుల్ చేస్తుంది.</translation>
 <translation id="2667463864537187133">స్పెల్ చెక్‌ను మేనేజ్ చేయండి</translation>
 <translation id="2668094785979141847">Google Lens నుండి నిష్క్రమించడానికి క్లిక్ చేయండి</translation>
+<translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome వెబ్ స్టోర్<ph name="END_LINK" /> నుండి ఒకే రకమైన ఎక్స్‌టెన్షన్‌లతో దాన్ని తీసివేయండి లేదా రీప్లేస్ చేయండి</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />ను తెరవడం సాధ్యపడలేదు</translation>
 <translation id="2669454659051515572">డౌన్‌లోడ్ చేసిన ఫైల్స్‌ను ఈ పరికరాన్ని ఉపయోగించే ఎవరైనా చూడగలరు</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> ఒక Chrome ట్యాబ్‌ను షేర్ చేస్తోంది.</translation>
@@ -2369,6 +2372,7 @@
 <translation id="2710101514844343743">వినియోగం &amp; విశ్లేషణల డేటా</translation>
 <translation id="271033894570825754">కొత్తది</translation>
 <translation id="2710507903599773521">మీ <ph name="DEVICE_TYPE" /> ఇప్పుడు అన్‌లాక్ చేయబడింది</translation>
+<translation id="2712141162840347885">Google Lensతో సెర్చ్ చేయడానికి ఏదైనా ఎంచుకోండి లేదా Google Lens నుండి ఎగ్జిట్ అవ్వడానికి ఎస్కేప్ బటన్‌ను నొక్కండి</translation>
 <translation id="2713106313042589954">కెమెరాను ఆఫ్ చేయి</translation>
 <translation id="2713444072780614174">తెలుపు</translation>
 <translation id="2714180132046334502">ముదురు నేపథ్యం</translation>
@@ -2993,6 +2997,7 @@
 <translation id="3177914167275935955">మీ పరికరం Chrome Education అప్‌గ్రేడ్‌ను కలిగి ఉంది, కానీ మీ యూజర్‌నేమ్ Google for Education ఖాతాతో అనుబంధించబడి లేదు. వేరొక పరికరంలో దయచేసి g.co/workspace/edusignup లింక్‌ను సందర్శించి Google for Education ఖాతాను క్రియేట్ చేయండి.</translation>
 <translation id="3179982752812949580">వచన ఫాంట్</translation>
 <translation id="3180284704187420717">సింక్ చేయడం ద్వారా మీ బుక్‌మార్క్‌లను, పాస్‌వర్డ్‌లను, అలాగే మరిన్నింటిని సేవ్ చేయండి</translation>
+<translation id="3180716079618904608">యాప్‌లు, గేమ్‌లను పొందండి</translation>
 <translation id="3181954750937456830">సురక్షిత బ్రౌజింగ్ (ప్రమాదకరమైన సైట్‌ల నుండి మిమ్మల్ని, మీ పరికరాన్ని రక్షిస్తుంది)</translation>
 <translation id="3182749001423093222">స్పెల్ చెక్</translation>
 <translation id="3183139917765991655">ప్రొఫైల్ ఇంపోర్టర్</translation>
@@ -4284,6 +4289,7 @@
 <translation id="4120817667028078560">పాథ్‌ చాలా పొడవుగా ఉంది</translation>
 <translation id="4124823734405044952">మీ సెక్యూరిటీ కీ రీసెట్ చేయబడింది</translation>
 <translation id="4124935795427217608">యునికార్న్</translation>
+<translation id="4126375522951286587"><ph name="VM_NAME" />‌ను షట్‌డౌన్ చేయండి</translation>
 <translation id="412730574613779332">స్పాండెక్స్</translation>
 <translation id="4130199216115862831">పరికరం లాగ్</translation>
 <translation id="4130750466177569591">నేను అంగీకరిస్తున్నాను</translation>
@@ -4584,6 +4590,7 @@
 <translation id="4364327530094270451">ఖర్బూజాపండు</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ఒక విండోను షేర్ చేస్తోంది.</translation>
 <translation id="4364830672918311045">నోటిఫికేషన్‌లను ప్రదర్శించడం</translation>
+<translation id="4367027658822022112">సులభంగా యాక్సెస్ చేయడం కోసం మీరు Google Lensను పిన్ చేయవచ్చు; సైడ్ ప్యానెల్‌లో ఎగువున ఉన్న 'పిన్ చేయండి' బటన్‌ను క్లిక్ చేయండి</translation>
 <translation id="4367513928820380646">తీసివేయబడిన అనుమతులను రివ్యూ చేయండి</translation>
 <translation id="4367971618859387374">డిస్‌ప్లే పేరు</translation>
 <translation id="4368960422722232719">ట్యాబ్ హోవర్ ప్రివ్యూ కార్డ్‌లో మెమరీ వినియోగాన్ని చూపండి</translation>
@@ -4986,6 +4993,7 @@
 <translation id="4666911709726371538">మరిన్ని యాప్‌లు</translation>
 <translation id="4668279686271488041">యాడ్ మెజర్‌మెంట్ డేటా మీ పరికరం నుండి క్రమం తప్పకుండా తొలగించబడుతుంది</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN కోసం తప్పనిసరిగా నంబర్‌లను మాత్రమే ఉపయోగించాలి</translation>
 <translation id="4670909875730475086">అభినందనలు! <ph name="APP_NAME" /> మీ పరికరంలో విజయవంతంగా ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="4672759829555593783">ఇప్పుడు <ph name="FILE_NAME" /> ఫైల్‌ను తెరవండి</translation>
 <translation id="4673442866648850031">స్టైలస్‌ను బయటకు తీసినప్పుడు స్టైలస్ సాధనాలను తెరుస్తుంది</translation>
@@ -5069,6 +5077,7 @@
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />లో <ph name="CURRENT_ELEMENT" />వ అదనపు కంటెంట్ ఎంచుకోబడింది</translation>
 <translation id="4739639199548674512">టికెట్‌లు</translation>
 <translation id="4740546261986864539">ఇటీవల తెరిచినవి</translation>
+<translation id="4741235124132242877">పిన్ చేశారు! టూల్‌బార్ నుండి Google Lensను మళ్లీ ఉపయోగించండి</translation>
 <translation id="4742334355511750246">ఇమేజ్‌లను చూపడానికి అనుమతించబడలేదు</translation>
 <translation id="4742795653798179840">Chrome డేటాను తొలగించడం జరిగింది</translation>
 <translation id="4742970037960872810">హైలైట్‌ను తీసివేయండి</translation>
@@ -5216,6 +5225,7 @@
 <translation id="4853020600495124913">&amp;కొత్త విండోలో తెరువు</translation>
 <translation id="4854317507773910281">ఆమోదం కోసం తల్లి/తండ్రి ఖాతాను ఎంచుకోండి</translation>
 <translation id="485480310608090163">మరిన్ని సెట్టింగ్‌లు మరియు అనుమతులు</translation>
+<translation id="4858599593306712511">యాప్ తల్లిదండ్రుల కంట్రోల్స్</translation>
 <translation id="4858913220355269194">ఫ్రిట్జ్</translation>
 <translation id="486213875233855629">మీ అడ్మినిస్ట్రేటర్ మ్యూట్ చేశారు</translation>
 <translation id="4862642413395066333">OCSP ప్రతిస్పందనలను సైన్ చేస్తోంది</translation>
@@ -6765,6 +6775,7 @@
 <translation id="6042308850641462728">మరింత చూపించు</translation>
 <translation id="604388835206766544">కాన్ఫిగరేషన్ అన్వయింపు విఫలమైంది</translation>
 <translation id="6043994281159824495">ఇప్పుడే సైన్ అవుట్ చేయి</translation>
+<translation id="604424701295382420">పిన్ చేశారు! మీరు టూల్‌బార్‌లోని కొత్త బటన్‌ను ఉపయోగించి Google Lensను మళ్లీ యాక్సెస్ చేయవచ్చు</translation>
 <translation id="6045114302329202345">ప్రధాన TrackPoint బటన్</translation>
 <translation id="6047632800149092791">సింక్ పని చేయడం లేదు. సైన్ అవుట్ చేసి, తిరిగి సైన్ ఇన్ చేయడాన్ని ట్రై చేయండి.</translation>
 <translation id="6048747414605857443">ChromeVox, 'వినడానికి ఎంచుకోండి'కి టెక్స్ట్-టు-స్పీచ్ వాయిస్‌లను ఎంచుకోండి, అనుకూలంగా మార్చండి</translation>
@@ -6917,7 +6928,6 @@
 <translation id="6154240335466762404">అన్ని పోర్ట్‌లను తీసివేయండి</translation>
 <translation id="615436196126345398">ప్రోటోకాల్</translation>
 <translation id="6154739047827675957">OneDrive సెటప్ విఫలమైంది</translation>
-<translation id="6154820449290823443">ఈ Chromebookలో యాప్‌లను మేనేజ్ చేయండి, బ్లాక్ చేయండి.</translation>
 <translation id="6155141482566063812">బ్యాక్‌గ్రౌండ్ ట్యాబ్ మీ స్క్రీన్‌ను షేర్ చేస్తోంది</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">పాస్-కీని క్రియేట్ చేయండి</translation>
@@ -7544,6 +7554,7 @@
 <translation id="6647690760956378579">సహజమైన వాయిస్‌కు ప్రివ్యూ</translation>
 <translation id="6648911618876616409">ఒక ముఖ్యమైన అప్‌డేట్ ఇన్‌స్టాల్ కావడానికి సిద్ధంగా ఉంది. ప్రారంభించడానికి సైన్ ఇన్ చేయండి.</translation>
 <translation id="6649018507441623493">ఒక సెకను వేచి ఉండండి…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
 <translation id="6650206238642452078">ChromeOS సిస్టమ్ ఈవెంట్‌లకు సబ్‌స్క్రయిబ్ చేయండి</translation>
 <translation id="6650584564768559994">బ్యాలెన్స్‌డ్ మెమరీ సేవింగ్స్‌ను పొందండి. సరైన సమయం తర్వాత మీ ట్యాబ్‌లు ఇన్‌యాక్టివ్ అవుతాయి.</translation>
 <translation id="665061930738760572">&amp;కొత్త విండోలో తెరువు</translation>
@@ -7597,6 +7608,7 @@
 <translation id="6686490380836145850">కుడివైపు ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="6686665106869989887">ట్యాబ్ కుడి వైపునకు తరలించబడింది</translation>
 <translation id="6686817083349815241">మీ పాస్‌వర్డ్‌ను సేవ్ చేయండి</translation>
+<translation id="6687008241368170505">Google Password Manager PINను మార్చండి</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" />‌ను దాచండి</translation>
 <translation id="6689714331348768690">కంప్యూటర్‌కు దగ్గరలో ఉండమని <ph name="SUPERVISED_USER_NAME" />ను అడగండి. మీ చిన్నారి వారి వాయిస్ మోడల్‌ను క్రియేట్ చేయడానికి ఈ స్క్రీన్‌పై ఉన్న కొన్ని ఫ్రేజ్‌లను చదువుతారు.
     <ph name="BR" />
@@ -8376,6 +8388,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - అనుమతి కోసం రిక్వెస్ట్ చేశారు, ప్రతిస్పందించడానికి F6ను నొక్కండి</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> హోస్ట్ చేసిన ఈ సైన్-ఇన్ సేవ, మీ కెమెరాను యాక్సెస్ చేస్తోంది.</translation>
 <translation id="7292067737327289208">మీ <ph name="BEGIN_LINK" />బ్రౌజర్ మేనేజ్‌మెంట్<ph name="END_LINK" /> మీ సంస్థ ద్వారా జరుగుతోంది, మీ <ph name="BEGIN_LINK" />ప్రొఫైల్ మేనేజ్‌మెంట్<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> ద్వారా జరుగుతోంది</translation>
+<translation id="7292147651179697920">సెట్టింగ్‌లలో యాక్సెస్‌ను అనుమతించమని మీ పేరెంట్‌ను అడగండి</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Android, Play, అనుబంధిత యాప్‌లు వాటి స్వంత డేటా సేకరణ, వినియోగ విధానాల ప్రకారం పర్యవేక్షించబడతాయి.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ఫోల్డర్‌ను ఎంచుకోండి</translation>
@@ -8684,6 +8697,7 @@
 <translation id="7514239104543605883">మీ పరికరానికి కాపీ చేయండి</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
 <translation id="7514417110442087199">కేటాయింపును జోడించండి</translation>
+<translation id="7515191208480168435">సులభంగా యాక్సెస్ చేయడం కోసం మీరు Google Lensను పిన్ చేయవచ్చు</translation>
 <translation id="751523031290522286">అడ్మిన్ <ph name="APP_NAME" />ను బ్లాక్ చేశారు. ఈ యాప్‌ను ఉపయోగించడానికి అడ్మిన్‌ను అనుమతి అడగండి.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">పేజీ కింది వైపు కీ</translation>
@@ -8846,7 +8860,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# తెరిచిన విండో ఉంది}other{# తెరిచిన విండోలు ఉన్నాయి}}</translation>
 <translation id="7643932971554933646">ఫైళ్లను చూడటానికి సైట్‌ను అనుమతించాలా?</translation>
 <translation id="7644543211198159466">రంగు మరియు థీమ్‌</translation>
-<translation id="7644953783774050577">దేన్నీ ఎంచుకోవద్దు</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (యజమాని)</translation>
 <translation id="7645681574855902035">Linux బ్యాకప్‍ను రద్దు చేస్తోంది</translation>
 <translation id="7646772052135772216">పాస్‌వర్డ్ సింక్ పనిచేయడం లేదు</translation>
@@ -10155,6 +10168,7 @@
 <translation id="8592141010104017453">నోటిఫికేషన్‌లను అస్సలు చూపవద్దు</translation>
 <translation id="859246725979739260">మీ లొకేషన్‌ను యాక్సెస్ చేయనివ్వకుండా ఈ సైట్ బ్లాక్ చేయబడింది.</translation>
 <translation id="8593450223647418235">సెటప్ పూర్తయ్యే వరకు మీరు Microsoft 365లో ఫైల్స్‌ను తెరవలేరు.</translation>
+<translation id="8593686980889923154">మీ <ph name="DEVICE_TYPE" />‌లో <ph name="APP_NAME" /> యాప్ బ్లాక్ చేయబడింది</translation>
 <translation id="8596540852772265699">అనుకూల ఫైళ్ళు</translation>
 <translation id="8597845839771543242">లక్షణ ఆకృతి:</translation>
 <translation id="8598249292448297523">ప్రింట్</translation>
@@ -10574,6 +10588,7 @@
 <translation id="8890529496706615641">ప్రొఫైల్ పేరు మార్చడం సాధ్యపడలేదు. దయచేసి మళ్లీ ట్రై చేయండి లేదా టెక్నికల్ సపోర్ట్ కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="8892168913673237979">అంతా పూర్తయింది!</translation>
 <translation id="8892246501904593980">బుక్‌మార్క్‌లు, లిస్ట్‌లలో మీ అన్ని బుక్‌మార్క్‌లను చూడండి</translation>
+<translation id="8893479486525393799">స్టూడియో మైక్</translation>
 <translation id="8893801527741465188">అన్ఇన్‌స్టాల్ పూర్తయింది</translation>
 <translation id="8893928184421379330">క్షమించండి, పరికరం <ph name="DEVICE_LABEL" /> గుర్తించబడలేదు.</translation>
 <translation id="8894761918470382415">పెరిఫెరల్స్ కోసం డేటా యాక్సెస్ రక్షణ</translation>

@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adrese tika saglabāta tikai šajā ierīcē</translation>
 <translation id="1449835205994625556">Slēpt paroli</translation>
 <translation id="1450170672351507823">Ir ieslēgta standarta aizsardzība. Lai iegūtu lielāku drošību, izmantojiet uzlaboto aizsardzību.</translation>
+<translation id="1455492980583160269">Sūtiet ziņojumu</translation>
 <translation id="1469381646033328562">Jūsu kontu pārvalda viens no vecākiem.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Veiciet dubultskārienu, lai pārslēgtu iestatījumu.</translation>
@@ -861,6 +862,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="54401264925851789">Lapas drošības informācija</translation>
 <translation id="5443952882982198570">Kredītkartes</translation>
 <translation id="5444892875087332195">Grāmatzīmes</translation>
+<translation id="5453738961176844111">Valsts kods</translation>
 <translation id="5454211924362324495">Lai citi nevarētu izmantot jūsu paroli, <ph name="BEGIN_LINK" />mainiet to vietnē <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Atvērt bezsaistes versiju</translation>
 <translation id="5459548306731933777">Rādīt informāciju</translation>
@@ -1189,6 +1191,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6979158407327259162">Google disks</translation>
 <translation id="6983306615164277634">Varat arī pieskarties adreses joslai un turēt to, lai mainītu tās pozīciju.</translation>
 <translation id="6988572888918530647">Google konta pārvaldība</translation>
+<translation id="6990519590575500580">Sāciet FaceTime zvanu</translation>
 <translation id="6998989275928107238">Kam</translation>
 <translation id="699954956411469731">Paziņojumi mobilajās ierīcēs</translation>
 <translation id="699985840472413751">Aizvērt lejupielādi</translation>
@@ -1355,6 +1358,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7866872729285243843">Lai lasīšanas saraksts būtu pieejams visās jūsu ierīcēs, iestatījumos ieslēdziet slēdzi “Lasīšanas saraksts”.</translation>
 <translation id="7866993391592926595">Paslēpjot šo kartīti, tiks izslēgta paku izsekošana un tiks noņemti visi jūsu dati</translation>
 <translation id="7870750252270996949">Pakalpojumā Lens nokopētais attēls</translation>
+<translation id="7877056713163921063">Pievienojiet kontaktpersonām</translation>
 <translation id="7879275349003161544">Rādīt lejupielādes</translation>
 <translation id="7883882164760409935">Jums ir atkārtoti izmantotas paroles.</translation>
 <translation id="7884694604461143138">Meklēt vēsturē (atrasti rezultāti: <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9000089900434778519">Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="9008201768610948239">Ignorēt</translation>
 <translation id="9012585441087414258">Tiek nodrošināta aizsardzība pret zināmām bīstamām vietnēm, lejupielādēm un paplašinājumiem. Ja lapas darbība ir aizdomīga, funkcijai “Google droša pārlūkošana” tiek nosūtīti vietrāži URL un lapas satura fragmenti.</translation>
-<translation id="9025203546212508704">Velciet, lai uzzinātu, kā pielāgot izvēlni.</translation>
 <translation id="9029650858822697271">Jūs tikāt izrakstīts</translation>
 <translation id="9034759925968272072">Jūs netiksiet izrakstīts no sava Google konta. Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> var būt citu veidu pārlūkošanas vēstures dati.</translation>
 <translation id="9037965129289936994">Rādīt sākotnējo tekstu</translation>

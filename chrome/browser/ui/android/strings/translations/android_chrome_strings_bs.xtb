@@ -314,7 +314,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2650348088770008516">Objašnjenje vodiča za privatnost je zatvoreno</translation>
 <translation id="2650408372219180431">Izvezite i izbrišite lozinke sačuvane na uređaju</translation>
 <translation id="2650751991977523696">Preuzeti fajl ponovo?</translation>
-<translation id="2651465929321991146">Historija i kartice</translation>
 <translation id="265156376773362237">Standardno predučitavanje</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2656405586795711023">Web aplikacije</translation>
@@ -906,7 +905,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5626134646977739690">Naziv:</translation>
 <translation id="5628604359369369630">Nepročitano – Dostupno offline</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Historija pretraživanja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />drugi oblici aktivnosti<ph name="END_LINK2" /> mogu ostati sačuvani na Google računu</translation>
-<translation id="564667659802381754">Vodič za privatnost <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Posljednjih 7 dana</translation>
 <translation id="5655963694829536461">Pretražite svoja preuzimanja</translation>
 <translation id="5657871969392618475">Vaše informacije su zaštićene uz zaključavanje profila</translation>
@@ -985,6 +983,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="6002122790816966947">Vaši uređaji</translation>
 <translation id="6011308810877101166">Poboljšanje prijedloga za pretraživanje</translation>
 <translation id="6013305291643746595">Sortiranje prema najstarijem</translation>
+<translation id="6022659036123304283">Prilagodite Chrome svojim potrebama</translation>
 <translation id="6026538407078977628">Proširivanje preko cijelog ekrana</translation>
 <translation id="6030719887161080597">Upravljajte informacijama koje web lokacije koriste za mjerenje performansi oglasa</translation>
 <translation id="6039379616847168523">Pređite na sljedeću karticu</translation>
@@ -1144,6 +1143,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6734310707649923383">Možete vidjeti stranice koje ste posjetili ili ih izbrisati iz historije</translation>
 <translation id="6738867403308150051">Preuzimanje…</translation>
 <translation id="674388916582496364">Uobičajeno je da web lokacije koje posjetite pamte stvari koje vas interesiraju radi personalizacije vašeg iskustva. Web lokacije mogu pohranjivati informacije o vašim interesovanjima i u Chromeu.</translation>
+<translation id="6746338529702829275">Pregledajte podatke o računu</translation>
 <translation id="6751521182688001123">Brzo otvorite novu karticu. Dodirnite i zadržite da uredite ovu prečicu.</translation>
 <translation id="6756507620369789050">Dijeli povratne informacije</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1176,6 +1176,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="686490460830618322">Tabela filtera aplikacija</translation>
 <translation id="6865313869410766144">Podaci za automatsko popunjavanje obrasca</translation>
 <translation id="6867400383614725881">Nova anonimna kartica</translation>
+<translation id="686899695320434745">Adrese nisu šifrirane pomoću vašeg pristupnog izraza. Ovo vam omogućava da ih koristite na drugim Googleovim uslugama.</translation>
 <translation id="6869056123412990582">računar</translation>
 <translation id="6882836635272038266">Standardna zaštita od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasne.</translation>
 <translation id="6883204995689174413">Dijeljenje</translation>
@@ -1600,6 +1601,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="885480114717186641">Za <ph name="HOST_NAME" /> možete zatražiti web lokaciju za računar</translation>
 <translation id="8856607253650333758">Preuzmi opise</translation>
 <translation id="8856931513242997049">Tok odobrenja za obavještenja je zatvoren</translation>
+<translation id="8865415417596392024">Podaci Chromea na vašem računu</translation>
 <translation id="8898822736010347272">Šalje Googleu URL-ove nekih stranica koje posjetite, ograničene informacije sistema i sadržaj nekih stranica radi lakšeg otkrivanja novih prijetnji te zaštite svakoga na webu.</translation>
 <translation id="8909135823018751308">Dijeljenje…</translation>
 <translation id="8921980840204105660">Sinhronizirajte da preuzmete oznake sa svojih drugih uređaja</translation>

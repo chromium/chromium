@@ -1614,8 +1614,6 @@
 <translation id="2165102982098084499">‏آپ نے QR کوڈ اسکین کر کے ان آلات کو لنک کیا ہے۔</translation>
 <translation id="2165177462441582039">منتخب کریں کہ ہائی لائٹ کو ہر آئٹم پر کتنی دیر رہنا چاہیے</translation>
 <translation id="2166369534954157698">ایک ٹیلے پر واقع مزار خواجہ فرید الدین گنج شکر کے احاطۂ صحن میں ذرا سی ژالہ باری چاندی کے ڈھیروں کی مثل بڑے غضب کا نظارہ دیتی ہے۔</translation>
-<translation id="2168454383292731451">‏<ph name="BEGIN_PARAGRAPH1" />یہ آلہ (SN: <ph name="SERIAL_NUMBER" />‎) مقفل تھا۔<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> کے ساتھ Chrome آلے کا مینیجمنٹ مزید تعاون یافتہ نہیں ہے۔ سائن ان کرنے کے لیے، کوئی مختلف آلہ استعمال کریں یا اپنے آلے کے منتظم سے رابطہ کریں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">بہر صورت سائن ان کریں</translation>
 <translation id="2173302385160625112">اپنا انٹرنیٹ کنکشن چیک کریں</translation>
 <translation id="2173801458090845390">‏اس آلہ میں درخواست ID شامل کریں</translation>
@@ -6916,7 +6914,6 @@
 <translation id="6154240335466762404">سبھی پورٹس ہٹائیں</translation>
 <translation id="615436196126345398">پروٹوکول</translation>
 <translation id="6154739047827675957">‏OneDrive کا سیٹ اپ ناکام ہو گیا</translation>
-<translation id="6154820449290823443">‏اس Chromebook پر رسائی کا نظم کریں اور ایپس کو مسدود کریں۔</translation>
 <translation id="6155141482566063812">پس منظر ٹیب آپ کی اسکرین کا اشتراک کر رہا ہے</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">پاس کی تخلیق کریں</translation>
@@ -7543,6 +7540,7 @@
 <translation id="6647690760956378579">قدرتی آواز کا پیش منظر</translation>
 <translation id="6648911618876616409">انسٹال کرنے کیلئے ایک اہم اپ ڈیٹ تیار ہے۔ شروع کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="6649018507441623493">بس ایک سیکنڈ…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> اس بات کی تصدیق کرنا چاہتی ہے کہ یہ آپ ہی ہیں</translation>
 <translation id="6650206238642452078">‏ChromeOS کے سسٹم ایونٹس کو سبسکرائب کریں</translation>
 <translation id="6650584564768559994">میموری کی متوازن بچتیں حاصل کریں۔ آپ کے ٹیبز ایک بہترین وقت کے بعد غیر فعال ہو جاتے ہیں۔</translation>
 <translation id="665061930738760572">نئی ونڈو میں کھولیں</translation>
@@ -8847,7 +8845,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# کھلی ہوئی ونڈو}other{# کھلی ہوئی ونڈوز}}</translation>
 <translation id="7643932971554933646">سائٹ کو فائلز پڑھنے دیں؟</translation>
 <translation id="7644543211198159466">رنگ اور تھیم</translation>
-<translation id="7644953783774050577">کسی کو منتخب نہ کریں</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (مالک)</translation>
 <translation id="7645681574855902035">‏Linux کا بیک اپ منسوخ ہو رہا ہے</translation>
 <translation id="7646772052135772216">پاس ورڈ کی مطابقت پذیری کام نہیں کر رہی ہے</translation>

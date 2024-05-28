@@ -1611,8 +1611,6 @@
 <translation id="2165102982098084499">Вы звязалі гэтыя прылады шляхам сканіравання QR-кода.</translation>
 <translation id="2165177462441582039">Выберыце працягласць вылучэння аднаго аб'екта</translation>
 <translation id="2166369534954157698">абвгдеёжзійклмнопрстуўфхцчшыьэюя</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Гэта прылада (серыйны нумар: <ph name="SERIAL_NUMBER" />) была заблакіравана.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Кіраванне прыладамі Chrome праз <ph name="MS_AD_NAME" /> больш не падтрымліваецца. Каб увайсці ва ўліковы запіс, звярніцеся да адміністратара гэтай прылады або выкарыстайце іншую.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Усё роўна ўвайсці</translation>
 <translation id="2173302385160625112">Праверце падключэнне да інтэрнэту</translation>
 <translation id="2173801458090845390">Дадаць ідэнтыфікатар заяўкі для гэтай прылады</translation>
@@ -6904,7 +6902,6 @@
 <translation id="6154240335466762404">Выдаліць усе парты</translation>
 <translation id="615436196126345398">Пратакол</translation>
 <translation id="6154739047827675957">Не ўдалося наладзіць OneDrive</translation>
-<translation id="6154820449290823443">Кіраваць доступам і блакіраваннем праграм на гэтай прыладзе Chromebook.</translation>
 <translation id="6155141482566063812">Фонавая ўкладка абагульвае ваш экран</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Стварыць ключ доступу</translation>
@@ -7537,6 +7534,7 @@
 <translation id="6647690760956378579">Узор натуральнага голасу</translation>
 <translation id="6648911618876616409">Крытычнае абнаўленне гатовае да ўсталявання. Каб усталяваць яго, увайдзіце ва ўліковы запіс.</translation>
 <translation id="6649018507441623493">Секунду…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> хоча ўпэўніцца, што гэта вы</translation>
 <translation id="6650206238642452078">Падпісацца на падзеі сістэмы ChromeOS</translation>
 <translation id="6650584564768559994">Збалансаваная эканомія памяці. Укладкі становяцца неактыўнымі праз аптымальны перыяд часу.</translation>
 <translation id="665061930738760572">Адкрыць у &amp;новым акне</translation>
@@ -8838,7 +8836,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# адкрытае акно}one{# адкрытае акно}few{# адкрытыя акны}many{# адкрытых вокнаў}other{# адкрытага акна}}</translation>
 <translation id="7643932971554933646">Дазволіць сайту праглядаць файлы?</translation>
 <translation id="7644543211198159466">Колер і тэма</translation>
-<translation id="7644953783774050577">Зняць птушкі ва ўсіх палях</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (уладальнік)</translation>
 <translation id="7645681574855902035">Скасоўваецца стварэнне рэзервовай копіі кантэйнера Linux</translation>
 <translation id="7646772052135772216">Сінхранізацыя пароляў не працуе</translation>

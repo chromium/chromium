@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Manzil faqat bu qurilmada saqlangan</translation>
 <translation id="1449835205994625556">Parolni berkitish</translation>
 <translation id="1450170672351507823">Standart himoya yoniq. Yanada kuchli himoyalanish uchun kengaytirilgan himoyadan foydalaning.</translation>
+<translation id="1455492980583160269">Xabar yuborish</translation>
 <translation id="1469381646033328562">Hisobingiz ota-onangiz boshqaruvida.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Almashtirish uchun ikki marta bosing</translation>
@@ -861,6 +862,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="54401264925851789">Sahifa xavfsizligi haqida ma’lumot</translation>
 <translation id="5443952882982198570">Bank kartalari</translation>
 <translation id="5444892875087332195">Bukmarklar</translation>
+<translation id="5453738961176844111">Mamlakat kodi</translation>
 <translation id="5454211924362324495">Boshqalar parolingizni ishlatmasligi uchun <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> saytida parolni almashtiring<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Oflayn versiyasini ochish</translation>
 <translation id="5459548306731933777">Tafsilotlarni ochish</translation>
@@ -1189,6 +1191,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Joylashuvini oʻzgartirish uchun manzillar qatorini bosib turing.</translation>
 <translation id="6988572888918530647">Google hisobingizni boshqaring</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">Host</translation>
 <translation id="699954956411469731">Mobil bildirishnomalar</translation>
 <translation id="699985840472413751">Yuklanmani yopish</translation>
@@ -1355,6 +1358,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7866872729285243843">Saqlangan sahifalardan barcha qurilmalarda foydalanish uchun sozlamalardan Saqlangan sahifalar bandini yoqing.</translation>
 <translation id="7866993391592926595">Bu karta berkitilganda paketni kuzatish funksiyasi faolsizlantiriladi va barcha maʼlumotlaringiz olib tashlanadi</translation>
 <translation id="7870750252270996949">Lens xizmatidan nusxalangan rasm</translation>
+<translation id="7877056713163921063">Kontaktlarga saqlash</translation>
 <translation id="7879275349003161544">Yuklanmalarni chiqarish</translation>
 <translation id="7883882164760409935">Qayta ishlatilgan parollar bor.</translation>
 <translation id="7884694604461143138">Brauzer tarixidan qidirish (<ph name="COUNT" /> ta natija)</translation>
@@ -1592,7 +1596,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9000089900434778519">Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi koʻrsatmalarni oching.</translation>
 <translation id="9008201768610948239">Tashlab ketish</translation>
 <translation id="9012585441087414258">Xavfli ekanligi maʼlum boʻlgan saytlar, yuklanmalar va kengaytmalardan himoya qiladi. Agar sahifa shubhali biror ish qilsa, URL manzillari va sahifa kontentining bitlari Google Saytlarni xavfsiz kezish xizmatiga yuboriladi.</translation>
-<translation id="9025203546212508704">Menyuni sozlashni oʻrganish uchun suring</translation>
 <translation id="9029650858822697271">Hisobingizdan chiqasiz</translation>
 <translation id="9034759925968272072">Google hisobingizdan chiqmaysiz. Google hisobingiz orqali amalga oshirilgan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> sahifasi orqali ko‘rishingiz mumkin.</translation>
 <translation id="9037965129289936994">Asl tilda ko‘rsatish</translation>

@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adres został zapisany tylko na tym urządzeniu</translation>
 <translation id="1449835205994625556">Ukryj hasło</translation>
 <translation id="1450170672351507823">Włączona jest standardowa ochrona. Jeśli zależy Ci na większym bezpieczeństwie, użyj silniejszej ochrony.</translation>
+<translation id="1455492980583160269">Wyślij wiadomość</translation>
 <translation id="1469381646033328562">Twoim kontem zarządza rodzic.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Kliknij dwukrotnie, by zmienić ustawienie</translation>
@@ -861,6 +862,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="54401264925851789">Informacje o bezpieczeństwie strony</translation>
 <translation id="5443952882982198570">Karty kredytowe</translation>
 <translation id="5444892875087332195">Zakładki</translation>
+<translation id="5453738961176844111">Kod kraju</translation>
 <translation id="5454211924362324495">Aby uniemożliwić innym korzystanie z Twojego hasła, <ph name="BEGIN_LINK" />zmień je na stronie <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Otwórz wersję offline</translation>
 <translation id="5459548306731933777">Pokaż szczegóły</translation>
@@ -1189,6 +1191,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6983306615164277634">Możesz też kliknąć i przytrzymać pasek adresu, aby zmienić jego pozycję.</translation>
 <translation id="6988572888918530647">Zarządzaj kontem Google</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Do</translation>
 <translation id="699954956411469731">Powiadomienia na urządzeniach mobilnych</translation>
 <translation id="699985840472413751">Zamknij pobieranie</translation>
@@ -1355,6 +1358,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7866872729285243843">Aby korzystać z listy Do przeczytania na wszystkich urządzeniach, włącz opcję „Do przeczytania” w ustawieniach.</translation>
 <translation id="7866993391592926595">Ukrycie tej karty spowoduje wyłączenie śledzenia przesyłek i usunięcie wszystkich danych</translation>
 <translation id="7870750252270996949">Wyszukaj skopiowany obraz za pomocą Obiektywu</translation>
+<translation id="7877056713163921063">Dodaj do kontaktów</translation>
 <translation id="7879275349003161544">Wyświetl pobrane pliki</translation>
 <translation id="7883882164760409935">Masz hasła użyte ponownie.</translation>
 <translation id="7884694604461143138">Historia wyszukiwania (liczba wyników: <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9000089900434778519">Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
 <translation id="9008201768610948239">Ignoruj</translation>
 <translation id="9012585441087414258">Chroni przed stronami, pobieranymi plikami i rozszerzeniami, o których wiadomo, że są niebezpieczne. Jeśli strona robi coś podejrzanego, adresy URL i fragmenty jej zawartości są wysyłane do usługi Bezpieczne przeglądanie Google.</translation>
-<translation id="9025203546212508704">Przesuń palcem, aby dowiedzieć się, jak dostosować menu</translation>
 <translation id="9029650858822697271">Nastąpiło wylogowanie</translation>
 <translation id="9034759925968272072">Nie spowoduje to wylogowania z konta Google. Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Pokaż tekst oryginalny</translation>

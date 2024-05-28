@@ -1621,8 +1621,6 @@
 <translation id="2165102982098084499">ທ່ານລິ້ງອຸປະກອນເຫຼົ່ານີ້ແລ້ວໂດຍການສະແກນລະຫັດ QR.</translation>
 <translation id="2165177462441582039">ເລືອກວ່າຈະໃຫ້ໄຮໄລ້ຢູ່ດົນປານໃດໃນແຕ່ລະລາຍການ</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />ອຸປະກອນນີ້ (SN: <ph name="SERIAL_NUMBER" />) ຖືກລັອກໄວ້ແລ້ວ.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ບໍ່ຮອງຮັບການຈັດການອຸປະກອນ Chrome ດ້ວຍ <ph name="MS_AD_NAME" /> ອີກຕໍ່ໄປແລ້ວ. ເພື່ອເຂົ້າສູ່ລະບົບ, ໃຫ້ໃຊ້ອຸປະກອນອື່ນ ຫຼື ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">ແນວໃດກໍ່ລົງຊື່ເຂົ້າໃຊ້</translation>
 <translation id="2173302385160625112">ກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ</translation>
 <translation id="2173801458090845390">ເພີ່ມ ID ທີ່ຈຳເປັນຕ້ອງມີໃສ່ອຸປະກອນນີ້</translation>
@@ -6931,7 +6929,6 @@
 <translation id="6154240335466762404">ນຳຜອດທັງໝົດອອກ</translation>
 <translation id="615436196126345398">ໂປຣໂຕຄໍ</translation>
 <translation id="6154739047827675957">ຕັ້ງຄ່າ OneDrive ບໍ່ສຳເລັດ</translation>
-<translation id="6154820449290823443">ຈັດການສິດເຂົ້າເຖິງ ແລະ ບລັອກແອັບຢູ່ Chromebook ນີ້.</translation>
 <translation id="6155141482566063812">ແຖບໃນພື້ນຫຼັງກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">ສ້າງກະແຈຜ່ານ</translation>
@@ -7558,6 +7555,7 @@
 <translation id="6647690760956378579">ຕົວຢ່າງສຽງທຳມະຊາດ</translation>
 <translation id="6648911618876616409">ການອັບເດດທີ່ສຳຄັນພ້ອມໃຫ້ຕິດຕັ້ງແລ້ວ. ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອເລີ່ມຕົ້ນ.</translation>
 <translation id="6649018507441623493">ຖ້າບຶດໜຶ່ງ...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ຕ້ອງການຢືນຢັນວ່າມັນແມ່ນທ່ານ</translation>
 <translation id="6650206238642452078">ຕິດຕາມເຫດການໃນລະບົບ ChromeOS</translation>
 <translation id="6650584564768559994">ຮັບການປະຢັດໜ່ວຍຄວາມຈຳແບບສົມດຸນ. ແຖບຂອງທ່ານຈະບໍ່ເຮັດວຽກຫຼັງຈາກໄລຍະເວລາທີ່ເໝາະສົມ.</translation>
 <translation id="665061930738760572">ເປີດ​ຢູ່​ໃນໜ້າ​ຕ່າງ​ໃຫມ່</translation>
@@ -8861,7 +8859,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# ໜ້າຈໍເປີດຢູ່}other{# ໜ້າຈໍເປີດຢູ່}}</translation>
 <translation id="7643932971554933646">ອະນຸຍາດໃຫ້ເວັບໄຊເບິ່ງໄຟລ໌ບໍ?</translation>
 <translation id="7644543211198159466">ສີ ແລະ ຮູບແບບສີສັນ</translation>
-<translation id="7644953783774050577">ບໍ່ເລືອກເລີຍ</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ເຈົ້າ​ຂອງ​)</translation>
 <translation id="7645681574855902035">ກຳລັງຍົກເລີກການສຳຮອງຂໍ້ມູນ Linux</translation>
 <translation id="7646772052135772216">ການຊິ້ງຂໍ້ມູນລະຫັດຜ່ານບໍ່ເຮັດວຽກ</translation>

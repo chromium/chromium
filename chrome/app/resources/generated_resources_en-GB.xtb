@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Not Now</translation>
 <translation id="100881991356161927">Site name</translation>
 <translation id="1009663062402466586">Game controls now available</translation>
+<translation id="1010136228650201057">User data encryption</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Page Unresponsive}other{Pages Unresponsive}}</translation>
 <translation id="1011003645819296594">Saved devices</translation>
 <translation id="1011355516189274711">Text-to-speech volume</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">&amp;Language settings</translation>
 <translation id="1050693411695664090">Poor</translation>
+<translation id="1053776357096024725">Enhance your built-in microphone sound with various effects</translation>
 <translation id="1054048317165655285">Complete setup on your phone</translation>
 <translation id="1054153489933238809">Open Original &amp;Image in New Tab</translation>
 <translation id="1054187194995068149">Hi. This is a preview</translation>
@@ -834,6 +836,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1607139524282324606">Clear entry</translation>
 <translation id="1607499585984539560">User is not affiliated with domain</translation>
 <translation id="1608668830839595724">More actions for selected items</translation>
+<translation id="1608698493373028805">This extension may soon no longer be supported</translation>
 <translation id="1610272688494140697">App settings</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Your device is locked</translation>
@@ -1620,8 +1623,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2165102982098084499">You linked these devices by scanning a QR code.</translation>
 <translation id="2165177462441582039">Choose how long the highlight should stay on each item</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />This device (SN: <ph name="SERIAL_NUMBER" />) was locked.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Chrome device management with <ph name="MS_AD_NAME" /> is no longer supported. To sign in, use a different device or contact your device administrator.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Sign in anyway</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2173801458090845390">Add requisition ID to this device</translation>
@@ -2321,6 +2322,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2667144577800272420">Other apps are set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" /> and <ph name="APP_NAME_3" /> from opening supported links.</translation>
 <translation id="2667463864537187133">Manage spell check</translation>
 <translation id="2668094785979141847">Click to exit Google Lens</translation>
+<translation id="2668604389652548400">Remove or replace it with similar extensions from the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Couldn't open <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> is sharing a Chrome tab.</translation>
@@ -2371,6 +2373,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2710101514844343743">Usage and diagnostic data</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521">Your <ph name="DEVICE_TYPE" /> is now unlocked</translation>
+<translation id="2712141162840347885">Select anything to search with Google Lens or press escape to exit Google Lens</translation>
 <translation id="2713106313042589954">Turn off camera</translation>
 <translation id="2713444072780614174">White</translation>
 <translation id="2714180132046334502">Dark background</translation>
@@ -2995,6 +2998,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3177914167275935955">Your device includes a Chrome Education upgrade, but your username is not associated with a Google for Education account. Please create a Google for Education account by visiting g.co/workspace/edusignup on a secondary device.</translation>
 <translation id="3179982752812949580">Text font</translation>
 <translation id="3180284704187420717">Save your bookmarks, passwords and more with sync</translation>
+<translation id="3180716079618904608">Get apps and games</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
 <translation id="3182749001423093222">Spell check</translation>
 <translation id="3183139917765991655">Profile Importer</translation>
@@ -4286,6 +4290,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4120817667028078560">Path too long</translation>
 <translation id="4124823734405044952">Your security key has been reset</translation>
 <translation id="4124935795427217608">Unicorn</translation>
+<translation id="4126375522951286587">Shut down <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Speedy</translation>
 <translation id="4130199216115862831">Device Log</translation>
 <translation id="4130750466177569591">I agree</translation>
@@ -4586,6 +4591,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> is sharing a window.</translation>
 <translation id="4364830672918311045">Display notifications</translation>
+<translation id="4367027658822022112">You can pin Google Lens for easy access; click the Pin button at the top of the side panel</translation>
 <translation id="4367513928820380646">Review removed permissions</translation>
 <translation id="4367971618859387374">Display name</translation>
 <translation id="4368960422722232719">Show memory usage on tab hover preview card</translation>
@@ -4988,6 +4994,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4666911709726371538">More apps</translation>
 <translation id="4668279686271488041">Ads measurement data is deleted regularly from your device</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN must use numbers only</translation>
 <translation id="4670909875730475086">Congrats! <ph name="APP_NAME" /> has been successfully installed on your device</translation>
 <translation id="4672759829555593783">Open <ph name="FILE_NAME" /> now</translation>
 <translation id="4673442866648850031">Open stylus tools when the stylus is removed</translation>
@@ -5071,6 +5078,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="473936925429402449">Selected; extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4740546261986864539">Recently opened</translation>
+<translation id="4741235124132242877">Pinned! Use Google Lens again from the toolbar</translation>
 <translation id="4742334355511750246">Not allowed to show images</translation>
 <translation id="4742795653798179840">Deleted Chrome data</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
@@ -6768,6 +6776,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6042308850641462728">More</translation>
 <translation id="604388835206766544">Failed to parse configuration</translation>
 <translation id="6043994281159824495">Sign out now</translation>
+<translation id="604424701295382420">Pinned! You can access Google Lens again from the new button on the toolbar</translation>
 <translation id="6045114302329202345">Primary TrackPoint button</translation>
 <translation id="6047632800149092791">Sync isn't working. Try signing out and back in again.</translation>
 <translation id="6048747414605857443">Select and customise text-to-speech voices for ChromeVox and Select to Speak</translation>
@@ -6920,7 +6929,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6154240335466762404">Remove all ports</translation>
 <translation id="615436196126345398">Protocol</translation>
 <translation id="6154739047827675957">OneDrive setup failed</translation>
-<translation id="6154820449290823443">Manage access and block apps on this Chromebook.</translation>
 <translation id="6155141482566063812">Background tab is sharing your screen</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Create passkey</translation>
@@ -7547,6 +7555,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6647690760956378579">Natural voice preview</translation>
 <translation id="6648911618876616409">A critical update is ready to install. Sign in to get started.</translation>
 <translation id="6649018507441623493">Just a sec...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="6650206238642452078">Subscribe to ChromeOS system events</translation>
 <translation id="6650584564768559994">Get balanced memory savings. Your tabs become inactive after an optimal period of time.</translation>
 <translation id="665061930738760572">Open in &amp;New Window</translation>
@@ -7600,6 +7609,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6686490380836145850">Close tabs to the right</translation>
 <translation id="6686665106869989887">Tab moved right</translation>
 <translation id="6686817083349815241">Save your password</translation>
+<translation id="6687008241368170505">Change Google Password Manager PIN</translation>
 <translation id="6687079240787935001">Hide <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Ask <ph name="SUPERVISED_USER_NAME" /> to come to the computer. Your child will be reading a few phrases on this screen to create their voice model.
     <ph name="BR" />
@@ -8379,6 +8389,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Permission requested, press F6 to respond</translation>
 <translation id="7290242001003353852">This sign-in service, hosted by <ph name="SAML_DOMAIN" />, is accessing your camera.</translation>
 <translation id="7292067737327289208">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by your organisation and your <ph name="BEGIN_LINK" />profile is managed<ph name="END_LINK" /> by <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Ask your parent to allow access in Settings</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Note that Android, Play and associated apps are governed by their own data collection and use policies.</translation>
 <translation id="7296503797589217366">Select folder <ph name="FOLDER_TITLE" /></translation>
@@ -8687,6 +8698,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7514239104543605883">Copy to your device</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Add assignment</translation>
+<translation id="7515191208480168435">You can pin Google Lens for easy access</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> is blocked by admin. Ask admin for permission to use this app.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -8849,7 +8861,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7643842463591647490">{0,plural, =1{# open window}other{# open windows}}</translation>
 <translation id="7643932971554933646">Let site view files?</translation>
 <translation id="7644543211198159466">Colour and theme</translation>
-<translation id="7644953783774050577">Select none</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (owner)</translation>
 <translation id="7645681574855902035">Cancelling Linux backup</translation>
 <translation id="7646772052135772216">Password sync isn't working</translation>
@@ -10162,6 +10173,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8592141010104017453">Don't show notifications at all</translation>
 <translation id="859246725979739260">This site has been blocked from accessing your location.</translation>
 <translation id="8593450223647418235">You won’t be able to open files in Microsoft 365 until setup is complete.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> is blocked on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Customised Files</translation>
 <translation id="8597845839771543242">Property format:</translation>
 <translation id="8598249292448297523">print</translation>
@@ -10581,6 +10593,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8890529496706615641">Profile could not be renamed. Please try again or contact your operator for technical support.</translation>
 <translation id="8892168913673237979">Ready!</translation>
 <translation id="8892246501904593980">See all your bookmarks in Bookmarks and Lists</translation>
+<translation id="8893479486525393799">Studio mic</translation>
 <translation id="8893801527741465188">Uninstall complete</translation>
 <translation id="8893928184421379330">Sorry, the device <ph name="DEVICE_LABEL" /> could not be recognised.</translation>
 <translation id="8894761918470382415">Data access protection for peripherals</translation>

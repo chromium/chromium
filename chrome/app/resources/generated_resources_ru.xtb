@@ -1612,8 +1612,6 @@
 <translation id="2165102982098084499">Вы связали эти устройства с помощью QR-кода.</translation>
 <translation id="2165177462441582039">Задайте скорость перемещения между элементами.</translation>
 <translation id="2166369534954157698">Съешь же ещё этих мягких французских булок, да выпей чаю</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Это устройство (серийный номер: <ph name="SERIAL_NUMBER" />) было заблокировано.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Управление устройствами Chrome с <ph name="MS_AD_NAME" /> больше не поддерживается. Чтобы войти в аккаунт, используйте другое устройство или обратитесь к администратору.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Выполнить вход</translation>
 <translation id="2173302385160625112">Проверьте подключение к интернету.</translation>
 <translation id="2173801458090845390">Добавить к устройству идентификатор заявки</translation>
@@ -6909,7 +6907,6 @@
 <translation id="6154240335466762404">Удалить все порты</translation>
 <translation id="615436196126345398">Протокол</translation>
 <translation id="6154739047827675957">Не удалось настроить OneDrive</translation>
-<translation id="6154820449290823443">Управление доступом и блокировка приложений на этом Chromebook</translation>
 <translation id="6155141482566063812">На фоновой вкладке предоставлен доступ к вашему экрану.</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Создать ключ доступа</translation>
@@ -7542,6 +7539,7 @@
 <translation id="6647690760956378579">Предв. прослушивание естественного голоса</translation>
 <translation id="6648911618876616409">Доступно новое критическое обновление. Войдите, чтобы установить его.</translation>
 <translation id="6649018507441623493">Подождите...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности.</translation>
 <translation id="6650206238642452078">Подписка на системные события ChromeOS</translation>
 <translation id="6650584564768559994">Сбалансированная экономия памяти. Вкладки становятся неактивными по истечении оптимального периода времени.</translation>
 <translation id="665061930738760572">Открыть в &amp;новом окне</translation>
@@ -8843,7 +8841,6 @@
 <translation id="7643842463591647490">{0,plural, =1{Открыто # окно}one{Открыто # окно}few{Открыто # окна}many{Открыто # окон}other{Открыто # окна}}</translation>
 <translation id="7643932971554933646">Разрешить сайту просматривать файлы?</translation>
 <translation id="7644543211198159466">Цвет и тема</translation>
-<translation id="7644953783774050577">Отменить выбор</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (владелец)</translation>
 <translation id="7645681574855902035">Отмена резервного копирования контейнера Linux…</translation>
 <translation id="7646772052135772216">Синхронизация паролей не работает</translation>

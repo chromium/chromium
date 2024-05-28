@@ -90,6 +90,7 @@
 <translation id="143681031165817424">地址只會儲存在這部裝置上</translation>
 <translation id="1449835205994625556">隱藏密碼</translation>
 <translation id="1450170672351507823">已啟用標準防護功能。如需更完整的安全防護，請使用強化防護功能。</translation>
+<translation id="1455492980583160269">傳送訊息</translation>
 <translation id="1469381646033328562">你的帳戶是由家長管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">輕觸兩下即可切換設定</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">網頁安全性資訊</translation>
 <translation id="5443952882982198570">信用卡</translation>
 <translation id="5444892875087332195">書籤</translation>
+<translation id="5453738961176844111">國家/地區代碼</translation>
 <translation id="5454211924362324495">如果不希望他人使用你的密碼，請<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 變更密碼<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">開啟離線版本</translation>
 <translation id="5459548306731933777">顯示詳細資料</translation>
@@ -1189,6 +1191,7 @@
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6983306615164277634">你也可以按住網址列來變更位置。</translation>
 <translation id="6988572888918530647">管理你的 Google 帳戶</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">收件者</translation>
 <translation id="699954956411469731">行動裝置通知</translation>
 <translation id="699985840472413751">關閉下載列</translation>
@@ -1355,6 +1358,7 @@
 <translation id="7866872729285243843">如要在所有裝置上存取閱讀清單，請前往設定開啟「閱讀清單」。</translation>
 <translation id="7866993391592926595">如果隱藏這張資訊卡，系統會關閉包裹追蹤功能，並移除你的所有資料</translation>
 <translation id="7870750252270996949">你複製的智慧鏡頭圖片</translation>
+<translation id="7877056713163921063">新增到聯絡人</translation>
 <translation id="7879275349003161544">顯示下載內容</translation>
 <translation id="7883882164760409935">你有多組密碼重複使用。</translation>
 <translation id="7884694604461143138">在歷史記錄中搜尋 (找到 <ph name="COUNT" /> 項結果)</translation>
@@ -1592,7 +1596,6 @@
 <translation id="9000089900434778519">你的搜尋引擎是 <ph name="DSE_NAME" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="9008201768610948239">略過</translation>
 <translation id="9012585441087414258">防範已知的不安全網站、下載內容和擴充功能。如果某個網頁含有可疑內容，系統會將網址和部分網頁內容傳送給「Google 安全瀏覽」功能。</translation>
-<translation id="9025203546212508704">滑動即可瞭解如何自訂選單</translation>
 <translation id="9029650858822697271">系統已將你登出</translation>
 <translation id="9034759925968272072">您並不會因此登出 Google 帳戶，不過帳戶中可能仍保留了其他類型的瀏覽記錄 (可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 查詢)。</translation>
 <translation id="9037965129289936994">顯示原文</translation>

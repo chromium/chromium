@@ -1621,8 +1621,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2165102982098084499">Du tilknyttede disse enheder ved at scanne en QR-kode.</translation>
 <translation id="2165177462441582039">Vælg, hvor længe hvert element skal fremhæves</translation>
 <translation id="2166369534954157698">Quizdeltagerne spiste jordbær med fløde, mens cirkusklovnen Walther spillede på xylofon</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Denne enhed (serienummer: <ph name="SERIAL_NUMBER" />) blev låst.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Administration af Chrome-enheder med <ph name="MS_AD_NAME" /> understøttes ikke længere. Hvis du vil logge ind, skal du bruge en anden enhed eller kontakte din enhedsadministrator.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Log ind alligevel</translation>
 <translation id="2173302385160625112">Tjek din internetforbindelse</translation>
 <translation id="2173801458090845390">Føj rekvisitions-id til denne enhed</translation>
@@ -6921,7 +6919,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6154240335466762404">Fjern alle porte</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6154739047827675957">Konfigurationen af OneDrive mislykkedes</translation>
-<translation id="6154820449290823443">Administrer adgang, og bloker apps på denne Chromebook.</translation>
 <translation id="6155141482566063812">En fane i baggrunden deler din skærm</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Opret adgangsnøgle</translation>
@@ -7550,6 +7547,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6647690760956378579">Eksempel på naturlig stemme</translation>
 <translation id="6648911618876616409">En vigtig opdatering er klar til at blive installeret. Log ind for at komme godt i gang.</translation>
 <translation id="6649018507441623493">Vent et øjeblik…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
 <translation id="6650206238642452078">Abonner på ChromeOS-systemhændelser</translation>
 <translation id="6650584564768559994">Få balanceret hukommelsesbesparelse. Dine faner bliver inaktive efter en optimal periode.</translation>
 <translation id="665061930738760572">Åbn i &amp;nyt vindue</translation>
@@ -8852,7 +8850,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7643842463591647490">{0,plural, =1{# åbent vindue}one{# åbent vindue}other{# åbne vinduer}}</translation>
 <translation id="7643932971554933646">Skal websitet kunne se filer?</translation>
 <translation id="7644543211198159466">Farve og tema</translation>
-<translation id="7644953783774050577">Vælg ingen</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ejer)</translation>
 <translation id="7645681574855902035">Annullerer Linux-sikkerhedskopiering</translation>
 <translation id="7646772052135772216">Synkronisering af adgangskoder fungerer ikke</translation>

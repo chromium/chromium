@@ -191,6 +191,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
           <ph name="LIST_ITEM" />Twojego pracodawcy lub Twojej szkoły;
           <ph name="LIST_ITEM" />dostawcy usług internetowych.
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Śledź tę stronę</translation>
 <translation id="1337692097987160377">Udostępnij tę kartę</translation>
 <translation id="1339601241726513588">Domena rejestracji:</translation>
 <translation id="1340482604681802745">Adres odbioru</translation>
@@ -2611,6 +2612,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6035491133925068289">Lekkoatletyka</translation>
 <translation id="6039846035001940113">Jeśli problem nie ustąpi, skontaktuj się z właścicielem strony.</translation>
 <translation id="6040143037577758943">Zamknij</translation>
+<translation id="6040539895181423374">Statystyki dotyczące cen</translation>
 <translation id="604124094241169006">Automatyczne</translation>
 <translation id="6041777658117377052">Temperatura w komorze</translation>
 <translation id="6042308850641462728">Więcej</translation>

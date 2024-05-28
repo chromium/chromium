@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Alamat hanya disimpan di perangkat ini</translation>
 <translation id="1449835205994625556">Sembunyikan Sandi</translation>
 <translation id="1450170672351507823">Perlindungan standar aktif. Untuk keamanan yang lebih baik, gunakan Perlindungan yang ditingkatkan.</translation>
+<translation id="1455492980583160269">Kirim Pesan</translation>
 <translation id="1469381646033328562">Akunmu dikelola oleh orang tuamu.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Ketuk dua kali untuk beralih setelan</translation>
@@ -861,6 +862,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="54401264925851789">Informasi Keamanan Halaman</translation>
 <translation id="5443952882982198570">Kartu Kredit</translation>
 <translation id="5444892875087332195">Bookmark</translation>
+<translation id="5453738961176844111">Kode Negara</translation>
 <translation id="5454211924362324495">Untuk mencegah orang lain menggunakan sandi Anda, <ph name="BEGIN_LINK" />ubah sandi di <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Buka Versi Offline</translation>
 <translation id="5459548306731933777">Tampilkan Detail</translation>
@@ -1189,6 +1191,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Anda juga dapat menyentuh lama kolom URL untuk mengubah posisi.</translation>
 <translation id="6988572888918530647">Kelola Akun Google Anda</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">Kepada</translation>
 <translation id="699954956411469731">Notifikasi Seluler</translation>
 <translation id="699985840472413751">Tutup Download</translation>
@@ -1355,6 +1358,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7866872729285243843">Untuk mendapatkan daftar bacaan di semua perangkat, aktifkan "Daftar Bacaan" di setelan.</translation>
 <translation id="7866993391592926595">Menyembunyikan Kartu Ini Akan Menonaktifkan Pelacakan Paket dan Menghapus Semua Data Anda</translation>
 <translation id="7870750252270996949">Gambar yang Disalin Lens</translation>
+<translation id="7877056713163921063">Tambahkan Ke Kontak</translation>
 <translation id="7879275349003161544">Tampilkan Download</translation>
 <translation id="7883882164760409935">Anda memiliki sandi yang digunakan ulang.</translation>
 <translation id="7884694604461143138">Histori Penelusuran (<ph name="COUNT" /> Ditemukan)</translation>
@@ -1592,7 +1596,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9000089900434778519">Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="9008201768610948239">Abaikan</translation>
 <translation id="9012585441087414258">Melindungi dari situs, download, dan ekstensi yang bereputasi berbahaya. Jika halaman melakukan hal yang mencurigakan, URL dan contoh kecil konten halaman akan dikirim ke Google Safe Browsing.</translation>
-<translation id="9025203546212508704">Geser untuk mempelajari cara menyesuaikan menu</translation>
 <translation id="9029650858822697271">Anda telah logout</translation>
 <translation id="9034759925968272072">Anda tidak akan dikeluarkan dari Akun Google. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Tampilkan Halaman Asli</translation>

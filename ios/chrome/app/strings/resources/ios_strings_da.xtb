@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adressen er kun gemt på denne enhed</translation>
 <translation id="1449835205994625556">Skjul adgangskode</translation>
 <translation id="1450170672351507823">Standardbeskyttelse er aktiveret. Du kan øge sikkerheden ved at bruge forbedret beskyttelse.</translation>
+<translation id="1455492980583160269">Send besked</translation>
 <translation id="1469381646033328562">Din konto administreres af din forælder.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Tryk to gange for at skifte indstilling</translation>
@@ -861,6 +862,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="54401264925851789">Oplysninger om sidesikkerhed</translation>
 <translation id="5443952882982198570">Kreditkort</translation>
 <translation id="5444892875087332195">Bogmærker</translation>
+<translation id="5453738961176844111">Landekode</translation>
 <translation id="5454211924362324495">Du kan forhindre andre i at bruge din adgangskode ved at <ph name="BEGIN_LINK" />ændre den på <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Åbn offlineversion</translation>
 <translation id="5459548306731933777">Se oplysninger</translation>
@@ -1189,6 +1191,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6979158407327259162">Google Drev</translation>
 <translation id="6983306615164277634">Du kan også holde fingeren nede på adresselinjen for at ændre placeringen.</translation>
 <translation id="6988572888918530647">Administrer din Google-konto</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Til</translation>
 <translation id="699954956411469731">Mobilnotifikationer</translation>
 <translation id="699985840472413751">Luk download</translation>
@@ -1355,6 +1358,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7866872729285243843">Du kan få adgang til din læseliste på alle dine enheder ved at aktivere "læseliste" i indstillingerne.</translation>
 <translation id="7866993391592926595">Hvis du skjuler dette kort, deaktiveres pakkesporing, og alle dine data fjernes</translation>
 <translation id="7870750252270996949">Lens-billede, du har kopieret</translation>
+<translation id="7877056713163921063">Føj til kontakter</translation>
 <translation id="7879275349003161544">Vis downloads</translation>
 <translation id="7883882164760409935">Du har genbrugt adgangskoder.</translation>
 <translation id="7884694604461143138">Søgehistorik (<ph name="COUNT" /> blev fundet)</translation>
@@ -1592,7 +1596,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9000089900434778519">Dine standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9012585441087414258">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Hvis en side udviser mistænkelig adfærd, sendes webadresser og uddrag af sideindhold til Google Beskyttet browsing.</translation>
-<translation id="9025203546212508704">Stryg for at se, hvordan du tilpasser din menu</translation>
 <translation id="9029650858822697271">Du er blevet logget ud</translation>
 <translation id="9034759925968272072">Du logges ikke ud af din Google-konto. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Vis oprindelig</translation>

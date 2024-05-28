@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">ليس الآن</translation>
 <translation id="100881991356161927">اسم الموقع الإلكتروني</translation>
 <translation id="1009663062402466586">عناصر التحكُّم في الألعاب متاحة الآن</translation>
+<translation id="1010136228650201057">تشفير بيانات المستخدمين</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ صفحة واحدة غير مستجيبة}zero{ صفحات غير مستجيبة}two{صفحتان غير مستجيبتين}few{ صفحات غير مستجيبة}many{ صفحة غير مستجيبة}other{ من الصفحات غير مستجيبة}}</translation>
 <translation id="1011003645819296594">الأجهزة المحفوظة</translation>
 <translation id="1011355516189274711">مستوى صوت "تحويل النص إلى كلام"</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="1049795001945932310">إ&amp;عدادات اللغة</translation>
 <translation id="1050693411695664090">ضعيفة</translation>
+<translation id="1053776357096024725">يمكنك تحسين صوت الميكروفون المُدمج باستخدام تأثيرات مختلفة</translation>
 <translation id="1054048317165655285">إكمال الإعداد على هاتفك</translation>
 <translation id="1054153489933238809">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
 <translation id="1054187194995068149">مرحبًا، هذه معاينة</translation>
@@ -836,6 +838,7 @@
 <translation id="1607139524282324606">محو الإدخال</translation>
 <translation id="1607499585984539560">هذا المستخدم ليس تابعًا لنطاقك.</translation>
 <translation id="1608668830839595724">المزيد من الإجراءات للعناصر المختارة</translation>
+<translation id="1608698493373028805">قد لا تتوفّر هذه الإضافة قريبًا</translation>
 <translation id="1610272688494140697">إعدادات التطبيق</translation>
 <translation id="161042844686301425">سماوي</translation>
 <translation id="1611432201750675208">تم قفل جهازك</translation>
@@ -1615,8 +1618,6 @@
 <translation id="2165102982098084499">تم ربط هذه الأجهزة من خلال المسح الضوئي لرمز الاستجابة السريعة.</translation>
 <translation id="2165177462441582039">اختَر مدة إبقاء كل عنصر مميّزًا.</translation>
 <translation id="2166369534954157698">أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ</translation>
-<translation id="2168454383292731451">‏<ph name="BEGIN_PARAGRAPH1" />تم قفل هذا الجهاز (الرقم التسلسلي: <ph name="SERIAL_NUMBER" />).<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />لم تعد إدارة جهاز Chrome باستخدام "<ph name="MS_AD_NAME" />" متاحة. لتسجيل الدخول، يُرجى استخدام جهاز مختلف أو التواصل مع مشرف الجهاز.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">تسجيل الدخول على أيّ حال</translation>
 <translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="2173801458090845390">إضافة معرّف الطلبات إلى هذا الجهاز</translation>
@@ -2313,6 +2314,7 @@
 <translation id="2667144577800272420">تم ضبط تطبيقات أخرى لفتح الروابط نفسها مثل <ph name="APP_NAME" />. وسيؤدي هذا الإجراء إلى منع <ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> من فتح الروابط المتوافقة.</translation>
 <translation id="2667463864537187133">إدارة التدقيق الإملائي</translation>
 <translation id="2668094785979141847">‏انقر للخروج من "عدسة Google"</translation>
+<translation id="2668604389652548400">‏يمكنك إزالتها أو استبدالها بإضافات مشابهة من <ph name="BEGIN_LINK" />سوق Chrome الإلكتروني<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">تعذّر فتح <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
 <translation id="2670102641511624474">‏يشارك <ph name="APP_NAME" /> علامة تبويب متصفح Chrome.</translation>
@@ -2363,6 +2365,7 @@
 <translation id="2710101514844343743">بيانات الاستخدام والتشخيص</translation>
 <translation id="271033894570825754">جديد</translation>
 <translation id="2710507903599773521">تم فتح قفل "<ph name="DEVICE_TYPE" />" الآن.</translation>
+<translation id="2712141162840347885">‏حدِّد أي محتوى للبحث عنه باستخدام "عدسة Google" أو اضغط على مفتاح Escape للخروج من "عدسة Google"</translation>
 <translation id="2713106313042589954">إيقاف الكاميرا</translation>
 <translation id="2713444072780614174">أبيض</translation>
 <translation id="2714180132046334502">خلفية معتمة</translation>
@@ -2987,6 +2990,7 @@
 <translation id="3177914167275935955">‏يتضمّن جهازك "ترقية Chrome Education"، ولكن اسم المستخدم الخاص بك غير مرتبط بحساب على Google for Education. يُرجى إنشاء حساب على Google for Education بالانتقال إلى g.co/workspace/edusignup على جهاز ثانوي.</translation>
 <translation id="3179982752812949580">خط النص</translation>
 <translation id="3180284704187420717">يمكنك حفظ إشاراتك المرجعية وكلمات المرور وغيرها باستخدام ميزة المزامنة.</translation>
+<translation id="3180716079618904608">الحصول على التطبيقات والألعاب</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
 <translation id="3182749001423093222">التدقيق الإملائي</translation>
 <translation id="3183139917765991655">مستورد الملف الشخصي</translation>
@@ -4276,6 +4280,7 @@
 <translation id="4120817667028078560">المسار طويل جدًا</translation>
 <translation id="4124823734405044952">تمت إعادة ضبط مفتاح الأمان</translation>
 <translation id="4124935795427217608">أحادي القرن</translation>
+<translation id="4126375522951286587">إيقاف تشغيل "<ph name="VM_NAME" />"</translation>
 <translation id="412730574613779332">إسباندكس</translation>
 <translation id="4130199216115862831">سجل الجهاز</translation>
 <translation id="4130750466177569591">أوافق</translation>
@@ -4576,6 +4581,7 @@
 <translation id="4364327530094270451">شمام</translation>
 <translation id="4364567974334641491">يشارك <ph name="APP_NAME" /> نافذة.</translation>
 <translation id="4364830672918311045">عرض الإشعارات</translation>
+<translation id="4367027658822022112">‏يمكنك تثبيت ميزة "عدسة Google" للوصول إليها بسهولة من خلال النقر على الزر "تثبيت" في أعلى اللوحة الجانبية</translation>
 <translation id="4367513928820380646">مراجعة الأذونات التي تمت إزالتها</translation>
 <translation id="4367971618859387374">الاسم المعروض</translation>
 <translation id="4368960422722232719">عرض استخدام الذاكرة في بطاقة المعاينة عند التمرير فوق علامة التبويب</translation>
@@ -4978,6 +4984,7 @@
 <translation id="4666911709726371538">المزيد من التطبيقات</translation>
 <translation id="4668279686271488041">يتم بانتظام حذف بيانات "قياس أداء الإعلانات" من جهازك.</translation>
 <translation id="4668929960204016307">،</translation>
+<translation id="4668936527507421457">يجب أن يستخدم رقم التعريف الشخصي أرقامًا فقط</translation>
 <translation id="4670909875730475086">تم تثبيت "<ph name="APP_NAME" />" على جهازك بنجاح.</translation>
 <translation id="4672759829555593783">فتح الملف "<ph name="FILE_NAME" />" الآن</translation>
 <translation id="4673442866648850031">فتح أدوات قلم الشاشة عندما تتم إزالة قلم الشاشة</translation>
@@ -5061,6 +5068,7 @@
 <translation id="473936925429402449">تم الاختيار، المحتوى الإضافي <ph name="CURRENT_ELEMENT" /> من أصل <ph name="TOTAL_ELEMENTS" />.</translation>
 <translation id="4739639199548674512">التذاكر</translation>
 <translation id="4740546261986864539">علامة التبويب التي تم فتحها مؤخرًا</translation>
+<translation id="4741235124132242877">‏تم تثبيت اللوحة. يمكنك استخدام "عدسة Google" مرة أخرى من خلال شريط الأدوات</translation>
 <translation id="4742334355511750246">المواقع الإلكترونية التي لا يُسمح لها بعرض الصور</translation>
 <translation id="4742795653798179840">‏تم حذف بيانات Chrome</translation>
 <translation id="4742970037960872810">إزالة التمييز</translation>
@@ -6758,6 +6766,7 @@
 <translation id="6042308850641462728">عرض المزيد</translation>
 <translation id="604388835206766544">تعذّر تحليل الضبط</translation>
 <translation id="6043994281159824495">الخروج الآن</translation>
+<translation id="604424701295382420">‏تم تثبيت اللوحة. يمكنك الوصول إلى ميزة "عدسة Google" مرة أخرى من خلال الزر الجديد في شريط الأدوات</translation>
 <translation id="6045114302329202345">‏زر TrackPoint الأساسي</translation>
 <translation id="6047632800149092791">المزامنة لا تعمل على نحو سليم جرّب الخروج وتسجيل الدخول مرة أخرى.</translation>
 <translation id="6048747414605857443">‏يمكنك اختيار الأصوات في ميزة تحويل النص إلى كلام وتخصيصها لكل من قارئ الشاشة ChromeVox وميزة "سماع الاختيار".</translation>
@@ -6910,7 +6919,6 @@
 <translation id="6154240335466762404">إزالة جميع المنافذ</translation>
 <translation id="615436196126345398">البروتوكول</translation>
 <translation id="6154739047827675957">‏تعذَّر إعداد OneDrive.</translation>
-<translation id="6154820449290823443">‏يمكنك إدارة إمكانية الوصول إلى التطبيقات وحظرها على جهاز Chromebook هذا.</translation>
 <translation id="6155141482566063812">تتشارك علامة تبويب خلفية في شاشتك</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">إنشاء مفتاح مرور</translation>
@@ -7545,6 +7553,7 @@
 <translation id="6647690760956378579">الاستماع إلى معاينة الصوت الطبيعي</translation>
 <translation id="6648911618876616409">تحديث مهم جاهز للتثبيت. يُرجى تسجيل الدخول للبدء.</translation>
 <translation id="6649018507441623493">لحظة من فضلك...</translation>
+<translation id="6650072551060208490">يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
 <translation id="6650206238642452078">‏الاشتراك في أحداث نظام ChromeOS</translation>
 <translation id="6650584564768559994">يمكنك إخلاء مقدار متوازن من مساحة التخزين في الذاكرة. وستظل علامات التبويب نشطة لفترة زمنية مثالية.</translation>
 <translation id="665061930738760572">فتح في &amp;نافذة جديدة</translation>
@@ -7598,6 +7607,7 @@
 <translation id="6686490380836145850">إغلاق علامات التبويب على اليمين</translation>
 <translation id="6686665106869989887">تم نقل علامة التبويب إلى اليمين.</translation>
 <translation id="6686817083349815241">حفظ كلمة المرور</translation>
+<translation id="6687008241368170505">‏تغيير رقم التعريف الشخصي لخدمة "مدير كلمات المرور في Google"</translation>
 <translation id="6687079240787935001">إخفاء <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">‏اطلب من <ph name="SUPERVISED_USER_NAME" /> الجلوس أمام جهاز الكمبيوتر. وسيقرأ طفلك بعض العبارات على هذه الشاشة لإنشاء نموذج صوتي له.
     <ph name="BR" />
@@ -8378,6 +8388,7 @@
 <translation id="7289386924227731009">‏<ph name="WINDOW_TITLE" /> - تم طلب الإذن، اضغط على مفتاح F6 للاستجابة للطلب</translation>
 <translation id="7290242001003353852">تحاول خدمة تسجيل الدخول هذه، المُستضافة من قبل <ph name="SAML_DOMAIN" />، الدخول إلى الكاميرا.</translation>
 <translation id="7292067737327289208">تتولّى مؤسستك <ph name="BEGIN_LINK" />إدارة متصفِّحك<ph name="END_LINK" />، ويتولّى <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />إدارة ملفك الشخصي<ph name="END_LINK" />.</translation>
+<translation id="7292147651179697920">اطلب من أحد والدَيك السماح بالوصول في "الإعدادات"</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">‏تجدر الإشارة إلى أن Android وPlay والتطبيقات المرتبطة بهما محكومة بسياسات الاستخدام وجمع البيانات.الخاصة بها.</translation>
 <translation id="7296503797589217366">اختيار المجلد "<ph name="FOLDER_TITLE" />"</translation>
@@ -8685,6 +8696,7 @@
 <translation id="7514239104543605883">نسخ إلى جهازك</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7514417110442087199">تخصيص المفتاح</translation>
+<translation id="7515191208480168435">‏يمكنك تثبيت ميزة "عدسة Google" للوصول إليها بسهولة</translation>
 <translation id="751523031290522286">حظَر المشرف تطبيق <ph name="APP_NAME" />. يمكنك طلب الإذن من المشرف لاستخدام هذا التطبيق.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">‏مفتاح PageDown</translation>
@@ -8847,7 +8859,6 @@
 <translation id="7643842463591647490">{0,plural, =1{هناك نافذة واحدة مفتوحة (#).}zero{هناك # نافذة مفتوحة.}two{هناك نافذتان مفتوحتان (#).}few{هناك # نوافذ مفتوحة.}many{هناك # نافذة مفتوحة.}other{هناك # نافذة مفتوحة.}}</translation>
 <translation id="7643932971554933646">هل تسمح للموقع الإلكتروني بعرض الملفات؟</translation>
 <translation id="7644543211198159466">اللون والمظهر</translation>
-<translation id="7644953783774050577">بلا تحديد</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (المالك)</translation>
 <translation id="7645681574855902035">‏جارٍ إلغاء عملية الاحتفاظ بنسخة احتياطية من Linux</translation>
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
@@ -10161,6 +10172,7 @@
 <translation id="8592141010104017453">عدم عرض الإشعارات على الإطلاق</translation>
 <translation id="859246725979739260">تم حظر هذا الموقع الإلكتروني من الوصول إلى موقعك الجغرافي.</translation>
 <translation id="8593450223647418235">‏لن تتمكّن من فتح الملفات في Microsoft 365 إلى أن تكتمل عملية الإعداد.</translation>
+<translation id="8593686980889923154">تم حظر "<ph name="APP_NAME" />" على <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">ملفات مخصصة</translation>
 <translation id="8597845839771543242">شكل الموقع:</translation>
 <translation id="8598249292448297523">طباعة</translation>
@@ -10584,6 +10596,7 @@
 <translation id="8890529496706615641">تعذّرت إعادة تسمية الملف الشخصي. يُرجى إعادة المحاولة أو التواصل مع فريق الدعم الفني لدى مشغّل شبكة الجوّال.</translation>
 <translation id="8892168913673237979">كل شيء جاهز!</translation>
 <translation id="8892246501904593980">عرض جميع الإشارات المرجعية لديك في "الإشارات المرجعية" و"القوائم"</translation>
+<translation id="8893479486525393799">استوديو الميكروفون</translation>
 <translation id="8893801527741465188">اكتملت عملية إلغاء التثبيت</translation>
 <translation id="8893928184421379330">عذرًا، تعذر التعرف على الجهاز <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">الحماية من الوصول إلى البيانات بالنسبة إلى الأجهزة الملحقة</translation>

@@ -191,6 +191,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
           <ph name="LIST_ITEM" />Je werkgever of school
           <ph name="LIST_ITEM" />Je internetprovider
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Dit item volgen</translation>
 <translation id="1337692097987160377">Dit tabblad delen</translation>
 <translation id="1339601241726513588">Inschrijvingsdomein:</translation>
 <translation id="1340482604681802745">Ophaaladres</translation>
@@ -2606,6 +2607,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6035491133925068289">Atletiek</translation>
 <translation id="6039846035001940113">Als het probleem blijft optreden, neem je contact op met de site-eigenaar.</translation>
 <translation id="6040143037577758943">Sluiten</translation>
+<translation id="6040539895181423374">Prijsinzichten</translation>
 <translation id="604124094241169006">Automatisch</translation>
 <translation id="6041777658117377052">Temperatuur van ruimte</translation>
 <translation id="6042308850641462728">Meer</translation>

@@ -1616,8 +1616,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2165102982098084499">Uliunganisha vifaa hivi kwa kuchanganua msimbo wa QR.</translation>
 <translation id="2165177462441582039">Chagua muda ambao kila kipengee kinafaa kuangaziwa</translation>
 <translation id="2166369534954157698">Juma ameanza kuvua papa baharini, naye Fatuma anamsaidia Lawi kuchimba mgodi</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" /> (SN: <ph name="SERIAL_NUMBER" />) ya kifaa hiki imefungwa.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Udhibiti wa Kifaa cha Chrome kwa kutumia <ph name="MS_AD_NAME" /> hautumiki tena. Ili uingie katika akaunti, tumia kifaa tofauti au uwasiliane na msimamizi wa kifaa chako.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Ingia tu</translation>
 <translation id="2173302385160625112">Angalia muunganisho wako wa intaneti</translation>
 <translation id="2173801458090845390">Ongeza ombi la Kitambulisho kwenye kifaa hiki</translation>
@@ -6915,7 +6913,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6154240335466762404">Ondoa milango yote</translation>
 <translation id="615436196126345398">Itifaki</translation>
 <translation id="6154739047827675957">Imeshindwa kuweka mipangilio ya OneDrive</translation>
-<translation id="6154820449290823443">Dhibiti ufikiaji na uzuie programu kwenye Chromebook hii.</translation>
 <translation id="6155141482566063812">Kichupo kinachofanya kazi chinichini kinashiriki skrini yako</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Buni ufunguo wa siri</translation>
@@ -7542,6 +7539,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6647690760956378579">Kagua kwanza sauti ya kawaida</translation>
 <translation id="6648911618876616409">Sasisho muhimu liko tayari kusakinishwa. Ingia katika akaunti ili usakinishe.</translation>
 <translation id="6649018507441623493">Subiri kidogo...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingependa kuthibitisha kwamba ni wewe</translation>
 <translation id="6650206238642452078">Jisajili kwenye matukio ya mfumo wa ChromeOS</translation>
 <translation id="6650584564768559994">Okoa nafasi iliyosawazishwa ya hifadhi. Vichupo vyako huacha kutumika baada ya muda unaopendekezwa.</translation>
 <translation id="665061930738760572">Fungua katika &amp;Dirisha Jipya</translation>
@@ -8844,7 +8842,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7643842463591647490">{0,plural, =1{Dirisha # limefunguliwa}other{Madirisha # yamefunguliwa}}</translation>
 <translation id="7643932971554933646">Je, ungependa kuruhusu tovuti ione faili?</translation>
 <translation id="7644543211198159466">Rangi na mandhari</translation>
-<translation id="7644953783774050577">Usichague yoyote</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (mmiliki)</translation>
 <translation id="7645681574855902035">Inaghairi kuhifadhi rudufu ya Linux</translation>
 <translation id="7646772052135772216">Kipengele cha usawazishaji wa nenosiri hakifanyi kazi</translation>

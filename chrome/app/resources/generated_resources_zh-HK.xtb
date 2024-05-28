@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">暫時不要</translation>
 <translation id="100881991356161927">網站名稱</translation>
 <translation id="1009663062402466586">您現可使用遊戲控制項</translation>
+<translation id="1010136228650201057">使用者資料加密</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{網頁沒有回應}other{網頁沒有回應}}</translation>
 <translation id="1011003645819296594">已儲存的裝置</translation>
 <translation id="1011355516189274711">「文字轉語音」音量</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">無痕</translation>
 <translation id="1049795001945932310">語言設定(&amp;L)</translation>
 <translation id="1050693411695664090">欠佳</translation>
+<translation id="1053776357096024725">使用多種效果強化內置麥克風的音質</translation>
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="1054187194995068149">你好，呢個係預覽畫面</translation>
@@ -834,6 +836,7 @@
 <translation id="1607139524282324606">清除項目</translation>
 <translation id="1607499585984539560">使用者並未與網域建立關聯</translation>
 <translation id="1608668830839595724">更多可對所選項目執行的動作</translation>
+<translation id="1608698493373028805">系統可能會在近期內停止支援此擴充程式</translation>
 <translation id="1610272688494140697">應用程式設定</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">您的裝置已鎖定</translation>
@@ -1620,8 +1623,6 @@
 <translation id="2165102982098084499">透過掃瞄 QR 碼的方式連結了這些裝置。</translation>
 <translation id="2165177462441582039">選擇突顯範圍在每個項目上的停留時間</translation>
 <translation id="2166369534954157698">繁體中文字體範例 The quick brown fox jumps over the lazy dog</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />此裝置 (序號：<ph name="SERIAL_NUMBER" />) 已鎖定。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />系統已不再支援 <ph name="MS_AD_NAME" /> 的 Chrome 裝置管理模式。如要登入，請使用其他裝置或聯絡裝置管理員。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">繼續登入</translation>
 <translation id="2173302385160625112">檢查互聯網連線</translation>
 <translation id="2173801458090845390">新增此裝置的申請 ID</translation>
@@ -2321,6 +2322,7 @@
 <translation id="2667144577800272420">其他應用程式所設定會開啟的連結與 <ph name="APP_NAME" /> 的設定相同，這會導致「<ph name="APP_NAME_2" />」和「<ph name="APP_NAME_3" />」無法開啟支援的連結。</translation>
 <translation id="2667463864537187133">管理拼字檢查</translation>
 <translation id="2668094785979141847">按一下即可離開「Google 智能鏡頭」</translation>
+<translation id="2668604389652548400">請移除擴充程式，或前往「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」尋找可取代的類似擴充程式。</translation>
 <translation id="2669241540496514785">無法開啟 <ph name="APP_NAME" />。</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共用 Chrome 分頁。</translation>
@@ -2371,6 +2373,7 @@
 <translation id="2710101514844343743">使用情況和診斷資料</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2710507903599773521">你的 <ph name="DEVICE_TYPE" /> 現已解鎖</translation>
+<translation id="2712141162840347885">揀任何要用「Google 智能鏡頭」搜尋嘅內容，㩒 Esc 掣就可以退出「Google 智能鏡頭」</translation>
 <translation id="2713106313042589954">關閉攝錄機</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
@@ -2995,6 +2998,7 @@
 <translation id="3177914167275935955">您的裝置包含一項 Chrome Education 升級，但您的使用者名稱尚未連結 Google for Education 帳戶。請在次要裝置上前往 g.co/workspace/edusignup 建立 Google for Education 帳戶。</translation>
 <translation id="3179982752812949580">文字字型</translation>
 <translation id="3180284704187420717">透過同步處理功能儲存書籤、密碼和其他資料</translation>
+<translation id="3180716079618904608">取得應用程式和遊戲</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護您和裝置免受危險網站攻擊)</translation>
 <translation id="3182749001423093222">拼字檢查</translation>
 <translation id="3183139917765991655">個人檔案匯入工具</translation>
@@ -4280,6 +4284,7 @@
 <translation id="4120817667028078560">路徑名稱過長</translation>
 <translation id="4124823734405044952">您的安全密鑰已重設</translation>
 <translation id="4124935795427217608">獨角獸</translation>
+<translation id="4126375522951286587">關閉「<ph name="VM_NAME" />」</translation>
 <translation id="412730574613779332">彈力俠</translation>
 <translation id="4130199216115862831">裝置記錄</translation>
 <translation id="4130750466177569591">我同意</translation>
@@ -4580,6 +4585,7 @@
 <translation id="4364327530094270451">蜜瓜</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
+<translation id="4367027658822022112">你可以固定「Google 智能鏡頭」方便存取；㩒一下側面板頂部嘅「固定」按鈕</translation>
 <translation id="4367513928820380646">審核移除咗嘅權限</translation>
 <translation id="4367971618859387374">顯示名稱</translation>
 <translation id="4368960422722232719">在分頁懸停預覽資訊卡上顯示記憶體用量</translation>
@@ -4982,6 +4988,7 @@
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4668279686271488041">系統會定期從裝置刪除廣告評估資料</translation>
 <translation id="4668929960204016307">，</translation>
+<translation id="4668936527507421457">只能在 PIN 中使用數字</translation>
 <translation id="4670909875730475086">恭喜！已成功在裝置上安裝「<ph name="APP_NAME" />」</translation>
 <translation id="4672759829555593783">立即開啟 <ph name="FILE_NAME" /></translation>
 <translation id="4673442866648850031">拔出觸控筆後開啟觸控筆工具</translation>
@@ -5065,6 +5072,7 @@
 <translation id="473936925429402449">已選取，第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="4739639199548674512">票證</translation>
 <translation id="4740546261986864539">最近曾開啟</translation>
+<translation id="4741235124132242877">已固定！你可透過工具列再次使用「Google 智能鏡頭」</translation>
 <translation id="4742334355511750246">不允許顯示圖片</translation>
 <translation id="4742795653798179840">已刪除 Chrome 資料</translation>
 <translation id="4742970037960872810">移除焦點內容</translation>
@@ -6758,6 +6766,7 @@
 <translation id="6042308850641462728">更多選項</translation>
 <translation id="604388835206766544">無法剖析設定</translation>
 <translation id="6043994281159824495">立即登出</translation>
+<translation id="604424701295382420">已固定！你可以透過工具列嘅新按鈕用多次「Google 智能鏡頭」</translation>
 <translation id="6045114302329202345">主要 TrackPoint 按鈕</translation>
 <translation id="6047632800149092791">同步功能無法正常運作。請嘗試登出，然後重新登入。</translation>
 <translation id="6048747414605857443">為 ChromeVox 和「揀選朗讀內容」選取及自訂文字轉語音的聲音</translation>
@@ -6911,7 +6920,6 @@
 <translation id="6154240335466762404">移除所有連接埠</translation>
 <translation id="615436196126345398">通訊協定</translation>
 <translation id="6154739047827675957">OneDrive 設定失敗</translation>
-<translation id="6154820449290823443">管理此 Chromebook 上允許及禁止存取的應用程式。</translation>
 <translation id="6155141482566063812">背景分頁正在分享您的螢幕畫面</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">建立密鑰</translation>
@@ -7538,6 +7546,7 @@
 <translation id="6647690760956378579">播放自然語音</translation>
 <translation id="6648911618876616409">已準備好安裝重要更新。登入即可開始更新。</translation>
 <translation id="6649018507441623493">請稍候...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認您的身分</translation>
 <translation id="6650206238642452078">訂閱 ChromeOS 系統事件</translation>
 <translation id="6650584564768559994">平衡地節省記憶體。分頁會在最佳時間長度過後進入閒置狀態。</translation>
 <translation id="665061930738760572">在新視窗中開啟(&amp;N)</translation>
@@ -7591,6 +7600,7 @@
 <translation id="6686490380836145850">關閉右側分頁</translation>
 <translation id="6686665106869989887">分頁移咗去右邊</translation>
 <translation id="6686817083349815241">儲存您的密碼</translation>
+<translation id="6687008241368170505">變更「Google 密碼管理工具」PIN</translation>
 <translation id="6687079240787935001">隱藏<ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">請<ph name="SUPERVISED_USER_NAME" />坐在電腦前。您的子女將朗讀此螢幕上的一些短句，藉此建立他們的語音模型。
     <ph name="BR" />
@@ -8370,6 +8380,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 要求咗權限，㩒 F6 掣就可以回覆</translation>
 <translation id="7290242001003353852">此登入服務商 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的相機。</translation>
 <translation id="7292067737327289208">你的<ph name="BEGIN_LINK" />瀏覽器<ph name="END_LINK" />由機構管理，<ph name="BEGIN_LINK" />個人檔案<ph name="END_LINK" />則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
+<translation id="7292147651179697920">請家長前往「設定」授予存取權</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">請注意，Android、Google Play 以及相關聯的應用程式受各自的資料收集政策和使用政策管限。</translation>
 <translation id="7296503797589217366">揀資料夾：<ph name="FOLDER_TITLE" /></translation>
@@ -8677,6 +8688,7 @@
 <translation id="7514239104543605883">複製至您的裝置</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7514417110442087199">新增指派</translation>
+<translation id="7515191208480168435">你可以固定「Google 智能鏡頭」方便存取</translation>
 <translation id="751523031290522286">管理員已封鎖「<ph name="APP_NAME" />」。請要求管理員授權使用此應用程式。</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page Down 鍵</translation>
@@ -8839,7 +8851,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# 個開啟的視窗}other{# 個開啟的視窗}}</translation>
 <translation id="7643932971554933646">要讓網站查看檔案嗎？</translation>
 <translation id="7644543211198159466">顏色和主題</translation>
-<translation id="7644953783774050577">全部不選取</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
 <translation id="7645681574855902035">正在取消 Linux 備份</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
@@ -10152,6 +10163,7 @@
 <translation id="8592141010104017453">完全不顯示通知</translation>
 <translation id="859246725979739260">此網站已被禁止存取您的位置。</translation>
 <translation id="8593450223647418235">設定完成後，您才能在 Microsoft 365 中開啟檔案。</translation>
+<translation id="8593686980889923154">你的 <ph name="DEVICE_TYPE" /> 已封鎖「<ph name="APP_NAME" />」</translation>
 <translation id="8596540852772265699">自訂檔</translation>
 <translation id="8597845839771543242">網絡屬性：</translation>
 <translation id="8598249292448297523">列印</translation>
@@ -10571,6 +10583,7 @@
 <translation id="8890529496706615641">無法重新命名設定檔。請再試一次，或聯絡您的流動網絡供應商以獲取技術支援。</translation>
 <translation id="8892168913673237979">大功告成！</translation>
 <translation id="8892246501904593980">在「書籤」和「清單」中查看所有書籤</translation>
+<translation id="8893479486525393799">錄音室麥克風</translation>
 <translation id="8893801527741465188">解除安裝完成</translation>
 <translation id="8893928184421379330">很抱歉，系統無法識別 <ph name="DEVICE_LABEL" /> 裝置。</translation>
 <translation id="8894761918470382415">周邊裝置的資料存取保護</translation>

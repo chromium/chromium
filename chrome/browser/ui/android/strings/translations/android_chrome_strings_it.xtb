@@ -314,7 +314,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2650348088770008516">Spiegazione della Guida alla privacy chiusa</translation>
 <translation id="2650408372219180431">Esporta ed elimina le password salvate su questo dispositivo</translation>
 <translation id="2650751991977523696">Scaricare nuovamente il file?</translation>
-<translation id="2651465929321991146">Cronologia e schede</translation>
 <translation id="265156376773362237">Precaricamento standard</translation>
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2656405586795711023">App web</translation>
@@ -906,7 +905,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5628604359369369630">Da leggere - Disponibili offline</translation>
 <translation id="5641456720590409793">La <ph name="BEGIN_LINK1" />cronologia delle ricerche<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />altri tipi di attività<ph name="END_LINK2" /> potrebbero essere salvati nel tuo Account Google</translation>
-<translation id="564667659802381754">Guida alla privacy <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Ultima settimana</translation>
 <translation id="5655963694829536461">Ricerca nei download</translation>
 <translation id="5657871969392618475">Le tue informazioni sono protette da un blocco del profilo</translation>
@@ -985,6 +983,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6002122790816966947">I tuoi dispositivi</translation>
 <translation id="6011308810877101166">Migliora i suggerimenti di ricerca</translation>
 <translation id="6013305291643746595">Ordinamento per meno recente</translation>
+<translation id="6022659036123304283">Personalizza il tuo Chrome</translation>
 <translation id="6026538407078977628">Espandi a schermo intero</translation>
 <translation id="6030719887161080597">Gestisci le informazioni utilizzate dai siti per misurare il rendimento dell'annuncio</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
@@ -1144,6 +1143,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6734310707649923383">Puoi visualizzare le pagine che hai visitato o eliminarle dalla cronologia</translation>
 <translation id="6738867403308150051">Download in corso…</translation>
 <translation id="674388916582496364">È normale che i siti che visiti memorizzino argomenti di tuo interesse per personalizzare la tua esperienza. I siti possono anche memorizzare su Chrome informazioni relative ai tuoi interessi.</translation>
+<translation id="6746338529702829275">Rivedi i dati dell'account</translation>
 <translation id="6751521182688001123">Apri rapidamente una nuova scheda. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="6756507620369789050">Condividi feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1176,6 +1176,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="686490460830618322">Foglio di filtro delle app</translation>
 <translation id="6865313869410766144">Dati della compilazione automatica dei moduli</translation>
 <translation id="6867400383614725881">Nuova scheda di navigazione in incognito</translation>
+<translation id="686899695320434745">Gli indirizzi non vengono criptati con la tua passphrase. In questo modo puoi utilizzarli in altri servizi Google.</translation>
 <translation id="6869056123412990582">computer</translation>
 <translation id="6882836635272038266">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi.</translation>
 <translation id="6883204995689174413">Condividi</translation>
@@ -1600,6 +1601,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="885480114717186641">Puoi richiedere il sito desktop di <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Recupera descrizioni</translation>
 <translation id="8856931513242997049">Flusso di autorizzazione alle notifiche chiuso</translation>
+<translation id="8865415417596392024">Dati di Chrome nel tuo account</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del Web.</translation>
 <translation id="8909135823018751308">Condividi…</translation>
 <translation id="8921980840204105660">Attiva la sincronizzazione per recuperare i preferiti dagli altri tuoi dispositivi</translation>

@@ -1603,8 +1603,6 @@
 <translation id="2165102982098084499">您已通过扫描二维码关联这些设备。</translation>
 <translation id="2165177462441582039">选择系统应将每项内容突出显示多久</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />此设备（序列号：<ph name="SERIAL_NUMBER" />）已被锁定。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />系统已不再支持通过 <ph name="MS_AD_NAME" /> 使用 Chrome 设备管理功能。如要登录账号，请使用其他设备或与设备管理员联系。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">仍然登录</translation>
 <translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
 <translation id="2173801458090845390">向此设备添加申请 ID</translation>
@@ -6892,7 +6890,6 @@
 <translation id="6154240335466762404">移除所有端口</translation>
 <translation id="615436196126345398">协议</translation>
 <translation id="6154739047827675957">OneDrive 设置失败</translation>
-<translation id="6154820449290823443">在此 Chromebook 上管理访问权限和屏蔽应用。</translation>
 <translation id="6155141482566063812">背景标签页正在共享您的屏幕</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">创建通行密钥</translation>
@@ -7519,6 +7516,7 @@
 <translation id="6647690760956378579">自然语音预览</translation>
 <translation id="6648911618876616409">有一项重要更新已可供安装。登录即可开始安装。</translation>
 <translation id="6649018507441623493">请稍候…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
 <translation id="6650206238642452078">订阅 ChromeOS 系统事件</translation>
 <translation id="6650584564768559994">以均衡的方式节省内存。标签页会在最适宜的一段时间后进入非活跃状态。</translation>
 <translation id="665061930738760572">在新窗口中打开(&amp;N)</translation>
@@ -8821,7 +8819,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# 个打开的窗口}other{# 个打开的窗口}}</translation>
 <translation id="7643932971554933646">允许网站查看文件？</translation>
 <translation id="7644543211198159466">颜色和主题</translation>
-<translation id="7644953783774050577">全部不选</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7645681574855902035">正在取消 Linux 备份</translation>
 <translation id="7646772052135772216">无法同步密码</translation>

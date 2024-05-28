@@ -314,7 +314,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2650348088770008516">Förklaringen till integritetsguiden har stängts</translation>
 <translation id="2650408372219180431">Exportera och radera lösenord som har sparats på den här enheten</translation>
 <translation id="2650751991977523696">Vill du ladda ned filen igen?</translation>
-<translation id="2651465929321991146">Historik och flikar</translation>
 <translation id="265156376773362237">Standardförinläsning</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2656405586795711023">Webbappar</translation>
@@ -907,7 +906,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5626134646977739690">Namn:</translation>
 <translation id="5628604359369369630">Oläst – Tillgänglig offline</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Sökhistorik<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />annan aktivitet<ph name="END_LINK2" /> kan sparas i Google-kontot</translation>
-<translation id="564667659802381754">Integritetsguide <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Senaste sju dagarna</translation>
 <translation id="5655963694829536461">Sök i dina nedladdningar</translation>
 <translation id="5657871969392618475">Dina uppgifter skyddas med ett profillås</translation>
@@ -986,6 +984,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6002122790816966947">Dina enheter</translation>
 <translation id="6011308810877101166">Förbättra sökförslag</translation>
 <translation id="6013305291643746595">Sorterar efter äldsta</translation>
+<translation id="6022659036123304283">Anpassa Chrome</translation>
 <translation id="6026538407078977628">Utöka till helskärmsläge</translation>
 <translation id="6030719887161080597">Hantera information som används av webbplatser för att mäta annonsresultat</translation>
 <translation id="6039379616847168523">Hoppa till nästa flik</translation>
@@ -1145,6 +1144,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6734310707649923383">Du kan se sidor som du har besökt eller radera dem från historiken</translation>
 <translation id="6738867403308150051">Laddar ned …</translation>
 <translation id="674388916582496364">Det är vanligt att webbplatser du besöker kommer ihåg sådant som intresserar dig för att anpassa din upplevelse. Webbplatser kan även lagra information om dina intressen i Chrome.</translation>
+<translation id="6746338529702829275">Granska din kontodata</translation>
 <translation id="6751521182688001123">Öppna en ny flik snabbt. Tryck länge om du vill ändra genvägen.</translation>
 <translation id="6756507620369789050">Dela feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1177,6 +1177,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="686490460830618322">Arbetsblad för appfilter</translation>
 <translation id="6865313869410766144">Formuläruppgifter för Autofyll</translation>
 <translation id="6867400383614725881">Ny inkognitoflik</translation>
+<translation id="686899695320434745">Adresserna krypteras inte med lösenfrasen. Detta gör att du kan använda dem i andra Google-tjänster.</translation>
 <translation id="6869056123412990582">dator</translation>
 <translation id="6882836635272038266">Standardskydd mot kända skadliga webbplatser, nedladdningar och tillägg.</translation>
 <translation id="6883204995689174413">Dela</translation>
@@ -1601,6 +1602,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="885480114717186641">Du kan begära webbplatsen för datorn för <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Få beskrivningar</translation>
 <translation id="8856931513242997049">Behörighetsflödet för aviseringar har stängts</translation>
+<translation id="8865415417596392024">Chrome-data i ditt konto</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="8909135823018751308">Dela …</translation>
 <translation id="8921980840204105660">Synkronisera om du vill få tillgång till bokmärken från dina andra enheter</translation>

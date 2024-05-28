@@ -90,6 +90,7 @@
 <translation id="143681031165817424">ఈ పరికరంలో మాత్రమే అడ్రస్ సేవ్ చేయబడింది</translation>
 <translation id="1449835205994625556">పాస్‌వర్డ్‌ను దాచండి</translation>
 <translation id="1450170672351507823">స్టాండర్డ్ రక్షణ ఆన్‌లో ఉంది. మరింత సెక్యూరిటీ కోసం, మెరుగైన రక్షణను ఉపయోగించండి.</translation>
+<translation id="1455492980583160269">మెసేజ్‌ను పంపించండి</translation>
 <translation id="1469381646033328562">మీ ఖాతాను మీ తల్లి/తండ్రి మేనేజ్ చేస్తున్నారు.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">సెట్టింగ్‌ను టోగుల్ చేయడానికి రెండుసార్లు నొక్కండి</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">పేజీ భద్రతా సమాచారం</translation>
 <translation id="5443952882982198570">క్రెడిట్ కార్డ్‌లు</translation>
 <translation id="5444892875087332195">బుక్‌మార్క్‌లు</translation>
+<translation id="5453738961176844111">దేశం కోడ్</translation>
 <translation id="5454211924362324495">ఇతరులు మీ పాస్‌వర్డ్‌ను ఉపయోగించకుండా ఆపడానికి, దాన్ని <ph name="BEGIN_LINK" /><ph name="WEBSITE" /><ph name="END_LINK" />‌లో మార్చండి</translation>
 <translation id="5457226814769348910">ఆఫ్‌లైన్ వెర్షన్‌ను తెరవండి</translation>
 <translation id="5459548306731933777">వివరాలను చూడండి</translation>
@@ -1189,6 +1191,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">స్థానాన్ని మార్చడానికి మీరు అడ్రస్ బార్‌ను నొక్కి, పట్టుకోవచ్చు కూడా.</translation>
 <translation id="6988572888918530647">మీ Google ఖాతాను మేనేజ్ చేయండి</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">స్వీకర్త</translation>
 <translation id="699954956411469731">మొబైల్ నోటిఫికేషన్‌లు</translation>
 <translation id="699985840472413751">డౌన్‌లోడ్‌ను మూసివేయండి</translation>
@@ -1355,6 +1358,7 @@
 <translation id="7866872729285243843">మీ అన్ని పరికరాలలో మీ చదవాల్సిన లిస్ట్‌ను పొందడానికి, సెట్టింగ్‌లలో “చదవాల్సిన లిస్ట్”ను ఆన్ చేయండి.</translation>
 <translation id="7866993391592926595">ఈ కార్డ్‌ను దాచడం వలన ప్యాకేజీ ట్రాకింగ్‌ను ఆఫ్ చేసి, మీ మొత్తం డేటా తీసివేయబడుతుంది</translation>
 <translation id="7870750252270996949">Lens ఇమేజ్ కాపీ చేయబడింది</translation>
+<translation id="7877056713163921063">కాంటాక్ట్‌లకు జోడించండి</translation>
 <translation id="7879275349003161544">డౌన్‌లోడ్‌లను చూడండి</translation>
 <translation id="7883882164760409935">మీ వద్ద వేరే చోట వాడిన పాస్‌వర్డ్‌లు ఉన్నాయి.</translation>
 <translation id="7884694604461143138">సెర్చ్ హిస్టరీ (<ph name="COUNT" /> కనుగొనబడింది)</translation>
@@ -1592,7 +1596,6 @@
 <translation id="9000089900434778519">మీ సెర్చ్ ఇంజిన్ <ph name="DSE_NAME" />. వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి దాని సూచనలను చూడండి.</translation>
 <translation id="9008201768610948239">విస్మరించు</translation>
 <translation id="9012585441087414258">ప్రమాదకరమని తెలిసిన సైట్‌లు, డౌన్‌లోడ్‌లు, అలాగే ఎక్స్‌టెన్షన్‌ల నుండి రక్షిస్తుంది. ఏదైనా పేజీ అనుమానాస్పదంగా ఉంటే, URLలు, పేజీ కంటెంట్‌‌కు సంబంధించిన బిట్‌లు Google సురక్షిత బ్రౌజింగ్‌కు పంపబడతాయి.</translation>
-<translation id="9025203546212508704">మీ మెనూను ఎలా అనుకూలంగా మార్చాలో తెలుసుకోవడానికి స్వైప్ చేయండి</translation>
 <translation id="9029650858822697271">మీరు సైన్ అవుట్ చేయబడ్డారు</translation>
 <translation id="9034759925968272072">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />లో మీ Google ఖాతా ఇతర రకాల బ్రౌజింగ్ హిస్టరీని కలిగి ఉండవచ్చు.</translation>
 <translation id="9037965129289936994">అసలైనది చూపు</translation>

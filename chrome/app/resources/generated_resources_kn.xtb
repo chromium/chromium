@@ -1616,8 +1616,6 @@
 <translation id="2165102982098084499">QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡುವ ಮೂಲಕ ನೀವು ಈ ಸಾಧನಗಳನ್ನು ಲಿಂಕ್ ಮಾಡಿದ್ದೀರಿ.</translation>
 <translation id="2165177462441582039">ಪ್ರತಿ ಐಟಂನಲ್ಲಿ ಹೈಲೈಟ್‌ ಎಷ್ಟು ಕಾಲ ಉಳಿಯಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />ಈ ಸಾಧನ (SN: <ph name="SERIAL_NUMBER" />) ಲಾಕ್ ಆಗಿದೆ.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> ಜೊತೆಗೆ Chrome ಸಾಧನ ನಿರ್ವಹಣೆಯು ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಸೈನ್ ಇನ್ ಮಾಡಲು, ಬೇರೆ ಸಾಧನವನ್ನು ಬಳಸಿ ಅಥವಾ ನಿಮ್ಮ ಸಾಧನದ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">ಹೇಗಾದರೂ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2173302385160625112">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2173801458090845390">ಈ ಸಾಧನಕ್ಕೆ ನಿಯೋಜನ ಐಡಿ ಅನ್ನು ಸೇರಿಸಿ</translation>
@@ -6924,7 +6922,6 @@
 <translation id="6154240335466762404">ಎಲ್ಲಾ ಪೋರ್ಟ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="615436196126345398">ಪ್ರೊಟೊಕಾಲ್</translation>
 <translation id="6154739047827675957">OneDrive ಸೆಟಪ್ ವಿಫಲವಾಗಿದೆ</translation>
-<translation id="6154820449290823443">ಈ Chromebook ನಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
 <translation id="6155141482566063812">ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">ಪಾಸ್‌ಕೀಯನ್ನು ರಚಿಸಿ</translation>
@@ -7553,6 +7550,7 @@
 <translation id="6647690760956378579">ಸ್ವಾಭಾವಿಕ ಧ್ವನಿ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="6648911618876616409">ಮಹತ್ವದ ಅಪ್‌ಡೇಟ್ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲು ಸಿದ್ಧವಾಗಿದೆ. ಪ್ರಾರಂಭಿಸಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="6649018507441623493">ಒಂದು ಕ್ಷಣ...</translation>
+<translation id="6650072551060208490">ಇದು ನೀವೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು <ph name="ORIGIN_NAME" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="6650206238642452078">ChromeOS ಸಿಸ್ಟಂ ಈವೆಂಟ್‌ಗಳಿಗೆ ಸಬ್‌ಸ್ಕ್ರೈಬ್‌ ಮಾಡಿ</translation>
 <translation id="6650584564768559994">ಸಮತೋಲಿತ ಮೆಮೊರಿ ಉಳಿತಾಯವನ್ನು ಪಡೆಯಿರಿ. ಸೂಕ್ತ ಸಮಯದ ನಂತರ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ನಿಷ್ಕ್ರಿಯವಾಗುತ್ತವೆ.</translation>
 <translation id="665061930738760572">&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -8858,7 +8856,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# ತೆರೆದ ವಿಂಡೋ}one{# ತೆರೆದ ವಿಂಡೋಗಳು}other{# ತೆರೆದ ವಿಂಡೋಗಳು}}</translation>
 <translation id="7643932971554933646">ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಸೈಟ್‌ಗೆ ಅನುಮತಿ ನೀಡಬೇಕೇ?</translation>
 <translation id="7644543211198159466">ಬಣ್ಣ ಮತ್ತು ಥೀಮ್</translation>
-<translation id="7644953783774050577">ಏನನ್ನೂ ಆರಿಸಬೇಡಿ</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ಮಾಲೀಕರು)</translation>
 <translation id="7645681574855902035">Linux ಬ್ಯಾಕಪ್ ಅನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7646772052135772216">ಪಾಸ್‌ವರ್ಡ್ ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>

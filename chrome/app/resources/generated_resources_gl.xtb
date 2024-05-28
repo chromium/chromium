@@ -1609,8 +1609,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2165102982098084499">Dispositivos que vinculaches escaneando un código QR.</translation>
 <translation id="2165177462441582039">Escolle canto tempo debe permanecer destacado cada elemento</translation>
 <translation id="2166369534954157698">Necesitamos unha tipografía chuliña de cor kiwi que lle zorregue unha labazada visual á xente</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Bloqueouse este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Xa non se admite a xestión de dispositivos Chrome con <ph name="MS_AD_NAME" />. Para iniciar sesión, usa outro dispositivo ou ponte en contacto co administrador do teu dispositivo.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Iniciar sesión igualmente</translation>
 <translation id="2173302385160625112">Comproba a túa conexión a Internet</translation>
 <translation id="2173801458090845390">Engade o ID de solicitude para este dispositivo</translation>
@@ -6906,7 +6904,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6154240335466762404">Quitar todos os portos</translation>
 <translation id="615436196126345398">Protocolo</translation>
 <translation id="6154739047827675957">Produciuse un erro durante a configuración de OneDrive</translation>
-<translation id="6154820449290823443">Xestiona o acceso e bloquea aplicacións neste Chromebook.</translation>
 <translation id="6155141482566063812">Hai unha pestana en segundo plano que está compartindo a pantalla</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Crear clave de acceso</translation>
@@ -7533,6 +7530,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6647690760956378579">Vista previa da voz natural</translation>
 <translation id="6648911618876616409">É necesario realizar unha actualización importante. Inicia sesión para comezar.</translation>
 <translation id="6649018507441623493">Un segundo…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>
 <translation id="6650206238642452078">Subscribirse aos eventos do sistema ChromeOS</translation>
 <translation id="6650584564768559994">Aforra memoria de forma equilibrada. As túas pestanas pasarán a estar inactivas despois dun período de tempo óptimo.</translation>
 <translation id="665061930738760572">Abrir nunha ventá &amp;nova</translation>
@@ -8834,7 +8832,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7643842463591647490">{0,plural, =1{# ventá aberta}other{# ventás abertas}}</translation>
 <translation id="7643932971554933646">Queres permitir que o sitio vexa os ficheiros?</translation>
 <translation id="7644543211198159466">Cor e tema</translation>
-<translation id="7644953783774050577">Non seleccionar nada</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7645681574855902035">Cancelando copia de seguranza de Linux</translation>
 <translation id="7646772052135772216">A sincronización de contrasinais non funciona</translation>

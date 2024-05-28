@@ -314,7 +314,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2650348088770008516">Maxfiylik qoʻllanmasi bildirgisi yopildi</translation>
 <translation id="2650408372219180431">Bu qurilmada saqlangan parollarni eksport qilish va oʻchirish</translation>
 <translation id="2650751991977523696">Fayl qayta yuklab olinsinmi?</translation>
-<translation id="2651465929321991146">Tarix va varaqlar</translation>
 <translation id="265156376773362237">Standart oldindan yuklash</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2656405586795711023">Veb-ilovalar</translation>
@@ -906,7 +905,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5626134646977739690">Ism:</translation>
 <translation id="5628604359369369630">Oʻqilmagan – oflayn mavjud</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Qidiruv tarixi<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />boshqa turdagi faoliyat<ph name="END_LINK2" /> Google hisobida saqlanishi mumkin</translation>
-<translation id="564667659802381754">Maxfiylik qoʻllanmasi <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Oxirgi 7 kun</translation>
 <translation id="5655963694829536461">Yuklanmalar ichidan qidirish</translation>
 <translation id="5657871969392618475">Maʼlumotlaringiz profil qulfi bilan himoyalangan</translation>
@@ -985,6 +983,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="6002122790816966947">Qurilmalaringiz</translation>
 <translation id="6011308810877101166">Qidiruv takliflarini yaxshilash</translation>
 <translation id="6013305291643746595">Avval eskilari</translation>
+<translation id="6022659036123304283">Shaxsiy Chrome brauzeringiz</translation>
 <translation id="6026538407078977628">Butun ekranda ochish</translation>
 <translation id="6030719887161080597">Reklama unumdorligini hisoblash uchun saytlar ishlatadigan maʼlumotlarni boshqarish</translation>
 <translation id="6039379616847168523">Keyingi varaqqa o‘tish</translation>
@@ -1144,6 +1143,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6734310707649923383">Tarix orqali ochilgan sahifalarni koʻrish yoki oʻchirish mumkin</translation>
 <translation id="6738867403308150051">Yuklab olinmoqda...</translation>
 <translation id="674388916582496364">Odatda siz kiradigan saytlar oʻz xizmatlarini sizga moslashtirish uchun sizga qiziq narsalarni eslab qoladi. Chrome orqali saytlar ham qiziqishlaringiz haqidagi maʼlumotlarni saqlashi mumkin.</translation>
+<translation id="6746338529702829275">Hisobingiz maʼlumotlarini tekshiring</translation>
 <translation id="6751521182688001123">Tezda yangi varaqda ochish. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
 <translation id="6756507620369789050">Fikr-mulohaza</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1176,6 +1176,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="686490460830618322">Ilova asosida filtrlash oynasi</translation>
 <translation id="6865313869410766144">Avtomatik to‘ldirish ma’lumotlari</translation>
 <translation id="6867400383614725881">Yangi Inkognito varaq</translation>
+<translation id="686899695320434745">Manzillar kodli ibora bilan shifrlanmaydi. Bunda ulardan boshqa Google xizmatlarida foydalanish mumkin.</translation>
 <translation id="6869056123412990582">kompyuter</translation>
 <translation id="6882836635272038266">Zararli deb hisoblangan sayt, yuklanma va kengaytmalarga qarshi standart himoya</translation>
 <translation id="6883204995689174413">Ulashish</translation>
@@ -1600,6 +1601,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="885480114717186641"><ph name="HOST_NAME" /> saytining kompyuter versiyasini talab qilish mumkin</translation>
 <translation id="8856607253650333758">Tavsiflarini yuklash</translation>
 <translation id="8856931513242997049">Bildirishnomalarga ruxsat zanjiri yopildi</translation>
+<translation id="8865415417596392024">Hisobingizdagi Chrome maʼlumotlari</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
 <translation id="8909135823018751308">Ulashish…</translation>
 <translation id="8921980840204105660">Boshqa qurilmalardan bukmarklarni olish uchun sinxronlang</translation>

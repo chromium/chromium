@@ -1612,8 +1612,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2165102982098084499">Jūs saistījāt šīs ierīces, skenējot kvadrātkodu.</translation>
 <translation id="2165177462441582039">Izvēlieties, cik ilgi katram vienumam jābūt izceltam</translation>
 <translation id="2166369534954157698">Muļķa hipiji turpat brīvi mēģina nogaršot celofāna žņaudzējčūsku</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Šī ierīce (sērijas numurs: <ph name="SERIAL_NUMBER" />) tika bloķēta.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Chrome ierīču pārvaldība, izmantojot pakalpojumu <ph name="MS_AD_NAME" />, vairs netiek atbalstīta. Lai pierakstītos, izmantojiet citu ierīci vai sazinieties ar savas ierīces administratoru.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Tik un tā pierakstīties</translation>
 <translation id="2173302385160625112">Pārbaudiet interneta savienojumu</translation>
 <translation id="2173801458090845390">Pievienot pieprasījuma ID šai ierīcei</translation>
@@ -6903,7 +6901,6 @@ Ja šī funkcija tiks izslēgta, Android ierīce atrašanās vietas noteikšanai
 <translation id="6154240335466762404">Noņemt visus portus</translation>
 <translation id="615436196126345398">Protokols</translation>
 <translation id="6154739047827675957">Neizdevās iestatīt OneDrive</translation>
-<translation id="6154820449290823443">Pārvaldiet piekļuvi un bloķējiet lietotnes šajā Chromebook datorā.</translation>
 <translation id="6155141482566063812">Fona cilne kopīgo jūsu ekrānu.</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Izveidot piekļuves atslēgu</translation>
@@ -7534,6 +7531,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6647690760956378579">Dabiskās balss priekšskatījums</translation>
 <translation id="6648911618876616409">Svarīgs atjauninājums ir pieejams instalēšanai. Pierakstieties, lai sāktu.</translation>
 <translation id="6649018507441623493">Uzgaidiet…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="6650206238642452078">Abonēt ChromeOS sistēmas notikumus</translation>
 <translation id="6650584564768559994">Ietaupiet optimāli daudz vietas atmiņā. Cilnes kļūs neaktīvas pēc optimāla laika perioda.</translation>
 <translation id="665061930738760572">Atvērt &amp;jaunā logā</translation>
@@ -8836,7 +8834,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7643842463591647490">{0,plural, =1{# atvērts logs}zero{# atvērti logi}one{# atvērts logs}other{# atvērti logi}}</translation>
 <translation id="7643932971554933646">Vai atļaut vietnei skatīt failus?</translation>
 <translation id="7644543211198159466">Krāsa un motīvs</translation>
-<translation id="7644953783774050577">Neatlasīt nevienu</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (īpašnieks)</translation>
 <translation id="7645681574855902035">Linux dublējuma atcelšana</translation>
 <translation id="7646772052135772216">Paroļu sinhronizācija nedarbojas</translation>

@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Gailu honetan baino ez da gorde helbidea</translation>
 <translation id="1449835205994625556">Ezkutatu pasahitza</translation>
 <translation id="1450170672351507823">Babes estandarra dago aktibatuta. Segurtasuna areagotzeko, erabili babes hobetua.</translation>
+<translation id="1455492980583160269">Bidali mezu bat</translation>
 <translation id="1469381646033328562">Gurasoak kudeatzen dizu kontua.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Sakatu birritan ezarpena aldatzeko</translation>
@@ -861,6 +862,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="54401264925851789">Orriaren segurtasunaren informazioa</translation>
 <translation id="5443952882982198570">Kreditu-txartelak</translation>
 <translation id="5444892875087332195">Laster-markak</translation>
+<translation id="5453738961176844111">Herrialde-kodea</translation>
 <translation id="5454211924362324495">Besteei zure pasahitza erabiltzea galarazteko, <ph name="BEGIN_LINK" />alda ezazu <ph name="WEBSITE" /> webgunean<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Ireki konexio gabeko bertsioa</translation>
 <translation id="5459548306731933777">Erakutsi xehetasunak</translation>
@@ -1189,6 +1191,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Eduki helbide-barra sakatuta haren kokapena aldatzeko.</translation>
 <translation id="6988572888918530647">Kudeatu Google-ko kontua</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Hartzailea</translation>
 <translation id="699954956411469731">Mugikorreko jakinarazpenak</translation>
 <translation id="699985840472413751">Itxi deskarga</translation>
@@ -1355,6 +1358,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7866872729285243843">Irakurketa-zerrenda gailu guztietan eskura izateko, aktibatu Irakurketa-zerrenda ezarpenetan.</translation>
 <translation id="7866993391592926595">Txartela ezkutatzen baduzu, Paketeen jarraipena desaktibatuko da, eta zure datu guztiak ezabatuko</translation>
 <translation id="7870750252270996949">Lens-en kopiatu duzun irudia</translation>
+<translation id="7877056713163921063">Gehitu kontaktuetan</translation>
 <translation id="7879275349003161544">Erakutsi deskargak</translation>
 <translation id="7883882164760409935">Beste nonbait erabilitako pasahitzak dauzkazu.</translation>
 <translation id="7884694604461143138">Bilatu historian (<ph name="COUNT" /> aurkitu dira)</translation>
@@ -1592,7 +1596,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> da bilatzailea. Behar izanez gero, joan haren argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko.</translation>
 <translation id="9008201768610948239">Egin ez ikusi</translation>
 <translation id="9012585441087414258">Arriskutsuak direla dakigun webgune, deskarga eta luzapenen aurka babesten du. Orri batek susmagarria den zerbait egiten badu, URLak eta orriaren edukiaren zati batzuk Google-ren Arakatze segurua eginbidera bidaltzen dira.</translation>
-<translation id="9025203546212508704">Pasatu hatza menua pertsonalizatzeko argibideak lortzeko</translation>
 <translation id="9029650858822697271">Zure saioa amaitu da</translation>
 <translation id="9034759925968272072">Ez da amaituko Google-ko kontuko saioa. Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk edukitzea <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="9037965129289936994">Ikusi jatorrizkoa</translation>

@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Хаягийг зөвхөн энэ төхөөрөмжид хадгалдаг</translation>
 <translation id="1449835205994625556">Нууц үгийг нуух</translation>
 <translation id="1450170672351507823">Стандарт хамгаалалт асаалттай байна. Аюулгүй байдлаа улам нэмэгдүүлэхийг хүсвэл сайжруулсан хамгаалалтыг ашиглаарай.</translation>
+<translation id="1455492980583160269">Мессеж илгээх</translation>
 <translation id="1469381646033328562">Таны бүртгэлийг танай эцэг эх удирддаг.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Асаах/унтраах тохиргоог хийхийн тулд хоёр удаа товшино уу</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">Хуудасны аюулгүй байдалтай холбоотой мэдээлэл</translation>
 <translation id="5443952882982198570">Кредит картууд</translation>
 <translation id="5444892875087332195">Хавчуурга</translation>
+<translation id="5453738961176844111">Улсын код</translation>
 <translation id="5454211924362324495">Бусад хүнийг таны нууц үгийг ашиглахыг зогсоохын тулд <ph name="BEGIN_LINK" />үүнийг <ph name="WEBSITE" />-д өөрчилнө үү<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Офлайн хувилбарыг нээх</translation>
 <translation id="5459548306731933777">Дэлгэрэнгүйг харуулах</translation>
@@ -1189,6 +1191,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Та мөн байрлалыг өөрчлөхийн тулд хаяг оруулах хэсэгт хүрээд удаан дарах боломжтой.</translation>
 <translation id="6988572888918530647">Google бүртгэлээ удирдах</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">руу</translation>
 <translation id="699954956411469731">Мобайл мэдэгдэл</translation>
 <translation id="699985840472413751">Таталтыг хаах</translation>
@@ -1355,6 +1358,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7866872729285243843">Унших жагсаалтаа бүх төхөөрөмждөө авахын тулд тохиргоонд “Унших жагсаалт”-ыг асаана уу.</translation>
 <translation id="7866993391592926595">Энэ картыг нуух нь Илгээмж хянахыг унтрааж, таны бүх өгөгдлийг хасна</translation>
 <translation id="7870750252270996949">Таны хуулсан Lens-н зураг</translation>
+<translation id="7877056713163921063">Харилцагчдад нэмэх</translation>
 <translation id="7879275349003161544">Таталтуудыг харуулах</translation>
 <translation id="7883882164760409935">Танд дахин ашигласан нууц үгнүүд байна.</translation>
 <translation id="7884694604461143138">Хайлтын түүх (<ph name="COUNT" />-г олсон)</translation>
@@ -1592,7 +1596,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9000089900434778519">Таны хайлтын систем <ph name="DSE_NAME" /> байна. Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд үүний зааварчилгааг харна уу.</translation>
 <translation id="9008201768610948239">Алгас</translation>
 <translation id="9012585441087414258">Аюултай гэдэг нь мэдэгдсэн сайт, татаж авсан файл болон өргөтгөлүүдээс хамгаална. Хэрэв хуудас ямар нэг сэжигтэй зүйл хийвэл URL болон хуудасны контентын багахан хэсгийг Google-н аюулгүй хөтчид илгээдэг.</translation>
-<translation id="9025203546212508704">Цэсээ хэрхэн өөрчлөхийг мэдэж авахын тулд шударна уу</translation>
 <translation id="9029650858822697271">Таныг гаргасан</translation>
 <translation id="9034759925968272072">Таныг Google Бүртгэлээс гаргахгүй. Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>
 <translation id="9037965129289936994">Эх хувийг харуулах</translation>

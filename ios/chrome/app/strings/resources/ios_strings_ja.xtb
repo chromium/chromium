@@ -90,6 +90,7 @@
 <translation id="143681031165817424">住所はこのデバイスにのみ保存されました</translation>
 <translation id="1449835205994625556">パスワードを非表示にします</translation>
 <translation id="1450170672351507823">標準保護機能がオンになっています。セキュリティをさらに強化するには、保護強化機能を使用してください。</translation>
+<translation id="1455492980583160269">メッセージを送信</translation>
 <translation id="1469381646033328562">ご利用のアカウントは保護者によって管理されています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">設定を切り替えるにはダブルタップします</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">ページのセキュリティ情報</translation>
 <translation id="5443952882982198570">クレジット カード</translation>
 <translation id="5444892875087332195">ブックマーク</translation>
+<translation id="5453738961176844111">国コード</translation>
 <translation id="5454211924362324495">他のユーザーがパスワードを使用できないようにするには、<ph name="BEGIN_LINK" /><ph name="WEBSITE" /> でパスワードを変更<ph name="END_LINK" />します</translation>
 <translation id="5457226814769348910">オフライン版を開く</translation>
 <translation id="5459548306731933777">詳細を表示</translation>
@@ -1189,6 +1191,7 @@
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6983306615164277634">アドレスバーを長押しして位置を変更することもできます。</translation>
 <translation id="6988572888918530647">Google アカウントを管理する</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">To</translation>
 <translation id="699954956411469731">モバイル通知</translation>
 <translation id="699985840472413751">ダウンロードを閉じる</translation>
@@ -1355,6 +1358,7 @@
 <translation id="7866872729285243843">お使いのすべてのデバイスで同じリーディング リストを使用するには、設定で [リーディング リスト] をオンにします。</translation>
 <translation id="7866993391592926595">このカードを非表示にすると、荷物追跡がオフになり、すべてのデータが削除されます</translation>
 <translation id="7870750252270996949">レンズでコピーした画像</translation>
+<translation id="7877056713163921063">連絡先に追加</translation>
 <translation id="7879275349003161544">ダウンロードを表示</translation>
 <translation id="7883882164760409935">使い回しのパスワードがあります。</translation>
 <translation id="7884694604461143138">履歴を検索（<ph name="COUNT" /> 件見つかりました）</translation>
@@ -1592,7 +1596,6 @@
 <translation id="9000089900434778519">検索エンジンは <ph name="DSE_NAME" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9012585441087414258">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ページで不審な動作が検出された場合、URL と一部のページ コンテンツが Google セーフ ブラウジングに送信されます。</translation>
-<translation id="9025203546212508704">スワイプして、メニューをカスタマイズする方法をご覧ください</translation>
 <translation id="9029650858822697271">ログアウトしました</translation>
 <translation id="9034759925968272072">Google アカウントへのログイン状態は維持されます。Google アカウントでの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> に残ることがあります。</translation>
 <translation id="9037965129289936994">原文のページを表示</translation>

@@ -477,6 +477,7 @@ Se definida como PromptInTab, quando a autenticação do usuário expirar, uma n
       Uma página descartada é descarregada e os recursos dela são totalmente recuperados. A guia a que ela está associada permanece na barra de guias, mas se ela ficar visível, uma atualização completa vai ser acionada.
       </translation>
 <translation id="138847842893090358">Informar o status de atualização do SO</translation>
+<translation id="1389138080311956934">Economia de memória máxima.</translation>
 <translation id="1390529781843037070">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão imprimir no <ph name="CLOUD_PRINT_NAME" /> pela caixa de diálogo de impressão do <ph name="PRODUCT_NAME" />. O <ph name="PRODUCT_NAME" /> pode enviar documentos para o <ph name="CLOUD_PRINT_NAME" /> para impressão. Os usuários não são impedidos de enviar trabalhos de impressão em sites.
 
       Se a política for definida como "Desativada", os usuários não poderão imprimir no <ph name="CLOUD_PRINT_NAME" /> pela caixa de diálogo de impressão do <ph name="PRODUCT_NAME" />.
@@ -2287,15 +2288,6 @@ O rótulo personalizado não será traduzido.</translation>
 <translation id="2699836109975228367">Ativar o áudio mono na tela de login</translation>
 <translation id="2702023190395322609">Ativar recomendações de mídia</translation>
 <translation id="2702682139813393777">Forçar os hosts de mensagens nativas do Windows a iniciar via cmd.exe</translation>
-<translation id="2703733412051211941">Aciona uma ação quando o computador está inativo.
-
-      Se esta política for definida, ela especificará após quantos minutos sem entradas do usuário o navegador vai executar ações configuradas pela <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Se a política for deixada sem definição, nenhuma ação será executada.
-
-      O limite mínimo é de 1 minuto.
-
-      A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui ações como mover o mouse ou digitar no teclado.</translation>
 <translation id="270582584528242502">Não mostrar uma caixa de diálogo de alerta quando o usuário tentar sair</translation>
 <translation id="2706708761587205154">Permitir impressão apenas com PIN</translation>
 <translation id="2707733461906745082">Separação de perfis</translation>
@@ -3873,29 +3865,6 @@ Observação: se a configuração resultar em métodos de autenticação aceitos
 <translation id="3982465141749620677">Pedir a reautenticação em uma guia</translation>
 <translation id="398294729592983401">Permitir que os usuários ativem ou desativem o recurso Proteção contra técnicas de impressão digital do <ph name="PRIVACY_SANDBOX_NAME" /> no dispositivo.</translation>
 <translation id="3983162212222338509">A resolução de DNS pode ser executada dentro ou fora do processo de rede, ou parcialmente dentro e parcialmente fora, dependendo da configuração do sistema e das flags de recursos.</translation>
-<translation id="3984773186203819634">Lista de ações a serem executadas quando o tempo limite da política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> for atingido.
-
-      Se a <ph name="IDLE_TIMEOUT_POLICY_NAME" /> não for definida, esta política não terá efeito.
-
-      Quando o tempo limite da <ph name="IDLE_TIMEOUT_POLICY_NAME" /> for atingido, o navegador vai executar as ações configuradas nesta política.
-
-      Se esta política for deixada em branco ou sem definição, a <ph name="IDLE_TIMEOUT_POLICY_NAME" /> não terá efeito.
-
-      As ações disponíveis são:
-
-      <ph name="CLOSE_BROWSERS_ACTION" />: fechar todos os PWAs e as janelas do navegador deste perfil. Indisponível no Android e no iOS.
-
-      <ph name="CLOSE_TABS_ACTION" />: fechar todas as guias em janelas abertas. Disponível apenas no iOS.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: mostrar a janela do seletor de perfil. Indisponível no Android e no iOS.
-
-      <ph name="SIGN_OUT_ACTION" />: desconecta o usuário. Disponível apenas no iOS.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: limpar os dados de navegação correspondentes. Consulte a política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> para saber mais detalhes. Os tipos disponíveis no iOS são <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" /> e <ph name="CLEAR_AUTOFILL_ACTION" />
-
-      <ph name="RELOAD_PAGES_ACTION" />: atualizar todas as páginas da Web. Em algumas delas, o usuário pode receber um pedido de confirmação primeiro. Indisponível no iOS.
-
-      A definição de <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> e <ph name="CLEAR_SITE_SETTINGS_ACTION" /> vai desativar a sincronização dos respectivos tipos de dados se a <ph name="CHROME_SYNC_NAME" /> não for desativada pela configuração da política <ph name="SYNC_DISABLED_POLICY_NAME" /> e a <ph name="BROWSER_SIGNIN_POLICY_NAME" /> não for desativada.</translation>
 <translation id="3986700049001404598">Permitir que os usuários encerrem processos no gerenciador de tarefas do Chrome</translation>
 <translation id="398884292557092447">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar as sugestões de preenchimento automático para cartões de crédito na interface.
 
@@ -3995,11 +3964,6 @@ Comportamento antigo e legado: em "beforeunload", chamar "event.preventDefault()
 <translation id="4051723201852944592">Ativar oclusão de janelas</translation>
 <translation id="4052529125939620019">Carregar a extensão do componente do CryptoToken na inicialização</translation>
 <translation id="4053157306171963473">Desativar relatórios sobre o horário das atividades do dispositivo</translation>
-<translation id="4055758693679485627">Configura uma lista de tipos de dados de navegação a serem excluídos quando o usuário fechar todas as janelas do navegador. Os tipos de dados disponíveis são: histórico de navegação (<ph name="DATA_TYPE_BROWSING_HISTORY" />), histórico de downloads (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, preenchimento automático (<ph name="DATA_TYPE_AUTOFILL" />), senhas (<ph name="DATA_TYPE_PASSWORD" />), configurações de sites (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dados de apps hospedados (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política não tem precedência sobre a <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NAME" /> fosse definida como verdadeira. A partir do Chrome 115, a definição desta política vai desativar a sincronização dos respectivos tipos de dados se a <ph name="CHROME_SYNC_NAME" /> não for desativada pela configuração da <ph name="SYNC_DISABLED_POLICY_NAME" />, e a <ph name="BROWSER_SIGNIN_POLICY_NAME" /> não for desativada.
-
-      Se o <ph name="PRODUCT_NAME" /> não for fechado corretamente (por exemplo, se o navegador ou o SO falhar), os dados de navegação serão excluídos da próxima vez que o perfil for carregado.</translation>
 <translation id="4056910949759281379">Desativar o protocolo SPDY</translation>
 <translation id="4057442294431066708">Esta política controla a opção de atalho selecionada para remapear eventos para
 F11/F12 na subpágina de remapeamento de teclas. Essas configurações se aplicam apenas a
@@ -4018,6 +3982,7 @@ No <ph name="PRODUCT_OS_NAME" />, esta política está relacionada a atestados r
 Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Diversos</translation>
 <translation id="4072225853834793549">Desativar atalhos de acessibilidade na tela de login</translation>
+<translation id="4074922053013383215">Economia de memória moderada.</translation>
 <translation id="4075675819066819571">Posicionar a estante no lado esquerdo da tela</translation>
 <translation id="4079306023113982053">Controla a disponibilidade da <ph name="BOREALIS_NAME" /> para este usuário.
 
@@ -4457,15 +4422,6 @@ Se você definir a política, os usuários não poderão mudá-la no <ph name="P
 <translation id="4426986640594727372">Permitir acesso à geolocalização do sistema</translation>
 <translation id="4427173305799125784">O visualizador de PDF não pode fazer anotações em PDFs</translation>
 <translation id="4432762137771104529">Ativar relatórios estendidos do Navegação segura</translation>
-<translation id="4434531680131327140">Define as configurações para o ciclo de vida dos dados de navegação do <ph name="PRODUCT_NAME" />. Esta política permite que os administradores configurem (para cada tipo de dado) quando os dados serão excluídos pelo navegador. Isso é útil para clientes que trabalham com dados sensíveis de consumidores.
-
-      Os tipos de dados disponíveis são: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" /> não estão disponíveis no Android.
-
-      O navegador vai excluir automaticamente os tipos de dados selecionados com mais de <ph name="TIME_TO_LIVE_IN_HOURS" />. O valor mínimo que pode ser definido é de uma hora.
-
-      Os dados expirados serão excluídos 15 segundos após a inicialização do navegador e a cada 30 minutos enquanto ele estiver em execução.
-
-      Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NAME" /> fosse definida como verdadeira. A partir do Chrome 115, a definição desta política vai desativar a sincronização dos respectivos tipos de dados se a <ph name="CHROME_SYNC_NAME" /> não for desativada pela configuração da <ph name="SYNC_DISABLED_POLICY_NAME" />, e a <ph name="BROWSER_SIGNIN_POLICY_NAME" /> não for desativada.</translation>
 <translation id="443454694385851356">Legado (não seguro)</translation>
 <translation id="4435032708588431506">Permitir o protocolo QUIC</translation>
 <translation id="443665821428652897">Remover dados do site ao fechar o navegador (obsoleto)</translation>
@@ -8932,6 +8888,7 @@ Para mais informações sobre a política <ph name="IEEM_SITELIST_POLICY" /> do 
       Se ela for definida como falsa ou for deixada sem definição, os conteúdos em <ph name="FLASH_PLUGIN_NAME" /> pequenos ou de outras origens poderão ser bloqueados.
 
       Observação: para controlar quais sites podem executar o <ph name="FLASH_PLUGIN_NAME" />, consulte estas políticas: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801163363326128751">Mudar o modo de Economia de memória</translation>
 <translation id="7804859754080118507">Informar eventos de conexão de rede e intensidade do sinal em dispositivos registrados.
 
       Se a política for definida como falsa ou deixada sem definição, as informações não serão enviadas.
@@ -9539,6 +9496,7 @@ Mais informações sobre tecnologias legadas podem ser encontradas em https://ch
 <translation id="8274926413890711289">Ativar controles de geração de relatórios granulares</translation>
 <translation id="8275103737670730746">Permitir que APIs de seletores de arquivos ou diretórios sejam chamadas sem o gesto anterior do usuário</translation>
 <translation id="8278133379873210419">Suprimir caixas de diálogo de JavaScript acionadas por subframes de origem diferentes</translation>
+<translation id="8284028944941138279">Economia de memória equilibrada.</translation>
 <translation id="8284296539558710573">Prompts de autenticação HTTP de origem cruzada</translation>
 <translation id="8284527236880877730">Se <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> for definida como "Desativada", a definição de <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> especificará a porcentagem para o cálculo do intervalo de escurecimento da tela quando o dispositivo estiver no modo de apresentação. Quando o intervalo de escurecimento for calculado, os intervalos de desligamento, bloqueio e inatividade da tela serão ajustados para manter as mesmas distâncias do intervalo de escurecimento da tela de acordo com a configuração original.
 

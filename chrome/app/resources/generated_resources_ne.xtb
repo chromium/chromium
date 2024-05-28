@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">अहिले होइन</translation>
 <translation id="100881991356161927">साइटको नाम</translation>
 <translation id="1009663062402466586">गेम कन्ट्रोलहरू अब उपलब्ध छन्</translation>
+<translation id="1010136228650201057">प्रयोगकर्ताको जानकारी इन्क्रिप्ट गर्ने सेटिङ</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ पृष्ठ प्रतिक्रियाविहीन}other{ पृष्ठहरू प्रतिक्रियाविहीन}}</translation>
 <translation id="1011003645819296594">सेभ गरिएका डिभाइस</translation>
 <translation id="1011355516189274711">टेक्स्ट-टू-स्पिचको भोल्युम</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="1049795001945932310">&amp;भाषा सेटिङहरू</translation>
 <translation id="1050693411695664090">खराब</translation>
+<translation id="1053776357096024725">विभिन्न इफेक्टहरू प्रयोग गरी अन्तर्निर्मित माइक्रोफोन साउन्ड परिष्कार गर्नुहोस्</translation>
 <translation id="1054048317165655285">आफ्नो फोनमा सेटअप प्रक्रिया पूरा गर्नुहोस्</translation>
 <translation id="1054153489933238809">नयाँ ट्याबमा मूल छविलाई खोल्नुहोस्</translation>
 <translation id="1054187194995068149">नमस्ते। यो प्रिभ्यू हो</translation>
@@ -830,6 +832,7 @@
 <translation id="1607139524282324606">प्रविष्टि खाली गर्नुहोस्</translation>
 <translation id="1607499585984539560">यी प्रयोगकर्ता यो डोमेनमा आबद्ध हुनुहुन्न</translation>
 <translation id="1608668830839595724">चयन गरिएका वस्तुमा गर्न सकिने थप कारबाहीहरू</translation>
+<translation id="1608698493373028805">यो एक्स्टेन्सनले चाँडै नै काम गर्न छाड्न सक्छ</translation>
 <translation id="1610272688494140697">एपसम्बन्धी सेटिङ</translation>
 <translation id="161042844686301425">सायन</translation>
 <translation id="1611432201750675208">तपाईंको यन्त्र लक गरिएको छ।</translation>
@@ -1607,8 +1610,6 @@
 <translation id="2165102982098084499">तपाईंले QR कोड स्क्यान गरेर यी डिभाइसहरू लिंक गर्नुभएको छ।</translation>
 <translation id="2165177462441582039">कुनै वस्तु कति बेरसम्म हाइलाइट गर्ने हो छनौट गर्नुहोस्</translation>
 <translation id="2166369534954157698">अ आ इ ई उ ऊ ए ऐ ओ औ अं अ: क ख ग घ ङ</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />यो डिभाइस (SN: <ph name="SERIAL_NUMBER" />) लक गरिएको थियो।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />अब <ph name="MS_AD_NAME" /> मार्फत Chrome डिभाइसको व्यवस्थापन गर्न मिल्दैन। तपाईं साइन इन गर्न चाहनुहुन्छ भने कुनै अर्को डिभाइस प्रयोग गर्नुहोस् वा आफ्नो डिभाइसका एड्मिनलाई सम्पर्क गर्नुहोस्।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">कुनैपनि अवस्थामा साइन इन गर्नुहोस्</translation>
 <translation id="2173302385160625112">आफ्नो इन्टरनेट जडानको जाँच गर्नुहोस्</translation>
 <translation id="2173801458090845390">यो डिभाइसमा माग ID थप्नुहोस्‌</translation>
@@ -2305,6 +2306,7 @@
 <translation id="2667144577800272420">अन्य एपले पनि <ph name="APP_NAME" /> ले झैँ उही लिंकहरू खोल्ने सेटिङ लागू गरिएको छ। तपाईंले डिफल्ट एप बदल्नुभयो भने <ph name="APP_NAME_2" /> र <ph name="APP_NAME_3" /> ले खोल्न मिल्ने लिंकहरू खोल्न सक्ने छैनन्।</translation>
 <translation id="2667463864537187133">हिज्जे जाँचको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2668094785979141847">Google लेन्सबाट बाहिरिन क्लिक गर्नुहोस्</translation>
+<translation id="2668604389652548400">यो एक्स्टेन्सन हटाउनुहोस् वा यसलाई <ph name="BEGIN_LINK" />Chrome वेब स्टोर<ph name="END_LINK" />मा उपलब्ध उस्तै एक्स्टेन्सनले प्रतिस्थापन गर्नुहोस्</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> खोल्न सकिएन</translation>
 <translation id="2669454659051515572">यो डिभाइस प्रयोग गर्ने सबै जना डाउनलोड गरिएका फाइलहरू देख्न सक्छन्</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome को एउटा ट्याबलाई साझेदारी गर्दैछ।</translation>
@@ -2355,6 +2357,7 @@
 <translation id="2710101514844343743">प्रयोग तथा निदानसम्बन्धी डेटा</translation>
 <translation id="271033894570825754">नयाँ</translation>
 <translation id="2710507903599773521">तपाईंको <ph name="DEVICE_TYPE" /> अब अनलक गरिएको छ</translation>
+<translation id="2712141162840347885">Google लेन्स प्रयोग गरी खोज्नका निम्ति जुनसुकै कुरा चयन गर्नुहोस् वा Google लेन्सबाट बाहिरिन इस्केप की थिच्नुहोस्</translation>
 <translation id="2713106313042589954">क्यामेरा अफ गर्नुहोस्</translation>
 <translation id="2713444072780614174">सेतो</translation>
 <translation id="2714180132046334502">गाढा पृष्ठभूमि</translation>
@@ -2980,6 +2983,7 @@
 <translation id="3177914167275935955">तपाईंको डिभाइसमा Chrome Education Upgrade समावेश छ तर तपाईंको युजरनेम Google for Education खातासँग सम्बद्ध छैन। कृपया सहायक डिभाइसमार्फत g.co/workspace/edusignup मा गई Google for Education खाता बनाउनुहोस्।</translation>
 <translation id="3179982752812949580">पाठको फन्ट</translation>
 <translation id="3180284704187420717">सिंक गर्ने सुविधाका सहायताले आफ्ना बुकमार्क र पासवर्डलगायतका कुराहरू सेभ गर्नुहोस्</translation>
+<translation id="3180716079618904608">एप तथा गेमहरू प्राप्त गर्नुहोस्</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउजिङ (तपाईं र तपाईंको यन्त्रलाई खतरनाक साइटहरूबाट सुरक्षित राख्छ)</translation>
 <translation id="3182749001423093222">हिज्जे जाँच</translation>
 <translation id="3183139917765991655">प्रोफाइल आयातकर्ता</translation>
@@ -4268,6 +4272,7 @@
 <translation id="4120817667028078560">बाटो निकै लामो</translation>
 <translation id="4124823734405044952">तपाईंको सुरक्षा साँचो रिसेट गरिएको छ</translation>
 <translation id="4124935795427217608">एक सिङे घोडा</translation>
+<translation id="4126375522951286587"><ph name="VM_NAME" /> सट डाउन गर्नुहोस्</translation>
 <translation id="412730574613779332">स्प्यानडेक्स</translation>
 <translation id="4130199216115862831">उपकरण लग</translation>
 <translation id="4130750466177569591">म सहमत गर्छु</translation>
@@ -4568,6 +4573,7 @@
 <translation id="4364327530094270451">खरबुजो</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> एउटा विन्डोलाई साझेदारी गर्दैछ</translation>
 <translation id="4364830672918311045">सूचनाहरू देखाउनुहोस्</translation>
+<translation id="4367027658822022112">तपाईं Google लेन्स पिन गरी सजिलै एक्सेस गर्न सक्नुहुन्छ; साइड प्यानलको सिरानमा रहेको "पिन गर्नुहोस्" बटन क्लिक गर्नुहोस्</translation>
 <translation id="4367513928820380646">हटाइएका अनुमतिहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="4367971618859387374">देखाइने नाम</translation>
 <translation id="4368960422722232719">ट्याबमा होभर गरी प्रिभ्यू देखाउने कार्डमा भएको मेमोरीको प्रयोग देखाउनुहोस्</translation>
@@ -4970,6 +4976,7 @@
 <translation id="4666911709726371538">थप एपहरू</translation>
 <translation id="4668279686271488041">तपाईंको डिभाइसबाट विज्ञापनको पर्फर्मेन्सको मापनसम्बन्धी डेटा नियमित रूपमा मेटाइन्छ</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN मा अनिवार्य रूपमा अङ्कहरू मात्र प्रयोग गर्नु पर्छ</translation>
 <translation id="4670909875730475086">बधाई छ! तपाईंको डिभाइसमा <ph name="APP_NAME" /> इन्स्टल गरिएको छ</translation>
 <translation id="4672759829555593783">अहिले नै <ph name="FILE_NAME" /> खोल्नुहोस्</translation>
 <translation id="4673442866648850031">स्टाइलस निकाल्दा स्टाइलस सम्बन्धी उपकरणहरू खोल्नुहोस्</translation>
@@ -5053,6 +5060,7 @@
 <translation id="473936925429402449">चयन गरियो, <ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्री</translation>
 <translation id="4739639199548674512">टिकटहरू</translation>
 <translation id="4740546261986864539">हालसालै खोलिएको</translation>
+<translation id="4741235124132242877">पिन गरियो! टुलबारबाट Google लेन्स फेरि प्रयोग गर्नुहोस्</translation>
 <translation id="4742334355511750246">फोटोहरू देखाउने अनुमति नदिइएका साइटहरू</translation>
 <translation id="4742795653798179840">Chrome को ब्राउजिङ डेटा मेटाइयो</translation>
 <translation id="4742970037960872810">हाइलाइट हटाउनुहोस्</translation>
@@ -6749,6 +6757,7 @@
 <translation id="6042308850641462728">थप</translation>
 <translation id="604388835206766544">कन्फिगुरेसन पार्स गर्न सकिएन</translation>
 <translation id="6043994281159824495">अहिले साइन आउट गर्नुहोस्</translation>
+<translation id="604424701295382420">पिन गरियो! तपाईं टुलबारमा भएको नयाँ बटन थिचेर Google लेन्स फेरि एक्सेस गर्न सक्नुहुन्छ</translation>
 <translation id="6045114302329202345">TrackPoint को मुख्य बटन</translation>
 <translation id="6047632800149092791">सिंक गर्ने सुविधाले काम गरिरहेको छैन। साइन आउट गरेर फेरि साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="6048747414605857443">ChromeVox र सेलेक्ट टु स्पिकमा प्रयोग गरिने टेक्स्ट-टू-स्पिचका आवाजहरू चयन र कस्टमाइज गर्नुहोस्</translation>
@@ -6901,7 +6910,6 @@
 <translation id="6154240335466762404">सबै पोर्टहरू हटाउनुहोस्</translation>
 <translation id="615436196126345398">प्रोटोकोल</translation>
 <translation id="6154739047827675957">OneDrive सेटअप गर्न सकिएन</translation>
-<translation id="6154820449290823443">यो Chromebook मा भएका एपको एक्सेस व्यवस्थापन गर्नुहोस् र ब्लक गर्नुहोस्।</translation>
 <translation id="6155141482566063812">पृष्ठभूमि स्क्रिनले तपाईंको स्क्रिन साझा गर्दै छ।</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">पासकी बनाउनुहोस्</translation>
@@ -7528,6 +7536,7 @@
 <translation id="6647690760956378579">उच्च गुणस्तरको आवाजको प्रिभ्यू</translation>
 <translation id="6648911618876616409">एउटा महत्त्वपूर्ण अद्यावधिक स्थापनाका लागि तयार छ। सुरु गर्न साइन इन गर्नुहोस्‌।</translation>
 <translation id="6649018507441623493">एकै सेकेन्ड...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="6650206238642452078">ChromeOS सिस्टम इभेन्टको सदस्यता लिइयोस्</translation>
 <translation id="6650584564768559994">सन्तुलित रूपमा मेमोरी बचत गर्नुहोस्। उचित समयसम्म प्रयोग नगरेपछि तपाईंका ट्याबहरू निष्क्रिय हुने छन्।</translation>
 <translation id="665061930738760572">&amp;नयाँ विण्डोमा खोल्नुहोस्</translation>
@@ -7581,6 +7590,7 @@
 <translation id="6686490380836145850">दायाँ तिरका ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="6686665106869989887">यो ट्याब दायाँतिर सारियो</translation>
 <translation id="6686817083349815241">तपाईंको पासवर्ड वचत गर्नुहोस्</translation>
+<translation id="6687008241368170505">Google पासवर्ड म्यानेजरको PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> नदेखिने पार्नुहोस्</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> लाई कम्प्युटर भएको ठाउँमा बोलाउनुहोस्। आवाजको मोडेल बनाउन तपाईंको बच्चाले कम्प्युटरको स्क्रिनबाट केही वाक्यांशहरू पढ्नु पर्ने हुन्छ।
     <ph name="BR" />
@@ -8359,6 +8369,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न F6 थिच्नुहोस्</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> द्वारा होस्ट गरिएको यस साइन-इन सेवाले तपाईँको क्यामेरामाथि पहुँच राख्दैछ।</translation>
 <translation id="7292067737327289208">तपाईंको सङ्गठनले तपाईंको <ph name="BEGIN_LINK" />ब्राउजर व्यवस्थापन गर्छ<ph name="END_LINK" /> र <ph name="PROFILE_DOMAIN" /> ले तपाईंको <ph name="BEGIN_LINK" />प्रोफाइल व्यवस्थापन<ph name="END_LINK" /> गर्छ</translation>
+<translation id="7292147651179697920">आफ्ना अभिभावकलाई सेटिङमा गई एक्सेस दिन आग्रह गर्नुहोस्</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Android, Play र सम्बद्ध एपका हकमा उनीहरूको आफ्नै डेटाको सङ्कलन र प्रयोगसम्बन्धी नीतिहरू लागू हुन्छन् भन्ने कुरा ख्याल गर्नुहोस्।</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> फोल्डर चयन गर्नुहोस्</translation>
@@ -8667,6 +8678,7 @@
 <translation id="7514239104543605883">प्रतिलिपि गरी तपाईंको डिभाइसमा टाँस्नुहोस्</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7514417110442087199">काम तोक्नुहोस्</translation>
+<translation id="7515191208480168435">तपाईं Google लेन्स पिन गरी सजिलै एक्सेस गर्न सक्नुहुन्छ</translation>
 <translation id="751523031290522286">प्रशासकले <ph name="APP_NAME" /> माथि रोक लगाउनुभएको छ। यो एप प्रयोग गर्न प्रशासकबाट अनुमति लिनुहोस्।</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">पेज डाउन</translation>
@@ -8829,7 +8841,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# विन्डो खुलेको छ}other{# विन्डोहरू खुलेका छन्}}</translation>
 <translation id="7643932971554933646">साइटलाई फाइलहरू हेर्न दिने हो?</translation>
 <translation id="7644543211198159466">रङ्ग तथा विषयवस्तु</translation>
-<translation id="7644953783774050577">कुनै पनि चयन नगर्नुहोला</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालिक)</translation>
 <translation id="7645681574855902035">Linux को ब्याकअप रद्द गर्दै</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
@@ -10141,6 +10152,7 @@
 <translation id="8592141010104017453">कुनै पनि सूचना नदेखाउनुहोस्</translation>
 <translation id="859246725979739260">यो साइटलाई तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्न नपाउने गरी ब्लक गरिएको छ।</translation>
 <translation id="8593450223647418235">सेटअप गर्ने कार्य पूरा नभएसम्म तपाईं Microsoft 365 मा फाइलहरू खोल्न सक्नु हुने छैन।</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> तपाईंको <ph name="DEVICE_TYPE" /> मा ब्लक गरिएको छ</translation>
 <translation id="8596540852772265699">अनुकूलित फाइलहरू</translation>
 <translation id="8597845839771543242">सम्पत्ति ढाँचा:</translation>
 <translation id="8598249292448297523">प्रिन्ट गर्नुहोस्</translation>
@@ -10560,6 +10572,7 @@
 <translation id="8890529496706615641">प्रोफाइलको नाम बदल्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा प्राविधिक सहायता प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="8892168913673237979">सबै सेट गर्नुहोस्!</translation>
 <translation id="8892246501904593980">बुकमार्क तथा सूचीहरूमा गई आफ्ना सबै बुकमार्कहरू हेर्नुहोस्</translation>
+<translation id="8893479486525393799">स्टुडियो माइक</translation>
 <translation id="8893801527741465188">स्थापना रद्द गर्ने कार्य सम्पन्न भयो</translation>
 <translation id="8893928184421379330">माफ गर्नुहोस्, यन्त्र <ph name="DEVICE_LABEL" /> पहिचान गर्न सकिएन।</translation>
 <translation id="8894761918470382415">सहायक यन्त्रलाई डेटा प्रयोग गर्न रोक लगाउने सुविधा</translation>

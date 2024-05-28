@@ -1613,8 +1613,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2165102982098084499">Je hebt deze apparaten gekoppeld door een QR-code te scannen.</translation>
 <translation id="2165177462441582039">Kiezen hoelang elk item gemarkeerd moet blijven</translation>
 <translation id="2166369534954157698">Pa's wijze lynx bezag vroom het fikse aquaduct</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Dit apparaat (SN: <ph name="SERIAL_NUMBER" />) is vergrendeld.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Chrome-apparaatbeheer met <ph name="MS_AD_NAME" /> wordt niet meer ondersteund. Gebruik een ander apparaat of neem contact op met je apparaatbeheerder om in te loggen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Toch inloggen</translation>
 <translation id="2173302385160625112">Controleer je internetverbinding</translation>
 <translation id="2173801458090845390">Aanvraag-ID toevoegen aan dit apparaat</translation>
@@ -1702,6 +1700,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2234827758954819389">Privacygids</translation>
 <translation id="2234876718134438132">Synchronisatie en Google-services</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
+<translation id="2236949375853147973">Mijn activiteit</translation>
 <translation id="2238379619048995541">Gegevens van frequentiestatus</translation>
 <translation id="2241053333139545397">Je gegevens lezen en wijzigen op een aantal websites</translation>
 <translation id="2241634353105152135">Slechts één keer</translation>
@@ -5211,6 +5210,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4853020600495124913">Openen in &amp;nieuw venster</translation>
 <translation id="4854317507773910281">Kies een ouderaccount voor goedkeuring</translation>
 <translation id="485480310608090163">Meer instellingen en rechten</translation>
+<translation id="4858599593306712511">Ouderlijk toezicht voor apps</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Geluid uitgezet door je beheerder</translation>
 <translation id="4862642413395066333">OCSP-antwoorden ondertekenen</translation>
@@ -6909,7 +6909,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6154240335466762404">Alle poorten verwijderen</translation>
 <translation id="615436196126345398">Protocol</translation>
 <translation id="6154739047827675957">Instellen van OneDrive mislukt</translation>
-<translation id="6154820449290823443">Beheer de toegang en blokkeer apps op deze Chromebook.</translation>
 <translation id="6155141482566063812">Achtergrondtabblad deelt je scherm</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Toegangssleutel maken</translation>
@@ -7536,6 +7535,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6647690760956378579">Voorbeeld van natuurlijke stem</translation>
 <translation id="6648911618876616409">Er is een nieuwe essentiële update beschikbaar. Log in om aan de slag te gaan.</translation>
 <translation id="6649018507441623493">Een ogenblik…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestigen dat jij het bent</translation>
 <translation id="6650206238642452078">Abonneren op ChromeOS-systeemgebeurtenissen</translation>
 <translation id="6650584564768559994">Krijg gebalanceerde geheugenbesparingen. Je tabbladen worden na een optimale periode inactief.</translation>
 <translation id="665061930738760572">Openen in &amp;nieuw venster</translation>
@@ -8839,7 +8839,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7643842463591647490">{0,plural, =1{# geopend venster}other{# geopende vensters}}</translation>
 <translation id="7643932971554933646">Site toestemming geven deze bestanden te bekijken?</translation>
 <translation id="7644543211198159466">Kleur en thema</translation>
-<translation id="7644953783774050577">Niets selecteren</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eigenaar)</translation>
 <translation id="7645681574855902035">Back-up voor Linux annuleren</translation>
 <translation id="7646772052135772216">Wachtwoordsynchronisatie werkt niet</translation>

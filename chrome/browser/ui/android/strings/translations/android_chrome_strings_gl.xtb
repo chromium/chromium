@@ -314,7 +314,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2650348088770008516">A explicación da Guía de privacidade está pechada</translation>
 <translation id="2650408372219180431">Exporta e elimina os contrasinais gardados neste dispositivo</translation>
 <translation id="2650751991977523696">Queres volver descargar o ficheiro?</translation>
-<translation id="2651465929321991146">Historial e pestanas</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2656405586795711023">Aplicacións web</translation>
@@ -906,7 +905,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5628604359369369630">Sen ler: dispoñibles sen conexión</translation>
 <translation id="5641456720590409793">O <ph name="BEGIN_LINK1" />historial de busca<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outros tipos de actividade<ph name="END_LINK2" /> poden gardarse na túa Conta de Google</translation>
-<translation id="564667659802381754">Guía de privacidade <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5655963694829536461">Buscar as túas descargas</translation>
 <translation id="5657871969392618475">A túa información está protexida cun bloqueo do perfil</translation>
@@ -985,6 +983,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6002122790816966947">Os teus dispositivos</translation>
 <translation id="6011308810877101166">Mellorar as suxestións de busca</translation>
 <translation id="6013305291643746595">Ordenando por máis antigo</translation>
+<translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6026538407078977628">Ampliar a pantalla completa</translation>
 <translation id="6030719887161080597">Xestiona a información que usan os sitios para medir o rendemento publicitario</translation>
 <translation id="6039379616847168523">Saltar á seguinte pestana</translation>
@@ -1144,6 +1143,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6734310707649923383">Podes ver as páxinas que visitaches ou eliminalas do teu historial</translation>
 <translation id="6738867403308150051">Descargando...</translation>
 <translation id="674388916582496364">É habitual que os sitios que visitas lembren o que che interesa para personalizar a experiencia que se che ofrece neles. Os sitios tamén poden almacenar con Chrome información sobre os teus intereses.</translation>
+<translation id="6746338529702829275">Revisa os datos da túa conta</translation>
 <translation id="6751521182688001123">Abrir rapidamente unha pestana nova. Para editar este atallo, mantén premido o botón.</translation>
 <translation id="6756507620369789050">Compartir comentarios</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1176,6 +1176,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="686490460830618322">Folla para filtrar por aplicación</translation>
 <translation id="6865313869410766144">Autocompletar datos do formulario</translation>
 <translation id="6867400383614725881">Nova pestana de incógnito</translation>
+<translation id="686899695320434745">Os enderezos non se encriptan coa túa frase de acceso. Deste xeito, poderás usalos noutros servizos de Google.</translation>
 <translation id="6869056123412990582">ordenador</translation>
 <translation id="6882836635272038266">Protección estándar contra os sitios web, as descargas e as extensións que se consideren perigosos.</translation>
 <translation id="6883204995689174413">Compartir</translation>
@@ -1600,6 +1601,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="885480114717186641">Podes solicitar o sitio para ordenadores para o anfitrión <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obter descricións</translation>
 <translation id="8856931513242997049">Fluxo de permiso de notificación pechado</translation>
+<translation id="8865415417596392024">Datos de Chrome na túa conta</translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="8909135823018751308">Compartir...</translation>
 <translation id="8921980840204105660">Sincroniza os datos para obter os marcadores dos teus outros dispositivos</translation>

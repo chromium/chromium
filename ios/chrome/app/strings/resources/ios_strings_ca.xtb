@@ -90,6 +90,7 @@
 <translation id="143681031165817424">L'adreça només s'ha desat en aquest dispositiu</translation>
 <translation id="1449835205994625556">Amaga la contrasenya</translation>
 <translation id="1450170672351507823">La protecció estàndard està activada. Per augmentar la seguretat, utilitza la protecció millorada.</translation>
+<translation id="1455492980583160269">Envia un missatge</translation>
 <translation id="1469381646033328562">El teu pare o mare gestiona el teu compte.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Fes doble toc per canviar la configuració</translation>
@@ -861,6 +862,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="54401264925851789">Informació de seguretat de la pàgina</translation>
 <translation id="5443952882982198570">Targetes de crèdit</translation>
 <translation id="5444892875087332195">Adreces d'interès</translation>
+<translation id="5453738961176844111">Codi de país</translation>
 <translation id="5454211924362324495">Per evitar que altres persones utilitzin la teva contrasenya, <ph name="BEGIN_LINK" />canvia-la a <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Obre la versió sense connexió</translation>
 <translation id="5459548306731933777">Mostra els detalls</translation>
@@ -1189,6 +1191,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">També pots mantenir premuda la barra d'adreces per canviar la posició.</translation>
 <translation id="6988572888918530647">Gestiona el teu Compte de Google</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Per a</translation>
 <translation id="699954956411469731">Notificacions al mòbil</translation>
 <translation id="699985840472413751">Tanca la baixada</translation>
@@ -1355,6 +1358,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7866872729285243843">Per accedir a la llista de lectura des de tots els dispositius, activa l'opció Llista de lectura a la configuració.</translation>
 <translation id="7866993391592926595">Si amagues aquesta targeta, es desactivarà el seguiment de l'enviament i se suprimiran totes les teves dades</translation>
 <translation id="7870750252270996949">Imatge de Lens copiada</translation>
+<translation id="7877056713163921063">Afegeix als contactes</translation>
 <translation id="7879275349003161544">Mostra les baixades</translation>
 <translation id="7883882164760409935">Tens contrasenyes reutilitzades.</translation>
 <translation id="7884694604461143138">Historial de cerques (n'hem trobat <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9000089900434778519">El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9012585441087414258">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Si una pàgina fa res sospitós, els URL i els fragments de contingut de les pàgines s'envien a Navegació segura de Google.</translation>
-<translation id="9025203546212508704">Llisca per obtenir informació sobre com pots personalitzar el teu menú</translation>
 <translation id="9029650858822697271">S'ha tancat la teva sessió</translation>
 <translation id="9034759925968272072">No se us tancarà la sessió del compte de Google, el qual és possible que tingui altres formes de l'historial de navegació a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostra l'original</translation>

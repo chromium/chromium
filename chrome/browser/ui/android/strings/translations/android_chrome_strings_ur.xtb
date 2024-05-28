@@ -317,7 +317,6 @@
 <translation id="2650348088770008516">رازداری کی گائیڈ کی وضاحت بند ہے</translation>
 <translation id="2650408372219180431">اس آلہ پر محفوظ کردہ پاس ورڈز کو برآمد اور حذف کریں</translation>
 <translation id="2650751991977523696">فائل دوبارہ ڈاؤن لوڈ کریں؟</translation>
-<translation id="2651465929321991146">سرگزشت اور ٹیبز</translation>
 <translation id="265156376773362237">معیاری پیشگی لوڈنگ</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2656405586795711023">ویب ایپس</translation>
@@ -911,7 +910,6 @@
 <translation id="5626134646977739690">نام:</translation>
 <translation id="5628604359369369630">نہ پڑھا ہوا - آف لائن دستیاب ہے</translation>
 <translation id="5641456720590409793">‏<ph name="BEGIN_LINK1" />تلاش کی سرگزشت<ph name="END_LINK1" /> اور<ph name="BEGIN_LINK2" /> سرگرمی کی دیگر اقسام<ph name="END_LINK2" /> آپ کے Google اکاؤنٹ میں محفوظ کی جا سکتی ہیں</translation>
-<translation id="564667659802381754">رازداری کی گائیڈ <ph name="BEGIN_NEW" />نئی<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">آخری 7 دن</translation>
 <translation id="5655963694829536461">اپنے ڈاؤن لوڈز تلاش کریں</translation>
 <translation id="5657871969392618475">پروفائل لاک آپ کی معلومات کو محفوظ رکھتا ہے</translation>
@@ -990,6 +988,7 @@
 <translation id="6002122790816966947">آپ کے آلات</translation>
 <translation id="6011308810877101166">تلاش کی تجاویز کو بہتر بنائیں</translation>
 <translation id="6013305291643746595">قدیم ترین کے لحاظ سے ترتیب دیا جا رہا ہے</translation>
+<translation id="6022659036123304283">‏Chrome کو اپنا ڈیفالٹ براؤزر بنائيں</translation>
 <translation id="6026538407078977628">مکمل اسکرین پر پھیلائیں</translation>
 <translation id="6030719887161080597">اشتہار کی کارکردگی کی پیمائش کرنے کے لیے سائٹس کے ذریعے استعمال ہونے والی معلومات کا نظم کریں</translation>
 <translation id="6039379616847168523">اگلے ٹیب پر جائیں</translation>
@@ -1149,6 +1148,7 @@
 <translation id="6734310707649923383">آپ ان صفحات کو دیکھ سکتے ہیں جن کا آپ نے ملاحظہ کیا ہے یا انہیں اپنی سرگزشت سے حذف بھی کر سکتے ہیں</translation>
 <translation id="6738867403308150051">ڈاؤن لوڈ ہو رہے ہیں…</translation>
 <translation id="674388916582496364">‏جن سائٹس کو آپ ملاحظہ کرتے ہیں ان میں آپ کی دلچسپیوں کو یاد رکھنا سائٹس کے لئے عام بات ہے تاکہ وہ آپ کے تجربے کو ذاتی نوعیت کا بنا سکیں۔ سائٹس Chrome کے ساتھ آپ کی دلچسپیوں کے بارے میں معلومات بھی اسٹور کر سکتی ہیں۔</translation>
+<translation id="6746338529702829275">اپنے اکاؤنٹ کے ڈیٹا کا جائزہ لیں</translation>
 <translation id="6751521182688001123">فوری طور پر ایک نیا ٹیب کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="6756507620369789050">تاثرات کا اشتراک کریں</translation>
 <translation id="6762511428368667596"><ph name="NAME" />، <ph name="EMAIL" />۔</translation>
@@ -1181,6 +1181,7 @@
 <translation id="686490460830618322">ایپ فلٹر شیٹ</translation>
 <translation id="6865313869410766144">آٹو فل فارم ڈیٹا</translation>
 <translation id="6867400383614725881">نیا پوشیدگی ٹیب</translation>
+<translation id="686899695320434745">‏پتے آپ کے پاس فریز کے ساتھ مرموز نہیں ہیں۔ یہ آپ کو انہیں Google کی دیگر سروسز میں استعمال کرنے دیتا ہے۔</translation>
 <translation id="6869056123412990582">کمپیوٹر</translation>
 <translation id="6882836635272038266">خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے معیاری حفاظت۔</translation>
 <translation id="6883204995689174413">اشتراک کریں</translation>
@@ -1606,6 +1607,7 @@
 <translation id="885480114717186641">آپ <ph name="HOST_NAME" /> کے لیے ڈیسک ٹاپ سائٹ کی درخواست کر سکتے ہیں</translation>
 <translation id="8856607253650333758">تفصیلات حاصل کریں</translation>
 <translation id="8856931513242997049">اطلاع کی اجازت کا فلو بند ہے</translation>
+<translation id="8865415417596392024">‏آپ کے اکاؤنٹ میں Chrome کا ڈیٹا</translation>
 <translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
 <translation id="8909135823018751308">اشتراک کریں…</translation>
 <translation id="8921980840204105660">اپنے دیگر آلات سے اپنے بُک مارکس حاصل کرنے کے لیے مطابقت پذیری کریں</translation>

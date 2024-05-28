@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adresse enregistrée uniquement sur cet appareil</translation>
 <translation id="1449835205994625556">Masquer le mot de passe</translation>
 <translation id="1450170672351507823">La protection standard est activée. Pour un niveau de sécurité supérieur, activez la protection renforcée.</translation>
+<translation id="1455492980583160269">Envoyer un message</translation>
 <translation id="1469381646033328562">Ton compte est géré par ton parent.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Appuyer deux fois pour activer/désactiver le paramètre</translation>
@@ -861,6 +862,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="54401264925851789">Informations sur la sécurité de cette page</translation>
 <translation id="5443952882982198570">Cartes de crédit</translation>
 <translation id="5444892875087332195">Favoris</translation>
+<translation id="5453738961176844111">Code pays</translation>
 <translation id="5454211924362324495">Pour empêcher d'autres personnes d'utiliser votre mot de passe, <ph name="BEGIN_LINK" />modifiez-le sur <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Ouvrir la version hors connexion</translation>
 <translation id="5459548306731933777">Voir les détails</translation>
@@ -1189,6 +1191,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Vous pouvez aussi appuyer de manière prolongée sur la barre d'adresse pour changer la position.</translation>
 <translation id="6988572888918530647">Gérer votre compte Google</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">À</translation>
 <translation id="699954956411469731">Notifications mobiles</translation>
 <translation id="699985840472413751">Fermer le téléchargement</translation>
@@ -1356,6 +1359,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7866872729285243843">Pour accéder à votre liste de lecture sur tous vos appareils, activez "Liste de lecture" dans les paramètres.</translation>
 <translation id="7866993391592926595">Si vous masquez cette carte, le suivi des colis sera désactivé et toutes vos données seront supprimées</translation>
 <translation id="7870750252270996949">Image Lens copiée</translation>
+<translation id="7877056713163921063">Ajouter aux contacts</translation>
 <translation id="7879275349003161544">Afficher les téléchargements</translation>
 <translation id="7883882164760409935">Vous avez des mots de passe réutilisés.</translation>
 <translation id="7884694604461143138">Rechercher dans l'historique (nombre de résultats : <ph name="COUNT" />)</translation>
@@ -1593,7 +1597,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9000089900434778519">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions connus pour être dangereux. En cas d'activité suspecte sur une page, des URL et des extraits de son contenu sont envoyés à la navigation sécurisée Google.</translation>
-<translation id="9025203546212508704">Balayez l'écran pour découvrir comment personnaliser votre menu</translation>
 <translation id="9029650858822697271">Vous avez été déconnecté</translation>
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. Celui-ci conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afficher l'original</translation>

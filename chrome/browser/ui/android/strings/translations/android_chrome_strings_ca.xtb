@@ -314,7 +314,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2650348088770008516">L'explicació de la guia de privadesa s'ha tancat</translation>
 <translation id="2650408372219180431">Exporta i suprimeix les contrasenyes desades en aquest dispositiu</translation>
 <translation id="2650751991977523696">Vols tornar a baixar el fitxer?</translation>
-<translation id="2651465929321991146">Historial i pestanyes</translation>
 <translation id="265156376773362237">Precàrrega estàndard</translation>
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2656405586795711023">Aplicacions web</translation>
@@ -906,7 +905,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5626134646977739690">Nom:</translation>
 <translation id="5628604359369369630">No llegits - Disponible sense connexió</translation>
 <translation id="5641456720590409793">És possible que l'<ph name="BEGIN_LINK1" />historial de cerques<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />altres tipus d'activitats<ph name="END_LINK2" /> es desin al teu Compte de Google</translation>
-<translation id="564667659802381754">Guia de privadesa <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">7 darrers dies</translation>
 <translation id="5655963694829536461">Cerca a les baixades</translation>
 <translation id="5657871969392618475">La teva informació està protegida amb un bloqueig de perfil</translation>
@@ -985,6 +983,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6002122790816966947">Els teus dispositius</translation>
 <translation id="6011308810877101166">Millora els suggeriments de cerca</translation>
 <translation id="6013305291643746595">S'ordena per més antics</translation>
+<translation id="6022659036123304283">Personalitza Chrome</translation>
 <translation id="6026538407078977628">Desplega en pantalla completa</translation>
 <translation id="6030719887161080597">Gestiona la informació que utilitzen els llocs web per mesurar el rendiment dels anuncis</translation>
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
@@ -1144,6 +1143,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6734310707649923383">Pots veure les pàgines que has visitat o suprimir-les de l'historial</translation>
 <translation id="6738867403308150051">S'està baixant...</translation>
 <translation id="674388916582496364">És habitual que els llocs web que visites recordin coses que t'interessen per personalitzar la teva experiència. Els llocs web també poden emmagatzemar informació a Chrome sobre els teus interessos.</translation>
+<translation id="6746338529702829275">Revisa les dades del compte</translation>
 <translation id="6751521182688001123">Obre ràpidament una pestanya nova. Mantingues premuda aquesta drecera per editar-la.</translation>
 <translation id="6756507620369789050">Comparteix suggeriments</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1176,6 +1176,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="686490460830618322">Full de filtratge per aplicació</translation>
 <translation id="6865313869410766144">Dades d'emplenament automàtic de formularis</translation>
 <translation id="6867400383614725881">Pestanya d'incògnit nova</translation>
+<translation id="686899695320434745">Les adreces no s'encripten amb la frase de contrasenya. Això et permetrà utilitzar-les en altres serveis de Google.</translation>
 <translation id="6869056123412990582">ordinador</translation>
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
 <translation id="6883204995689174413">Comparteix</translation>
@@ -1600,6 +1601,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="885480114717186641">Pots sol·licitar el lloc web per a ordinadors de <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obtén les descripcions</translation>
 <translation id="8856931513242997049">El flux del permís de notificacions s'ha tancat</translation>
+<translation id="8865415417596392024">Dades de Chrome al teu compte</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
 <translation id="8909135823018751308">Comparteix...</translation>
 <translation id="8921980840204105660">Sincronitza per obtenir les adreces d'interès dels teus altres dispositius</translation>

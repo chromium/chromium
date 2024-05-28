@@ -48,6 +48,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1175944128323889279">Current battery level <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> left</translation>
 <translation id="1178581264944972037">Pause</translation>
+<translation id="1179776263021875437">Stop focusing on task</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1182225749592316782">This allows access for all apps and websites with the camera and microphone permissions</translation>
 <translation id="1182876754474670069">home</translation>
@@ -119,6 +120,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1394698770495054737">Full blur</translation>
+<translation id="1404963891829069586">Focus sounds</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Use arrow keys to navigate between dates.</translation>
 <translation id="141170878022560212">Middle Button</translation>
@@ -180,6 +182,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1651914502370159744">Open History page</translation>
 <translation id="1654477262762802994">Start a voice query</translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
+<translation id="1673232940951031776">Finish Focus. <ph name="REMAINING_TIME" /> left.</translation>
 <translation id="1675844249244994876">Update the right window</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is not connected.</translation>
@@ -223,6 +226,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1824922790784036530">Turn on location access</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> was un-pinned</translation>
 <translation id="1831565490995294689">Select to open <ph name="APP_TO_OPEN" />.</translation>
+<translation id="1838011306813517425">Focus settings</translation>
 <translation id="1838895407229022812">Night Light is off.</translation>
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1862077610023398675">Hide controls</translation>
@@ -310,6 +314,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2277103315734023688">Seek forwards</translation>
 <translation id="2282073721614284166">Open link in tab</translation>
 <translation id="2292698582925480719">Display scale</translation>
+<translation id="2293443480080733021">What would you like to focus on? Press enter to add the task.</translation>
 <translation id="229397294990920565">Mobile data is turning off…</translation>
 <translation id="2295777434187870477">Mic is on, toggling will mute input.</translation>
 <translation id="2298170939937364391">Full-screen Magnifier enabled. Press Ctrl+Search+M again to toggle it off.</translation>
@@ -377,6 +382,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2509468283778169019">CAPS LOCK is on</translation>
 <translation id="2514415433888497495">Stop <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516416533263263796">Focus is on, 10 minutes left</translation>
 <translation id="2516637483312286228">Edit game controls</translation>
 <translation id="2526581474998477112">Unlock the windows</translation>
 <translation id="2528111225373402384">Hotspot settings</translation>
@@ -447,6 +453,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2798702144670138229">Tablet mode is on. Game Dashboard is unavailable.</translation>
 <translation id="2801954693771979815">Screen size</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selected</translation>
+<translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Partial capture</translation>
 <translation id="2819276065543622893">You will be signed out now.</translation>
@@ -474,6 +481,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2914580577416829331">Screen captures</translation>
 <translation id="2924416280450782352">Can't show items. Try reopening this panel.</translation>
 <translation id="2931572158271115754">Nothing on this to-do list.</translation>
+<translation id="2932487126591186298">10 minutes added. <ph name="REMAINING_TIME" /> left.</translation>
 <translation id="2935225303485967257">Manage profiles</translation>
 <translation id="2941112035454246133">Low</translation>
 <translation id="2942350706960889382">Docked Magnifier</translation>
@@ -649,6 +657,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3576141592585647168">Change timezone</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3580650856351781466">Downloading speech files</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{minute}other{minutes}}</translation>
 <translation id="3585296979871889131">View your phone's recent photos, media, notifications and apps</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Side button</translation>
@@ -672,6 +681,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3631369015426612114">Allow notifications from the following</translation>
 <translation id="3633097874324966332">Open Bluetooth settings to pair your device</translation>
 <translation id="3633851487917460983">Open clipboard</translation>
+<translation id="363473492175527493">Task set to focus on: <ph name="TASK_NAME" />. Press enter to edit the task.</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimise window</translation>
 <translation id="3649505501900178324">Update overdue</translation>
@@ -707,6 +717,7 @@ Connect your device to power.</translation>
 <translation id="3735740477244556633">Sort by</translation>
 <translation id="3738664582935948253">You can now show clicks and keyboard shortcuts in screen recordings</translation>
 <translation id="3742055079367172538">Screenshot taken</translation>
+<translation id="3743775386021959186">Focus is on, <ph name="REMAINING_TIME" /> left</translation>
 <translation id="3756485814916578707">Casting screen</translation>
 <translation id="3765841382945324995">The <ph name="SIX_PACK_KEY_NAME" /> shortcut is updated to <ph name="NEW_SHORTCUT" /> from <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Edited today</translation>
@@ -896,6 +907,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4477751544736611934">This may incur data cost.
 One device connected.</translation>
 <translation id="4477892968187500306">This device may contain apps that haven't been verified by Google.</translation>
+<translation id="4479130137987693286">You can add a little more time if you need it, or end your focus session</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Unpaired devices</translation>
 <translation id="4485506555414638855">Dismiss setting up viewing your phone's recent photos, media, notifications and apps</translation>
@@ -1069,6 +1081,7 @@ One device connected.</translation>
 <translation id="5095136268899496849">Customise and personalise your <ph name="PRODUCT_NAME" /> in settings. Try changing your wallpaper or setting a screen saver.</translation>
 <translation id="509790653408515442">When you stream your phone’s apps, they will appear here</translation>
 <translation id="5098537242461068432">Desk and windows reopened</translation>
+<translation id="5103975065730779239">Until <ph name="END_TIME_EXPRESSION" /></translation>
 <translation id="5104236669533825617">Can’t create screencast</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
@@ -1147,6 +1160,7 @@ No devices connected.</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on top of <ph name="IN_PLACE_APP" />, release to create folder.</translation>
 <translation id="5397578532367286026">Usage and history of this user can be reviewed by the manager (<ph name="MANAGER_EMAIL" />) on chrome.com.</translation>
 <translation id="540713187982329711">Toggle hotspot. Hotspot is on, no device connected.</translation>
+<translation id="5409208741270395213">Mark task as completed</translation>
 <translation id="5413656666631274079">Settings page</translation>
 <translation id="5414198321558177633">Refreshing profile list. This may take a few minutes.</translation>
 <translation id="5417965108047245734">Take a quick tour to learn how to get around your <ph name="PRODUCT_NAME" /></translation>
@@ -1178,6 +1192,7 @@ No devices connected.</translation>
 <translation id="553675580533261935">Exiting session</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554017492391497564">Couldn't mark as complete.</translation>
+<translation id="5543778275214926792">Turn on Select to Speak?</translation>
 <translation id="5546397813406633847">Recover user</translation>
 <translation id="554893713779400387">Toggle dictation</translation>
 <translation id="5550417424894892620">Drop files on the desktop to add them to <ph name="HOLDING_SPACE_TITLE" />. You can't add files to desktop.</translation>
@@ -1201,6 +1216,7 @@ No devices connected.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5599242528220103262">Keyboard shortcut is off</translation>
+<translation id="5600415762228455511">Focus is on, <ph name="REMAINING_TIME" /> left, focusing on: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Press Ctrl + Alt + Z to disable spoken feedback.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">We've switched you to a better network</translation>
@@ -1230,8 +1246,10 @@ No devices connected.</translation>
 <translation id="5699366815052349604">Assign active window to all desks</translation>
 <translation id="5701785125601597013">Quickly send or reply to your phone's messages using Phone Hub</translation>
 <translation id="570390244361237317">All apps; navigate with arrow keys to access all apps</translation>
+<translation id="5705197514573687092">Show Focus settings. Timer set to <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Your device supports a higher data rate than your cable. Device performance may be limited.</translation>
 <translation id="5710450975648804523">Do Not Disturb is on</translation>
+<translation id="5711984160978177607"><ph name="REMAINING_TIME" /> left</translation>
 <translation id="5712132663381964774">Use apps to do everything that you need on your <ph name="PRODUCT_NAME" />. You can find your apps in the Launcher.</translation>
 <translation id="571295407079589142">Mobile data is turned off</translation>
 <translation id="5727460725221669831">If you forgot your password or changed your Google Account password recently, try recovering this user.</translation>
@@ -1242,6 +1260,7 @@ No devices connected.</translation>
 <translation id="5744083938413354016">Tap dragging</translation>
 <translation id="5745612484876805746">Night Light turns on automatically at sunset</translation>
 <translation id="5750765938512549687">Bluetooth is off</translation>
+<translation id="5758114525425072423">Start Focus. Timer set to <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5760866832697883462">Connect your <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Toggle marker. <ph name="STATE_TEXT" /> Use the trackpad, touchscreen or stylus to draw onscreen.</translation>
 <translation id="576341972084747908">Download dangerous <ph name="FILENAME" /></translation>
@@ -1249,6 +1268,7 @@ No devices connected.</translation>
 <translation id="5764569119212455782">Switch to last language selected</translation>
 <translation id="5767730327234918501">Your administrator has turned off hotspot.</translation>
 <translation id="5769373120130404283">Privacy screen</translation>
+<translation id="5770004650349728202">Turn on Select to Speak</translation>
 <translation id="5773950591113557721">This allows access for <ph name="APP_NAME" /> and all apps and websites with the camera and microphone permissions</translation>
 <translation id="5774295353725270860">Open Files app</translation>
 <translation id="5775936059231769503">Toggle hotspot. Hotspot is off.</translation>
@@ -1343,8 +1363,10 @@ No devices connected.</translation>
 <translation id="6119972796024789243">Colour correction</translation>
 <translation id="6121838516699723042">Confirm download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">The Google Assistant is not available in a guest session.</translation>
+<translation id="6127370444807669747">For personalised playlists and more focus music, try YouTube Music Premium</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455">Open remove dialogue for <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141205840878048728">What would you like to focus on?</translation>
 <translation id="6141988275892716286">Confirm download</translation>
 <translation id="6143578372829139382">Share to YouTube</translation>
 <translation id="6154006699632741460">Peripheral not supported</translation>
@@ -1405,11 +1427,13 @@ No devices connected.</translation>
 <translation id="6381109794406942707">To unlock the device, enter your PIN.</translation>
 <translation id="638716340450135524">Turn on camera access</translation>
 <translation id="639644700271529076">CAPS LOCK is off</translation>
+<translation id="6406458002328242616">Edit timer. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Clear all notifications</translation>
+<translation id="6430225033895752525">Show Focus settings</translation>
 <translation id="643147933154517414">All finished</translation>
 <translation id="6431865393913628856">Screen record</translation>
 <translation id="643593192654616063">Storage <ph name="STORAGE_IN_USE_SIZE" /> in use out of <ph name="STORAGE_TOTAL_SIZE" /> total</translation>
@@ -1450,6 +1474,7 @@ No devices connected.</translation>
 New install</translation>
 <translation id="6559158502366839560">Explore more apps and games</translation>
 <translation id="6559976592393364813">Ask administrator</translation>
+<translation id="6562447480759345110">Finish Focus</translation>
 <translation id="6565007273808762236">eSIM connection unavailable</translation>
 <translation id="6570831796530454248">{0,plural, =1{Update device within an hour}other{Update device within # hours}}</translation>
 <translation id="6570902864550063460">Charging via USB</translation>
@@ -1459,6 +1484,7 @@ New install</translation>
 <translation id="6585808820553845416">Session ends in <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Camera snapped to the bottom-left corner. Conflict with system surface.</translation>
+<translation id="6605415194043280389">Focus is on</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="6612802754306526077">Screen recording mode selected</translation>
 <translation id="6612889377159412215">subtask</translation>
@@ -1525,6 +1551,7 @@ New install</translation>
 <translation id="6836499262298959512">Dangerous file</translation>
 <translation id="6837621009301897464">To take a screenshot, press</translation>
 <translation id="6852052252232534364">Click to activate</translation>
+<translation id="6852628153543175788">Add 10 minutes</translation>
 <translation id="6855029042976311970">Edited just now</translation>
 <translation id="6856708615407876657">Toggle search result categories</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
@@ -1585,6 +1612,7 @@ New install</translation>
 <translation id="7068360136237591149">Open files</translation>
 <translation id="7076293881109082629">Signing in</translation>
 <translation id="7076878155205969899">Mute sound</translation>
+<translation id="7083848064787091821">Focus</translation>
 <translation id="7084678090004350185">Toggle hotspot. Hotspot is on, <ph name="DEVICECOUNT" /> devices connected.</translation>
 <translation id="7086931198345821656">This update requires powerwashing your <ph name="DEVICE_TYPE" />. All data will be deleted. Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
@@ -1612,6 +1640,7 @@ New install</translation>
 <translation id="7188494361780961876">Menu moved to the top-left corner of the screen.</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
 <translation id="7198435252016571249">Camera snapped to the bottom-right corner. Conflict with system surface.</translation>
+<translation id="720981139652840573">Hear specific text read aloud. First, select the Select to Speak icon at the bottom of your screen, then highlight text. You can also use a keyboard shortcut: Highlight text, then press Search/Launcher + S.</translation>
 <translation id="7219573373513695352">No devices connected</translation>
 <translation id="7229029500464092426">Memory <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% battery left. Connect your device to power.</translation>
@@ -1621,6 +1650,7 @@ New install</translation>
 <translation id="7258828758145722155">Edited yesterday</translation>
 <translation id="726276584504105859">Drag here to use split screen</translation>
 <translation id="7262906531272962081">Create reminder</translation>
+<translation id="7264788308526527464">Reduce <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Use the screen capture tool in Quick Settings to take screenshots</translation>
 <translation id="7301826272005790482">Dismiss window suggestions</translation>
@@ -1631,6 +1661,7 @@ New install</translation>
 <translation id="7313193732017069507">Expand camera</translation>
 <translation id="7330397557116570022">Go to a text field to use dictation</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
+<translation id="7337660433630200387">+10 min</translation>
 <translation id="7340731148882810149">Automatic clicks menu</translation>
 <translation id="7346909386216857016">OK, got it</translation>
 <translation id="7348093485538360975">On-Screen Keyboard</translation>
@@ -1650,6 +1681,7 @@ New install</translation>
 <translation id="7386767620098596324">Toggle network connection. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">You can always perform setup later from Settings.</translation>
 <translation id="7401222354741467707">Take full screenshot or screen recording</translation>
+<translation id="7401788553834047908">Do Not Disturb while in Focus</translation>
 <translation id="7405710164030118432">To unlock the device, enter your Family Link parent access code</translation>
 <translation id="7406608787870898861">Finish setting up your mobile network</translation>
 <translation id="7406854842098869085">Press and hold <ph name="MODIFIER_1" />, tap <ph name="KEY" /> until you get to the window you want to open, then release</translation>
@@ -1684,6 +1716,8 @@ New install</translation>
 <translation id="7519649142417630956">Once shut down, the administrator will be logged out and won't be able to control your device.
 
 To shut down the device, press and hold the power button on the device again.</translation>
+<translation id="7523420897035067483">Enable Do Not Disturb while in Focus</translation>
+<translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7526573455193969409">Network may be monitored</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Update the left window</translation>
@@ -1816,6 +1850,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7963992254934562106">From <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Select folder…</translation>
 <translation id="7973756967040444713">Close toolbar</translation>
+<translation id="797485111629834774">Mark task as completed: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Turn fullscreen magnifier on or off</translation>
 <translation id="7977927628060636163">Searching for mobile networks...</translation>
 <translation id="7982789257301363584">Network</translation>
@@ -1829,6 +1864,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8000066093800657092">No network</translation>
 <translation id="8001755249288974029">Select text from cursor to beginning of line</translation>
 <translation id="8004512796067398576">Increment</translation>
+<translation id="8005527720597583355">Start Focus session</translation>
 <translation id="8015361438441228492">Couldn't edit task.</translation>
 <translation id="802782383769312836">Previous desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> of <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Hotspot connection failed</translation>
@@ -1844,6 +1880,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8054466585765276473">Calculating battery time.</translation>
 <translation id="8079538659226626406">Screen Share</translation>
 <translation id="8083540854303889870">Saved for later</translation>
+<translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Use Tab for more options. Use left and right arrows to access all desks.</translation>
 <translation id="8091153018031979607">Starts at <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatic updates</translation>
@@ -1875,10 +1912,12 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8192727139462702395">When you turn off Bluetooth, these external devices will disconnect from your <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Casting tab</translation>
 <translation id="8200772114523450471">Resume</translation>
+<translation id="820256110035940528"><ph name="TITLE" /> You've just focused for <ph name="FOCUSED_TIME" />. Open Quick Settings to focus again.</translation>
 <translation id="8203795194971602413">Right click</translation>
 <translation id="8209010265547628927">Reset</translation>
 <translation id="8214996719228530800">Canary channel</translation>
 <translation id="8219451629189078428">Your Chromebook needs to stay on and connected to power during this time. Make sure that the charger or adaptor cables are completely plugged in, both to your Chromebook and the power socket. Do not turn off your Chromebook.</translation>
+<translation id="8220076512072059941">Add <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8230305195727960608">Colour inversion mode</translation>
 <translation id="8236042855478648955">Time for a break</translation>
 <translation id="8237964652943995219">Next desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> of <ph name="DESK_COUNT" />.</translation>
@@ -1986,6 +2025,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Press enter to capture partial screenshot</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
+<translation id="8679158879996532670">Show Focus settings. Focus is on, <ph name="REMAINING_TIME" /> left.</translation>
 <translation id="8683506306463609433">Performance tracing active</translation>
 <translation id="8703634754197148428">Start recording. Once recording has started use Alt + Shift + L to navigate to the shelf and find the stop recording button</translation>
 <translation id="8704155109538237473">Focus on the picture-in-picture window</translation>
@@ -2004,6 +2044,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Activating</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749787185286745219">Time's up. Great work! 🎉</translation>
 <translation id="8755498163081687682">Verify your identity: <ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="875593634123171288">Show VPN settings</translation>
 <translation id="8756799553341497810">You can start customising your app layout once you exit this view.</translation>
@@ -2042,6 +2083,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8878886163241303700">Extending screen</translation>
 <translation id="888982883502837004">Firmware updates are available for your device. Click to review and update.</translation>
+<translation id="8893479486525393799">Studio mic</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> will be permanently deleted</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% battery left (about <ph name="TIME_LEFT" />). Connect your device to power.</translation>
 <translation id="88986195241502842">Page down</translation>

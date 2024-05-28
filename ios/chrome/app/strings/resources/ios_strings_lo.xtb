@@ -90,6 +90,7 @@
 <translation id="143681031165817424">ບັນທຶກທີ່ຢູ່ໃນອຸປະກອນເຄື່ອງນີ້ເທົ່ານັ້ນ</translation>
 <translation id="1449835205994625556">ເຊື່ອງລະຫັດຜ່ານ</translation>
 <translation id="1450170672351507823">ການປົກປ້ອງມາດຕະຖານເປີດຢູ່. ເພື່ອຄວາມປອດໄພຍິ່ງຂຶ້ນ, ກະລຸນາໃຊ້ການປົກປ້ອງທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ.</translation>
+<translation id="1455492980583160269">ສົ່ງຂໍ້ຄວາມ</translation>
 <translation id="1469381646033328562">ບັນຊີຂອງທ່ານໄດ້ຮັບການຈັດການໂດຍພໍ່ແມ່ຂອງທ່ານ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">ແຕະສອງຄັ້ງເພື່ອສັບປ່ຽນການຕັ້ງຄ່າ</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">ຂໍ້ມູນຄວາມປອດໄພໜ້າ</translation>
 <translation id="5443952882982198570">ບັດເຄຣດິດ</translation>
 <translation id="5444892875087332195">ບຸກມາກ</translation>
+<translation id="5453738961176844111">ລະຫັດປະເທດ</translation>
 <translation id="5454211924362324495">ເພື່ອຢຸດຄົນອື່ນບໍ່ໃຫ້ໃຊ້ລະຫັດຜ່ານຂອງທ່ານ, ກະລຸນາ <ph name="BEGIN_LINK" />ປ່ຽນມັນຢູ່ <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">ເປີດເວີຊັນອອບລາຍ</translation>
 <translation id="5459548306731933777">ສະແດງລາຍລະອຽດ</translation>
@@ -1189,6 +1191,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດແຕະແຖບທີ່ຢູ່ຄ້າງໄວ້ເພື່ອປ່ຽນຕຳແໜ່ງໄດ້ນຳ.</translation>
 <translation id="6988572888918530647">ຈັດການບັນຊີ Google ຂອງທ່ານ</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">ເຖິງ</translation>
 <translation id="699954956411469731">ການແຈ້ງເຕືອນມືຖື</translation>
 <translation id="699985840472413751">ປິດດາວໂຫຼດ</translation>
@@ -1355,6 +1358,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7866872729285243843">ເພື່ອຮັບລາຍຊື່ການອ່ານຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເປີດ “ລາຍຊື່ການອ່ານ” ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="7866993391592926595">ການເຊື່ອງບັດນີ້ຈະປິດການຕິດຕາມພັດສະດຸ ແລະ ລຶບຂໍ້ມູນທັງໝົດຂອງທ່ານອອກ</translation>
 <translation id="7870750252270996949">ຮູບທີ່ສຳເນົາດ້ວຍ Lens</translation>
+<translation id="7877056713163921063">ເພີ່ມໃສ່ລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="7879275349003161544">ສະແດງການດາວໂຫຼດ</translation>
 <translation id="7883882164760409935">ທ່ານມີລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳ.</translation>
 <translation id="7884694604461143138">ປະ​ຫວັດ​ການ​ຊອກຫາ (ພົບ <ph name="COUNT" /> ລາຍການ)</translation>
@@ -1592,7 +1596,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="9000089900434778519">ໂປຣແກຣມຊອກຫາຂອງທ່ານແມ່ນ <ph name="DSE_NAME" />. ກະລຸນາອ່ານຄຳແນະນຳສຳລັບການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ.</translation>
 <translation id="9008201768610948239">ບໍ່ສົນໃຈ</translation>
 <translation id="9012585441087414258">ປົກປ້ອງຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ຮູ້ແລ້ວວ່າເປັນອັນຕະລາຍ. ຫາກໜ້າເວັບເຮັດສິ່ງທີ່ໜ້າສົງໄສ, URL ແລະ ເນື້ອຫາຂອງໜ້າເວັບບາງສ່ວນຈະຖືກສົ່ງໄປຫາ Google Safe Browsing.</translation>
-<translation id="9025203546212508704">ປັດເພື່ອສຶກສາວິທີປັບແຕ່ງເມນູຂອງທ່ານ</translation>
 <translation id="9029650858822697271">ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="9034759925968272072">ທ່ານຈະບໍ່ຖືກນຳອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ. ບັນຊີ Google ຂອງທ່ານອາດຈະມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນຢູ່ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">ສະແດງຕົ້ນສະບັບ</translation>

@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Alamat disimpan pada peranti ini sahaja</translation>
 <translation id="1449835205994625556">Sembunyikan Kata Laluan</translation>
 <translation id="1450170672351507823">Perlindungan standard dihidupkan. Untuk mendapatkan keselamatan, gunakan perlindungan Dipertingkat.</translation>
+<translation id="1455492980583160269">Hantar Mesej</translation>
 <translation id="1469381646033328562">Akaun anda diuruskan oleh ibu/bapa anda.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Dwiketik untuk togol tetapan</translation>
@@ -861,6 +862,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="54401264925851789">Maklumat Halaman Keselamatan</translation>
 <translation id="5443952882982198570">Kad Kredit</translation>
 <translation id="5444892875087332195">Penanda halaman</translation>
+<translation id="5453738961176844111">Kod Negara</translation>
 <translation id="5454211924362324495">Untuk menghalang orang lain daripada menggunakan kata laluan anda, <ph name="BEGIN_LINK" />tukar kata laluan pada <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Buka Versi Luar Talian</translation>
 <translation id="5459548306731933777">Paparkan Butiran</translation>
@@ -1189,6 +1191,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Anda juga boleh sentuh dan tahan bar alamat untuk menukar kedudukan.</translation>
 <translation id="6988572888918530647">Urus Google Account Anda</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">Kepada</translation>
 <translation id="699954956411469731">Pemberitahuan Mudah Alih</translation>
 <translation id="699985840472413751">Tutup Muat Turun</translation>
@@ -1355,6 +1358,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7866872729285243843">Untuk mendapatkan senarai bacaan pada semua peranti anda, hidupkan “Senarai Bacaan” dalam tetapan.</translation>
 <translation id="7866993391592926595">Menyembunyikan Kad Ini Akan Mematikan Penjejakan Bungkusan dan Mengalih Keluar Semua Data Anda</translation>
 <translation id="7870750252270996949">Imej Disalin Lensa</translation>
+<translation id="7877056713163921063">Tambah Pada Kenalan</translation>
 <translation id="7879275349003161544">Tunjukkan Muat Turun</translation>
 <translation id="7883882164760409935">Anda mempunyai kata laluan yang digunakan semula.</translation>
 <translation id="7884694604461143138">Sejarah Carian (<ph name="COUNT" /> Ditemukan)</translation>
@@ -1592,7 +1596,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="9000089900434778519">Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu untuk memadamkan sejarah carian anda, jika berkenaan.</translation>
 <translation id="9008201768610948239">Abaikan</translation>
 <translation id="9012585441087414258">Melindungi daripada laman, muat turun dan sambungan yang diketahui berbahaya. Jika terdapat tindakan halaman yang mencurigakan, URL dan bit kandungan halaman tersebut akan dihantar kepada Penyemakan Imbas Selamat Google.</translation>
-<translation id="9025203546212508704">Leret untuk mengetahui cara menyesuaikan menu anda</translation>
 <translation id="9029650858822697271">Anda telah dilog keluar</translation>
 <translation id="9034759925968272072">Anda tidak akan dilog keluar daripada Google Account anda. Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="9037965129289936994">Tunjukkan Yang Asal</translation>

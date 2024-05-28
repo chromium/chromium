@@ -127,6 +127,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2770231113462710648">Remplacer le navigateur par défaut par :</translation>
 <translation id="2775140325783767197">Chrome ne peut pas vérifier vos mots de passe. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="2799223571221894425">Redémarrer</translation>
+<translation id="2825024317344269723">Site dangereux. Chrome a retiré les notifications.</translation>
 <translation id="2846251086934905009">Erreur d'installation : le programme d'installation n'a pas été terminé. L'installation a été annulée.</translation>
 <translation id="2847461019998147611">Afficher Google Chrome dans cette langue</translation>
 <translation id="2853415089995957805">Chrome précharge les pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous les visitez</translation>
@@ -188,6 +189,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3583751698304738917">Vous êtes déjà connecté en tant que <ph name="USER_EMAIL_ADDRESS" /> dans un autre profil Chrome</translation>
 <translation id="3595784445906693824">Vous connecter à Chrome dans un nouveau profil?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour}=1{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
+<translation id="3609788354808247807">Vous n'êtes pas venu récemment. Chrome a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Il est maintenant plus facile d'utiliser Google Chrome avec votre compte Google et sur des ordinateurs partagés.</translation>
 <translation id="3635073343384702370">Chrome peut vérifier vos mots de passe lorsque vous les enregistrez</translation>
 <translation id="3667616615096815454">Installation impossible, l'application est inconnue du serveur.</translation>
@@ -337,6 +339,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5941830788786076944">Faire de Google Chrome le navigateur par défaut</translation>
 <translation id="5947104538377036631">Raccourci Chrome</translation>
+<translation id="5953954252731207958">Vous n'êtes pas venu récemment. Chrome a retiré <ph name="PERMISSION" /></translation>
 <translation id="6003112304606738118">Téléchargement en cours… <ph name="HOURS" /> heure(s) restante(s)</translation>
 <translation id="6014316319780893079">Grâce aux <ph name="BEGIN_LINK" />outils de Chrome<ph name="END_LINK" />, vous pouvez naviguer en toute sécurité et garder le contrôle</translation>
 <translation id="6022659036123304283">Appropriez-vous Chrome</translation>
@@ -351,6 +354,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> — Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome bêta</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
+<translation id="6200139057479872438">Vous n'êtes pas venu récemment. Chrome a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6235018212288296708">Règle de trafic entrant pour Google Chrome autorisant le trafic mDNS.</translation>
 <translation id="624230925347970731">Chrome se fermera bientôt</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
@@ -449,6 +453,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7651907282515937834">Logo de Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome a bloqué ce téléchargement, car vous avez désactivé la Navigation sécurisée et le fichier ne peut pas être vérifié</translation>
 <translation id="7655455401911432608">Votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chrome sur cet appareil.</translation>
+<translation id="7661924425853052955">Vous n'êtes pas venu récemment. Chrome a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="COUNT" /> autres</translation>
 <translation id="7668816516367091728">Effectuez des tâches comme traduire, calculer et plus encore directement depuis la barre d'adresse</translation>
 <translation id="769538538642757151">Chrome vous informera si vous devez examiner quelque chose</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>

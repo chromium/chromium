@@ -314,7 +314,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2650348088770008516">Beskrivelsen af Privatlivsguide er lukket</translation>
 <translation id="2650408372219180431">Eksportér og slet adgangskoder, der er gemt på denne enhed</translation>
 <translation id="2650751991977523696">Vil du downloade filen igen?</translation>
-<translation id="2651465929321991146">Historik og faner</translation>
 <translation id="265156376773362237">Standardforudindlæsning</translation>
 <translation id="2653659639078652383">Send</translation>
 <translation id="2656405586795711023">Webapps</translation>
@@ -906,7 +905,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5628604359369369630">Ulæst – Tilgængelig offline</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Søgehistorikken<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />andre former for aktivitet<ph name="END_LINK2" /> gemmes muligvis på din Google-konto</translation>
-<translation id="564667659802381754">Privatlivsguide <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">De seneste syv dage</translation>
 <translation id="5655963694829536461">Søg i dine downloads</translation>
 <translation id="5657871969392618475">Dine oplysninger er beskyttet af en profillås</translation>
@@ -985,6 +983,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="6002122790816966947">Dine enheder</translation>
 <translation id="6011308810877101166">Gør søgeforslag bedre</translation>
 <translation id="6013305291643746595">Sorteres efter ældste</translation>
+<translation id="6022659036123304283">Gør Chrome til din egen</translation>
 <translation id="6026538407078977628">Udvid til fuld skærm</translation>
 <translation id="6030719887161080597">Administrer oplysninger, der anvendes af websites til at måle annonceeffektivitet</translation>
 <translation id="6039379616847168523">Gå til den næste fane</translation>
@@ -1144,6 +1143,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6734310707649923383">Du kan se de sider, du har besøgt, eller slette dem fra din historik</translation>
 <translation id="6738867403308150051">Downloader…</translation>
 <translation id="674388916582496364">Det er almindeligt, at de websites, du besøger, husker ting, du er interesseret i, så din oplevelse tilpasses personligt. Websites kan også gemme oplysninger med Chrome om dine interesser.</translation>
+<translation id="6746338529702829275">Gennemgå dine kontodata</translation>
 <translation id="6751521182688001123">Åbn hurtigt en ny fane. Hold fingeren på genvejen for at redigere.</translation>
 <translation id="6756507620369789050">Del feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1176,6 +1176,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="686490460830618322">Oversigt over filtrering efter app</translation>
 <translation id="6865313869410766144">Formulardata for AutoFyld</translation>
 <translation id="6867400383614725881">Ny inkognitofane</translation>
+<translation id="686899695320434745">Adresser krypteres ikke med din adgangssætning. Dette giver dig mulighed for at bruge dem i andre Google-tjenester.</translation>
 <translation id="6869056123412990582">computer</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mod websites, downloads og udvidelser, som er registreret som skadelige.</translation>
 <translation id="6883204995689174413">Del</translation>
@@ -1600,6 +1601,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="885480114717186641">Du kan anmode om computerwebsitet for <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Få beskrivelser</translation>
 <translation id="8856931513242997049">Flow for notifikationstilladelse er lukket</translation>
+<translation id="8865415417596392024">Chrome-data på din konto</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
 <translation id="8909135823018751308">Del…</translation>
 <translation id="8921980840204105660">Synkroniser for at få dine bogmærker fra dine andre enheder</translation>

@@ -314,7 +314,6 @@
 <translation id="2650348088770008516">ההסבר על המדריך בנושא פרטיות נסגר</translation>
 <translation id="2650408372219180431">ייצוא ומחיקה של הסיסמאות שנשמרו במכשיר הזה</translation>
 <translation id="2650751991977523696">האם להוריד את הקובץ שוב?</translation>
-<translation id="2651465929321991146">היסטוריה וכרטיסיות</translation>
 <translation id="265156376773362237">טעינה רגילה מראש</translation>
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2656405586795711023">אפליקציות אינטרנט</translation>
@@ -906,7 +905,6 @@
 <translation id="5626134646977739690">שם:</translation>
 <translation id="5628604359369369630">לא נקראו – זמינים במצב אופליין</translation>
 <translation id="5641456720590409793">‏<ph name="BEGIN_LINK1" />היסטוריית החיפושים<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />סוגי פעילות אחרים<ph name="END_LINK2" /> עשויים להישמר בחשבון Google.</translation>
-<translation id="564667659802381754">מדריך בנושא פרטיות <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">מהשבוע האחרון</translation>
 <translation id="5655963694829536461">חיפוש ההורדות שלך</translation>
 <translation id="5657871969392618475">המידע שלך מאובטח באמצעות נעילת פרופיל</translation>
@@ -985,6 +983,7 @@
 <translation id="6002122790816966947">המכשירים שלך</translation>
 <translation id="6011308810877101166">שיפור של ההצעות לחיפוש</translation>
 <translation id="6013305291643746595">בתהליך מיון לפי הפריט הישן ביותר</translation>
+<translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
 <translation id="6026538407078977628">הרחבה למסך מלא</translation>
 <translation id="6030719887161080597">ניהול המידע שמשמש אתרים למדידת ביצועי מודעות</translation>
 <translation id="6039379616847168523">מעבר לכרטיסייה הבאה</translation>
@@ -1144,6 +1143,7 @@
 <translation id="6734310707649923383">בדף ההיסטוריה אפשר לראות או למחוק את הדפים שנכנסת אליהם</translation>
 <translation id="6738867403308150051">ההורדה מתבצעת...</translation>
 <translation id="674388916582496364">‏בהרבה אתרים נהוג לשמור את תחומי העניין של המבקרים כדי להתאים אישית את חוויית הגלישה. בנוסף, אתרים יכולים לשמור מידע ב-Chrome לגבי תחומי העניין האלה.</translation>
+<translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
 <translation id="6751521182688001123">פתיחת כרטיסייה חדשה במהירות. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="6756507620369789050">שיתוף משוב</translation>
 <translation id="6762511428368667596"><ph name="NAME" />,‏ <ph name="EMAIL" />.</translation>
@@ -1176,6 +1176,7 @@
 <translation id="686490460830618322">גיליון הסינון לפי אפליקציות</translation>
 <translation id="6865313869410766144">נתוני טפסים למילוי אוטומטי</translation>
 <translation id="6867400383614725881">כרטיסיית מצב אנונימי חדשה</translation>
+<translation id="686899695320434745">‏הכתובות לא מוצפנות באמצעות ביטוי הסיסמה. פעולה זו מאפשרת לך להשתמש בהן בשירותי Google אחרים.</translation>
 <translation id="6869056123412990582">מחשב</translation>
 <translation id="6882836635272038266">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים.</translation>
 <translation id="6883204995689174413">שיתוף</translation>
@@ -1600,6 +1601,7 @@
 <translation id="885480114717186641">ניתן לבקש את האתר שמותאם למחשב של <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">ליצירת תיאורים</translation>
 <translation id="8856931513242997049">תהליך ההרשאה לשליחת התראות נסגר</translation>
+<translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="8909135823018751308">שיתוף…</translation>
 <translation id="8921980840204105660">אפשר לבצע סנכרון כדי להוסיף את הסימניות מהמכשירים האחרים שלך</translation>

@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Ünvan yalnız bu cihazda yadda saxlandı</translation>
 <translation id="1449835205994625556">Parolu Gizlədin</translation>
 <translation id="1450170672351507823">Standart qoruma aktivdir. Təhlükəsizliyi daha da artırmaq üçün Qabaqcıl qoruma işlədin.</translation>
+<translation id="1455492980583160269">Mesaj göndərin</translation>
 <translation id="1469381646033328562">Hesabı valideyn idarə edir.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Ayarı dəyişmək üçün iki dəfə klikləyin</translation>
@@ -861,6 +862,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="54401264925851789">Səhifə güvənliyi məlumatı</translation>
 <translation id="5443952882982198570">Kredit Kartları</translation>
 <translation id="5444892875087332195">Əlfəcinlər</translation>
+<translation id="5453738961176844111">Ölkə kodu</translation>
 <translation id="5454211924362324495">Digərlərinin paroldan istifadə etməməsi üçün <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> veb-saytında onu dəyişin<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Oflayn versiyanı açın</translation>
 <translation id="5459548306731933777">Detalları göstərin</translation>
@@ -1189,6 +1191,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6983306615164277634">Mövqeni dəyişmək üçün ünvan panelinə toxunub saxlaya bilərsiniz.</translation>
 <translation id="6988572888918530647">Google Hesabını İdarə Edin</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">Kimə</translation>
 <translation id="699954956411469731">Mobil Bildirişlər</translation>
 <translation id="699985840472413751">Endirmə panelini bağlayın</translation>
@@ -1355,6 +1358,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7866872729285243843">Bütün cihazlarda oxu siyahısını əldə etmək üçün ayarlarda "Oxu Siyahısı"nı aktiv edin.</translation>
 <translation id="7866993391592926595">Bu kartı gizlədəndə bağlama izləməsi deaktiv ediləcək və data silinəcək</translation>
 <translation id="7870750252270996949">Kopyalanan Linza Şəkli</translation>
+<translation id="7877056713163921063">Kontaktlara əlavə edin</translation>
 <translation id="7879275349003161544">Endirmələri göstərin</translation>
 <translation id="7883882164760409935">Təkrar işlənən parollar var.</translation>
 <translation id="7884694604461143138">Axtarış Tarixçəsi (<ph name="COUNT" /> Tapılıb)</translation>
@@ -1592,7 +1596,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9000089900434778519">Axtarış sisteminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək üçün onun təlimatlarına (təmin edilibsə) baxın.</translation>
 <translation id="9008201768610948239">İqnor</translation>
 <translation id="9012585441087414258">Təhlükəli sayt, endirmə və artırmalardan qoruyur. Səhifədə şübhəli fəaliyyət olarsa, URL və səhifə kontentinin bir hissəsi Google Güvənli Axtarışa göndərilir.</translation>
-<translation id="9025203546212508704">Sürüşdürərək menyu fərdiləşdirmə haqqında məlumat alın</translation>
 <translation id="9029650858822697271">Çıxış edildi</translation>
 <translation id="9034759925968272072">Google Hesabından çıxmayacaqsınız. Google Hesabınızın <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində başqa formada axtarış tarixçəsi ola bilər.</translation>
 <translation id="9037965129289936994">Orijinalı Göstərin</translation>

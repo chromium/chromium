@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">後で</translation>
 <translation id="100881991356161927">サイト名</translation>
 <translation id="1009663062402466586">ゲーム操作キーをご利用いただけるようになりました</translation>
+<translation id="1010136228650201057">ユーザーデータの暗号化</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ページが応答しません}other{ページが応答しません}}</translation>
 <translation id="1011003645819296594">保存済みのデバイス</translation>
 <translation id="1011355516189274711">テキスト読み上げの音量</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="1049795001945932310">言語設定(&amp;L)</translation>
 <translation id="1050693411695664090">悪い</translation>
+<translation id="1053776357096024725">さまざまなエフェクトで内蔵マイクの音質を調整する</translation>
 <translation id="1054048317165655285">スマートフォンの設定を完了する</translation>
 <translation id="1054153489933238809">元の画像を新しいタブで開く(&amp;I)</translation>
 <translation id="1054187194995068149">こんにちは。これはプレビューです</translation>
@@ -833,6 +835,7 @@
 <translation id="1607139524282324606">エラー項目を消去</translation>
 <translation id="1607499585984539560">ユーザーはドメインに関連付けられていません</translation>
 <translation id="1608668830839595724">選択した項目のその他の操作</translation>
+<translation id="1608698493373028805">この拡張機能はまもなくサポートされなくなる可能性があります</translation>
 <translation id="1610272688494140697">アプリの設定</translation>
 <translation id="161042844686301425">シアン</translation>
 <translation id="1611432201750675208">デバイスはロックされています</translation>
@@ -1607,8 +1610,6 @@
 <translation id="2165102982098084499">次のデバイスを QR コードのスキャンによりリンクしました。</translation>
 <translation id="2165177462441582039">各項目のハイライト表示の長さを選択します</translation>
 <translation id="2166369534954157698">あいうえおアイウエオABCabc123漢字</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />このデバイス（SN: <ph name="SERIAL_NUMBER" />）はロックされました。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> での Chrome デバイス管理のサポートは終了しました。ログインするには、別のデバイスを使用するか、デバイスの管理者にお問い合わせください。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">このままログインする</translation>
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2173801458090845390">登録 ID をこのデバイスに追加します</translation>
@@ -2302,6 +2303,7 @@
 <translation id="2667144577800272420"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリが複数あります。設定を変更すると、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> で対応リンクを開けなくなります。</translation>
 <translation id="2667463864537187133">スペルチェックの管理</translation>
 <translation id="2668094785979141847">クリックして Google レンズを終了</translation>
+<translation id="2668604389652548400">削除するか、<ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />にある同様の拡張機能に置き換えてください。</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> を開けませんでした</translation>
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> が Chrome タブを共有しています。</translation>
@@ -2352,6 +2354,7 @@
 <translation id="2710101514844343743">使用状況データと診断データ</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> のロックが解除されました</translation>
+<translation id="2712141162840347885">Google レンズで検索する範囲を選択してください。Esc キーを押すと Google レンズを終了します</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2713444072780614174">白</translation>
 <translation id="2714180132046334502">暗い背景</translation>
@@ -2976,6 +2979,7 @@
 <translation id="3177914167275935955">デバイスには Chrome Education Upgrade が含まれていますが、ユーザー名が Google for Education アカウントに関連付けられていません。別のデバイスで g.co/workspace/edusignup にアクセスし、Google for Education アカウントを作成してください。</translation>
 <translation id="3179982752812949580">テキストのフォント</translation>
 <translation id="3180284704187420717">同期することで、ブックマークやパスワード、その他の設定を保存できます</translation>
+<translation id="3180716079618904608">アプリやゲームを入手する</translation>
 <translation id="3181954750937456830">セーフ ブラウジング（危険なサイトからユーザーとデバイスを保護します）</translation>
 <translation id="3182749001423093222">スペルチェック</translation>
 <translation id="3183139917765991655">プロフィール インポーター</translation>
@@ -4263,6 +4267,7 @@
 <translation id="4120817667028078560">パスが長すぎます</translation>
 <translation id="4124823734405044952">セキュリティ キーがリセットされました</translation>
 <translation id="4124935795427217608">ユニコーン</translation>
+<translation id="4126375522951286587"><ph name="VM_NAME" /> をシャットダウン</translation>
 <translation id="412730574613779332">スパンデックス</translation>
 <translation id="4130199216115862831">デバイスログ</translation>
 <translation id="4130750466177569591">同意する</translation>
@@ -4562,6 +4567,7 @@
 <translation id="4364327530094270451">メロン</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> がウィンドウを共有しています。</translation>
 <translation id="4364830672918311045">通知を表示</translation>
+<translation id="4367027658822022112">Google レンズを固定して簡単にアクセスできます。固定するには、サイドパネルの上部にある [固定] ボタンをクリックします</translation>
 <translation id="4367513928820380646">削除された権限を確認</translation>
 <translation id="4367971618859387374">表示名</translation>
 <translation id="4368960422722232719">タブ マウスオーバーのプレビュー カードにメモリ使用量を表示する</translation>
@@ -4963,6 +4969,7 @@
 <translation id="4666911709726371538">表示するアプリを増やす</translation>
 <translation id="4668279686271488041">広告測定データはデバイスから定期的に削除されます</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN には数字のみ使用してください</translation>
 <translation id="4670909875730475086">おめでとうございます。<ph name="APP_NAME" /> をデバイスにインストールしました</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> を今すぐ開く</translation>
 <translation id="4673442866648850031">タッチペンを取り外したらタッチペン ツールを開く</translation>
@@ -5046,6 +5053,7 @@
 <translation id="473936925429402449">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目を選択しています</translation>
 <translation id="4739639199548674512">チケット</translation>
 <translation id="4740546261986864539">最近開いたタブ</translation>
+<translation id="4741235124132242877">固定しました。ツールバーから Google レンズを使用できます</translation>
 <translation id="4742334355511750246">画像の表示を許可しないサイト</translation>
 <translation id="4742795653798179840">Chrome データを削除しました</translation>
 <translation id="4742970037960872810">テキストの選択を解除</translation>
@@ -6740,6 +6748,7 @@
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="604388835206766544">設定を解析処理できませんでした</translation>
 <translation id="6043994281159824495">ログアウト</translation>
+<translation id="604424701295382420">固定しました。ツールバーの新しいボタンから、Google レンズにアクセスできます</translation>
 <translation id="6045114302329202345">メインの TrackPoint ボタン</translation>
 <translation id="6047632800149092791">同期が機能していません。ログアウトして再度ログインしてみてください。</translation>
 <translation id="6048747414605857443">ChromeVox と「選択して読み上げ」のテキスト読み上げ用の音声を選択してカスタマイズします</translation>
@@ -6892,7 +6901,6 @@
 <translation id="6154240335466762404">すべてのポートを削除</translation>
 <translation id="615436196126345398">プロトコル</translation>
 <translation id="6154739047827675957">OneDrive を設定できませんでした</translation>
-<translation id="6154820449290823443">この Chromebook のアクセスを管理したり、アプリをブロックしたりできます。</translation>
 <translation id="6155141482566063812">バックグラウンドのタブで画面が共有されています</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">パスキーを作成</translation>
@@ -7518,6 +7526,7 @@
 <translation id="6647690760956378579">自然な音声のプレビュー</translation>
 <translation id="6648911618876616409">重要なアップデートをインストールする準備ができました。適用するにはまずログインしてください。</translation>
 <translation id="6649018507441623493">お待ちください…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
 <translation id="6650206238642452078">ChromeOS のシステム イベントに登録する</translation>
 <translation id="6650584564768559994">メモリをバランスよく節約します。タブは最適な時間が経過してから非アクティブになります。</translation>
 <translation id="665061930738760572">新しいウィンドウで開く(&amp;N)</translation>
@@ -7571,6 +7580,7 @@
 <translation id="6686490380836145850">右側のタブを閉じる</translation>
 <translation id="6686665106869989887">タブを右に移動しました</translation>
 <translation id="6686817083349815241">パスワードを保存</translation>
+<translation id="6687008241368170505">Google パスワード マネージャーの PIN を変更する</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> を非表示にする</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> さんにパソコンの前に来てもらってください。お子様の音声モデルを作成するには、この画面上のフレーズをいくつか声に出して読んでもらいます。
     <ph name="BR" />
@@ -8348,6 +8358,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 権限がリクエストされました。対応するには、F6 キーを押してください</translation>
 <translation id="7290242001003353852">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされており、カメラにアクセスしています。</translation>
 <translation id="7292067737327289208">お使いの<ph name="BEGIN_LINK" />ブラウザは組織<ph name="END_LINK" />によって、<ph name="BEGIN_LINK" />プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理<ph name="END_LINK" />されています</translation>
+<translation id="7292147651179697920">保護者の方に [設定] でアクセスを許可してもらってください</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" />（<ph name="VARIANT" />）</translation>
 <translation id="7295614427631867477">なお、Android、Play、および関連付けられているアプリには、それぞれ独自のデータ収集と使用のポリシーが適用されます。</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> フォルダを選択</translation>
@@ -8655,6 +8666,7 @@
 <translation id="7514239104543605883">デバイスにコピー</translation>
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7514417110442087199">割り当てを追加</translation>
+<translation id="7515191208480168435">Google レンズを固定して簡単にアクセスできます</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> は管理者によってブロックされています。このアプリを使用するには、管理者の許可が必要です。</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">PageDown</translation>
@@ -8817,7 +8829,6 @@
 <translation id="7643842463591647490">{0,plural, =1{開いているウィンドウ # 個}other{開いているウィンドウ # 個}}</translation>
 <translation id="7643932971554933646">サイトにファイルの読み取りを許可しますか？</translation>
 <translation id="7644543211198159466">色とテーマ</translation>
-<translation id="7644953783774050577">選択しない</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7645681574855902035">Linux のバックアップをキャンセルしています</translation>
 <translation id="7646772052135772216">パスワード同期が機能していません</translation>
@@ -10129,6 +10140,7 @@
 <translation id="8592141010104017453">通知を一切表示しない</translation>
 <translation id="859246725979739260">このサイトでは位置情報へのアクセスがブロックされています。</translation>
 <translation id="8593450223647418235">設定が完了するまで、Microsoft 365 でファイルを開くことはできません。</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> は <ph name="DEVICE_TYPE" /> でブロックされています</translation>
 <translation id="8596540852772265699">カスタム ファイル</translation>
 <translation id="8597845839771543242">プロパティの書式:</translation>
 <translation id="8598249292448297523">印刷</translation>
@@ -10548,6 +10560,7 @@
 <translation id="8890529496706615641">プロファイルの名前を変更できませんでした。もう一度お試しいただくか、ご利用の携帯通信会社のテクニカル サポートにお問い合わせください。</translation>
 <translation id="8892168913673237979">設定完了。</translation>
 <translation id="8892246501904593980">[ブックマーク] と [リスト] にすべてのブックマークが表示されます</translation>
+<translation id="8893479486525393799">スタジオマイク</translation>
 <translation id="8893801527741465188">アンインストールが完了しました</translation>
 <translation id="8893928184421379330">デバイス <ph name="DEVICE_LABEL" /> を認識できませんでした。</translation>
 <translation id="8894761918470382415">周辺機器のデータアクセス保護</translation>

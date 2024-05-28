@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Anwani imehifadhiwa kwenye kifaa hiki</translation>
 <translation id="1449835205994625556">Ficha Nenosiri</translation>
 <translation id="1450170672351507823">Kipengele cha ulinzi wa kawaida kimewashwa. Kwa usalama zaidi, tumia kipengele cha usalama Ulioboreshwa.</translation>
+<translation id="1455492980583160269">Tuma Ujumbe</translation>
 <translation id="1469381646033328562">Akaunti yako inadhibitiwa na mzazi wako.
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Gusa mara mbili ili ugeuze mipangilio</translation>
@@ -861,6 +862,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="54401264925851789">Maelezo ya Usalama wa Ukurasa</translation>
 <translation id="5443952882982198570">Kadi za Mikopo</translation>
 <translation id="5444892875087332195">Alamisho</translation>
+<translation id="5453738961176844111">Msimbo wa Nchi</translation>
 <translation id="5454211924362324495">Ili uwazuie wengine wasitumie nenosiri lako, <ph name="BEGIN_LINK" />libadilishe kwenye <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Fungua Nakala ya Nje ya Mtandao</translation>
 <translation id="5459548306731933777">Onyesha Maelezo</translation>
@@ -1189,6 +1191,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6979158407327259162">Hifadhi ya Google</translation>
 <translation id="6983306615164277634">Unaweza pia kugusa na kushikilia sehemu ya anwani ili ubadilishe nafasi.</translation>
 <translation id="6988572888918530647">Dhibiti Akaunti Yako ya Google</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">Hadi</translation>
 <translation id="699954956411469731">Arifa za Vifaa vya Mkononi</translation>
 <translation id="699985840472413751">Funga Upau wa Vipakuliwa</translation>
@@ -1355,6 +1358,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7866872729285243843">Ili upate orodha yako ya kusoma kwenye vifaa vyako vyote, washa kipengele cha "Orodha ya Kusoma" katika mipangilio.</translation>
 <translation id="7866993391592926595">Hatua ya Kuficha Kadi Hii Itazima Ufuatiliaji wa Kifurushi na Kuondoa Data Yako Yote</translation>
 <translation id="7870750252270996949">Picha ya Lenzi Uliyonakili</translation>
+<translation id="7877056713163921063">Weka kwenye Anwani</translation>
 <translation id="7879275349003161544">Onyesha Vipakuliwa</translation>
 <translation id="7883882164760409935">Una manenosiri yaliyotumiwa kwingine.</translation>
 <translation id="7884694604461143138">Historia ya Mambo Uliyotafuta (Yamepatikana <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9000089900434778519">Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
 <translation id="9008201768610948239">Puuza</translation>
 <translation id="9012585441087414258">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari Iwapo ukurasa utafanya kitu chenye kutia mashaka, URL na sehemu za maudhui hutumwa kwenye kipengele cha Kuvinjari Salama na Google.</translation>
-<translation id="9025203546212508704">Telezesha kidole ili upate maelezo kuhusu jinsi ya kuweka mapendeleo kwenye menyu yako</translation>
 <translation id="9029650858822697271">Uliondolewa kwenye akaunti</translation>
 <translation id="9034759925968272072">Hutaondolewa katika Akaunti yako ya Google. Huenda Akaunti yako ya Google ina aina nyingine za historia ya kuvinjari katika <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Onyesha Asili</translation>

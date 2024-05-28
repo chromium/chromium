@@ -314,7 +314,6 @@
 <translation id="2650348088770008516">የግላዊነት መመሪያ ማብራሪያ ተዘግቷል</translation>
 <translation id="2650408372219180431">በዚህ መሣሪያ ላይ የተቀመጡ የይለፍ ቃላትን ወደ ውጭ ይላኩ እና ይሰርዙ</translation>
 <translation id="2650751991977523696">ፋይሉ እንደገና ይውረድ?</translation>
-<translation id="2651465929321991146">ታሪክ እና ትሮች</translation>
 <translation id="265156376773362237">መደበኛ ቅድሚያ መጫን</translation>
 <translation id="2653659639078652383">አስገባ</translation>
 <translation id="2656405586795711023">የድር መተግበሪያዎች</translation>
@@ -906,7 +905,6 @@
 <translation id="5626134646977739690">ስም፦</translation>
 <translation id="5628604359369369630">ያልተነበበ - ከመስመር ውጭ ይገኛል</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />የፍለጋ ታሪክ<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />ሌሎች የእንቅስቃሴ ቅርጾች<ph name="END_LINK2" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ</translation>
-<translation id="564667659802381754">የግላዊነት መመሪያ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">ያለፉት 7 ቀኖች</translation>
 <translation id="5655963694829536461">የእርስዎን ውርዶች ይፈልጉ</translation>
 <translation id="5657871969392618475">መረጃዎ በመገለጫ መቆለፊያ ደህንነቱ የተጠበቀ ነው</translation>
@@ -985,6 +983,7 @@
 <translation id="6002122790816966947">የእርስዎ መሣሪያዎች</translation>
 <translation id="6011308810877101166">የፍለጋ አስተያየት ጥቆማዎችን ያሻሽሉ</translation>
 <translation id="6013305291643746595">በጣም የድሮ ከሆነው ጀምሮ በመደርደር ላይ</translation>
+<translation id="6022659036123304283">Chromeን የራስዎ ያድርጉት</translation>
 <translation id="6026538407078977628">ወደ ሙሉ ገፅ ዕይታ ዘርጋ</translation>
 <translation id="6030719887161080597">የማስታወቂያ አፈጻጸምን ለመለካት በጣቢያዎች ጥቅም ላይ የዋለ መረጃን ያስተዳድድሩ</translation>
 <translation id="6039379616847168523">ወደ ቀጣዩ ትር ዝለል</translation>
@@ -1144,6 +1143,7 @@
 <translation id="6734310707649923383">የጎበኟቸዉን ገጾች ማየት ወይም ከታሪክዎ ውስጥ መሰረዝ ይችላሉ</translation>
 <translation id="6738867403308150051">በማውረድ ላይ…</translation>
 <translation id="674388916582496364">የሚጎበኟቸው ጣቢያዎች ልምድዎን ግላዊነት እንዲያላብሱ እርስዎ የሚፈልጓቸውን ነገሮች ማስታወስ የተለመደ ነው። እንዲሁም ጣቢያዎች ስለዝንባሌዎችዎ መረጃን በChrome አማካኝነት ማከማቸት ይችላሉ።</translation>
+<translation id="6746338529702829275">የመለያ ውሂብዎን ይገምግሙ</translation>
 <translation id="6751521182688001123">አዲስ ትርን በፍጥነት ይክፈቱ። ይህን አቋራጭ ለማርትዕ ነክተው ይያዙ።</translation>
 <translation id="6756507620369789050">ግብረመልስ ያጋሩ</translation>
 <translation id="6762511428368667596"><ph name="NAME" />፣ <ph name="EMAIL" />።</translation>
@@ -1176,6 +1176,7 @@
 <translation id="686490460830618322">የመተግበሪያ ማጣሪያ ሉህ</translation>
 <translation id="6865313869410766144">የራስ-ሙላ ቅጽ ውሂብ</translation>
 <translation id="6867400383614725881">አዲስ ማንነት የማያሳውቅ ትር</translation>
+<translation id="686899695320434745">አድራሻዎች በእርስዎ የይለፍ ሐረግ የተመሰጠሩ አይደሉም። ይህ በሌሎች የGoogle አገልግሎቶች እንዲጠቀሟቸው ያስችልዎታል።</translation>
 <translation id="6869056123412990582">ኮምፒውተር</translation>
 <translation id="6882836635272038266">አደገኛ መሆናቸው ከታወቁ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች መደበኛ ጥበቃ።</translation>
 <translation id="6883204995689174413">አጋራ</translation>
@@ -1600,6 +1601,7 @@
 <translation id="885480114717186641">የ<ph name="HOST_NAME" />ን የዴስክቶፕ ጣቢያ መጠየቅ ይችላሉ</translation>
 <translation id="8856607253650333758">መግለጫዎችን ያግኙ</translation>
 <translation id="8856931513242997049">የማሳወቂያ ፈቃድ ፍሰት ተዘግቷል</translation>
+<translation id="8865415417596392024">በመለያዎ ውስጥ የChrome ውሂብ</translation>
 <translation id="8898822736010347272">አዲስ ስጋቶችን ለማግኘት እንዲያግዝ እና በድር ላይ ያለ ሁሉንም ሰው ለመጠበቅ የጎበኟቸው የአንዳንድ ገጾች ዩአርኤሎችን፣ የተወሰነ የስርዓት መረጃን እና አንዳንድ የገጽ ይዘትን ወደ Google ይልካል።</translation>
 <translation id="8909135823018751308">አጋራ…</translation>
 <translation id="8921980840204105660">የእርስዎን እልባቶች ከሌሎች መሣሪያዎችዎ ለማግኘት ያስምሩ</translation>

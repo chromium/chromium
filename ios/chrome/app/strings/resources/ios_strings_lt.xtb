@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adresas išsaugotas tik šiame įrenginyje</translation>
 <translation id="1449835205994625556">Slėpti slaptažodį</translation>
 <translation id="1450170672351507823">Įprasta apsauga įjungta. Jei norite apsisaugoti dar labiau, naudokite sustiprintą apsaugą.</translation>
+<translation id="1455492980583160269">Siųsti pranešimą</translation>
 <translation id="1469381646033328562">Jūsų paskyrą tvarko vienas iš tėvų.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Dukart palieskite, kad perjungtumėte nustatymą</translation>
@@ -861,6 +862,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="54401264925851789">Puslapio saugos informacija</translation>
 <translation id="5443952882982198570">Kredito kortelės</translation>
 <translation id="5444892875087332195">Žymės</translation>
+<translation id="5453738961176844111">Šalies kodas</translation>
 <translation id="5454211924362324495">Jei nenorite, kad kiti asmenys naudotų jūsų slaptažodį, <ph name="BEGIN_LINK" />pakeiskite jį <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Atidaryti versiją neprisijungus</translation>
 <translation id="5459548306731933777">Rodyti išsamią informaciją</translation>
@@ -1189,6 +1191,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6979158407327259162">„Google“ diskas</translation>
 <translation id="6983306615164277634">Be to, jei norite pakeisti poziciją, galite paliesti ir palaikyti adreso juostą.</translation>
 <translation id="6988572888918530647">„Google“ paskyros tvarkymas</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">Kam</translation>
 <translation id="699954956411469731">Pranešimai mobiliuosiuose</translation>
 <translation id="699985840472413751">Uždaryti atsisiuntimą</translation>
@@ -1355,6 +1358,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7866872729285243843">Norėdami gauti skaitymo sąrašą visuose įrenginiuose, nustatymuose įjunkite „Skaitymo sąrašas“.</translation>
 <translation id="7866993391592926595">Paslėpus šią kortelę bus išjungtas siuntinio stebėjimas ir pašalinti visi jūsų duomenys</translation>
 <translation id="7870750252270996949">Nukopijuotas „Lens“ vaizdas</translation>
+<translation id="7877056713163921063">Pridėti prie kontaktų</translation>
 <translation id="7879275349003161544">Rodyti atsisiuntimus</translation>
 <translation id="7883882164760409935">Turite pakartotinai naudojamų slaptažodžių.</translation>
 <translation id="7884694604461143138">Paieškos istorija (rasta: <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9000089900434778519">Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
 <translation id="9008201768610948239">Nepaisyti</translation>
 <translation id="9012585441087414258">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Jei puslapyje atliekami įtartini veiksmai, URL ir puslapio turinio dalys siunčiami „Google“ saugaus naršymo paslaugai.</translation>
-<translation id="9025203546212508704">Perbraukite, kad sužinotumėte, kaip tinkinti meniu</translation>
 <translation id="9029650858822697271">Buvote atjungti</translation>
 <translation id="9034759925968272072">Nebūsite atjungti nuo „Google“ paskyros. Adresu <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> gali būti pateikta kitų formų jūsų „Google“ paskyros istorija.</translation>
 <translation id="9037965129289936994">Rodyti originalą</translation>

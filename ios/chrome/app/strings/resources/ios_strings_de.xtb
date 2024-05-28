@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Die Adresse wird nur auf diesem Gerät gespeichert</translation>
 <translation id="1449835205994625556">Passwort ausblenden</translation>
 <translation id="1450170672351507823">Standardschutz ist aktiviert. Der erweiterte Schutz bietet noch mehr Sicherheit.</translation>
+<translation id="1455492980583160269">Nachricht senden</translation>
 <translation id="1469381646033328562">Dein Konto wird von deinen Eltern verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Zum Aktivieren bzw. Deaktivieren doppeltippen</translation>
@@ -861,6 +862,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="54401264925851789">Sicherheitsinformationen zur Seite</translation>
 <translation id="5443952882982198570">Kreditkarten</translation>
 <translation id="5444892875087332195">Lesezeichen</translation>
+<translation id="5453738961176844111">Ländercode</translation>
 <translation id="5454211924362324495">Wenn du verhindern möchtest, dass andere dein Passwort verwenden, <ph name="BEGIN_LINK" />ändere es auf <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Offlineversion öffnen</translation>
 <translation id="5459548306731933777">Details anzeigen</translation>
@@ -1189,6 +1191,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Alternativ kannst du auch die Adressleiste gedrückt halten, um die Position zu ändern.</translation>
 <translation id="6988572888918530647">Google-Konto verwalten</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">An</translation>
 <translation id="699954956411469731">Mobile Benachrichtigungen</translation>
 <translation id="699985840472413751">Download schließen</translation>
@@ -1355,6 +1358,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7866872729285243843">Wenn du deine Leseliste auf allen deinen Geräten sehen möchtest, aktiviere in den Einstellungen die Option „Leseliste“.</translation>
 <translation id="7866993391592926595">Wenn du diese Karte ausblendest, wird die Paketverfolgung deaktiviert und alle deine Daten werden entfernt</translation>
 <translation id="7870750252270996949">Aus Lens kopiertes Bild</translation>
+<translation id="7877056713163921063">Zu Kontakten hinzufügen</translation>
 <translation id="7879275349003161544">Downloads anzeigen</translation>
 <translation id="7883882164760409935">Du nutzt wiederverwendete Passwörter.</translation>
 <translation id="7884694604461143138">Suchverlauf (<ph name="COUNT" /> gefunden)</translation>
@@ -1592,7 +1596,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9000089900434778519">Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum Löschen deines Suchverlaufs findest du in der zugehörigen Anleitung.</translation>
 <translation id="9008201768610948239">Ignorieren</translation>
 <translation id="9012585441087414258">Schützt vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind. Wenn sich eine Seite verdächtig verhält, werden URLs und Teile von Seiteninhalten an Google Safe Browsing gesendet.</translation>
-<translation id="9025203546212508704">Wische, um zu erfahren, wie du dein Menü anpassen kannst</translation>
 <translation id="9029650858822697271">Du wurdest abgemeldet</translation>
 <translation id="9034759925968272072">Du wirst nicht von deinem Google-Konto abgemeldet. Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> weitere Arten von Browserverlaufsdaten für dein Google-Konto.</translation>
 <translation id="9037965129289936994">Original anzeigen</translation>

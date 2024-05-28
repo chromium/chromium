@@ -1612,8 +1612,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2165102982098084499">Tato zařízení jste propojili naskenováním QR kódu.</translation>
 <translation id="2165177462441582039">Zvolte, jak dlouho mají jednotlivé položky zůstat zvýrazněny</translation>
 <translation id="2166369534954157698">Příliš žluťoučký kůň úpěl ďábelské ódy</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Toto zařízení (sériové číslo: <ph name="SERIAL_NUMBER" />) bylo uzamčeno.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Správa zařízení Chrome pomocí služby <ph name="MS_AD_NAME" /> již není podporována. Pokud se chcete přihlásit, použijte jiné zařízení nebo kontaktujte administrátora zařízení.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Přesto se přihlásit</translation>
 <translation id="2173302385160625112">Zkontrolujte připojení k internetu.</translation>
 <translation id="2173801458090845390">Přidat do tohoto zařízení ID požadavku</translation>
@@ -6902,7 +6900,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6154240335466762404">Odebrat všechny porty</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6154739047827675957">Nastavení služby OneDrive se nezdařilo</translation>
-<translation id="6154820449290823443">Spravujte přístup a blokujte na tomto Chromebooku aplikace.</translation>
 <translation id="6155141482566063812">Karta na pozadí sdílí vaši obrazovku</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Vytvořit přístupový klíč</translation>
@@ -7533,6 +7530,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6647690760956378579">Náhled přirozeného hlasu</translation>
 <translation id="6648911618876616409">K instalaci je připravena kritická aktualizace. Začněte tím, že se přihlásíte.</translation>
 <translation id="6649018507441623493">Chviličku…</translation>
+<translation id="6650072551060208490">Web <ph name="ORIGIN_NAME" /> chce ověřit, zda jste to vy</translation>
 <translation id="6650206238642452078">Odebírat události systému ChromeOS</translation>
 <translation id="6650584564768559994">Získáte vyváženou úsporu paměti. Karty přestanou být aktivní po optimální době.</translation>
 <translation id="665061930738760572">Otevřít v &amp;novém okně</translation>
@@ -8834,7 +8832,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7643842463591647490">{0,plural, =1{# otevřené okno}few{# otevřená okna}many{# otevřeného okna}other{# otevřených oken}}</translation>
 <translation id="7643932971554933646">Povolit webu zobrazení souborů?</translation>
 <translation id="7644543211198159466">Barva a motiv</translation>
-<translation id="7644953783774050577">Nevybrat žádné</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlastník)</translation>
 <translation id="7645681574855902035">Zálohování kontejneru systému Linux se ruší</translation>
 <translation id="7646772052135772216">Synchronizace hesel nefunguje</translation>

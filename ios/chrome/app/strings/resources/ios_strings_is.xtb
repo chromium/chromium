@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Heimilisfang er aðeins vistað á þessu tæki</translation>
 <translation id="1449835205994625556">Fela aðgangsorð</translation>
 <translation id="1450170672351507823">Kveikt er á hefðbundinni vörn. Þú getur aukið öryggið með því að nota aukna vörn.</translation>
+<translation id="1455492980583160269">Senda skilaboð</translation>
 <translation id="1469381646033328562">Foreldri þitt stjórnar reikningnum þínum.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Ýttu tvisvar til að breyta stillingum</translation>
@@ -861,6 +862,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="54401264925851789">Öryggisupplýsingar síðu</translation>
 <translation id="5443952882982198570">Kreditkort</translation>
 <translation id="5444892875087332195">Bókamerki</translation>
+<translation id="5453738961176844111">Landskóði</translation>
 <translation id="5454211924362324495">Til að koma í veg fyrir að aðrir noti aðgangsorðið þitt <ph name="BEGIN_LINK" />skaltu breyta því á <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Opna útgáfu án nettengingar</translation>
 <translation id="5459548306731933777">Sýna upplýsingar</translation>
@@ -1189,6 +1191,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Þú getur einnig haldið fingri á veffangastikunni til að breyta staðsetningu hennar.</translation>
 <translation id="6988572888918530647">Stjórnaðu Google reikningnum</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Til</translation>
 <translation id="699954956411469731">Tilkynningar í snjalltæki</translation>
 <translation id="699985840472413751">Loka niðurhali</translation>
@@ -1355,6 +1358,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7866872729285243843">Kveiktu á „Leslisti“ í stillingunum til að fá aðgang að leslistanum þínum í öllum tækjum.</translation>
 <translation id="7866993391592926595">Að fela þetta spjald slekkur á rakningu fyrir pakka og fjarlægir öll gögnin þín</translation>
 <translation id="7870750252270996949">Linsumynd sem þú afritaðir</translation>
+<translation id="7877056713163921063">Bæta við tengiliði</translation>
 <translation id="7879275349003161544">Sýna niðurhal</translation>
 <translation id="7883882164760409935">Þú ert með endurnýtt aðgangsorð.</translation>
 <translation id="7884694604461143138">Leitarferill (<ph name="COUNT" /> fannst/fundust)</translation>
@@ -1592,7 +1596,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9000089900434778519">Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="9008201768610948239">Hunsa</translation>
 <translation id="9012585441087414258">Vernda þig gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Ef grunsamleg virkni greinist á síðu eru vefslóðir og hlutar af innihaldi síðna sendir í örugga vefskoðun Google.</translation>
-<translation id="9025203546212508704">Strjúktu til að kynna þér hvernig þú getur sérsniðið valmyndina</translation>
 <translation id="9029650858822697271">Þú skráðist út</translation>
 <translation id="9034759925968272072">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Sýna frumtexta</translation>

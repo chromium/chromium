@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adres is net op hierdie toestel gestoor</translation>
 <translation id="1449835205994625556">Versteek wagwoord</translation>
 <translation id="1450170672351507823">Standaardbeskerming is aan. Gebruik verbeterde beskerming vir selfs nog meer sekuriteit.</translation>
+<translation id="1455492980583160269">Stuur boodskap</translation>
 <translation id="1469381646033328562">Jou rekening word deur jou ouer bestuur.
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Dubbeltik om instelling te wissel</translation>
@@ -861,6 +862,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="54401264925851789">Bladsy se sekuriteitsinligting</translation>
 <translation id="5443952882982198570">Kredietkaarte</translation>
 <translation id="5444892875087332195">Boekmerke</translation>
+<translation id="5453738961176844111">Landkode</translation>
 <translation id="5454211924362324495"><ph name="BEGIN_LINK" />Verander jou wagwoord op <ph name="WEBSITE" /><ph name="END_LINK" /> om te keer dat ander dit gebruik</translation>
 <translation id="5457226814769348910">Maak vanlyn weergawe oop</translation>
 <translation id="5459548306731933777">Wys besonderhede</translation>
@@ -1189,6 +1191,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Jy kan ook die adresbalk raak en hou om die posisie te verander.</translation>
 <translation id="6988572888918530647">Bestuur jou Google-rekening</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">Aan</translation>
 <translation id="699954956411469731">Mobiele kennisgewings</translation>
 <translation id="699985840472413751">Maak aflaai toe</translation>
@@ -1355,6 +1358,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7866872729285243843">Skakel “Leeslys” in instellings aan om jou leeslys op al jou toestelle te kry.</translation>
 <translation id="7866993391592926595">As jy hierdie kaart versteek, sal jou pakkette nie nagespoor word nie en al jou data sal verwyder word</translation>
 <translation id="7870750252270996949">Lens-prent wat jy gekopieer het</translation>
+<translation id="7877056713163921063">Voeg by kontakte</translation>
 <translation id="7879275349003161544">Wys aflaaie</translation>
 <translation id="7883882164760409935">Jy het hergebruikte wagwoord.</translation>
 <translation id="7884694604461143138">Soekgeskiedenis (<ph name="COUNT" /> gevind)</translation>
@@ -1592,7 +1596,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9000089900434778519">Jou soekenjin is <ph name="DSE_NAME" />. Sien hulle instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="9008201768610948239">Ignoreer</translation>
 <translation id="9012585441087414258">Beskerm teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is. As ’n bladsy iets verdag doen, word URL’e en stukkies van die bladsyinhoud na Google Veiligblaai toe gestuur.</translation>
-<translation id="9025203546212508704">Swiep om uit te vind hoe om jou kieslys te pasmaak</translation>
 <translation id="9029650858822697271">Jy is afgemeld</translation>
 <translation id="9034759925968272072">Jy sal nie uit jou Google-rekening afgemeld word nie. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis by <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="9037965129289936994">Wys oorspronklike</translation>

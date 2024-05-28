@@ -2192,15 +2192,6 @@ Kyber поддерживает обратную совместимость. Су
 <translation id="2699836109975228367">Включить монофонический звук на экране входа</translation>
 <translation id="2702023190395322609">Включить советы о том, что посмотреть</translation>
 <translation id="2702682139813393777">Принудительно запускать хосты для нативного обмена сообщениями в Windows через cmd.exe</translation>
-<translation id="2703733412051211941">Выполняет действия, когда на компьютере нет активности.
-
-      Если правило настроено, оно определяет, по истечении какого периода неактивности пользователя (в минутах) браузер выполнит действия, указанные в правиле <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Если правило не настроено, никакие действия выполняться не будут.
-
-      Минимальное пороговое значение – одна минута.
-
-      Понятие "активность пользователя" определяется API операционной системы. Например, это может быть перемещение курсора мыши или ввод с клавиатуры.</translation>
 <translation id="270582584528242502">Не показывать диалоговое окно с предупреждением при закрытии браузера</translation>
 <translation id="2706708761587205154">Разрешить печать только с вводом PIN-кода</translation>
 <translation id="2707733461906745082">Создание отдельного профиля</translation>
@@ -3744,29 +3735,6 @@ URL должен иметь стандартный вид (например, htt
 <translation id="3982465141749620677">Предлагать пройти повторную аутентификацию на вкладке</translation>
 <translation id="398294729592983401">Пользователи смогут управлять на своих устройствах защитой от создания цифровых отпечатков, которую обеспечивает <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="3983162212222338509">DNS-преобразование может выполняться как в сетевом процессе, так и вне его или частично в нем и частично вне этого процесса – в зависимости от конфигурации системы и флагов функций</translation>
-<translation id="3984773186203819634">Список действий, которые необходимо выполнить, когда истечет период, заданный в правиле <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Правило IdleTimeoutActions не действует, если не настроено правило <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Когда истечет время ожидания, установленное в правиле <ph name="IDLE_TIMEOUT_POLICY_NAME" />, браузер выполнит указанные действия.
-
-      Если правило IdleTimeoutActions не настроено или для него задано пустое значение, правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> работать не будет.
-
-      Поддерживаемые действия:
-
-      <ph name="CLOSE_BROWSERS_ACTION" /> (закрытие всех окон браузеров и PWA в этом профиле). Не поддерживается на устройствах Android и iOS.
-
-      <ph name="CLOSE_TABS_ACTION" /> (закрытие всех вкладок в открытых окнах). Поддерживается только на устройствах iOS.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" /> (показ окна выбора профиля). Не поддерживается на устройствах Android и iOS.
-
-      <ph name="SIGN_OUT_ACTION" /> (выход из аккаунта для текущего пользователя, выполнившего вход). Поддерживается только на устройствах iOS.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> (очистка разных категорий данных о работе в браузере). Подробные сведения представлены в правиле <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />. Действия из этого списка, которые поддерживаются на устройствах iOS: <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" /> и <ph name="CLEAR_AUTOFILL_ACTION" />.
-
-      <ph name="RELOAD_PAGES_ACTION" /> (обновление всех веб-страниц). На некоторых страницах пользователь может сначала получить запрос на подтверждение действия. Не поддерживается на устройствах iOS.
-
-      Действия <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> и <ph name="CLEAR_SITE_SETTINGS_ACTION" /> остановят синхронизацию для соответствующих типов данных, если функция "<ph name="CHROME_SYNC_NAME" />" не отключена в настройках правила <ph name="SYNC_DISABLED_POLICY_NAME" /> и не отключено правило <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="3986700049001404598">Разрешить пользователям завершать процессы с помощью диспетчера задач Chrome</translation>
 <translation id="398884292557092447">Если правило не настроено или задано значение True, пользователи смогут сами управлять вариантами автозаполнения для банковских карт через интерфейс.
 
@@ -3866,11 +3834,6 @@ URL должен иметь стандартный вид (например, htt
 <translation id="4051723201852944592">Включить перекрытие окон</translation>
 <translation id="4052529125939620019">Загружать расширение CryptoToken при запуске</translation>
 <translation id="4053157306171963473">Отключить отправку данных о продолжительности работы устройства</translation>
-<translation id="4055758693679485627">Правило позволяет настроить список данных о работе в браузере, которые должны удаляться, когда пользователь закрывает все окна браузера. Вы можете выбрать следующие типы данных: историю браузера (<ph name="DATA_TYPE_BROWSING_HISTORY" />), историю скачиваний (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), файлы cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), кеш <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, информацию для автозаполнения (<ph name="DATA_TYPE_AUTOFILL" />), пароли (<ph name="DATA_TYPE_PASSWORD" />), настройки сайтов (<ph name="DATA_TYPE_SITE_SETTINGS" />) и данные размещенных приложений (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Это правило не имеет приоритет над правилом <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-До Chrome версии 114 это правило работало, только если для правила <ph name="SYNC_DISABLED_POLICY_NAME" /> установлено значение True. Начиная с Chrome версии 115 это правило позволяет останавливать синхронизацию для соответствующих типов данных, если функция "<ph name="CHROME_SYNC_NAME" />" не отключена правилом <ph name="SYNC_DISABLED_POLICY_NAME" /> и включено правило <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
-
-      Если <ph name="PRODUCT_NAME" /> закрывается непредвиденно (например, из-за сбоя в работе браузера или ОС), данные о работе в браузере удаляются при следующей загрузке профиля.</translation>
 <translation id="4056910949759281379">Отключение протокола SPDY</translation>
 <translation id="4057442294431066708">Это правило определяет, какое сочетание клавиш используется для переназначения событий, соответствующих клавишам F11 и F12, на подстранице переназначения клавиш. Эти настройки применяются только для клавиатур, совместимых с ChromeOS. Если правило не настроено, они не действуют.</translation>
 <translation id="4061590579642538878">Передача информации из отчетов о сбое</translation>
@@ -4296,15 +4259,6 @@ URL должен иметь стандартный вид (например, htt
 <translation id="4426986640594727372">Разрешить доступ к геолокации системы</translation>
 <translation id="4427173305799125784">Запретить добавление заметок в PDF-файлы в средстве просмотра PDF</translation>
 <translation id="4432762137771104529">Включить передачу расширенных отчетов Безопасного просмотра</translation>
-<translation id="4434531680131327140">Правило устанавливает настройки автоматической очистки данных о работе в браузере <ph name="PRODUCT_NAME" />. Оно позволяет администраторам указывать, когда браузер удаляет информацию определенных типов. Это полезно при работе с конфиденциальными данными клиентов.
-
-      Вы можете выбрать следующие типы данных: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> и <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> и <ph name="DATA_TYPE_HOSTED_APP_DATA" /> не поддерживаются в Android.
-
-      Браузер будет автоматически удалять данные выбранного типа, которые хранятся дольше <ph name="TIME_TO_LIVE_IN_HOURS" />. Минимальное допустимое значение: 1 час.
-
-      Данные с истекшим сроком хранения удаляются через 15 секунд после запуска браузера и каждые следующие 30 минут во время его работы.
-
-      До Chrome версии 114 это правило работало, только если для правила <ph name="SYNC_DISABLED_POLICY_NAME" /> установлено значение True. Начиная с Chrome версии 115 это правило позволяет останавливать синхронизацию для соответствующих типов данных, если функция "<ph name="CHROME_SYNC_NAME" />" не отключена правилом <ph name="SYNC_DISABLED_POLICY_NAME" /> и включено правило <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="443454694385851356">Устаревшие (небезопасно)</translation>
 <translation id="4435032708588431506">Разрешить использование протокола QUIC</translation>
 <translation id="443665821428652897">Удаление данных сайта при закрытии браузера (поддержка прекращена)</translation>

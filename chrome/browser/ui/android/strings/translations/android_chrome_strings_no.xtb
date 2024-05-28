@@ -314,7 +314,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2650348088770008516">Forklaringen til personvernveiledningen er lukket</translation>
 <translation id="2650408372219180431">Eksporter og slett passord som er lagret på denne enheten</translation>
 <translation id="2650751991977523696">Vil du laste ned filen på nytt?</translation>
-<translation id="2651465929321991146">Logg og faner</translation>
 <translation id="265156376773362237">Standard forhåndslasting</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2656405586795711023">Nettprogrammer</translation>
@@ -906,7 +905,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5628604359369369630">Ulest – tilgjengelig uten nett</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Søkeloggen<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />annen typer aktivitet<ph name="END_LINK2" /> kan lagres i Google-kontoen din.</translation>
-<translation id="564667659802381754">Personvernveiledning <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
 <translation id="5655963694829536461">Søk i nedlastingene dine</translation>
 <translation id="5657871969392618475">Informasjonen din er sikret med en profillås</translation>
@@ -985,6 +983,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6002122790816966947">Enhetene dine</translation>
 <translation id="6011308810877101166">Gjør søkeforslagene bedre</translation>
 <translation id="6013305291643746595">Sorterer etter eldste</translation>
+<translation id="6022659036123304283">Gi Chrome et personlig preg</translation>
 <translation id="6026538407078977628">Utvid til fullskjerm</translation>
 <translation id="6030719887161080597">Administrer informasjon som nettsteder bruker til å måle annonseresultater</translation>
 <translation id="6039379616847168523">Gå til den neste fanen</translation>
@@ -1144,6 +1143,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6734310707649923383">Du kan se sidene du har besøkt, eller slette dem fra loggen</translation>
 <translation id="6738867403308150051">Laster ned …</translation>
 <translation id="674388916582496364">Det er vanlig at nettsteder du besøker, husker ting du er interessert i, for å gi opplevelsen din personlig preg. Nettsteder kan også lagre informasjon om interessene dine i Chrome.</translation>
+<translation id="6746338529702829275">Gjennomgå kontodataene dine</translation>
 <translation id="6751521182688001123">Åpner raskt en ny fane. Trykk og hold for å redigere denne snarveien.</translation>
 <translation id="6756507620369789050">Gi tilbakemelding</translation>
 <translation id="6762511428368667596"><ph name="NAME" /> (<ph name="EMAIL" />).</translation>
@@ -1176,6 +1176,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="686490460830618322">Ark for appfiltrering</translation>
 <translation id="6865313869410766144">Skjemadata lagret med autofyll</translation>
 <translation id="6867400383614725881">Ny inkognitofane</translation>
+<translation id="686899695320434745">Adresser krypteres ikke med passordfrasen. Dermed kan du bruke dem i andre Google-tjenester.</translation>
 <translation id="6869056123412990582">datamaskin</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige.</translation>
 <translation id="6883204995689174413">Del</translation>
@@ -1600,6 +1601,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="885480114717186641">Du kan be om nettsted for datamaskiner for <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Få beskrivelser</translation>
 <translation id="8856931513242997049">Flyt for varslingstillatelse er lukket</translation>
+<translation id="8865415417596392024">Chrome-data i kontoen din</translation>
 <translation id="8898822736010347272">Sender nettadresser for noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google for å bidra til å oppdage nye trusler og beskytte alle på nettet.</translation>
 <translation id="8909135823018751308">Del</translation>
 <translation id="8921980840204105660">Synkroniser for å få bokmerkene dine på andre enheter du bruker</translation>

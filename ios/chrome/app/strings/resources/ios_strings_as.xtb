@@ -90,6 +90,7 @@
 <translation id="143681031165817424">ঠিকনা কেৱল এই ডিভাইচত ছেভ কৰা হৈছে</translation>
 <translation id="1449835205994625556">পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="1450170672351507823">সাধাৰণ সুৰক্ষা অন কৰা আছে। আৰু অধিক সুৰক্ষাৰ বাবে বৰ্ধিত সুৰক্ষা ব্যৱহাৰ কৰক।</translation>
+<translation id="1455492980583160269">বাৰ্তা পঠিয়াওক</translation>
 <translation id="1469381646033328562">আপোনাৰ অভিভাৱকে আপোনাৰ একাউণ্টটো পৰিচালনা কৰে।
 <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">ছেটিং ট’গ’ল কৰিবলৈ দুবাৰ টিপক।</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">পৃষ্ঠাৰ সুৰক্ষাৰ তথ্য</translation>
 <translation id="5443952882982198570">ক্ৰেডিট কাৰ্ড</translation>
 <translation id="5444892875087332195">বুকমার্ক</translation>
+<translation id="5453738961176844111">দেশৰ ক’ড</translation>
 <translation id="5454211924362324495">অন্য লোকে আপোনাৰ পাছৱৰ্ড ব্যৱহাৰ কৰাটো বন্ধ কৰিবলৈ, <ph name="BEGIN_LINK" /><ph name="WEBSITE" />ত সেইটো সলনি কৰক<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">অফলাইন সংস্কৰণটো খোলক</translation>
 <translation id="5459548306731933777">সবিশেষ দেখুৱাওক</translation>
@@ -1189,6 +1191,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">আপুনি অৱস্থান সলনি কৰিবলৈ ঠিকনা বাৰ স্পৰ্শ কৰি ধৰি ৰাখিব পাৰে।</translation>
 <translation id="6988572888918530647">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">প্ৰতি</translation>
 <translation id="699954956411469731">ম’বাইলৰ জাননী</translation>
 <translation id="699985840472413751">ডাউনল’ড বন্ধ কৰক</translation>
@@ -1355,6 +1358,7 @@
 <translation id="7866872729285243843">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ পঢ়াৰ সূচী পাবলৈ ছেটিঙত “পঢ়াৰ সূচী” অন কৰক।</translation>
 <translation id="7866993391592926595">এই কাৰ্ডখন লুকুওৱাটোৱে পেকেজ ট্ৰেক কৰাটো অফ কৰিব আৰু আপোনাৰ আটাইবোৰ ডেটা আঁতৰাব</translation>
 <translation id="7870750252270996949">Lensৰে প্ৰতিলিপি কৰা প্ৰতিচ্ছবি</translation>
+<translation id="7877056713163921063">সৰ্ম্পকসূচীত যোগ দিয়ক</translation>
 <translation id="7879275349003161544">ডাউনল’ড ফ’ল্ডাৰ দেখুৱাওক</translation>
 <translation id="7883882164760409935">আপোনাৰ পুনৰ্ব্যৱহৃত পাছৱৰ্ড আছে।</translation>
 <translation id="7884694604461143138">সন্ধানৰ ইতিহাস (<ph name="COUNT" /> টা পোৱা গৈছে)</translation>
@@ -1592,7 +1596,6 @@
 <translation id="9000089900434778519">আপোনাৰ সন্ধানৰ ইঞ্জিনটো হৈছে <ph name="DSE_NAME" />। যদি প্ৰযোজ্য হয়, আপোনাৰ সন্ধানৰ ইতিহাস মচিবলৈ আপোনাৰ সন্ধানৰ ইঞ্জিনৰ নিৰ্দেশাৱলী চাওক।</translation>
 <translation id="9008201768610948239">উপেক্ষা কৰক</translation>
 <translation id="9012585441087414258">বিপজ্জনক হিচাপে জনাজাত ছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষিত কৰে। যদি কোনো পৃষ্ঠাই কোনো সন্দেহজনক কাৰ্য কৰে, তেন্তে URL আৰু পৃষ্ঠাৰ কিছুমান সমল Googleৰ সুৰক্ষিত ব্ৰাউজিং লৈ পঠিওৱা হয়।</translation>
-<translation id="9025203546212508704">আপোনাৰ মেনু কেনেকৈ কাষ্টমাইজ কৰিব পাৰি জানিবলৈ ছোৱাইপ কৰক</translation>
 <translation id="9029650858822697271">আপোনাক ছাইন আউট কৰোৱা হৈছে</translation>
 <translation id="9034759925968272072">আপোনাক নিজৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰোৱা নহয়। <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />ত আপোনাৰ Google একাউণ্টৰ অন্য ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস থাকিবও পাৰে।</translation>
 <translation id="9037965129289936994">প্ৰকৃত সমল দেখুৱাওক</translation>

@@ -1619,8 +1619,6 @@
 <translation id="2165102982098084499">QR குறியீட்டை ஸ்கேன் செய்ததன் மூலம் இந்தச் சாதனங்களை இணைத்துள்ளீர்கள்.</translation>
 <translation id="2165177462441582039">திரையில் உள்ள ஒவ்வொன்றையும் எவ்வளவு நேரம் ஹைலைட் செய்ய வேண்டும் என்பதைத் தேர்வு செய்யலாம்</translation>
 <translation id="2166369534954157698">அகர முதல எழுத்தெல்லாம் ஆதிபகவன் முதற்றே உலகு</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />இந்தச் சாதனம் (SN: <ph name="SERIAL_NUMBER" />) பூட்டப்பட்டது.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> உடன் கூடிய Chrome சாதன நிர்வாகி இனி ஆதரிக்கப்படாது. உள்நுழைய வேறு சாதனத்தைப் பயன்படுத்தவும் அல்லது உங்கள் சாதன நிர்வாகியைத் தொடர்புகொள்ளவும்.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">எப்படியேனும் உள்நுழை</translation>
 <translation id="2173302385160625112">உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="2173801458090845390">இந்தச் சாதனத்தில் கோரிக்கை ஐடியைச் சேர்</translation>
@@ -6902,7 +6900,6 @@
 <translation id="6154240335466762404">அனைத்துப் போர்ட்டுகளையும் அகற்று</translation>
 <translation id="615436196126345398">நெறிமுறை</translation>
 <translation id="6154739047827675957">OneDrive அமைவு நிறைவடையவில்லை</translation>
-<translation id="6154820449290823443">இந்த Chromebookகில் உள்ள ஆப்ஸுக்கான அணுகலை நிர்வகிக்கலாம் தடுக்கலாம்.</translation>
 <translation id="6155141482566063812">பின்னணித் தாவல் உங்கள் திரையைப் பகிர்கிறது</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">கடவுச்சாவியை உருவாக்கு</translation>
@@ -7528,6 +7525,7 @@
 <translation id="6647690760956378579">இயல்பான குரல் மாதிரி</translation>
 <translation id="6648911618876616409">முக்கியப் புதுப்பிப்பு நிறுவுவதற்குத் தயாராக உள்ளது. தொடங்க, உள்நுழையவும்.</translation>
 <translation id="6649018507441623493">சற்று காத்திருக்கவும்...</translation>
+<translation id="6650072551060208490">இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>
 <translation id="6650206238642452078">ChromeOS சிஸ்டம் நிகழ்வுகளில் குழு சேர்</translation>
 <translation id="6650584564768559994">நினைவகத்தில் குறிப்பிட்ட அளவு இடம் காலியாகும். குறிப்பிட்ட நேரம் பயன்படுத்தவில்லை என்றால் உங்கள் பக்கங்கள் செயலற்ற நிலைக்குச் செல்லும்.</translation>
 <translation id="665061930738760572">&amp;புதிய சாளரத்தில் திற</translation>
@@ -8829,7 +8827,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# சாளரம் திறக்கப்பட்டுள்ளது}other{# சாளரங்கள் திறக்கப்பட்டுள்ளன}}</translation>
 <translation id="7643932971554933646">ஃபைல்களைப் பார்க்க வலைத்தளத்தை அனுமதிக்கவா?</translation>
 <translation id="7644543211198159466">வண்ணமும் தீமும்</translation>
-<translation id="7644953783774050577">எதையும் தேர்ந்தெடுக்காதே</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (உரிமையாளர்)</translation>
 <translation id="7645681574855902035">Linux காப்புப் பிரதியை ரத்துசெய்கிறது</translation>
 <translation id="7646772052135772216">கடவுச்சொல் ஒத்திசைவு இயங்கவில்லை</translation>

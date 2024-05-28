@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Адресу збережено лише на цьому пристрої</translation>
 <translation id="1449835205994625556">Сховати пароль</translation>
 <translation id="1450170672351507823">Стандартний захист увімкнено. Щоб посилити свою безпеку, активуйте покращений захист.</translation>
+<translation id="1455492980583160269">Надіслати повідомлення</translation>
 <translation id="1469381646033328562">Обліковим записом керує один із твоїх батьків.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Двічі торкніться, щоб змінити налаштування</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">Відомості про безпеку сторінки</translation>
 <translation id="5443952882982198570">Кредитні картки</translation>
 <translation id="5444892875087332195">Закладки</translation>
+<translation id="5453738961176844111">Код країни</translation>
 <translation id="5454211924362324495">Щоб інші люди не використовували ваш пароль, <ph name="BEGIN_LINK" />змініть його на сайті <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Відкрити офлайн-версію</translation>
 <translation id="5459548306731933777">Показати деталі</translation>
@@ -1189,6 +1191,7 @@
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6983306615164277634">Щоб змінити положення адресного рядка, натисніть його й утримуйте.</translation>
 <translation id="6988572888918530647">Керуйте обліковим записом Google</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Кому</translation>
 <translation id="699954956411469731">Сповіщення на мобільному пристрої</translation>
 <translation id="699985840472413751">Закрити панель завантаження</translation>
@@ -1355,6 +1358,7 @@
 <translation id="7866872729285243843">Щоб мати доступ до списку читання на всіх своїх пристроях, увімкніть опцію "Список читання" в налаштуваннях.</translation>
 <translation id="7866993391592926595">Якщо сховати цю картку, відстеження замовлень буде вимкнено, а всі ваші дані – вилучено</translation>
 <translation id="7870750252270996949">Шукати скопійоване зображення через Об’єктив</translation>
+<translation id="7877056713163921063">Додати в контакти</translation>
 <translation id="7879275349003161544">Показати завантаження</translation>
 <translation id="7883882164760409935">У вас є повторно використані паролі.</translation>
 <translation id="7884694604461143138">Історія пошуку (знайдено: <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@
 <translation id="9000089900434778519">Ваша пошукова система – <ph name="DSE_NAME" />. Перегляньте її вказівки щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="9008201768610948239">Ігнорувати</translation>
 <translation id="9012585441087414258">Захищає від відомих небезпечних веб-сайтів, завантажень і розширень. Якщо сторінка виконує підозрілі дії, URL-адреси й фрагменти контенту надсилаються в Безпечний перегляд Google.</translation>
-<translation id="9025203546212508704">Гортайте, щоб дізнатись, як налаштувати меню</translation>
 <translation id="9029650858822697271">Ви вийшли з облікового запису</translation>
 <translation id="9034759925968272072">Ви не вийдете з облікового запису Google. Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці  <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Показати оригінал</translation>

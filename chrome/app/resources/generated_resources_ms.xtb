@@ -1623,8 +1623,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2165102982098084499">Anda telah memautkan peranti ini dengan mengimbas kod QR.</translation>
 <translation id="2165177462441582039">Pilih tempoh serlahan dipaparkan pada setiap item</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Peranti ini (SN: <ph name="SERIAL_NUMBER" />) telah dikunci.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pengurusan peranti Chrome dengan <ph name="MS_AD_NAME" /> tidak lagi disokong. Untuk log masuk, gunakan peranti lain atau hubungi pentadbir peranti anda.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Log masuk juga</translation>
 <translation id="2173302385160625112">Periksa sambungan Internet anda</translation>
 <translation id="2173801458090845390">Tambahkan ID permintaan pada peranti ini</translation>
@@ -1712,6 +1710,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2234827758954819389">Panduan Privasi</translation>
 <translation id="2234876718134438132">Segerak dan perkhidmatan Google</translation>
 <translation id="2235344399760031203">Kuki pihak ketiga disekat</translation>
+<translation id="2236949375853147973">Aktiviti Saya</translation>
 <translation id="2238379619048995541">Data Keadaan Kekerapan</translation>
 <translation id="2241053333139545397">Baca dan tukar data anda pada beberapa laman web</translation>
 <translation id="2241634353105152135">Hanya sekali</translation>
@@ -5228,6 +5227,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4853020600495124913">Buka dalam tetingkap &amp;baharu</translation>
 <translation id="4854317507773910281">Pilih akaun ibu/bapa untuk kelulusan</translation>
 <translation id="485480310608090163">Lagi tetapan dan kebenaran</translation>
+<translation id="4858599593306712511">Kawalan ibu bapa apl</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Diredamkan oleh pentadbir anda</translation>
 <translation id="4862642413395066333">Menandatangan Respons OCSP</translation>
@@ -6931,7 +6931,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6154240335466762404">Alih keluar semua port</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6154739047827675957">Persediaan OneDrive gagal</translation>
-<translation id="6154820449290823443">Mengurus akses dan menyekat apl pada Chromebook ini.</translation>
 <translation id="6155141482566063812">Tab latar belakang berkongsi skrin anda</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Buat kunci laluan</translation>
@@ -7558,6 +7557,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6647690760956378579">Pratonton suara semula jadi</translation>
 <translation id="6648911618876616409">Kemas kini genting sudah sedia untuk dipasang. Log masuk untuk bermula.</translation>
 <translation id="6649018507441623493">Tunggu sebentar...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingin mengesahkan orang itu ialah anda</translation>
 <translation id="6650206238642452078">Langgan peristiwa sistem ChromeOS</translation>
 <translation id="6650584564768559994">Dapatkan penjimatan memori seimbang. Tab anda menjadi tidak aktif selepas tempoh masa yang optimum.</translation>
 <translation id="665061930738760572">Buka dalam &amp;Tetingkap Baharu</translation>
@@ -8863,7 +8863,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7643842463591647490">{0,plural, =1{# tetingkap terbuka}other{# tetingkap terbuka}}</translation>
 <translation id="7643932971554933646">Benarkan tapak membaca fail?</translation>
 <translation id="7644543211198159466">Warna dan tema</translation>
-<translation id="7644953783774050577">Jangan pilih apa-apa</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (pemilik)</translation>
 <translation id="7645681574855902035">Membatalkan sandaran Linux</translation>
 <translation id="7646772052135772216">Penyegerakan kata laluan tidak berfungsi</translation>

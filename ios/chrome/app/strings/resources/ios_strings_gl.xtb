@@ -90,6 +90,7 @@
 <translation id="143681031165817424">O enderezo gardouse só neste dispositivo</translation>
 <translation id="1449835205994625556">Ocultar contrasinal</translation>
 <translation id="1450170672351507823">A protección estándar está activada. Se queres unha seguranza aínda maior, utiliza a protección mellorada.</translation>
+<translation id="1455492980583160269">Envía unha mensaxe</translation>
 <translation id="1469381646033328562">A túa conta está xestionada polo teu pai ou pola túa nai.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Toca dúas veces para activar ou desactivar a configuración</translation>
@@ -861,6 +862,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="54401264925851789">Información de seguranza da páxina</translation>
 <translation id="5443952882982198570">Tarxetas de crédito</translation>
 <translation id="5444892875087332195">Marcadores</translation>
+<translation id="5453738961176844111">Código de país</translation>
 <translation id="5454211924362324495">Para evitar que outras persoas usen o teu contrasinal, <ph name="BEGIN_LINK" />cámbiao en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Abrir versión sen conexión</translation>
 <translation id="5459548306731933777">Mostrar detalles</translation>
@@ -1189,6 +1191,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Tamén podes manter premida a barra de enderezos para cambiar a posición.</translation>
 <translation id="6988572888918530647">Xestionar a túa Conta de Google</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Para</translation>
 <translation id="699954956411469731">Notificacións para móbiles</translation>
 <translation id="699985840472413751">Pechar a barra de descargas</translation>
@@ -1355,6 +1358,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7866872729285243843">Para desfrutar da lista de lectura en todos os teus dispositivos, activa Lista de lectura na configuración.</translation>
 <translation id="7866993391592926595">Se ocultas esta tarxeta, desactivarase o seguimento automático de paquetes e quitaranse os teus datos</translation>
 <translation id="7870750252270996949">Imaxe de Lens copiada</translation>
+<translation id="7877056713163921063">Engádeo aos contactos</translation>
 <translation id="7879275349003161544">Mostrar descargas</translation>
 <translation id="7883882164760409935">Tes contrasinais reutilizados.</translation>
 <translation id="7884694604461143138">Historial de busca (coincidencias atopadas: <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9000089900434778519">O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Se algunha páxina leva a cabo unha acción sospeitosa, os URL e algúns fragmentos do contido da páxina enviaranse a Navegación segura de Google.</translation>
-<translation id="9025203546212508704">Pasa o dedo para descubrir como personalizar o menú</translation>
 <translation id="9029650858822697271">Pechouse a túa sesión</translation>
 <translation id="9034759925968272072">Non se pechará sesión na túa conta de Google. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar orixinal</translation>

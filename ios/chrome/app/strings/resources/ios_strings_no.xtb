@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adressen er kun lagret på denne enheten</translation>
 <translation id="1449835205994625556">Skjul passordet</translation>
 <translation id="1450170672351507823">Standardbeskyttelse er på. Bruk økt beskyttelse om du vil ha enda mer sikkerhet.</translation>
+<translation id="1455492980583160269">Send melding</translation>
 <translation id="1469381646033328562">Kontoen din administreres av forelderen din.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Dobbelttrykk for å slå innstillingen av/på</translation>
@@ -861,6 +862,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="54401264925851789">Sikkerhetsinformasjon for siden</translation>
 <translation id="5443952882982198570">Kredittkort</translation>
 <translation id="5444892875087332195">Bokmerker</translation>
+<translation id="5453738961176844111">Landskode</translation>
 <translation id="5454211924362324495">For å forhindre andre fra å bruke passordet ditt, <ph name="BEGIN_LINK" />endre det på <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Åpne versjon uten nett</translation>
 <translation id="5459548306731933777">Vis detaljer</translation>
@@ -1189,6 +1191,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6983306615164277634">Du kan også trykke og holde på adressefeltet for å endre posisjonen.</translation>
 <translation id="6988572888918530647">Administrer Google-kontoen din</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">Til</translation>
 <translation id="699954956411469731">Mobilvarsler</translation>
 <translation id="699985840472413751">Lukk nedlastingen</translation>
@@ -1355,6 +1358,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7866872729285243843">For å få leselisten din på alle enhetene dine, slå på «Leseliste» i innstillingene.</translation>
 <translation id="7866993391592926595">Hvis du skjuler dette kortet, blir pakkesporing slått av, og alle dataene dine blir fjernet</translation>
 <translation id="7870750252270996949">Lens-bildet du har kopiert</translation>
+<translation id="7877056713163921063">Legg til som kontakt</translation>
 <translation id="7879275349003161544">Vis Nedlastinger</translation>
 <translation id="7883882164760409935">Du har gjenbrukte passord.</translation>
 <translation id="7884694604461143138">Søkelogg (fant <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9000089900434778519">Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9012585441087414258">Beskytter mot nettsteder, nedlastinger og utvidelser som anses som farlige. Hvis en side gjør noe mistenkelig, blir nettadresser og deler av sideinnholdet sendt til Google Safe Browsing.</translation>
-<translation id="9025203546212508704">Sveip for å finne ut hvordan du tilpasser menyen</translation>
 <translation id="9029650858822697271">Du ble logget av</translation>
 <translation id="9034759925968272072">Du blir ikke logget av Google-kontoen din, og det kan hende den har andre typer nettleserlogger på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Vis original</translation>

@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Aadress salvestatakse ainult sellesse seadmesse</translation>
 <translation id="1449835205994625556">Peida parool</translation>
 <translation id="1450170672351507823">Tavakaitse on sisse lülitatud. Turvalisuse suurendamiseks kasutage täiustatud kaitset.</translation>
+<translation id="1455492980583160269">Saatke sõnum</translation>
 <translation id="1469381646033328562">Sinu kontot haldab vanem.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Seade vahetamiseks topeltpuudutage</translation>
@@ -861,6 +862,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="54401264925851789">Lehe turvateave</translation>
 <translation id="5443952882982198570">Krediitkaardid</translation>
 <translation id="5444892875087332195">Järjehoidjad</translation>
+<translation id="5453738961176844111">Riigikood</translation>
 <translation id="5454211924362324495">Kui soovite, et teised ei saaks teie parooli kasutada, <ph name="BEGIN_LINK" />muutke seda saidil <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Ava võrguühenduseta versioon</translation>
 <translation id="5459548306731933777">Kuva üksikasjad</translation>
@@ -1189,6 +1191,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Aadressiriba asukoha muutmiseks võite seda ka pikalt puudutada.</translation>
 <translation id="6988572888918530647">Google'i konto haldamine</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Kellele</translation>
 <translation id="699954956411469731">Mobiilimärguanded</translation>
 <translation id="699985840472413751">Sule allalaadimisriba</translation>
@@ -1355,6 +1358,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7866872729285243843">Selleks et näha lugemisloendit kõigis seadmetes, lülitage seadetes sisse „Lugemisloend“.</translation>
 <translation id="7866993391592926595">Selle kaardi peitmine lülitab paki jälgimise välja ja eemaldab kõik teie andmed</translation>
 <translation id="7870750252270996949">Otsi kopeeritud pilti Lensiga</translation>
+<translation id="7877056713163921063">Lisage kontaktidesse</translation>
 <translation id="7879275349003161544">Kausta Allalaadimised kuvamine</translation>
 <translation id="7883882164760409935">Teil on korduvalt kasutatud paroolid.</translation>
 <translation id="7884694604461143138">Otsinguajalugu (leiti <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9000089900434778519">Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="9008201768610948239">Eira</translation>
 <translation id="9012585441087414258">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui leht teeb midagi kahtlast, saadetakse URL-id ja lehe sisu osad teenusele Google'i ohutu sirvimine.</translation>
-<translation id="9025203546212508704">Pühkige menüü kohandamise õppimiseks</translation>
 <translation id="9029650858822697271">Teid logiti välja</translation>
 <translation id="9034759925968272072">Teid ei logita Google'i kontolt välja. Aadressil <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
 <translation id="9037965129289936994">Kuva originaal</translation>

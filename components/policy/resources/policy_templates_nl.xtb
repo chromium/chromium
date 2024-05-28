@@ -573,6 +573,7 @@ Online opnieuw verifiëren kan om verschillende redenen vereist zijn, zoals wach
 
       Lokale printers staan ook bekend als systeemeigen afdrukbestemmingen en omvatten bestemmingen die beschikbaar zijn voor de lokale computer en gedeelde netwerkprinters.</translation>
 <translation id="1456822151187621582">Windows (<ph name="PRODUCT_OS_NAME" />-clients):</translation>
+<translation id="1459693405370120464">Weer</translation>
 <translation id="1464848559468748897">Bepaal het gebruikersgedrag tijdens een sessie met meerdere profielen op <ph name="PRODUCT_OS_NAME" />-apparaten.
 
       Als dit beleid is ingesteld op 'MultiProfileUserBehaviorUnrestricted', kan de gebruiker de primaire of secundaire gebruiker in een sessie met meerdere profielen zijn.
@@ -2193,15 +2194,6 @@ Het aangepaste label wordt niet vertaald.</translation>
 <translation id="2699836109975228367">Monogeluid op het inlogscherm aanzetten</translation>
 <translation id="2702023190395322609">Media-aanbevelingen aanzetten</translation>
 <translation id="2702682139813393777">Afdwingen dat Windows-hosts voor native berichten worden gestart via cmd.exe</translation>
-<translation id="2703733412051211941">Hiermee wordt een actie gestart als de computer inactief is.
-
-      Als dit beleid is ingesteld, specificeert het de tijdsduur zonder gebruikersinvoer (in minuten) voordat de browser acties uitvoert die zijn ingesteld via het beleid <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Als dit beleid niet is ingesteld, wordt er geen actie uitgevoerd.
-
-      De minimumdrempel is 1 minuut.
-
-      'Gebruikersinvoer' wordt gedefinieerd door API's voor het besturingssysteem en omvat bijvoorbeeld de muis bewegen of typen op het toetsenbord.</translation>
 <translation id="270582584528242502">Geen waarschuwingsdialoogvenster tonen als de gebruiker probeert de browser te sluiten</translation>
 <translation id="2706708761587205154">Afdrukken alleen toestaan met pincode</translation>
 <translation id="2707733461906745082">Profielscheiding</translation>
@@ -3742,29 +3734,6 @@ Opmerking: Als de instelling resulteert in geen verificatiemethoden die wederzij
 <translation id="3982465141749620677">Vragen om opnieuw te verifiëren in een tabblad</translation>
 <translation id="398294729592983401">Toestaan dat gebruikers de instelling voor fingerprinting-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> aan- of uitzetten op hun apparaat.</translation>
 <translation id="3983162212222338509">De DNS-omzetting van het systeem kan binnen of buiten het netwerkproces worden uitgevoerd, of gedeeltelijk binnen en gedeeltelijk buiten het netwerkproces, afhankelijk van de systeemconfiguratie en functievlaggen.</translation>
-<translation id="3984773186203819634">Lijst met acties die moeten worden uitgevoerd als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt.
-
-      Als je het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> niet instelt, heeft dit beleid geen effect.
-
-      Als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt, voert de browser de acties uit die in dit beleid zijn ingesteld.
-
-      Als je dit beleid leeg laat of niet instelt, heeft het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> geen effect.
-
-      Deze acties worden ondersteund:
-
-<ph name="CLOSE_BROWSERS_ACTION" />: Alle browservensters en PWA's voor dit profiel worden gesloten. Niet ondersteund op Android en iOS.
-
-      <ph name="CLOSE_TABS_ACTION" />: Alle geopende tabbladen in geopende vensters worden gesloten. Alleen ondersteund op iOS.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: Het profielkiezervenster wordt getoond. Niet ondersteund op Android en iOS.
-
-      <ph name="SIGN_OUT_ACTION" />: De huidige ingelogde gebruiker wordt uitgelogd. Alleen ondersteund op iOS.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: De bijbehorende browsegegevens worden gewist. Zie het beleid <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> voor meer informatie. De ondersteunde typen op iOS zijn <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" /> en <ph name="CLEAR_AUTOFILL_ACTION" />
-
-<ph name="RELOAD_PAGES_ACTION" />: Alle webpagina's worden opnieuw geladen. Voor sommige pagina's kan de gebruiker eerst om bevestiging worden gevraagd. Niet ondersteund op iOS.
-
-      Als je <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> en <ph name="CLEAR_SITE_SETTINGS_ACTION" /> instelt, wordt synchronisatie voor de betreffende gegevenstypen uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="3986700049001404598">Gebruikers toestaan processen te beëindigen met taakbeheer van Chrome</translation>
 <translation id="398884292557092447">Als je het beleid instelt op True of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor creditcards in de UI.
 
@@ -3864,11 +3833,6 @@ Oud en verouderd gedrag: Als 'event.preventDefault()' wordt aangeroepen in 'befo
 <translation id="4051723201852944592">Occlusie van vensters aanzetten</translation>
 <translation id="4052529125939620019">De componentextensie CryptoToken laden bij opstarten</translation>
 <translation id="4053157306171963473">Rapportage voor tijd van apparaatactiviteit uitzetten</translation>
-<translation id="4055758693679485627">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit. De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op True. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.
-
-      Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als de browser of het besturingssysteem crasht), worden de browsegegevens gewist wanneer het profiel weer wordt geladen.</translation>
 <translation id="4056910949759281379">SPDY-protocol uitzetten</translation>
 <translation id="4057442294431066708">Dit beleid is van toepassing op de geselecteerde snelkoppelingsoptie om gebeurtenissen opnieuw toe te wijzen aan F11/F12 op de subpagina voor het opnieuw toewijzen van toetsen. Deze instellingen gelden alleen voor ChromeOS-toetsenborden en staan standaard uit als het beleid niet is ingesteld.</translation>
 <translation id="4061590579642538878">Informatie over crashrapporten rapporteren.</translation>
@@ -4298,15 +4262,6 @@ Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PROD
 <translation id="4426986640594727372">Toegang tot geolocatie van systeem toestaan</translation>
 <translation id="4427173305799125784">Er kunnen geen annotaties in pdf's worden gemaakt met de pdf-viewer</translation>
 <translation id="4432762137771104529">Uitgebreide rapportage van Safe Browsing aanzetten</translation>
-<translation id="4434531680131327140">Hiermee geef je instellingen voor de levensduur van browsergegevens op voor <ph name="PRODUCT_NAME" />. Met dit beleid kunnen beheerders instellen (per gegevenstype) wanneer gegevens door de browser moeten worden verwijderd. Dit is handig voor klanten die met gevoelige klantgegevens werken.
-
-      De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" /> worden niet ondersteund op Android.
-
-      De browser verwijdert automatisch gegevens van de geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. De minimumwaarde die kan worden ingesteld is 1 uur.
-
-      De verwijdering van verlopen gegevens vindt plaats 15 seconden nadat de browser is gestart en daarna elke 30 minuten terwijl de browser actief is.
-
-      Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op True. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="443454694385851356">Verouderd (onbeveiligd)</translation>
 <translation id="4435032708588431506">QUIC toestaan</translation>
 <translation id="443665821428652897">Sitegegevens wissen als de browser wordt gesloten (verouderd)</translation>
@@ -6777,6 +6732,7 @@ Als je dit beleid niet instelt, wordt het virtuele toetsenbord getoond op basis 
 <translation id="6410847321564585975">Toelatingslijst voor rapportage van website-activiteit</translation>
 <translation id="6412352702230183710">Alleen hosts voor native berichten op systeemniveau toestaan</translation>
 <translation id="6416506846917150119">Voorspellend schrijven voor fysiek toetsenbord als gebruikers typen uitzetten</translation>
+<translation id="6416916931494972926">Zet de telemetrierapportage van Kiosk Vision aan.</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6419001911253110938">Weergave van het introductiescherm voor AI-functies in sessie aanzetten tijdens het inlogproces</translation>
 <translation id="6421254653839955267">Als je het beleid toepast, wordt CNAME-lookup overgeslagen. De servernaam wordt gebruikt zoals deze is ingevoerd tijdens het maken van de Kerberos SPN.
@@ -6926,6 +6882,7 @@ Als je het beleid niet instelt of als je een lege lijst met URL's invoert, mogen
 <translation id="6506486086262398387">Als je het beleid toepast, gebruikt de functie Network File Shares voor <ph name="PRODUCT_OS_NAME" /> waar nodig NTLM om SMB-fileshares te verifiëren. Als je het beleid niet toepast, staat NTLM-verificatie voor SMB-fileshares uit.
 
       Als je dit beleid niet instelt, staat dit gedrag standaard uit voor beheerde gebruikers en aan voor andere gebruikers.</translation>
+<translation id="6508882314969525299">Zet de telemetrierapportage van Kiosk Vision uit.</translation>
 <translation id="6509376413448002446">Hiermee stel je de screensaver voor het vergrendelscherm in.
 
 Als je dit beleid instelt op True, toont het <ph name="PRODUCT_OS_NAME" />-apparaat een screensaver op het vergrendelscherm als het apparaat inactief is.
@@ -9574,6 +9531,9 @@ Als je het beleid niet instelt, kunnen gebruikers de game niet spelen op ingesch
       Als het beleid is ingesteld op 'True', kunnen tabbladen die minimaal vijf minuten op de achtergrond actief zijn worden vastgezet. Het vastzetten van tabbladen verlaagt het CPU-, batterij- en geheugengebruik. <ph name="PRODUCT_NAME" /> gebruikt bepaalde methoden om te voorkomen dat tabbladen worden vastgezet die nuttig werk op de achtergrond leveren (zoals meldingen tonen, geluid afspelen en video streamen). Webontwikkelaars kunnen daarnaast hun toestemming intrekken voor het vastzetten van hun site (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Als het beleid is ingesteld op 'False', worden er geen tabbladen vastgezet.</translation>
+<translation id="8607613052618540095">Als je het beleid toepast, wordt de telemetrierapportage van Kiosk Vision aangezet.
+Hiermee start je het Kiosk Vision-framework en wordt rapportage van de doelgroeptelemetrie aangezet.
+Als je dit beleid niet instelt of niet toepast, wordt de telemetrierapportage van Kiosk Vision uitgezet.</translation>
 <translation id="8610216287193516769">Verwijderd in M122: Dit is een beleid dat alleen aan de serverzijde bestaat en dat de ChromeOS-beleidsinfrastructuur nooit heeft gebruikt voor de uitvoering.
 Als je dit beleid instelt op <ph name="POLICY_VALUE_ALL" /> of niet instelt, zijn alle typen gebruik van beheerde accounts toegestaan. Dit kan ertoe leiden dat een beheerd account een secundair account is, waardoor het account alleen beleidsregels krijgt als het is ingelogd als primair account in een browserprofiel.
       Beleidsregels die zijn ingesteld voor het account, worden in de volgende scenario's niet afgedwongen:
@@ -9828,17 +9788,6 @@ Dit beleid is niet van toepassing als het virtuele toetsenbord is uitgezet (bijv
 <translation id="8835322836315560274">Met dit beleid bepaal je welke opdracht moet worden gebruikt om URL's te openen in een alternatieve browser. Je kunt dit beleid instellen op <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> of een bestandspad. Als je dit beleid instelt op een bestandspad, wordt dat bestand als uitvoerbaar bestand gebruikt. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> is alleen beschikbaar op <ph name="MS_WIN_NAME" />. <ph name="SAFARI_VALUE_PLACEHOLDER" /> en <ph name="EDGE_VALUE_PLACEHOLDER" /> zijn alleen beschikbaar op <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" />.
 
       Als je het beleid niet instelt, wordt er een platformspecifieke standaard-app gebruikt: <ph name="IE_PRODUCT_NAME" /> voor <ph name="MS_WIN_NAME" /> en <ph name="SAFARI_PRODUCT_NAME" /> voor <ph name="MAC_OS_NAME" />. In <ph name="LINUX_OS_NAME" /> werkt het starten van een alternatieve browser niet.</translation>
-<translation id="8836227957461360521">Met dit beleid wijzig je het besparingsniveau van Geheugenbesparing.
-
-Dit is alleen van kracht als Geheugenbesparing is aangezet via de instellingen of via het beleid <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> en heeft invloed op hoe heuristieken worden gebruikt om te bepalen wanneer tabbladen moeten worden verwijderd. Als je bijvoorbeeld de levensduur van een inactief tabblad verkort voordat je het verwijdert, kun je geheugen besparen. Het betekent ook dat tabbladen vaker worden geladen, wat kan leiden tot een slechte gebruikerservaring en meer netwerkverkeer.
-
-Als je het beleid instelt op 0, zorgt Geheugenbesparing voor gemiddelde geheugenbesparingen. Tabbladen worden na een langere periode inactief.
-
-Als je het beleid instelt op 1, zorgt Geheugenbesparing voor gebalanceerde geheugenbesparingen. Je tabbladen worden na een optimale periode inactief.
-
-Als je het beleid instelt op 2, zorgt Geheugenbesparing voor maximale geheugenbesparingen. Je tabbladen worden na een kortere periode inactief.
-
-Als je dit beleid niet instelt, kan de eindgebruiker deze instelling beheren in chrome://settings/performance.</translation>
 <translation id="8836975838488342340">Tijd dat de toegangscode geldig is (in seconden).</translation>
 <translation id="883744045558067826">Het gebruik van de Chrome Root Store is afhankelijk van het lanceringsproces van de functies.</translation>
 <translation id="8837957135252624017">Minstens 1 Chrome-tabblad open laten staan</translation>

@@ -18,6 +18,7 @@
 <translation id="1080365971383768617">Mga password sa lahat ng iyong device</translation>
 <translation id="1082920045291562218">Isinara ang sheet sa pag-share nang may feedback sa buod</translation>
 <translation id="1089606299949659462">Tapos na ang pagsusuri!</translation>
+<translation id="1094555143448724771">Para makita ang mga tab mula sa iba mong device, i-sync ang iyong mga tab at history</translation>
 <translation id="1095761715416917775">Tiyaking maa-access mo sa anumang oras ang iyong sini-sync na data</translation>
 <translation id="1100066534610197918">Buksan sa bagong tab sa grupo</translation>
 <translation id="1103142993930332957">Tumulong na pahusayin ang Chrome?</translation>
@@ -33,6 +34,7 @@
 <translation id="115483310321669804">Gamitin ang password na <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Pangalanang muli</translation>
 <translation id="1174479719160874822">Ire-request ng Chrome ang pang-mobile na site kapag makitid ang screen</translation>
+<translation id="1175241315203286684">Puwedeng remote na gumawa ng mga pagbabago sa profile at browser mo, magsuri ng impormasyon tungkol sa browser sa pamamagitan ng pag-uulat, at gumawa ng iba pang kinakailangang gawain ang iyong administrator. Puwede ring pamahalaan sa labas ng Chrome ang aktibidad sa device na ito.</translation>
 <translation id="1177863135347784049">Custom</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1181366777303791449">sa <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -165,6 +167,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="185383612275551373">Mag-sync para makuha ang pinakanauugnay na content mula sa Google</translation>
 <translation id="1871098866036088250">Buksan sa Chrome browser</translation>
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
+<translation id="1877073879466606884">Naka-sign in ka sa isang pinapamahalaang profile. Puwedeng remote na gumawa ng mga pagbabago sa mga setting ng profile mo, magsuri ng impormasyon tungkol sa browser sa pamamagitan ng pag-uulat, at gumawa ng iba pang kinakailangang gawain ang iyong administrator.</translation>
 <translation id="1883903952484604915">Aking Mga File</translation>
 <translation id="189358972401248634">Iba pang mga wika</translation>
 <translation id="1900260903084164610">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_TOS_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_TOS_LINK" />.</translation>
@@ -314,7 +317,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2650348088770008516">Nakasara ang paliwanag sa gabay sa privacy</translation>
 <translation id="2650408372219180431">Mag-export at mag-delete ng mga password na naka-save sa device na ito</translation>
 <translation id="2650751991977523696">I-download ulit ang file?</translation>
-<translation id="2651465929321991146">History at Mga Tab</translation>
 <translation id="265156376773362237">Karaniwang pag-preload</translation>
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="2656405586795711023">Mga web app</translation>
@@ -807,6 +809,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="506254248375231072">Walang tab</translation>
 <translation id="5062960805900435602">Nakasara ang update tungkol sa pag-merge ng password</translation>
 <translation id="5081960376148623587">Piliin kung magpi-preload ng mga page</translation>
+<translation id="5085038751173179818">Mag-sign in sa site na ito at sa Chrome para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo</translation>
 <translation id="5091199029769593641">Hindi magtatagal at makakakita ka ng mga kuwento mula sa <ph name="SITE_NAME" /> kapag nagbukas ka ng bagong tab. Mase-save sa iyong Google account ang mga site na sinusubaybayan mo. Puwede mong pamahalaan ang mga ito sa mga setting ng Discover.</translation>
 <translation id="509429900233858213">May naganap na error.</translation>
 <translation id="5097349930204431044">Puwedeng tukuyin ng mga site na binibisita mo kung ano ang gusto mo at pagkatapos ay magmumungkahi ito ng mga ad habang patuloy kang nagba-browse</translation>
@@ -835,6 +838,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Dina-download ang file…}one{Nagda-download ng # file…}other{Nagda-download ng # na file…}}</translation>
 <translation id="5210286577605176222">Pumunta sa nakaraang tab</translation>
 <translation id="5210365745912300556">Isara ang tab</translation>
+<translation id="5215957675041756913">Kontrolin ang iyong data at account</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5226378907213531272">Ia-unlock mo ang iyong screen sa tuwing gagamitin mo ang kotse</translation>
 <translation id="5227554086496586518">I-tap para makita ang mga resulta ng paghahanap</translation>
@@ -906,7 +910,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5626134646977739690">Pangalan:</translation>
 <translation id="5628604359369369630">Hindi pa nabasa - Available offline</translation>
 <translation id="5641456720590409793">Posibleng naka-save sa iyong Google Account ang <ph name="BEGIN_LINK1" />history ng paghahanap<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />iba pang anyo ng aktibidad<ph name="END_LINK2" /></translation>
-<translation id="564667659802381754">Gabay sa Privacy <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Nakalipas na 7 araw</translation>
 <translation id="5655963694829536461">Maghanap sa iyong mga download</translation>
 <translation id="5657871969392618475">Naka-secure ang iyong impormasyon gamit ang isang lock ng profile</translation>
@@ -985,6 +988,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6002122790816966947">Ang iyong mga device</translation>
 <translation id="6011308810877101166">Pahusayin ang mga suhestyon sa paghahanap</translation>
 <translation id="6013305291643746595">Ibinubukod-bukod ayon sa pinakaluma</translation>
+<translation id="6022659036123304283">Gawing iyo ang Chrome</translation>
 <translation id="6026538407078977628">I-expand sa full screen</translation>
 <translation id="6030719887161080597">Pamahalaan ang impormasyong ginagamit ng mga site para sukatin ang performance ng ad</translation>
 <translation id="6039379616847168523">Pumunta sa susunod na tab</translation>
@@ -1144,6 +1148,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6734310707649923383">Makikita mo ang mga page na binisita mo o made-delete mo ang mga ito sa iyong history</translation>
 <translation id="6738867403308150051">Nagda-download...</translation>
 <translation id="674388916582496364">Karaniwan para sa mga binibisita mong site na tandaan ang mga bagay na kinawiwilihan mo, para ma-personalize ang iyong karanasan. Puwede ring mag-store ang mga site sa Chrome ng impormasyon tungkol sa iyong mga interes.</translation>
+<translation id="6746338529702829275">Suriin ang data ng iyong account</translation>
 <translation id="6751521182688001123">Mabilis na magbukas ng bagong tab. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
 <translation id="6756507620369789050">Magbahagi ng feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1176,6 +1181,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="686490460830618322">Sheet para sa filter ng app</translation>
 <translation id="6865313869410766144">Data ng form ng autofill</translation>
 <translation id="6867400383614725881">Bagong tab na Incognito</translation>
+<translation id="686899695320434745">Hindi naka-encrypt ang mga address gamit ang iyong passphrase. Binibigyang-daan ka nitong magamit ang mga ito sa iba pang serbisyo ng Google.</translation>
 <translation id="6869056123412990582">computer</translation>
 <translation id="6882836635272038266">Karaniwang proteksyon laban sa mga website, download, at extension na kilalang mapanganib.</translation>
 <translation id="6883204995689174413">Ibahagi</translation>
@@ -1553,6 +1559,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8562452229998620586">Lalabas dito ang mga naka-save na password.</translation>
 <translation id="8570677896027847510">Hindi secure na mada-download ang mga file</translation>
 <translation id="8571213806525832805">Huling 4 na linggo</translation>
+<translation id="8582529315803410153">Makikita mo rito ang iyong mga tab mula sa iba pang device</translation>
 <translation id="859046281437143747">Subaybayan ang presyo mula sa button na Higit pang opsyon</translation>
 <translation id="860043288473659153">Pangalan ng cardholder</translation>
 <translation id="8602358303461588329">Nakasara ang pag-sign in sa Chrome.</translation>
@@ -1600,6 +1607,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="885480114717186641">Puwede mong i-request ang pang-desktop na site para sa <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Makakuha ng mga paglalarawan</translation>
 <translation id="8856931513242997049">Nakasara ang proseso ng pahintulot sa notification</translation>
+<translation id="8865415417596392024">Data ng Chrome sa iyong account</translation>
 <translation id="8898822736010347272">Nagpapadala ng mga URL ng ilang page na binibisita mo, limitadong impormasyon ng system, at ilang content ng page sa Google, para makatulong na tumuklas ng mga bagong banta at protektahan ang lahat ng nasa web.</translation>
 <translation id="8909135823018751308">Ibahagi…</translation>
 <translation id="8921980840204105660">Mag-sync para makuha ang iyong mga bookmark mula sa iba pang device mo</translation>

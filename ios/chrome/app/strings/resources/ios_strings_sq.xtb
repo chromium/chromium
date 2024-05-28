@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Adresa është ruajtur vetëm në këtë pajisje</translation>
 <translation id="1449835205994625556">Fshih fjalëkalimin</translation>
 <translation id="1450170672351507823">"Mbrojtja standarde" është aktive. Për akoma më shumë mbrojtje, përdor "Mbrojtjen e përparuar".</translation>
+<translation id="1455492980583160269">Dërgo mesazh</translation>
 <translation id="1469381646033328562">Llogaria jote menaxhohet nga prindi yt.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Trokit dy herë për të ndryshuar cilësimin</translation>
@@ -861,6 +862,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="54401264925851789">Informacioni i sigurisë së faqes</translation>
 <translation id="5443952882982198570">Kartat e kreditit</translation>
 <translation id="5444892875087332195">Faqeshënuesit</translation>
+<translation id="5453738961176844111">Prefiksi i shtetit</translation>
 <translation id="5454211924362324495">Për t'i ndaluar të tjerët që të mos përdorin fjalëkalimin tënd, <ph name="BEGIN_LINK" />ndryshoje atë në <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Hap versionin offline</translation>
 <translation id="5459548306731933777">Shfaq detajet</translation>
@@ -1189,6 +1191,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6983306615164277634">Mund të prekësh dhe të mbash shtypur shiritin e adresës për të ndryshuar pozicionin.</translation>
 <translation id="6988572888918530647">Menaxho "Llogarinë tënde të Google"</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">Për</translation>
 <translation id="699954956411469731">Njoftimet në celular</translation>
 <translation id="699985840472413751">Mbyll shkarkimin</translation>
@@ -1355,6 +1358,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7866872729285243843">Për të marrë listën tënde të leximit në të gjitha pajisjet e tua, aktivizo "Listën e leximit" te cilësimet.</translation>
 <translation id="7866993391592926595">Fshehja e kësaj karte do të çaktivizojë gjurmimin e paketës dhe do të heqë të gjitha të dhënat e tua</translation>
 <translation id="7870750252270996949">Imazhi i "Lentes" që kopjove</translation>
+<translation id="7877056713163921063">Shto te kontaktet</translation>
 <translation id="7879275349003161544">Shfaq shkarkimet</translation>
 <translation id="7883882164760409935">Ke fjalëkalime të ripërdorura.</translation>
 <translation id="7884694604461143138">Historiku i kërkimeve (u gjetën <ph name="COUNT" />)</translation>
@@ -1592,7 +1596,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9000089900434778519">Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="9008201768610948239">Shpërfill</translation>
 <translation id="9012585441087414258">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Nëse një faqe bën diçka të dyshimtë, URL-të dhe pjesët e përmbajtjes së faqes dërgohen te "Shfletimi i sigurt i Google".</translation>
-<translation id="9025203546212508704">Rrëshqit shpejt për të mësuar se si të personalizosh menynë</translation>
 <translation id="9029650858822697271">Ke dalë nga llogaria</translation>
 <translation id="9034759925968272072">Nuk do të dalësh nga llogaria e Google. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Shfaq origjinalin</translation>

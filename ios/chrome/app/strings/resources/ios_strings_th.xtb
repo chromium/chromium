@@ -90,6 +90,7 @@
 <translation id="143681031165817424">บันทึกที่อยู่ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="1449835205994625556">ซ่อนรหัสผ่าน</translation>
 <translation id="1450170672351507823">การปกป้องแบบมาตรฐานเปิดอยู่ ใช้การปกป้องที่ดียิ่งขึ้นเพื่อเพิ่มความปลอดภัยให้มากขึ้น</translation>
+<translation id="1455492980583160269">ส่งข้อความ</translation>
 <translation id="1469381646033328562">บัญชีของคุณได้รับการจัดการโดยผู้ปกครอง
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">แตะ 2 ครั้งเพื่อสลับการตั้งค่า</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">ข้อมูลเกี่ยวกับการรักษาความปลอดภัยของหน้าเว็บ</translation>
 <translation id="5443952882982198570">บัตรเครดิต</translation>
 <translation id="5444892875087332195">บุ๊กมาร์ก</translation>
+<translation id="5453738961176844111">รหัสประเทศ</translation>
 <translation id="5454211924362324495">หากไม่ต้องการให้ผู้อื่นใช้รหัสผ่านของคุณ ให้<ph name="BEGIN_LINK" />เปลี่ยนรหัสผ่านใน <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">เปิดเวอร์ชันออฟไลน์</translation>
 <translation id="5459548306731933777">แสดงรายละเอียด</translation>
@@ -1189,6 +1191,7 @@
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6983306615164277634">คุณยังสามารถแตะแถบที่อยู่ค้างไว้เพื่อเปลี่ยนตำแหน่งได้อีกด้วย</translation>
 <translation id="6988572888918530647">จัดการบัญชี Google</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">ถึง</translation>
 <translation id="699954956411469731">การแจ้งเตือนในอุปกรณ์เคลื่อนที่</translation>
 <translation id="699985840472413751">ปิดการดาวน์โหลด</translation>
@@ -1355,6 +1358,7 @@
 <translation id="7866872729285243843">หากต้องการรับเรื่องรออ่านในอุปกรณ์ทุกเครื่อง ให้เปิด "เรื่องรออ่าน" ในการตั้งค่า</translation>
 <translation id="7866993391592926595">การซ่อนการ์ดนี้จะปิดการติดตามพัสดุภัณฑ์และนำข้อมูลทั้งหมดของคุณออก</translation>
 <translation id="7870750252270996949">รูปภาพที่คัดลอกด้วย Lens</translation>
+<translation id="7877056713163921063">เพิ่มในรายชื่อติดต่อ</translation>
 <translation id="7879275349003161544">แสดงการดาวน์โหลด</translation>
 <translation id="7883882164760409935">คุณมีรหัสผ่านที่ใช้ซ้ำ</translation>
 <translation id="7884694604461143138">ประวัติการค้นหา (พบ <ph name="COUNT" /> รายการ)</translation>
@@ -1592,7 +1596,6 @@
 <translation id="9000089900434778519">เครื่องมือค้นหาของคุณคือ <ph name="DSE_NAME" /> ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
 <translation id="9012585441087414258">ปกป้องจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย หากหน้าเว็บทำสิ่งที่น่าสงสัย ระบบจะส่ง URL และเนื้อหาของหน้าเว็บบางส่วนไปยัง Google Safe Browsing</translation>
-<translation id="9025203546212508704">ปัดเพื่อดูวิธีปรับแต่งเมนู</translation>
 <translation id="9029650858822697271">คุณออกจากระบบแล้ว</translation>
 <translation id="9034759925968272072">คุณจะไม่ออกจากระบบบัญชี Google บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="9037965129289936994">แสดงหน้าเว็บเดิม</translation>

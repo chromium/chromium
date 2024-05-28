@@ -90,6 +90,7 @@
 <translation id="143681031165817424">Indirizzo salvato solo su questo dispositivo</translation>
 <translation id="1449835205994625556">Nascondi password</translation>
 <translation id="1450170672351507823">È attiva la protezione standard. Per una maggiore sicurezza, utilizza la Protezione avanzata.</translation>
+<translation id="1455492980583160269">Invia messaggio</translation>
 <translation id="1469381646033328562">Il tuo account è gestito da un genitore.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Tocca due volte per attivare/disattivare l'impostazione</translation>
@@ -861,6 +862,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="54401264925851789">Info sicurezza pagina</translation>
 <translation id="5443952882982198570">Carte di credito</translation>
 <translation id="5444892875087332195">Preferiti</translation>
+<translation id="5453738961176844111">Codice paese</translation>
 <translation id="5454211924362324495">Per impedire ad altri di utilizzare la tua password, <ph name="BEGIN_LINK" />modificala su <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">Apri versione offline</translation>
 <translation id="5459548306731933777">Mostra dettagli</translation>
@@ -1189,6 +1191,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Per cambiare la posizione, puoi anche toccare e tenere premuta la barra degli indirizzi.</translation>
 <translation id="6988572888918530647">Gestisci il tuo Account Google</translation>
+<translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">A</translation>
 <translation id="699954956411469731">Notifiche mobile</translation>
 <translation id="699985840472413751">Chiudi download</translation>
@@ -1355,6 +1358,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7866872729285243843">Per visualizzare il tuo elenco di lettura su tutti i dispositivi, attiva "Elenco di lettura" nelle Impostazioni.</translation>
 <translation id="7866993391592926595">Se nascondi questa scheda, il tracciamento dei pacchi verrà disattivato e verranno rimossi tutti i tuoi dati</translation>
 <translation id="7870750252270996949">Immagine copiata da Lens</translation>
+<translation id="7877056713163921063">Aggiungi ai contatti</translation>
 <translation id="7879275349003161544">Mostra download</translation>
 <translation id="7883882164760409935">Hai password riutilizzate.</translation>
 <translation id="7884694604461143138">Cerca nella cronologia (<ph name="COUNT" /> risultati)</translation>
@@ -1592,7 +1596,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9000089900434778519">Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzioni per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9012585441087414258">Protezione da siti, download ed estensioni noti per essere pericolosi. Se una pagina esegue operazioni sospette, vengono inviati URL e frammenti dei contenuti delle pagine a Google Navigazione sicura</translation>
-<translation id="9025203546212508704">Scorri per scoprire come personalizzare il menu</translation>
 <translation id="9029650858822697271">Il tuo account è stato disconnesso</translation>
 <translation id="9034759925968272072">Non verrai disconnesso dal tuo Account Google. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione alla pagina <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostra originale</translation>

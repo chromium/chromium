@@ -191,6 +191,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
           <ph name="LIST_ITEM" />A sua entidade empregadora ou escola
           <ph name="LIST_ITEM" />O seu fornecedor de serviços de Internet
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Acompanhar este artigo</translation>
 <translation id="1337692097987160377">Partilhar este separador</translation>
 <translation id="1339601241726513588">Domínio de inscrição:</translation>
 <translation id="1340482604681802745">Endereço de recolha</translation>
@@ -2611,6 +2612,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6035491133925068289">Atletismo</translation>
 <translation id="6039846035001940113">Se o problema persistir, contacte o proprietário do site.</translation>
 <translation id="6040143037577758943">Fechar</translation>
+<translation id="6040539895181423374">Estatísticas de preço</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6041777658117377052">Temperatura na câmara</translation>
 <translation id="6042308850641462728">Mais</translation>

@@ -90,6 +90,7 @@
 <translation id="143681031165817424">نشانی فقط در این دستگاه ذخیره می‌شود</translation>
 <translation id="1449835205994625556">پنهان کردن گذرواژه</translation>
 <translation id="1450170672351507823">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از «محافظت پیشرفته» استفاده کنید.</translation>
+<translation id="1455492980583160269">ارسال پیام</translation>
 <translation id="1469381646033328562">حساب شما را ولی‌تان مدیریت می‌کند.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">برای جابه‌جایی بین تنظیمات، دو ضربه سریع بزنید</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">اطلاعات امنیتی صفحه</translation>
 <translation id="5443952882982198570">کارت‌های اعتباری</translation>
 <translation id="5444892875087332195">نشانک‌ها</translation>
+<translation id="5453738961176844111">کد کشور</translation>
 <translation id="5454211924362324495">برای اینکه دیگران از گذرواژه‌تان استفاده نکنند، <ph name="BEGIN_LINK" />آن را در <ph name="WEBSITE" /> تغییر دهید<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">باز کردن نسخه آفلاین</translation>
 <translation id="5459548306731933777">نمایش جزئیات</translation>
@@ -1189,6 +1191,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">برای تغییر موقعیت نوار نشانی، همچنین می‌توانید آن را لمس کنید و نگه دارید.</translation>
 <translation id="6988572888918530647">‏مدیریت «حساب Google»</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">به</translation>
 <translation id="699954956411469731">اعلان‌های تلفن همراه</translation>
 <translation id="699985840472413751">بستن بارگیری</translation>
@@ -1355,6 +1358,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7866872729285243843">برای دریافت فهرست خواندن در همه دستگاه‌هایتان، «فهرست خواندن» را در تنظیمات روشن کنید.</translation>
 <translation id="7866993391592926595">پنهان کردن این کارت باعث می‌شود پیگیری بسته غیرفعال شود و همه داده‌هایتان پاک شود</translation>
 <translation id="7870750252270996949">تصویر کپی‌شده «لنز»</translation>
+<translation id="7877056713163921063">افزودن به مخاطبین</translation>
 <translation id="7879275349003161544">نمایش بارگیری‌ها</translation>
 <translation id="7883882164760409935">چند گذرواژه دوباره‌استفاده‌شده دارید.</translation>
 <translation id="7884694604461143138">سابقه جستجو (<ph name="COUNT" /> مورد پیدا شد)</translation>
@@ -1592,7 +1596,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9000089900434778519">موتور جستجوی شما <ph name="DSE_NAME" /> است. برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید.</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
 <translation id="9012585441087414258">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است از شما محافظت می‌کند. اگر صفحه‌ای کار مشکوکی انجام دهد، نشانی‌های وب و بیت‌های محتوای صفحه به «مرور ایمن Google» ارسال می‌شود.</translation>
-<translation id="9025203546212508704">برای آشنایی با نحوه سفارشی‌سازی منو، تند بکشید</translation>
 <translation id="9029650858822697271">از سیستم خارج شدید</translation>
 <translation id="9034759925968272072">‏از حساب Google خود خارج نمی‌شوید. حساب Google شما ممکن است ممکن است اشکال دیگری از سابقه مرورتان در <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> وجود داشته باشد.</translation>
 <translation id="9037965129289936994">نمایش مورد اصلی</translation>

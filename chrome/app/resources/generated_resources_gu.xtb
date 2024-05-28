@@ -1607,8 +1607,6 @@
 <translation id="2165102982098084499">તમે QR કોડ સ્કૅન કરીને આ ડિવાઇસ લિંક કર્યા છે.</translation>
 <translation id="2165177462441582039">દરેક આઇટમ પર હાઇલાઇટ કેટલીવાર સુધી રહેશે તે પસંદ કરો</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />આ ડિવાઇસ (SN: <ph name="SERIAL_NUMBER" />) લૉક હતું.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> વડે Chrome ડિવાઇસ મેનેજમેન્ટ હવેથી સપોર્ટેડ રહેશે નહીં. સાઇન ઇન કરવા માટે, કોઈ અન્ય ડિવાઇસનો ઉપયોગ કરો અથવા તમારા ડિવાઇસ ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">કોઈપણ રીતે સાઇન ઇન કરો</translation>
 <translation id="2173302385160625112">તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો</translation>
 <translation id="2173801458090845390">આ ઉપકરણમાં માગણી ID ઉમેરો</translation>
@@ -6907,7 +6905,6 @@ USB ડિવાઇસ</translation>
 <translation id="6154240335466762404">બધા પોર્ટ કાઢી નાખો</translation>
 <translation id="615436196126345398">પ્રોટોકોલ</translation>
 <translation id="6154739047827675957">OneDriveનું સેટઅપ કરવામાં નિષ્ફળ રહ્યાં</translation>
-<translation id="6154820449290823443">આ Chromebook પર ઍપનો ઍક્સેસ મેનેજ કરો અને બ્લૉક કરો.</translation>
 <translation id="6155141482566063812">બૅકગ્રાઉન્ડ ટૅબ તમારી સ્ક્રીન શેર કરી રહ્યું છે</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">પાસકી બનાવો</translation>
@@ -7536,6 +7533,7 @@ USB ડિવાઇસ</translation>
 <translation id="6647690760956378579">સાહજિક વૉઇસનો પ્રીવ્યૂ</translation>
 <translation id="6648911618876616409">મહત્ત્વપૂર્ણ અપડેટ ઇન્સ્ટૉલ થવા માટે તૈયાર છે. શરૂ કરવા માટે, સાઇન ઇન કરો.</translation>
 <translation id="6649018507441623493">માત્ર એક જ સેકંડ…</translation>
+<translation id="6650072551060208490">આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>
 <translation id="6650206238642452078">ChromeOSની સિસ્ટમ ઇવેન્ટ સબ્સ્ક્રાઇબ કરો</translation>
 <translation id="6650584564768559994">સંતુલિત પ્રમાણમાં મેમરી બચત મેળવો. ઑપ્ટિમલ સમયગાળા બાદ તમારા ટૅબ નિષ્ક્રિય બની જાય છે.</translation>
 <translation id="665061930738760572">&amp;નવી વિંડોમાં ખોલો</translation>
@@ -8838,7 +8836,6 @@ USB ડિવાઇસ</translation>
 <translation id="7643842463591647490">{0,plural, =1{# વિંડો ખોલો}one{# વિંડો ખોલો}other{# વિંડો ખોલો}}</translation>
 <translation id="7643932971554933646">સાઇટને ફાઇલો જોવાની મંજૂરી આપીએ?</translation>
 <translation id="7644543211198159466">રંગ અને થીમ</translation>
-<translation id="7644953783774050577">કોઈપણ પસંદ ન કરો</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (માલિક)</translation>
 <translation id="7645681574855902035">Linuxનું બૅકઅપ રદ કરી રહ્યાં છીએ</translation>
 <translation id="7646772052135772216">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>

@@ -1619,8 +1619,6 @@
 <translation id="2165102982098084499">‏קישרת את המכשירים האלה באמצעות סריקה של קוד QR.</translation>
 <translation id="2165177462441582039">יש לבחור את משך הזמן שבו ההדגשה תוצב על פריט כלשהו</translation>
 <translation id="2166369534954157698">דג סקרן שט בים זך ולפתע מצא חבורה נחמדה</translation>
-<translation id="2168454383292731451">‏<ph name="BEGIN_PARAGRAPH1" />המכשיר הזה (מספר סידורי: <ph name="SERIAL_NUMBER" />) ננעל.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />אין יותר תמיכה בניהול מכשירי Chrome עם <ph name="MS_AD_NAME" />. כדי להיכנס, יש להשתמש במכשיר אחר או לפנות לאדמין המכשיר.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">אני רוצה להיכנס בכל זאת</translation>
 <translation id="2173302385160625112">יש לבדוק את החיבור לאינטרנט</translation>
 <translation id="2173801458090845390">הוספת מזהה דרישה למכשיר זה</translation>
@@ -1708,6 +1706,7 @@
 <translation id="2234827758954819389">המדריך בנושא פרטיות</translation>
 <translation id="2234876718134438132">‏סנכרון ושירותי Google</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
+<translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="2238379619048995541">נתוני מצב תדירות</translation>
 <translation id="2241053333139545397">לקרוא ולשנות את הנתונים שלך במספר אתרים</translation>
 <translation id="2241634353105152135">פעם אחת בלבד</translation>
@@ -5218,6 +5217,7 @@
 <translation id="4853020600495124913">פתיחה ב&amp;חלון חדש</translation>
 <translation id="4854317507773910281">בחירת חשבון הורה לשליחת בקשת אישור</translation>
 <translation id="485480310608090163">עוד הגדרות והרשאות</translation>
+<translation id="4858599593306712511">אמצעי בקרת הורים לאפליקציות</translation>
 <translation id="4858913220355269194">מסי</translation>
 <translation id="486213875233855629">הופעלה השתקה על ידי האדמין</translation>
 <translation id="4862642413395066333">‏חתימה על תגובות OCSP</translation>
@@ -6920,7 +6920,6 @@
 <translation id="6154240335466762404">הסרה של כל היציאות</translation>
 <translation id="615436196126345398">פרוטוקול</translation>
 <translation id="6154739047827675957">‏ההגדרה של OneDrive נכשלה</translation>
-<translation id="6154820449290823443">‏ניהול הגישה של אפליקציות ב-Chromebook הזה וחסימה שלהן.</translation>
 <translation id="6155141482566063812">כרטיסיית הרקע משתפת את המסך שלך</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">יצירת מפתח גישה</translation>
@@ -7551,6 +7550,7 @@
 <translation id="6647690760956378579">תצוגה מקדימה של הקול הטבעי</translation>
 <translation id="6648911618876616409">יש עדכון קריטי המוכן להתקנה. צריך להיכנס לחשבון כדי להתחיל.</translation>
 <translation id="6649018507441623493">רק רגע...</translation>
+<translation id="6650072551060208490">כדי להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
 <translation id="6650206238642452078">‏הרשמה לאירועי מערכת של ChromeOS</translation>
 <translation id="6650584564768559994">חיסכון מאוזן במשאבי הזיכרון. הכרטיסיות מושבתות אחרי פרק זמן אופטימלי.</translation>
 <translation id="665061930738760572">פתיחה ב&amp;חלון חדש</translation>
@@ -7794,7 +7794,7 @@
 <translation id="6823561724060793716">בסרגל הכתובות ניתן לפתוח את פרטי הדף כדי לראות מידע נוסף על הדף הפתוח</translation>
 <translation id="6824564591481349393">העתקת כתובת &amp;אימייל</translation>
 <translation id="6824584962142919697">&amp;בדיקת רכיבים</translation>
-<translation id="6824725898506587159">נהל שפות</translation>
+<translation id="6824725898506587159">ניהול שפות</translation>
 <translation id="6825184156888454064">מיון לפי שם</translation>
 <translation id="6826872289184051766">‏אימות באמצעות USB</translation>
 <translation id="6827121912381363404">מתן הרשאה לכל התוספים לקרוא את האתר <ph name="PERMITTED_SITE" /> ולשנות אותו</translation>
@@ -8853,7 +8853,6 @@
 <translation id="7643842463591647490">{0,plural, =1{חלון אחד פתוח}one{# חלונות פתוחים}two{2 חלונות פתוחים}other{# חלונות פתוחים}}</translation>
 <translation id="7643932971554933646">לאפשר לאתר לראות את הקבצים?</translation>
 <translation id="7644543211198159466">צבע ועיצוב</translation>
-<translation id="7644953783774050577">אל תבחר אף אחד</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (בעלים)</translation>
 <translation id="7645681574855902035">‏המערכת מבטלת את הגיבוי ב-Linux</translation>
 <translation id="7646772052135772216">סנכרון הסיסמאות לא פועל</translation>
@@ -9868,7 +9867,7 @@
 <translation id="835951711479681002">‏שמירה בחשבון Google שלך</translation>
 <translation id="8360140320636871023">התאמה אישית של עיצוב המסך</translation>
 <translation id="8360267485906769442">לחצן לשליחת משוב</translation>
-<translation id="8362914115861174987">תרגום ל:</translation>
+<translation id="8362914115861174987">תרגום ל</translation>
 <translation id="8363095875018065315">יציב</translation>
 <translation id="8363142353806532503">לא ניתן להשתמש במיקרופון בדף זה</translation>
 <translation id="8366396658833131068">קישוריות הרשת שלך התחדשה. יש לבחור רשת אחרת או ללחוץ על הלחצן 'המשך' שלמטה כדי להפעיל את יישום הקיוסק.</translation>

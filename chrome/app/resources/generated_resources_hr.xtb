@@ -1612,8 +1612,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2165102982098084499">Ove uređaje povezali ste skeniranjem QR koda.</translation>
 <translation id="2165177462441582039">Odaberite trajanje isticanja pojedine stavke</translation>
 <translation id="2166369534954157698">Đačić sjedi u hladu i čita zanimljivu knjigu, u džepu mu šljiva, boca, frula i puž.</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Uređaj (serijski broj: <ph name="SERIAL_NUMBER" />) je zaključan.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Upravljanje uređajima sa sustavom Chrome i načinom upravljanja <ph name="MS_AD_NAME" /> više nije podržano. Da biste se prijavili, upotrijebite neki drugi uređaj ili se obratite administratoru uređaja.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Ipak se prijavi</translation>
 <translation id="2173302385160625112">Provjerite internetsku vezu</translation>
 <translation id="2173801458090845390">Dodavanje ID-a zahtjeva uređaju</translation>
@@ -1701,6 +1699,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2234827758954819389">Vodič za privatnost</translation>
 <translation id="2234876718134438132">Sinkronizacija i Googleove usluge</translation>
 <translation id="2235344399760031203">Blokirani su kolačići treće strane</translation>
+<translation id="2236949375853147973">Moja aktivnost</translation>
 <translation id="2238379619048995541">Podaci o stanju učestalosti</translation>
 <translation id="2241053333139545397">čitati i mijenjati vaše podatke na više web-lokacija</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
@@ -5207,6 +5206,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4853020600495124913">Otvaranje u &amp;novom prozoru</translation>
 <translation id="4854317507773910281">Odaberi roditeljski račun za odobrenje</translation>
 <translation id="485480310608090163">Više postavki i dopuštenja</translation>
+<translation id="4858599593306712511">Roditeljski nadzor za aplikaciju</translation>
 <translation id="4858913220355269194">Zvone</translation>
 <translation id="486213875233855629">Administrator je isključio zvuk</translation>
 <translation id="4862642413395066333">Potpisivanje OCSP odgovora</translation>
@@ -6905,7 +6905,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6154240335466762404">Ukloni sve priključke</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6154739047827675957">Postavljanje OneDrivea nije uspjelo</translation>
-<translation id="6154820449290823443">Upravljajte pristupom i blokirajte aplikacije na ovom Chromebooku.</translation>
 <translation id="6155141482566063812">Pozadinska kartica dijeli vaš zaslon</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Izradi pristupni ključ</translation>
@@ -7536,6 +7535,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6647690760956378579">Pregled prirodnog glasa</translation>
 <translation id="6648911618876616409">Kritično ažuriranje spremno je za instalaciju. Prijavite se za početak.</translation>
 <translation id="6649018507441623493">Samo tren...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi potvrditi da ste to vi</translation>
 <translation id="6650206238642452078">Pretplata na događaje sustava Chrome OS</translation>
 <translation id="6650584564768559994">Ostvarite uravnoteženu uštedu memorije. Kartice će nakon optimalnog razdoblja postati neaktivne.</translation>
 <translation id="665061930738760572">Otvaranje u &amp;novom prozoru</translation>
@@ -8838,7 +8838,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7643842463591647490">{0,plural, =1{# otvoreni prozor}one{# otvoreni prozor}few{# otvorena prozora}other{# otvorenih prozora}}</translation>
 <translation id="7643932971554933646">Želite li dopustiti web-lokaciji da pregleda datoteke?</translation>
 <translation id="7644543211198159466">Boja i tema</translation>
-<translation id="7644953783774050577">Bez odabira</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlasnik)</translation>
 <translation id="7645681574855902035">Otkazivanje sigurnosnog kopiranja Linuxa</translation>
 <translation id="7646772052135772216">Sinkronizacija zaporki ne radi</translation>

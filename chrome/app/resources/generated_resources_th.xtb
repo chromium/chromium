@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">ไม่ใช่ตอนนี้</translation>
 <translation id="100881991356161927">ชื่อเว็บไซต์</translation>
 <translation id="1009663062402466586">การควบคุมเกมพร้อมใช้งานแล้ว</translation>
+<translation id="1010136228650201057">การเข้ารหัสข้อมูลผู้ใช้</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{หน้าไม่ตอบสนอง}other{หน้าไม่ตอบสนอง}}</translation>
 <translation id="1011003645819296594">อุปกรณ์ที่บันทึกไว้</translation>
 <translation id="1011355516189274711">ระดับเสียงของการอ่านออกเสียงข้อความ</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="1049795001945932310">&amp;การตั้งค่าภาษา</translation>
 <translation id="1050693411695664090">แย่</translation>
+<translation id="1053776357096024725">เพิ่มคุณภาพเสียงไมโครโฟนในตัวด้วยเอฟเฟกต์ต่างๆ</translation>
 <translation id="1054048317165655285">ตั้งค่าในโทรศัพท์ให้เสร็จสมบูรณ์</translation>
 <translation id="1054153489933238809">เ&amp;ปิดภาพต้นฉบับในแท็บใหม่</translation>
 <translation id="1054187194995068149">สวัสดี นี่คือตัวอย่าง</translation>
@@ -833,6 +835,7 @@
 <translation id="1607139524282324606">ล้างรายการ</translation>
 <translation id="1607499585984539560">ผู้ใช้ไม่ได้เชื่อมโยงกับโดเมน</translation>
 <translation id="1608668830839595724">การดำเนินการอื่นๆ สำหรับรายการที่เลือก</translation>
+<translation id="1608698493373028805">อีกไม่นานระบบอาจไม่รองรับส่วนขยายนี้อีกต่อไป</translation>
 <translation id="1610272688494140697">การตั้งค่าแอป</translation>
 <translation id="161042844686301425">สีฟ้า</translation>
 <translation id="1611432201750675208">อุปกรณ์ล็อกอยู่</translation>
@@ -1610,8 +1613,6 @@
 <translation id="2165102982098084499">คุณลิงก์อุปกรณ์เหล่านี้ด้วยการสแกนคิวอาร์โค้ด</translation>
 <translation id="2165177462441582039">เลือกระยะเวลาที่ไฮไลต์ควรแสดงอยู่ที่แต่ละรายการ</translation>
 <translation id="2166369534954157698">สุนัขจิ้งจอกที่ปราดเปรียวกระโดดข้ามสุนัขเกียจคร้าน</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />อุปกรณ์นี้ (SN: <ph name="SERIAL_NUMBER" />) ถูกล็อก<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ไม่รองรับการจัดการอุปกรณ์ Chrome ด้วย <ph name="MS_AD_NAME" /> อีกต่อไป หากต้องการลงชื่อเข้าใช้ ให้ใช้อุปกรณ์อื่นหรือติดต่อผู้ดูแลระบบอุปกรณ์<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">ลงชื่อเข้าใช้ต่อไป</translation>
 <translation id="2173302385160625112">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2173801458090845390">เพิ่มรหัสข้อกำหนดลงในอุปกรณ์นี้</translation>
@@ -1699,6 +1700,7 @@
 <translation id="2234827758954819389">คู่มือความเป็นส่วนตัว</translation>
 <translation id="2234876718134438132">การซิงค์และบริการของ Google</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
+<translation id="2236949375853147973">กิจกรรมของฉัน</translation>
 <translation id="2238379619048995541">ข้อมูลสถานะความถี่</translation>
 <translation id="2241053333139545397">อ่านและเปลี่ยนแปลงข้อมูลของคุณในหลายเว็บไซต์</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
@@ -2308,6 +2310,7 @@
 <translation id="2667144577800272420">มีแอปอื่นได้รับการตั้งค่าให้เปิดลิงก์เดียวกับ <ph name="APP_NAME" /> การดำเนินการนี้จะทำให้ <ph name="APP_NAME_2" /> และ <ph name="APP_NAME_3" /> ไม่สามารถเปิดลิงก์ที่รองรับ</translation>
 <translation id="2667463864537187133">จัดการการตรวจตัวสะกด</translation>
 <translation id="2668094785979141847">คลิกเพื่อออกจาก Google Lens</translation>
+<translation id="2668604389652548400">นำออกหรือแทนที่ด้วยส่วนขยายที่คล้ายกันจาก <ph name="BEGIN_LINK" />Chrome เว็บสโตร์<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">เปิด <ph name="APP_NAME" /> ไม่ได้</translation>
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> กำลังแชร์แท็บใน Chrome</translation>
@@ -2358,6 +2361,7 @@
 <translation id="2710101514844343743">ข้อมูลการใช้งานและการวินิจฉัย</translation>
 <translation id="271033894570825754">ใหม่</translation>
 <translation id="2710507903599773521">ปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณแล้ว</translation>
+<translation id="2712141162840347885">เลือกอะไรก็ได้เพื่อค้นหาด้วย Google Lens หรือกด Escape เพื่อออกจาก Google Lens</translation>
 <translation id="2713106313042589954">ปิดกล้อง</translation>
 <translation id="2713444072780614174">สีขาว</translation>
 <translation id="2714180132046334502">พื้นหลังสีเข้ม</translation>
@@ -2982,6 +2986,7 @@
 <translation id="3177914167275935955">อุปกรณ์ของคุณมี Chrome Education Upgrade แต่ชื่อผู้ใช้ไม่ได้เชื่อมโยงกับบัญชี Google for Education โปรดสร้างบัญชี Google for Education โดยไปที่ g.co/workspace/edusignup บนอุปกรณ์สำรอง</translation>
 <translation id="3179982752812949580">แบบอักษรของข้อความ</translation>
 <translation id="3180284704187420717">บันทึกบุ๊กมาร์ก รหัสผ่าน และอื่นๆ ด้วยการซิงค์</translation>
+<translation id="3180716079618904608">ดาวน์โหลดแอปและเกม</translation>
 <translation id="3181954750937456830">Google Safe Browsing (ปกป้องคุณและอุปกรณ์จากเว็บไซต์ที่เป็นอันตราย)</translation>
 <translation id="3182749001423093222">ตรวจตัวสะกด</translation>
 <translation id="3183139917765991655">ตัวนำเข้าโปรไฟล์</translation>
@@ -4271,6 +4276,7 @@
 <translation id="4120817667028078560">เส้นทางยาวเกินไป</translation>
 <translation id="4124823734405044952">รีเซ็ตคีย์ความปลอดภัยแล้ว</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
+<translation id="4126375522951286587">ปิด <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">สแปนเด็กซ์</translation>
 <translation id="4130199216115862831">บันทึกของอุปกรณ์</translation>
 <translation id="4130750466177569591">ฉันยอมรับ</translation>
@@ -4571,6 +4577,7 @@
 <translation id="4364327530094270451">เมลอน</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> กำลังแชร์หน้าต่าง</translation>
 <translation id="4364830672918311045">แสดงการแจ้งเตือน</translation>
+<translation id="4367027658822022112">คุณสามารถปักหมุด Google Lens เพื่อให้เข้าถึงได้ง่าย โดยการคลิกปุ่ม "ปักหมุด" ที่ด้านบนของแผงด้านข้าง</translation>
 <translation id="4367513928820380646">ตรวจสอบสิทธิ์ที่นำออกแล้ว</translation>
 <translation id="4367971618859387374">ชื่อที่แสดง</translation>
 <translation id="4368960422722232719">แสดงการใช้งานหน่วยความจำในการ์ดตัวอย่างเมื่อวางเมาส์เหนือแท็บ</translation>
@@ -4973,6 +4980,7 @@
 <translation id="4666911709726371538">แสดงแอปเพิ่มเติม</translation>
 <translation id="4668279686271488041">ระบบจะลบข้อมูลการวัดผลโฆษณาออกจากอุปกรณ์ของคุณเป็นประจำ</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN ต้องใช้ตัวเลขเท่านั้น</translation>
 <translation id="4670909875730475086">ยินดีด้วย ติดตั้ง <ph name="APP_NAME" /> ในอุปกรณ์เรียบร้อยแล้ว</translation>
 <translation id="4672759829555593783">เปิด <ph name="FILE_NAME" /> เลย</translation>
 <translation id="4673442866648850031">เปิดเครื่องมือสไตลัสเมื่อมีการถอดสไตลัสออก</translation>
@@ -5056,6 +5064,7 @@
 <translation id="473936925429402449">เลือกเนื้อหาเพิ่มเติม <ph name="CURRENT_ELEMENT" /> จาก <ph name="TOTAL_ELEMENTS" /> รายการ</translation>
 <translation id="4739639199548674512">ตั๋ว</translation>
 <translation id="4740546261986864539">เพิ่งเปิดเมื่อเร็วๆ นี้</translation>
+<translation id="4741235124132242877">ปักหมุดแล้ว ใช้ Google Lens อีกครั้งจากแถบเครื่องมือ</translation>
 <translation id="4742334355511750246">ไม่ได้รับอนุญาตให้แสดงรูปภาพ</translation>
 <translation id="4742795653798179840">ลบข้อมูลใน Chrome แล้ว</translation>
 <translation id="4742970037960872810">นำไฮไลต์ออก</translation>
@@ -5203,6 +5212,7 @@
 <translation id="4853020600495124913">เปิดใน&amp;หน้าต่างใหม่</translation>
 <translation id="4854317507773910281">เลือกบัญชีผู้ปกครองที่จะเป็นผู้อนุมัติ</translation>
 <translation id="485480310608090163">การตั้งค่าและสิทธิ์อื่นๆ</translation>
+<translation id="4858599593306712511">การควบคุมโดยผู้ปกครองในแอป</translation>
 <translation id="4858913220355269194">ฟริทซ์</translation>
 <translation id="486213875233855629">ผู้ดูแลระบบได้ปิดเสียง</translation>
 <translation id="4862642413395066333">การเซ็นชื่อในการตอบสนอง OCSP</translation>
@@ -6749,6 +6759,7 @@
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="604388835206766544">แยกวิเคราะห์ค่ากำหนดไม่สำเร็จ</translation>
 <translation id="6043994281159824495">ออกจากระบบเลย</translation>
+<translation id="604424701295382420">ปักหมุดแล้ว คุณเข้าถึง Google Lens ได้อีกครั้งจากปุ่มใหม่ในแถบเครื่องมือ</translation>
 <translation id="6045114302329202345">ปุ่ม TrackPoint หลัก</translation>
 <translation id="6047632800149092791">การซิงค์ไม่ทำงาน โปรดลองออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="6048747414605857443">เลือกและปรับแต่งเสียงของการอ่านออกเสียงข้อความสำหรับ ChromeVox และเลือกเพื่อให้อ่าน</translation>
@@ -6901,7 +6912,6 @@
 <translation id="6154240335466762404">นำพอร์ตทั้งหมดออก</translation>
 <translation id="615436196126345398">โปรโตคอล</translation>
 <translation id="6154739047827675957">ตั้งค่า OneDrive ไม่สำเร็จ</translation>
-<translation id="6154820449290823443">จัดการการเข้าถึงและบล็อกแอปใน Chromebook เครื่องนี้</translation>
 <translation id="6155141482566063812">แท็บพื้นหลังกำลังแชร์หน้าจอ</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">สร้างพาสคีย์</translation>
@@ -7528,6 +7538,7 @@
 <translation id="6647690760956378579">ตัวอย่างเสียงที่เป็นธรรมชาติ</translation>
 <translation id="6648911618876616409">มีการอัปเดตสำคัญพร้อมให้ติดตั้ง ลงชื่อเข้าใช้เพื่อเริ่มติดตั้ง</translation>
 <translation id="6649018507441623493">รอสักครู่...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ต้องการยืนยันว่าเป็นคุณ</translation>
 <translation id="6650206238642452078">ติดตามเหตุการณ์ในระบบ ChromeOS</translation>
 <translation id="6650584564768559994">ประหยัดหน่วยความจำแบบสมดุล แท็บจะไม่ทำงานหลังจากผ่านช่วงระยะเวลาที่เหมาะสม</translation>
 <translation id="665061930738760572">เปิดใน&amp;หน้าต่างใหม่</translation>
@@ -7581,6 +7592,7 @@
 <translation id="6686490380836145850">ปิดแท็บทางด้านขวา</translation>
 <translation id="6686665106869989887">แท็บถูกย้ายไปทางขวา</translation>
 <translation id="6686817083349815241">บันทึกรหัสผ่าน</translation>
+<translation id="6687008241368170505">เปลี่ยน PIN ของเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6687079240787935001">ซ่อน<ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">ขอให้ <ph name="SUPERVISED_USER_NAME" /> มาที่คอมพิวเตอร์ บุตรหลานจะได้อ่านข้อความ 2-3 วลีบนหน้าจอนี้เพื่อสร้างรูปแบบเสียงของตน
     <ph name="BR" />
@@ -8360,6 +8372,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - ขอสิทธิ์ กด F6 เพื่อตอบกลับ</translation>
 <translation id="7290242001003353852">บริการลงชื่อเข้าใช้ที่โฮสต์โดย <ph name="SAML_DOMAIN" /> กำลังเข้าถึงกล้องถ่ายรูปของคุณ</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />เบราว์เซอร์ได้รับการจัดการ<ph name="END_LINK" />โดยองค์กร และ<ph name="BEGIN_LINK" />โปรไฟล์ของคุณได้รับการจัดการ<ph name="END_LINK" />โดย <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">ขอให้ผู้ปกครองอนุญาตการเข้าถึงในการตั้งค่า</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">โปรดทราบว่า Android, Play และแอปที่เชื่อมโยงจะอยู่ภายใต้นโยบายการรวบรวมและการใช้งานข้อมูลของตน</translation>
 <translation id="7296503797589217366">เลือกโฟลเดอร์ <ph name="FOLDER_TITLE" /></translation>
@@ -8667,6 +8680,7 @@
 <translation id="7514239104543605883">คัดลอกไปยังอุปกรณ์ของคุณ</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7514417110442087199">เพิ่มการกำหนด</translation>
+<translation id="7515191208480168435">คุณสามารถปักหมุด Google Lens เพื่อให้เข้าถึงได้ง่าย</translation>
 <translation id="751523031290522286">ผู้ดูแลระบบบล็อก <ph name="APP_NAME" /> ไว้ โปรดขอสิทธิ์จากผู้ดูแลระบบเพื่อใช้แอปนี้</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page Down</translation>
@@ -8829,7 +8843,6 @@
 <translation id="7643842463591647490">{0,plural, =1{หน้าต่างเปิดอยู่ # หน้า}other{หน้าต่างเปิดอยู่ # หน้า}}</translation>
 <translation id="7643932971554933646">อนุญาตให้เว็บไซต์ดูไฟล์ใช่ไหม</translation>
 <translation id="7644543211198159466">สีและธีม</translation>
-<translation id="7644953783774050577">ไม่เลือกเลย</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (เจ้าของ)</translation>
 <translation id="7645681574855902035">กำลังยกเลิกการสำรองข้อมูล Linux</translation>
 <translation id="7646772052135772216">การซิงค์รหัสผ่านไม่ทำงาน</translation>
@@ -10142,6 +10155,7 @@
 <translation id="8592141010104017453">ไม่ต้องแสดงการแจ้งเตือนใดๆ</translation>
 <translation id="859246725979739260">เว็บไซต์นี้ถูกบล็อกไม่ให้เข้าถึงตำแหน่งของคุณ</translation>
 <translation id="8593450223647418235">คุณจะเปิดไฟล์ใน Microsoft 365 ไม่ได้จนกว่าการตั้งค่าจะเสร็จสมบูรณ์</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> ถูกบล็อกใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">ไฟล์ที่กำหนดเอง</translation>
 <translation id="8597845839771543242">รูปแบบของคุณสมบัติ:</translation>
 <translation id="8598249292448297523">พิมพ์</translation>
@@ -10561,6 +10575,7 @@
 <translation id="8890529496706615641">เปลี่ยนชื่อโปรไฟล์ไม่ได้ โปรดลองอีกครั้งหรือติดต่อผู้ให้บริการเพื่อรับการสนับสนุนด้านเทคนิค</translation>
 <translation id="8892168913673237979">เรียบร้อยแล้ว!</translation>
 <translation id="8892246501904593980">ดูบุ๊กมาร์กทั้งหมดได้ในบุ๊กมาร์กและรายการ</translation>
+<translation id="8893479486525393799">ไมค์สตูดิโอ</translation>
 <translation id="8893801527741465188">ถอนการติดตั้งเรียบร้อยแล้ว</translation>
 <translation id="8893928184421379330">ขออภัย ระบบไม่รู้จักอุปกรณ์ <ph name="DEVICE_LABEL" /></translation>
 <translation id="8894761918470382415">การป้องกันการเข้าถึงข้อมูลสำหรับอุปกรณ์ต่อพ่วง</translation>

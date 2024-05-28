@@ -1621,8 +1621,6 @@
 <translation id="2165102982098084499">একটি QR কোড স্ক্যান করে আপনি এইসব ডিভাইস লিঙ্ক করেছেন।</translation>
 <translation id="2165177462441582039">প্রতিটি আইটেমে কতটা সময় হাইলাইট থাকবে সেটি বেছে নিন</translation>
 <translation id="2166369534954157698">বিষণ্ণ ঔদাসীন্যে ঊষাবৌদি বাংলাভাষায় প্রচলিত ঈশপের নিখুঁত গল্পটির ডালপালা অর্ধেক ছড়াতেই ঋতু ভুঁইঞা আর ঐন্দ্রিলা ধড়ফড়িয়ে দারুণ হৈ-হৈ করে উঠল-- ওঃ, ব্যাস্ এবার থামো তো, বুঝেছি বড্ডো পুরানো ঢঙের কেমন এক গল্প যার নীতিবাক্য হল,“মূঢ় আড়ম্বর ও আত্মশ্লাঘার ফল জীবনে বিঘ্ন ও বৃহৎ ক্ষতি”-- তাই না, এ্যাঁ?</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />এই ডিভাইস (SN: <ph name="SERIAL_NUMBER" />) লক করা ছিল।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> সহ Chrome ডিভাইস ম্যানেজমেন্ট আর কাজ করবে না। সাইন-ইন করতে, আলাদা ডিভাইস ব্যবহার করুন বা আপনার ডিভাইসের অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">যেকোনো প্রকারে সাইন-ইন করুন</translation>
 <translation id="2173302385160625112">আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা ভাল করে দেখে নিন</translation>
 <translation id="2173801458090845390">এই ডিভাইসে অনুরোধ করার আইডি যোগ করুন</translation>
@@ -6924,7 +6922,6 @@
 <translation id="6154240335466762404">সব পোর্ট সরিয়ে দিন</translation>
 <translation id="615436196126345398">প্রোটোকল</translation>
 <translation id="6154739047827675957">OneDrive সেট-আপ করা যায়নি</translation>
-<translation id="6154820449290823443">এই Chromebook-এ অ্যাপের অ্যাক্সেস ম্যানেজ ও ব্লক করুন।</translation>
 <translation id="6155141482566063812">ব্যাকগ্রাউন্ড ট্যাব আপনার স্ক্রিন শেয়ার করছে</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">পাসকী তৈরি করুন</translation>
@@ -7553,6 +7550,7 @@
 <translation id="6647690760956378579">স্বাভাবিক ভয়েস প্রিভিউ</translation>
 <translation id="6648911618876616409">একটি গুরুত্বপূর্ণ আপডেট ইনস্টল করার জন্য তৈরি। শুরু করতে সাইন-ইন করুন।</translation>
 <translation id="6649018507441623493">একটু অপেক্ষা করুন…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> আপনার পরিচয় যাচাই করতে চায়</translation>
 <translation id="6650206238642452078">ChromeOS সিস্টেম ইভেন্টে সাবস্ক্রাইব করুন</translation>
 <translation id="6650584564768559994">ব্যালেন্স মেমরি সেভ করুন। কিছু সময় পর্যন্ত ব্যবহার না করলে আপনার ট্যাব অ্যাক্টিভ থাকে না।</translation>
 <translation id="665061930738760572">&amp;নতুন উইন্ডোতে খুলুন</translation>
@@ -8855,7 +8853,6 @@
 <translation id="7643842463591647490">{0,plural, =1{#টি খোলা উইন্ডো}one{#টি খোলা উইন্ডো}other{#টি খোলা উইন্ডো}}</translation>
 <translation id="7643932971554933646">সাইটকে এই ফাইল পড়ার অনুমতি দেবেন?</translation>
 <translation id="7644543211198159466">রঙ ও থিম</translation>
-<translation id="7644953783774050577">কিছু নির্বাচন করবেন না</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (মালিক)</translation>
 <translation id="7645681574855902035">Linux ব্যাক-আপ বাতিল করা হচ্ছে</translation>
 <translation id="7646772052135772216">পাসওয়ার্ড সিঙ্ক ফিচার কাজ করছে না</translation>

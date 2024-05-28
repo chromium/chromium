@@ -18,6 +18,7 @@
 <translation id="1080365971383768617">在所有裝置上都能使用自己的密碼</translation>
 <translation id="1082920045291562218">閂咗「透過摘要意見反映表分享」功能</translation>
 <translation id="1089606299949659462">審核已完成！</translation>
+<translation id="1094555143448724771">如要查看其他裝置上的分頁，請同步處理分頁和記錄</translation>
 <translation id="1095761715416917775">請確保您可隨時存取同步處理的資料</translation>
 <translation id="1100066534610197918">在群組的新分頁中開啟</translation>
 <translation id="1103142993930332957">要協助改善 Chrome 嗎？</translation>
@@ -33,6 +34,7 @@
 <translation id="115483310321669804">用密碼：<ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1174479719160874822">Chrome 會在螢幕較窄時要求使用流動網站</translation>
+<translation id="1175241315203286684">管理員可遠端變更你的設定檔和瀏覽器、透過報告分析瀏覽器相關資料，以及執行其他必要工作。此裝置上的活動亦可透過 Chrome 以外的服務管理。</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1181366777303791449">在 <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -165,6 +167,7 @@
 <translation id="185383612275551373">進行同步處理，取得 Google 提供的最相關內容</translation>
 <translation id="1871098866036088250">在 Chrome 瀏覽器中開啟</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
+<translation id="1877073879466606884">你已登入受管設定檔。管理員可遠端變更你的設定檔設定、透過報告分析瀏覽器相關資料，以及執行其他必要工作。</translation>
 <translation id="1883903952484604915">我的檔案</translation>
 <translation id="189358972401248634">其他語言</translation>
 <translation id="1900260903084164610">繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》。</translation>
@@ -314,7 +317,6 @@
 <translation id="2650348088770008516">閂咗私隱權指南說明</translation>
 <translation id="2650408372219180431">匯出並刪除儲存至此裝置的密碼</translation>
 <translation id="2650751991977523696">要重新下載檔案嗎？</translation>
-<translation id="2651465929321991146">記錄和分頁</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2656405586795711023">網絡應用程式</translation>
@@ -807,6 +809,7 @@
 <translation id="506254248375231072">沒有分頁</translation>
 <translation id="5062960805900435602">閂咗關於密碼合併嘅更新</translation>
 <translation id="5081960376148623587">選擇是否要預先載入網頁</translation>
+<translation id="5085038751173179818">登入此網站和 Chrome，即可在所有裝置上存取書籤及其他設定</translation>
 <translation id="5091199029769593641">不久後，您將會在開啟新分頁時看到 <ph name="SITE_NAME" /> 的內容。您追蹤的網站會儲存在 Google 帳戶中。您可在「探索」設定中管理已儲存的網站。</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
 <translation id="5097349930204431044">您瀏覽的網站可判斷您喜愛的內容，然後在您繼續瀏覽時建議廣告</translation>
@@ -835,6 +838,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{正在下載檔案…}other{正在下載 # 個檔案…}}</translation>
 <translation id="5210286577605176222">跳至上一個分頁</translation>
 <translation id="5210365745912300556">關閉分頁</translation>
+<translation id="5215957675041756913">控制資料和帳戶</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5226378907213531272">每次使用汽車時都要解鎖螢幕</translation>
 <translation id="5227554086496586518">輕按以查看搜尋結果</translation>
@@ -906,7 +910,6 @@
 <translation id="5626134646977739690">名稱：</translation>
 <translation id="5628604359369369630">未讀 - 可離線閱讀</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />搜尋記錄<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活動<ph name="END_LINK2" />可能會儲存至您的 Google 帳戶</translation>
-<translation id="564667659802381754">私隱權指南 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">最近 7 天</translation>
 <translation id="5655963694829536461">搜尋您的下載內容</translation>
 <translation id="5657871969392618475">您的資料受個人檔案鎖定功能保護</translation>
@@ -985,6 +988,7 @@
 <translation id="6002122790816966947">您的裝置</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6013305291643746595">由舊至新排序</translation>
+<translation id="6022659036123304283">自訂屬於您的 Chrome</translation>
 <translation id="6026538407078977628">展開去全螢幕</translation>
 <translation id="6030719887161080597">管理網站用來評估廣告成效的資料</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
@@ -1144,6 +1148,7 @@
 <translation id="6734310707649923383">你可查看瀏覽過的網頁，或從記錄刪除網頁</translation>
 <translation id="6738867403308150051">下載中…</translation>
 <translation id="674388916582496364">您瀏覽的網站經常會記住您感興趣的項目，以便為您提供個人化體驗。網站亦可將您的興趣相關資訊儲存在 Chrome 中。</translation>
+<translation id="6746338529702829275">查看帳戶資料</translation>
 <translation id="6751521182688001123">快速開啟新分頁。如要編輯此捷徑，請按住捷徑按鈕。</translation>
 <translation id="6756507620369789050">提供意見</translation>
 <translation id="6762511428368667596"><ph name="NAME" />，<ph name="EMAIL" />。</translation>
@@ -1176,6 +1181,7 @@
 <translation id="686490460830618322">應用程式篩選器工作表</translation>
 <translation id="6865313869410766144">自動填入表格數據</translation>
 <translation id="6867400383614725881">新無痕式分頁</translation>
+<translation id="686899695320434745">系統不會透過密碼短語將地址加密，此選項讓你在其他 Google 服務中使用這些地址。</translation>
 <translation id="6869056123412990582">電腦</translation>
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
 <translation id="6883204995689174413">分享</translation>
@@ -1553,6 +1559,7 @@
 <translation id="8562452229998620586">已儲存的密碼會顯示在這裡。</translation>
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
+<translation id="8582529315803410153">你在其他裝置上的分頁會在這裡顯示</translation>
 <translation id="859046281437143747">使用「更多選項」按鈕追蹤價格</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8602358303461588329">登入 Chrome，閂咗。</translation>
@@ -1600,6 +1607,7 @@
 <translation id="885480114717186641">您可向 <ph name="HOST_NAME" /> 要求取得桌面版網站</translation>
 <translation id="8856607253650333758">取得說明</translation>
 <translation id="8856931513242997049">閂咗通知權限流程</translation>
+<translation id="8865415417596392024">帳戶中的 Chrome 資料</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>
 <translation id="8909135823018751308">共用…</translation>
 <translation id="8921980840204105660">進行同步處理，取得您在其他裝置上的書籤</translation>

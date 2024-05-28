@@ -1621,8 +1621,6 @@
 <translation id="2165102982098084499">ਤੁਸੀਂ QR ਕੋਡ ਸਕੈਨ ਕਰ ਕੇ ਇਨ੍ਹਾਂ ਡੀਵਾਈਸਾਂ ਨੂੰ ਲਿੰਕ ਕੀਤਾ ਹੈ।</translation>
 <translation id="2165177462441582039">ਚੁਣੋ ਕਿ ਹਰੇਕ ਆਈਟਮ ਨੂੰ ਕਿੰਨੇ ਸਮੇਂ ਤੱਕ ਉਜਾਗਰ ਰਹਿਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />ਇਸ ਡੀਵਾਈਸ (SN: <ph name="SERIAL_NUMBER" />) ਨੂੰ ਲਾਕ ਕੀਤਾ ਗਿਆ ਸੀ।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> ਵਾਲਾ Chrome ਡੀਵਾਈਸ ਪ੍ਰਬੰਧਨ ਹੁਣ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ, ਕੋਈ ਵੱਖਰਾ ਡੀਵਾਈਸ ਵਰਤੋ ਜਾਂ ਆਪਣੇ ਡੀਵਾਈਸ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">ਫੇਰ ਵੀ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2173302385160625112">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="2173801458090845390">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਬੇਨਤੀ ਆਈ.ਡੀ. ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -6922,7 +6920,6 @@
 <translation id="6154240335466762404">ਸਾਰੇ ਪੋਰਟ ਹਟਾਓ</translation>
 <translation id="615436196126345398">ਪ੍ਰੋਟੋਕੋਲ</translation>
 <translation id="6154739047827675957">OneDrive ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
-<translation id="6154820449290823443">ਇਸ Chromebook 'ਤੇ ਪਹੁੰਚ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ ਅਤੇ ਐਪਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ।</translation>
 <translation id="6155141482566063812">ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਸਾਂਝਾ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">ਪਾਸਕੀ ਬਣਾਓ</translation>
@@ -7551,6 +7548,7 @@
 <translation id="6647690760956378579">ਕੁਦਰਤੀ ਅਵਾਜ਼ ਦੀ ਪੂਰਵ-ਝਲਕ</translation>
 <translation id="6648911618876616409">ਇੱਕ ਅਤਿ ਜ਼ਰੂਰੀ ਅੱਪਡੇਟ ਸਥਾਪਤ ਹੋਣ ਲਈ ਤਿਆਰ ਹੈ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="6649018507441623493">ਬੱਸ ਇੱਕ ਸਕਿੰਟ…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="6650206238642452078">ChromeOS ਸਿਸਟਮ ਇਵੈਂਟਾਂ ਨੂੰ ਸਬਸਕ੍ਰਾਈਬ ਕਰੋ</translation>
 <translation id="6650584564768559994">ਸੰਤੁਲਿਤ ਮੈਮੋਰੀ ਬਚਤ ਪਾਓ। ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਅਨੁਕੂਲ ਸਮੇਂ ਤੋਂ ਬਾਅਦ ਅਕਿਰਿਆਸ਼ੀਲ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।</translation>
 <translation id="665061930738760572">&amp;ਨਵੀਂ Window ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
@@ -8853,7 +8851,6 @@
 <translation id="7643842463591647490">{0,plural, =1{# ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ}one{# ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ}other{# ਵਿੰਡੋਆਂ ਖੁੱਲ੍ਹੀਆਂ ਹਨ}}</translation>
 <translation id="7643932971554933646">ਕੀ ਸਾਈਟ ਨੂੰ ਫ਼ਾਈਲਾਂ ਦੇਖਣ ਦੇਈਏ?</translation>
 <translation id="7644543211198159466">ਰੰਗ ਅਤੇ ਥੀਮ</translation>
-<translation id="7644953783774050577">ਕਿਸੇ ਨੂੰ ਨਾ ਚੁਣੋ</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ਮਾਲਕ)</translation>
 <translation id="7645681574855902035">Linux ਬੈਕਅੱਪ ਨੂੰ ਰੱਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7646772052135772216">ਪਾਸਵਰਡ ਸਿੰਕ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ</translation>

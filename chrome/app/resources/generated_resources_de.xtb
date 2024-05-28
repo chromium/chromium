@@ -465,6 +465,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1343865611738742294">Linux-Apps erlauben, auf USB-Geräte zuzugreifen. Linux merkt sich keine USB-Geräte, nachdem diese entfernt wurden.</translation>
 <translation id="1343920184519992513">Da weitermachen, wo du aufgehört hast, und bestimmte Seiten öffnen</translation>
 <translation id="1344141078024003905">Du streamst gerade deinen Bildschirm. Du kannst den Stream jederzeit pausieren oder beenden.</translation>
+<translation id="1346403631707626730">Nutzungs- und Diagnosedaten senden. Du kannst uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ für dein Kind aktiviert ist, werden diese Daten in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK1" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Bestätigen und neu starten</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1347512539447549782">Linux-Speicher</translation>
@@ -1606,8 +1607,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2165102982098084499">Du hast einen QR-Code gescannt, um diese Geräte zu verknüpfen.</translation>
 <translation id="2165177462441582039">Du kannst festlegen, wie lange ein Element markiert bleiben soll</translation>
 <translation id="2166369534954157698">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Dieses Gerät (Seriennummer: <ph name="SERIAL_NUMBER" />) wurde gesperrt.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Die Chrome-Geräteverwaltung mit <ph name="MS_AD_NAME" /> wird nicht mehr unterstützt. Verwende ein anderes Gerät, um dich anzumelden, oder wende dich an deinen Geräteadministrator.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Trotzdem anmelden</translation>
 <translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
 <translation id="2173801458090845390">Diesem Gerät eine Anforderungs-ID hinzufügen</translation>
@@ -1922,6 +1921,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2405887402346713222">Seriennummern von Geräten und Komponenten</translation>
 <translation id="2406153734066939945">Dieses Profil und die zugehörigen Daten löschen?</translation>
 <translation id="2407671304279211586">DNS-Anbieter auswählen</translation>
+<translation id="240789602312469910">Nutzungs- und Diagnosedaten senden. Du kannst uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK2_END" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="2408018932941436077">Karte wird gespeichert</translation>
 <translation id="2408955596600435184">PIN eingeben</translation>
 <translation id="2409268599591722235">Los geht's!</translation>
@@ -2082,6 +2082,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2497852260688568942">Die Synchronisierung wurde von deinem Administrator deaktiviert</translation>
 <translation id="2498539833203011245">Im Dock ablegen</translation>
 <translation id="2498765460639677199">Riesig</translation>
+<translation id="2499065671910214321">Standort verwenden. ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort dieses Geräts nutzen. Google kann Standortdaten in regelmäßigen Abständen erheben und diese Daten auf anonyme Weise verwenden, um die Genauigkeit des Standortdienstes und standortbezogene Dienste zu verbessern. <ph name="BEGIN_LINK1" />Weitere Informationen zum Standort<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="2500471369733289700">Blockiert, um deine Privatsphäre zu schützen</translation>
 <translation id="2501173422421700905">Zertifikat vorübergehend ausgesetzt</translation>
 <translation id="2501278716633472235">Zurück</translation>
@@ -2345,6 +2346,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="270516211545221798">Touchpad-Geschwindigkeit</translation>
 <translation id="2705736684557713153">Scrolle auf dem Bildschirm nach unten und aktiviere die Option „Instant Tethering“, wenn diese angezeigt wird. Falls nicht, brauchst du nichts weiter zu tun.</translation>
+<translation id="2706304388244371417">In Google Drive sichern. Du kannst Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. In dieser Sicherung sind auch App-Daten enthalten. Sicherungen werden an Google gesendet und mit dem Passwort des Google-Kontos deines Kindes verschlüsselt. <ph name="BEGIN_LINK1" />Weitere Informationen zur Sicherung<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="2707024448553392710">Komponente wird heruntergeladen.</translation>
 <translation id="270921614578699633">Durchschnitt bilden</translation>
 <translation id="2709516037105925701">Autofill</translation>
@@ -2883,11 +2885,13 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3094521107841754472">Der Preis hat sich von <ph name="PREVIOUS_PRICE" /> zu <ph name="CURRENT_PRICE" /> geändert.</translation>
 <translation id="3095871294753148861">Lesezeichen, Passwörter und andere Browserdaten werden mit dem primären Konto synchronisiert.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potenziell schädliche Erweiterung wurde deaktiviert. Du kannst sie auch entfernen.}other{{NUM_EXTENSIONS} potenziell schädliche Erweiterungen wurden deaktiviert. Du kannst sie auch entfernen.}}</translation>
+<translation id="3100071818310370858">Standort verwenden. Apps und Dienste mit Berechtigung zur Standortermittlung dürfen den Standort dieses Geräts nutzen. Google kann Standortdaten in regelmäßigen Abständen erheben und diese Daten auf anonyme Weise verwenden, um die Genauigkeit des Standortdienstes und standortbezogene Dienste zu verbessern. <ph name="BEGIN_LINK1" />Weitere Informationen zum Standort<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Schwaches Licht</translation>
 <translation id="3101709781009526431">Datum und Uhrzeit</translation>
 <translation id="310297983047869047">Vorherige Folie</translation>
 <translation id="3103451787721578293">Bitte gib einen Grund für das Hochladen dieser Daten an:</translation>
 <translation id="3103512663951238230">Alt + Klick</translation>
+<translation id="3104948640446684649">Nutzungs- und Diagnosedaten senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK2_END" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Letztes fehlgeschlagenes Update</translation>
 <translation id="3105796011181310544">Wieder zu Google wechseln?</translation>
 <translation id="3105820656234755131">Passwort aktualisiert</translation>
@@ -2985,6 +2989,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
     Falls du die PIN vergisst, setze dieses Gerät auf die Werkseinstellungen zurück und richte es erneut ein.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Diese App ist blockiert}other{Einige Apps sind blockiert}}</translation>
 <translation id="3187472288455401631">Erfolgsmessung von Anzeigen</translation>
+<translation id="3187556136478864255">Siehst du dein Übertragungsgerät in der <ph name="BEGIN_LINK" />Google Home App<ph name="END_LINK" />?</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3188465121994729530">Gleitender Durchschnitt</translation>
 <translation id="3189187154924005138">Großer Cursor</translation>
@@ -3241,6 +3246,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3391721320619127327">Der Screenreader unter ChromeOS, ChromeVox, wird vor allem von Menschen mit Sehbehinderung oder eingeschränktem Sehvermögen verwendet, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Halte beide Lautstärketasten fünf Sekunden gedrückt, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
 <translation id="3393554941209044235">Chrome-Dokumentenanalyse</translation>
 <translation id="3393582007140394275">Bildschirm kann nicht gestreamt werden.</translation>
+<translation id="3394072120086516913">PC verwendet eine kabelgebundene Verbindung für den Internetzugriff und Übertragungsgerät ist mit WLAN verbunden</translation>
 <translation id="3394850431319394743">Darf Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
 <translation id="3396442984945202128">Identität bestätigen</translation>
 <translation id="3396800784455899911">Wenn du auf die Schaltfläche „Akzeptieren und fortfahren“ klickst, willigst du damit in die oben für diese Google-Dienste beschriebene Verarbeitung deiner Daten ein.</translation>
@@ -4499,6 +4505,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4314561087119792062">Neuen Zugangspunkt hinzufügen</translation>
 <translation id="4314815835985389558">Synchronisierung verwalten</translation>
 <translation id="4316850752623536204">Website des Entwicklers</translation>
+<translation id="43176328751044557">{NUM_SITES,plural, =1{Berechtigungen für 1 Website entzogen}other{Berechtigungen für {NUM_SITES} Websites entzogen}}</translation>
 <translation id="4317733381297736564">In-App-Käufe</translation>
 <translation id="4317820549299924617">Bestätigung fehlgeschlagen</translation>
 <translation id="4319441675152393296">Klicke auf das Symbol dieser Erweiterung, um das Abrufen und Ändern von Daten auf <ph name="HOST" /> zu erlauben</translation>
@@ -4815,6 +4822,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4559617833001311418">Diese Website greift auf meine Bewegungs- oder Lichtsensoren zu.</translation>
 <translation id="4560728518401799797">Weitere Optionen für das Lesezeichen „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="4561893854334016293">Keine vor Kurzem geänderten Berechtigungen</translation>
+<translation id="4562091353415772246">Updates und Apps installieren. Wenn du fortfährst, stimmst du zu, dass auf diesem Gerät auch automatisch Updates und Apps von Google, von deinem Mobilfunkanbieter und vom Hersteller des Geräts heruntergeladen und installiert werden dürfen, möglicherweise über eine mobile Datenverbindung. Bei einigen dieser Apps werden eventuell In-App-Käufe angeboten. <ph name="BEGIN_LINK1" />Weitere Informationen zu automatischen Play-Installationen<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Fingerabdruck hinzufügen</translation>
 <translation id="4562155266774382038">Vorschlag ablehnen</translation>
 <translation id="4563210852471260509">Anfängliche Eingabesprache ist Chinesisch.</translation>
@@ -5749,6 +5757,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5288106344236929384">Weitere Aktionen und Passkey-Optionen für <ph name="USERNAME" /> auf <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Geschlossenen Tab wieder öffn&amp;en</translation>
 <translation id="52895863590846877">Diese Seite ist nicht auf <ph name="LANGUAGE" /></translation>
+<translation id="5290020561438336792">PC und Übertragungsgerät in verschiedenen WLANs (z. B. 2,4 GHz und 5 GHz)</translation>
 <translation id="52912272896845572">Private Schlüsseldatei ist ungültig.</translation>
 <translation id="5291739252352359682">Erstellt automatisch Untertitel für Medien in Chrome (zurzeit nur auf Englisch verfügbar). Audioinhalte und Untertitel werden ausschließlich auf dem Gerät verarbeitet.</translation>
 <translation id="529175790091471945">Gerät formatieren</translation>
@@ -6230,9 +6239,12 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5646558797914161501">Geschäftsmann</translation>
 <translation id="5648021990716966815">Mikrofonanschluss</translation>
 <translation id="5648166631817621825">Letzte 7 Tage</translation>
+<translation id="5649182603113127372">Standort verwenden. ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort des Geräts nutzen. Google kann Standortdaten in regelmäßigen Abständen erheben und diese Daten auf anonyme Weise verwenden, um die Genauigkeit des Standortdienstes und standortbezogene Dienste zu verbessern. <ph name="BEGIN_LINK1" />Weitere Informationen zum Standort<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
+<translation id="5650537073531199882">Formular ausfüllen</translation>
 <translation id="5651308944918885595">Nearby Share-Sichtbarkeit</translation>
 <translation id="5653154844073528838">Du hast <ph name="PRINTER_COUNT" /> gespeicherte Drucker.</translation>
 <translation id="5654669866168491665">Weitere Informationen zu Websites, die möglicherweise nicht funktionieren, wenn Drittanbieter-Cookies blockiert werden</translation>
+<translation id="5654848283274615843">{NUM_SITES,plural, =1{Zum Schutz deiner Daten wurden einer Website Berechtigungen entzogen}other{Zum Schutz deiner Daten wurden einigen Websites Berechtigungen entzogen}}</translation>
 <translation id="565515993087783098">Wenn du dieses Netzwerk entfernst, werden auch das Passpoint-Abo und die zugehörigen Netzwerke entfernt.</translation>
 <translation id="5655296450510165335">Geräteregistrierung</translation>
 <translation id="5655823808357523308">Darstellung von Farben auf dem Bildschirm anpassen</translation>
@@ -6345,6 +6357,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5746169159649715125">Als PDF speichern</translation>
 <translation id="5747785204778348146">Entwickler – instabil</translation>
 <translation id="5747809636523347288">Einfügen und <ph name="URL" /> aufrufen</translation>
+<translation id="5749214722697335450">Nutzungs- und Diagnosedaten senden. Du kannst uns helfen, Android zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK1" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Tethering-Bereitschaft prüfen</translation>
 <translation id="5753570386948603678">Aus Verlauf löschen</translation>
@@ -6380,6 +6393,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
     Wenn du diese Einstellung deaktivierst, ermittelt Android den Standort nur über die IP-Adresse. Das kann sich auf die Genauigkeit der Standortangaben in Apps wie Google Maps auswirken.</translation>
 <translation id="5778491106820461378">Du kannst angemeldete Google-Konten in den <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> verwalten. Berechtigungen, die du Websites und Apps gewährt hast, gelten möglicherweise für alle Konten. Wenn du nicht möchtest, dass Websites oder Apps Zugriff auf deine Kontoinformationen haben, kannst du dich auf deinem Gerät (<ph name="DEVICE_TYPE" />) als Gast anmelden.</translation>
 <translation id="5780011244986845107">Der ausgewählte Ordner enthält vertrauliche Dateien. Möchtest du <ph name="APP_NAME" /> wirklich dauerhaft Lesezugriff auf diesen Ordner gewähren?</translation>
+<translation id="5780940414249100901">Nutzungs- und Diagnosedaten senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK2_END" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">Prozesspriorität</translation>
 <translation id="5781092003150880845">Synchronisieren als <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Befehle an <ph name="EXTENSION_NAME" /> senden</translation>
@@ -6882,7 +6896,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6154240335466762404">Alle Ports entfernen</translation>
 <translation id="615436196126345398">Protokoll</translation>
 <translation id="6154739047827675957">OneDrive-Einrichtung fehlgeschlagen</translation>
-<translation id="6154820449290823443">Zugriff auf diesem Chromebook verwalten und Apps blockieren.</translation>
 <translation id="6155141482566063812">Ein Tab im Hintergrund hat deinen Bildschirm freigegeben</translation>
 <translation id="6155885807222400044">AES‑128</translation>
 <translation id="6155997322654401708">Passkey erstellen</translation>
@@ -7073,6 +7086,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6294759976468837022">Geschwindigkeit des automatischen Scans</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
 <translation id="6295855836753816081">Wird gespeichert...</translation>
+<translation id="6297986260307280218">Nutzungs- und Diagnosedaten senden. Du kannst uns helfen, Android zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK2_END" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Dies betrifft die hier aufgeführten Websites. Wenn du „[*.]“ vor einem Domainnamen einfügst, wird eine Ausnahme für die gesamte Domain erstellt. Wenn du beispielsweise „[*.]google.com“ hinzufügst, können Drittanbieter-Cookies auch für „mail.google.com“ aktiv sein, da diese Subdomain zu „google.com“ gehört.</translation>
 <translation id="6298962879096096191">Google Play verwenden, um Android-Apps zu installieren</translation>
 <translation id="6300177430812514606">Dürfen den Datenversand und ‑empfang nicht abschließen</translation>
@@ -7508,6 +7522,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6647690760956378579">Vorschau für natürliche Stimme</translation>
 <translation id="6648911618876616409">Ein wichtiges Update ist zur Installation bereit. Melde dich an, um die Installation zu starten.</translation>
 <translation id="6649018507441623493">Bitte warten...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> möchte sichergehen, dass du das bist</translation>
 <translation id="6650206238642452078">ChromeOS-Systemereignisse abonnieren</translation>
 <translation id="6650584564768559994">Du erzielst ausgewogene Arbeitsspeichereinsparungen. Deine Tabs werden nach einer optimalen Zeitspanne inaktiv.</translation>
 <translation id="665061930738760572">In &amp;neuem Fenster öffnen</translation>
@@ -8112,6 +8127,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="710047887584828070">Der Inhalt dieses Tabs wird geteilt</translation>
 <translation id="710224247908684995">Safe Browsing wurde durch eine Erweiterung deaktiviert</translation>
 <translation id="7102832101143475489">Zeitüberschreitung bei der Anfrage</translation>
+<translation id="7103944802169726298">PC und Übertragungsgerät im selben WLAN</translation>
 <translation id="710640343305609397">Netzwerkeinstellungen öffnen</translation>
 <translation id="7107609441453408294">Dieselben Audioinhalte über alle Lautsprecher wiedergeben</translation>
 <translation id="7108338896283013870">Ausblenden</translation>
@@ -8809,7 +8825,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7643842463591647490">{0,plural, =1{# offenes Fenster}other{# offene Fenster}}</translation>
 <translation id="7643932971554933646">Website erlauben, diese Dateien zu lesen?</translation>
 <translation id="7644543211198159466">Farbe und Design</translation>
-<translation id="7644953783774050577">Keine auswählen</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (Eigentümer)</translation>
 <translation id="7645681574855902035">Linux-Sicherung wird abgebrochen</translation>
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
@@ -10269,10 +10284,12 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8695139659682234808">Jugendschutzeinstellungen nach der Einrichtung hinzufügen</translation>
 <translation id="8695825812785969222">&amp;Adresse öffnen...</translation>
 <translation id="8698269656364382265">Du gelangst zum vorherigen Bildschirm, indem du von der linken Seite zur Mitte wischst.</translation>
+<translation id="8698432579173128320">In Google Drive sichern. Du kannst deine Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. In der Sicherung sind auch App-Daten enthalten. Deine Sicherungen werden an Google gesendet und mit dem Passwort deines Google-Kontos verschlüsselt. <ph name="BEGIN_LINK1" />Weitere Informationen zur Sicherung<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Apps-Menü</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8699188901396699995">PPD für „<ph name="PRINTER_NAME" />“</translation>
 <translation id="8700066369485012242">Warum hast du auf dieser Website Drittanbieter-Cookies zugelassen?</translation>
+<translation id="8700087567921985940">Standort verwenden. Apps und Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Google kann Standortdaten in regelmäßigen Abständen erheben und diese Daten auf anonyme Weise verwenden, um die Genauigkeit des Standortdienstes und standortbezogene Dienste zu verbessern. <ph name="BEGIN_LINK1" />Weitere Informationen zum Standort<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">Launcher-Taste + Rücktaste</translation>
 <translation id="8702278591052316269">Menü mit ausgeblendeten gespeicherten Tabgruppen</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> wurde gesperrt.</translation>
@@ -10526,6 +10543,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8881020143150461183">Versuche es noch einmal. Für technischen Support wende dich bitte an <ph name="CARRIER_NAME" />.</translation>
 <translation id="888256071122006425">Maus- und Touchpad-Einstellungen</translation>
 <translation id="8883273463630735858">Touchpad-Beschleunigung aktivieren</translation>
+<translation id="8883478023074930307">Nutzungs- und Diagnosedaten senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK2_END" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Zum Schutz deiner Daten entfernen wir automatisch Websites aus der Liste, die älter als vier Wochen sind. Wenn du eine der Websites noch einmal besuchst, kann sie wieder in der Liste erscheinen. Du kannst einzelne Websites auch entfernen, wenn du nicht möchtest, dass sie Interessen für dich definieren.</translation>
 <translation id="8884570509232205463">Das Gerät wird jetzt um <ph name="UNLOCK_TIME" /> gesperrt.</translation>
 <translation id="8885449336974696155">Hilf uns mit deinem Feedback, die <ph name="BEGIN_LINK" />aktuellen Einstellungen<ph name="END_LINK" /> von ChromeOS zu verbessern</translation>
@@ -10955,6 +10973,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="919686179725692564">Weitere Informationen zum Sichern von Apps</translation>
 <translation id="9199503643457729322">Klicke hier, um den Datenschutz-Leitfaden zu verlassen.</translation>
 <translation id="9199695835892108985">Alle Berechtigungen für serielle Ports zurücksetzen?</translation>
+<translation id="9199853905755292769">Nutzungs- und Diagnosedaten senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK2_END" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> kann Dateien in <ph name="FOLDERNAME" /> bearbeiten</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />-Suche</translation>
 <translation id="9201117361710210082">Zuvor angesehen</translation>

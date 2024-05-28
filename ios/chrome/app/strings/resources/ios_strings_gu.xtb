@@ -90,6 +90,7 @@
 <translation id="143681031165817424">માત્ર આ ડિવાઇસ પર સરનામું સાચવવામાં આવે છે</translation>
 <translation id="1449835205994625556">પાસવર્ડ છુપાવો</translation>
 <translation id="1450170672351507823">માનક સુરક્ષા ચાલુ છે. વધુ સઘન સુરક્ષા માટે, વધારેલા સંરક્ષણનો ઉપયોગ કરો.</translation>
+<translation id="1455492980583160269">મેસેજ મોકલો</translation>
 <translation id="1469381646033328562">તમારું એકાઉન્ટ તમારા માતાપિતા દ્વારા મેનેજ કરવામાં આવે છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">સેટિંગ ટૉગલ કરવા માટે બે વાર ટૅપ કરો</translation>
@@ -861,6 +862,7 @@
 <translation id="54401264925851789">પેજની સુરક્ષા માહિતી</translation>
 <translation id="5443952882982198570">ક્રેડિટ કાર્ડ</translation>
 <translation id="5444892875087332195">બુકમાર્ક</translation>
+<translation id="5453738961176844111">દેશનો કોડ</translation>
 <translation id="5454211924362324495">અન્ય લોકોને તમારા પાસવર્ડનો ઉપયોગ કરતા રોકવા માટે, તેને <ph name="BEGIN_LINK" /><ph name="WEBSITE" />પર બદલો<ph name="END_LINK" /></translation>
 <translation id="5457226814769348910">ઑફલાઇન વર્ઝન ખોલો</translation>
 <translation id="5459548306731933777">વિગતો બતાવો</translation>
@@ -1189,6 +1191,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">તમે આ સ્થિતિને બદલવા માટે ઍડ્રેસ બારને ટચ કરીને થોડીવાર દબાવી રાખી શકો છો.</translation>
 <translation id="6988572888918530647">તમારા Google એકાઉન્ટને મેનેજ કરો</translation>
+<translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">પ્રતિ</translation>
 <translation id="699954956411469731">મોબાઇલ નોટિફિકેશન</translation>
 <translation id="699985840472413751">ડાઉનલોડ બંધ કરો</translation>
@@ -1355,6 +1358,7 @@
 <translation id="7866872729285243843">તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ મેળવવા માટે, સેટિંગમાં "વાંચન સૂચિ" ચાલુ કરો.</translation>
 <translation id="7866993391592926595">આ કાર્ડ છુપાવવાથી પૅકેજ ટ્રૅકિંગની સુવિધા બંધ થઈ જશે અને તમારો બધો ડેટા કાઢી નાખવામાં આવશે</translation>
 <translation id="7870750252270996949">લેન્સની કૉપિ કરેલી છબી</translation>
+<translation id="7877056713163921063">સંપર્કોમાં ઉમેરો</translation>
 <translation id="7879275349003161544">ડાઉનલોડ કરેલી આઇટમ બતાવો</translation>
 <translation id="7883882164760409935">તમારી પાસે એવા પાસવર્ડ છે જેનો તમે વારંવાર ઉપયોગ કરો છો.</translation>
 <translation id="7884694604461143138">શોધ ઇતિહાસ (<ph name="COUNT" /> મળ્યાં)</translation>
@@ -1592,7 +1596,6 @@
 <translation id="9000089900434778519">તમારું શોધ એન્જિન <ph name="DSE_NAME" /> છે. જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તેમની સૂચનાઓ જુઓ.</translation>
 <translation id="9008201768610948239">અવગણો</translation>
 <translation id="9012585441087414258">જોખમકારક જણાતી હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રક્ષણ આપે છે. જો કોઈ પેજ કંઈપણ શંકાસ્પદ કરે છે, તો URL અને પેજ કન્ટેન્ટના બિટ Google Safe Browsingને મોકલવામાં આવે છે.</translation>
-<translation id="9025203546212508704">તમારું મેનૂ કસ્ટમાઇઝ કરવાની રીત જાણવા સ્વાઇપ કરો</translation>
 <translation id="9029650858822697271">તમને સાઇન આઉટ કરવામાં આવ્યા</translation>
 <translation id="9034759925968272072">તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થશો નહિ. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="9037965129289936994">મૂળ બતાવો</translation>

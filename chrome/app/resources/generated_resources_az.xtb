@@ -1609,8 +1609,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2165102982098084499">Bu cihazları QR kodu skan etməklə əlaqələndirmisiniz.</translation>
 <translation id="2165177462441582039">Vurğulamanın hər element üzərində qalma müddətini seçin</translation>
 <translation id="2166369534954157698">Qəhvəyi tülkə tənbəl itin üzərindən qaçaraq hoppanır</translation>
-<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Bu cihaz (SN: <ph name="SERIAL_NUMBER" />) kilidlənib.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> ilə Chrome cihaz idarəetməsi artıq dəstəklənmir. Daxil olmaq üçün başqa cihazdan istifadə edin və ya cihaz administratorunuzla əlaqə saxlayın.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Hər bir halda daxil olun</translation>
 <translation id="2173302385160625112">İnternet bağlantısını yoxlayın</translation>
 <translation id="2173801458090845390">Bu cihaza sifariş ID-si əlavə edin</translation>
@@ -1698,6 +1696,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2234827758954819389">Məxfilik Bələdçisi</translation>
 <translation id="2234876718134438132">Sinxronizasiya və Google xidmətləri</translation>
 <translation id="2235344399760031203">Üçüncü tərəf kukiləri bloklanıb</translation>
+<translation id="2236949375853147973">Fəaliyyətim</translation>
 <translation id="2238379619048995541">Tezlik Statusu Datası</translation>
 <translation id="2241053333139545397">Datanızı çoxsaylı cihazlarda oxuyun və dəyişin</translation>
 <translation id="2241634353105152135">Sadəcə bir dəfə</translation>
@@ -5212,6 +5211,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4853020600495124913">Yeni pəncərədə açın</translation>
 <translation id="4854317507773910281">Təsdiq üçün valideyn hesabı seçin</translation>
 <translation id="485480310608090163">Daha çox ayar və icazələr</translation>
+<translation id="4858599593306712511">Tətbiq valideyn nəzarətləri</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Administrator səssiz edib</translation>
 <translation id="4862642413395066333">OCSP Cavabları imzalanır</translation>
@@ -6913,7 +6913,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6154240335466762404">Bütün portları çıxarın</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6154739047827675957">OneDrive ayarlanmadı</translation>
-<translation id="6154820449290823443">Bu Chromebook-da girişi idarə edin və tətbiqləri bloklayın.</translation>
 <translation id="6155141482566063812">Arxa fondakı tab ekranınızı paylaşır</translation>
 <translation id="6155885807222400044">AES-128</translation>
 <translation id="6155997322654401708">Giriş açarı yaradın</translation>
@@ -7540,6 +7539,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6647690760956378579">Təbii səs önizləməsi</translation>
 <translation id="6648911618876616409">Mühüm güncəlləmə quraşdırmaq üçün hazırdır. Daxil olun və başlayın.</translation>
 <translation id="6649018507441623493">Bir saniyə...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> siz olduğunuzu təsdiqləmək istəyir</translation>
 <translation id="6650206238642452078">ChromeOS sistem hadisələrinə abunə olun</translation>
 <translation id="6650584564768559994">Yaddaşa balanslı şəkildə qənaət edin. Tablar optimal müddətdən sonra qeyri-aktiv olur.</translation>
 <translation id="665061930738760572">Yeni pəncərədə açın</translation>
@@ -8844,7 +8844,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7643842463591647490">{0,plural, =1{# açıq pəncərə}other{# açıq pəncərə}}</translation>
 <translation id="7643932971554933646">Sayta fayllara baxmağa icazə verilsin?</translation>
 <translation id="7644543211198159466">Rəng və tema</translation>
-<translation id="7644953783774050577">Heç birini seçməyin</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (sahib)</translation>
 <translation id="7645681574855902035">Linux yedəkləməsi ləğv edilir</translation>
 <translation id="7646772052135772216">Parol sinxronizasiyası işləmir</translation>

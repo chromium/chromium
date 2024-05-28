@@ -314,7 +314,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2650348088770008516">Zavřené vysvětlení průvodce ochranou soukromí</translation>
 <translation id="2650408372219180431">Exportovat a smazat hesla uložená v tomto zařízení</translation>
 <translation id="2650751991977523696">Stáhnout soubor znovu?</translation>
-<translation id="2651465929321991146">Historie a karty</translation>
 <translation id="265156376773362237">Standardní předběžné načítání</translation>
 <translation id="2653659639078652383">Odeslat</translation>
 <translation id="2656405586795711023">Webové aplikace</translation>
@@ -906,7 +905,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5626134646977739690">Jméno:</translation>
 <translation id="5628604359369369630">Nepřečteno – k dispozici offline</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Historie vyhledávání<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />další typy aktivity<ph name="END_LINK2" /> se mohou ukládat do vašeho účtu Google</translation>
-<translation id="564667659802381754">Průvodce ochranou soukromí <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Posledních 7 dní</translation>
 <translation id="5655963694829536461">Hledat ve stažených souborech</translation>
 <translation id="5657871969392618475">Vaše údaje jsou zabezpečeny zámkem profilu</translation>
@@ -985,6 +983,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6002122790816966947">Vaše zařízení</translation>
 <translation id="6011308810877101166">Vylepšovat návrhy ve vyhledávání</translation>
 <translation id="6013305291643746595">Řazení od nejstarších</translation>
+<translation id="6022659036123304283">Přizpůsobte si Chrome</translation>
 <translation id="6026538407078977628">Rozbalit na celou obrazovku</translation>
 <translation id="6030719887161080597">Spravovat informace, pomocí nichž weby měří výkon reklam</translation>
 <translation id="6039379616847168523">Přejít na další kartu</translation>
@@ -1144,6 +1143,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6734310707649923383">Můžete si zobrazit stránky, které jste navštívili, a případně je z historie smazat</translation>
 <translation id="6738867403308150051">Stahování…</translation>
 <translation id="674388916582496364">Je běžné, že si navštívené weby pamatují, co vás zajímá, aby pro vás personalizovaly svůj obsah. Weby mohou v prohlížeči Chrome ukládat také informace o vašich zájmech.</translation>
+<translation id="6746338529702829275">Zkontrolovat data svého účtu</translation>
 <translation id="6751521182688001123">Rychle otevřít novou kartu. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
 <translation id="6756507620369789050">Odeslat zpětnou vazbu</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1176,6 +1176,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="686490460830618322">Panel filtrování podle aplikace</translation>
 <translation id="6865313869410766144">Automatické vyplňování formulářů</translation>
 <translation id="6867400383614725881">Nová anonymní karta</translation>
+<translation id="686899695320434745">Adresy se nešifrují pomocí vaší heslové fráze. Můžete je tak používat v jiných službách Google.</translation>
 <translation id="6869056123412990582">počítač</translation>
 <translation id="6882836635272038266">Standardní ochrana před weby, soubory ke stažení a rozšířeními, o nichž je známo, že jsou nebezpečné.</translation>
 <translation id="6883204995689174413">Sdílení</translation>
@@ -1600,6 +1601,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="885480114717186641">Můžete požádat o web <ph name="HOST_NAME" /> pro počítače</translation>
 <translation id="8856607253650333758">Zobrazovat popisy</translation>
 <translation id="8856931513242997049">Postup udělení oznámení k zasílání oprávnění je zavřený</translation>
+<translation id="8865415417596392024">Data Chromu ve vašem účtu</translation>
 <translation id="8898822736010347272">Odesílá adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek do Googlu a pomáhá tak objevovat nové hrozby a chránit všechny uživatele internetu.</translation>
 <translation id="8909135823018751308">Sdílet…</translation>
 <translation id="8921980840204105660">Pokud chcete získat záložky ze svých ostatních zařízení, zapněte synchronizaci</translation>
