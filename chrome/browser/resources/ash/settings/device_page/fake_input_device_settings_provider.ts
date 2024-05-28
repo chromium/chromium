@@ -415,6 +415,13 @@ export class FakeInputDeviceSettingsProvider implements
     }
   }
 
+  sendKeyboardAmbientLightSensorEnabledChange(enabled: boolean): void {
+    if (this.keyboardAmbientLightSensorObserver) {
+      this.keyboardAmbientLightSensorObserver
+          .onKeyboardAmbientLightSensorEnabledChanged(enabled);
+    }
+  }
+
   hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
     return this.methods.resolveMethod('fakeHasLauncherButton');
   }

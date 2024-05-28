@@ -485,6 +485,25 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     assertEquals(secondAdjustedBrightness, slider.pref!.value);
   });
 
+  test('observe keyboard ambient light sensor enabled change', async () => {
+    await changeIsExternalState(false);
+    const toggle =
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#keyboardAutoBrightnessToggle');
+    assertTrue(!!toggle);
+
+    // Simulate a keyboard ambient light sensor enabled change and verify the
+    // toggle updates accordingly.
+    provider.sendKeyboardAmbientLightSensorEnabledChange(true);
+    await flushTasks();
+    assertTrue(toggle.pref!.value);
+
+    // Simulate another keyboard ambient light sensor enabled change.
+    provider.sendKeyboardAmbientLightSensorEnabledChange(false);
+    await flushTasks();
+    assertFalse(toggle.pref!.value);
+  });
+
   test('Set keyboard brightness via slider', async () => {
     await changeIsExternalState(false);
     const slider = subsection.shadowRoot!.querySelector<SettingsSliderElement>(

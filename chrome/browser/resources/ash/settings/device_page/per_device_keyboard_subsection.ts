@@ -32,7 +32,7 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {SettingsSliderElement} from '../controls/settings_slider.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {KeyboardBrightnessObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
+import {KeyboardAmbientLightSensorObserverReceiver, KeyboardBrightnessObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from '../personalization_page/personalization_hub_browser_proxy.js';
 import {Route, Router, routes} from '../router.js';
@@ -203,6 +203,8 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       PersonalizationHubBrowserProxyImpl.getInstance();
   private keyboardBrightnessObserverReceiver:
       KeyboardBrightnessObserverReceiver;
+  private keyboardAmbientLightSensorObserverReceiver:
+      KeyboardAmbientLightSensorObserverReceiver;
   private keyboardIndex: number;
   private isLastDevice: boolean;
   private isRgbKeyboardSupported: boolean;
@@ -219,6 +221,13 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
           new KeyboardBrightnessObserverReceiver(this);
       this.inputDeviceSettingsProvider.observeKeyboardBrightness(
           this.keyboardBrightnessObserverReceiver.$.bindNewPipeAndPassRemote());
+
+      // Add keyboardAmbientLightSensorChange observer.
+      this.keyboardAmbientLightSensorObserverReceiver =
+          new KeyboardAmbientLightSensorObserverReceiver(this);
+      this.inputDeviceSettingsProvider.observeKeyboardAmbientLightSensor(
+          this.keyboardAmbientLightSensorObserverReceiver.$
+              .bindNewPipeAndPassRemote());
 
       this.isRgbKeyboardSupported =
         (await this.inputDeviceSettingsProvider.isRgbKeyboardSupported())
@@ -318,6 +327,12 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
 
   onKeyboardBrightnessChanged(keyboardBrightnessPercent: number): void {
     this.set('keyboardBrightnessPercentPref.value', keyboardBrightnessPercent);
+  }
+
+  onKeyboardAmbientLightSensorEnabledChanged(keyboardAmbientLightSensorEnabled:
+                                                 boolean): void {
+    this.set(
+        'keyboardAutoBrightnessPref.value', keyboardAmbientLightSensorEnabled);
   }
 
   private getNumRemappedSixPackKeys(): number {
