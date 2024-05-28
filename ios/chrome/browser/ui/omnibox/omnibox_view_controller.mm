@@ -413,6 +413,7 @@ using base::UserMetricsAction;
 }
 
 - (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField {
+  base::RecordAction(UserMetricsAction("MobileOmniboxRichInlineRemoved"));
   if (_textChangeDelegate) {
     _textChangeDelegate->OnRemoveAdditionalText();
   }
