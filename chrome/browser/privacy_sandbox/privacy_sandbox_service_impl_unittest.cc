@@ -3408,4 +3408,50 @@ TEST_F(PrivacySandboxActivityTypeStorageMetricsTests, VerifyNoMetrics) {
   EXPECT_EQ(10u,
             prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord).size());
 }
+
+TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
+       VerifyDurationSinceOldestRecordMetrics) {
+  local_state()->Get()->SetInt64(
+      metrics::prefs::kMetricsReportingEnabledTimestamp,
+      (base::Time::Now() - base::Days(10)).ToTimeT());
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 0, 1);
+  browser_task_environment()->FastForwardBy(base::Days(5));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 5, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 5, 2);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 15, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 25, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 35, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 45, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 55, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 60, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 60, 2);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)

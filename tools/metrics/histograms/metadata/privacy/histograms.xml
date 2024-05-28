@@ -519,6 +519,16 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord"
+    units="days" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the days since the oldest record in the Activity Type Storage list.
+    Recorded once on Clank startup.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.AGSACCT"
     units="%" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>

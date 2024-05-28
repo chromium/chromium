@@ -1500,7 +1500,9 @@ void RecordPercentageMetrics(const base::Value::List& activity_type_record) {
 
   // Emit all the histograms with each percentage value.
   for (const auto& [type, suffix] : kTypesToHistogramSuffix) {
-    DCHECK(activity_type_percentages.contains(type));
+    if (!activity_type_percentages.contains(type)) {
+      return;
+    }
     base::UmaHistogramPercentage(
         base::StrCat(
             {"PrivacySandbox.ActivityTypeStorage.Percentage.", suffix}),
@@ -1559,6 +1561,21 @@ void RecordUserSegmentMetrics(const base::Value::List& activity_type_record,
       segment_type);
 }
 
+void RecordDaysSinceMetrics(const base::Value::List& activity_type_record) {
+  auto* timestamp =
+      activity_type_record[activity_type_record.size() - 1].GetDict().Find(
+          "timestamp");
+  CHECK(timestamp);
+  std::optional<base::Time> oldest_record_timestamp =
+      base::ValueToTime(*timestamp);
+  CHECK(oldest_record_timestamp.has_value());
+  int days_since_oldest_record =
+      (base::Time::Now() - oldest_record_timestamp.value()).InDays();
+  base::UmaHistogramCustomCounts(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord",
+      days_since_oldest_record, 1, 61, 60);
+}
+
 void RecordActivityTypeMetrics(const base::Value::List& activity_type_record,
                                base::Time current_time) {
   int total_records = static_cast<int>(activity_type_record.size());
@@ -1583,6 +1600,7 @@ void RecordActivityTypeMetrics(const base::Value::List& activity_type_record,
   RecordPercentageMetrics(activity_type_record);
   RecordUserSegmentMetrics(activity_type_record, 10);
   RecordUserSegmentMetrics(activity_type_record, 20);
+  RecordDaysSinceMetrics(activity_type_record);
 }
 
 void PrivacySandboxServiceImpl::RecordActivityType(
