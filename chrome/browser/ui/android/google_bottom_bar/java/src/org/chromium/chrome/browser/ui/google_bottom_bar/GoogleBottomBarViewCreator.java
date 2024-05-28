@@ -9,7 +9,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 
@@ -84,7 +84,7 @@ public class GoogleBottomBarViewCreator {
 
     private void initButton(int viewId, @ButtonId int buttonConfigId) {
         assert mRootView != null;
-        ImageView button = mRootView.findViewById(viewId);
+        ImageButton button = mRootView.findViewById(viewId);
         ButtonConfig buttonConfig = findButtonConfig(buttonConfigId);
         maybeUpdateButton(button, buttonConfig, /* isFirstTimeShown= */ true);
     }
@@ -93,7 +93,7 @@ public class GoogleBottomBarViewCreator {
         if (buttonConfig == null) {
             return false;
         }
-        ImageView button = mRootView.findViewById(buttonConfig.getId());
+        ImageButton button = mRootView.findViewById(buttonConfig.getId());
         return maybeUpdateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
     }
 
@@ -129,7 +129,7 @@ public class GoogleBottomBarViewCreator {
     }
 
     private boolean maybeUpdateButton(
-            @Nullable ImageView button,
+            @Nullable ImageButton button,
             @Nullable ButtonConfig buttonConfig,
             boolean isFirstTimeShown) {
         if (button == null || buttonConfig == null) {
