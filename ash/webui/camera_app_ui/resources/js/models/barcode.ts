@@ -4,7 +4,7 @@
 
 import {assertInstanceof} from '../assert.js';
 import * as Comlink from '../lib/comlink.js';
-import {SCAN_INTERVAL, ScanResult} from '../photo_mode_auto_scanner.js';
+import {BARCODE_SCAN_INTERVAL, ScanResult} from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
 import {getSanitizedScriptUrl} from '../trusted_script_url_policy_util.js';
 import {lazySingleton} from '../util.js';
@@ -47,7 +47,7 @@ export class BarcodeScanner {
    *
    * @param scanIntervalMs Scan interval time. Unit is milliseconds.
    */
-  start(scanIntervalMs = SCAN_INTERVAL): void {
+  start(scanIntervalMs = BARCODE_SCAN_INTERVAL): void {
     if (this.scanRunner !== null) {
       return;
     }

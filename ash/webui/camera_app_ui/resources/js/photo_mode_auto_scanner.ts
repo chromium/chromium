@@ -11,15 +11,17 @@ import {Ocr} from './ocr.js';
 import * as scannerChip from './scanner_chip.js';
 import {OneShotTimer} from './timer.js';
 
-// The delay interval between consecutive preview scans in milliseconds.
-export const SCAN_INTERVAL = 200;
+// The interval between consecutive preview scans in milliseconds.
+export const BARCODE_SCAN_INTERVAL = 200;
+export const OCR_SCAN_INTERVAL = 500;
 
 // The delay time to keep `SCAN_INTERVAL` in milliseconds. After this delay, the
 // interval becomes `SCAN_INTERVAL_SLOW`.
 export const SLOWDOWN_DELAY = 3 * 60 * 1000;
 
-// The delay interval after `SLOWDOWN_DELAY` of idle in milliseconds.
-export const SCAN_INTERVAL_SLOW = 1000;
+// The interval after `SLOWDOWN_DELAY` of idle in milliseconds.
+export const BARCODE_SCAN_INTERVAL_SLOW = 1000;
+export const OCR_SCAN_INTERVAL_SLOW = 1000;
 
 export interface ScanResult {
   // The detected content.
@@ -86,10 +88,10 @@ export class PhotoModeAutoScanner {
     // TODO(b/311592341): Show the object closer to the center of preview when
     // both scanners detect objects at the same time.
     if (getChromeFlag(Flag.AUTO_QR)) {
-      this.barcodeRunner = this.createBarcodeRunner(SCAN_INTERVAL);
+      this.barcodeRunner = this.createBarcodeRunner(BARCODE_SCAN_INTERVAL);
     }
     if (getChromeFlag(Flag.PREVIEW_OCR)) {
-      this.ocrRunner = this.createOcrRunner(SCAN_INTERVAL);
+      this.ocrRunner = this.createOcrRunner(OCR_SCAN_INTERVAL);
     }
     this.slowdownTimer = new OneShotTimer(() => {
       this.slowdownTimer = null;
@@ -121,11 +123,11 @@ export class PhotoModeAutoScanner {
   private slowdown() {
     if (this.barcodeRunner !== null) {
       this.barcodeRunner.stop();
-      this.barcodeRunner = this.createBarcodeRunner(SCAN_INTERVAL_SLOW);
+      this.barcodeRunner = this.createBarcodeRunner(BARCODE_SCAN_INTERVAL_SLOW);
     }
     if (this.ocrRunner !== null) {
       this.ocrRunner.stop();
-      this.ocrRunner = this.createOcrRunner(SCAN_INTERVAL_SLOW);
+      this.ocrRunner = this.createOcrRunner(OCR_SCAN_INTERVAL_SLOW);
     }
   }
 
