@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -607,8 +608,10 @@ int TabStripModel::MoveWebContentsAt(int index,
     return to_position;
   }
 
-  MoveWebContentsAtImpl(index, to_position, select_after_move);
-  EnsureGroupContiguity(to_position);
+  std::optional<tab_groups::TabGroupId> group =
+      GetGroupToAssign(index, to_position);
+  MoveTabToIndexImpl(index, to_position, group, IsTabPinned(index),
+                     select_after_move);
 
   return to_position;
 }
@@ -676,7 +679,7 @@ void TabStripModel::MoveGroupTo(const tab_groups::TabGroupId& group,
   }
 
   for (size_t i = 0; i < tabs_in_group.length(); ++i) {
-    MoveWebContentsAtImpl(from_index, to_index, false);
+    MoveTabToIndexImpl(from_index, to_index, group, false, false);
   }
 
   MoveTabGroup(group);
@@ -848,8 +851,19 @@ void TabStripModel::SetTabBlocked(int index, bool blocked) {
 
 int TabStripModel::SetTabPinned(int index, bool pinned) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  CHECK(ContainsIndex(index));
 
-  return SetTabPinnedImpl(index, pinned);
+  tabs::TabModel* tab = GetTabAtIndex(index);
+
+  if (tab->pinned() == pinned) {
+    return index;
+  }
+
+  const int final_index =
+      pinned ? IndexOfFirstNonPinnedTab() : IndexOfFirstNonPinnedTab() - 1;
+
+  MoveTabToIndexImpl(index, final_index, std::nullopt, pinned, false);
+  return final_index;
 }
 
 bool TabStripModel::IsTabPinned(int index) const {
@@ -1202,14 +1216,14 @@ void TabStripModel::UpdateGroupForDragRevert(
     if (!group_exists) {
       group_model_->AddTabGroup(group_id.value(), group_data);
     }
-    GroupTab(index, group_id.value());
+    MoveTabToIndexImpl(index, index, group_id, IsTabPinned(index), false);
     if (!group_exists) {
       // TODO(crbug.com/339858272) : Consolidate all default save logic to
       // TabStripModel::AddToNewGroupImpl.
       delegate_->GroupAdded(group_id.value());
     }
   } else {
-    UngroupTab(index);
+    MoveTabToIndexImpl(index, index, std::nullopt, IsTabPinned(index), false);
   }
 }
 
@@ -2309,18 +2323,19 @@ void TabStripModel::MoveTabRelative(TabRelativeDirection direction) {
   std::optional<tab_groups::TabGroupId> current_group =
       GetTabGroupForTab(current_index);
 
+  // Calculate the target index the tab needs to move to.
   const int first_non_pinned_tab_index = IndexOfFirstNonPinnedTab();
   const int first_valid_index =
       IsTabPinned(current_index) ? 0 : first_non_pinned_tab_index;
   const int last_valid_index =
       IsTabPinned(current_index) ? first_non_pinned_tab_index - 1 : count() - 1;
-  int target_index = std::max(
-      std::min(current_index + offset, last_valid_index), first_valid_index);
+  int target_index =
+      std::clamp(current_index + offset, first_valid_index, last_valid_index);
 
   // If the target index is the same as the current index, then the tab is at a
   // min/max boundary and being moved further in that direction. In that case,
   // the tab could still be ungrouped to move one more slot.
-  const std::optional<tab_groups::TabGroupId> target_group =
+  std::optional<tab_groups::TabGroupId> target_group =
       (target_index == current_index) ? std::nullopt
                                       : GetTabGroupForTab(target_index);
 
@@ -2328,8 +2343,8 @@ void TabStripModel::MoveTabRelative(TabRelativeDirection direction) {
   // actually moving the tab just change its group membership.
   if (group_model_ && current_group != target_group) {
     if (current_group.has_value()) {
-      UngroupTab(current_index);
-      return;
+      target_index = current_index;
+      target_group = std::nullopt;
     } else if (target_group.has_value()) {
       // If the tab is at a group boundary and the group is collapsed, treat the
       // collapsed group as a tab and find the next available slot for the tab
@@ -2340,47 +2355,15 @@ void TabStripModel::MoveTabRelative(TabRelativeDirection direction) {
         target_index = direction == TabRelativeDirection::kNext
                            ? tabs_in_group.end() - 1
                            : tabs_in_group.start();
+        target_group = std::nullopt;
       } else {
-        GroupTab(current_index, target_group.value());
-        return;
+        target_index = current_index;
       }
     }
   }
   // TODO: this needs to be updated for multi-selection.
-  MoveWebContentsAt(current_index, target_index, true);
-}
-
-void TabStripModel::MoveWebContentsAtImpl(int index,
-                                          int to_position,
-                                          bool select_after_move) {
-  FixOpeners(index);
-
-  TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
-
-  CHECK_LT(index, GetTabCount());
-  CHECK_LT(to_position, GetTabCount());
-  std::unique_ptr<tabs::TabModel> moved_data =
-      std::move(GetContentsDataAsVector()[index]);
-  WebContents* web_contents = moved_data->contents();
-  GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() + index);
-  GetContentsDataAsVector().insert(
-      GetContentsDataAsVector().begin() + to_position, std::move(moved_data));
-
-  selection_model_.Move(index, to_position, 1);
-  if (!selection_model_.IsSelected(to_position) && select_after_move) {
-    selection_model_.SetSelectedIndex(to_position);
-  }
-  CHECK(empty() || selection_model_.active().has_value(),
-        base::NotFatalUntil::M124);
-
-  selection.new_model = selection_model_;
-
-  TabStripModelChange::Move move;
-  move.contents = web_contents;
-  move.from_index = index;
-  move.to_index = to_position;
-  TabStripModelChange change(move);
-  OnChange(change, selection);
+  MoveTabToIndexImpl(current_index, target_index, target_group,
+                     IsTabPinned(target_index), true);
 }
 
 void TabStripModel::MoveSelectedTabsToImpl(int index,
@@ -2404,7 +2387,9 @@ void TabStripModel::MoveSelectedTabsToImpl(int index,
   int target_index = index + count_before_index;
   size_t tab_index = start;
   while (tab_index < end && indices[start] < index) {
-    MoveWebContentsAtImpl(indices[start], target_index - 1, false);
+    MoveTabToIndexImpl(indices[start], target_index - 1,
+                       GetTabGroupForTab(indices[start]),
+                       IsTabPinned(indices[start]), false);
     // It is necessary to re-populate selected indices because
     // MoveWebContetsAtImpl mutates selection_model_.
     const auto& new_sel = selection_model_.selected_indices();
@@ -2416,7 +2401,9 @@ void TabStripModel::MoveSelectedTabsToImpl(int index,
   // selection, therefore there is no need to repopulate indices.
   while (tab_index < end) {
     if (indices[tab_index] != target_index) {
-      MoveWebContentsAtImpl(indices[tab_index], target_index, false);
+      MoveTabToIndexImpl(indices[tab_index], target_index,
+                         GetTabGroupForTab(indices[tab_index]),
+                         IsTabPinned(indices[tab_index]), false);
     }
     tab_index++;
     target_index++;
@@ -2511,11 +2498,9 @@ void TabStripModel::AddToExistingGroupImpl(const std::vector<int>& indices,
   std::vector<int> tabs_left_of_group;
   std::vector<int> tabs_right_of_group;
   for (int index : indices) {
-    if (index >= first_tab_in_group && index <= last_tab_in_group) {
-      GroupTab(index, group);
-    } else if (index < first_tab_in_group) {
+    if (index < first_tab_in_group) {
       tabs_left_of_group.push_back(index);
-    } else {
+    } else if (index > last_tab_in_group) {
       tabs_right_of_group.push_back(index);
     }
   }
@@ -2535,8 +2520,9 @@ void TabStripModel::MoveTabsAndSetGroupImpl(
     const std::vector<int>& indices,
     int destination_index,
     std::optional<tab_groups::TabGroupId> group) {
-  if (!group_model_)
+  if (!group_model_) {
     return;
+  }
 
   // Some tabs will need to be moved to the right, some to the left. We need to
   // handle those separately. First, move tabs to the right, starting with the
@@ -2547,8 +2533,8 @@ void TabStripModel::MoveTabsAndSetGroupImpl(
     numTabsMovingRight++;
   }
   for (int i = numTabsMovingRight - 1; i >= 0; i--) {
-    MoveAndSetGroup(indices[i], destination_index - numTabsMovingRight + i,
-                    group);
+    MoveTabToIndexImpl(indices[i], destination_index - numTabsMovingRight + i,
+                       group, false, false);
   }
 
   // Collect indices for tabs moving to the left.
@@ -2558,52 +2544,9 @@ void TabStripModel::MoveTabsAndSetGroupImpl(
   }
 
   // Move tabs to the left, starting with the leftmost tab.
-  for (size_t i = 0; i < move_left_indices.size(); i++)
-    MoveAndSetGroup(move_left_indices[i], destination_index + i, group);
-}
-
-void TabStripModel::MoveAndSetGroup(
-    int index,
-    int new_index,
-    std::optional<tab_groups::TabGroupId> new_group) {
-  if (!group_model_) {
-    return;
-  }
-
-  if (new_group.has_value()) {
-    // Unpin tabs when grouping -- the states should be mutually exclusive.
-    // Here we move the tab twice to ensure the tabstrip is always in a valid
-    // state when observers are notified of changes.
-    if (IsTabPinned(index)) {
-      index = SetTabPinnedImpl(index, false);
-    }
-
-    std::optional<tab_groups::TabGroupId> old_group = GetTabGroupForTab(index);
-    if (old_group.has_value()) {
-      // TODO (1302144): We don't maintain group contiguity in this case. If
-      // |index| is in the middle of |old_group|, GroupTab will notify observers
-      // while |old_group| is split in twain. Simply reordering the move and
-      // group actions won't do it; we'd need to move, ungroup, move, and then
-      // group.
-      GroupTab(index, new_group.value());
-      if (index != new_index) {
-        MoveWebContentsAtImpl(index, new_index, false);
-      }
-    } else {
-      // Move the tab now so that group contiguity is preserved.
-      // When grouping, this will move the tab next to |new_group|.
-      if (index != new_index) {
-        MoveWebContentsAtImpl(index, new_index, false);
-      }
-      GroupTab(new_index, new_group.value());
-    }
-  } else {
-    // Move the tab now so that group contiguity is preserved.
-    // When ungrouping, this will move the tab to the edge of |old_group|.
-    if (index != new_index) {
-      MoveWebContentsAtImpl(index, new_index, false);
-    }
-    UngroupTab(new_index);
+  for (size_t i = 0; i < move_left_indices.size(); i++) {
+    MoveTabToIndexImpl(move_left_indices[i], destination_index + i, group,
+                       false, false);
   }
 }
 
@@ -2693,6 +2636,63 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
   }
 
   return old_data;
+}
+
+void TabStripModel::MoveTabToIndexImpl(
+    int initial_index,
+    int final_index,
+    const std::optional<tab_groups::TabGroupId> group,
+    bool pin,
+    bool select_after_move) {
+  CHECK(ContainsIndex(initial_index));
+  CHECK_LT(initial_index, count());
+  CHECK_LT(final_index, count());
+
+  tabs::TabModel* tab = GetTabAtIndex(initial_index);
+  WebContents* web_contents = tab->contents();
+  bool initial_pinned_state = tab->pinned();
+  std::optional<tab_groups::TabGroupId> initial_group = tab->group();
+
+  if (initial_index != final_index) {
+    FixOpeners(initial_index);
+  }
+
+  tab->set_pinned(pin);
+  tab->set_group(group);
+
+  // Move the tab to the destination index.
+  if (initial_index != final_index) {
+    std::unique_ptr<tabs::TabModel> moved_data =
+        std::move(GetContentsDataAsVector()[initial_index]);
+    GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() +
+                                    initial_index);
+    GetContentsDataAsVector().insert(
+        GetContentsDataAsVector().begin() + final_index, std::move(moved_data));
+  }
+
+  TabStripSelectionChange selection =
+      MaybeUpdateSelectionModel(initial_index, final_index, select_after_move);
+
+  // TODO(shibalik): Replace with `ValidateTabStripModel()` after bulk move
+  // primitive addition.
+  CHECK(empty() || selection_model_.active().has_value());
+
+  // Send all the notifications.
+  if (initial_index != final_index) {
+    SendMoveNotificationForWebContents(initial_index, final_index, web_contents,
+                                       selection);
+  }
+
+  if (initial_pinned_state != tab->pinned()) {
+    for (auto& observer : observers_) {
+      observer.TabPinnedStateChanged(this, web_contents, final_index);
+    }
+  }
+
+  if (group_model_ && (initial_group != tab->group())) {
+    TabGroupStateChanged(final_index, web_contents, initial_group,
+                         tab->group());
+  }
 }
 
 void TabStripModel::TabGroupStateChanged(
@@ -2795,108 +2795,51 @@ void TabStripModel::ValidateTabStripModel() {
 #endif
 }
 
-std::optional<tab_groups::TabGroupId> TabStripModel::UngroupTab(int index) {
-  if (!group_model_) {
-    return std::nullopt;
-  }
-
-  std::optional<tab_groups::TabGroupId> group = GetTabGroupForTab(index);
-  if (!group.has_value()) {
-    return std::nullopt;
-  }
-
-  // Update the tab.
-  GetTabAtIndex(index)->set_group(std::nullopt);
-  for (auto& observer : observers_) {
-    observer.TabGroupedStateChanged(std::nullopt,
-                                    GetTabAtIndex(index)->contents(), index);
-  }
-
-  // Update the group model.
-  TabGroup* tab_group = group_model_->GetTabGroup(group.value());
-  tab_group->RemoveTab();
-  if (tab_group->IsEmpty()) {
-    group_model_->RemoveTabGroup(group.value());
-  }
-
-  return group;
+void TabStripModel::SendMoveNotificationForWebContents(
+    int index,
+    int to_position,
+    WebContents* web_contents,
+    TabStripSelectionChange& selection_change) {
+  TabStripModelChange::Move move;
+  move.contents = web_contents;
+  move.from_index = index;
+  move.to_index = to_position;
+  TabStripModelChange change(move);
+  OnChange(change, selection_change);
 }
 
-void TabStripModel::GroupTab(int index, const tab_groups::TabGroupId& group) {
-  if (!group_model_)
-    return;
-
-  // Check for an old group first, so that any groups that are changed can be
-  // notified appropriately.
-  std::optional<tab_groups::TabGroupId> old_group = GetTabGroupForTab(index);
-  if (old_group.has_value()) {
-    if (old_group.value() == group) {
-      return;
-    } else {
-      UngroupTab(index);
-    }
-  }
-  GetTabAtIndex(index)->set_group(group);
-  for (auto& observer : observers_) {
-    observer.TabGroupedStateChanged(group, GetTabAtIndex(index)->contents(),
-                                    index);
+TabStripSelectionChange TabStripModel::MaybeUpdateSelectionModel(
+    int initial_index,
+    int final_index,
+    bool select_after_move) {
+  if (initial_index == final_index) {
+    return TabStripSelectionChange();
   }
 
-  group_model_->GetTabGroup(group)->AddTab();
+  TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
+  selection_model_.Move(initial_index, final_index, 1);
+  if (!selection_model_.IsSelected(final_index) && select_after_move) {
+    selection_model_.SetSelectedIndex(final_index);
+  }
+  selection.new_model = selection_model_;
+  return selection;
 }
 
-int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
-  CHECK(ContainsIndex(index));
-  tabs::TabModel* tab_model = GetTabAtIndex(index);
-  if (tab_model->pinned() == pinned) {
-    return index;
+void TabStripModel::SetTabsPinned(std::vector<int> indices, bool pinned) {
+  if (!pinned) {
+    std::reverse(indices.begin(), indices.end());
   }
 
-  // Upgroup tabs if pinning -- the states should be mutually exclusive.
-  if (pinned && group_model_) {
-    UngroupTab(index);
-  }
-
-  // The tab's position may have to change as the pinned tab state is changing.
-  int non_pinned_tab_index = IndexOfFirstNonPinnedTab();
-  tab_model->set_pinned(pinned);
-  if (pinned && index != non_pinned_tab_index) {
-    MoveWebContentsAtImpl(index, non_pinned_tab_index, false);
-    index = non_pinned_tab_index;
-  } else if (!pinned && index + 1 != non_pinned_tab_index) {
-    MoveWebContentsAtImpl(index, non_pinned_tab_index - 1, false);
-    index = non_pinned_tab_index - 1;
-  }
-
-  for (auto& observer : observers_) {
-    observer.TabPinnedStateChanged(this, tab_model->contents(), index);
-  }
-
-  return index;
-}
-
-std::vector<int> TabStripModel::SetTabsPinned(const std::vector<int>& indices,
-                                              bool pinned) {
-  std::vector<int> new_indices;
-  if (pinned) {
-    for (int index : indices) {
-      if (IsTabPinned(index)) {
-        new_indices.push_back(index);
-      } else {
-        new_indices.push_back(SetTabPinnedImpl(index, true));
-      }
+  for (int index : indices) {
+    if (GetTabAtIndex(index)->pinned() == pinned) {
+      continue;
     }
-  } else {
-    for (int index : base::Reversed(indices)) {
-      if (!IsTabPinned(index)) {
-        new_indices.push_back(index);
-      } else {
-        new_indices.push_back(SetTabPinnedImpl(index, false));
-      }
-    }
-    std::reverse(new_indices.begin(), new_indices.end());
+
+    const int non_pinned_tab_index = IndexOfFirstNonPinnedTab();
+    MoveTabToIndexImpl(index,
+                       pinned ? non_pinned_tab_index : non_pinned_tab_index - 1,
+                       std::nullopt, pinned, false);
   }
-  return new_indices;
 }
 
 // Sets the sound content setting for each site at the |indices|.
@@ -2976,25 +2919,44 @@ void TabStripModel::FixOpeners(int index) {
   }());
 }
 
-void TabStripModel::EnsureGroupContiguity(int index) {
-  if (!group_model_)
-    return;
+std::optional<tab_groups::TabGroupId> TabStripModel::GetGroupToAssign(
+    int index,
+    int to_position) {
+  CHECK(ContainsIndex(index), base::NotFatalUntil::M129);
+  CHECK(ContainsIndex(to_position), base::NotFatalUntil::M129);
 
-  const auto old_group = GetTabGroupForTab(index);
-  const auto new_left_group = GetTabGroupForTab(index - 1);
-  const auto new_right_group = GetTabGroupForTab(index + 1);
+  tabs::TabModel* tab_to_move = GetTabAtIndex(index);
 
-  if (old_group != new_left_group && old_group != new_right_group) {
+  if (!group_model_) {
+    return std::nullopt;
+  }
+
+  std::optional<tab_groups::TabGroupId> new_left_group;
+  std::optional<tab_groups::TabGroupId> new_right_group;
+
+  if (to_position > index) {
+    new_left_group = GetTabGroupForTab(to_position);
+    new_right_group = GetTabGroupForTab(to_position + 1);
+  } else if (to_position < index) {
+    new_left_group = GetTabGroupForTab(to_position - 1);
+    new_right_group = GetTabGroupForTab(to_position);
+  }
+
+  if (tab_to_move->group() != new_left_group &&
+      tab_to_move->group() != new_right_group) {
     if (new_left_group == new_right_group && new_left_group.has_value()) {
       // The tab is in the middle of an existing group, so add it to that group.
-      GroupTab(index, new_left_group.value());
-    } else if (old_group.has_value() &&
-               group_model_->GetTabGroup(old_group.value())->tab_count() > 1) {
+      return new_left_group;
+    } else if (tab_to_move->group().has_value() &&
+               group_model_->GetTabGroup(tab_to_move->group().value())
+                       ->tab_count() > 1) {
       // The tab is between groups and its group is non-contiguous, so clear
       // this tab's group.
-      UngroupTab(index);
+      return std::nullopt;
     }
   }
+
+  return tab_to_move->group();
 }
 
 int TabStripModel::GetTabIndexAfterClosing(int index,

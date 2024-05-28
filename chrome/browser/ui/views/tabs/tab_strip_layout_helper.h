@@ -124,6 +124,11 @@ class TabStripLayoutHelper {
       int new_model_index,
       std::optional<tab_groups::TabGroupId> group) const;
 
+  // Returns the slot corresponding to the first tab in a group
+  // in the view.
+  std::optional<int> GetFirstTabSlotForGroup(
+      tab_groups::TabGroupId group) const;
+
   // Used internally in the above two functions. For a tabstrip with N
   // tabs, this takes 0 <= |model_index| <= N and returns the first
   // possible slot corresponding to this model index.

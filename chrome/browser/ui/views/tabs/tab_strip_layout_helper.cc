@@ -168,11 +168,9 @@ void TabStripLayoutHelper::UpdateGroupHeaderIndex(
   TabSlot header_slot = slots_[slot_index];
 
   slots_.erase(slots_.begin() + slot_index);
-  std::optional<int> first_tab = controller_->GetFirstTabInGroup(group);
-  DCHECK(first_tab);
-  const int first_tab_slot_index =
-      GetSlotInsertionIndexForNewTab(first_tab.value(), group);
-  slots_.insert(slots_.begin() + first_tab_slot_index, header_slot);
+  std::optional<int> first_tab = GetFirstTabSlotForGroup(group);
+  CHECK(first_tab);
+  slots_.insert(slots_.begin() + first_tab.value(), header_slot);
 }
 
 void TabStripLayoutHelper::SetActiveTab(
@@ -330,6 +328,24 @@ int TabStripLayoutHelper::GetSlotInsertionIndexForNewTab(
   }
 
   return slot_index;
+}
+
+std::optional<int> TabStripLayoutHelper::GetFirstTabSlotForGroup(
+    tab_groups::TabGroupId group) const {
+  for (int slot_index = 0; slot_index < static_cast<int>(slots_.size());
+       ++slot_index) {
+    if (slots_[slot_index].state.IsClosed()) {
+      continue;
+    }
+
+    if (slots_[slot_index].type == ViewType::kTab &&
+        slots_[slot_index].view->group().has_value() &&
+        slots_[slot_index].view->group().value() == group) {
+      return slot_index;
+    }
+  }
+
+  return std::nullopt;
 }
 
 int TabStripLayoutHelper::GetFirstSlotIndexForTabModelIndex(
