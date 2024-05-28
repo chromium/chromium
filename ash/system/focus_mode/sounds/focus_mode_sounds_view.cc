@@ -22,15 +22,18 @@
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/image/image_skia_operations.h"
-#include "ui/resources/grit/ui_resources.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/grit/ash_internal_scaled_resources.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -47,6 +50,14 @@ constexpr int kNonPremiumChildViewsSpacing = 16;
 constexpr int kNonPremiumLabelViewMaxWidth = 288;
 
 constexpr float kOfflineStateOpacity = 0.38f;
+
+std::optional<int> GetYouTubeMusicIconResourceId() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return IDR_YOUTUBE_MUSIC_ICON;
+#else
+  return std::nullopt;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
 
 std::unique_ptr<views::BoxLayoutView> CreateNonPremiumView() {
   auto box_view = std::make_unique<views::BoxLayoutView>();
@@ -77,20 +88,18 @@ std::unique_ptr<views::BoxLayoutView> CreateNonPremiumView() {
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_LEARN_MORE_BUTTON),
       PillButton::Type::kDefaultElevatedWithIconLeading));
 
-  const gfx::ImageSkia* image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_DEFAULT_FAVICON_32);
-  DCHECK(image);
+  // Add the YouTube Music icon for the `learn_more_button` if it's chrome
+  // branded.
+  const auto& resource_id = GetYouTubeMusicIconResourceId();
+  if (resource_id.has_value()) {
+    const gfx::ImageSkia* image =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            resource_id.value());
 
-  // TODO(b/332922522): After adding the YTM icon, we can remove the resize
-  // step below and its include file.
-  gfx::ImageSkia resized_image = *image;
-  resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
-      *image, skia::ImageOperations::RESIZE_BEST, gfx::Size(20, 20));
-
-  learn_more_button->SetImageModel(
-      views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromImageSkia(resized_image));
+    CHECK(image);
+    learn_more_button->SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                                     ui::ImageModel::FromImageSkia(*image));
+  }
 
   return box_view;
 }
