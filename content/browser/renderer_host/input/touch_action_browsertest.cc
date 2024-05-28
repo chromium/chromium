@@ -357,11 +357,9 @@ class TouchActionBrowserTest : public ContentBrowserTest {
                 { "name": "pointerUp"}]}]
         )HTML";
 
-    // TODO(crbug.com/342446311): Investigate the root cause of the unsafe
-    // buffer usage inside the ASSERT_OK_AND_ASSIGN macro.
-    UNSAFE_BUFFERS(ASSERT_OK_AND_ASSIGN(
+    ASSERT_OK_AND_ASSIGN(
         auto parsed_json,
-        base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json)));
+        base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json));
     ActionsParser actions_parser(std::move(parsed_json));
 
     ASSERT_TRUE(actions_parser.Parse());

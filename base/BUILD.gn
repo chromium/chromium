@@ -4286,6 +4286,7 @@ if (enable_nocompile_tests) {
       "test/bind_test_nocompile.nc",
       "thread_annotations_nocompile.nc",
       "traits_bag_nocompile.nc",
+      "types/expected_macros_nocompile.nc",
       "types/pass_key_nocompile.nc",
       "types/variant_util_nocompile.nc",
       "unsafe_buffers_nocompile.nc",
