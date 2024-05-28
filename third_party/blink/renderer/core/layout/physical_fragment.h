@@ -524,10 +524,11 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
   // Dump the fragment tree, optionally mark |target| if it's found. If not
   // found, the subtree established by |target| will be dumped as well.
-  String DumpFragmentTree(DumpFlags,
-                          const PhysicalFragment* target = nullptr,
-                          std::optional<PhysicalOffset> = std::nullopt,
-                          unsigned indent = 2) const;
+  [[nodiscard]] String DumpFragmentTree(
+      DumpFlags,
+      const PhysicalFragment* target = nullptr,
+      std::optional<PhysicalOffset> = std::nullopt,
+      unsigned indent = 2) const;
 
   // Dump the fragment tree, starting at |root| (searching inside legacy
   // subtrees to find all fragments), optionally mark |target| if it's found. If
@@ -535,9 +536,10 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   //
   // Note that if we're in the middle of layout somewhere inside the subtree,
   // behavior is undefined.
-  static String DumpFragmentTree(const LayoutObject& root,
-                                 DumpFlags,
-                                 const PhysicalFragment* target = nullptr);
+  [[nodiscard]] static String DumpFragmentTree(
+      const LayoutObject& root,
+      DumpFlags,
+      const PhysicalFragment* target = nullptr);
 
   void Trace(Visitor*) const;
   void TraceAfterDispatch(Visitor*) const;
