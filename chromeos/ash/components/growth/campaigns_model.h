@@ -49,8 +49,9 @@ enum class BuiltInVectorIcon { kRedeem = 0, kMaxValue = kRedeem };
 enum class BuiltInImage {
   kContainerApp = 0,
   kG1 = 1,
-  kRebuy = 2,
-  kMaxValue = kRebuy
+  kSparkRebuy = 2,
+  kSpark1PApp = 3,
+  kMaxValue = kSpark1PApp
 };
 
 // Supported window anchor element.

@@ -139,7 +139,7 @@ TEST_F(ShowNotificationActionPerformerTest, TestValidParams) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const auto& expected_image =
       ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_GROWTH_FRAMEWORK_REBUY_PNG);
+          IDR_GROWTH_FRAMEWORK_SPARK_REBUY_PNG);
   EXPECT_EQ(expected_image, notification->rich_notification_data().image);
 #else
   EXPECT_EQ(gfx::Image(), notification->rich_notification_data().image);

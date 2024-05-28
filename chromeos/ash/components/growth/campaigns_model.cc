@@ -146,8 +146,10 @@ std::optional<int> GetBuiltInImageResourceId(
       return IDR_GROWTH_FRAMEWORK_CONTAINER_APP_PNG;
     case BuiltInImage::kG1:
       return IDR_GROWTH_FRAMEWORK_G1_PNG;
-    case BuiltInImage::kRebuy:
-      return IDR_GROWTH_FRAMEWORK_REBUY_PNG;
+    case BuiltInImage::kSparkRebuy:
+      return IDR_GROWTH_FRAMEWORK_SPARK_REBUY_PNG;
+    case BuiltInImage::kSpark1PApp:
+      return IDR_GROWTH_FRAMEWORK_SPARK_1P_APP_PNG;
   }
 }
 
