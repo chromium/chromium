@@ -115,36 +115,16 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
 };
 
 class RenderableGpuMemoryBufferVideoFramePoolTest
-    : public testing::TestWithParam<std::tuple<bool, VideoPixelFormat>> {
+    : public testing::TestWithParam<VideoPixelFormat> {
  public:
-  RenderableGpuMemoryBufferVideoFramePoolTest()
-      : nv12_multi_plane_(std::get<0>(GetParam())),
-        format_(std::get<1>(GetParam())) {
-    if (format_ == PIXEL_FORMAT_NV12) {
-      if (nv12_multi_plane_) {
-        scoped_feature_list_.InitAndEnableFeature(
-            {kUseMultiPlaneFormatForHardwareVideo});
-      } else {
-        scoped_feature_list_.InitAndDisableFeature(
-            {kUseMultiPlaneFormatForHardwareVideo});
-      }
-    }
-  }
+  RenderableGpuMemoryBufferVideoFramePoolTest() : format_(GetParam()) {}
 
  protected:
   void VerifySharedImageCreation(FakeContext* context) {
     switch (format_) {
       case PIXEL_FORMAT_NV12: {
-        if (nv12_multi_plane_) {
-          EXPECT_CALL(*context,
-                      DoCreateSharedImage(viz::MultiPlaneFormat::kNV12, _, _, _,
-                                          _, _, _));
-        } else {
-          EXPECT_CALL(*context,
-                      DoCreateSharedImage(_, gfx::BufferPlane::Y, _, _, _, _));
-          EXPECT_CALL(*context,
-                      DoCreateSharedImage(_, gfx::BufferPlane::UV, _, _, _, _));
-        }
+        EXPECT_CALL(*context, DoCreateSharedImage(viz::MultiPlaneFormat::kNV12,
+                                                  _, _, _, _, _, _));
         break;
       }
       case PIXEL_FORMAT_ARGB: {
@@ -167,9 +147,7 @@ class RenderableGpuMemoryBufferVideoFramePoolTest
 
   int NumSharedImagesPerFrame() {
     switch (format_) {
-      case PIXEL_FORMAT_NV12: {
-        return nv12_multi_plane_ ? 1 : 2;
-      }
+      case PIXEL_FORMAT_NV12:
       case PIXEL_FORMAT_ABGR:
       case PIXEL_FORMAT_ARGB: {
         return 1;
@@ -180,7 +158,6 @@ class RenderableGpuMemoryBufferVideoFramePoolTest
     }
   }
 
-  bool nv12_multi_plane_;
   VideoPixelFormat format_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -461,18 +438,9 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, RespectSizeAndColorSpace) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     RenderableGpuMemoryBufferVideoFramePoolTest,
-    testing::Combine(
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-        // kUseMultiPlaneFormatForHardwareVideo experiment has been enabled on
-        // Fuchsia and Mac fully and codepath is deleted.
-        testing::Values(true),
-#else
-        testing::Bool(),
-#endif
-        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_NV12,
-                        media::VideoPixelFormat::PIXEL_FORMAT_ARGB,
-                        media::VideoPixelFormat::PIXEL_FORMAT_ABGR)));
+    testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                    media::VideoPixelFormat::PIXEL_FORMAT_ARGB,
+                    media::VideoPixelFormat::PIXEL_FORMAT_ABGR));
 
 }  // namespace
 

@@ -1859,13 +1859,7 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 }
 
 bool IsMultiPlaneFormatForHardwareVideoEnabled() {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
   return true;
-#else
-  return
-      base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
-#endif
 }
 
 bool IsMultiPlaneFormatForSoftwareVideoEnabled() {
