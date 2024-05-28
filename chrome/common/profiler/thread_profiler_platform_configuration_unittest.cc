@@ -88,11 +88,11 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
   using RelativePopulations =
       ThreadProfilerPlatformConfiguration::RelativePopulations;
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ((RelativePopulations{0, 1, 99}),
+  EXPECT_EQ((RelativePopulations{0, 0, 100}),
             config()->GetEnableRates(version_info::Channel::CANARY));
-  EXPECT_EQ((RelativePopulations{0, 1, 99}),
+  EXPECT_EQ((RelativePopulations{0, 0, 100}),
             config()->GetEnableRates(version_info::Channel::DEV));
-  EXPECT_EQ((RelativePopulations{25, 0, 75}),
+  EXPECT_EQ((RelativePopulations{0, 0, 100}),
             config()->GetEnableRates(version_info::Channel::BETA));
   // Note: death tests aren't supported on Android. Otherwise this test would
   // check that the other inputs result in CHECKs.
