@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
-import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,7 +70,7 @@ public abstract class Transition {
         mWaits = createWaits();
         try {
             ConditionWaiter.preCheck(mWaits, mOptions, mTrigger);
-        } catch (CriteriaNotSatisfiedException e) {
+        } catch (Throwable e) {
             throw newTransitionException(e);
         }
         for (ConditionWait wait : mWaits) {
@@ -112,9 +111,9 @@ public abstract class Transition {
             try {
                 mTrigger.triggerTransition();
                 Log.i(TAG, "%s: finished running trigger", toDebugString());
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw TravelException.newTravelException(
-                        "Exception thrown by Transition trigger for " + toDebugString(), e);
+                        String.format("%s: trigger threw ", toDebugString()), e);
             }
         } else {
             Log.i(TAG, "%s is triggerless", toDebugString());
@@ -127,7 +126,7 @@ public abstract class Transition {
         // for flakiness due to tight timeouts.
         try {
             ConditionWaiter.waitFor(mWaits, mOptions);
-        } catch (AssertionError e) {
+        } catch (Throwable e) {
             throw newTransitionException(e);
         }
     }
