@@ -44,6 +44,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/prefs/pref_service.h"
 #include "url/android/gurl_android.h"
@@ -880,9 +881,8 @@ JNI_PersonalDataManager_GetBasicCardIssuerNetwork(
     return ConvertUTF8ToJavaString(env, "");
   }
   return ConvertUTF8ToJavaString(
-      env,
-      data_util::GetPaymentRequestData(CreditCard::GetCardNetwork(card_number))
-          .basic_card_issuer_network);
+      env, data_util::GetPaymentRequestData(GetCardNetwork(card_number))
+               .basic_card_issuer_network);
 }
 
 // Returns an ISO 3166-1-alpha-2 country code for a |jcountry_name| using
