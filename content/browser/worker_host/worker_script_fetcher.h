@@ -58,7 +58,6 @@ struct CONTENT_EXPORT WorkerScriptFetcherResult final {
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
       PolicyContainerPolicies policy_container_policies,
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      base::WeakPtr<ServiceWorkerVersion> controller_at_params_creation,
       const GURL& final_response_url);
   ~WorkerScriptFetcherResult();
 
@@ -82,7 +81,6 @@ struct CONTENT_EXPORT WorkerScriptFetcherResult final {
 
   // Plumbed from `SubresourceLoaderParams`.
   base::WeakPtr<ServiceWorkerClient> service_worker_client;
-  base::WeakPtr<ServiceWorkerVersion> controller_at_params_creation;
 
   // The script response URL.
   // https://fetch.spec.whatwg.org/#concept-response-url

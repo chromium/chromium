@@ -6015,8 +6015,7 @@ void NavigationRequest::CommitNavigation() {
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   SubresourceLoaderParams::CheckWithMainResourceHandle(
       service_worker_handle_.get(),
-      subresource_loader_params_.service_worker_client.get(),
-      subresource_loader_params_.controller_at_params_creation.get());
+      subresource_loader_params_.service_worker_client.get());
   if (service_worker_handle_) {
     DCHECK(coep_reporter());
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>

@@ -174,7 +174,6 @@ void DidCreateScriptLoader(
         std::move(subresource_loader_factories),
         std::move(main_script_load_params), PolicyContainerPolicies(),
         std::move(subresource_loader_params.service_worker_client),
-        std::move(subresource_loader_params.controller_at_params_creation),
         final_response_url));
   } else {
     std::move(callback).Run(std::nullopt);
@@ -207,13 +206,11 @@ WorkerScriptFetcherResult::WorkerScriptFetcherResult(
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
     PolicyContainerPolicies policy_container_policies,
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
-    base::WeakPtr<ServiceWorkerVersion> controller_at_params_creation,
     const GURL& final_response_url)
     : subresource_loader_factories(std::move(subresource_loader_factories)),
       main_script_load_params(std::move(main_script_load_params)),
       policy_container_policies(std::move(policy_container_policies)),
       service_worker_client(std::move(service_worker_client)),
-      controller_at_params_creation(std::move(controller_at_params_creation)),
       final_response_url(final_response_url) {
   CHECK(this->main_script_load_params);
   CHECK(this->main_script_load_params->response_head);

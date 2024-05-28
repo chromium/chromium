@@ -14,7 +14,6 @@ namespace content {
 
 class ServiceWorkerClient;
 class ServiceWorkerMainResourceHandle;
-class ServiceWorkerVersion;
 
 // For NetworkService glues:
 // Navigation parameters that are necessary to set-up a subresource loader
@@ -38,12 +37,6 @@ struct CONTENT_EXPORT SubresourceLoaderParams {
   // controller information separately here.
   base::WeakPtr<ServiceWorkerClient> service_worker_client;
 
-  // The controller at the time of `SubresourceLoaderParams` creation, to
-  // CHECK() that it doesn't change before commit.
-  // TODO(crbug.com/336154571): Remove this once we confirm the related CHECK()s
-  // don't crash.
-  base::WeakPtr<ServiceWorkerVersion> controller_at_params_creation;
-
   // When signed exchanges were prefetched in the previous page and were stored
   // to the PrefetchedSignedExchangeCache, and the main resource for the
   // navigation was served from the cache, |prefetched_signed_exchanges|
@@ -54,12 +47,10 @@ struct CONTENT_EXPORT SubresourceLoaderParams {
 
   // Should be called at the time of `ServiceWorkerClient::CommitResponse()` to
   // check some invariants (see implementation for details).
-  // `service_worker_client_from_params` and `controller_at_params_creation`
-  // come from `SubresourceLoaderParams`.
+  // `service_worker_client_from_params` comes from `SubresourceLoaderParams`.
   static void CheckWithMainResourceHandle(
       ServiceWorkerMainResourceHandle* handle,
-      ServiceWorkerClient* service_worker_client_from_params,
-      ServiceWorkerVersion* controller_at_params_creation);
+      ServiceWorkerClient* service_worker_client_from_params);
 };
 
 }  // namespace content

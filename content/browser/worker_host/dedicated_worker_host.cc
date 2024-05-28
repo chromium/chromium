@@ -468,8 +468,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       network::URLLoaderCompletionStatus(net::OK));
 
   SubresourceLoaderParams::CheckWithMainResourceHandle(
-      service_worker_handle_.get(), result->service_worker_client.get(),
-      result->controller_at_params_creation.get());
+      service_worker_handle_.get(), result->service_worker_client.get());
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {
     // TODO(crbug.com/41478971): Plumb the COEP reporter.

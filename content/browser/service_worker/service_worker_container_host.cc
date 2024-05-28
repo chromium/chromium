@@ -2096,10 +2096,6 @@ SubresourceLoaderParams ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
     base::WeakPtr<ServiceWorkerClient> service_worker_client) {
   SubresourceLoaderParams params;
   params.service_worker_client = service_worker_client;
-  if (service_worker_client && service_worker_client->controller()) {
-    params.controller_at_params_creation =
-        service_worker_client->controller()->GetWeakPtr();
-  }
   return params;
 }
 
