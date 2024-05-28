@@ -5,6 +5,7 @@
 """Siso configuration main entry."""
 
 load("@builtin//encoding.star", "json")
+load("@builtin//lib/gn.star", "gn")
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 load("./blink_all.star", "blink_all")
@@ -313,6 +314,13 @@ def __use_large_b289968566(ctx, step_config):
     step_config["rules"] = new_rules
     return step_config
 
+def __disable_remote(ctx, step_config):
+    if gn.args(ctx).get("use_remoteexec") == "true":
+        return step_config
+    for rule in step_config["rules"]:
+        rule["remote"] = False
+    return step_config
+
 def init(ctx):
     print("runtime: os:%s arch:%s run:%d" % (
         runtime.os,
@@ -374,6 +382,7 @@ def init(ctx):
         rule["remote_command"] = arg0
 
     step_config = __use_large_b289968566(ctx, step_config)
+    step_config = __disable_remote(ctx, step_config)
 
     filegroups = {}
     filegroups.update(blink_all.filegroups(ctx))
