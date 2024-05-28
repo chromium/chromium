@@ -22,14 +22,16 @@ MediaSessionServiceImpl::MediaSessionServiceImpl(
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
       playback_state_(blink::mojom::MediaSessionPlaybackState::NONE) {
   MediaSessionImpl* session = GetMediaSession();
-  if (session)
-    session->OnServiceCreated(this);
+  if (session) {
+    media_session_ = session->GetWeakPtr();
+    media_session_->OnServiceCreated(this);
+  }
 }
 
 MediaSessionServiceImpl::~MediaSessionServiceImpl() {
-  MediaSessionImpl* session = GetMediaSession();
-  if (session)
-    session->OnServiceDestroyed(this);
+  if (media_session_) {
+    media_session_->OnServiceDestroyed(this);
+  }
 }
 
 // static
@@ -70,17 +72,17 @@ void MediaSessionServiceImpl::SetClient(
 void MediaSessionServiceImpl::SetPlaybackState(
     blink::mojom::MediaSessionPlaybackState state) {
   playback_state_ = state;
-  MediaSessionImpl* session = GetMediaSession();
-  if (session)
-    session->OnMediaSessionPlaybackStateChanged(this);
+  if (media_session_) {
+    media_session_->OnMediaSessionPlaybackStateChanged(this);
+  }
 }
 
 void MediaSessionServiceImpl::SetPositionState(
     const std::optional<media_session::MediaPosition>& position) {
   position_ = position;
-  MediaSessionImpl* session = GetMediaSession();
-  if (session)
-    session->RebuildAndNotifyMediaPositionChanged();
+  if (media_session_) {
+    media_session_->RebuildAndNotifyMediaPositionChanged();
+  }
 }
 
 void MediaSessionServiceImpl::SetMetadata(
@@ -102,48 +104,48 @@ void MediaSessionServiceImpl::SetMetadata(
     metadata_ = std::move(metadata);
   }
 
-  MediaSessionImpl* session = GetMediaSession();
-  if (session)
-    session->OnMediaSessionMetadataChanged(this);
+  if (media_session_) {
+    media_session_->OnMediaSessionMetadataChanged(this);
+  }
 }
 
 void MediaSessionServiceImpl::SetMicrophoneState(
     media_session::mojom::MicrophoneState microphone_state) {
   microphone_state_ = microphone_state;
-  MediaSessionImpl* session = GetMediaSession();
-  if (session)
-    session->OnMediaSessionInfoChanged(this);
+  if (media_session_) {
+    media_session_->OnMediaSessionInfoChanged(this);
+  }
 }
 
 void MediaSessionServiceImpl::SetCameraState(
     media_session::mojom::CameraState camera_state) {
   camera_state_ = camera_state;
-  MediaSessionImpl* session = GetMediaSession();
-  if (session)
-    session->OnMediaSessionInfoChanged(this);
+  if (media_session_) {
+    media_session_->OnMediaSessionInfoChanged(this);
+  }
 }
 
 void MediaSessionServiceImpl::EnableAction(
     media_session::mojom::MediaSessionAction action) {
   actions_.insert(action);
-  MediaSessionImpl* session = GetMediaSession();
-  if (session)
-    session->OnMediaSessionActionsChanged(this);
+  if (media_session_) {
+    media_session_->OnMediaSessionActionsChanged(this);
+  }
 }
 
 void MediaSessionServiceImpl::DisableAction(
     media_session::mojom::MediaSessionAction action) {
   actions_.erase(action);
-  MediaSessionImpl* session = GetMediaSession();
-  if (session)
-    session->OnMediaSessionActionsChanged(this);
+  if (media_session_) {
+    media_session_->OnMediaSessionActionsChanged(this);
+  }
 }
 
 void MediaSessionServiceImpl::ClearActions() {
   actions_.clear();
-  MediaSessionImpl* session = GetMediaSession();
-  if (session)
-    session->OnMediaSessionActionsChanged(this);
+  if (media_session_) {
+    media_session_->OnMediaSessionActionsChanged(this);
+  }
 }
 
 MediaSessionImpl* MediaSessionServiceImpl::GetMediaSession() {
