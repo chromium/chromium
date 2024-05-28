@@ -1947,7 +1947,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.enabledLanguagesInPref.includes(toggledLanguage);
 
     if (!currentlyEnabled) {
-      this.installVoicePackIfPossible(toggledLanguage);
+      this.installVoicePackIfPossible(
+          toggledLanguage, /* onlyInstallExactGoogleLocaleMatch=*/ true);
     } else {
       // If the language has been deselected, remove the language from the list
       // of language packs to download
@@ -2126,7 +2127,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
 
     for (const lang of this.enabledLanguagesInPref) {
-      this.installVoicePackIfPossible(lang);
+      this.installVoicePackIfPossible(
+          lang, /* onlyInstallExactGoogleLocaleMatch=*/ true);
     }
   }
 
@@ -2345,7 +2347,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (chrome.readingMode.isAutoVoiceSwitchingEnabled) {
       this.selectPreferredVoice_();
     }
-    this.installVoicePackIfPossible(this.speechSynthesisLanguage);
+    // Don't check for Google locales when the language has changed.
+    this.installVoicePackIfPossible(
+        this.speechSynthesisLanguage,
+        /* onlyInstallExactGoogleLocaleMatch=*/ false);
   }
 
   // Include parameters in order to force a re-render whenever the values
@@ -2365,8 +2370,22 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // 3) Kicks off request GetVoicePackInfo to see if the voice is installed
   // 4) Upon response, if we see the voice is not installed and that it's in
   // installVoicePackIfPossible, then we trigger an install request
-  private installVoicePackIfPossible(langOrLocale: string) {
+  private installVoicePackIfPossible(
+      langOrLocale: string, onlyInstallExactGoogleLocaleMatch: boolean) {
     if (!chrome.readingMode.isLanguagePackDownloadingEnabled) {
+      return;
+    }
+
+    // Don't attempt to install a language if it's not a Google TTS language
+    // available for downloading. It's possible for other non-Google TTS
+    // voices to have a valid language code from
+    // convertLangOrLocaleForVoicePackManager, so return early instead to
+    // prevent accidentally downloading untoggled voices.
+    // If we shouldn't check for Google locales (such as when installing a new
+    // page language), this check can be skipped.
+    if (onlyInstallExactGoogleLocaleMatch &&
+        !AVAILABLE_GOOGLE_TTS_LOCALES.has(langOrLocale)) {
+      this.setVoicePackStatus_(langOrLocale, VoicePackStatus.NONE);
       return;
     }
 

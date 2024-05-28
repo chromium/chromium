@@ -42,17 +42,19 @@ suite('UpdateVoicePack', () => {
       });
 
       test('request install if we need to', () => {
-        const lang = 'it';
+        const lang = 'it-it';
         chrome.readingMode.isLanguagePackDownloadingEnabled = true;
         chrome.readingMode.baseLanguageForSpeech = lang;
         app.$.toolbar.updateFonts = () => {};
         app.languageChanged();
 
-        app.updateVoicePackStatus(lang, 'kNotInstalled');
+        const voicePackLang = convertLangOrLocaleForVoicePackManager(lang)!;
 
-        assertEquals(getInstallStatus(lang), VoicePackStatus.INSTALLING);
+        app.updateVoicePackStatus(voicePackLang, 'kNotInstalled');
+
         assertEquals(
-            sentInstallRequestFor, chrome.readingMode.baseLanguageForSpeech);
+            getInstallStatus(voicePackLang), VoicePackStatus.INSTALLING);
+        assertEquals(sentInstallRequestFor, voicePackLang);
       });
     });
   });

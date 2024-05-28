@@ -10,7 +10,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {suppressInnocuousErrors} from './common.js';
@@ -223,8 +223,25 @@ suite('LanguageChanged', () => {
           VoicePackStatus.NONE);
     });
 
+    test('if the language is unsupported but has valid voice pack code', () => {
+      chrome.readingMode.baseLanguageForSpeech = 'bn';
+
+      app.languageChanged();
+
+      // Use this check to ensure this stays updated if the supported
+      // languages changes.
+      assertTrue(PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(
+          chrome.readingMode.baseLanguageForSpeech));
+      assertFalse(AVAILABLE_GOOGLE_TTS_LOCALES.has(
+          chrome.readingMode.baseLanguageForSpeech));
+      assertTrue(sentRequest);
+      assertEquals(
+          voicePackInstallStatus()[chrome.readingMode.baseLanguageForSpeech],
+          VoicePackStatus.EXISTS);
+    });
+
     test('and refreshes voice list if already downloaded', () => {
-      const lang = 'it';
+      const lang = 'bn-bd';
       chrome.readingMode.baseLanguageForSpeech = lang;
       app.synth = new FakeSpeechSynthesis();
       const voices = app.synth.getVoices();
@@ -234,32 +251,43 @@ suite('LanguageChanged', () => {
             {lang: lang, name: 'Andy (Natural)'} as SpeechSynthesisVoice,
         );
       };
-      setInstallStatus(lang, VoicePackStatus.DOWNLOADED);
+
+      const voicePackLang = convertLangOrLocaleForVoicePackManager(lang);
+      assertTrue(voicePackLang !== undefined);
+
+      setInstallStatus(voicePackLang, VoicePackStatus.DOWNLOADED);
 
       app.languageChanged();
 
       assertFalse(sentRequest);
-      assertEquals(voicePackInstallStatus()[lang], VoicePackStatus.INSTALLED);
+      assertEquals(
+          voicePackInstallStatus()[voicePackLang], VoicePackStatus.INSTALLED);
     });
 
     test('and gets voice pack info if no status yet', () => {
-      const lang = 'bn';
+      const lang = 'bn-bd';
       chrome.readingMode.baseLanguageForSpeech = lang;
 
       app.languageChanged();
 
       assertTrue(sentRequest);
-      assertEquals(voicePackInstallStatus()[lang], VoicePackStatus.EXISTS);
+      assertEquals(
+          voicePackInstallStatus()[convertLangOrLocaleForVoicePackManager(lang)!
+      ],
+          VoicePackStatus.EXISTS);
     });
 
     test('and gets voice pack info if we know it exists', () => {
-      const lang = 'de';
+      const lang = 'de-de';
       chrome.readingMode.baseLanguageForSpeech = lang;
 
       app.languageChanged();
 
       assertTrue(sentRequest);
-      assertEquals(voicePackInstallStatus()[lang], VoicePackStatus.EXISTS);
+      assertEquals(
+          voicePackInstallStatus()[convertLangOrLocaleForVoicePackManager(lang)!
+      ],
+          VoicePackStatus.EXISTS);
     });
   });
 
