@@ -61,9 +61,9 @@ class ChildAccountService : public KeyedService,
   // authentication state can't be determined at the moment.
   AuthState GetGoogleAuthState();
 
-  // Subscribes to changes to the Google authentication state
-  // (see IsGoogleAuthenticated()). Can send a notification even if the
-  // authentication state has not changed.
+  // Subscribes to changes to the Google authentication state (see
+  // GetGoogleAuthState()). Can send a notification even if the authentication
+  // state has not changed.
   base::CallbackListSubscription ObserveGoogleAuthState(
       const base::RepeatingCallback<void()>& callback);
 
