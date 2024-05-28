@@ -302,7 +302,13 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, CaptureInSplitIncognitoMode) {
 
 // Tests that valid constraints allow tab capture to start, while invalid ones
 // do not.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, Constraints) {
+#if BUILDFLAG(IS_LINUX) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/343116848): Re-enable this test
+#define MAYBE_Constraints DISABLED_Constraints
+#else
+#define MAYBE_Constraints Constraints
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_Constraints) {
   AddExtensionToCommandLineAllowlist();
   ASSERT_TRUE(RunExtensionTest("tab_capture/constraints",
                                {.extension_url = "constraints.html"}))
