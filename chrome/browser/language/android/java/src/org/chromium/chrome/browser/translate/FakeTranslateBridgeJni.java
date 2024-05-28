@@ -36,7 +36,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     private boolean mAppLanguagePromptShown;
     private String mCurrentLanguage;
     private boolean mIsPageTranslated;
-    private final Map<Long, TranslationObserver> mObservers = new HashMap<>();
+    private final Map<WebContents, Map<Long, TranslationObserver>> mObservers = new HashMap<>();
     private static long sObserverPtr;
 
     public FakeTranslateBridgeJni(
@@ -173,21 +173,37 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     @Override
     public long addTranslationObserver(WebContents webContents, TranslationObserver observer) {
         long ptr = ++sObserverPtr;
-        mObservers.put(ptr, observer);
+        if (!mObservers.containsKey(webContents)) {
+            mObservers.put(webContents, new HashMap<>());
+        }
+        mObservers.get(webContents).put(ptr, observer);
         return ptr;
     }
 
     @Override
     public void removeTranslationObserver(WebContents webContents, long observerNativePtr) {
-        mObservers.remove(observerNativePtr);
+        var observersForWebContents = mObservers.get(webContents);
+        if (observersForWebContents != null) {
+            observersForWebContents.remove(observerNativePtr);
+        }
     }
 
     public int getObserverCount() {
-        return mObservers.keySet().size();
+        int count = 0;
+        for (var observersForWebContents : mObservers.values()) {
+            count += observersForWebContents.size();
+        }
+        return count;
+    }
+
+    public int getObserverCount(WebContents webContents) {
+        var observersForWebContents = mObservers.get(webContents);
+        return observersForWebContents == null ? 0 : observersForWebContents.size();
     }
 
     /**
      * Set the web content's current language for testing.
+     *
      * @param language String value of what getCurrentLanguage should return.
      */
     public void setCurrentLanguage(String language) {
