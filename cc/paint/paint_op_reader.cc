@@ -217,13 +217,24 @@ void PaintOpReader::Read(SkRRect* rect) {
 
 void PaintOpReader::Read(SkColor4f* color) {
   ReadSimple(color);
+  if (!valid_) {
+    return;
+  }
+
   // Colors are generally [0, 1], sometimes with a wider gamut, but
   // infinite and NaN colors don't make sense and shouldn't be produced by a
   // renderer, so encountering a non-finite color implies the paint op buffer
   // is invalid.
-  if (valid_ && (!std::isfinite(color->fR) || !std::isfinite(color->fG) ||
-                 !std::isfinite(color->fB) || !std::isfinite(color->fA))) {
+  if (!std::isfinite(color->fR) || !std::isfinite(color->fG) ||
+      !std::isfinite(color->fB) || !std::isfinite(color->fA)) {
     SetInvalid(DeserializationError::kNonFiniteSkColor4f);
+    return;
+  }
+
+  // Alpha outside [0, 1] is considered invalid.
+  if (color->fA < 0.0f || 1.0f < color->fA) {
+    SetInvalid(DeserializationError::kInvalidSkColor4fAlpha);
+    return;
   }
 }
 
@@ -631,7 +642,7 @@ void PaintOpReader::Read(sk_sp<DrawLooper>* looper) {
 
     ReadSimple(&offset);
     ReadSimple(&blur_sigma);
-    ReadSimple(&color);
+    Read(&color);
     ReadSimple(&flags);
     if (!valid_) {
       *looper = nullptr;
