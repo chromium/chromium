@@ -7,7 +7,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_util.h"
 #import "ios/web/common/features.h"

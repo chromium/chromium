@@ -569,6 +569,13 @@ the generic promo launch. -->
   <int value="3" label="SwipeToDismiss"/>
 </enum>
 
+<enum name="IOSParcelTrackingOptInStatus">
+  <int value="0" label="Never Track"/>
+  <int value="1" label="Always Track"/>
+  <int value="2" label="Ask To Track"/>
+  <int value="3" label="Status Not Set"/>
+</enum>
+
 <enum name="IOSPermissionEvent">
   <int value="0" label="Camera permission disabled"/>
   <int value="1" label="Camera permission enabled"/>

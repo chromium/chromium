@@ -2655,6 +2655,18 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.ParcelTracking.OptInStatus"
+    enum="IOSParcelTrackingOptInStatus" expires_after="2024-09-21">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs the opt-in status the user has given for whether or not they allow
+    parcel tracking on the device. Logged once per app start. For users who have
+    not yet interacted with the opt-in prompt, new users on M127 will log
+    StatusNotSet, while users before M127 will log AskToTrack.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ParcelTracking.Tracked.{Source}" units="count"
     expires_after="2024-10-28">
   <owner>hiramahmood@google.com</owner>

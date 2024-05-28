@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
@@ -102,6 +104,10 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
     account_bookmark_model = ios::AccountBookmarkModelFactory::
         GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
             chrome_state);
+  }
+
+  if (IsIOSParcelTrackingEnabled()) {
+    RecordParcelTrackingOptInStatus(pref_service);
   }
 
   return std::make_unique<ShoppingService>(

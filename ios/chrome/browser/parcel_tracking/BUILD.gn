@@ -44,8 +44,28 @@ source_set("parcel_tracking_step") {
   sources = [ "parcel_tracking_step.h" ]
 }
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/variations/service",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
 source_set("opt_in_status") {
-  sources = [ "parcel_tracking_opt_in_status.h" ]
+  sources = [
+    "parcel_tracking_opt_in_status.h",
+    "parcel_tracking_opt_in_status.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
 }
 
 source_set("prefs") {
@@ -65,6 +85,7 @@ source_set("util") {
     "parcel_tracking_util.mm",
   ]
   deps = [
+    ":features",
     ":metrics",
     ":opt_in_status",
     ":prefs",
@@ -74,7 +95,6 @@ source_set("util") {
     "//components/commerce/core:shopping_service",
     "//components/prefs",
     "//components/signin/public/base",
-    "//components/variations/service",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",

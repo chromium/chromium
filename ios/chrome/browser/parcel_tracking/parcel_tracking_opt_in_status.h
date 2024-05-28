@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_PARCEL_TRACKING_PARCEL_TRACKING_OPT_IN_STATUS_H_
 #define IOS_CHROME_BROWSER_PARCEL_TRACKING_PARCEL_TRACKING_OPT_IN_STATUS_H_
 
+class PrefService;
+
 // Enum for the different values of the parcel tracking opt-in status.
 enum class IOSParcelTrackingOptInStatus {
   kNeverTrack = 0,
@@ -13,5 +15,8 @@ enum class IOSParcelTrackingOptInStatus {
   kStatusNotSet = 3,
   kMaxValue = kStatusNotSet,
 };
+
+// Logs the user's parcel tracking opt-in status.
+void RecordParcelTrackingOptInStatus(PrefService* pref_service);
 
 #endif  // IOS_CHROME_BROWSER_PARCEL_TRACKING_PARCEL_TRACKING_OPT_IN_STATUS_H_

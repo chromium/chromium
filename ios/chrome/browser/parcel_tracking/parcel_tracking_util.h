@@ -17,11 +17,6 @@ class ShoppingService;
 
 @protocol ParcelTrackingOptInCommands;
 
-// Returns true if the parcel tracking feature is enabled. This returns true if
-// 1) the policy is not disabled for enterprise users and 2) the user's
-// permanent location is in the US.
-bool IsIOSParcelTrackingEnabled();
-
 // Returns true if the user is eligible for the parcel tracking opt-in prompt.
 // The user must have never before seen the prompt and must be signed in.
 bool IsUserEligibleParcelTrackingOptInPrompt(

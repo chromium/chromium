@@ -13,9 +13,10 @@
 #import "components/commerce/core/commerce_types.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/signin/public/base/consent_level.h"
-#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -27,15 +28,6 @@
 namespace {
 const CGFloat parcelLimit = 5;
 }  // namespace
-
-bool IsIOSParcelTrackingEnabled() {
-  variations::VariationsService* variations_service =
-      GetApplicationContext()->GetVariationsService();
-  return variations_service &&
-         variations_service->GetStoredPermanentCountry() == "us" &&
-         GetApplicationContext()->GetLocalState()->GetBoolean(
-             prefs::kIosParcelTrackingPolicyEnabled);
-}
 
 bool IsUserEligibleParcelTrackingOptInPrompt(
     PrefService* pref_service,

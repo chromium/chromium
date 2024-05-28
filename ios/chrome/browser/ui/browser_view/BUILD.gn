@@ -85,6 +85,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/overscroll_actions/model",
+    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/parcel_tracking:infobar_delegate",
     "//ios/chrome/browser/parcel_tracking:opt_in_status",
     "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
