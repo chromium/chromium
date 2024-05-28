@@ -3389,11 +3389,6 @@
       status: "stable",
     },
     {
-      // crbug.com/40942025
-      name: "RtNoFirstLetterFirstLine",
-      status: "stable",
-    },
-    {
       // crbug.com/336592423
       name: "RubyAnnotationSpaceFix",
       status: "stable",
