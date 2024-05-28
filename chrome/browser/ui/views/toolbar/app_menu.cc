@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -357,6 +358,22 @@ class InMenuImageButton : public ImageButton {
 
 BEGIN_METADATA(InMenuImageButton)
 END_METADATA
+
+// Conditionally return the update app menu item substring text based on upgrade
+// detector state.
+std::u16string GetUpgradeDialogSubstringText() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+  if (base::FeatureList::IsEnabled(features::kUpdateTextOptions) &&
+      !UpgradeDetector::GetInstance()->is_outdated_install() &&
+      !UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
+    {
+      return {l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT_MINOR_TEXT)};
+    }
+  }
+#endif
+  return std::u16string();
+}
 
 // Helper method that adds a bespoke chip to the profile related menu items.
 void AddSignedInChipToProfileMenuItem(
@@ -1382,11 +1399,11 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
 
     // Helper method that adds a background to a menu item.
     auto add_menu_row_background = [item](int vertical_margin,
-                                          ui::ColorId background_color) {
+                                          ui::ColorId background_color_id) {
       constexpr int kBackgroundCornerRadius = 12;
       item->set_vertical_margin(vertical_margin);
       item->SetMenuItemBackground(MenuItemView::MenuItemBackground(
-          background_color, kBackgroundCornerRadius));
+          background_color_id, kBackgroundCornerRadius));
       item->SetSelectedColorId(ui::kColorAppMenuRowBackgroundHovered);
     };
 
@@ -1411,10 +1428,22 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         break;
       }
       case IDC_UPGRADE_DIALOG: {
-        add_menu_row_background(
-            views::LayoutProvider::Get()->GetDistanceMetric(
-                views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
-            ui::kColorAppMenuUpgradeRowBackground);
+        add_menu_row_background(12, ui::kColorAppMenuUpgradeRowBackground);
+        if (const auto upgrade_substring_text = GetUpgradeDialogSubstringText();
+            !upgrade_substring_text.empty()) {
+          item->AddChildView(
+              views::Builder<views::Label>()
+                  .SetText(upgrade_substring_text)
+                  .SetEnabledColorId(
+                      ui::kColorAppMenuUpgradeRowSubstringForeground)
+                  .SetEnabled(true)
+                  .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+                      0, views::LayoutProvider::Get()->GetDistanceMetric(
+                             views::DISTANCE_RELATED_LABEL_HORIZONTAL) -
+                             MenuItemView::kChildHorizontalPadding)))
+                  .Build());
+          item->SetHighlightWhenSelectedWithChildViews(true);
+        }
         break;
       }
       case IDC_SET_BROWSER_AS_DEFAULT: {

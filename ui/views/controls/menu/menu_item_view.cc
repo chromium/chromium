@@ -96,9 +96,6 @@ END_METADATA
 
 }  // namespace
 
-// Padding between child views.
-static constexpr int kChildXPadding = 8;
-
 // MenuItemView ---------------------------------------------------------------
 
 MenuItemView::MenuItemView(MenuDelegate* delegate)
@@ -756,7 +753,7 @@ void MenuItemView::Layout(PassKey) {
         continue;
       int width = child->GetPreferredSize({}).width();
       child->SetBounds(child_end - width, 0, width, height());
-      child_end -= width + kChildXPadding;
+      child_end -= width + kChildHorizontalPadding;
     }
 
     // Position the icons.
@@ -1231,7 +1228,7 @@ gfx::Size MenuItemView::GetChildPreferredSize() const {
         child == submenu_arrow_image_view_ || child == vertical_separator_)
       return width;
     if (width)
-      width += kChildXPadding;
+      width += kChildHorizontalPadding;
     return width + child->GetPreferredSize({}).width();
   };
   const int width =

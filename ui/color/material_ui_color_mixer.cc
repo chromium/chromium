@@ -34,6 +34,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
                                  kColorAppMenuProfileRowChipBackground)};
   mixer[kColorAppMenuRowBackgroundHovered] = {kColorSysStateHoverOnSubtle};
   mixer[kColorAppMenuUpgradeRowBackground] = {kColorSysTonalContainer};
+  mixer[kColorAppMenuUpgradeRowSubstringForeground] = {
+      kColorSysOnTonalContainer};
   mixer[kColorAvatarIconGuest] = {kColorSysOnSurfaceSecondary};
   mixer[kColorBadgeBackground] = {kColorSysTonalContainer};
   mixer[kColorBadgeForeground] = {kColorSysOnTonalContainer};
@@ -107,6 +109,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
       {kColorSysStateHoverOnSubtle}, {kColorMenuButtonBackground})};
   mixer[kColorMenuIcon] = {kColorSysOnSurfaceSubtle};
   mixer[kColorMenuIconDisabled] = {kColorSysStateDisabled};
+  mixer[kColorMenuIconOnEmphasizedBackground] = {kColorSysOnTonalContainer};
   mixer[kColorMenuItemForegroundSecondary] = {kColorSysOnSurfaceSubtle};
   mixer[kColorMenuItemForeground] = {kColorSysOnSurface};
   mixer[kColorMenuSelectionBackground] = {GetResultingPaintColor(

@@ -77,6 +77,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   METADATA_HEADER(MenuItemView, View)
 
  public:
+  // Padding between child views.
+  static constexpr int kChildHorizontalPadding = 8;
+
   // Different types of menu items.
   enum class Type {
     kNormal,             // Performs an action when selected.

@@ -204,30 +204,20 @@ void AddSubMenuWithStringIdAndVectorIcon(ui::SimpleMenuModel* model,
                                      ui::SimpleMenuModel::kDefaultIconSize));
 }
 
-struct MenuItemStrings {
-  std::u16string title_text;
-  std::u16string minor_text;
-};
-
-// Conditionally return the update app menu item title and minor text based on
-// upgrade detector state.
-MenuItemStrings GetUpgradeDialogTitleAndMinorText() {
+// Conditionally return the update app menu item title based on upgrade detector
+// state.
+std::u16string GetUpgradeDialogTitleText() {
   if (UpgradeDetector::GetInstance()->is_outdated_install() ||
       UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
-    return {.title_text =
-                l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_MENU_ITEM)};
-  } else {
+    return l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_MENU_ITEM);
+  }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
     if (base::FeatureList::IsEnabled(features::kUpdateTextOptions)) {
-      return {
-          .title_text = l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT),
-          .minor_text =
-              l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT_MINOR_TEXT)};
+      return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT);
     }
 #endif
-    return {.title_text = l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE)};
-  }
+    return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1636,24 +1626,18 @@ void AppMenuModel::Build() {
   // Build (and, by extension, Init) should only be called once.
   DCHECK_EQ(0u, GetItemCount());
 
-  auto from_vector_icon = [](const gfx::VectorIcon& vector_icon) {
-    return ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorMenuIcon,
-                                          kDefaultIconSize);
-  };
-
   bool need_separator = false;
   if (app_menu_icon_controller_ &&
       app_menu_icon_controller_->GetTypeAndSeverity().type ==
           AppMenuIconController::IconType::UPGRADE_NOTIFICATION) {
-    const auto update_icon =
-        from_vector_icon(kBrowserToolsUpdateChromeRefreshIcon);
+    AddSeparator(ui::SPACING_SEPARATOR);
+    const auto update_icon = ui::ImageModel::FromVectorIcon(
+        kBrowserToolsUpdateChromeRefreshIcon,
+        ui::kColorMenuIconOnEmphasizedBackground, kDefaultIconSize);
     if (browser_defaults::kShowUpgradeMenuItem) {
-      const MenuItemStrings upgrade_strings =
-          GetUpgradeDialogTitleAndMinorText();
-      AddItemWithIcon(IDC_UPGRADE_DIALOG, upgrade_strings.title_text,
+      AddItemWithIcon(IDC_UPGRADE_DIALOG, GetUpgradeDialogTitleText(),
                       update_icon);
-      SetMinorText(GetIndexOfCommandId(IDC_UPGRADE_DIALOG).value(),
-                   upgrade_strings.minor_text);
+      AddSeparator(ui::SPACING_SEPARATOR);
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     AddItemWithIcon(IDC_LACROS_DATA_MIGRATION,
@@ -1876,10 +1860,11 @@ void AppMenuModel::Build() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (chrome::ShouldDisplayManagedUi(browser_->profile())) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    AddItemWithIcon(
-        IDC_SHOW_MANAGEMENT_PAGE,
-        chrome::GetManagedUiMenuItemLabel(browser_->profile()),
-        from_vector_icon(chrome::GetManagedUiIcon(browser_->profile())));
+    AddItemWithIcon(IDC_SHOW_MANAGEMENT_PAGE,
+                    chrome::GetManagedUiMenuItemLabel(browser_->profile()),
+                    ui::ImageModel::FromVectorIcon(
+                        chrome::GetManagedUiIcon(browser_->profile()),
+                        ui::kColorMenuIcon, kDefaultIconSize));
 
     SetAccessibleNameAt(
         GetIndexOfCommandId(IDC_SHOW_MANAGEMENT_PAGE).value(),
