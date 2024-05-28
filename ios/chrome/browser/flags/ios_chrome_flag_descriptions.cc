@@ -836,6 +836,12 @@ const char kOmniboxRichAutocompletionDescription[] =
     "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
     "to any type of input that users repeatedly use to get to specific URLs.";
 
+const char kOmniboxSuggestionAnswerMigrationName[] =
+    "Omnibox suggestion answer migration";
+const char kOmniboxSuggestionAnswerMigrationDescription[] =
+    "Enables omnibox Suggestion answer migration, when enabled the omnibox "
+    "will use the migrated Answer_template instead of answer.";
+
 extern const char kOmniboxSuggestionsRTLImprovementsName[] =
     "Omnibox Improved RTL Suggestion Layout";
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[] =
