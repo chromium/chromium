@@ -24,10 +24,12 @@ void ChildProcessSnapshotController::CreateSelfOwnedReceiver(
       std::move(receiver));
 }
 
-void ChildProcessSnapshotController::TakeSnapshot() {
+void ChildProcessSnapshotController::TakeSnapshot(double process_probability,
+                                                  uint32_t process_index) {
   if (auto* controller = HeapProfilerController::GetInstance()) {
     controller->TakeSnapshotInChildProcess(
-        base::PassKey<ChildProcessSnapshotController>());
+        base::PassKey<ChildProcessSnapshotController>(), process_probability,
+        process_index);
   }
 }
 

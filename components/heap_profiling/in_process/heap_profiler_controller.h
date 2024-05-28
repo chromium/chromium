@@ -92,8 +92,12 @@ class HeapProfilerController {
 
   // Triggers an immediate snapshot in a child process. In the browser process,
   // snapshots are scheduled internally by the HeapProfilerController.
-  void TakeSnapshotInChildProcess(
-      base::PassKey<ChildProcessSnapshotController>);
+  // `process_probability` and `process_index` will be recorded in the profile
+  // metadata so that samples from a single profile can be distinguished and
+  // scaled to represent the full population.
+  void TakeSnapshotInChildProcess(base::PassKey<ChildProcessSnapshotController>,
+                                  double process_probability,
+                                  size_t process_index);
 
   // Allows unit tests to call AppendCommandLineSwitchForChildProcess without
   // creating a HeapProfilerController. `snapshot_controller` should be null if
@@ -124,6 +128,8 @@ class HeapProfilerController {
     SnapshotParams(scoped_refptr<StoppedFlag> stopped,
                    ProcessType process_type,
                    base::TimeTicks profiler_creation_time,
+                   double process_probability,
+                   size_t process_index,
                    base::OnceClosure on_first_snapshot_callback);
 
     ~SnapshotParams();
@@ -150,6 +156,12 @@ class HeapProfilerController {
 
     // Time the profiler was created.
     base::TimeTicks profiler_creation_time;
+
+    // Metadata to record with the profile. The default values are correct for
+    // the browser process and child processes with kHeapProfilerCentralControl
+    // disabled, where one HeapProfiler always samples one process.
+    double process_probability = 1.0;
+    size_t process_index = 0;
 
     // A callback to invoke for the first snapshot. Will be null for the
     // following snapshots. For testing.
@@ -179,7 +191,9 @@ class HeapProfilerController {
   // Processes the most recent snapshot and sends it to CallStackProfileBuilder.
   static void RetrieveAndSendSnapshot(
       ProcessType process_type,
-      base::TimeDelta time_since_profiler_creation);
+      base::TimeDelta time_since_profiler_creation,
+      double process_probability,
+      size_t process_index);
 
   const ProcessType process_type_;
   const bool profiling_enabled_;

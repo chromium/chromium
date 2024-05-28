@@ -23,9 +23,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/profiler/frame.h"
+#include "base/profiler/metadata_recorder.h"
 #include "base/profiler/module_cache.h"
 #include "base/rand_util.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
@@ -184,10 +186,14 @@ HeapProfilerController::SnapshotParams::SnapshotParams(
     scoped_refptr<StoppedFlag> stopped,
     ProcessType process_type,
     base::TimeTicks profiler_creation_time,
+    double process_probability,
+    size_t process_index,
     base::OnceClosure on_first_snapshot_callback)
     : stopped(std::move(stopped)),
       process_type(process_type),
       profiler_creation_time(profiler_creation_time),
+      process_probability(process_probability),
+      process_index(process_index),
       on_first_snapshot_callback(std::move(on_first_snapshot_callback)) {}
 
 HeapProfilerController::SnapshotParams::~SnapshotParams() = default;
@@ -294,6 +300,10 @@ bool HeapProfilerController::StartIfEnabled() {
 void HeapProfilerController::SuppressRandomnessForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   suppress_randomness_for_testing_ = true;
+  if (browser_process_snapshot_controller_) {
+    browser_process_snapshot_controller_
+        ->SuppressRandomnessForTesting();  // IN-TEST
+  }
 }
 
 void HeapProfilerController::SetFirstSnapshotCallbackForTesting(
@@ -329,7 +339,9 @@ HeapProfilerController::GetBrowserProcessSnapshotController() const {
 }
 
 void HeapProfilerController::TakeSnapshotInChildProcess(
-    base::PassKey<ChildProcessSnapshotController>) {
+    base::PassKey<ChildProcessSnapshotController>,
+    double process_probability,
+    size_t process_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_NE(process_type_, ProcessType::kBrowser);
   CHECK(base::FeatureList::IsEnabled(kHeapProfilerCentralControl));
@@ -337,6 +349,7 @@ void HeapProfilerController::TakeSnapshotInChildProcess(
       FROM_HERE,
       base::BindOnce(&TakeSnapshot,
                      SnapshotParams(stopped_, process_type_, creation_time_,
+                                    process_probability, process_index,
                                     std::move(on_first_snapshot_callback_))));
 }
 
@@ -361,7 +374,8 @@ void HeapProfilerController::AppendCommandLineSwitchInternal(
   if (snapshot_controller &&
       GetHeapProfilerParametersForProcess(child_process_type).is_supported) {
     command_line->AppendSwitch(switches::kSubprocessHeapProfiling);
-    snapshot_controller->BindRemoteForChildProcess(child_process_id);
+    snapshot_controller->BindRemoteForChildProcess(child_process_id,
+                                                   child_process_type);
     return;
   }
   // Record that HeapProfilerController had a chance to update the child's
@@ -394,7 +408,8 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params) {
   }
   RetrieveAndSendSnapshot(
       params.process_type,
-      base::TimeTicks::Now() - params.profiler_creation_time);
+      base::TimeTicks::Now() - params.profiler_creation_time,
+      params.process_probability, params.process_index);
   if (params.process_type == ProcessType::kBrowser) {
     // Also trigger snapshots in child processes.
     params.trigger_child_process_snapshot_closure.Run();
@@ -410,19 +425,26 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params) {
 // static
 void HeapProfilerController::RetrieveAndSendSnapshot(
     ProcessType process_type,
-    base::TimeDelta time_since_profiler_creation) {
+    base::TimeDelta time_since_profiler_creation,
+    double process_probability,
+    size_t process_index) {
   using Sample = base::SamplingHeapProfiler::Sample;
+
+  CHECK_GT(process_probability, 0.0);
+  CHECK_LE(process_probability, 1.0);
 
   // Always log the total sampled memory before returning. If `samples` is empty
   // this will be logged as 0 MB.
   base::ClampedNumeric<uint64_t> total_sampled_bytes;
-  absl::Cleanup log_total_sampled_memory = [&total_sampled_bytes,
-                                            &process_type] {
+  absl::Cleanup log_total_sampled_memory = [&total_sampled_bytes, process_type,
+                                            process_probability] {
+    // Scale this processes' memory by the inverse of the probability that it
+    // was chosen to get its estimated contribution to the total memory.
     constexpr int kBytesPerMB = 1024 * 1024;
     base::UmaHistogramMemoryLargeMB(
         ProcessHistogramName("HeapProfiling.InProcess.TotalSampledMemory",
                              process_type),
-        base::ClampDiv(total_sampled_bytes, kBytesPerMB));
+        total_sampled_bytes / kBytesPerMB * (1.0 / process_probability));
   };
 
   std::vector<Sample> samples =
@@ -470,6 +492,19 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
 
     total_sampled_bytes += value.total;
   }
+
+  // Initialize on first call since HashMetricName isn't constexpr.
+  static const uint64_t kProcessPercentHash =
+      base::HashMetricName("process_percent");  // 0xd598e4d0a9e55408
+  static const uint64_t kProcessIndexHash =
+      base::HashMetricName("process_index");  // 0x28f4372e67b3f8f8
+
+  // Store probability as int from 0 to 100.
+  profile_builder.AddProfileMetadata(
+      base::MetadataRecorder::Item(kProcessPercentHash, std::nullopt,
+                                   std::nullopt, 100 * process_probability));
+  profile_builder.AddProfileMetadata(base::MetadataRecorder::Item(
+      kProcessIndexHash, std::nullopt, std::nullopt, process_index));
 
   profile_builder.OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
 }
