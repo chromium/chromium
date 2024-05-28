@@ -33,10 +33,17 @@ class CORE_EXPORT NADCTypedArrayView {
   // NOLINTNEXTLINE(google-explicit-constructor)
   template <typename U>
   NADCTypedArrayView(const v8::FastApiTypedArray<U>& rhs)
-      : size_(rhs.length()) {
+      : small_buffer_(), size_(rhs.length()) {
     U* data = nullptr;
     bool is_aligned = rhs.getStorageIfAligned(&data);
     DCHECK(is_aligned);
+    if (size_ < kOnHeapLimit) {
+      std::memcpy(
+          const_cast<void*>(reinterpret_cast<const void*>(small_buffer_)), data,
+          size_ * sizeof(T));
+      data_ = small_buffer_;
+      return;
+    }
     data_ = data;
   }
 
@@ -49,7 +56,8 @@ class CORE_EXPORT NADCTypedArrayView {
   template <typename U, typename V8TypedArray, bool clamped>
   NADCTypedArrayView(
       const MaybeShared<DOMTypedArray<U, V8TypedArray, clamped>>& rhs)
-      : data_(rhs.Get() ? rhs->DataMaybeShared() : nullptr),
+      : small_buffer_(),
+        data_(rhs.Get() ? rhs->DataMaybeShared() : nullptr),
         size_(rhs.Get() ? rhs->length() : 0) {}
 
   T* Data() const { return data_; }
@@ -61,6 +69,13 @@ class CORE_EXPORT NADCTypedArrayView {
   bool IsNull() const { return data_ == nullptr; }
 
  private:
+  // If the content of the v8::TypedArray is smaller than 64 bytes, then the
+  // content gets allocated on the V8 heap and therefore may move upon garbage
+  // collection. Therefore the content of small v8::TypedArrays gets copied into
+  // the `small_buffer_` of this class, so that the data is accessible beyond
+  // garbage collection.
+  static constexpr size_t kOnHeapLimit = 64 / sizeof(T);
+  T small_buffer_[kOnHeapLimit];
   T* data_;
   size_t size_;
 };
