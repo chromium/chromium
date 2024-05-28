@@ -113,11 +113,24 @@ BASE_FEATURE(kRelaxLimitAImageReaderMaxSizeToOne,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // List of devices on which to relax the restriction of max queue size of 1 for
-// AImageReader. This list is based on manufacturer name.
+// AImageReader.
 const base::FeatureParam<std::string>
-    kRelaxLimitAImageReaderMaxSizeToOneBlocklist{
+    kRelaxLimitAImageReaderMaxSizeToOneSoCBlocklist{
         &kRelaxLimitAImageReaderMaxSizeToOne,
-        "RelaxLimitAImageReaderMaxSizeToOneBlocklist", "*Broadcom*"};
+        "RelaxLimitAImageReaderMaxSizeToOneSoCBlocklist", "*Broadcom*"};
+const base::FeatureParam<std::string>
+    kRelaxLimitAImageReaderMaxSizeToOneManufacturerBlocklist{
+        &kRelaxLimitAImageReaderMaxSizeToOne,
+        "RelaxLimitAImageReaderMaxSizeToOneManufacturerBlocklist",
+        "*Broadcom*"};
+const base::FeatureParam<std::string>
+    kRelaxLimitAImageReaderMaxSizeToOneDeviceBlocklist{
+        &kRelaxLimitAImageReaderMaxSizeToOne,
+        "RelaxLimitAImageReaderMaxSizeToOneDeviceBlocklist", ""};
+const base::FeatureParam<std::string>
+    kRelaxLimitAImageReaderMaxSizeToOneModelBlocklist{
+        &kRelaxLimitAImageReaderMaxSizeToOne,
+        "RelaxLimitAImageReaderMaxSizeToOneModelBlocklist", ""};
 
 // Increase number of buffers and pipeline depth for high frame rate devices.
 BASE_FEATURE(kIncreaseBufferCountForHighFrameRate,
@@ -766,14 +779,30 @@ bool LimitAImageReaderMaxSizeToOne() {
     // only 1 image. Also note that we should use soc_manufacturer instead of
     // manufacturer when available as sometimes manufacturer field gets
     // modified by vendors.
-    const char* manufacturer =
-        strlen(base::android::BuildInfo::GetInstance()->soc_manufacturer())
-            ? base::android::BuildInfo::GetInstance()->soc_manufacturer()
-            : base::android::BuildInfo::GetInstance()->manufacturer();
-    if (IsDeviceBlocked(manufacturer,
-                        kRelaxLimitAImageReaderMaxSizeToOneBlocklist.Get())) {
+
+    const auto* build_info = base::android::BuildInfo::GetInstance();
+
+    if (IsDeviceBlocked(
+            build_info->soc_manufacturer(),
+            kRelaxLimitAImageReaderMaxSizeToOneSoCBlocklist.Get())) {
       return false;
     }
+    if (IsDeviceBlocked(
+            build_info->manufacturer(),
+            kRelaxLimitAImageReaderMaxSizeToOneManufacturerBlocklist.Get())) {
+      return false;
+    }
+    if (IsDeviceBlocked(
+            build_info->device(),
+            kRelaxLimitAImageReaderMaxSizeToOneDeviceBlocklist.Get())) {
+      return false;
+    }
+    if (IsDeviceBlocked(
+            build_info->model(),
+            kRelaxLimitAImageReaderMaxSizeToOneModelBlocklist.Get())) {
+      return false;
+    }
+
     return true;
   }
 
