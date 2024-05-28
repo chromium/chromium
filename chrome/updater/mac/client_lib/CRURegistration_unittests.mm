@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/scoped_generic.h"
+#include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 #import "chrome/updater/mac/client_lib/CRURegistration-Private.h"
 #include "net/base/apple/url_conversions.h"
@@ -19,6 +20,27 @@
 #include "testing/gtest_mac.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
+
+// Work queue item callbacks get called on a thread that can't make test
+// assertions or expectations, so we need a type to store partial results from
+// item callbacks during asynchronous work queue tests, for subsequent
+// evaluation on the test thread. Making this an Objective-C type (which must be
+// outside of any namespace) makes the test much easier to write, both
+// syntactically and due to ARC's advantages in avoiding use-after-free bugs
+// via use of __block storage duration.
+@interface CRUWorkQueueTestObservation : NSObject
+@property(nonatomic) int itemId;
+@property(nonatomic, copy) NSString* taskStdOut;
+@property(nonatomic, copy) NSString* taskStdErr;
+@property(nonatomic, copy) NSError* taskNSErr;
+@end
+
+@implementation CRUWorkQueueTestObservation
+@synthesize itemId = _itemId;
+@synthesize taskStdOut = _taskStdOut;
+@synthesize taskStdErr = _taskStdErr;
+@synthesize taskNSErr = _taskNSErr;
+@end
 
 namespace {
 
@@ -51,10 +73,8 @@ class CRUAsyncTaskRunnerTest : public ::testing::Test {
   NSError* got_error_ = nil;
 };
 
-void CRUAsyncTaskRunnerTest::SetUp() {
-  queue_ = dispatch_queue_create_with_target(
-      "CRUAsyncTaskRunnerTestBlankOutput", DISPATCH_QUEUE_SERIAL,
-      dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0));
+void GetEmitTextNSURL(NSURL** result) {
+  ASSERT_TRUE(result);
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &test_data_path));
   base::FilePath emit_text_path =
@@ -62,8 +82,17 @@ void CRUAsyncTaskRunnerTest::SetUp() {
   ASSERT_TRUE(base::PathExists(emit_text_path))
       << "cannot find: " << emit_text_path;
   GURL emit_text_gurl = net::FilePathToFileURL(emit_text_path);
-  emit_text_nsurl_ = net::NSURLWithGURL(emit_text_gurl);
-  ASSERT_TRUE(emit_text_nsurl_);
+  *result = net::NSURLWithGURL(emit_text_gurl);
+  ASSERT_TRUE(*result);
+}
+
+void CRUAsyncTaskRunnerTest::SetUp() {
+  queue_ = dispatch_queue_create_with_target(
+      "CRUAsyncTaskRunnerTestBlankOutput", DISPATCH_QUEUE_SERIAL,
+      dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0));
+  NSURL* emit_text_nsurl = nil;
+  ASSERT_NO_FATAL_FAILURE(GetEmitTextNSURL(&emit_text_nsurl));
+  emit_text_nsurl_ = emit_text_nsurl;
 }
 
 bool CRUAsyncTaskRunnerTest::RunEmitText(NSString* text,
@@ -96,18 +125,18 @@ bool CRUAsyncTaskRunnerTest::RunEmitText(NSString* text,
   // into the corresponding fields of `self` if we can acquire the lock.
   // Tests can subsequently use the instance fields without further locking.
   NSConditionLock* results_lock = [[NSConditionLock alloc] initWithCondition:0];
-  __block NSData* got_stdout;
-  __block NSData* got_stderr;
+  __block NSString* got_stdout;
+  __block NSString* got_stderr;
   __block NSError* got_error;
 
-  [runner
-      launchWithReply:^(NSData* task_out, NSData* task_err, NSError* error) {
-        [results_lock lock];
-        got_stdout = task_out;
-        got_stderr = task_err;
-        got_error = error;
-        [results_lock unlockWithCondition:1];
-      }];
+  [runner launchWithReply:^(NSString* task_out, NSString* task_err,
+                            NSError* error) {
+    [results_lock lock];
+    got_stdout = task_out;
+    got_stderr = task_err;
+    got_error = error;
+    [results_lock unlockWithCondition:1];
+  }];
 
   if (![results_lock
           lockWhenCondition:1
@@ -120,14 +149,8 @@ bool CRUAsyncTaskRunnerTest::RunEmitText(NSString* text,
     [results_lock unlock];
   };
 
-  got_stdout_ = got_stdout
-                    ? [[NSString alloc] initWithData:got_stdout
-                                            encoding:NSUTF8StringEncoding]
-                    : nil;
-  got_stderr_ = got_stderr
-                    ? [[NSString alloc] initWithData:got_stderr
-                                            encoding:NSUTF8StringEncoding]
-                    : nil;
+  got_stdout_ = got_stdout;
+  got_stderr_ = got_stderr;
   got_error_ = got_error;
   return true;
 }
@@ -205,6 +228,82 @@ TEST_F(CRUAsyncTaskRunnerTest, NonzeroReturn) {
   EXPECT_EQ(got_stderr_.length, 0U);
   EXPECT_NSEQ(CRUReturnCodeErrorDomain, got_error_.domain);
   EXPECT_EQ((NSInteger)34, got_error_.code);
+}
+
+void TestWorkQueueImpl(int item_count) {
+  dispatch_queue_t queue = dispatch_queue_create_with_target(
+      "TestWorkQueueImpl", DISPATCH_QUEUE_SERIAL,
+      dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0));
+
+  CRURegistration* registration = [[CRURegistration alloc]
+      initWithAppId:
+          @"org.chromium.ChromiumUpdater.CRURegistrationTest.WorkQueueTest"
+        targetQueue:queue];
+
+  NSURL* emit_text_nsurl = nil;
+  ASSERT_NO_FATAL_FAILURE(GetEmitTextNSURL(&emit_text_nsurl));
+
+  NSConditionLock* result_order_lock =
+      [[NSConditionLock alloc] initWithCondition:0];
+  NSMutableArray<CRURegistrationWorkItem*>* items = [NSMutableArray array];
+  NSMutableArray<CRUWorkQueueTestObservation*>* observations =
+      [NSMutableArray array];
+
+  for (int i = 0; i < item_count; ++i) {
+    CRURegistrationWorkItem* item = [[CRURegistrationWorkItem alloc] init];
+    item.binPathCallback = ^NSURL* {
+      return emit_text_nsurl;
+    };
+    item.args = @[ [NSString stringWithFormat:@"--text=%d", i] ];
+    const int captured_i = i;
+    item.resultCallback =
+        ^(NSString* task_stdout, NSString* task_stderr, NSError* task_nserr) {
+          [result_order_lock lock];
+          NSInteger prev_cond = result_order_lock.condition;
+          CRUWorkQueueTestObservation* observation =
+              [[CRUWorkQueueTestObservation alloc] init];
+          observation.itemId = captured_i;
+          observation.taskStdOut = task_stdout;
+          observation.taskStdErr = task_stderr;
+          observation.taskNSErr = task_nserr;
+          [observations addObject:observation];
+          [result_order_lock unlockWithCondition:prev_cond + 1];
+        };
+    [items addObject:item];
+  }
+
+  [registration addWorkItems:items];
+
+  ASSERT_TRUE([result_order_lock
+      lockWhenCondition:(NSInteger)item_count
+             beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
+  absl::Cleanup result_unlocker = ^{
+    [result_order_lock unlock];
+  };
+
+  ASSERT_EQ((size_t)item_count, observations.count);
+  for (int i = 0; i < item_count; ++i) {
+    CRUWorkQueueTestObservation* observation = observations[i];
+    EXPECT_EQ(i, observation.itemId);
+    NSString* expected = [NSString stringWithFormat:@"%d", observation.itemId];
+    EXPECT_NSEQ(observation.taskStdOut, expected)
+        << "wrong stdout in position " << i << ", item " << observation.itemId;
+    EXPECT_NSEQ(observation.taskStdErr, @"")
+        << "nonempty stderr in position " << i << ", item "
+        << observation.itemId;
+    EXPECT_FALSE(observation.taskNSErr)
+        << "in position " << i << ", item " << observation.itemId
+        << " had error: "
+        << base::SysNSStringToUTF8([observation.taskNSErr description]);
+  }
+}
+
+TEST(CRURegistrationTest, WorkQueueOneItem) {
+  ASSERT_NO_FATAL_FAILURE(TestWorkQueueImpl(1));
+}
+
+TEST(CRURegistrationTest, WorkQueueThreeItems) {
+  ASSERT_NO_FATAL_FAILURE(TestWorkQueueImpl(3));
 }
 
 }  // namespace

@@ -9,6 +9,8 @@
 
 #import "CRURegistration-Private.h"
 
+#pragma mark - Constants
+
 NSString* const CRURegistrationErrorDomain = @"org.chromium.CRURegistration";
 NSString* const CRUReturnCodeErrorDomain = @"org.chromium.CRUReturnCode";
 NSString* const CRURegistrationInternalErrorDomain =
@@ -22,6 +24,8 @@ typedef NS_ERROR_ENUM(CRURegistrationInternalErrorDomain,
 // Keys that may be present in NSError `userInfo` dictionaries.
 NSString* const CRUErrnoKey = @"org.chromium.CRUErrno";
 NSString* const CRUStdStreamNameKey = @"org.chromium.CRUStdStreamName";
+
+#pragma mark - CRUAsyncTaskRunner
 
 @implementation CRUAsyncTaskRunner {
   // These fields are written once during init and never again.
@@ -103,7 +107,10 @@ NSString* const CRUStdStreamNameKey = @"org.chromium.CRUStdStreamName";
                                         userInfo:nil];
     }
     dispatch_async(self->_parentQueue, ^{
-      reply([self->_taskStdoutData copy], [self->_taskStderrData copy],
+      reply([[NSString alloc] initWithData:self->_taskStdoutData
+                                  encoding:NSUTF8StringEncoding],
+            [[NSString alloc] initWithData:self->_taskStderrData
+                                  encoding:NSUTF8StringEncoding],
             returnCodeError);
     });
   });
@@ -179,13 +186,29 @@ NSString* const CRUStdStreamNameKey = @"org.chromium.CRUStdStreamName";
       });
 }
 
+@end  // CRUAsyncTaskRunner
+
+#pragma mark - CRURegistrationWorkItem
+
+@implementation CRURegistrationWorkItem
+
+@synthesize binPathCallback = _binPathCallback;
+@synthesize args = _args;
+@synthesize resultCallback = _resultCallback;
+
 @end
+
+#pragma mark - CRURegistration
+
 @implementation CRURegistration {
   // Immutable fields.
   NSString* _appId;
 
   dispatch_queue_t _privateQueue;
   dispatch_queue_t _parentQueue;
+
+  NSMutableArray<CRURegistrationWorkItem*>* _pendingWork;
+  CRUAsyncTaskRunner* _currentWork;
 }
 
 - (instancetype)initWithAppId:(NSString*)appId
@@ -195,6 +218,7 @@ NSString* const CRUStdStreamNameKey = @"org.chromium.CRUStdStreamName";
     _parentQueue = targetQueue;
     _privateQueue = dispatch_queue_create_with_target(
         "CRURegistration", DISPATCH_QUEUE_SERIAL, targetQueue);
+    _pendingWork = [NSMutableArray array];
   }
   return self;
 }
@@ -206,6 +230,59 @@ NSString* const CRUStdStreamNameKey = @"org.chromium.CRUStdStreamName";
 
 - (instancetype)initWithAppId:(NSString*)appId {
   return [self initWithAppId:appId qos:QOS_CLASS_UTILITY];
+}
+
+#pragma mark - CRURegistration private methods
+
+- (void)syncMaybeStartMoreWork {
+  if (_currentWork || !_pendingWork.count) {
+    return;
+  }
+
+  CRURegistrationWorkItem* nextItem = _pendingWork.firstObject;
+  // NSMutableArray is actually a deque, so the obvious approach is performant.
+  [_pendingWork removeObjectAtIndex:0];
+
+  NSURL* taskURL = nextItem.binPathCallback();
+  if (!taskURL) {
+    dispatch_async(_parentQueue, ^{
+      nextItem.resultCallback(
+          nil, nil,
+          [NSError errorWithDomain:CRURegistrationErrorDomain
+                              code:CRURegistrationErrorHelperNotFound
+                          userInfo:nil]);
+    });
+    [self syncMaybeStartMoreWork];
+    return;
+  }
+
+  NSTask* task = [[NSTask alloc] init];
+  task.executableURL = taskURL;
+  task.arguments = nextItem.args;
+
+  _currentWork = [[CRUAsyncTaskRunner alloc] initWithTask:task
+                                              targetQueue:_privateQueue];
+  [_currentWork
+      launchWithReply:^(NSString* taskOut, NSString* taskErr, NSError* error) {
+        self->_currentWork = nil;
+        dispatch_async(self->_parentQueue, ^{
+          nextItem.resultCallback(taskOut, taskErr, error);
+        });
+        [self syncMaybeStartMoreWork];
+      }];
+}
+
+@end
+
+#pragma mark - CRURegistration (VisibleForTesting)
+
+@implementation CRURegistration (VisibleForTesting)
+
+- (void)addWorkItems:(NSArray<CRURegistrationWorkItem*>*)items {
+  dispatch_async(_privateQueue, ^{
+    [self->_pendingWork addObjectsFromArray:items];
+    [self syncMaybeStartMoreWork];
+  });
 }
 
 @end

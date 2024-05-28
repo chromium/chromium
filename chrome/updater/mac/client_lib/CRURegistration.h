@@ -32,6 +32,11 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
      * error's user data under CRUErrnoKey.
      */
     CRURegistrationErrorTaskStreamUnreadable = 1,
+
+    /**
+     * CRURegistration couldn't find the updater or the updater installer.
+     */
+    CRURegistrationErrorHelperNotFound = 2,
 };
 
 /**
