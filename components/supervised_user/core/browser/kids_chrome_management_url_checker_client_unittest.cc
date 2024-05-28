@@ -186,9 +186,15 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, UrlRestricted) {
 }
 
 TEST_F(KidsChromeManagementURLCheckerClientTest, AccessTokenError) {
-  EXPECT_CALL(*this,
-              OnCheckDone(GURL("http://example.com"),
-                          safe_search_api::ClientClassification::kUnknown));
+  // This test does not add a primary account, and therefore no access token is
+  // available. On platforms with kWaitUntilAccessTokenAvailableForClassifyUrl
+  // enabled this means that the ClassifyUrl call will not be made.
+  if (!base::FeatureList::IsEnabled(
+          kWaitUntilAccessTokenAvailableForClassifyUrl)) {
+    EXPECT_CALL(*this,
+                OnCheckDone(GURL("http://example.com"),
+                            safe_search_api::ClientClassification::kUnknown));
+  }
   CheckUrl("http://example.com");
 
   // Simulate opposite response from shadow call to prove that it is

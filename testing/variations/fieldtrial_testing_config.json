@@ -23066,21 +23066,6 @@
             ]
         }
     ],
-    "WaitUntilAccessTokenAvailableForClassifyUrl": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WaitUntilAccessTokenAvailableForClassifyUrl"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkAllowIconUpdate": [
         {
             "platforms": [
