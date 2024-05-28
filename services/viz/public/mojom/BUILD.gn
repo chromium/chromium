@@ -27,6 +27,7 @@ mojom("mojom") {
     "compositing/frame_timing_details.mojom",
     "compositing/layer_context.mojom",
     "compositing/local_surface_id.mojom",
+    "compositing/offset_tag.mojom",
     "compositing/paint_filter.mojom",
     "compositing/quads.mojom",
     "compositing/region_capture_bounds.mojom",
@@ -330,6 +331,27 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "viz.mojom.OffsetTag"
+          cpp = "::viz::OffsetTag"
+        },
+        {
+          mojom = "viz.mojom.OffsetTagValue"
+          cpp = "::viz::OffsetTagValue"
+        },
+        {
+          mojom = "viz.mojom.OffsetTagDefinitoin"
+          cpp = "::viz::OffsetTagDefintion"
+        },
+      ]
+      traits_sources =
+          [ "//services/viz/public/cpp/compositing/offset_tag_mojom_traits.cc" ]
+      traits_headers =
+          [ "//services/viz/public/cpp/compositing/offset_tag_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
           mojom = "viz.mojom.FilterOperation"
           cpp = "::cc::FilterOperation"
         },
@@ -441,8 +463,8 @@ mojom("mojom") {
         "//services/viz/public/cpp/compositing/quads_mojom_traits.cc",
       ]
       traits_headers = [
-        "//services/viz/public/cpp/compositing/quads_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h",
+        "//services/viz/public/cpp/compositing/quads_mojom_traits.h",
       ]
       traits_public_deps = [ "//ui/gl" ]
     },
@@ -478,6 +500,7 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [
@@ -581,13 +604,13 @@ mojom("mojom") {
         "//gpu/ipc/common/mailbox_mojom_traits.h",
         "//gpu/ipc/common/sync_token_mojom_traits.h",
         "//ipc/ipc_message_utils.h",
-        "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h",
+        "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h",
+        "//services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h",
+        "//services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h",
         "//services/viz/public/cpp/compositing/filter_operation_mojom_traits.h",
         "//services/viz/public/cpp/compositing/filter_operations_mojom_traits.h",
         "//services/viz/public/cpp/compositing/quads_mojom_traits.h",
-        "//services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h",
-        "//services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h",
         "//services/viz/public/cpp/compositing/selection_mojom_traits.h",
         "//services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h",
         "//services/viz/public/cpp/compositing/transferable_resource_mojom_traits.h",

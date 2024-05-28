@@ -4,6 +4,8 @@
 
 module viz.mojom;
 
+import "mojo/public/mojom/base/token.mojom";
+import "services/viz/public/mojom/compositing/offset_tag.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
 import "ui/gfx/mojom/transform.mojom";
@@ -40,4 +42,6 @@ struct SharedQuadState {
   uint32 layer_id;
 
   bool is_fast_rounded_corner;
+
+  OffsetTag offset_tag;
 };

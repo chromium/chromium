@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_SHARED_QUAD_STATE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_SHARED_QUAD_STATE_H_
 
+#include <memory>
 #include <optional>
 
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
@@ -90,6 +92,10 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // TODO(crbug.com/40072194): Consider moving this member out of this struct
   // and into the quads themselves.
   std::optional<size_t> overlay_damage_index;
+
+  // If not zero then the quads can be offset by some provided value. Offset is
+  // in target content space.
+  OffsetTag offset_tag;
 };
 
 }  // namespace viz

@@ -13,6 +13,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -41,6 +42,7 @@
 #include "services/viz/public/cpp/compositing/filter_operations_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/frame_sink_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/local_surface_id_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/offset_tag_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/returned_resource_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
@@ -64,6 +66,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
@@ -770,6 +773,43 @@ TEST_F(StructTraitsTest, CompositorFrameMetadata) {
   EXPECT_EQ(*output.top_controls_visible_height, top_controls_visible_height);
 }
 
+TEST_F(StructTraitsTest, CompositorFrameMetadataBadOffsetTagDefinition) {
+  CompositorFrameMetadata input;
+  input.device_scale_factor = 1.0f;
+  input.frame_token = 1u;
+  input.begin_frame_ack.frame_id.sequence_number = 1u;
+
+  {
+    // Verify metadata serialization/deserialization is initially successful.
+    CompositorFrameMetadata output;
+    bool result =
+        mojo::test::SerializeAndDeserialize<mojom::CompositorFrameMetadata>(
+            input, output);
+    EXPECT_TRUE(result);
+  }
+
+  SurfaceId surface_id(
+      FrameSinkId(1337, 1234),
+      LocalSurfaceId(0xfbadbeef, base::UnguessableToken::Create()));
+
+  OffsetTagDefinition offset_tag_def;
+  offset_tag_def.tag = OffsetTag(base::Token(1, 1));
+  offset_tag_def.provider = SurfaceRange(surface_id);
+  offset_tag_def.constraints.min_offset = {-20.4f, -89.3f};
+  offset_tag_def.constraints.max_offset = {60.4f, 489.3f};
+
+  input.offset_tag_definitions.push_back((offset_tag_def));
+  {
+    // There is no corresponding Surfacerange entry in `referenced_surfaces` so
+    // this should fail deserialization.
+    CompositorFrameMetadata output;
+    bool result =
+        mojo::test::SerializeAndDeserialize<mojom::CompositorFrameMetadata>(
+            input, output);
+    EXPECT_FALSE(result);
+  }
+}
+
 TEST_F(StructTraitsTest, RenderPass) {
   // The CopyOutputRequest struct traits require a TaskRunner.
   base::test::TaskEnvironment task_environment;
@@ -1200,6 +1240,44 @@ TEST_F(StructTraitsTest, SurfaceId) {
   mojo::test::SerializeAndDeserialize<mojom::SurfaceId>(input, output);
   EXPECT_EQ(frame_sink_id, output.frame_sink_id());
   EXPECT_EQ(local_surface_id, output.local_surface_id());
+}
+
+TEST_F(StructTraitsTest, OffsetTag) {
+  constexpr OffsetTag input(base::Token(1, 1));
+  OffsetTag output;
+
+  mojo::test::SerializeAndDeserialize<mojom::OffsetTag>(input, output);
+  EXPECT_EQ(input, output);
+}
+
+TEST_F(StructTraitsTest, OffsetTagValue) {
+  constexpr OffsetTag kTag(base::Token(1, 1));
+  OffsetTagValue input = {kTag, {5.0f, 7.7f}};
+  OffsetTagValue output;
+
+  mojo::test::SerializeAndDeserialize<mojom::OffsetTagValue>(input, output);
+  EXPECT_EQ(input.tag, output.tag);
+  EXPECT_EQ(input.offset, output.offset);
+}
+
+TEST_F(StructTraitsTest, OffsetTagDefinition) {
+  SurfaceId surface_id(
+      FrameSinkId(1337, 1234),
+      LocalSurfaceId(0xfbadbeef, base::UnguessableToken::Create()));
+
+  OffsetTagDefinition input;
+  input.tag = OffsetTag(base::Token(1, 1));
+  input.provider = SurfaceRange(surface_id);
+  input.constraints.min_offset = {-20.4f, -89.3f};
+  input.constraints.max_offset = {60.4f, 489.3f};
+
+  OffsetTagDefinition output;
+  mojo::test::SerializeAndDeserialize<mojom::OffsetTagDefinition>(input,
+                                                                  output);
+  EXPECT_EQ(input.tag, output.tag);
+  EXPECT_EQ(input.provider, output.provider);
+  EXPECT_EQ(input.constraints.min_offset, output.constraints.min_offset);
+  EXPECT_EQ(input.constraints.max_offset, output.constraints.max_offset);
 }
 
 TEST_F(StructTraitsTest, TransferableResource) {

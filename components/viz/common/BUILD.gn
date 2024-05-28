@@ -193,6 +193,8 @@ viz_component("common") {
     "quads/frame_deadline.h",
     "quads/largest_draw_quad.cc",
     "quads/largest_draw_quad.h",
+    "quads/offset_tag.cc",
+    "quads/offset_tag.h",
     "quads/picture_draw_quad.cc",
     "quads/picture_draw_quad.h",
     "quads/quad_list.cc",

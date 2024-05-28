@@ -11,10 +11,12 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/frame_deadline_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/offset_tag_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/region_capture_bounds_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_range_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom-shared.h"
@@ -156,6 +158,16 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   static const viz::RegionCaptureBounds& capture_bounds(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.capture_bounds;
+  }
+
+  static const std::vector<viz::OffsetTagDefinition>& offset_tag_definitions(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.offset_tag_definitions;
+  }
+
+  static const std::vector<viz::OffsetTagValue>& offset_tag_values(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.offset_tag_values;
   }
 
   static const std::optional<

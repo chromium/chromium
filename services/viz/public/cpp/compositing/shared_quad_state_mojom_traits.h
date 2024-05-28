@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/viz/common/quads/shared_quad_state.h"
+#include "services/viz/public/cpp/compositing/offset_tag_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/shared_quad_state.mojom-shared.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/mojom/mask_filter_info_mojom_traits.h"
@@ -78,6 +79,10 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, OptSharedQuadState> {
   static bool is_fast_rounded_corner(const OptSharedQuadState& input) {
     return input.sqs->is_fast_rounded_corner;
   }
+
+  static const viz::OffsetTag& offset_tag(const OptSharedQuadState& input) {
+    return input.sqs->offset_tag;
+  }
 };
 
 template <>
@@ -128,12 +133,17 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, viz::SharedQuadState> {
     return sqs.is_fast_rounded_corner;
   }
 
+  static const viz::OffsetTag& offset_tag(const viz::SharedQuadState& sqs) {
+    return sqs.offset_tag;
+  }
+
   static bool Read(viz::mojom::SharedQuadStateDataView data,
                    viz::SharedQuadState* out) {
     if (!data.ReadQuadToTargetTransform(&out->quad_to_target_transform) ||
         !data.ReadQuadLayerRect(&out->quad_layer_rect) ||
         !data.ReadVisibleQuadLayerRect(&out->visible_quad_layer_rect) ||
-        !data.ReadClipRect(&out->clip_rect)) {
+        !data.ReadClipRect(&out->clip_rect) ||
+        !data.ReadOffsetTag(&out->offset_tag)) {
       return false;
     }
 

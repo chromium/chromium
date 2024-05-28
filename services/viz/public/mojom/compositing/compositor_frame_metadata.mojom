@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom";
 import "ui/gfx/mojom/delegated_ink_metadata.mojom";
+import "services/viz/public/mojom/compositing/offset_tag.mojom";
 import "services/viz/public/mojom/compositing/frame_deadline.mojom";
 import "services/viz/public/mojom/compositing/region_capture_bounds.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
@@ -89,4 +90,7 @@ struct CompositorFrameMetadata {
   // When set, this frame contains software resources. See
   // TransferableResource::is_software for details.
   bool is_software;
+
+  array<OffsetTagDefinition> offset_tag_definitions;
+  array<OffsetTagValue> offset_tag_values;
 };
