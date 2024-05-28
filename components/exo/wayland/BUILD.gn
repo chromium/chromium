@@ -119,6 +119,7 @@ source_set("wayland") {
     "zcr_stylus.h",
     "zcr_stylus_tools.cc",
     "zcr_stylus_tools.h",
+    "zcr_test_controller.h",
     "zcr_touchpad_haptics.cc",
     "zcr_touchpad_haptics.h",
     "zcr_ui_controls.h",
@@ -227,6 +228,26 @@ source_set("wayland") {
   if (use_xkbcommon) {
     deps += [ "//ui/events/keycodes:xkb" ]
   }
+}
+
+static_library("test_controller") {
+  testonly = true
+  sources = [ "zcr_test_controller.cc" ]
+  deps = [
+    ":wayland",
+    "//base/test:test_support",
+    "//third_party/wayland:wayland_server",
+    "//third_party/wayland-protocols:test_controller_protocol",
+    "//ui/events",
+  ]
+}
+
+static_library("test_controller_stub") {
+  testonly = false
+  sources = [
+    "zcr_test_controller.h",
+    "zcr_test_controller_stub.cc",
+  ]
 }
 
 static_library("ui_controls_protocol") {

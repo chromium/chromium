@@ -242,6 +242,7 @@ source_set("test_support") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ui/base",
+    "//components/exo/wayland:test_controller_stub",
     "//components/exo/wayland:ui_controls_protocol_stub",
     "//components/viz/service",
     "//gpu",
