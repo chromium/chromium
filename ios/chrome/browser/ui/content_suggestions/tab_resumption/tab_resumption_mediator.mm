@@ -292,8 +292,8 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)webState {
   if (self.itemConfig && self.itemConfig.itemType == kMostRecentTab) {
-    self.itemConfig = nil;
     [self.delegate removeTabResumptionModule];
+    self.itemConfig = nil;
   }
 }
 
