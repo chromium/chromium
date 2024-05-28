@@ -40,8 +40,9 @@ class PickerFileSuggester {
   PickerFileSuggester& operator=(const PickerFileSuggester&) = delete;
 
   // Any in-flight requests are cancelled when this object is destroyed.
-  void GetRecentLocalImages(RecentLocalImagesCallback callback);
-  void GetRecentDriveFiles(RecentDriveFilesCallback callback);
+  void GetRecentLocalImages(size_t max_files,
+                            RecentLocalImagesCallback callback);
+  void GetRecentDriveFiles(size_t max_files, RecentDriveFilesCallback callback);
 
  private:
   void OnGetRecentLocalImages(RecentLocalImagesCallback callback,

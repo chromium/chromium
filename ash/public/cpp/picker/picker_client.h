@@ -80,9 +80,11 @@ class ASH_PUBLIC_EXPORT PickerClient {
   virtual void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) = 0;
 
-  virtual void GetRecentLocalFileResults(RecentFilesCallback callback) = 0;
+  virtual void GetRecentLocalFileResults(size_t max_files,
+                                         RecentFilesCallback callback) = 0;
 
-  virtual void GetRecentDriveFileResults(RecentFilesCallback callback) = 0;
+  virtual void GetRecentDriveFileResults(size_t max_files,
+                                         RecentFilesCallback callback) = 0;
 
   virtual void GetSuggestedLinkResults(SuggestedLinksCallback callback) = 0;
 

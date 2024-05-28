@@ -396,16 +396,18 @@ void PickerClientImpl::GetSuggestedEditorResults(
           .Then(std::move(callback)));
 }
 
-void PickerClientImpl::GetRecentLocalFileResults(RecentFilesCallback callback) {
+void PickerClientImpl::GetRecentLocalFileResults(size_t max_files,
+                                                 RecentFilesCallback callback) {
   file_suggester_->GetRecentLocalImages(
-      base::BindOnce(CreateSearchResultsForRecentLocalImages)
-          .Then(std::move(callback)));
+      max_files, base::BindOnce(CreateSearchResultsForRecentLocalImages)
+                     .Then(std::move(callback)));
 }
 
-void PickerClientImpl::GetRecentDriveFileResults(RecentFilesCallback callback) {
+void PickerClientImpl::GetRecentDriveFileResults(size_t max_files,
+                                                 RecentFilesCallback callback) {
   file_suggester_->GetRecentDriveFiles(
-      base::BindOnce(CreateSearchResultsForRecentDriveFiles)
-          .Then(std::move(callback)));
+      max_files, base::BindOnce(CreateSearchResultsForRecentDriveFiles)
+                     .Then(std::move(callback)));
 }
 
 void PickerClientImpl::GetSuggestedLinkResults(

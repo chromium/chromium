@@ -61,6 +61,7 @@ using ::testing::IsSupersetOf;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Property;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
 
@@ -318,7 +319,7 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesWithNoFiles) {
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
 
-  client.GetRecentLocalFileResults(future.GetCallback());
+  client.GetRecentLocalFileResults(/*max_files=*/100, future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
 }
@@ -349,7 +350,7 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
           },
       });
 
-  client.GetRecentLocalFileResults(future.GetCallback());
+  client.GetRecentLocalFileResults(/*max_files=*/100, future.GetCallback());
 
   EXPECT_THAT(future.Get(),
               UnorderedElementsAre(Property(
@@ -378,7 +379,7 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
           },
       });
 
-  client.GetRecentLocalFileResults(future.GetCallback());
+  client.GetRecentLocalFileResults(/*max_files=*/100, future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
 }
@@ -388,7 +389,7 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesWithNoFiles) {
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
 
-  client.GetRecentDriveFileResults(future.GetCallback());
+  client.GetRecentDriveFileResults(/*max_files=*/100, future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
 }
@@ -419,7 +420,7 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
           },
       });
 
-  client.GetRecentDriveFileResults(future.GetCallback());
+  client.GetRecentDriveFileResults(/*max_files=*/100, future.GetCallback());
 
   EXPECT_THAT(
       future.Get(),
@@ -451,9 +452,59 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
           },
       });
 
-  client.GetRecentDriveFileResults(future.GetCallback());
+  client.GetRecentLocalFileResults(/*max_files=*/100, future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
+}
+
+TEST_F(PickerClientImplTest, GetRecentLocalFilesTruncates) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  const base::FilePath mount_path = GetFakeDriveFs().mount_path();
+  SetRecentFiles(
+      profile(),
+      {
+          Volume{
+              .type = fmp::VolumeType::kDownloads,
+              .files =
+                  {
+                      CreateRecentFile(mount_path.AppendASCII("1.jpg"),
+                                       storage::kFileSystemTypeLocal),
+                      CreateRecentFile(mount_path.AppendASCII("2.jpg"),
+                                       storage::kFileSystemTypeLocal),
+                  },
+          },
+      });
+
+  client.GetRecentLocalFileResults(/*max_files=*/1, future.GetCallback());
+
+  EXPECT_THAT(future.Get(), SizeIs(1));
+}
+
+TEST_F(PickerClientImplTest, GetRecentDriveFilesTruncates) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  const base::FilePath mount_path = GetFakeDriveFs().mount_path();
+  SetRecentFiles(
+      profile(),
+      {
+          Volume{
+              .type = fmp::VolumeType::kDrive,
+              .files =
+                  {
+                      CreateRecentFile(mount_path.AppendASCII("1"),
+                                       storage::kFileSystemTypeDriveFs),
+                      CreateRecentFile(mount_path.AppendASCII("2"),
+                                       storage::kFileSystemTypeDriveFs),
+                  },
+          },
+      });
+
+  client.GetRecentDriveFileResults(/*max_files=*/1, future.GetCallback());
+
+  EXPECT_THAT(future.Get(), SizeIs(1));
 }
 
 TEST_F(PickerClientImplTest, GetSuggestedLinkResultsReturnsLinks) {

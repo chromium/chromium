@@ -84,6 +84,8 @@ constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
 
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
+constexpr int kMaxRecentFiles = 10;
+
 PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   // Command line looks like:
   //  out/Default/chrome --user-data-dir=/tmp/tmp123
@@ -389,11 +391,13 @@ void PickerController::GetResultsForCategory(PickerCategory category,
       NOTREACHED_NORETURN();
     case PickerCategory::kDriveFiles:
       client_->GetRecentDriveFileResults(
+          kMaxRecentFiles,
           base::BindRepeating(CreateSingleSectionForCategoryResults)
               .Then(std::move(callback)));
       return;
     case PickerCategory::kLocalFiles:
       client_->GetRecentLocalFileResults(
+          kMaxRecentFiles,
           base::BindRepeating(CreateSingleSectionForCategoryResults)
               .Then(std::move(callback)));
       return;

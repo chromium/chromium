@@ -74,8 +74,10 @@ class PickerClientImpl
   ShowEditorCallback CacheEditorContext() override;
   void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) override;
-  void GetRecentLocalFileResults(RecentFilesCallback callback) override;
-  void GetRecentDriveFileResults(RecentFilesCallback callback) override;
+  void GetRecentLocalFileResults(size_t max_files,
+                                 RecentFilesCallback callback) override;
+  void GetRecentDriveFileResults(size_t max_files,
+                                 RecentFilesCallback callback) override;
   void GetSuggestedLinkResults(SuggestedLinksCallback callback) override;
   bool IsFeatureAllowedForDogfood() override;
   void FetchFileThumbnail(const base::FilePath& path,
