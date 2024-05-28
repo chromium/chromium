@@ -95,8 +95,9 @@ Take frames coming from various sources and check that:
         decoder_configs.length >= 2,
         'There should be 2 configs, for each configure()');
 
-
-      if (arg.codec.startsWith('avc1.')) {
+      // TODO(crbug.com/343199623): Re-enable once we also set level.
+      const is_android = navigator.userAgent.indexOf("Android") > -1
+      if (arg.codec.startsWith('avc1.') && !is_android) {
         // Check that h.264 in the config matches the codec string
         for (const configs of decoder_configs) {
           if (configs.description) {

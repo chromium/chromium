@@ -43,6 +43,16 @@ enum PixelFormat {
   COLOR_FORMAT_YUV420_SEMIPLANAR = 21,  // Same as NV12
 };
 
+struct AMediaFormatDeleter {
+  inline void operator()(AMediaFormat* ptr) const {
+    if (ptr) {
+      AMediaFormat_delete(ptr);
+    }
+  }
+};
+
+// TODO(crbug.com/343199623): Uncomment once we also set level.
+#if 0
 enum class CodecProfileLevel {
   // Subset of MediaCodecInfo.CodecProfileLevel
   AVCProfileBaseline = 0x01,
@@ -77,12 +87,6 @@ enum class CodecProfileLevel {
   HEVCProfileMain10HDR10 = 0x1000,
   HEVCProfileMain10HDR10Plus = 0x2000,
   Unknown = 0xFFFFFF,
-};
-struct AMediaFormatDeleter {
-  inline void operator()(AMediaFormat* ptr) const {
-    if (ptr)
-      AMediaFormat_delete(ptr);
-  }
 };
 
 CodecProfileLevel GetAndroidVideoProfile(VideoCodecProfile profile,
@@ -126,6 +130,7 @@ CodecProfileLevel GetAndroidVideoProfile(VideoCodecProfile profile,
       return CodecProfileLevel::Unknown;
   }
 }
+#endif
 
 bool GetAndroidColorValues(const gfx::ColorSpace& cs,
                            int* standard,
@@ -203,13 +208,14 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
                                  int num_temporal_layers,
                                  PixelFormat format) {
   int iframe_interval = config.gop_length.value_or(kDefaultGOPLength);
-  int profile = static_cast<int>(GetAndroidVideoProfile(
-      config.output_profile, config.is_constrained_h264));
   auto mime = MediaCodecUtil::CodecToAndroidMimeType(
       VideoCodecProfileToVideoCodec(config.output_profile));
   MediaFormatPtr result(AMediaFormat_new());
   AMediaFormat_setString(result.get(), AMEDIAFORMAT_KEY_MIME, mime.c_str());
-  AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PROFILE, profile);
+  // TODO(crbug.com/343199623): Uncomment once we also set level.
+  // int profile = static_cast<int>(GetAndroidVideoProfile(
+  //     config.output_profile, config.is_constrained_h264));
+  // AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PROFILE, profile);
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_WIDTH,
                         frame_size.width());
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_HEIGHT,
