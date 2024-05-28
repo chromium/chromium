@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "base/i18n/rtl.h"
+#include "base/task/current_thread.h"
 #include "base/trace_event/base_tracing.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -70,6 +71,7 @@ void ShowSystemMenuAtScreenPixelLocation(HWND window, const gfx::Point& point) {
     flags |= TPM_RIGHTALIGN;
   HMENU menu = ::GetSystemMenu(window, FALSE);
 
+  base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
   const int command =
       ::TrackPopupMenu(menu, flags, point.x(), point.y(), 0, window, nullptr);
 
