@@ -1906,20 +1906,20 @@ INSTANTIATE_TEST_SUITE_P(
     AshSideVolumeButton,
     SideVolumeButtonAcceleratorTest,
     testing::ValuesIn(
-        {std::make_pair<std::string, std::string>(kVolumeButtonRegionKeyboard,
-                                                  kVolumeButtonSideLeft),
-         std::make_pair<std::string, std::string>(kVolumeButtonRegionKeyboard,
-                                                  kVolumeButtonSideRight),
-         std::make_pair<std::string, std::string>(kVolumeButtonRegionKeyboard,
-                                                  kVolumeButtonSideBottom),
-         std::make_pair<std::string, std::string>(kVolumeButtonRegionScreen,
-                                                  kVolumeButtonSideLeft),
-         std::make_pair<std::string, std::string>(kVolumeButtonRegionScreen,
-                                                  kVolumeButtonSideRight),
-         std::make_pair<std::string, std::string>(kVolumeButtonRegionScreen,
-                                                  kVolumeButtonSideTop),
-         std::make_pair<std::string, std::string>(kVolumeButtonRegionScreen,
-                                                  kVolumeButtonSideBottom)}));
+        {std::pair<std::string, std::string>(kVolumeButtonRegionKeyboard,
+                                             kVolumeButtonSideLeft),
+         std::pair<std::string, std::string>(kVolumeButtonRegionKeyboard,
+                                             kVolumeButtonSideRight),
+         std::pair<std::string, std::string>(kVolumeButtonRegionKeyboard,
+                                             kVolumeButtonSideBottom),
+         std::pair<std::string, std::string>(kVolumeButtonRegionScreen,
+                                             kVolumeButtonSideLeft),
+         std::pair<std::string, std::string>(kVolumeButtonRegionScreen,
+                                             kVolumeButtonSideRight),
+         std::pair<std::string, std::string>(kVolumeButtonRegionScreen,
+                                             kVolumeButtonSideTop),
+         std::pair<std::string, std::string>(kVolumeButtonRegionScreen,
+                                             kVolumeButtonSideBottom)}));
 
 TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsWithFunctionKey) {
   base::test::ScopedFeatureList feature_list;
