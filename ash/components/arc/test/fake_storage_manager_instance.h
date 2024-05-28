@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_STORAGE_MANAGER_INSTANCE_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_STORAGE_MANAGER_INSTANCE_H_
 
+#include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
 #include "base/functional/callback_forward.h"
 

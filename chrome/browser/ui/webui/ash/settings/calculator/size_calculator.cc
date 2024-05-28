@@ -8,9 +8,9 @@
 #include <numeric>
 #include <type_traits>
 
+#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/storage_manager/arc_storage_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
@@ -308,7 +308,7 @@ AppsSizeCalculator::AppsSizeCalculator(Profile* profile)
 AppsSizeCalculator::~AppsSizeCalculator() {
   arc::ArcServiceManager::Get()
       ->arc_bridge_service()
-      ->storage_manager()
+      ->disk_space()
       ->RemoveObserver(this);
 }
 
@@ -327,7 +327,7 @@ void AppsSizeCalculator::AddObserver(Observer* observer) {
   if (observers_.empty()) {
     arc::ArcServiceManager::Get()
         ->arc_bridge_service()
-        ->storage_manager()
+        ->disk_space()
         ->AddObserver(this);
   }
   SizeCalculator::AddObserver(observer);
@@ -339,7 +339,7 @@ void AppsSizeCalculator::RemoveObserver(Observer* observer) {
   if (observers_.empty()) {
     arc::ArcServiceManager::Get()
         ->arc_bridge_service()
-        ->storage_manager()
+        ->disk_space()
         ->RemoveObserver(this);
   }
 }
@@ -384,10 +384,10 @@ void AppsSizeCalculator::UpdateAndroidAppsSize() {
   }
 
   bool success = false;
-  auto* arc_storage_manager =
-      arc::ArcStorageManager::GetForBrowserContext(profile_);
-  if (arc_storage_manager) {
-    success = arc_storage_manager->GetApplicationsSize(
+  auto* arc_disk_space_bridge =
+      arc::ArcDiskSpaceBridge::GetForBrowserContext(profile_);
+  if (arc_disk_space_bridge) {
+    success = arc_disk_space_bridge->GetApplicationsSize(
         base::BindOnce(&AppsSizeCalculator::OnGetAndroidAppsSize,
                        weak_ptr_factory_.GetWeakPtr()));
   }

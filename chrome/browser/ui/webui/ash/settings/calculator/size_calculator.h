@@ -11,9 +11,9 @@
 #include <ostream>
 #include <vector>
 
-#include "ash/components/arc/mojom/storage_manager.mojom.h"
+#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
+#include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
-#include "ash/components/arc/storage_manager/arc_storage_manager.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -226,7 +226,7 @@ class BrowsingDataSizeCalculator : public SizeCalculator {
 // Class handling the calculation of the size of the user's apps and extensions.
 class AppsSizeCalculator
     : public SizeCalculator,
-      public arc::ConnectionObserver<arc::mojom::StorageManagerInstance> {
+      public arc::ConnectionObserver<arc::mojom::DiskSpaceInstance> {
  public:
   explicit AppsSizeCalculator(Profile* profile);
 
@@ -235,7 +235,7 @@ class AppsSizeCalculator
 
   ~AppsSizeCalculator() override;
 
-  // arc::ConnectionObserver<arc::mojom::StorageManagerInstance>:
+  // arc::ConnectionObserver<arc::mojom::DiskSpaceInstance>:
   void OnConnectionReady() override;
   void OnConnectionClosed() override;
 

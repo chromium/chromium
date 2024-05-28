@@ -6,15 +6,7 @@
 
 module arc.mojom;
 
-// Represents total storage usage of Android applications.
-struct ApplicationsSize {
-    // Usage for APK and OBB.
-    uint64 total_code_bytes;
-    // Usage for data and media.
-    uint64 total_data_bytes;
-    // Usage for applications' cache.
-    uint64 total_cache_bytes;
-};
+import "ash/components/arc/mojom/disk_space.mojom";
 
 // Next method ID: 5
 // Deprecated method ID: 1, 2
