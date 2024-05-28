@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   // TODO(crbug.com/40278771): prefer using `size_t` over `uint64_t`.
   uint64_t size() const { return size_; }
 
+  base::WeakPtr<const WebNNBufferImpl> GetWeakPtr() const {
+    return weak_factory_.GetWeakPtr();
+  }
+
  protected:
   // This method will be called by `ReadBuffer()` after the read info is
   // validated. A backend subclass should implement this method to read data
@@ -63,6 +67,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   const uint64_t size_;
 
   mojo::AssociatedReceiver<mojom::WebNNBuffer> receiver_;
+
+  base::WeakPtrFactory<WebNNBufferImpl> weak_factory_{this};
 };
 
 }  // namespace webnn

@@ -4510,6 +4510,19 @@ void HandleGraphCreationFailure(
   }
 }
 
+bool IsDispatchBindingValid(
+    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_buffers,
+    const base::flat_map<std::string, base::WeakPtr<const WebNNBufferImpl>>&
+        prev_named_buffers) {
+  return base::ranges::equal(
+      named_buffers, prev_named_buffers,
+      [](const auto& pair, const auto& previous_pair) {
+        const auto& [name, buffer] = pair;
+        const auto& [prev_name, prev_buffer] = previous_pair;
+        return name == prev_name && buffer == prev_buffer.get();
+      });
+}
+
 }  // namespace
 
 GraphImplDml::GraphBufferBindingInfo::GraphBufferBindingInfo() = default;
@@ -5586,6 +5599,11 @@ void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
                                          HRESULT hr) {
   DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
   command_recorder_.reset();
+
+  // Clear out previous buffers recorded for dispatch() so we don't mistakenly
+  // skip recording on failure.
+  previous_input_buffers_.clear();
+  previous_output_buffers_.clear();
 }
 
 void GraphImplDml::ComputeImpl(
@@ -5718,6 +5736,20 @@ void GraphImplDml::DispatchImpl(
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::DispatchImpl");
 
+  // It indicates whether we need to record commands and bind resources again.
+  // If either the I/O buffers change or `graph_resources_` is not available
+  // during the graph execution, it must be set to true.
+  bool is_command_recording_needed = false;
+
+  // TODO(crbug.com/40278771): avoid re-bindings for all buffers
+  if (!IsDispatchBindingValid(named_inputs, previous_input_buffers_)) {
+    is_command_recording_needed = true;
+  }
+
+  if (!IsDispatchBindingValid(named_outputs, previous_output_buffers_)) {
+    is_command_recording_needed = true;
+  }
+
   if (!command_recorder_) {
     command_recorder_ = CommandRecorder::Create(adapter_->command_queue(),
                                                 adapter_->dml_device());
@@ -5725,6 +5757,7 @@ void GraphImplDml::DispatchImpl(
       LOG(ERROR) << "Failed to create the command recorder.";
       return;
     }
+    is_command_recording_needed = true;
   }
 
   // Use the existing graph resource if it is available, otherwise allocate
@@ -5741,95 +5774,114 @@ void GraphImplDml::DispatchImpl(
       return;
     }
     graph_resources = std::move(result.value());
+    is_command_recording_needed = true;
   }
   CHECK(graph_resources);
 
-  // TODO(crbug.com/40278771): avoid re-recording commands between dispatches.
-  HRESULT hr = command_recorder_->Open();
-  if (FAILED(hr)) {
-    HandleDispatchFailure("Failed to open the command recorder.", hr);
-    return;
-  }
+  HRESULT hr = S_OK;
 
-  // Create the MLBuffer input bindings needed for graph execution.
-  std::vector<DML_BUFFER_BINDING> graph_input_buffer_bindings(
-      graph_buffer_binding_info_.input_buffer_binding_count,
-      DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
+  if (is_command_recording_needed) {
+    hr = command_recorder_->Open();
+    if (FAILED(hr)) {
+      HandleDispatchFailure("Failed to open the command recorder.", hr);
+      return;
+    }
 
-  // The graph input tensors must be bound to the binding table during the
-  // graph execution.
-  std::vector<DML_BINDING_DESC> input_buffer_binding_desc(
-      graph_buffer_binding_info_.input_buffer_binding_count,
-      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
+    // Create the MLBuffer input bindings needed for graph execution.
+    std::vector<DML_BUFFER_BINDING> graph_input_buffer_bindings(
+        graph_buffer_binding_info_.input_buffer_binding_count,
+        DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
 
-  for (auto& [name, input_buffer] : named_inputs) {
-    BufferImplDml* input_buffer_impl =
-        static_cast<BufferImplDml*>(input_buffer);
-    // Get the graph input index for the name.
-    const size_t graph_input_index =
-        graph_buffer_binding_info_.graph_input_name_to_index_map.at(
-            std::string(name));
-    graph_input_buffer_bindings[graph_input_index] =
-        DML_BUFFER_BINDING{.Buffer = input_buffer_impl->buffer(),
-                           .Offset = 0,
-                           .SizeInBytes = input_buffer_impl->size()};
-    input_buffer_binding_desc[graph_input_index] = {
-        DML_BINDING_TYPE_BUFFER,
-        &graph_input_buffer_bindings[graph_input_index]};
-  }
+    previous_input_buffers_.reserve(named_inputs.size());
 
-  // TODO(crbug.com/40278771): consider pre-computing the output binding count.
-  const size_t output_buffer_binding_count =
-      graph_buffer_binding_info_.graph_output_name_to_index_map.size();
+    // The graph input tensors must be bound to the binding table during the
+    // graph execution.
+    std::vector<DML_BINDING_DESC> input_buffer_binding_desc(
+        graph_buffer_binding_info_.input_buffer_binding_count,
+        DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
 
-  // Create the MLBuffer output bindings needed for graph execution.
-  std::vector<DML_BUFFER_BINDING> graph_output_buffer_bindings(
-      output_buffer_binding_count,
-      DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
+    for (auto& [name, input_buffer] : named_inputs) {
+      BufferImplDml* input_buffer_impl =
+          static_cast<BufferImplDml*>(input_buffer);
+      // Get the graph input index for the name.
+      const size_t graph_input_index =
+          graph_buffer_binding_info_.graph_input_name_to_index_map.at(
+              std::string(name));
+      graph_input_buffer_bindings[graph_input_index] =
+          DML_BUFFER_BINDING{.Buffer = input_buffer_impl->buffer(),
+                             .Offset = 0,
+                             .SizeInBytes = input_buffer_impl->size()};
+      input_buffer_binding_desc[graph_input_index] = {
+          DML_BINDING_TYPE_BUFFER,
+          &graph_input_buffer_bindings[graph_input_index]};
+      previous_input_buffers_[std::string(name)] =
+          input_buffer_impl->GetWeakPtr();
+    }
 
-  // The graph output tensors must be bound to the binding table during the
-  // graph execution.
-  std::vector<DML_BINDING_DESC> output_buffer_binding_desc(
-      output_buffer_binding_count,
-      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
+    // TODO(crbug.com/40278771): consider pre-computing the output binding
+    // count.
+    const size_t output_buffer_binding_count =
+        graph_buffer_binding_info_.graph_output_name_to_index_map.size();
 
-  for (auto& [name, output_buffer] : named_outputs) {
-    BufferImplDml* output_buffer_impl =
-        static_cast<BufferImplDml*>(output_buffer);
-    // Get the graph output index with the name.
-    const size_t graph_output_index =
-        graph_buffer_binding_info_.graph_output_name_to_index_map.at(
-            std::string(name));
-    graph_output_buffer_bindings[graph_output_index] =
-        DML_BUFFER_BINDING{.Buffer = output_buffer_impl->buffer(),
-                           .Offset = 0,
-                           .SizeInBytes = output_buffer_impl->size()};
-    output_buffer_binding_desc[graph_output_index] = {
-        DML_BINDING_TYPE_BUFFER,
-        &graph_output_buffer_bindings[graph_output_index]};
-  }
+    // Create the MLBuffer output bindings needed for graph execution.
+    std::vector<DML_BUFFER_BINDING> graph_output_buffer_bindings(
+        output_buffer_binding_count,
+        DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
 
-  std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
-  if (persistent_resource_) {
-    persistent_buffer_binding_desc =
-        persistent_resource_->persistent_buffer_binding_desc;
-  }
+    // The graph output tensors must be bound to the binding table during the
+    // graph execution.
+    std::vector<DML_BINDING_DESC> output_buffer_binding_desc(
+        output_buffer_binding_count,
+        DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
 
-  // Execute the graph with input, output, temporary, and persistent bindings.
-  hr = command_recorder_->ExecuteOperator(
-      compiled_operator_.Get(), graph_resources->descriptor_heap,
-      input_buffer_binding_desc, output_buffer_binding_desc,
-      persistent_buffer_binding_desc,
-      graph_resources->temporary_buffer_binding_desc);
-  if (FAILED(hr)) {
-    HandleDispatchFailure("Failed to record execute operator.", hr);
-    return;
+    previous_output_buffers_.reserve(named_outputs.size());
+
+    for (auto& [name, output_buffer] : named_outputs) {
+      BufferImplDml* output_buffer_impl =
+          static_cast<BufferImplDml*>(output_buffer);
+      // Get the graph output index with the name.
+      const size_t graph_output_index =
+          graph_buffer_binding_info_.graph_output_name_to_index_map.at(
+              std::string(name));
+      graph_output_buffer_bindings[graph_output_index] =
+          DML_BUFFER_BINDING{.Buffer = output_buffer_impl->buffer(),
+                             .Offset = 0,
+                             .SizeInBytes = output_buffer_impl->size()};
+      output_buffer_binding_desc[graph_output_index] = {
+          DML_BINDING_TYPE_BUFFER,
+          &graph_output_buffer_bindings[graph_output_index]};
+      previous_output_buffers_[std::string(name)] =
+          output_buffer_impl->GetWeakPtr();
+    }
+
+    std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
+    if (persistent_resource_) {
+      persistent_buffer_binding_desc =
+          persistent_resource_->persistent_buffer_binding_desc;
+    }
+
+    // Execute the graph with input, output, temporary, and persistent bindings.
+    hr = command_recorder_->ExecuteOperator(
+        compiled_operator_.Get(), graph_resources->descriptor_heap,
+        input_buffer_binding_desc, output_buffer_binding_desc,
+        persistent_buffer_binding_desc,
+        graph_resources->temporary_buffer_binding_desc);
+    if (FAILED(hr)) {
+      HandleDispatchFailure("Failed to record execute operator.", hr);
+      return;
+    }
+
+    hr = command_recorder_->Close();
+    if (FAILED(hr)) {
+      HandleDispatchFailure("Failed to close the command recorder.", hr);
+      return;
+    }
   }
 
   // Submit the command list for execution.
-  hr = command_recorder_->CloseAndExecute();
+  hr = command_recorder_->Execute();
   if (FAILED(hr)) {
-    HandleDispatchFailure("Failed to open the command recorder.", hr);
+    HandleDispatchFailure("Failed to execute the command recorder.", hr);
     return;
   }
 

@@ -340,6 +340,11 @@ class GraphImplDml final : public WebNNGraphImpl {
   // is done.
   std::unique_ptr<GraphResources> graph_resources_;
 
+  base::flat_map<std::string, base::WeakPtr<const WebNNBufferImpl>>
+      previous_input_buffers_;
+  base::flat_map<std::string, base::WeakPtr<const WebNNBufferImpl>>
+      previous_output_buffers_;
+
   base::WeakPtrFactory<GraphImplDml> weak_factory_{this};
 };
 
