@@ -664,22 +664,11 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
 
   const bool render_pass_is_clipped =
       !render_pass_scissor_in_draw_space.Contains(surface_rect_in_draw_space);
-
-  // The SetDrawRectangleCHROMIUM spec requires that the scissor bit is always
-  // set on the root framebuffer or else the rendering may modify something
-  // outside the damage rectangle, even if the damage rectangle is the size of
-  // the full backbuffer.
-  const bool supports_dc_layers =
-      output_surface_->capabilities().supports_dc_layers;
-  const bool render_pass_requires_scissor =
-      render_pass_is_clipped || (supports_dc_layers && is_root_render_pass);
-
   const bool should_clear_surface =
       !is_root_render_pass || settings_->should_clear_root_render_pass;
-
   const gfx::Rect render_pass_update_rect = MoveFromDrawToWindowSpace(
-      render_pass_requires_scissor ? render_pass_scissor_in_draw_space
-                                   : surface_rect_in_draw_space);
+      render_pass_is_clipped ? render_pass_scissor_in_draw_space
+                             : surface_rect_in_draw_space);
   BeginDrawingRenderPass(render_pass, should_clear_surface,
                          render_pass_update_rect);
 
@@ -704,7 +693,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
     if (last_sorting_context_id != quad.shared_quad_state->sorting_context_id) {
       last_sorting_context_id = quad.shared_quad_state->sorting_context_id;
       FlushPolygons(&poly_list, render_pass_scissor_in_draw_space,
-                    render_pass_requires_scissor);
+                    render_pass_is_clipped);
     }
 
     // This layer is in a 3D sorting context so we add it to the list of
@@ -723,12 +712,12 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
 
     // We are not in a 3d sorting context, so we should draw the quad normally.
     SetScissorStateForQuad(quad, render_pass_scissor_in_draw_space,
-                           render_pass_requires_scissor);
+                           render_pass_is_clipped);
 
     DoDrawQuad(&quad, nullptr);
   }
   FlushPolygons(&poly_list, render_pass_scissor_in_draw_space,
-                render_pass_requires_scissor);
+                render_pass_is_clipped);
   FinishDrawingRenderPass();
 }
 
