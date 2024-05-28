@@ -45,6 +45,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -341,6 +342,19 @@ bool EnterpriseResultIsFailure(BinaryUploadService::Result result,
              : enterprise_connectors::CloudMultipartResultIsFailure(result);
 }
 
+void RecordEnterpriseScan(std::unique_ptr<FileAnalysisRequest> request,
+                          BinaryUploadService::Result result) {
+  const std::string result_info =
+      safe_browsing::BinaryUploadService::ResultToString(result);
+  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
+      request->per_profile_request(), /*access_token*/ "",
+      /*upload_info*/ base::StrCat({"Skipped - ", result_info}),
+      request->content_analysis_request());
+  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
+      /*token=*/"", result_info,
+      enterprise_connectors::ContentAnalysisResponse());
+}
+
 }  // namespace
 
 /* static */
@@ -592,6 +606,11 @@ void DeepScanningRequest::OnGetPackageFileRequestData(
                                            final_path.AsUTF8Unsafe(), data.hash,
                                            data.mime_type, data.size)});
   if (ShouldTerminateEarly(result)) {
+    // We record the scan here because the request is terminated early and won't
+    // be uploaded to CloudBinaryUploadService.
+    if (IsEnterpriseTriggered()) {
+      RecordEnterpriseScan(std::move(request), result);
+    }
     OnScanComplete(current_path, result,
                    enterprise_connectors::ContentAnalysisResponse());
     return;
@@ -606,6 +625,11 @@ void DeepScanningRequest::OnGetFileRequestData(
     BinaryUploadService::Result result,
     BinaryUploadService::Request::Data data) {
   if (ShouldTerminateEarly(result)) {
+    // We record the scan here because the request is terminated early and won't
+    // be uploaded to CloudBinaryUploadService.
+    if (IsEnterpriseTriggered()) {
+      RecordEnterpriseScan(std::move(request), result);
+    }
     OnScanComplete(file_path, result,
                    enterprise_connectors::ContentAnalysisResponse());
     return;
