@@ -11,15 +11,12 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "base/callback_list.h"
-#include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
-#include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
 
 class AuthHubConnector;
-class AuthPanel;
 
 // This class encapsulates the UI state of `AuthPanel`.
 class AuthFactorStore {
@@ -77,9 +74,8 @@ class AuthFactorStore {
   void OnFactorStateChanged(AshAuthFactor factor, AuthFactorState state);
   void OnAuthVerdict(AshAuthFactor factor,
                      AuthPanelEventDispatcher::AuthVerdict verdict);
- private:
-  friend class AuthPanel::TestApi;
 
+ private:
   void NotifyStateChanged();
 
   void SubmitPassword(const std::string& password);
@@ -91,8 +87,6 @@ class AuthFactorStore {
   std::optional<AshAuthFactor> password_type_;
 
   raw_ptr<AuthHubConnector> auth_hub_connector_;
-
-  auth_panel::SubmitPasswordCallback submit_password_callback_;
 };
 
 class AuthFactorStoreFactory {

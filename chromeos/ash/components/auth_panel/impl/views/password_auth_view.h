@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
-#include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view.h"
 #include "chromeos/ash/components/auth_panel/impl/views/login_textfield.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -48,21 +47,7 @@ class PasswordAuthView : public FactorAuthView,
                          public ImeControllerImpl::Observer,
                          public LoginTextfield::Delegate {
   METADATA_HEADER(PasswordAuthView, FactorAuthView)
-
  public:
-  class TestApi {
-   public:
-    explicit TestApi(PasswordAuthView* password_auth_view)
-        : password_auth_view_(password_auth_view) {}
-
-    views::Textfield* GetPasswordTextfield();
-
-    views::View* GetSubmitPasswordButton();
-
-   private:
-    raw_ptr<PasswordAuthView> password_auth_view_;
-  };
-
   PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
                    AuthFactorStore* store);
   ~PasswordAuthView() override;
@@ -99,7 +84,6 @@ class PasswordAuthView : public FactorAuthView,
   };
 
   friend class TextfieldContentsChangedListener;
-  friend class AuthPanel::TestApi;
 
   void ContentsChanged(const std::u16string& new_contents);
 

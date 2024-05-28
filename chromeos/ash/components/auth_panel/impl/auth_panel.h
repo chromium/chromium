@@ -13,7 +13,6 @@
 #include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -25,7 +24,6 @@ class AuthFactorStore;
 class AuthFactorStoreFactory;
 class FactorAuthView;
 class FactorAuthViewFactory;
-class PasswordAuthView;
 
 // Controller class that orchestrates the several `FactorAuthView` objects.
 // Responsible for :
@@ -39,21 +37,6 @@ class AuthPanel : public NonAccessibleView, public AuthFactorStatusConsumer {
   METADATA_HEADER(AuthPanel, views::View)
 
  public:
-  class TestApi {
-   public:
-    explicit TestApi(AuthPanel*);
-    ~TestApi();
-    TestApi(const TestApi&) = delete;
-    TestApi& operator=(const TestApi&) = delete;
-
-    PasswordAuthView* GetPasswordAuthView();
-
-    void SetSubmitPasswordCallback(auth_panel::SubmitPasswordCallback);
-
-   private:
-    raw_ptr<AuthPanel> auth_panel_;
-  };
-
   AuthPanel(
       std::unique_ptr<FactorAuthViewFactory> view_factory,
       std::unique_ptr<AuthFactorStoreFactory> store_factory,
@@ -78,8 +61,6 @@ class AuthPanel : public NonAccessibleView, public AuthFactorStatusConsumer {
   void OnEndAuthentication() override;
 
  private:
-  friend class TestApi;
-
   void InitializeViewPlaceholders();
 
   base::flat_map<AshAuthFactor, raw_ptr<views::View>> views_;
