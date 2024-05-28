@@ -9,15 +9,13 @@
 #include <algorithm>
 #include <limits>
 #include <set>
-#include <string_view>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -34,19 +32,16 @@
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
-using url_matcher::URLMatcher;
-using url_matcher::URLMatcherCondition;
-using url_matcher::URLMatcherConditionFactory;
-using url_matcher::URLMatcherConditionSet;
-using url_matcher::URLMatcherPortFilter;
-using url_matcher::URLMatcherSchemeFilter;
-using url_matcher::URLQueryElementMatcherCondition;
+#if BUILDFLAG(IS_IOS)
+#include <string_view>
+
+#include "base/strings/string_util.h"
+#endif
 
 namespace policy {
 
-using url_matcher::util::CreateConditionSet;
+using url_matcher::URLMatcher;
 using url_matcher::util::FilterComponents;
-using url_matcher::util::FilterToComponents;
 
 namespace {
 
@@ -218,13 +213,13 @@ URLBlocklist::URLBlocklist() : url_matcher_(new URLMatcher) {}
 URLBlocklist::~URLBlocklist() = default;
 
 void URLBlocklist::Block(const base::Value::List& filters) {
-  url_matcher::util::AddFilters(url_matcher_.get(), false, &id_, filters,
-                                &filters_);
+  url_matcher::util::AddFilters(url_matcher_.get(), /*allow=*/false, &id_,
+                                filters, &filters_);
 }
 
 void URLBlocklist::Allow(const base::Value::List& filters) {
-  url_matcher::util::AddFilters(url_matcher_.get(), true, &id_, filters,
-                                &filters_);
+  url_matcher::util::AddFilters(url_matcher_.get(), /*allow=*/true, &id_,
+                                filters, &filters_);
 }
 
 bool URLBlocklist::IsURLBlocked(const GURL& url) const {
@@ -258,10 +253,6 @@ URLBlocklist::URLBlocklistState URLBlocklist::GetURLBlocklistState(
 
   return max->allow ? URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
                     : URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
-}
-
-size_t URLBlocklist::Size() const {
-  return filters_.size();
 }
 
 URLBlocklistManager::URLBlocklistManager(

@@ -59,16 +59,13 @@ class POLICY_EXPORT URLBlocklist {
   void Block(const base::Value::List& filters);
 
   // URLs matching one of the |filters| will be allowed. If a URL is both
-  // Blocked and Allowed, Allow takes precedence.
+  // blocked and allowed, allow takes precedence.
   void Allow(const base::Value::List& filters);
 
   // Returns true if the URL is blocked.
   bool IsURLBlocked(const GURL& url) const;
 
   URLBlocklistState GetURLBlocklistState(const GURL& url) const;
-
-  // Returns the number of items in the list.
-  size_t Size() const;
 
  private:
   base::MatcherStringPattern::ID id_ = 0;
@@ -81,7 +78,7 @@ class POLICY_EXPORT URLBlocklist {
 // blocklist.
 class BlocklistSource {
  public:
-  virtual ~BlocklistSource() {}
+  virtual ~BlocklistSource() = default;
 
   // Returns the blocklist which can contains URLs, domain/subdomains and
   // schemes.
