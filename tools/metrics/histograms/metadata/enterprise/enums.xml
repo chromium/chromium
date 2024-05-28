@@ -2277,6 +2277,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="URL filtering interstitial event"/>
   <int value="10" label="Extension install event"/>
   <int value="11" label="Browser crash event"/>
+  <int value="12" label="Extension telemetry event"/>
 </enum>
 
 <enum name="EnterpriseUserInfoFetchStatus">

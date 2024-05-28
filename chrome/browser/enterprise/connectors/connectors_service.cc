@@ -18,6 +18,8 @@
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -50,6 +52,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
 #include "device_management_backend.pb.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -640,7 +643,9 @@ ConnectorsService* ConnectorsServiceFactory::GetForBrowserContext(
 ConnectorsServiceFactory::ConnectorsServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "ConnectorsService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
+}
 
 ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 
@@ -655,6 +660,7 @@ KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
       context, std::make_unique<ConnectorsManager>(
                    std::make_unique<BrowserCrashEventRouter>(context),
                    std::make_unique<ExtensionInstallEventRouter>(context),
+                   std::make_unique<ExtensionTelemetryEventRouter>(context),
                    user_prefs::UserPrefs::Get(context),
                    GetServiceProviderConfig(), observe_prefs));
 }

@@ -27,7 +27,8 @@ enum class EnterpriseReportingEventType {
   kUrlFilteringInterstitialEvent = 9,
   kExtensionInstallEvent = 10,
   kBrowserCrashEvent = 11,
-  kMaxValue = kBrowserCrashEvent,
+  kExtensionTelemetryEvent = 12,
+  kMaxValue = kExtensionTelemetryEvent,
 };
 
 // Mapping from event name to UMA enum for logging histogram.
@@ -56,6 +57,8 @@ constexpr auto kEventNameToUmaEnumMap =
          EnterpriseReportingEventType::kExtensionInstallEvent},
         {ReportingServiceSettings::kBrowserCrashEvent,
          EnterpriseReportingEventType::kBrowserCrashEvent},
+        {ReportingServiceSettings::kExtensionTelemetryEvent,
+         EnterpriseReportingEventType::kExtensionTelemetryEvent},
     });
 
 // Return the UMA EnterpriseReportingEventType enum for the given event name.

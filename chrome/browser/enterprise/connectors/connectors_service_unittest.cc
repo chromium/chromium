@@ -448,6 +448,7 @@ class ConnectorsServiceProfileTypeBrowserTest : public testing::Test {
     auto manager = std::make_unique<ConnectorsManager>(
         std::make_unique<BrowserCrashEventRouter>(profile),
         std::make_unique<ExtensionInstallEventRouter>(profile),
+        std::make_unique<ExtensionTelemetryEventRouter>(profile),
         profile->GetPrefs(), GetServiceProviderConfig(), false);
 
     return std::make_unique<ConnectorsService>(profile, std::move(manager));

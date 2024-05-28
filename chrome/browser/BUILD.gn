@@ -3951,6 +3951,8 @@ static_library("browser") {
       "enterprise/connectors/reporting/crash_reporting_context.h",
       "enterprise/connectors/reporting/extension_install_event_router.cc",
       "enterprise/connectors/reporting/extension_install_event_router.h",
+      "enterprise/connectors/reporting/extension_telemetry_event_router.cc",
+      "enterprise/connectors/reporting/extension_telemetry_event_router.h",
       "enterprise/connectors/reporting/metrics_utils.cc",
       "enterprise/connectors/reporting/metrics_utils.h",
       "enterprise/connectors/reporting/realtime_reporting_client.cc",
@@ -8669,6 +8671,7 @@ static_library("test_support") {
     deps += [
       "//components/crx_file",
       "//extensions/browser",
+      "//extensions/common:mojom",
     ]
   }
 

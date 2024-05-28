@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -51,6 +52,8 @@ class ConnectorsManager {
   ConnectorsManager(
       std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
       std::unique_ptr<ExtensionInstallEventRouter> extension_install_router,
+      std::unique_ptr<ExtensionTelemetryEventRouter>
+          extension_telemetry_event_router,
       PrefService* pref_service,
       const ServiceProviderConfig* config,
       bool observe_prefs = true);
@@ -184,6 +187,10 @@ class ConnectorsManager {
 
   // An observer to report extension install events via the reporting pipeline.
   std::unique_ptr<ExtensionInstallEventRouter> extension_install_event_router_;
+
+  // A router to report extension telemetry events via the reporting pipeline.
+  std::unique_ptr<ExtensionTelemetryEventRouter>
+      extension_telemetry_event_router_;
 };
 
 }  // namespace enterprise_connectors

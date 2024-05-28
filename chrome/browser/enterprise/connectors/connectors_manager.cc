@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -44,15 +45,21 @@ static constexpr enterprise_connectors::AnalysisConnector
 ConnectorsManager::ConnectorsManager(
     std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
     std::unique_ptr<ExtensionInstallEventRouter> extension_install_event_router,
+    std::unique_ptr<ExtensionTelemetryEventRouter>
+        extension_telemetry_event_router,
     PrefService* pref_service,
     const ServiceProviderConfig* config,
     bool observe_prefs)
     : service_provider_config_(config),
       browser_crash_event_router_(std::move(browser_crash_event_router)),
       extension_install_event_router_(
-          std::move(extension_install_event_router)) {
+          std::move(extension_install_event_router)),
+      extension_telemetry_event_router_(
+          std::move(extension_telemetry_event_router)) {
   DCHECK(browser_crash_event_router_) << "Crash event router is null";
   DCHECK(extension_install_event_router_) << "Extension event router is null";
+  DCHECK(extension_telemetry_event_router_)
+      << "Extension telemetry event router is null";
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Start observing tab strip models for all browsers.
@@ -70,6 +77,7 @@ ConnectorsManager::ConnectorsManager(
 #endif
   }
   extension_install_event_router_->StartObserving();
+  extension_telemetry_event_router_->StartObserving();
 }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)

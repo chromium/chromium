@@ -18,6 +18,8 @@
 
 namespace enterprise_connectors {
 
+BASE_DECLARE_FEATURE(kExtensionTelemetryEventsEnabled);
+
 // The settings for a report service obtained from a connector policy.
 class ReportingServiceSettings {
  public:
@@ -35,6 +37,7 @@ class ReportingServiceSettings {
 
   static constexpr char kExtensionInstallEvent[] =
       "browserExtensionInstallEvent";
+  static constexpr char kExtensionTelemetryEvent[] = "extensionTelemetryEvent";
   static constexpr char kBrowserCrashEvent[] = "browserCrashEvent";
 
   // All events that the reporting connector supports.
@@ -50,6 +53,7 @@ class ReportingServiceSettings {
       extensions::SafeBrowsingPrivateEventRouter::
           kKeyUrlFilteringInterstitialEvent,
       kExtensionInstallEvent,
+      kExtensionTelemetryEvent,
       kBrowserCrashEvent,
   };
 
