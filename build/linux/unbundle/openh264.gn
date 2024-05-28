@@ -7,7 +7,7 @@ import("//build/shim_headers.gni")
 
 config("encoder_cfi_flags") {
   cflags = []
-  if (current_toolchain == default_toolchain) {
+  if (current_toolchain == default_toolchain && is_clang) {
     openh264_cfi_ignorelist_path =
         rebase_path("//build/linux/unbundle/openh264_encoder_cfi_ignores.txt",
                     root_build_dir)
