@@ -148,21 +148,14 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             runVoiceSearch();
         } else if (searchType == SearchType.LENS) {
             runGoogleLens();
-        } else {
-            focusTextBox();
         }
+        focusTextBox();
         mInteractionFromWidget = false;
     }
 
     /** Begins a new Voice query. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void runVoiceSearch() {
-        // Run Voice before focusing the Omnibox. Voice search may trigger omnibox focus as part of
-        // its own flow in the event where the input is ambiguous. Focusing the Omnibox early may
-        // affect this flow.
-        //
-        // Note that the Voice search will call us back in the event of any failure via
-        // notifyVoiceRecognitionCanceled() call, giving us the opportunity to focus the Omnibox.
         View micButton = findViewById(R.id.mic_button);
         if (!micButton.performClick()) {
             // Voice recognition is not available. Fall back to regular text search.
@@ -171,20 +164,11 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
                             R.string.quick_action_search_widget_message_no_voice_search,
                             Toast.LENGTH_LONG)
                     .show();
-            focusTextBox();
         }
     }
 
     /** Begins a new Lens query. */
     private void runGoogleLens() {
-        // Preemptively focus the Search box to handle fallback to text search for every case where
-        // Lens search could not be performed, including events where Lens is started and canceled
-        // by the User.
-        // Unlike Voice, Lens gives us no feedback about completion and does not interact with the
-        // Omnibox at any point. Focus is relevant here, because otherwise canceled Lens intent
-        // lands the User on a white, unfocused activity with no keyboard and single, empty text
-        // field on top.
-        focusTextBox();
         View lensButton = findViewById(R.id.lens_camera_button);
         if (!lensButton.performClick()) {
             Toast.makeText(
