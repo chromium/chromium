@@ -881,8 +881,8 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveComplete(size_t idx,
   // source errors are found.
   for (const auto& source : progress_->sources) {
     DCHECK(source.error.has_value());
-    if (source.error != base::File::FILE_OK) {
-      LOG(ERROR) << "Error on complete: error " << source.error.value() << " "
+    if (source.error.value() != base::File::FILE_OK) {
+      LOG(ERROR) << "Cannot copy or move " << source.url.DebugString() << ": "
                  << base::File::ErrorToString(source.error.value());
       complete_state = State::kError;
       break;
