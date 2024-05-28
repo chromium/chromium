@@ -21,8 +21,8 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
-#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 
 namespace {
 
@@ -50,14 +50,14 @@ AIManagerImpl::~AIManagerImpl() = default;
 // static
 void AIManagerImpl::Create(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   AIManagerImpl* model_manager =
       AIManagerImpl::GetOrCreateForCurrentDocument(render_frame_host);
   model_manager->receiver_.Bind(std::move(receiver));
 }
 
-void AIManagerImpl::CanCreateGenericSession(
-    CanCreateGenericSessionCallback callback) {
+void AIManagerImpl::CanCreateTextSession(
+    CanCreateTextSessionCallback callback) {
   // If the model path is empty or invalid, return false.
   auto model_path =
       optimization_guide::switches::GetOnDeviceModelExecutionOverride();
@@ -79,10 +79,10 @@ void AIManagerImpl::CanCreateGenericSession(
                      model_path.value()));
 }
 
-void AIManagerImpl::CreateGenericSession(
-    mojo::PendingReceiver<blink::mojom::ModelGenericSession> receiver,
-    blink::mojom::ModelGenericSessionSamplingParamsPtr sampling_params,
-    CreateGenericSessionCallback callback) {
+void AIManagerImpl::CreateTextSession(
+    mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
+    blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+    CreateTextSessionCallback callback) {
   content::BrowserContext* browser_context = browser_context_.get();
   if (!browser_context) {
     receiver_.ReportBadMessage(
@@ -129,9 +129,9 @@ void AIManagerImpl::CreateGenericSession(
   std::move(callback).Run(/*success=*/true);
 }
 
-void AIManagerImpl::GetDefaultGenericSessionSamplingParams(
-    GetDefaultGenericSessionSamplingParamsCallback callback) {
-  std::move(callback).Run(blink::mojom::ModelGenericSessionSamplingParams::New(
+void AIManagerImpl::GetDefaultTextSessionSamplingParams(
+    GetDefaultTextSessionSamplingParamsCallback callback) {
+  std::move(callback).Run(blink::mojom::AITextSessionSamplingParams::New(
       optimization_guide::features::GetOnDeviceModelDefaultTopK(),
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
 }
@@ -180,7 +180,7 @@ std::string ConvertOnDeviceModelEligibilityReasonToString(
 }
 
 void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
-    CanCreateGenericSessionCallback callback) {
+    CanCreateTextSessionCallback callback) {
   content::BrowserContext* browser_context = browser_context_.get();
   CHECK(browser_context);
   OptimizationGuideKeyedService* service =
@@ -213,7 +213,7 @@ void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
 }
 
 void AIManagerImpl::OnModelPathValidationComplete(
-    CanCreateGenericSessionCallback callback,
+    CanCreateTextSessionCallback callback,
     const std::string& model_path,
     bool is_valid_path) {
   if (!is_valid_path) {

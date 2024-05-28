@@ -11,9 +11,9 @@
 #include "base/time/time.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom-params-data.h"
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom-shared.h"
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-params-data.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
 
 namespace content {
 
@@ -35,7 +35,7 @@ void MockAITextSession::DoMockExecution(const std::string& input,
                         std::nullopt);
 }
 
-void MockAITextSession::Execute(
+void MockAITextSession::Prompt(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {

@@ -258,6 +258,7 @@
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
@@ -268,7 +269,6 @@
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
-#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
@@ -12344,7 +12344,7 @@ void RenderFrameHostImpl::BindNonAssociatedLocalFrameHost(
 }
 
 void RenderFrameHostImpl::BindAIManager(
-    mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   CHECK(
       base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI));
 

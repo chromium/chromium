@@ -7,7 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/blink/public/mojom/model_execution/model_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_model_generic_session_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -53,10 +53,10 @@ class ModelManager final : public ScriptWrappable,
       ExceptionState& exception_state);
 
  private:
-  HeapMojoRemote<mojom::blink::ModelManager>& GetModelManagerRemote();
+  HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoRemote<mojom::blink::ModelManager> model_manager_remote_;
+  HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
 };
 
 }  // namespace blink

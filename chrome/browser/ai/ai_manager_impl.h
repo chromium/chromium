@@ -12,22 +12,22 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
 
-// The browser-side implementation of `blink::mojom::ModelManager`, it should be
+// The browser-side implementation of `blink::mojom::AIManager`, it should be
 // destroyed together with the associated RFH or when the RFH is used for a
 // cross-document navigation.
 class AIManagerImpl : public content::DocumentUserData<AIManagerImpl>,
-                      public blink::mojom::ModelManager {
+                      public blink::mojom::AIManager {
  public:
   AIManagerImpl(const AIManagerImpl&) = delete;
   AIManagerImpl& operator=(const AIManagerImpl&) = delete;
 
   ~AIManagerImpl() override;
 
-  static void Create(
-      content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ModelManager> receiver);
+  static void Create(content::RenderFrameHost* render_frame_host,
+                     mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
  private:
   friend class DocumentUserData<AIManagerImpl>;
@@ -37,25 +37,24 @@ class AIManagerImpl : public content::DocumentUserData<AIManagerImpl>,
 
   explicit AIManagerImpl(content::RenderFrameHost* rfh);
 
-  // `blink::mojom::ModelManager` implementation.
-  void CanCreateGenericSession(
-      CanCreateGenericSessionCallback callback) override;
-  void CreateGenericSession(
-      mojo::PendingReceiver<::blink::mojom::ModelGenericSession> receiver,
-      blink::mojom::ModelGenericSessionSamplingParamsPtr sampling_params,
-      CreateGenericSessionCallback callback) override;
-  void GetDefaultGenericSessionSamplingParams(
-      GetDefaultGenericSessionSamplingParamsCallback callback) override;
+  // `blink::mojom::AIManager` implementation.
+  void CanCreateTextSession(CanCreateTextSessionCallback callback) override;
+  void CreateTextSession(
+      mojo::PendingReceiver<::blink::mojom::AITextSession> receiver,
+      blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+      CreateTextSessionCallback callback) override;
+  void GetDefaultTextSessionSamplingParams(
+      GetDefaultTextSessionSamplingParamsCallback callback) override;
 
-  void OnModelPathValidationComplete(CanCreateGenericSessionCallback callback,
+  void OnModelPathValidationComplete(CanCreateTextSessionCallback callback,
                                      const std::string& model_path,
                                      bool is_valid_path);
 
   void CanOptimizationGuideKeyedServiceCreateGenericSession(
-      CanCreateGenericSessionCallback callback);
+      CanCreateTextSessionCallback callback);
 
   base::WeakPtr<content::BrowserContext> browser_context_;
-  mojo::Receiver<blink::mojom::ModelManager> receiver_{this};
+  mojo::Receiver<blink::mojom::AIManager> receiver_{this};
 
   base::WeakPtrFactory<AIManagerImpl> weak_factory_{this};
 };
