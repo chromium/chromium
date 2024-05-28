@@ -75,7 +75,7 @@ class ProductSpecificationsService : public KeyedService {
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   std::vector<base::OnceCallback<void()>> deferred_operations_;
-  bool is_initialized_;
+  bool is_initialized_{false};
 
   void OnInit();
   base::WeakPtrFactory<ProductSpecificationsService> weak_ptr_factory_{this};
