@@ -4,8 +4,18 @@
 
 #include "ash/system/focus_mode/youtube_music/youtube_music_client.h"
 
+#include <algorithm>
+#include <memory>
+#include <optional>
+
+#include "ash/system/focus_mode/youtube_music/youtube_music_types.h"
 #include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
+#include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/youtube_music/youtube_music_api_request_types.h"
+#include "google_apis/youtube_music/youtube_music_api_requests.h"
+#include "google_apis/youtube_music/youtube_music_api_response_types.h"
 
 namespace ash::youtube_music {
 
@@ -46,6 +56,106 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
     )");
 
+// Returns the pointer of the most appropriate image to use. When there are
+// images that meet the minimal width and height requirements, it uses the
+// smallest image to speed things up; otherwise it uses the largest image
+// available.
+google_apis::youtube_music::Image* FindAppropriateImage(
+    std::vector<std::unique_ptr<google_apis::youtube_music::Image>>* images) {
+  if (!images || images->empty()) {
+    return nullptr;
+  }
+
+  auto bigger_in_size =
+      [](const std::unique_ptr<google_apis::youtube_music::Image>& img1,
+         const std::unique_ptr<google_apis::youtube_music::Image>& img2) {
+        if (!img1) {
+          return false;
+        }
+        if (!img2) {
+          return true;
+        }
+        return img1->width() * img1->height() > img2->width() * img2->height();
+      };
+  auto qualified =
+      [](const std::unique_ptr<google_apis::youtube_music::Image>& img) {
+        return img && img->width() >= kImageMinimalWidth &&
+               img->height() >= kImageMinimalHeight;
+      };
+  size_t smallest_qualified_index = images->size();
+  for (size_t i = 0; i < images->size(); i++) {
+    if (qualified(images->at(i)) &&
+        (smallest_qualified_index == images->size() ||
+         bigger_in_size(images->at(smallest_qualified_index), images->at(i)))) {
+      smallest_qualified_index = i;
+    }
+  }
+
+  return smallest_qualified_index < images->size()
+             ? images->at(smallest_qualified_index).get()
+             : std::max_element(images->begin(), images->end(), bigger_in_size)
+                   ->get();
+}
+
+// Gets `Image` from API image. Please note, `api_iamge` could be null.
+// TODO(yongshun): Consider add a default image.
+Image FromApiImage(const google_apis::youtube_music::Image* api_iamge) {
+  auto image = Image(0, 0, GURL());
+  if (api_iamge) {
+    image.width = api_iamge->width();
+    image.height = api_iamge->height();
+    image.url = api_iamge->url();
+  }
+  return image;
+}
+
+// Gets a vector of `Playlist` from `top_level_music_recommendations`.
+std::optional<std::vector<Playlist>>
+GetPlaylistsFromTopLevelMusicRecommendations(
+    google_apis::youtube_music::TopLevelMusicRecommendations*
+        top_level_music_recommendations) {
+  if (!top_level_music_recommendations) {
+    return std::nullopt;
+  }
+
+  std::vector<Playlist> playlists;
+  for (auto& top_level_recommendation :
+       *top_level_music_recommendations
+            ->mutable_top_level_music_recommendations()) {
+    for (auto& music_recommendation : *top_level_recommendation->music_section()
+                                           .mutable_music_recommendations()) {
+      auto& playlist = music_recommendation->playlist();
+      playlists.emplace_back(
+          playlist.name(), playlist.title(), playlist.owner().title(),
+          FromApiImage(FindAppropriateImage(playlist.mutable_images())));
+    }
+  }
+  return playlists;
+}
+
+// Gets `PlaybackContext` from `queue`.
+std::optional<PlaybackContext> GetPlaybackContextFromPlaybackQueue(
+    google_apis::youtube_music::Queue* queue) {
+  if (!queue) {
+    return std::nullopt;
+  }
+
+  auto& playback_context = queue->playback_context();
+  auto& track = playback_context.queue_item().track();
+  // TODO(yongshun): Consider to add retry when there is no stream in the
+  // response.
+  GURL stream_url = GURL();
+  if (auto* mutable_streams =
+          playback_context.playback_manifest().mutable_streams();
+      !mutable_streams->empty()) {
+    stream_url = mutable_streams->begin()->get()->url();
+  }
+  return PlaybackContext(
+      track.name(), track.title(), track.explicit_type(),
+      FromApiImage(FindAppropriateImage(track.mutable_images())), stream_url,
+      queue->name());
+}
+
 }  // namespace
 
 YouTubeMusicClient::YouTubeMusicClient(
@@ -54,21 +164,52 @@ YouTubeMusicClient::YouTubeMusicClient(
 
 YouTubeMusicClient::~YouTubeMusicClient() = default;
 
-void YouTubeMusicClient::GetPlaylists(const std::string& music_section_name,
-                                      GetPlaylistsCallback callback) {
-  // TODO(yongshun): Start the request with retry.
+void YouTubeMusicClient::GetPlaylists(GetPlaylistsCallback callback) {
+  CHECK(callback);
+  playlists_callback_ = std::move(callback);
+
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(
+      std::make_unique<google_apis::youtube_music::GetPlaylistsRequest>(
+          request_sender,
+          base::BindOnce(&YouTubeMusicClient::OnGetPlaylistsRequestDone,
+                         weak_factory_.GetWeakPtr(), base::Time::Now())));
 }
 
 void YouTubeMusicClient::PlaybackQueuePrepare(
     const std::string& playlist_name,
     GetPlaybackContextCallback callback) {
-  // TODO(yongshun): Start the request with retry.
+  CHECK(callback);
+  playback_context_prepare_callback_ = std::move(callback);
+
+  auto request_payload =
+      google_apis::youtube_music::PlaybackQueuePrepareRequestPayload(
+          playlist_name,
+          google_apis::youtube_music::PlaybackQueuePrepareRequestPayload::
+              ExplicitFilter::kBestEffort,
+          google_apis::youtube_music::PlaybackQueuePrepareRequestPayload::
+              ShuffleMode::kOn);
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(
+      std::make_unique<google_apis::youtube_music::PlaybackQueuePrepareRequest>(
+          request_sender, request_payload,
+          base::BindOnce(&YouTubeMusicClient::OnPlaybackQueuePrepareRequestDone,
+                         weak_factory_.GetWeakPtr(), base::Time::Now())));
 }
 
 void YouTubeMusicClient::PlaybackQueueNext(
     const std::string& playback_queue_name,
     GetPlaybackContextCallback callback) {
-  // TODO(yongshun): Start the request with retry.
+  CHECK(callback);
+  playback_context_next_callback_ = std::move(callback);
+
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(
+      std::make_unique<google_apis::youtube_music::PlaybackQueueNextRequest>(
+          request_sender,
+          base::BindOnce(&YouTubeMusicClient::OnPlaybackQueueNextRequestDone,
+                         weak_factory_.GetWeakPtr(), base::Time::Now()),
+          playback_queue_name));
 }
 
 google_apis::RequestSender* YouTubeMusicClient::GetRequestSender() {
@@ -81,6 +222,76 @@ google_apis::RequestSender* YouTubeMusicClient::GetRequestSender() {
     CHECK(request_sender_);
   }
   return request_sender_.get();
+}
+
+void YouTubeMusicClient::OnGetPlaylistsRequestDone(
+    const base::Time& request_start_time,
+    base::expected<
+        std::unique_ptr<
+            google_apis::youtube_music::TopLevelMusicRecommendations>,
+        google_apis::ApiErrorCode> result) {
+  if (!playlists_callback_) {
+    return;
+  }
+
+  if (!result.has_value()) {
+    std::move(playlists_callback_).Run(result.error(), std::nullopt);
+    return;
+  }
+
+  std::move(playlists_callback_)
+      .Run(google_apis::HTTP_SUCCESS,
+           GetPlaylistsFromTopLevelMusicRecommendations(result.value().get()));
+}
+
+void YouTubeMusicClient::OnPlaybackQueuePrepareRequestDone(
+    const base::Time& request_start_time,
+    base::expected<std::unique_ptr<google_apis::youtube_music::Queue>,
+                   google_apis::ApiErrorCode> result) {
+  if (!playback_context_prepare_callback_) {
+    return;
+  }
+
+  if (!result.has_value()) {
+    std::move(playback_context_prepare_callback_)
+        .Run(result.error(), std::nullopt);
+    return;
+  }
+
+  if (!result.value()) {
+    std::move(playback_context_prepare_callback_)
+        .Run(google_apis::ApiErrorCode::HTTP_SUCCESS, std::nullopt);
+    return;
+  }
+
+  std::move(playback_context_prepare_callback_)
+      .Run(google_apis::HTTP_SUCCESS,
+           GetPlaybackContextFromPlaybackQueue(result.value().get()));
+}
+
+void YouTubeMusicClient::OnPlaybackQueueNextRequestDone(
+    const base::Time& request_start_time,
+    base::expected<std::unique_ptr<google_apis::youtube_music::QueueContainer>,
+                   google_apis::ApiErrorCode> result) {
+  if (!playback_context_next_callback_) {
+    return;
+  }
+
+  if (!result.has_value()) {
+    std::move(playback_context_next_callback_)
+        .Run(result.error(), std::nullopt);
+    return;
+  }
+
+  if (!result.value()) {
+    std::move(playback_context_next_callback_)
+        .Run(google_apis::ApiErrorCode::HTTP_SUCCESS, std::nullopt);
+    return;
+  }
+
+  std::move(playback_context_next_callback_)
+      .Run(google_apis::HTTP_SUCCESS,
+           GetPlaybackContextFromPlaybackQueue(&result.value()->queue()));
 }
 
 }  // namespace ash::youtube_music

@@ -25,6 +25,8 @@ class ASH_EXPORT FocusModeSoundsDelegate {
     Playlist& operator=(const Playlist&);
     ~Playlist();
 
+    std::string ToString() const;
+
     std::string id;
     std::string title;
     GURL thumbnail_url;
@@ -39,6 +41,8 @@ class ASH_EXPORT FocusModeSoundsDelegate {
     Track(const Track&);
     Track& operator=(const Track&);
     ~Track();
+
+    std::string ToString() const;
 
     std::string title;
     std::string artist;

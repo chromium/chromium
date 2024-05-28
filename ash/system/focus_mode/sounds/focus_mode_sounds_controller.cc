@@ -5,6 +5,7 @@
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/session/session_types.h"
@@ -99,7 +100,7 @@ void DispatchRequests(
     return;
   }
 
-  CHECK_EQ(data.size(), 4u);
+  CHECK_EQ(static_cast<int>(data.size()), kPlaylistNum);
 
   // TODO(b/340304748): Currently, when opening the focus panel, we will clean
   // up all saved data and then download all playlists. In the future, we can
@@ -113,6 +114,11 @@ void DispatchRequests(
                          base::BindOnce(&OnOneThumbnailDownloaded,
                                         barrier_callback, item.id, item.title));
   }
+}
+
+// In response to receiving the track, start playing the track.
+void OnTrackFetched(const std::optional<FocusModeSoundsDelegate::Track>& data) {
+  // TODO: Play the track here.
 }
 
 }  // namespace
@@ -197,6 +203,14 @@ void FocusModeSoundsController::SelectPlaylist(
   // trigger the player to start playing and set the state as `kPlaying`
   // instead.
   selected_playlist_.state = focus_mode_util::SoundState::kSelected;
+
+  if (playlist_data.type == focus_mode_util::SoundType::kSoundscape) {
+    soundscape_delegate_->GetNextTrack(playlist_data.id,
+                                       base::BindOnce(&OnTrackFetched));
+  } else if (playlist_data.type == focus_mode_util::SoundType::kYouTubeMusic) {
+    youtube_music_delegate_->GetNextTrack(playlist_data.id,
+                                          base::BindOnce(&OnTrackFetched));
+  }
 
   for (auto& observer : observers_) {
     observer.OnSelectedPlaylistChanged();

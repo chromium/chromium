@@ -1,4 +1,5 @@
 include_rules = [
   "+google_apis/common",
   "+google_apis/gaia",
+  "+google_apis/youtube_music",
 ]

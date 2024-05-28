@@ -7,6 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
+#include "ash/system/focus_mode/youtube_music/youtube_music_controller.h"
+#include "ash/system/focus_mode/youtube_music/youtube_music_types.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace ash {
 
@@ -21,6 +24,25 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
                     FocusModeSoundsDelegate::TrackCallback callback) override;
   bool GetPlaylists(
       FocusModeSoundsDelegate::PlaylistsCallback callback) override;
+
+ private:
+  // Called when get playlists request is done.
+  void OnGetPlaylistsDone(
+      google_apis::ApiErrorCode http_error_code,
+      std::optional<const std::vector<youtube_music::Playlist>> playlists);
+
+  // Called when switching to next track is done.
+  void OnNextTrackDone(
+      google_apis::ApiErrorCode http_error_code,
+      std::optional<const youtube_music::PlaybackContext> playback_context);
+
+  // Cached callbacks for API requests.
+  FocusModeSoundsDelegate::PlaylistsCallback get_playlists_callback_;
+  FocusModeSoundsDelegate::TrackCallback get_next_track_callback_;
+
+  // Last playlist/queue name requested through `GetNextTrack()`.
+  std::string last_playlist_name_;
+  std::string last_queue_name_;
 };
 
 }  // namespace ash

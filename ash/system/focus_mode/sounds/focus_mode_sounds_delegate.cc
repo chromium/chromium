@@ -4,6 +4,8 @@
 
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
 
+#include "base/strings/stringprintf.h"
+
 namespace ash {
 
 FocusModeSoundsDelegate::Playlist::Playlist(const std::string& id,
@@ -14,6 +16,12 @@ FocusModeSoundsDelegate::Playlist::Playlist(const Playlist&) = default;
 FocusModeSoundsDelegate::Playlist& FocusModeSoundsDelegate::Playlist::operator=(
     const Playlist&) = default;
 FocusModeSoundsDelegate::Playlist::~Playlist() = default;
+
+std::string FocusModeSoundsDelegate::Playlist::ToString() const {
+  return base::StringPrintf(
+      "Playlist(id=\"%s\", title=\"%s\", thumbnail_url=\"%s\")", id.c_str(),
+      title.c_str(), thumbnail_url.spec().c_str());
+}
 
 FocusModeSoundsDelegate::Track::Track(const std::string& title,
                                       const std::string& artist,
@@ -29,5 +37,13 @@ FocusModeSoundsDelegate::Track::Track(const Track&) = default;
 FocusModeSoundsDelegate::Track& FocusModeSoundsDelegate::Track::operator=(
     const Track&) = default;
 FocusModeSoundsDelegate::Track::~Track() = default;
+
+std::string FocusModeSoundsDelegate::Track::ToString() const {
+  return base::StringPrintf(
+      "Track(title=\"%s\", artist=\"%s\", source=\"%s\", thumbnail_url=\"%s\", "
+      "source_url=\"%s\")",
+      title.c_str(), artist.c_str(), source.c_str(),
+      thumbnail_url.spec().c_str(), source_url.spec().c_str());
+}
 
 }  // namespace ash

@@ -145,6 +145,10 @@ FocusModeSoundsView::FocusModeSoundsView(bool is_network_connected) {
         /*is_soundscape_type=*/true,
         base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
                        weak_factory_.GetWeakPtr()));
+    sounds_controller->DownloadPlaylistsForType(
+        /*is_soundscape_type=*/false,
+        base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
+                       weak_factory_.GetWeakPtr()));
     OnYouTubeMusicButtonToggled();
   } else {
     AddChildView(CreateOfflineStateView());
@@ -218,10 +222,12 @@ void FocusModeSoundsView::CreatesSoundSectionViews() {
   youtube_music_container_ = AddChildView(std::make_unique<SoundSectionView>(
       focus_mode_util::SoundType::kYouTubeMusic));
 
-  // TODO: Assume that the user doesn't have a premium account currently. Will
-  // add a condition here when we finish the API implementation.
-  youtube_music_container_->SetAlternateView(CreateNonPremiumView());
-  youtube_music_container_->ShowAlternateView(true);
+  // TODO: Assume that the user has a premium account currently. Will add a
+  // condition here when we finish the API implementation.
+  if (/* DISABLES CODE */ (false)) {
+    youtube_music_container_->SetAlternateView(CreateNonPremiumView());
+    youtube_music_container_->ShowAlternateView(true);
+  }
 }
 
 void FocusModeSoundsView::OnSoundscapeButtonToggled() {

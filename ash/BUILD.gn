@@ -3122,6 +3122,7 @@ component("ash") {
     "//google_apis/calendar",
     "//google_apis/common",
     "//google_apis/tasks",
+    "//google_apis/youtube_music",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//services/data_decoder/public/mojom",

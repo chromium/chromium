@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_FOCUS_MODE_YOUTUBE_MUSIC_YOUTUBE_MUSIC_TYPES_H_
 #define ASH_SYSTEM_FOCUS_MODE_YOUTUBE_MUSIC_YOUTUBE_MUSIC_TYPES_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -62,6 +63,7 @@ struct ASH_EXPORT Playlist {
            const std::string& title,
            const std::string& owner_title,
            const Image& image);
+  Playlist(const Playlist& other);
   ~Playlist();
 
   std::string ToString() const;
@@ -86,9 +88,11 @@ struct ASH_EXPORT Playlist {
 struct ASH_EXPORT PlaybackContext {
   PlaybackContext(const std::string& track_name,
                   const std::string& track_title,
+                  const std::string& track_explicit_type,
                   const Image& track_image,
                   const GURL& stream_url,
                   const std::string& queue_name);
+  PlaybackContext(const PlaybackContext& other);
   ~PlaybackContext();
 
   std::string ToString() const;
@@ -97,6 +101,8 @@ struct ASH_EXPORT PlaybackContext {
 
   std::string track_title;
 
+  std::string track_explicit_type_;
+
   Image track_image;
 
   GURL stream_url;
@@ -104,13 +110,13 @@ struct ASH_EXPORT PlaybackContext {
   std::string queue_name;
 };
 
-using GetPlaylistsCallback =
-    base::OnceCallback<void(google_apis::ApiErrorCode http_error_code,
-                            const std::vector<Playlist> playlists)>;
+using GetPlaylistsCallback = base::OnceCallback<void(
+    google_apis::ApiErrorCode http_error_code,
+    std::optional<const std::vector<Playlist>> playlists)>;
 
-using GetPlaybackContextCallback =
-    base::OnceCallback<void(google_apis::ApiErrorCode http_error_code,
-                            const PlaybackContext playback_context)>;
+using GetPlaybackContextCallback = base::OnceCallback<void(
+    google_apis::ApiErrorCode http_error_code,
+    std::optional<const PlaybackContext> playback_context)>;
 
 }  // namespace ash::youtube_music
 

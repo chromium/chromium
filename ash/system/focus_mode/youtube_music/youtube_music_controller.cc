@@ -62,14 +62,13 @@ youtube_music::YouTubeMusicClient* YouTubeMusicController::GetActiveClient()
 }
 
 bool YouTubeMusicController::GetPlaylists(
-    const std::string& music_section_name,
     youtube_music::GetPlaylistsCallback callback) {
   CHECK(callback);
   auto* client = GetActiveClient();
   if (!client) {
     return false;
   }
-  client->GetPlaylists(music_section_name, std::move(callback));
+  client->GetPlaylists(std::move(callback));
   return true;
 }
 

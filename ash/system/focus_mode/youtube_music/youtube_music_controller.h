@@ -31,8 +31,7 @@ class ASH_EXPORT YouTubeMusicController : public SessionObserver {
 
   // Triggers request to get playlists through the active client. Returns true
   // if the request is successfully triggered.
-  bool GetPlaylists(const std::string& music_section_name,
-                    youtube_music::GetPlaylistsCallback callback);
+  bool GetPlaylists(youtube_music::GetPlaylistsCallback callback);
 
   // Triggers request to prepare the playback queue through the active client.
   // Returns true if the request is successfully triggered.
