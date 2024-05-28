@@ -183,6 +183,9 @@ class TestTableModel2 : public ui::TableModel {
   TestTableModel2(const TestTableModel2&) = delete;
   TestTableModel2& operator=(const TestTableModel2&) = delete;
 
+  // Clears the model entirely, leaving it empty.
+  void Clear();
+
   // Adds a new row at index |row| with values |c1_value| and |c2_value|.
   void AddRow(size_t row, int c1_value, int c2_value);
 
@@ -227,6 +230,10 @@ TestTableModel2::TestTableModel2() {
   AddRow(1, 1, 1);
   AddRow(2, 2, 2);
   AddRow(3, 3, 0);
+}
+
+void TestTableModel2::Clear() {
+  RemoveRows(0, rows_.size());
 }
 
 void TestTableModel2::AddRow(size_t row, int c1_value, int c2_value) {
@@ -650,6 +657,17 @@ INSTANTIATE_TEST_SUITE_P(
     TableViewTest,
     testing::Combine(/*use_default_construction=*/testing::Bool(),
                      /*use_rtl=*/testing::Bool()));
+
+// Using one of the arrow keys (which normally change selection) with an empty
+// table must leave the selection state empty.
+// Regression test for https://issues.chromium.org/issues/342341277
+TEST_P(TableViewTest, SelectedIndexWithNoRows) {
+  model_->Clear();
+  table_->RequestFocus();
+  EXPECT_TRUE(table_->selection_model().empty());
+  table_->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, 0));
+  EXPECT_TRUE(table_->selection_model().empty());
+}
 
 // Verifies GetPaintRegion.
 TEST_P(TableViewTest, GetPaintRegion) {

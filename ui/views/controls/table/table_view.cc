@@ -458,13 +458,13 @@ void TableView::SetVisibleColumnWidth(size_t index, int width) {
 size_t TableView::ModelToView(size_t model_index) const {
   if (!GetIsSorted())
     return model_index;
-  DCHECK_LT(model_index, model_to_view_.size())
+  CHECK_LT(model_index, model_to_view_.size())
       << " out of bounds model_index " << model_index;
   return model_to_view_[model_index];
 }
 
 size_t TableView::ViewToModel(size_t view_index) const {
-  DCHECK_LT(view_index, GetRowCount());
+  CHECK_LT(view_index, GetRowCount());
   if (!GetIsSorted())
     return view_index;
   DCHECK_LT(view_index, view_to_model_.size())
@@ -788,8 +788,9 @@ bool TableView::HandleAccessibleAction(const ui::AXActionData& action_data) {
     case ax::mojom::Action::kFocus:
       RequestFocus();
       // Setting focus should not affect the current selection.
-      if (selection_model_.empty())
+      if (selection_model_.empty() && GetRowCount() > 0) {
         SelectByViewIndex(size_t{0});
+      }
       break;
 
     case ax::mojom::Action::kScrollRight: {
@@ -1329,8 +1330,10 @@ void TableView::AdvanceActiveVisibleColumn(AdvanceDirection direction) {
   }
 
   if (!active_visible_column_index_.has_value()) {
-    if (!selection_model_.active().has_value() && !header_row_is_active_)
+    if (!selection_model_.active().has_value() && !header_row_is_active_ &&
+        GetRowCount()) {
       SelectByViewIndex(size_t{0});
+    }
     SetActiveVisibleColumnIndex(size_t{0});
     return;
   }
@@ -1373,6 +1376,7 @@ void TableView::SetActiveVisibleColumnIndex(std::optional<size_t> index) {
 void TableView::SelectByViewIndex(std::optional<size_t> view_index) {
   ui::ListSelectionModel new_selection;
   if (view_index.has_value()) {
+    CHECK_LE(view_index.value(), GetRowCount());
     SelectRowsInRangeFrom(view_index.value(), true, &new_selection);
     new_selection.set_anchor(ViewToModel(view_index.value()));
     new_selection.set_active(ViewToModel(view_index.value()));
@@ -1417,8 +1421,11 @@ void TableView::AdvanceSelection(AdvanceDirection direction) {
     bool make_header_active =
         header_ && direction == AdvanceDirection::kDecrement;
     header_row_is_active_ = make_header_active;
-    SelectByViewIndex(make_header_active ? std::nullopt
-                                         : std::make_optional(size_t{0}));
+    if (make_header_active) {
+      SelectByViewIndex(std::nullopt);
+    } else if (GetRowCount() > 0) {
+      SelectByViewIndex(std::make_optional(size_t{0}));
+    }
     UpdateFocusRings();
     ScheduleUpdateAccessibilityFocusIfNeeded();
     return;
