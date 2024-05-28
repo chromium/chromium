@@ -1964,6 +1964,18 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       treat_as_error = False,
     ),
+    BanRule(
+      pattern = r'/WIDGET_OWNS_NATIVE_WIDGET|'
+                r'NATIVE_WIDGET_OWNS_WIDGET',
+      explanation = (
+        'WIDGET_OWNS_NATIVE_WIDGET and NATIVE_WIDGET_OWNS_WIDGET are in the '
+        'process of being deprecated. Consider using the new '
+        'CLIENT_OWNS_WIDGET ownership model. Eventually, this will be the only '
+        'available ownership model available and the associated enumeration'
+        'will be removed.',
+      ),
+      treat_as_error = False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
