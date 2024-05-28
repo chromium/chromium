@@ -236,11 +236,31 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 }
 
 #pragma mark - AppStateObserver
+
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  if (appState.initStage < InitStageFinal) {
+    return;
+  }
+  SceneState* sceneState = appState.foregroundActiveScene;
+  if (sceneState == nil) {
+    return;
+  }
+  [self appDidEnterForeground:sceneState];
+}
+
 - (void)appState:(AppState*)appState
     sceneDidBecomeActive:(SceneState*)sceneState {
   if (appState.initStage < InitStageFinal) {
     return;
   }
+  [self appDidEnterForeground:sceneState];
+}
+
+#pragma mark - Private
+
+// Notifies the client manager that the scene is "foreground active".
+- (void)appDidEnterForeground:(SceneState*)sceneState {
   PushNotificationClientManager* clientManager =
       GetApplicationContext()
           ->GetPushNotificationService()
@@ -280,7 +300,6 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       }];
 }
 
-#pragma mark - Private
 - (void)recordLifeCycleEvent:(PushNotificationLifecycleEvent)event {
   base::UmaHistogramEnumeration(kLifecycleEventsHistogram, event);
 }
