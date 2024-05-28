@@ -69,6 +69,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/archive_patch_helper.h"
 #include "chrome/installer/setup/brand_behaviors.h"
+#include "chrome/installer/setup/configure_app_container_sandbox.h"
 #include "chrome/installer/setup/downgrade_cleanup.h"
 #include "chrome/installer/setup/install.h"
 #include "chrome/installer/setup/install_params.h"
@@ -1127,6 +1128,25 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
           *installer_state, prefs,
           static_cast<installer::InstallShortcutLevel>(install_level_op),
           static_cast<installer::InstallShortcutOperation>(install_op));
+    }
+  } else if (cmd_line.HasSwitch(
+                 installer::switches::kConfigureBrowserInDirectory)) {
+    base::FilePath path = cmd_line.GetSwitchValuePath(
+        installer::switches::kConfigureBrowserInDirectory);
+
+    if (path.empty()) {
+      LOG(ERROR) << "Empty directory specified in --"
+                 << installer::switches::kConfigureBrowserInDirectory;
+      *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_FAILED;
+    } else if (!path.IsAbsolute()) {
+      LOG(ERROR) << "--" << installer::switches::kConfigureBrowserInDirectory
+                 << " must contain an absolute path";
+      *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_FAILED;
+    } else if (installer::ConfigureAppContainerSandbox(
+                   std::array<const base::FilePath*, 1>{&path})) {
+      *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_SUCCESS;
+    } else {
+      *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_FAILED;
     }
   } else {
     handled = false;

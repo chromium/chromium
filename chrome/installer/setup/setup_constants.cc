@@ -25,16 +25,6 @@ const char kZucchini[] = "zucchini";
 
 namespace switches {
 
-// Set the MSI-managed DisplayVersion in the registry to match Chrome's real
-// version number. The parameter to this option specifies the product-id in
-// the registry under HKLM.
-const char kSetDisplayVersionProduct[] = "set-display-version-product";
-const char kSetDisplayVersionValue[] = "set-display-version-value";
-
-// A handle number for an event to be signaled when the process is ready for
-// work.
-const char kStartupEventHandle[] = "startup-event-handle";
-
 // Sets the operation to do for the downgrade cleanup. Only the values "revert"
 // and "cleanup" are accepted. If the operation is "cleanup", cleans up the
 // necessary data, if the operation is "revert", reverts any cleanup previously
@@ -44,6 +34,20 @@ const char kCleanupForDowngradeOperation[] = "cleanup-for-downgrade-operation";
 // Indicates the version to which the browser is being downgraded. All state
 // written by versions newer than that indicated will be cleaned.
 const char kCleanupForDowngradeVersion[] = "cleanup-for-downgrade-version";
+
+// Sets required permissions on a Chrome installation directory and exits
+// without running the rest of the setup.
+const char kConfigureBrowserInDirectory[] = "configure-browser-in-directory";
+
+// Set the MSI-managed DisplayVersion in the registry to match Chrome's real
+// version number. The parameter to this option specifies the product-id in
+// the registry under HKLM.
+const char kSetDisplayVersionProduct[] = "set-display-version-product";
+const char kSetDisplayVersionValue[] = "set-display-version-value";
+
+// A handle number for an event to be signaled when the process is ready for
+// work.
+const char kStartupEventHandle[] = "startup-event-handle";
 
 }  // namespace switches
 

@@ -129,7 +129,9 @@ enum InstallStatus {
                                          // key due to missing permissions.
   ROTATE_DTKEY_FAILED_CONFLICT = 77,  // Failed to rotate the device trust key
                                       // due to a conflict during upload.
-  MAX_INSTALL_STATUS = 78,  // When adding a new result, bump this and update
+  CONFIGURE_APP_CONTAINER_SANDBOX_SUCCESS = 78,
+  CONFIGURE_APP_CONTAINER_SANDBOX_FAILED = 79,
+  MAX_INSTALL_STATUS = 80,  // When adding a new result, bump this and update
                             // the SetupInstallResult enum in enums.xml.
 };
 

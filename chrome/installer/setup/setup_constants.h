@@ -33,12 +33,14 @@ extern const char kZucchini[];
 
 namespace switches {
 
+extern const char kCleanupForDowngradeOperation[];
+extern const char kCleanupForDowngradeVersion[];
+
+extern const char kConfigureBrowserInDirectory[];
+
 extern const char kSetDisplayVersionProduct[];
 extern const char kSetDisplayVersionValue[];
 extern const char kStartupEventHandle[];
-
-extern const char kCleanupForDowngradeOperation[];
-extern const char kCleanupForDowngradeVersion[];
 
 }  // namespace switches
 

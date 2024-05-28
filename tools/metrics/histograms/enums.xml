@@ -32331,6 +32331,10 @@ Called by update_net_error_codes.py.-->
   <int value="75" label="DMToken deletion succeeded."/>
   <int value="76" label="Failed Device Trust Rotation: Invalid Permissions"/>
   <int value="77" label="Failed Device Trust Rotation: Conflict"/>
+  <int value="78"
+      label="Successfully configured the browser in a specified directory"/>
+  <int value="79"
+      label="Failed to configure the browser in a specified directory"/>
 </enum>
 
 <enum name="ShapeRunFallback">

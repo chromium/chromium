@@ -54,6 +54,8 @@ if (is_win) {
       "archive_patch_helper.cc",
       "archive_patch_helper.h",
       "brand_behaviors.h",
+      "configure_app_container_sandbox.cc",
+      "configure_app_container_sandbox.h",
       "downgrade_cleanup.cc",
       "downgrade_cleanup.h",
       "install.cc",
@@ -133,6 +135,7 @@ if (is_win) {
   test("setup_unittests") {
     sources = [
       "archive_patch_helper_unittest.cc",
+      "configure_app_container_sandbox_unittest.cc",
       "downgrade_cleanup_unittest.cc",
       "install_unittest.cc",
       "install_worker_unittest.cc",

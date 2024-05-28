@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <aclapi.h>
+#include <sddl.h>
 #include <stddef.h>
 #include <wchar.h>
 
@@ -21,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_localalloc.h"
 #include "base/win/shlwapi.h"
 
 namespace base {
@@ -193,6 +195,43 @@ FilePermissionRestorer::FilePermissionRestorer(const FilePath& path)
 FilePermissionRestorer::~FilePermissionRestorer() {
   if (!RestorePermissionInfo(path_, info_, length_))
     NOTREACHED_IN_MIGRATION();
+}
+
+std::wstring GetFileDacl(const FilePath& path) {
+  PSECURITY_DESCRIPTOR sd;
+  if (::GetNamedSecurityInfo(path.value().c_str(), SE_FILE_OBJECT,
+                             DACL_SECURITY_INFORMATION, nullptr, nullptr,
+                             nullptr, nullptr, &sd) != ERROR_SUCCESS) {
+    return std::wstring();
+  }
+  auto sd_ptr = win::TakeLocalAlloc(sd);
+  LPWSTR sddl;
+  if (!::ConvertSecurityDescriptorToStringSecurityDescriptor(
+          sd_ptr.get(), SDDL_REVISION_1, DACL_SECURITY_INFORMATION, &sddl,
+          nullptr)) {
+    return std::wstring();
+  }
+  return win::TakeLocalAlloc(sddl).get();
+}
+
+bool CreateWithDacl(const FilePath& path, wcstring_view sddl, bool directory) {
+  PSECURITY_DESCRIPTOR sd;
+  if (!::ConvertStringSecurityDescriptorToSecurityDescriptor(
+          sddl.c_str(), SDDL_REVISION_1, &sd, nullptr)) {
+    return false;
+  }
+  auto sd_ptr = win::TakeLocalAlloc(sd);
+  SECURITY_ATTRIBUTES security_attr = {};
+  security_attr.nLength = sizeof(security_attr);
+  security_attr.lpSecurityDescriptor = sd_ptr.get();
+  if (directory) {
+    return !!::CreateDirectory(path.value().c_str(), &security_attr);
+  }
+
+  return win::ScopedHandle(::CreateFile(path.value().c_str(), GENERIC_ALL, 0,
+                                        &security_attr, CREATE_ALWAYS, 0,
+                                        nullptr))
+      .is_valid();
 }
 
 }  // namespace base
