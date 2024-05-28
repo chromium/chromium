@@ -144,14 +144,18 @@ final class SigninBridge {
         }
         // TODO(b/41493784): Update this when the new sign-in flow will be used for the web signin
         // entry point.
+        int titleId =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? R.string.signin_account_picker_bottom_sheet_title
+                        : R.string.signin_account_picker_dialog_title;
         int subtitleId =
                 ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
                         ? R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin
                         : R.string.signin_account_picker_bottom_sheet_subtitle;
         AccountPickerBottomSheetStrings strings =
-                new AccountPickerBottomSheetStrings.Builder(
-                                R.string.signin_account_picker_dialog_title)
+                new AccountPickerBottomSheetStrings.Builder(titleId)
                         .setSubtitleStringId(subtitleId)
                         .setDismissButtonStringId(R.string.signin_account_picker_dismiss_button)
                         .build();
