@@ -53,6 +53,13 @@ class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedPageHandler,
                        aura::Window* lost_focus) override;
 
   // aura::WindowObserver:
+  // Called when window bounds have changed from moving the window or
+  // resizing. Useful for hiding any opened PDF context menus.
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
+
   // When the associated media app closes, resets `media_app_window_` to avoid
   // dangling raw_ptr.
   void OnWindowDestroying(aura::Window* window) override;

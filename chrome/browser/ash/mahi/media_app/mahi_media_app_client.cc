@@ -149,6 +149,19 @@ void MahiMediaAppClient::OnWindowFocused(aura::Window* gained_focus,
   }
 }
 
+void MahiMediaAppClient::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  if (window == media_app_window_) {
+    // Any changes to the window bounds (from moving the window or resizing)
+    // might affect the context menu position. Instead of updating the Mahi card
+    // to follow the context menu, make the Media app hide the context menu.
+    media_app_pdf_file_->HidePdfContextMenu();
+  }
+}
+
 void MahiMediaAppClient::OnWindowDestroying(aura::Window* window) {
   if (window == media_app_window_) {
     media_app_window_ = nullptr;
