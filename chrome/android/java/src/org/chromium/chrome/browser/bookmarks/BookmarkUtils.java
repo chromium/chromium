@@ -492,7 +492,7 @@ public class BookmarkUtils {
             @Override
             public void onAction(Object actionData) {
                 RecordUserAction.record("TabMultiSelectV2.BookmarkTabsSnackbarEditClicked");
-                BookmarkUtils.startFolderPickerActivity(context, folder);
+                BookmarkUtils.startEditActivity(context, folder);
             }
         };
     }
