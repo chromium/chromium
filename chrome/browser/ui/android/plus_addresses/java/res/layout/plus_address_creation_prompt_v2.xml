@@ -53,14 +53,34 @@ found in the LICENSE file.
       android:layout_marginBottom="@dimen/list_item_default_margin"
       android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
-  <TextView
-      android:id="@+id/proposed_plus_address"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:textAlignment="center"
-      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-      android:background="@drawable/rounded_rectangle_surface_1"
-      android:paddingVertical="10dp" />
+  <LinearLayout
+    android:id="@+id/proposed_plus_address_container"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:background="@drawable/proposed_plus_address_background">
+
+    <!-- TODO(b/342126606): Use correct icon when it is created. -->
+    <ImageView
+        android:id="@+id/favicon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_logo_googleg_20dp"
+        android:importantForAccessibility="no"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"/>
+
+    <TextView
+        android:id="@+id/proposed_plus_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+</LinearLayout>
 
   <org.chromium.ui.widget.TextViewWithClickableSpans
       android:id="@+id/plus_address_modal_error_report"

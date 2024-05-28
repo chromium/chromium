@@ -133,8 +133,13 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     }
 
     public void showError() {
-        TextView proposedPlusAddressView = mContentView.findViewById(R.id.proposed_plus_address);
-        proposedPlusAddressView.setVisibility(View.GONE);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
+            mContentView
+                    .findViewById(R.id.proposed_plus_address_container)
+                    .setVisibility(View.GONE);
+        } else {
+            mContentView.findViewById(R.id.proposed_plus_address).setVisibility(View.GONE);
+        }
         TextViewWithClickableSpans plusAddressErrorReportView =
                 mContentView.findViewById(R.id.plus_address_modal_error_report);
         plusAddressErrorReportView.setVisibility(View.VISIBLE);
