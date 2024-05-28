@@ -37,7 +37,7 @@ namespace viz {
 // TODO(crbug.com/338958218): Remove feature post safe rollout.
 BASE_FEATURE(kCreateSharedMemoryGMBsViaGpuService,
              "CreateSharedMemoryGMBsViaGpuService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
