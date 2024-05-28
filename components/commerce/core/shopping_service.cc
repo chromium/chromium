@@ -8,6 +8,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/check_is_test.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -72,6 +73,87 @@ namespace commerce {
 namespace {
 // The maximum number of recently visited tab URLs to maintain.
 const size_t kRecentTabsMaxSize = 10;
+
+// An observer of the ProductSpecificationsService that adds and removes
+// references to URLs kept by each ProductSpecificationsSet.
+class ProductSpecificationsUrlObserver
+    : public ProductSpecificationsSet::Observer {
+ public:
+  explicit ProductSpecificationsUrlObserver(
+      CommerceInfoCache* cache,
+      ProductSpecificationsService* product_specifications_service)
+      : cache_(cache) {
+    scoped_observation_.Observe(product_specifications_service);
+
+    product_specifications_service->GetAllProductSpecifications(base::BindOnce(
+        [](base::WeakPtr<ProductSpecificationsUrlObserver> observer,
+           const std::vector<ProductSpecificationsSet> sets) {
+          if (!observer) {
+            return;
+          }
+          for (const auto& set : sets) {
+            observer->UpdateForAddition(set);
+          }
+        },
+        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  ProductSpecificationsUrlObserver(const ProductSpecificationsUrlObserver&) =
+      delete;
+  ProductSpecificationsUrlObserver operator=(
+      const ProductSpecificationsUrlObserver&) = delete;
+  ~ProductSpecificationsUrlObserver() override = default;
+
+  void OnProductSpecificationsSetAdded(
+      const ProductSpecificationsSet& product_specifications_set) override {
+    UpdateForAddition(product_specifications_set);
+  }
+
+  void OnProductSpecificationsSetUpdate(
+      const ProductSpecificationsSet& before,
+      const ProductSpecificationsSet& after) override {
+    // First remove any references to URLs that are no longer in the product
+    // spec set.
+    for (const auto& url : before.urls()) {
+      if (!base::Contains(after.urls(), url)) {
+        cache_->RemoveRef(url);
+      }
+    }
+
+    // Now add any URLs that weren't previously referenced.
+    for (const auto& url : after.urls()) {
+      if (!base::Contains(before.urls(), url)) {
+        cache_->AddRef(url);
+      }
+    }
+  }
+
+  void OnProductSpecificationsSetRemoved(
+      const ProductSpecificationsSet& set) override {
+    for (const auto& url : set.urls()) {
+      cache_->RemoveRef(url);
+    }
+  }
+
+ private:
+  void UpdateForAddition(const ProductSpecificationsSet& set) {
+    for (const auto& url : set.urls()) {
+      cache_->AddRef(url);
+    }
+  }
+
+  base::ScopedObservation<ProductSpecificationsService,
+                          ProductSpecificationsSet::Observer>
+      scoped_observation_{this};
+
+  // A pointer to the cache held by the shopping service. This observer will
+  // always be destroyed prior to the shopping service itself (and the cache).
+  raw_ptr<CommerceInfoCache> cache_;
+
+  base::WeakPtrFactory<ProductSpecificationsUrlObserver> weak_ptr_factory_{
+      this};
+};
+
 }  // namespace
 
 const char kImageAvailabilityHistogramName[] =
@@ -220,14 +302,19 @@ ShoppingService::ShoppingService(
       std::make_unique<ProductSpecificationsServerProxy>(
           account_checker_.get(), identity_manager, url_loader_factory);
 
-  if (account_checker_ && product_specifications_service_ &&
-      IsProductSpecificationsEnabled(account_checker_.get())) {
-    cluster_manager_ = std::make_unique<ClusterManager>(
-        product_specifications_service_,
-        base::BindRepeating(&ShoppingService::GetProductInfoForUrl,
-                            weak_ptr_factory_.GetWeakPtr()),
-        base::BindRepeating(&ShoppingService::GetUrlInfosForActiveWebWrappers,
-                            base::Unretained(this)));
+  if (account_checker_ && product_specifications_service_) {
+    prod_spec_url_ref_observer_ =
+        std::make_unique<ProductSpecificationsUrlObserver>(
+            &commerce_info_cache_, product_specifications_service_);
+
+    if (IsProductSpecificationsEnabled(account_checker_.get())) {
+      cluster_manager_ = std::make_unique<ClusterManager>(
+          product_specifications_service_,
+          base::BindRepeating(&ShoppingService::GetProductInfoForUrl,
+                              weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&ShoppingService::GetUrlInfosForActiveWebWrappers,
+                              base::Unretained(this)));
+    }
   }
 }
 

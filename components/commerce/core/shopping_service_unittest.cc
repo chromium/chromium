@@ -517,6 +517,54 @@ TEST_P(ShoppingServiceTest, TestRecentUrls_CacheEntriesRetained) {
   }
 }
 
+// Ensure the cache maintained by the service is observing changes in the URLs
+// stored in each ProductSpecificationsSet.
+TEST_P(ShoppingServiceTest, TestProductSpecificationsSetUrlsRetained) {
+  ProductSpecificationsSet::Observer* observer =
+      GetProductSpecServiceUrlRefObserver();
+  ASSERT_FALSE(observer == nullptr);
+
+  const GURL url1("http://example.com/1");
+  const GURL url2("http://example.com/2");
+  base::Uuid id = base::Uuid::GenerateRandomV4();
+
+  ProductSpecificationsSet prod_spec_set(id.AsLowercaseString(), 0, 0, {url1},
+                                         "specs");
+
+  observer->OnProductSpecificationsSetAdded(prod_spec_set);
+
+  // The URLs in the set should be referenced in the cache.
+  ASSERT_EQ(1u, GetCache().GetUrlRefCount(url1));
+  ASSERT_EQ(0u, GetCache().GetUrlRefCount(url2));
+
+  ProductSpecificationsSet updated_prod_spec_set(id.AsLowercaseString(), 0, 0,
+                                                 {url1, url2}, "specs");
+
+  // The updated set is considered the same since the UUID matches the previous.
+  observer->OnProductSpecificationsSetUpdate(prod_spec_set,
+                                             updated_prod_spec_set);
+
+  // The existing URL count should not have changed and the new one should be
+  // added.
+  ASSERT_EQ(1u, GetCache().GetUrlRefCount(url1));
+  ASSERT_EQ(1u, GetCache().GetUrlRefCount(url2));
+
+  ProductSpecificationsSet updated_prod_spec_set2(id.AsLowercaseString(), 0, 0,
+                                                  {url2}, "specs");
+
+  observer->OnProductSpecificationsSetUpdate(updated_prod_spec_set,
+                                             updated_prod_spec_set2);
+
+  ASSERT_EQ(0u, GetCache().GetUrlRefCount(url1));
+  ASSERT_EQ(1u, GetCache().GetUrlRefCount(url2));
+
+  observer->OnProductSpecificationsSetRemoved(updated_prod_spec_set2);
+
+  // There should no longer be any references in the cache.
+  ASSERT_EQ(0u, GetCache().GetUrlRefCount(url1));
+  ASSERT_EQ(0u, GetCache().GetUrlRefCount(url2));
+}
+
 // Test that product info is inserted into the cache without a client
 // necessarily querying for it.
 TEST_P(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {

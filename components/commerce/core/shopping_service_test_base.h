@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_info_cache.h"
+#include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/web_extractor.h"
 #include "components/commerce/core/web_wrapper.h"
@@ -239,6 +240,10 @@ class ShoppingServiceTestBase : public testing::Test {
 
   MockOptGuideDecider* GetMockOptGuideDecider();
 
+  // Gets a handle to the ProductSpecificationsService observer that tracks the
+  // URLs that are part of a user's ProductSpecificationsSets.
+  ProductSpecificationsSet::Observer* GetProductSpecServiceUrlRefObserver();
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -261,6 +266,8 @@ class ShoppingServiceTestBase : public testing::Test {
   std::unique_ptr<syncer::TestSyncService> sync_service_;
 
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
+
+  std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
 
   std::unique_ptr<ShoppingService> shopping_service_;
 };

@@ -317,6 +317,7 @@ source_set("shopping_service_test_support") {
     "//components/bookmarks/test",
     "//components/commerce/core:proto",
     "//components/commerce/core/compare:compare",
+    "//components/commerce/core/product_specifications:test_support",
     "//components/commerce/core/subscriptions",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",

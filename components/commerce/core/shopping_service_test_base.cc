@@ -440,7 +440,9 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
       identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>()),
       sync_service_(std::make_unique<syncer::TestSyncService>()),
       test_url_loader_factory_(
-          std::make_unique<network::TestURLLoaderFactory>()) {
+          std::make_unique<network::TestURLLoaderFactory>()),
+      product_spec_service_(
+          std::make_unique<MockProductSpecificationsService>()) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   RegisterPrefs(pref_service_->registry());
@@ -462,7 +464,7 @@ void ShoppingServiceTestBase::SetUp() {
       identity_test_env_->identity_manager(), sync_service_.get(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
-      nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+      nullptr, nullptr, product_spec_service_.get(), nullptr, nullptr, nullptr,
       std::make_unique<MockWebExtractor>());
 }
 
@@ -530,6 +532,11 @@ CommerceInfoCache& ShoppingServiceTestBase::GetCache() {
 
 MockOptGuideDecider* ShoppingServiceTestBase::GetMockOptGuideDecider() {
   return opt_guide_.get();
+}
+
+ProductSpecificationsSet::Observer*
+ShoppingServiceTestBase::GetProductSpecServiceUrlRefObserver() {
+  return shopping_service_->prod_spec_url_ref_observer_.get();
 }
 
 }  // namespace commerce

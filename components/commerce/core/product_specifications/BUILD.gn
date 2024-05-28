@@ -32,3 +32,17 @@ source_set("unit_tests") {
     "//components/sync:test_support",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_product_specifications_service.cc",
+    "mock_product_specifications_service.h",
+  ]
+  deps = [
+    ":product_specifications",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//testing/gtest",
+  ]
+}

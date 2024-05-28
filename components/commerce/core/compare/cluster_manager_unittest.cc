@@ -16,11 +16,10 @@
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/compare/candidate_product.h"
 #include "components/commerce/core/compare/product_group.h"
+#include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/proto/product_category.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -38,29 +37,6 @@ const std::string kCategoryGamingChair = "GamingChair";
 const std::string kProductGroupName = "Furniture";
 }  // namespace
 
-class MockProductSpecificationsService : public ProductSpecificationsService {
- public:
-  explicit MockProductSpecificationsService(
-      std::unique_ptr<ProductSpecificationsSyncBridge> bridge)
-      : ProductSpecificationsService(
-            base::DoNothing(),
-            std::make_unique<syncer::MockModelTypeChangeProcessor>()) {}
-  ~MockProductSpecificationsService() override = default;
-
-  MOCK_METHOD(const std::vector<ProductSpecificationsSet>,
-              GetAllProductSpecifications,
-              (),
-              (override));
-  MOCK_METHOD(void,
-              AddObserver,
-              (commerce::ProductSpecificationsSet::Observer * observer),
-              (override));
-  MOCK_METHOD(void,
-              RemoveObserver,
-              (commerce::ProductSpecificationsSet::Observer * observer),
-              (override));
-};
-
 class MockObserver : public ClusterManager::Observer {
  public:
   MOCK_METHOD(void,
@@ -75,13 +51,8 @@ class ClusterManagerTest : public testing::Test {
   ~ClusterManagerTest() override = default;
 
   void SetUp() override {
-    store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
     product_specification_service_ =
-        std::make_unique<MockProductSpecificationsService>(
-            std::make_unique<ProductSpecificationsSyncBridge>(
-                syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-                    store_.get()),
-                processor_.CreateForwardingProcessor(), base::DoNothing()));
+        std::make_unique<MockProductSpecificationsService>();
     EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
         .Times(1);
     cluster_manager_ = std::make_unique<ClusterManager>(
@@ -195,10 +166,8 @@ class ClusterManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
   std::unique_ptr<MockProductSpecificationsService>
       product_specification_service_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<ClusterManager> cluster_manager_;
   std::map<GURL, ProductInfo> product_infos_;
   std::vector<UrlInfo> url_infos_;

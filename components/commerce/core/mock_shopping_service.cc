@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/commerce/core/mock_cluster_manager.h"
+#include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 
 namespace commerce {
@@ -15,28 +16,6 @@ namespace commerce {
 std::unique_ptr<KeyedService> MockShoppingService::Build() {
   return std::make_unique<testing::NiceMock<MockShoppingService>>();
 }
-
-class MockProductSpecificationsService : public ProductSpecificationsService {
- public:
-  explicit MockProductSpecificationsService(
-      std::unique_ptr<ProductSpecificationsSyncBridge> bridge)
-      : ProductSpecificationsService(
-            base::DoNothing(),
-            std::make_unique<syncer::MockModelTypeChangeProcessor>()) {}
-  ~MockProductSpecificationsService() override = default;
-  MOCK_METHOD(const std::vector<ProductSpecificationsSet>,
-              GetAllProductSpecifications,
-              (),
-              (override));
-  MOCK_METHOD(void,
-              AddObserver,
-              (commerce::ProductSpecificationsSet::Observer * observer),
-              (override));
-  MOCK_METHOD(void,
-              RemoveObserver,
-              (commerce::ProductSpecificationsSet::Observer * observer),
-              (override));
-};
 
 MockShoppingService::MockShoppingService()
     : commerce::ShoppingService("us",
@@ -56,7 +35,7 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr) {
   product_specifications_service_ =
-      std::make_unique<MockProductSpecificationsService>(nullptr);
+      std::make_unique<MockProductSpecificationsService>();
   cluster_manager_ = std::make_unique<MockClusterManager>(
       product_specifications_service_.get());
   ON_CALL(*this, GetClusterManager)

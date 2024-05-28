@@ -721,6 +721,12 @@ class ShoppingService : public KeyedService,
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
 
+  // An observer of the ProductSpecificationsService that keeps track of the
+  // URLs contained within each ProductSpecificationsSet. This is used to keep
+  // the commerce info cache up to date.
+  std::unique_ptr<ProductSpecificationsSet::Observer>
+      prod_spec_url_ref_observer_;
+
   // Ensure certain functions are being executed on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);
 

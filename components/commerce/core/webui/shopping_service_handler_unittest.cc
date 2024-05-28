@@ -19,6 +19,7 @@
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
@@ -109,39 +110,6 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
   void SetCurrentTabUkmSourceId(ukm::SourceId id) {
     ON_CALL(*this, GetCurrentTabUkmSourceId).WillByDefault(testing::Return(id));
   }
-};
-
-class MockProductSpecificationsService : public ProductSpecificationsService {
- public:
-  MockProductSpecificationsService()
-      : ProductSpecificationsService(
-            base::DoNothing(),
-            std::make_unique<syncer::MockModelTypeChangeProcessor>()) {}
-  ~MockProductSpecificationsService() override = default;
-  MOCK_METHOD(const std::vector<ProductSpecificationsSet>,
-              GetAllProductSpecifications,
-              (),
-              (override));
-  MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
-              GetSetByUuid,
-              (const base::Uuid& uuid),
-              (override));
-  MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
-              AddProductSpecificationsSet,
-              (const std::string& name, const std::vector<GURL>& urls),
-              (override));
-  MOCK_METHOD(void,
-              DeleteProductSpecificationsSet,
-              (const std::string& uuid),
-              (override));
-  MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
-              SetName,
-              (const base::Uuid& uuid, const std::string& name),
-              (override));
-  MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
-              SetUrls,
-              (const base::Uuid& uuid, const std::vector<GURL>& urls),
-              (override));
 };
 
 void GetEvaluationProductInfos(
