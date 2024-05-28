@@ -1125,13 +1125,6 @@
       origin_trial_allows_third_party: true,
       origin_trial_type: "deprecation",
     },
-    {
-      // This is a killswitch for the `serializable` attribute on declarative
-      // shadow roots. It should be removed in M125 (March 18, 2024) assuming
-      // no issues are encountered.
-      name: "DeclarativeShadowDOMSerializable",
-      status: "stable",
-    },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.
@@ -1411,18 +1404,9 @@
       status: {"Android": "", "default": "experimental"},
     },
     {
-      // This is the "new" version of getHTML() used for declarative shadow
-      // DOM, and this version will replace the deprecated getInnerHTML(), which
-      // is enabled by the ElementGetInnerHTML feature.
-      // Shipped in M125, flag can be removed in M127.
-      name: "ElementGetHTML",
-      status: "stable",
-    },
-    {
       // This is the "old" version of getInnerHTML() used for declarative shadow
-      // DOM, and this version is deprecated. The replacement is enabled by the
-      // ElementGetHTML feature. Once the new feature is stabilized and shipped,
-      // this feature (and its corresponding functionality) will be removed.
+      // DOM, and this version is deprecated. The replacement is called
+      // `getHTML()` and it shipped in M125.
       name: "ElementGetInnerHTML",
       status: "stable",
     },

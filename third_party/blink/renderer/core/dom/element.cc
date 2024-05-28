@@ -5544,8 +5544,6 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
                                           bool serializable,
                                           bool clonable) {
   CHECK(type == ShadowRootMode::kOpen || type == ShadowRootMode::kClosed);
-  CHECK(RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() ||
-        !serializable);
 
   // 12. Run attach a shadow root with shadow host equal to declarative shadow
   // host element, mode equal to declarative shadow mode, and delegates focus
@@ -5592,8 +5590,6 @@ ShadowRoot& Element::AttachShadowRootInternal(
   DCHECK(type == ShadowRootMode::kOpen || type == ShadowRootMode::kClosed)
       << type;
   DCHECK(!AlwaysCreateUserAgentShadowRoot());
-  CHECK(!serializable ||
-        RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled());
 
   GetDocument().SetContainsShadowRoot();
 

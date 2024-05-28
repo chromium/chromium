@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Calling attachShadow() on declarative shadow root must match all parameters
-  assert_true: expected true got undefined
-Harness: the test ran to completion.
-

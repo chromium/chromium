@@ -44,7 +44,7 @@
     [Reflect,ReflectOnly=("open","closed")] attribute DOMString shadowRootMode;
     [CEReactions,Reflect] attribute boolean shadowRootDelegatesFocus;
     [CEReactions,Reflect] attribute boolean shadowRootClonable;
-    [Reflect, RuntimeEnabled=ElementGetHTML] attribute boolean shadowRootSerializable;
+    [Reflect] attribute boolean shadowRootSerializable;
 
     // Used by the DOM Parts API
     [Reflect, RuntimeEnabled=DOMPartsAPI] attribute boolean parseparts;

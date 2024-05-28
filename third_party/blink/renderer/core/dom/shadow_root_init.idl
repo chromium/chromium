@@ -12,7 +12,7 @@ dictionary ShadowRootInit {
   boolean delegatesFocus;
   SlotAssignmentMode slotAssignment;
   [RuntimeEnabled=ScopedCustomElementRegistry] CustomElementRegistry registry;
-  [RuntimeEnabled=ElementGetHTML] boolean serializable;
+  boolean serializable;
   boolean clonable;
   // Note: if you add a parameter here, be sure to add it to the list of checks
   // in Element::attachShadow() for existing declarative shadow roots.

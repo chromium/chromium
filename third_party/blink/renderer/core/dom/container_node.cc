@@ -1777,7 +1777,6 @@ String ContainerNode::getInnerHTML(const GetInnerHTMLOptions* options) const {
 
 String ContainerNode::getHTML(const GetHTMLOptions* options,
                               ExceptionState& exception_state) const {
-  CHECK(RuntimeEnabledFeatures::ElementGetHTMLEnabled());
   DCHECK(options && options->hasSerializableShadowRoots())
       << "Should have IDL default";
   DCHECK(options->hasShadowRoots()) << "Should have IDL default";

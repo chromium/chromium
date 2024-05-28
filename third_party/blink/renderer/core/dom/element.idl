@@ -109,7 +109,7 @@ dictionary CheckVisibilityOptions {
     [Affects=Nothing, MeasureAs=ElementGetInnerHTML, RuntimeEnabled=ElementGetInnerHTML] DOMString getInnerHTML(optional GetInnerHTMLOptions options = {});
 
     // Declarative Shadow DOM getHTML() function.
-    [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException, RuntimeEnabled=ElementGetHTML] DOMString getHTML(optional GetHTMLOptions options = {});
+    [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException] DOMString getHTML(optional GetHTMLOptions options = {});
 
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface

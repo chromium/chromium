@@ -598,8 +598,7 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
     template_element->SetBooleanAttribute(
         html_names::kShadowrootdelegatesfocusAttr, true);
   }
-  if (shadow_root->serializable() &&
-      RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled()) {
+  if (shadow_root->serializable()) {
     template_element->SetBooleanAttribute(
         html_names::kShadowrootserializableAttr, true);
   }
