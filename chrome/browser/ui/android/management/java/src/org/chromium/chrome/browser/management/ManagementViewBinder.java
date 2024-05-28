@@ -25,8 +25,14 @@ class ManagementViewBinder {
             view.setTitleText(model.get(ManagementProperties.TITLE));
         } else if (propertyKey == ManagementProperties.LEARN_MORE_TEXT) {
             view.setLearnMoreText(model.get(ManagementProperties.LEARN_MORE_TEXT));
-        } else if (propertyKey == ManagementProperties.REPORTING_IS_ENABLED) {
-            view.setReportingEnabled(model.get(ManagementProperties.REPORTING_IS_ENABLED));
+        } else if (propertyKey == ManagementProperties.BROWSER_REPORTING_IS_ENABLED) {
+            view.setBrowserReportingEnabled(
+                    model.get(ManagementProperties.BROWSER_REPORTING_IS_ENABLED));
+        } else if (propertyKey == ManagementProperties.PROFILE_REPORTING_IS_ENABLED) {
+            view.setProfileReportingEnabled(
+                    model.get(ManagementProperties.PROFILE_REPORTING_IS_ENABLED));
+        } else if (propertyKey == ManagementProperties.PROFILE_REPORTING_TEXT) {
+            view.setProfileReportingText(model.get(ManagementProperties.PROFILE_REPORTING_TEXT));
         } else if (propertyKey == ManagementProperties.LEGACY_TECH_REPORTING_IS_ENABLED) {
             view.setLegacyTechReportingEnabled(
                     model.get(ManagementProperties.LEGACY_TECH_REPORTING_IS_ENABLED));

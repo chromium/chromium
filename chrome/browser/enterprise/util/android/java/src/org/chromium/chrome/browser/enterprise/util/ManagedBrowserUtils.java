@@ -28,9 +28,14 @@ public class ManagedBrowserUtils {
         return (profile != null) ? ManagedBrowserUtilsJni.get().getTitle(profile) : "";
     }
 
-    /** Wrapper around native call to get if cloud reporting is enabled. */
-    public static boolean isReportingEnabled() {
-        return ManagedBrowserUtilsJni.get().isReportingEnabled();
+    /** Wrapper around native call to get if cloud browser reporting is enabled. */
+    public static boolean isBrowserReportingEnabled() {
+        return ManagedBrowserUtilsJni.get().isBrowserReportingEnabled();
+    }
+
+    /** Wrapper around native call to get if cloud profile reporting is enabled. */
+    public static boolean isProfileReportingEnabled(Profile profile) {
+        return ManagedBrowserUtilsJni.get().isProfileReportingEnabled(profile);
     }
 
     @NativeMethods
@@ -41,6 +46,8 @@ public class ManagedBrowserUtils {
 
         String getTitle(@JniType("Profile*") Profile profile);
 
-        boolean isReportingEnabled();
+        boolean isBrowserReportingEnabled();
+
+        boolean isProfileReportingEnabled(@JniType("Profile*") Profile profile);
     }
 }

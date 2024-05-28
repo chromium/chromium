@@ -681,9 +681,16 @@ base::android::ScopedJavaLocalRef<jstring> JNI_ManagedBrowserUtils_GetTitle(
 }
 
 // static
-jboolean JNI_ManagedBrowserUtils_IsReportingEnabled(JNIEnv* env) {
+jboolean JNI_ManagedBrowserUtils_IsBrowserReportingEnabled(JNIEnv* env) {
   return g_browser_process->local_state()->GetBoolean(
       enterprise_reporting::kCloudReportingEnabled);
+}
+
+// static
+jboolean JNI_ManagedBrowserUtils_IsProfileReportingEnabled(JNIEnv* env,
+                                                           Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      enterprise_reporting::kCloudProfileReportingEnabled);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

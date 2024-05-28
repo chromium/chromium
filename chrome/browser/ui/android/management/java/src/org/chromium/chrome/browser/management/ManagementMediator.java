@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.management;
 
 import android.content.Context;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -17,6 +18,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.widget.ChromeBulletSpan;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,8 +44,14 @@ public class ManagementMediator {
                         .with(ManagementProperties.TITLE, ManagedBrowserUtils.getTitle(profile))
                         .with(ManagementProperties.LEARN_MORE_TEXT, getLearnMoreClickableText())
                         .with(
-                                ManagementProperties.REPORTING_IS_ENABLED,
-                                ManagedBrowserUtils.isReportingEnabled())
+                                ManagementProperties.BROWSER_REPORTING_IS_ENABLED,
+                                ManagedBrowserUtils.isBrowserReportingEnabled())
+                        .with(
+                                ManagementProperties.PROFILE_REPORTING_IS_ENABLED,
+                                ManagedBrowserUtils.isProfileReportingEnabled(profile))
+                        .with(
+                                ManagementProperties.PROFILE_REPORTING_TEXT,
+                                getProfileReportingText())
                         .with(
                                 ManagementProperties.LEGACY_TECH_REPORTING_IS_ENABLED,
                                 isLegacyTechReportingEnabled(UserPrefs.get(profile)))
@@ -68,6 +76,25 @@ public class ManagementMediator {
         return SpanApplier.applySpans(
                 context.getString(R.string.management_learn_more),
                 new SpanApplier.SpanInfo("<LINK>", "</LINK>", clickableLearnMoreSpan));
+    }
+
+    private SpannableString buildBulletString(int stringResId) {
+        SpannableString bullet = new SpannableString(mHost.getContext().getString(stringResId));
+        bullet.setSpan(new ChromeBulletSpan(mHost.getContext()), 0, bullet.length(), 0);
+        return bullet;
+    }
+
+    private SpannableStringBuilder getProfileReportingText() {
+        SpannableStringBuilder spannableString = new SpannableStringBuilder();
+        spannableString
+                .append(buildBulletString(R.string.management_profile_reporting_overview))
+                .append("\n")
+                .append(buildBulletString(R.string.management_profile_reporting_username))
+                .append("\n")
+                .append(buildBulletString(R.string.management_profile_reporting_browser))
+                .append("\n")
+                .append(buildBulletString(R.string.management_profile_reporting_policy));
+        return spannableString;
     }
 
     private boolean isLegacyTechReportingEnabled(PrefService prefs) {
