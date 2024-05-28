@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -301,7 +302,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
   VideoTrackRecorder(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
-      CallbackInterface* callback_interface);
+      WeakCell<CallbackInterface>* callback_interface);
 
   virtual void Pause() = 0;
   virtual void Resume() = 0;
@@ -313,13 +314,15 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
       scoped_refptr<EncodedVideoFrame> frame,
       base::TimeTicks capture_time) {}
 
-  CallbackInterface* callback_interface() const { return callback_interface_; }
+  WeakCell<CallbackInterface>* callback_interface() const {
+    return callback_interface_;
+  }
 
  protected:
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
  private:
-  WeakPersistent<CallbackInterface> const callback_interface_;
+  Persistent<WeakCell<CallbackInterface>> const callback_interface_;
 };
 
 // VideoTrackRecorderImpl uses the inherited WebMediaStreamSink and encodes the
@@ -348,7 +351,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       CodecProfile codec,
       MediaStreamComponent* track,
-      CallbackInterface* callback_interface,
+      WeakCell<CallbackInterface>* callback_interface,
       uint32_t bits_per_second,
       KeyFrameRequestProcessor::Configuration key_frame_config);
 
@@ -434,7 +437,7 @@ class MODULES_EXPORT VideoTrackRecorderPassthrough : public VideoTrackRecorder {
   VideoTrackRecorderPassthrough(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       MediaStreamComponent* track,
-      CallbackInterface* callback_interface,
+      WeakCell<CallbackInterface>* callback_interface,
       KeyFrameRequestProcessor::Configuration key_frame_config);
 
   VideoTrackRecorderPassthrough(const VideoTrackRecorderPassthrough&) = delete;

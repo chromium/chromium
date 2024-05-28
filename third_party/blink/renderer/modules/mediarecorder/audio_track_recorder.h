@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 
 namespace media {
@@ -78,7 +79,7 @@ class MODULES_EXPORT AudioTrackRecorder
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       CodecId codec,
       MediaStreamComponent* track,
-      CallbackInterface* callback_interface,
+      WeakCell<CallbackInterface>* callback_interface,
       uint32_t bits_per_second,
       BitrateMode bitrate_mode,
       scoped_refptr<base::SequencedTaskRunner> encoder_task_runner =
@@ -97,6 +98,10 @@ class MODULES_EXPORT AudioTrackRecorder
 
   void Pause();
   void Resume();
+
+  WeakCell<CallbackInterface>* callback_interface_for_testing() {
+    return callback_interface_;
+  }
 
  private:
   // Creates an audio encoder from |codec|. Returns nullptr if the codec is
@@ -131,6 +136,7 @@ class MODULES_EXPORT AudioTrackRecorder
 #if DCHECK_IS_ON()
   std::atomic<int> race_checker_{0};
 #endif
+  Persistent<WeakCell<CallbackInterface>> callback_interface_;
 };
 
 }  // namespace blink

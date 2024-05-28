@@ -30,6 +30,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
+#include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/fake_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
@@ -208,6 +210,15 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     }
 
     return true;
+  }
+
+  WeakCell<AudioTrackRecorder::CallbackInterface>* GetAudioCallbackInterface() {
+    return media_recorder_handler_->audio_recorders_[0]
+        ->callback_interface_for_testing();
+  }
+
+  WeakCell<VideoTrackRecorder::CallbackInterface>* GetVideoCallbackInterface() {
+    return media_recorder_handler_->video_recorders_[0]->callback_interface();
   }
 
   void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame) {
@@ -1272,6 +1283,32 @@ class MediaRecorderHandlerAudioVideoTest : public testing::Test,
 
   base::TimeTicks timestamp_ = base::TimeTicks::Now();
 };
+
+TEST_F(MediaRecorderHandlerAudioVideoTest, IgnoresStaleEncodedMediaOnRestart) {
+  AddTracks();
+  V8TestingScope scope;
+  auto* recorder = MakeGarbageCollected<MockMediaRecorder>(scope);
+  media_recorder_handler_->Initialize(
+      recorder, registry_.test_stream(), "video/webm", "vp9,opus",
+      AudioTrackRecorder::BitrateMode::kVariable);
+  media_recorder_handler_->Start(std::numeric_limits<int>::max(), "video/webm",
+                                 0, 0);
+  auto* audio_weak_cell = GetAudioCallbackInterface();
+  auto* video_weak_cell = GetVideoCallbackInterface();
+  EXPECT_TRUE(audio_weak_cell->Get());
+  EXPECT_TRUE(video_weak_cell->Get());
+  media_recorder_handler_->Stop();
+  EXPECT_FALSE(audio_weak_cell->Get());
+  EXPECT_FALSE(video_weak_cell->Get());
+
+  // Start with a new session serial created by Stop.
+  media_recorder_handler_->Start(std::numeric_limits<int>::max(), "video/webm",
+                                 0, 0);
+  EXPECT_TRUE(GetAudioCallbackInterface()->Get());
+  EXPECT_TRUE(GetVideoCallbackInterface()->Get());
+  media_recorder_handler_->Stop();
+  media_recorder_handler_ = nullptr;
+}
 
 TEST_F(MediaRecorderHandlerAudioVideoTest, EmitsCachedAudioDataOnStop) {
   AddTracks();

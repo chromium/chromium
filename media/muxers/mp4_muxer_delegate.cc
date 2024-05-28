@@ -126,13 +126,6 @@ void Mp4MuxerDelegate::AddVideoFrame(
   DVLOG(1) << __func__ << ", " << params.AsHumanReadableString();
 
   if (!video_track_index_.has_value()) {
-    // TODO(crbug.com/333614631): Potential issue for the first frame.
-    if (!is_key_frame) {
-      CHECK_EQ(params.codec, VideoCodec::kVP9);
-      DVLOG(1) << __func__ << ", not a key frame";
-      return;
-    }
-
     CHECK(codec_description.has_value() || (params.codec == VideoCodec::kVP9));
     CHECK(is_key_frame);
     CHECK(start_video_time_.is_null());
