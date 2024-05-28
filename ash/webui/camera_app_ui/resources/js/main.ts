@@ -93,11 +93,15 @@ function setupTooltip() {
           elements.push(target);
         }
       } else if (mutation.type === 'childList') {
-        const {target} = mutation;
-        if (target instanceof HTMLElement) {
-          elements.push(
-              ...dom.getAllFrom(target, tooltipAttributeSelector, HTMLElement),
-          );
+        // Check newly added nodes.
+        for (const node of mutation.addedNodes) {
+          if (node instanceof HTMLElement) {
+            if (node.hasAttribute(tooltipAttribute)) {
+              elements.push(node);
+            }
+            elements.push(
+                ...dom.getAllFrom(node, tooltipAttributeSelector, HTMLElement));
+          }
         }
       }
     }
