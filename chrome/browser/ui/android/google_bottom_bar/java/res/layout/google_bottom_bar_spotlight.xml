@@ -12,8 +12,8 @@ found in the LICENSE file.
     android:id="@+id/google_bottom_bar_container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/google_bottom_bar_height"
-    android:paddingLeft="@dimen/google_bottom_bar_padding"
-    android:paddingRight="@dimen/google_bottom_bar_padding"
+    android:paddingStart="@dimen/google_bottom_bar_padding"
+    android:paddingEnd="@dimen/google_bottom_bar_padding"
     android:background="@color/google_bottom_bar_background_color"
     android:baselineAligned="false"
     android:orientation="horizontal">
@@ -29,7 +29,7 @@ found in the LICENSE file.
       android:padding="@dimen/google_bottom_bar_button_padding"
       android:clickable="true"
       android:focusable="true"
-      android:background="?attr/selectableItemBackground"
+      android:background="@drawable/bottom_button_ripple_effect"
       android:src="@drawable/bottom_bar_page_insights_icon" />
   <LinearLayout
       android:id="@+id/google_bottom_bar_non_spotlit_buttons_container"
@@ -38,8 +38,6 @@ found in the LICENSE file.
       android:layout_height="@dimen/google_bottom_bar_height"
       android:layout_gravity="center_vertical"
       android:gravity="end"
-      android:paddingStart="@dimen/google_bottom_bar_expanded_button_padding_horizontal"
-      android:paddingEnd="@dimen/google_bottom_bar_expanded_button_padding_horizontal"
       android:orientation="horizontal">
     <ImageButton
         android:id="@+id/google_bottom_bar_save_button"
@@ -53,7 +51,7 @@ found in the LICENSE file.
         android:padding="@dimen/google_bottom_bar_button_padding"
         android:clickable="true"
         android:focusable="true"
-        android:background="?attr/selectableItemBackground"
+        android:background="@drawable/bottom_button_ripple_effect"
         android:src="@drawable/bookmark" />
     <ImageButton
         android:id="@+id/google_bottom_bar_share_button"
@@ -68,7 +66,7 @@ found in the LICENSE file.
         android:padding="@dimen/google_bottom_bar_button_padding"
         android:clickable="true"
         android:focusable="true"
-        android:background="?attr/selectableItemBackground"
+        android:background="@drawable/bottom_button_ripple_effect"
         android:src="@drawable/ic_share_white_24dp" />
   </LinearLayout>
 </LinearLayout>

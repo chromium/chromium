@@ -29,7 +29,7 @@ found in the LICENSE file.
       android:padding="@dimen/google_bottom_bar_button_padding"
       android:clickable="true"
       android:focusable="true"
-      android:background="?attr/selectableItemBackground"
+      android:background="@drawable/bottom_button_ripple_effect"
       android:src="@drawable/bookmark" />
   <ImageButton
       android:id="@+id/google_bottom_bar_page_insights_button"
@@ -46,7 +46,7 @@ found in the LICENSE file.
       android:padding="@dimen/google_bottom_bar_button_padding"
       android:clickable="true"
       android:focusable="true"
-      android:background="?attr/selectableItemBackground"
+      android:background="@drawable/bottom_button_ripple_effect"
       android:src="@drawable/bottom_bar_page_insights_icon" />
   <ImageButton
       android:id="@+id/google_bottom_bar_share_button"
@@ -63,6 +63,6 @@ found in the LICENSE file.
       android:padding="@dimen/google_bottom_bar_button_padding"
       android:clickable="true"
       android:focusable="true"
-      android:background="?attr/selectableItemBackground"
+      android:background="@drawable/bottom_button_ripple_effect"
       android:src="@drawable/ic_share_white_24dp" />
 </LinearLayout>
