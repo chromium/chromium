@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ai/ai_manager_impl.h"
+#include "chrome/browser/model_execution/model_manager_impl.h"
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ai/ai_text_session.h"
+#include "chrome/browser/model_execution/model_execution_session.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,25 +38,25 @@ bool IsModelPathValid(const std::string& model_path_str) {
 
 }  // namespace
 
-DOCUMENT_USER_DATA_KEY_IMPL(AIManagerImpl);
+DOCUMENT_USER_DATA_KEY_IMPL(ModelManagerImpl);
 
-AIManagerImpl::AIManagerImpl(content::RenderFrameHost* rfh)
-    : DocumentUserData<AIManagerImpl>(rfh) {
+ModelManagerImpl::ModelManagerImpl(content::RenderFrameHost* rfh)
+    : DocumentUserData<ModelManagerImpl>(rfh) {
   browser_context_ = rfh->GetBrowserContext()->GetWeakPtr();
 }
 
-AIManagerImpl::~AIManagerImpl() = default;
+ModelManagerImpl::~ModelManagerImpl() = default;
 
 // static
-void AIManagerImpl::Create(
+void ModelManagerImpl::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
-  AIManagerImpl* model_manager =
-      AIManagerImpl::GetOrCreateForCurrentDocument(render_frame_host);
+  ModelManagerImpl* model_manager =
+      ModelManagerImpl::GetOrCreateForCurrentDocument(render_frame_host);
   model_manager->receiver_.Bind(std::move(receiver));
 }
 
-void AIManagerImpl::CanCreateGenericSession(
+void ModelManagerImpl::CanCreateGenericSession(
     CanCreateGenericSessionCallback callback) {
   // If the model path is empty or invalid, return false.
   auto model_path =
@@ -74,12 +74,12 @@ void AIManagerImpl::CanCreateGenericSession(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(IsModelPathValid, model_path.value()),
-      base::BindOnce(&AIManagerImpl::OnModelPathValidationComplete,
+      base::BindOnce(&ModelManagerImpl::OnModelPathValidationComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      model_path.value()));
 }
 
-void AIManagerImpl::CreateGenericSession(
+void ModelManagerImpl::CreateGenericSession(
     mojo::PendingReceiver<blink::mojom::ModelGenericSession> receiver,
     blink::mojom::ModelGenericSessionSamplingParamsPtr sampling_params,
     CreateGenericSessionCallback callback) {
@@ -122,14 +122,15 @@ void AIManagerImpl::CreateGenericSession(
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  // The new `AITextSession` shares the same lifetime with the
+  // The new `ModelExecutionSession` shares the same lifetime with the
   // `receiver`.
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<AITextSession>(std::move(session)), std::move(receiver));
+      std::make_unique<ModelExecutionSession>(std::move(session)),
+      std::move(receiver));
   std::move(callback).Run(/*success=*/true);
 }
 
-void AIManagerImpl::GetDefaultGenericSessionSamplingParams(
+void ModelManagerImpl::GetDefaultGenericSessionSamplingParams(
     GetDefaultGenericSessionSamplingParamsCallback callback) {
   std::move(callback).Run(blink::mojom::ModelGenericSessionSamplingParams::New(
       optimization_guide::features::GetOnDeviceModelDefaultTopK(),
@@ -179,7 +180,7 @@ std::string ConvertOnDeviceModelEligibilityReasonToString(
   return "";
 }
 
-void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
+void ModelManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
     CanCreateGenericSessionCallback callback) {
   content::BrowserContext* browser_context = browser_context_.get();
   CHECK(browser_context);
@@ -212,7 +213,7 @@ void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
   std::move(callback).Run(/*can_create=*/true);
 }
 
-void AIManagerImpl::OnModelPathValidationComplete(
+void ModelManagerImpl::OnModelPathValidationComplete(
     CanCreateGenericSessionCallback callback,
     const std::string& model_path,
     bool is_valid_path) {

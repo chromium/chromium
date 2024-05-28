@@ -12343,12 +12343,12 @@ void RenderFrameHostImpl::BindNonAssociatedLocalFrameHost(
   non_associated_local_frame_host_receiver_.Bind(std::move(receiver));
 }
 
-void RenderFrameHostImpl::BindAIManager(
+void RenderFrameHostImpl::BindModelManager(
     mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
   CHECK(
       base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI));
 
-  GetContentClient()->browser()->BindAIManager(this, std::move(receiver));
+  GetContentClient()->browser()->BindModelManager(this, std::move(receiver));
 }
 
 bool RenderFrameHostImpl::CancelPrerendering(

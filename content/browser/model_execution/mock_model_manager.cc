@@ -2,49 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/ai/mock_ai_manager_impl.h"
+#include "content/browser/model_execution/mock_model_manager.h"
 
-#include "content/browser/ai/mock_ai_text_session.h"
+#include "content/browser/model_execution/mock_model_execution_session.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 
-namespace content {
+DOCUMENT_USER_DATA_KEY_IMPL(MockModelManager);
 
-DOCUMENT_USER_DATA_KEY_IMPL(MockAIManagerImpl);
+MockModelManager::MockModelManager(content::RenderFrameHost* rfh)
+    : DocumentUserData<MockModelManager>(rfh) {}
 
-MockAIManagerImpl::MockAIManagerImpl(content::RenderFrameHost* rfh)
-    : DocumentUserData<MockAIManagerImpl>(rfh) {}
-
-MockAIManagerImpl::~MockAIManagerImpl() = default;
+MockModelManager::~MockModelManager() = default;
 
 // static
-void MockAIManagerImpl::Create(
+void MockModelManager::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
-  MockAIManagerImpl* ai =
-      MockAIManagerImpl::GetOrCreateForCurrentDocument(render_frame_host);
-  ai->receiver_.Bind(std::move(receiver));
+  MockModelManager* model_manager =
+      MockModelManager::GetOrCreateForCurrentDocument(render_frame_host);
+  model_manager->receiver_.Bind(std::move(receiver));
 }
 
-void MockAIManagerImpl::CanCreateGenericSession(
+void MockModelManager::CanCreateGenericSession(
     CanCreateGenericSessionCallback callback) {
   std::move(callback).Run(/*can_create=*/true);
 }
 
-void MockAIManagerImpl::CreateGenericSession(
+void MockModelManager::CreateGenericSession(
     mojo::PendingReceiver<blink::mojom::ModelGenericSession> receiver,
     blink::mojom::ModelGenericSessionSamplingParamsPtr sampling_params,
     CreateGenericSessionCallback callback) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<MockAITextSession>(),
+  mojo::MakeSelfOwnedReceiver(std::make_unique<MockModelExecutionSession>(),
                               std::move(receiver));
   std::move(callback).Run(/*success=*/true);
 }
 
-void MockAIManagerImpl::GetDefaultGenericSessionSamplingParams(
+void MockModelManager::GetDefaultGenericSessionSamplingParams(
     GetDefaultGenericSessionSamplingParamsCallback callback) {
   std::move(callback).Run(blink::mojom::ModelGenericSessionSamplingParams::New(
       /*top_k=*/1, /*temperature=*/0));
 }
-
-}  // namespace content

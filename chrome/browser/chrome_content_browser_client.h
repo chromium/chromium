@@ -1048,7 +1048,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldSuppressAXLoadComplete(content::RenderFrameHost* rfh) override;
 
-  void BindAIManager(
+  void BindModelManager(
       content::RenderFrameHost* rfh,
       mojo::PendingReceiver<blink::mojom::ModelManager> receiver) override;
 

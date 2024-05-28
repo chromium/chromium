@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ai/ai_text_session.h"
+#include "chrome/browser/model_execution/model_execution_session.h"
 
 #include <optional>
 
@@ -19,12 +19,12 @@
 using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-AITextSession::AITextSession(
+ModelExecutionSession::ModelExecutionSession(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session)
     : session_(std::move(session)) {}
 
-AITextSession::~AITextSession() = default;
+ModelExecutionSession::~ModelExecutionSession() = default;
 
 blink::mojom::ModelStreamingResponseStatus ConvertModelExecutionError(
     ModelExecutionError error) {
@@ -56,7 +56,7 @@ blink::mojom::ModelStreamingResponseStatus ConvertModelExecutionError(
   }
 }
 
-void AITextSession::ModelExecutionCallback(
+void ModelExecutionSession::ModelExecutionCallback(
     mojo::RemoteSetElementId responder_id,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   blink::mojom::ModelStreamingResponder* responder =
@@ -84,7 +84,7 @@ void AITextSession::ModelExecutionCallback(
   }
 }
 
-void AITextSession::Execute(
+void ModelExecutionSession::Execute(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
@@ -103,11 +103,11 @@ void AITextSession::Execute(
   request.set_value(input);
   session_->ExecuteModel(
       request,
-      base::BindRepeating(&AITextSession::ModelExecutionCallback,
+      base::BindRepeating(&ModelExecutionSession::ModelExecutionCallback,
                           weak_ptr_factory_.GetWeakPtr(), responder_id));
 }
 
-void AITextSession::Destroy() {
+void ModelExecutionSession::Destroy() {
   if (session_) {
     session_.reset();
   }
