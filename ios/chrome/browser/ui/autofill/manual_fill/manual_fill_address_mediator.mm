@@ -19,6 +19,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using autofill::AutofillProfile;
+
 namespace manual_fill {
 NSString* const ManageAddressAccessibilityIdentifier =
     @"kManualFillManageAddressAccessibilityIdentifier";
@@ -27,17 +29,16 @@ NSString* const ManageAddressAccessibilityIdentifier =
 @interface ManualFillAddressMediator ()
 
 // All available addresses.
-@property(nonatomic, strong) NSArray<ManualFillAddress*>* addresses;
+@property(nonatomic, assign) std::vector<const AutofillProfile*> addresses;
 
 @end
 
 @implementation ManualFillAddressMediator
 
-- (instancetype)initWithProfiles:
-    (std::vector<const autofill::AutofillProfile*>)profiles {
+- (instancetype)initWithProfiles:(std::vector<const AutofillProfile*>)profiles {
   self = [super init];
   if (self) {
-    _addresses = [ManualFillAddress manualFillAddressesFromProfiles:profiles];
+    _addresses = std::move(profiles);
   }
   return self;
 }
@@ -51,9 +52,8 @@ NSString* const ManageAddressAccessibilityIdentifier =
   [self postActionsToConsumer];
 }
 
-- (void)reloadWithProfiles:
-    (std::vector<const autofill::AutofillProfile*>)profiles {
-  self.addresses = [ManualFillAddress manualFillAddressesFromProfiles:profiles];
+- (void)reloadWithProfiles:(std::vector<const AutofillProfile*>)profiles {
+  self.addresses = profiles;
   if (self.consumer) {
     [self postAddressesToConsumer];
     [self postActionsToConsumer];
@@ -69,10 +69,13 @@ NSString* const ManageAddressAccessibilityIdentifier =
   }
 
   NSMutableArray* items =
-      [[NSMutableArray alloc] initWithCapacity:self.addresses.count];
-  for (ManualFillAddress* address in self.addresses) {
+      [[NSMutableArray alloc] initWithCapacity:self.addresses.size()];
+  for (const AutofillProfile* address : self.addresses) {
+    ManualFillAddress* manualFillAddress =
+        [[ManualFillAddress alloc] initWithProfile:*address];
+
     auto item =
-        [[ManualFillAddressItem alloc] initWithAddress:address
+        [[ManualFillAddressItem alloc] initWithAddress:manualFillAddress
                                        contentInjector:self.contentInjector];
     [items addObject:item];
   }
@@ -84,6 +87,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
   if (!self.consumer) {
     return;
   }
+
   NSString* manageAddressesTitle =
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_ADDRESSES);
   __weak __typeof(self) weakSelf = self;
