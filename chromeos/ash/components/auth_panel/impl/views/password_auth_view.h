@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view.h"
+#include "chromeos/ash/components/auth_panel/impl/views/login_textfield.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 
@@ -31,7 +32,6 @@ class ToggleImageButton;
 namespace ash {
 
 class ArrowButtonView;
-class LoginTextfield;
 class AuthPanelEventDispatcher;
 
 // This class encapsulates a textfield, toggle display password eye icon, and
@@ -44,7 +44,8 @@ class AuthPanelEventDispatcher;
 // payload. The password submission logic does not live in this class. Here, we
 // only handle UI behavior.
 class PasswordAuthView : public FactorAuthView,
-                         public ImeControllerImpl::Observer {
+                         public ImeControllerImpl::Observer,
+                         public LoginTextfield::Delegate {
   METADATA_HEADER(PasswordAuthView, FactorAuthView)
  public:
   PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
@@ -60,7 +61,7 @@ class PasswordAuthView : public FactorAuthView,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  // ImeControllerImpl::Observer
+  // ImeControllerImpl::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override {}
 
@@ -96,6 +97,10 @@ class PasswordAuthView : public FactorAuthView,
   void OnSubmitButtonPressed();
   void OnDisplayPasswordButtonPressed();
   void SetCapsLockIconHighlighted(bool highlight);
+
+  // LoginTextfield::Delegate:
+  void OnTextfieldBlur() override;
+  void OnTextfieldFocus() override;
 
   raw_ptr<AuthPanelEventDispatcher, DanglingUntriaged> dispatcher_ = nullptr;
 

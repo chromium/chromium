@@ -16,8 +16,7 @@
 
 namespace ash {
 
-LoginTextfield::LoginTextfield(AuthPanelEventDispatcher* dispatcher)
-    : SystemTextfield(Type::kMedium), dispatcher_(dispatcher) {
+LoginTextfield::LoginTextfield() : SystemTextfield(Type::kMedium) {
   const gfx::FontList font_list =
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           TypographyToken::kLegacyBody1);
@@ -34,6 +33,8 @@ LoginTextfield::LoginTextfield(AuthPanelEventDispatcher* dispatcher)
   ConfigureAuthTextField(this);
 }
 
+LoginTextfield::~LoginTextfield() = default;
+
 void LoginTextfield::AboutToRequestFocusFromTabTraversal(bool reverse) {
   if (!GetText().empty()) {
     SelectAll(/*reversed=*/false);
@@ -41,17 +42,15 @@ void LoginTextfield::AboutToRequestFocusFromTabTraversal(bool reverse) {
 }
 
 void LoginTextfield::OnBlur() {
-  dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
-      AuthPanelEventDispatcher::UserAction::Type::kPasswordTextfieldBlurred,
-      std::nullopt});
   SystemTextfield::OnBlur();
+  CHECK(delegate_);
+  delegate_->OnTextfieldBlur();
 }
 
 void LoginTextfield::OnFocus() {
   SystemTextfield::OnFocus();
-  dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
-      AuthPanelEventDispatcher::UserAction::Type::kPasswordTextfieldFocused,
-      std::nullopt});
+  CHECK(delegate_);
+  delegate_->OnTextfieldFocus();
 }
 
 gfx::Size LoginTextfield::CalculatePreferredSize(
@@ -62,7 +61,6 @@ gfx::Size LoginTextfield::CalculatePreferredSize(
 void LoginTextfield::OnStateChanged(
     const AuthFactorStore::State::LoginTextfieldState& login_textfield_state) {
   SetReadOnly(login_textfield_state.is_read_only);
-  SetCursorEnabled(!login_textfield_state.is_read_only);
 
   SetTextInputType(login_textfield_state.is_password_visible_
                        ? ui::TEXT_INPUT_TYPE_NULL
@@ -72,6 +70,10 @@ void LoginTextfield::OnStateChanged(
       new_text != GetText()) {
     SetText(new_text);
   }
+}
+
+void LoginTextfield::SetDelegate(Delegate* delegate) {
+  delegate_ = delegate;
 }
 
 BEGIN_METADATA(LoginTextfield)

@@ -169,8 +169,10 @@ void PasswordAuthView::CreateAndConfigureTextfieldContainer() {
 
   // Password textfield. We control the textfield size by sizing the parent
   // view, as the textfield will expand to fill it.
-  login_textfield_ = textfield_container->AddChildView(
-      std::make_unique<LoginTextfield>(dispatcher_));
+  login_textfield_ =
+      textfield_container->AddChildView(std::make_unique<LoginTextfield>());
+
+  login_textfield_->SetDelegate(this);
 
   login_textfield_->set_controller(contents_changed_listener_.get());
   login_textfield_->SetPlaceholderText(
@@ -242,7 +244,9 @@ PasswordAuthView::PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
   CreateAndConfigureSubmitButton();
 }
 
-PasswordAuthView::~PasswordAuthView() = default;
+PasswordAuthView::~PasswordAuthView() {
+  login_textfield_->SetDelegate(nullptr);
+}
 
 AshAuthFactor PasswordAuthView::GetFactor() {
   return AshAuthFactor::kGaiaPassword;
@@ -322,6 +326,18 @@ void PasswordAuthView::OnStateChanged(const AuthFactorStore::State& state) {
 void PasswordAuthView::SetCapsLockIconHighlighted(bool highlight) {
   capslock_icon_->SetImage(highlight ? capslock_icon_highlighted_
                                      : capslock_icon_blurred_);
+}
+
+void PasswordAuthView::OnTextfieldBlur() {
+  dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
+      AuthPanelEventDispatcher::UserAction::Type::kPasswordTextfieldBlurred,
+      std::nullopt});
+}
+
+void PasswordAuthView::OnTextfieldFocus() {
+  dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
+      AuthPanelEventDispatcher::UserAction::Type::kPasswordTextfieldFocused,
+      std::nullopt});
 }
 
 BEGIN_METADATA(PasswordAuthView)

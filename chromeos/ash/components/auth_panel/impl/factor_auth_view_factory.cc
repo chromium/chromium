@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
-#include "chromeos/ash/components/auth_panel/impl/views/login_textfield.h"
 #include "chromeos/ash/components/auth_panel/impl/views/password_auth_view.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "ui/base/l10n/l10n_util.h"

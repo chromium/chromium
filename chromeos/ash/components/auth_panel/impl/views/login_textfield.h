@@ -13,24 +13,29 @@
 
 namespace ash {
 
-class AuthPanelEventDispatcher;
 class AuthFactorStore;
 
 // A textfield that selects all text on focus and allows to switch between
 // show/hide password modes.
 class LoginTextfield : public SystemTextfield {
   METADATA_HEADER(LoginTextfield, SystemTextfield)
-
  public:
-  explicit LoginTextfield(AuthPanelEventDispatcher* dispatcher);
+  class Delegate {
+   public:
+    virtual void OnTextfieldBlur() {}
+    virtual void OnTextfieldFocus() {}
+  };
+
+  LoginTextfield();
   LoginTextfield(const LoginTextfield&) = delete;
   LoginTextfield& operator=(const LoginTextfield&) = delete;
-  ~LoginTextfield() override = default;
+  ~LoginTextfield() override;
 
   // views::Textfield:
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void OnBlur() override;
   void OnFocus() override;
+
   // This is useful when the display password button is not shown. In such a
   // case, the login text field needs to define its size.
   gfx::Size CalculatePreferredSize(
@@ -39,8 +44,10 @@ class LoginTextfield : public SystemTextfield {
   void OnStateChanged(
       const AuthFactorStore::State::LoginTextfieldState& login_textfield_state);
 
+  void SetDelegate(Delegate* delegate);
+
  private:
-  raw_ptr<AuthPanelEventDispatcher, DanglingUntriaged> dispatcher_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace ash
