@@ -13,6 +13,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {FakeQuickUnlockPrivate} from '../fake_quick_unlock_private.js';
+
 import {TestFingerprintBrowserProxy} from './test_fingerprint_browser_proxy.js';
 
 suite('<settings-fingerprint-list-subpage>', () => {
@@ -258,9 +260,10 @@ suite('<settings-fingerprint-list-subpage>', () => {
   });
 
   test('RemoveFingerprint', async () => {
+    const quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
+    fingerprintList.set('authToken', quickUnlockPrivateApi.getFakeToken());
     browserProxy.setFingerprints(['Label 1', 'Label 2']);
     fingerprintList['updateFingerprintsList_']();
-
     await browserProxy.whenCalled('getFingerprintsList');
     browserProxy.resetResolver('getFingerprintsList');
     assertEquals(2, fingerprintList.get('fingerprints_').length);
@@ -274,8 +277,10 @@ suite('<settings-fingerprint-list-subpage>', () => {
   });
 
   test('Deep link to add fingerprint', async () => {
+    const quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
+    fingerprintList.set('authToken', quickUnlockPrivateApi.getFakeToken());
+    // This is equivalent to the settings id.
     const settingId = '1111';
-
     browserProxy.setFingerprints(['Label 1', 'Label 2']);
     fingerprintList['updateFingerprintsList_']();
     await browserProxy.whenCalled('getFingerprintsList');
@@ -300,6 +305,8 @@ suite('<settings-fingerprint-list-subpage>', () => {
     const settingId = '1112';
 
     browserProxy.setFingerprints(['Label 1', 'Label 2']);
+    const quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
+    fingerprintList.set('authToken', quickUnlockPrivateApi.getFakeToken());
     fingerprintList['updateFingerprintsList_']();
     await browserProxy.whenCalled('getFingerprintsList');
 
@@ -341,7 +348,8 @@ suite('<settings-fingerprint-list-subpage>', () => {
   test('AddingNewFingerprint', async () => {
     browserProxy.setFingerprints(['1', '2', '3']);
     fingerprintList['updateFingerprintsList_']();
-
+    const quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
+    fingerprintList.set('authToken', quickUnlockPrivateApi.getFakeToken());
     // Verify that new fingerprints cannot be added when there are already three
     // registered fingerprints.
     await browserProxy.whenCalled('getFingerprintsList');

@@ -682,10 +682,12 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("osSettingsAppId", web_app::kOsSettingsAppId);
 
-  html_source->AddString("authPrompt",
-                         l10n_util::GetStringFUTF16(
-                             IDS_SETTINGS_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT,
-                             u"ChromeOS Settings"));
+  html_source->AddString(
+      "authPrompt",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT,
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT_LOCATION)));
 
   html_source->AddBoolean("showSecureDnsSetting", false);
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);
