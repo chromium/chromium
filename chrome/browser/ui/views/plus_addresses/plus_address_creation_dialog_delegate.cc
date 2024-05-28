@@ -102,6 +102,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   SetModalType(ui::MODAL_TYPE_CHILD);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+  SetShowCloseButton(
+      !base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign));
 
   std::unique_ptr<views::View> primary_view =
       views::Builder<views::BoxLayoutView>()
@@ -332,10 +334,6 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
 
 PlusAddressCreationDialogDelegate::~PlusAddressCreationDialogDelegate() {
   plus_address_label_ = nullptr;
-}
-
-bool PlusAddressCreationDialogDelegate::ShouldShowCloseButton() const {
-  return true;
 }
 
 void PlusAddressCreationDialogDelegate::OnWidgetInitialized() {

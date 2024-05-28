@@ -43,7 +43,6 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   ~PlusAddressCreationDialogDelegate() override;
 
   // WidgetDelegate:
-  bool ShouldShowCloseButton() const override;
   void OnWidgetInitialized() override;
 
   // PlusAddressCreationView:
