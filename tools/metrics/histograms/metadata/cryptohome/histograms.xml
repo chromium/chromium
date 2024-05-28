@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChallengeCredential"/>
   <variant name="CryptohomeRecovery"/>
   <variant name="DoubleWrappedCompat"/>
+  <variant name="Fingerprint"/>
   <variant name="LibScryptCompat"/>
   <variant name="PinWeaver"/>
   <variant name="Scrypt"/>
@@ -757,6 +758,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ChallengeCredential"/>
     <variant name="CryptohomeRecovery"/>
     <variant name="DoubleWrappedCompat"/>
+    <variant name="Fingerprint"/>
     <variant name="LibScryptCompat"/>
     <variant name="PinWeaver"/>
     <variant name="Scrypt"/>
