@@ -80,7 +80,7 @@ def __step_config(ctx, step_config):
         # remotely, too.
         remote = False
         win_toolchain_dir = __win_toolchain_dir(ctx)
-        if win_toolchain_dir and not config.get(ctx, "clang-tot"):
+        if win_toolchain_dir:
             remote = True
             if reproxy_config["platform"]["OSFamily"] == "Windows":
                 step_config["input_deps"].update({

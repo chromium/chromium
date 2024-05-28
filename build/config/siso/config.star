@@ -23,9 +23,6 @@ __KNOWN_CONFIG_OPTIONS = [
     # TODO: b/316267242 - Enable remote links after confirming performance.
     "remote-library-link",
     "remote-exec-link",
-
-    # Clang ToT builds don't run compile actions remotely.
-    "clang-tot",
 ]
 
 def __check(ctx):

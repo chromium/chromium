@@ -39,7 +39,6 @@ ci.defaults.set(
     },
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-    siso_configs = ["builder", "clang-tot"],
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,
 )
@@ -150,7 +149,6 @@ ci.builder(
     ),
     contact_team_email = "lexan@google.com",
     notifies = ["CFI Linux"],
-    siso_configs = ["builder"],  # disable clang_tot config to use remote execution.
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
