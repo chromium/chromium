@@ -177,6 +177,9 @@ class InputDeviceSettingsProvider
 
   void OnReceiveKeyboardBrightness(std::optional<double> brightness_percent);
 
+  void OnReceiveKeyboardAmbientLightSensorEnabled(
+      std::optional<bool> keyboard_ambient_light_sensor_enabled);
+
   // Denotes whether button observing should be paused due to the settings app
   // being out of focus or minimized. Default to true to require a valid widget
   // to observe devices.

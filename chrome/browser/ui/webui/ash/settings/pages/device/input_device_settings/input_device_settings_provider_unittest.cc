@@ -351,9 +351,10 @@ class FakeKeyboardBrightnessControlDelegate
   void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) override {
     keyboard_ambient_light_sensor_enabled_ = enabled;
   }
-
   void HandleGetKeyboardAmbientLightSensorEnabled(
-      base::OnceCallback<void(std::optional<bool>)> callback) override {}
+      base::OnceCallback<void(std::optional<bool>)> callback) override {
+    std::move(callback).Run(keyboard_ambient_light_sensor_enabled_);
+  }
 
   double keyboard_brightness() { return keyboard_brightness_; }
   bool keyboard_ambient_light_sensor_enabled() {
@@ -1146,6 +1147,11 @@ TEST_F(InputDeviceSettingsProviderTest,
   // Start observing the keyboard ambient light sensor
   provider_->ObserveKeyboardAmbientLightSensor(
       fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // OnKeyboardAmbientLightSensorEnabledChange is called to set initial value
+  // when observer is registered.
+  EXPECT_EQ(1, fake_observer.num_times_called());
 
   // Enable the keyboard ambient light sensor
   {
@@ -1158,7 +1164,7 @@ TEST_F(InputDeviceSettingsProviderTest,
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(keyboard_ambient_light_sensor_enabled,
               fake_observer.keyboard_ambient_light_sensor_enabled());
-    EXPECT_EQ(1, fake_observer.num_times_called());
+    EXPECT_EQ(2, fake_observer.num_times_called());
   }
 
   // Disable the keyboard ambient light sensor
@@ -1172,7 +1178,7 @@ TEST_F(InputDeviceSettingsProviderTest,
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(keyboard_ambient_light_sensor_enabled,
               fake_observer.keyboard_ambient_light_sensor_enabled());
-    EXPECT_EQ(2, fake_observer.num_times_called());
+    EXPECT_EQ(3, fake_observer.num_times_called());
   }
 }
 
