@@ -2327,9 +2327,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDifferentMoveConfirmation) {
       ash::cloud_upload::OfficeTaskResult::kCannotShowMoveConfirmation, 1);
 }
 
-// Test to check that a second setup dialog will not launch when one
+// Test to check that subsequent setup dialogs will not launch when one
 // is already being shown for the same file.
-IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateSetupDialog) {
+IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateSetupDialogs) {
   // Doing this before SetUpTest creates a FakeWebAppPublisher which would
   // intercept Files app launching.
   LaunchFilesAppAndWait();
@@ -2366,15 +2366,21 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateSetupDialog) {
                   failed_future.GetCallback());
   ASSERT_EQ(failed_future.Get<0>(), TaskResult::kFailed);
 
-  // Both open file requests will log the CloudProvider metric.
+  // Fails to launch a third setup dialog for the same file.
+  base::test::TestFuture<TaskResult, std::string> failed_future2;
+  ExecuteFileTask(profile(), open_in_office_task, file_urls,
+                  failed_future2.GetCallback());
+  ASSERT_EQ(failed_future2.Get<0>(), TaskResult::kFailed);
+
+  // All open file requests will log the CloudProvider metric.
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
-      ash::cloud_upload::CloudProvider::kOneDrive, 2);
-  // Only the second open file request will complete and with a
+      ash::cloud_upload::CloudProvider::kOneDrive, 3);
+  // Only the subsequent open file requests will complete and with a
   // kFileAlreadyBeingOpened TaskResult.
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
-      ash::cloud_upload::OfficeTaskResult::kFileAlreadyBeingOpened, 1);
+      ash::cloud_upload::OfficeTaskResult::kFileAlreadyBeingOpened, 2);
 }
 
 // Test to check that a second move confirmation dialog will not launch when one
@@ -2563,17 +2569,23 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
                   failed_future.GetCallback());
   ASSERT_EQ(failed_future.Get<0>(), TaskResult::kFailed);
 
+  // Fail again to execute a duplicate CloudOpenTask for the file.
+  base::test::TestFuture<TaskResult, std::string> failed_future2;
+  ExecuteFileTask(profile(), open_in_office_task, file_urls,
+                  failed_future2.GetCallback());
+  ASSERT_EQ(failed_future2.Get<0>(), TaskResult::kFailed);
+
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(0u, launches.size());
 
   histogram_.ExpectUniqueSample(
-      ash::cloud_upload::kNumberOfFilesToOpenWithOneDriveMetric, 1, 1);
+      ash::cloud_upload::kNumberOfFilesToOpenWithOneDriveMetric, 1, 2);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
-      ash::cloud_upload::CloudProvider::kOneDrive, 1);
+      ash::cloud_upload::CloudProvider::kOneDrive, 2);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
-      ash::cloud_upload::OfficeTaskResult::kFileAlreadyBeingOpened, 1);
+      ash::cloud_upload::OfficeTaskResult::kFileAlreadyBeingOpened, 2);
 }
 
 // Test that ExecuteFileTask() will open ODFS office files with the Open In

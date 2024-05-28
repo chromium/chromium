@@ -401,6 +401,20 @@ bool CloudOpenTask::Execute(
     const fm_tasks::TaskDescriptor& task,
     const CloudProvider cloud_provider,
     std::unique_ptr<CloudOpenMetrics> cloud_open_metrics) {
+  DCHECK(!file_urls.empty());
+  auto* event_router = file_manager::EventRouterFactory::GetForProfile(profile);
+  // TODO(b/242685536) add support for multiple files.
+  if (event_router) {
+    if (!event_router->AddCloudOpenTask(file_urls.front())) {
+      LOG(ERROR) << "File already being opened";
+      cloud_open_metrics->LogTaskResult(
+          OfficeTaskResult::kFileAlreadyBeingOpened);
+      return false;
+    }
+  } else {
+    LOG(ERROR) << "Cannot get EventRouter";
+  }
+
   scoped_refptr<CloudOpenTask> upload_task = WrapRefCounted(new CloudOpenTask(
       profile, file_urls, task, cloud_provider, std::move(cloud_open_metrics)));
   // Keep `upload_task` alive until `TaskFinished` executes.
@@ -438,25 +452,10 @@ CloudOpenTask::~CloudOpenTask() {
 // there are any issues, e.g. ODFS is not mounted. Otherwise, attempts to move
 // files to the correct cloud or open the files if they are already there.
 bool CloudOpenTask::ExecuteInternal() {
-  DCHECK(!file_urls_.empty());
   if (file_urls_.empty()) {
     LOG(ERROR) << "No files to open";
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kNoFilesToOpen);
     return false;
-  }
-
-  auto* event_router =
-      file_manager::EventRouterFactory::GetForProfile(profile_);
-  // TODO(b/242685536) add support for multiple files.
-  if (event_router) {
-    if (!event_router->AddCloudOpenTask(file_urls_.front())) {
-      LOG(ERROR) << "File already being opened";
-      cloud_open_metrics_->LogTaskResult(
-          OfficeTaskResult::kFileAlreadyBeingOpened);
-      return false;
-    }
-  } else {
-    LOG(ERROR) << "Cannot get EventRouter";
   }
 
   // Run the setup flow if we don't have explicit default file handlers set for
