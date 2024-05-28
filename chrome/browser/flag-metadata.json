@@ -5675,6 +5675,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "media-app-pdf-mahi",
+    "owners": [ "alanlxl@chromium.org", "thanhdng@chromium.org", "chrome-knowledge-eng@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "media-picker-adoption",
     "owners": [ "finnur@google.com", "beverloo@google.com" ],
     "expiry_milestone": 140
