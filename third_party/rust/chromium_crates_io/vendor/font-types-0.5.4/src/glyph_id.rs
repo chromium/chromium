@@ -52,4 +52,10 @@ impl std::fmt::Display for GlyphId {
     }
 }
 
+impl From<GlyphId> for u32 {
+    fn from(value: GlyphId) -> u32 {
+        value.to_u32()
+    }
+}
+
 crate::newtype_scalar!(GlyphId, [u8; 2]);

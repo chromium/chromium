@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "font-types"
-version = "0.5.3"
+version = "0.5.4"
 description = "Scalar types used in fonts."
 readme = "README.md"
 categories = ["text-processing"]

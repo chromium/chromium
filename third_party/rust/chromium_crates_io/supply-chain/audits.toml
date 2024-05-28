@@ -571,8 +571,17 @@ notes = "Reviewed in https://crrev.com/c/5362378. No new use of unsafe."
 
 [[audits.font-types]]
 who = "danakj <danakj@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 delta = "0.5.2 -> 0.5.3"
+
+[[audits.font-types]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "0.5.3 -> 0.5.4"
+notes = """
+The delta just adds `impl From<GlyphId> for u32` - no impact on `unsafe impl`s
+elsewhere.
+"""
 
 [[audits.getrandom]]
 who = "danakj@chromium.org"

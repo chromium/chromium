@@ -101,7 +101,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."fend-core:1.4.8"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."font-types:0.5.3"]
+[policy."font-types:0.5.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."getrandom:0.2.15"]
