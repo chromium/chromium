@@ -815,6 +815,13 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Notifies the delegate that the back forward transition animation state
+  // has changed. If necessary, the delegate should use this notification to
+  // hold on its animation until the back forward transition has completed.
+  virtual void DidBackForwardTransitionAnimationChange() {}
+#endif  // BUILDFLAG(IS_ANDROID)
+
  protected:
   virtual ~WebContentsDelegate();
 

@@ -17,6 +17,24 @@ import java.lang.annotation.RetentionPolicy;
 
 /** An interface for pages that will be using Android views instead of html/rendered Web content. */
 public interface NativePage {
+
+    /** An interface to trigger the native page's smooth transition. */
+    interface SmoothTransitionDelegate {
+
+        /** A callback for delegate to set the initial state of the smooth transition. */
+        void prepare();
+
+        /**
+         * Start the smooth transition.
+         *
+         * @param onEnd A runnable to be invoked when the transition is complete.
+         */
+        void start(Runnable onEnd);
+
+        /** Cancel the smooth transition. */
+        void cancel();
+    }
+
     /**
      * @return The View to display the page. This is always non-null.
      */
@@ -93,6 +111,15 @@ public interface NativePage {
 
     /** Notify the native page that it is about to be navigated back or hidden by a back press. */
     default void notifyHidingWithBack() {}
+
+    /**
+     * Enable the smooth transition for the native page. Defaults to null which means not supported.
+     * Return a {@link SmoothTransitionDelegate} which will signal the start and execute the given
+     * post-task.
+     */
+    default SmoothTransitionDelegate enableSmoothTransition() {
+        return null;
+    }
 
     /** Called after a page has been removed from the view hierarchy and will no longer be used. */
     void destroy();

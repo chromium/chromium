@@ -182,7 +182,8 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
   // produced its first frame.
   if (new_render_widget_host_) {
     CHECK(state_ == State::kDisplayingInvokeAnimation ||
-          state_ == State::kWaitingForNewRendererToDraw);
+          state_ == State::kWaitingForNewRendererToDraw)
+        << ToString(state_);
     UnregisterNewFrameActivationObserver();
   }
 }
@@ -375,6 +376,13 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
       skip_all_animations_and_self_destroy = true;
       break;
+    case State::kWaitingForContentForNavigationEntryShown:
+      // Our navigation has already committed while waiting for a native
+      // entry to be finished drawing by the embedder.
+      CHECK_EQ(navigation_state_, NavigationState::kCommitted);
+      CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
+      skip_all_animations_and_self_destroy = true;
+      break;
     case State::kDisplayingCrossFadeAnimation: {
       // Our navigation has already committed while a second navigation commits.
       // This can be a client redirect: A.com -> B.com and B.com's document
@@ -434,6 +442,15 @@ void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
     // `State::kAnimationFinished`.
     CHECK_EQ(state_, State::kDisplayingCancelAnimation);
   }
+}
+
+void BackForwardTransitionAnimator::OnContentForNavigationEntryShown() {
+  // Might be called multiple times if user swipes again before NTP fade
+  // has finished.
+  if (state_ != State::kWaitingForContentForNavigationEntryShown) {
+    return;
+  }
+  AdvanceAndProcessState(State::kAnimationFinished);
 }
 
 AnimationStage BackForwardTransitionAnimator::GetCurrentAnimationStage() {
@@ -537,6 +554,7 @@ void BackForwardTransitionAnimator::OnAnimate(
     case State::kStarted:
     case State::kWaitingForBeforeUnloadResponse:
     case State::kWaitingForNewRendererToDraw:
+    case State::kWaitingForContentForNavigationEntryShown:
     case State::kAnimationFinished:
       return;
   }
@@ -559,6 +577,7 @@ void BackForwardTransitionAnimator::OnAnimate(
       case State::kStarted:
       case State::kWaitingForBeforeUnloadResponse:
       case State::kWaitingForNewRendererToDraw:
+      case State::kWaitingForContentForNavigationEntryShown:
       case State::kAnimationFinished:
         NOTREACHED_IN_MIGRATION();
         break;
@@ -692,7 +711,9 @@ void BackForwardTransitionAnimator::OnInvokeAnimationDisplayed() {
   // viewport, so the `KeyFrameModel` for the scrim should also be exhausted and
   // removed.
   CHECK(effect_.keyframe_models().empty());
-  if (viz_has_activated_first_frame_) {
+  if (screenshot_->is_copied_from_embedder()) {
+    AdvanceAndProcessState(State::kWaitingForContentForNavigationEntryShown);
+  } else if (viz_has_activated_first_frame_) {
     AdvanceAndProcessState(State::kDisplayingCrossFadeAnimation);
   } else {
     AdvanceAndProcessState(State::kWaitingForNewRendererToDraw);
@@ -718,9 +739,12 @@ bool BackForwardTransitionAnimator::CanAdvanceTo(State from, State to) {
              to == State::kWaitingForNewRendererToDraw ||
              // A second navigation replaces the current one, or the user hits
              // the stop button.
-             to == State::kDisplayingCancelAnimation;
+             to == State::kDisplayingCancelAnimation ||
+             to == State::kWaitingForContentForNavigationEntryShown;
     case State::kWaitingForNewRendererToDraw:
       return to == State::kDisplayingCrossFadeAnimation;
+    case State::kWaitingForContentForNavigationEntryShown:
+      return to == State::kAnimationFinished;
     case State::kDisplayingCrossFadeAnimation:
       return to == State::kAnimationFinished;
     case State::kDisplayingCancelAnimation:
@@ -747,6 +771,8 @@ std::string BackForwardTransitionAnimator::ToString(State state) {
       return "kDisplayingInvokeAnimation";
     case State::kWaitingForNewRendererToDraw:
       return "kWaitingForNewRendererToDraw";
+    case State::kWaitingForContentForNavigationEntryShown:
+      return "kWaitingForContentForNavigationEntryShown";
     case State::kDisplayingCrossFadeAnimation:
       return "kDisplayingCrossFadeAnimation";
     case State::kAnimationFinished:
@@ -803,7 +829,11 @@ void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
   CHECK(CanAdvanceTo(state_, state))
       << "Cannot advance from " << ToString(state_) << " to "
       << ToString(state);
+  auto previous_animation_stage = GetCurrentAnimationStage();
   state_ = state;
+  if (previous_animation_stage != GetCurrentAnimationStage()) {
+    animation_manager_->OnAnimationStageChanged();
+  }
   ProcessState();
 }
 
@@ -891,6 +921,9 @@ void BackForwardTransitionAnimator::ProcessState() {
     }
     case State::kWaitingForNewRendererToDraw:
       // No-op. Waiting for `OnRenderFrameMetadataChangedAfterActivation()`.
+      break;
+    case State::kWaitingForContentForNavigationEntryShown:
+      // No-op.
       break;
     case State::kDisplayingCrossFadeAnimation: {
       // Before we start displaying the crossfade animation,
@@ -1144,6 +1177,10 @@ void BackForwardTransitionAnimator::
     // for `OnRenderFrameMetadataChangedAfterActivation()` at all.
     CHECK(!viz_has_activated_first_frame_);
     viz_has_activated_first_frame_ = true;
+    return;
+  }
+
+  if (screenshot_->is_copied_from_embedder()) {
     return;
   }
 

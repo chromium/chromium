@@ -77,8 +77,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * The WebContentsImpl Java wrapper to allow communicating with the native WebContentsImpl
- * object.
+ * The WebContentsImpl Java wrapper to allow communicating with the native WebContentsImpl object.
  */
 @JNINamespace("content")
 public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, WindowEventObserver {
@@ -1227,6 +1226,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public void onContentForNavigationEntryShown() {
+        checkNotDestroyed();
+        WebContentsImplJni.get().onContentForNavigationEntryShown(mNativeWebContentsAndroid);
+    }
+
+    @Override
     @AnimationStage
     public int getCurrentBackForwardTransitionStage() {
         checkNotDestroyed();
@@ -1438,6 +1443,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         boolean isBeingDestroyed(long nativeWebContentsAndroid);
 
         boolean needToFireBeforeUnloadOrUnloadEvents(long nativeWebContentsAndroid);
+
+        void onContentForNavigationEntryShown(long nativeWebContentsAndroid);
 
         @AnimationStage
         int getCurrentBackForwardTransitionStage(long nativeWebContentsAndroid);

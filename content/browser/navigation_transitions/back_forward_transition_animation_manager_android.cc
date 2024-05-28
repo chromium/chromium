@@ -4,10 +4,14 @@
 
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 
+#include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
+#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents_delegate.h"
 
 namespace content {
 
@@ -106,6 +110,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
   animator_ = animator_factory_->Create(
       web_contents_view_android_.get(), navigation_controller_.get(), gesture,
       navigation_direction, destination_entry->GetUniqueID(), this);
+  OnAnimationStageChanged();
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureProgressed(
@@ -133,10 +138,24 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureInvoked() {
   destination_entry_index_ = -1;
 }
 
+void BackForwardTransitionAnimationManagerAndroid::
+    OnContentForNavigationEntryShown() {
+  if (animator_) {
+    animator_->OnContentForNavigationEntryShown();
+  }
+}
+
 AnimationStage
 BackForwardTransitionAnimationManagerAndroid::GetCurrentAnimationStage() {
   return animator_ ? animator_->GetCurrentAnimationStage()
                    : AnimationStage::kNone;
+}
+
+void BackForwardTransitionAnimationManagerAndroid::OnAnimationStageChanged() {
+  web_contents_view_android()
+      ->web_contents()
+      ->GetDelegate()
+      ->DidBackForwardTransitionAnimationChange();
 }
 
 void BackForwardTransitionAnimationManagerAndroid::
@@ -161,6 +180,7 @@ void BackForwardTransitionAnimationManagerAndroid::
     SynchronouslyDestroyAnimator() {
   CHECK(animator_);
   animator_.reset();
+  OnAnimationStageChanged();
 }
 
 }  // namespace content

@@ -75,6 +75,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
   void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
+  void OnContentForNavigationEntryShown();
   BackForwardTransitionAnimationManager::AnimationStage
   GetCurrentAnimationStage();
 
@@ -185,6 +186,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // the end of `kDisplayingInvokeAnimation`, this state will be skipped
     // completely.
     kWaitingForNewRendererToDraw,
+
+    // A state only reachable from `kDisplayingInvokeAnimation`: at
+    // the end of the invoke animation, the animator is waiting for the
+    // embedder content to be fully visible. The animator will continue or
+    // end after the content becomes fully visible.
+    kWaitingForContentForNavigationEntryShown,
 
     // Reachable from the end of `kDisplayingInvokeAnimation` or from
     // `kWaitingForNewRendererToDraw`. Cross-fading from the screenshot to the

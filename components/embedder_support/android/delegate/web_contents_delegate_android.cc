@@ -473,6 +473,16 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
   return false;
 }
 
+void WebContentsDelegateAndroid::DidBackForwardTransitionAnimationChange() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsDelegateAndroid_didBackForwardTransitionAnimationChange(env,
+                                                                          obj);
+}
+
 void JNI_WebContentsDelegateAndroid_MaybeCopyContentAreaAsBitmapOutcome(
     JNIEnv* env,
     jlong callback_ptr,

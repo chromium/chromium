@@ -202,6 +202,9 @@ public class WebContentsDelegateAndroid {
     }
 
     @CalledByNative
+    public void didBackForwardTransitionAnimationChange() {}
+
+    @CalledByNative
     private boolean maybeCopyContentAreaAsBitmap(long nativeCallback) {
         return maybeCopyContentAreaAsBitmap(
                 (bitmap) -> {

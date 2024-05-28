@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
@@ -43,9 +44,9 @@ import java.util.Collections;
 
 // TODO(meiliang): Rename to StaticLayoutMediator.
 /**
- * A {@link Layout} that shows a single tab at full screen. This tab is chosen based on the
- * {@link #tabSelecting(long, int)} call, and is used to show a thumbnail of a {@link Tab}
- * until that {@link Tab} is ready to be shown.
+ * A {@link Layout} that shows a single tab at full screen. This tab is chosen based on the {@link
+ * #tabSelecting(long, int)} call, and is used to show a thumbnail of a {@link Tab} until that
+ * {@link Tab} is ready to be shown.
  */
 public class StaticLayout extends Layout {
     public static final String TAG = "StaticLayout";
@@ -456,10 +457,18 @@ public class StaticLayout extends Layout {
     }
 
     private boolean canUseLiveTexture(Tab tab) {
+        final WebContents webContents = tab.getWebContents();
+        if (webContents == null) return false;
+
         final GURL url = tab.getUrl();
         final boolean isNativePage =
                 tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
-        return tab.getWebContents() != null && !SadTab.isShowing(tab) && !isNativePage;
+        final boolean isBFScreenshotDrawing =
+                isNativePage && tab.isDisplayingBackForwardAnimation();
+        assert !isBFScreenshotDrawing
+                        || ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+                : "Must not draw bf screenshot if back forward transition is disabled";
+        return !SadTab.isShowing(tab) && (!isNativePage || isBFScreenshotDrawing);
     }
 
     @Override

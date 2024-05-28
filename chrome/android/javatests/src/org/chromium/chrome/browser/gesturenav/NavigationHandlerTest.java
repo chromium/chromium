@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -35,14 +36,17 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -108,6 +112,49 @@ public class NavigationHandlerTest {
         Assert.assertEquals(
                 "Didn't navigate back", toUrl, ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
         Assert.assertEquals("Detected a wrong direction.", mNavigationHandler.fromLeftSide(), edge);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.BACK_FORWARD_TRANSITIONS})
+    public void testSwipeBackToNTPWithTransition() {
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
+        mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
+
+        mNavUtils.swipeFromEdgeAndHold(true);
+        Assert.assertEquals(
+                "Back forward transition not invoked yet",
+                AnimationStage.OTHER,
+                tab.getWebContents().getCurrentBackForwardTransitionStage());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mNavigationHandler.release(true));
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        AnimationStage.INVOKE_ANIMATION
+                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
+                "invoking animation should be started");
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        AnimationStage.NONE
+                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
+                "should wait for animation to be finished");
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        ((NewTabPage) tab.getNativePage()).getSmoothTransitionDelegateForTesting()
+                                != null,
+                "Smooth transition should be enabled");
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        !((BasicSmoothTransitionDelegate)
+                                        ((NewTabPage) tab.getNativePage())
+                                                .getSmoothTransitionDelegateForTesting())
+                                .getAnimatorForTesting()
+                                .isRunning(),
+                "Smooth transition should be finished");
     }
 
     @Test

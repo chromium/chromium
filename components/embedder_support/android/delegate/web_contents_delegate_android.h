@@ -131,6 +131,8 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback) override;
 
+  void DidBackForwardTransitionAnimationChange() override;
+
  protected:
   base::android::ScopedJavaLocalRef<jobject> GetJavaDelegate(JNIEnv* env) const;
 

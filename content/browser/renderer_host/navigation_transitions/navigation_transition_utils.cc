@@ -80,6 +80,7 @@ NavigationEntryImpl* GetEntryForToken(
 
 void CacheScreenshotImpl(NavigationControllerImpl& controller,
                          NavigationEntryImpl& entry,
+                         bool is_copied_from_embedder,
                          const SkBitmap& bitmap) {
   auto navigation_entry_id = entry.GetUniqueID();
 
@@ -124,7 +125,7 @@ void CacheScreenshotImpl(NavigationControllerImpl& controller,
   bitmap_copy.setImmutable();
 
   auto screenshot = std::make_unique<NavigationEntryScreenshot>(
-      bitmap_copy, entry.GetUniqueID());
+      bitmap_copy, entry.GetUniqueID(), is_copied_from_embedder);
   NavigationEntryScreenshotCache* cache =
       controller.GetNavigationEntryScreenshotCache();
   cache->SetScreenshot(&entry, std::move(screenshot));
@@ -133,6 +134,7 @@ void CacheScreenshotImpl(NavigationControllerImpl& controller,
 void CacheScreenshotForCrossDocNavigations(
     base::WeakPtr<NavigationControllerImpl> controller,
     int navigation_entry_id,
+    bool is_copied_from_embedder,
     const SkBitmap& bitmap) {
   if (!controller) {
     // The tab was destroyed by the time we receive the bitmap from the GPU.
@@ -146,7 +148,7 @@ void CacheScreenshotForCrossDocNavigations(
     // `NavigationEntry` was replaced or deleted, etc.
     return;
   }
-  CacheScreenshotImpl(*controller, *entry, bitmap);
+  CacheScreenshotImpl(*controller, *entry, is_copied_from_embedder, bitmap);
 }
 
 // We only want to capture screenshots for navigation entries reachable via
@@ -268,7 +270,8 @@ void CacheScreenshotForSameDocNavigations(
     return;
   }
 
-  CacheScreenshotImpl(*controller, *destination_entry, bitmap);
+  CacheScreenshotImpl(*controller, *destination_entry,
+                      /*is_copied_from_embedder=*/false, bitmap);
 
   destination_entry->SetSameDocumentNavigationEntryScreenshotToken(
       std::nullopt);
@@ -357,11 +360,10 @@ void NavigationTransitionUtils::
 
   bool copied_via_delegate =
       navigation_request.GetDelegate()->MaybeCopyContentAreaAsBitmap(
-          base::BindOnce(
-              &CacheScreenshotForCrossDocNavigations,
-              nav_controller.GetWeakPtr(),
-              nav_controller.GetLastCommittedEntry()->GetUniqueID()));
-
+          base::BindOnce(&CacheScreenshotForCrossDocNavigations,
+                         nav_controller.GetWeakPtr(),
+                         nav_controller.GetLastCommittedEntry()->GetUniqueID(),
+                         /*is_copied_from_embedder=*/true));
   if (!copied_via_delegate &&
       should_capture == ShouldCapture::kOnlyAskEmbedder) {
     if (GetTestScreenshotCallback()) {
@@ -393,7 +395,8 @@ void NavigationTransitionUtils::
       /*src_rect=*/gfx::Rect(), output_size,
       base::BindOnce(&CacheScreenshotForCrossDocNavigations,
                      nav_controller.GetWeakPtr(),
-                     nav_controller.GetLastCommittedEntry()->GetUniqueID()));
+                     nav_controller.GetLastCommittedEntry()->GetUniqueID(),
+                     /*is_copied_from_embedder=*/false));
 
   ++g_num_copy_requests_issued_for_testing;
 }

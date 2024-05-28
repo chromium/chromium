@@ -392,4 +392,10 @@ public interface Tab extends TabLifecycle {
 
     /** Update the title for the current page if changed. */
     void updateTitle();
+
+    /**
+     * @return True if the back forward transition is in progress, including web page and native
+     *     page transitions.
+     */
+    boolean isDisplayingBackForwardAnimation();
 }

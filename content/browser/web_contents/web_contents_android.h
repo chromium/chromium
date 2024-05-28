@@ -12,9 +12,11 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 #include "content/browser/renderer_host/navigation_controller_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 
 class GURL;
@@ -228,6 +230,7 @@ class CONTENT_EXPORT WebContentsAndroid {
   void AddDestructionObserver(DestructionObserver* observer);
   void RemoveDestructionObserver(DestructionObserver* observer);
 
+  void OnContentForNavigationEntryShown(JNIEnv* env);
   jint GetCurrentBackForwardTransitionStage(JNIEnv* env);
 
   // Adds a crash report, like DumpWithoutCrashing(), including the Java stack

@@ -375,6 +375,9 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public void onContentForNavigationEntryShown() {}
+
+    @Override
     public int getCurrentBackForwardTransitionStage() {
         return AnimationStage.NONE;
     }

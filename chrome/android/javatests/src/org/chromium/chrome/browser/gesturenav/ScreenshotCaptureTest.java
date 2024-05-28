@@ -50,7 +50,7 @@ import java.util.concurrent.TimeoutException;
     "hide-scrollbars",
     "enable-features=" + BlinkFeatures.BACK_FORWARD_TRANSITIONS
 })
-@DoNotBatch(reason = "Test")
+@DoNotBatch(reason = "Affect nav settings")
 public class ScreenshotCaptureTest {
     @Rule
     public final SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();

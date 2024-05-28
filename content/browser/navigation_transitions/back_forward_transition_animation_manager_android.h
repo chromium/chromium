@@ -49,6 +49,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   void OnGestureProgressed(const ui::BackGestureEvent& gesture) override;
   void OnGestureCancelled() override;
   void OnGestureInvoked() override;
+  void OnContentForNavigationEntryShown() override;
   AnimationStage GetCurrentAnimationStage() override;
 
   // This is called before the `old_host` is swapped out and before the
@@ -82,6 +83,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // has finished in the browser UI. Also use this to abort processing the
   // gesture when an unrelated navigation occurs during the animation.
   void SynchronouslyDestroyAnimator();
+
+  // `animator_` invokes this callback to notify the state changes of the
+  // current animation.
+  void OnAnimationStageChanged();
 
   WebContentsViewAndroid* web_contents_view_android() const {
     return web_contents_view_android_;

@@ -74,6 +74,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
   // viewport. This API also starts the session history navigation.
   virtual void OnGestureInvoked() = 0;
 
+  // For cases where the content for a navigation entry is being drawn by the
+  // embedder (instead of the web page), this notifies when the embedder has
+  // rendered the UI at its final state.
+  virtual void OnContentForNavigationEntryShown() = 0;
+
   // Get current stage of the back forward transition.
   virtual AnimationStage GetCurrentAnimationStage() = 0;
 };

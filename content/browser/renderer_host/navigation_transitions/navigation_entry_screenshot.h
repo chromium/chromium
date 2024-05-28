@@ -48,8 +48,9 @@ class CONTENT_EXPORT NavigationEntryScreenshot
  public:
   const static void* const kUserDataKey;
 
-  explicit NavigationEntryScreenshot(const SkBitmap& bitmap,
-                                     int navigation_entry_id);
+  NavigationEntryScreenshot(const SkBitmap& bitmap,
+                            int navigation_entry_id,
+                            bool is_copied_from_embedder);
   NavigationEntryScreenshot(const NavigationEntryScreenshot&) = delete;
   NavigationEntryScreenshot& operator=(const NavigationEntryScreenshot&) =
       delete;
@@ -77,6 +78,8 @@ class CONTENT_EXPORT NavigationEntryScreenshot
 
   int navigation_entry_id() const { return navigation_entry_id_; }
 
+  bool is_copied_from_embedder() const { return is_copied_from_embedder_; }
+
   SkBitmap GetBitmapForTesting() const;
 
  private:
@@ -97,6 +100,9 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   // This screenshot is cached for the navigation entry of
   // `navigation_entry_id_`.
   const int navigation_entry_id_;
+
+  // This screenshot is copied from embedder.
+  const bool is_copied_from_embedder_;
 };
 
 }  // namespace content

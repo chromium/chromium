@@ -25,26 +25,23 @@ import java.util.List;
 /**
  * The WebContents Java wrapper to allow communicating with the native WebContents object.
  *
- * Note about serialization and {@link Parcelable}:
- *   This object is serializable and deserializable as long as it is done in the same process.  That
- * means it can be passed between Activities inside this process, but not preserved beyond the
- * process lifetime.  This class will automatically deserialize into {@code null} if a deserialize
- * attempt happens in another process.
+ * <p>Note about serialization and {@link Parcelable}: This object is serializable and
+ * deserializable as long as it is done in the same process. That means it can be passed between
+ * Activities inside this process, but not preserved beyond the process lifetime. This class will
+ * automatically deserialize into {@code null} if a deserialize attempt happens in another process.
  *
- * To properly deserialize a custom Parcelable the right class loader must be used.  See below for
+ * <p>To properly deserialize a custom Parcelable the right class loader must be used. See below for
  * some examples.
  *
- * Intent Serialization/Deserialization Example:
- * intent.putExtra("WEBCONTENTSKEY", webContents);
+ * <p>Intent Serialization/Deserialization Example: intent.putExtra("WEBCONTENTSKEY", webContents);
  * // ... send to other location ...
- * intent.setExtrasClassLoader(WebContents.class.getClassLoader());
- * webContents = intent.getParcelableExtra("WEBCONTENTSKEY");
+ * intent.setExtrasClassLoader(WebContents.class.getClassLoader()); webContents =
+ * intent.getParcelableExtra("WEBCONTENTSKEY");
  *
- * Bundle Serialization/Deserialization Example:
- * bundle.putParcelable("WEBCONTENTSKEY", webContents);
- * // ... send to other location ...
- * bundle.setClassLoader(WebContents.class.getClassLoader());
- * webContents = bundle.get("WEBCONTENTSKEY");
+ * <p>Bundle Serialization/Deserialization Example: bundle.putParcelable("WEBCONTENTSKEY",
+ * webContents); // ... send to other location ...
+ * bundle.setClassLoader(WebContents.class.getClassLoader()); webContents =
+ * bundle.get("WEBCONTENTSKEY");
  */
 public interface WebContents extends Parcelable {
     /**
@@ -605,6 +602,16 @@ public interface WebContents extends Parcelable {
      * handler.
      */
     boolean needToFireBeforeUnloadOrUnloadEvents();
+
+    /**
+     * For cases where the content for a navigation entry is being drawn by the embedder (instead of
+     * the web page), this notifies when the embedder has rendered the UI at its final state. This
+     * is only called if the WebContents is showing an invoke animation for back forward
+     * transitions, see {@link
+     * org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid#didBackForwardTransitionAnimationChange},
+     * when the navigation entry showing embedder provided UI commits.
+     */
+    void onContentForNavigationEntryShown();
 
     /**
      * @return {@link AnimationStage} the current stage of back forward transition.
