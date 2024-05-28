@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/test/rectify_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window.h"

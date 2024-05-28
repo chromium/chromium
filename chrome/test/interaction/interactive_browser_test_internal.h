@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
