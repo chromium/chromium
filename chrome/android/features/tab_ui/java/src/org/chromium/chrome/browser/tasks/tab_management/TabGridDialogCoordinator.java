@@ -22,7 +22,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.MemberPickerListenerImpl;
@@ -33,7 +32,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
@@ -67,7 +65,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             new ObservableSupplierImpl<>();
     private final Activity mActivity;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
-    private final Supplier<TabModel> mRegularTabModelSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private ObservableSupplierImpl<Boolean> mShowingOrAnimationSupplier =
             new ObservableSupplierImpl<>(false);
@@ -87,7 +84,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
-            @NonNull Supplier<TabModel> regularTabModelSupplier,
             TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             ViewGroup containerView,
@@ -106,7 +102,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             : "TabGridDialogInSwitcher";
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
-            mRegularTabModelSupplier = regularTabModelSupplier;
             mTabContentManager = tabContentManager;
             mTabSwitcherResetHandler = resetHandler;
 
@@ -198,7 +193,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             activity,
                             mBrowserControlsStateProvider,
                             currentTabModelFilterSupplier,
-                            regularTabModelSupplier,
                             (tabId,
                                     thumbnailSize,
                                     callback,
@@ -242,7 +236,13 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // TODO(crbug.com/40894893): Consider inlining these behaviors in their respective
             // constructors if possible.
             mMediator.initWithNative(this::getTabListEditorController, tabGroupTitleEditor);
-            mTabListCoordinator.initWithNative(mRegularTabModelSupplier.get().getProfile(), null);
+            mTabListCoordinator.initWithNative(
+                    mCurrentTabModelFilterSupplier
+                            .get()
+                            .getTabModel()
+                            .getProfile()
+                            .getOriginalProfile(),
+                    null);
         }
     }
 
@@ -304,7 +304,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mDialogView.findViewById(R.id.dialog_container_view),
                             mBrowserControlsStateProvider,
                             mCurrentTabModelFilterSupplier,
-                            mRegularTabModelSupplier,
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
                             mode,

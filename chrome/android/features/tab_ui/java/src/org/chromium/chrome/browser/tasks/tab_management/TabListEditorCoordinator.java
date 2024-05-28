@@ -20,14 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
@@ -152,7 +150,6 @@ class TabListEditorCoordinator {
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
-            @NonNull Supplier<TabModel> regularTabModelSupplier,
             TabContentManager tabContentManager,
             Callback<RecyclerViewPosition> clientTabListRecyclerViewPositionSetter,
             @TabListMode int mode,
@@ -186,7 +183,6 @@ class TabListEditorCoordinator {
                             context,
                             mBrowserControlsStateProvider,
                             currentTabModelFilterSupplier,
-                            regularTabModelSupplier,
                             thumbnailProvider,
                             displayGroups,
                             null,
@@ -202,7 +198,12 @@ class TabListEditorCoordinator {
 
             // Note: The TabListEditorCoordinator is always created after native is
             // initialized.
-            Profile regularProfile = regularTabModelSupplier.get().getProfile();
+            Profile regularProfile =
+                    currentTabModelFilterSupplier
+                            .get()
+                            .getTabModel()
+                            .getProfile()
+                            .getOriginalProfile();
             mTabListCoordinator.initWithNative(regularProfile, null);
             if (mMultiThumbnailCardProvider != null) {
                 mMultiThumbnailCardProvider.initWithNative(regularProfile);

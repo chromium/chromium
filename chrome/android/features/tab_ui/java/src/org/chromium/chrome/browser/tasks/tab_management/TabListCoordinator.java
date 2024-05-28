@@ -122,7 +122,6 @@ public class TabListCoordinator
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
      *     controls.
      * @param tabModelFilterSupplier The supplier for the current tab model filter.
-     * @param regularTabModelSupplier The supplier for the regular tab model.
      * @param thumbnailProvider Provider to provide screenshot related details.
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
      *     tabs.
@@ -143,15 +142,12 @@ public class TabListCoordinator
      * @param rootView The root view of the app.
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
      *     respected in TabListMode.STRIP mode.
-     * @param hasEmptyView A boolean to determine if we should show empty view in tab switcher.
-     *     Currently only valid for TabListMode.GRID and TabListMode.LIST.
      */
     TabListCoordinator(
             @TabListMode int mode,
             Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
-            @NonNull Supplier<TabModel> regularTabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             boolean actionOnRelatedTabs,
             @Nullable
@@ -171,7 +167,6 @@ public class TabListCoordinator
                 browserControlsStateProvider,
                 /* modalDialogManager= */ null,
                 tabModelFilterSupplier,
-                regularTabModelSupplier,
                 thumbnailProvider,
                 actionOnRelatedTabs,
                 gridCardOnClickListenerProvider,
@@ -196,7 +191,6 @@ public class TabListCoordinator
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @Nullable ModalDialogManager modalDialogManager,
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
-            @NonNull Supplier<TabModel> regularTabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             boolean actionOnRelatedTabs,
             @Nullable
@@ -301,11 +295,12 @@ public class TabListCoordinator
                         mMode == TabListMode.STRIP,
                         R.dimen.default_favicon_corner_radius);
 
+        TabModelFilter currentFilter = mCurrentTabModelFilterSupplier.get();
         ActionConfirmationManager actionConfirmationManager =
                 new ActionConfirmationManager(
-                        regularTabModelSupplier.get().getProfile(),
+                        currentFilter.getTabModel().getProfile().getOriginalProfile(),
                         mContext,
-                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                        (TabGroupModelFilter) currentFilter,
                         modalDialogManager);
 
         mMediator =
@@ -315,7 +310,6 @@ public class TabListCoordinator
                         mMode,
                         modalDialogManager,
                         tabModelFilterSupplier,
-                        regularTabModelSupplier,
                         thumbnailProvider,
                         tabListFaviconProvider,
                         new TabGroupColorFaviconProvider(mContext),

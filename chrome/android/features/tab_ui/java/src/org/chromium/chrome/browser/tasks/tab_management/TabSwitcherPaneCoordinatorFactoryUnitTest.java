@@ -62,6 +62,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,6 +129,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModelSelector.getModels()).thenReturn(Arrays.asList(mTabModel));
+        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mTabModelFilter);
         mTabModelFilterSupplier.set(mTabModelFilter);
         when(mTabModelFilterProvider.getCurrentTabModelFilterSupplier())
@@ -136,6 +139,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         when(mTabModel.getCount()).thenReturn(1);
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
     }

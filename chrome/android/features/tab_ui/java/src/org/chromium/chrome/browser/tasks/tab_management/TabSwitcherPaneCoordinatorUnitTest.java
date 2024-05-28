@@ -137,6 +137,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
@@ -172,7 +173,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         activity,
                         mProfileProviderSupplier,
                         mTabModelFilterSupplier,
-                        () -> mTabModel,
                         mTabContentManager,
                         mTabCreatorManager,
                         mBrowserControlsStateProvider,

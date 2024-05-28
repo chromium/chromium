@@ -87,7 +87,6 @@ public class ClosableTabListEditorTest {
                                     mParentView,
                                     sActivityTestRule.getActivity().getBrowserControlsManager(),
                                     currentTabModelFilterSupplier,
-                                    () -> mTabModelSelector.getModel(false),
                                     sActivityTestRule.getActivity().getTabContentManager(),
                                     mSetRecyclerViewPosition,
                                     getMode(),

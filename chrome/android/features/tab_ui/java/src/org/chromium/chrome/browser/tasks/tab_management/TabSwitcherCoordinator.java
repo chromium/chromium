@@ -217,7 +217,6 @@ public class TabSwitcherCoordinator
                             mBrowserControlsStateProvider,
                             modalDialogManager,
                             currentTabModelFilterSupplier,
-                            () -> tabModelSelector.getModel(false),
                             mMultiThumbnailCardProvider,
                             true,
                             mMediator,
@@ -254,7 +253,6 @@ public class TabSwitcherCoordinator
                             rootView,
                             browserControls,
                             currentTabModelFilterSupplier,
-                            () -> mTabModelSelector.getModel(false),
                             tabContentManager,
                             mTabListCoordinator,
                             mode);
@@ -308,7 +306,6 @@ public class TabSwitcherCoordinator
                         mBrowserControlsStateProvider,
                         mBottomSheetController,
                         currentTabModelFilterSupplier,
-                        () -> mTabModelSelector.getModel(false),
                         mTabContentManager,
                         mTabCreatorManager,
                         mCoordinatorView,

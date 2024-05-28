@@ -184,7 +184,6 @@ public class SelectableTabListEditorTest {
                                     mParentView,
                                     cta.getBrowserControlsManager(),
                                     currentTabModelFilterSupplier,
-                                    () -> mTabModelSelector.getModel(false),
                                     cta.getTabContentManager(),
                                     mSetRecyclerViewPosition,
                                     getMode(),

@@ -368,8 +368,6 @@ class TabListMediator {
     private final @TabListMode int mMode;
     private final ModalDialogManager mModalDialogManager;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
-    // TODO(crbug.com/40946413): Refactor price drops so we don't need this.
-    private final Supplier<TabModel> mRegularTabModelSupplier;
     private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
             new ValueChangedCallback<>(this::onTabModelFilterChanged);
     private final TabActionListener mTabClosedListener;
@@ -923,7 +921,6 @@ class TabListMediator {
      * @param model The Model to keep state about a list of {@link Tab}s.
      * @param mode The {@link TabListMode}
      * @param modalDialogManager The {@link ModalDialogManager} for managing dialog lifecycles.
-     * @param regularTabModelSupplier The supplier of the regular {@link TabModel}.
      * @param thumbnailProvider {@link ThumbnailProvider} to provide screenshot related details.
      * @param tabListFaviconProvider Provider for all favicon related drawables.
      * @param tabGroupColorFaviconProvider Provider for tab group color favicon related drawables.
@@ -946,7 +943,6 @@ class TabListMediator {
             @TabListMode int mode,
             @Nullable ModalDialogManager modalDialogManager,
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
-            @NonNull Supplier<TabModel> regularTabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             TabListFaviconProvider tabListFaviconProvider,
             @NonNull TabGroupColorFaviconProvider tabGroupColorFaviconProvider,
@@ -961,7 +957,6 @@ class TabListMediator {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
-        mRegularTabModelSupplier = regularTabModelSupplier;
         mThumbnailProvider = thumbnailProvider;
         mModel = model;
         mMode = mode;
@@ -974,7 +969,7 @@ class TabListMediator {
         mActionsOnAllRelatedTabs = actionOnRelatedTabs;
         mTabActionState = initialTabActionState;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
-        mProfile = regularTabModelSupplier.get().getProfile();
+        mProfile = mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
         mTabGroupVisualDataDialogManager = null;
         mActionConfirmationManager = actionConfirmationManager;
 
@@ -1583,10 +1578,14 @@ class TabListMediator {
      * While leaving the tab switcher grid this update whether a tab's current price drop has or has
      * not been seen.
      */
+    // TODO(crbug.com/343206772): Move code to TabSwitcherPane.
     private void saveSeenPriceDrops() {
+        // The filter determines what's shown in the tab list.
         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        // The filter's underlying model should have any tab that was viewed.
+        TabModel model = filter.getTabModel();
         for (Integer tabId : sViewedTabIds) {
-            Tab tab = TabModelUtils.getTabById(mRegularTabModelSupplier.get(), tabId);
+            Tab tab = TabModelUtils.getTabById(model, tabId);
             if (tab != null && !filter.isTabInTabGroup(tab)) {
                 ShoppingPersistedTabData.from(
                         tab,

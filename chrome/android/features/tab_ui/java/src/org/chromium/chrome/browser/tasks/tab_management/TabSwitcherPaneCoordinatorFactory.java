@@ -131,7 +131,6 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mActivity,
                 mProfileProviderSupplier,
                 createTabModelFilterSupplier(isIncognito),
-                () -> mTabModelSelector.getModel(false),
                 mTabContentManager,
                 mTabCreatorManager,
                 mBrowserControlsStateProvider,
