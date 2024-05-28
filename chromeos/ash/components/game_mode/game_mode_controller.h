@@ -97,6 +97,10 @@ class GameModeController : public aura::client::FocusChangeObserver {
                     NotifySetGameModeCallback notify_set_game_mode_callback);
     ~GameModeEnabler();
 
+    // Updates the window which is causing the game mode to be enabled, and
+    // notifies observers.
+    void SetWindowState(ash::WindowState* window_state);
+
    private:
     static void OnSetGameMode(std::optional<GameMode> refresh_of,
                               std::optional<GameMode> previous);
@@ -110,7 +114,7 @@ class GameModeController : public aura::client::FocusChangeObserver {
     // Not owned. |window_state_| is observed by the WindowTracker which owns
     // this GameModeEnabler, and this enabler will always be destroyed before
     // the window is destroyed.
-    const raw_ptr<ash::WindowState> window_state_;
+    raw_ptr<ash::WindowState> window_state_;
 
     const NotifySetGameModeCallback notify_set_game_mode_callback_;
   };
