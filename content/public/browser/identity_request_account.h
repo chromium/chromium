@@ -59,6 +59,9 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   std::string name;
   std::string given_name;
   GURL picture;
+  // This will be an empty string if fetching failed.
+  std::string picture_data;
+
   std::vector<std::string> login_hints;
   std::vector<std::string> domain_hints;
   std::vector<std::string> labels;

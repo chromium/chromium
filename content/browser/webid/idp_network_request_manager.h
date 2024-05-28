@@ -306,6 +306,10 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                      const std::string& client_id,
                                      DisconnectCallback callback);
 
+  // Download a URL. The request is made uncredentialed.
+  virtual void DownloadUncredentialedUrl(const GURL& url,
+                                         DownloadCallback callback);
+
  private:
   // Starts download request using `url_loader`. Calls `parse_json_callback`
   // when the download result has been parsed.

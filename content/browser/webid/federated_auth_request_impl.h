@@ -290,6 +290,21 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdentityProviderInfo> idp_info,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::AccountList accounts);
+  // Fetches the account pictures for |accounts| and calls
+  // OnFetchDataForIdpSucceeded when done.
+  void FetchAccountPictures(
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      const IdpNetworkRequestManager::AccountList& accounts,
+      const IdpNetworkRequestManager::ClientMetadata& client_metadata);
+  void OnAccountPictureReceived(base::RepeatingClosure cb,
+                                GURL url,
+                                std::unique_ptr<std::string> response_body,
+                                int response_code,
+                                const std::string& mime_type);
+  void OnAllAccountPicturesReceived(
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      IdpNetworkRequestManager::AccountList accounts,
+      const IdpNetworkRequestManager::ClientMetadata& client_metadata);
   void OnAccountSelected(const GURL& idp_config_url,
                          const std::string& account_id,
                          bool is_sign_in);
@@ -445,6 +460,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Maps the login URL to the info that may be added as query parameters to
   // that URL. Populated by OnAllConfigAndWellKnownFetched().
   base::flat_map<GURL, IdentityProviderLoginUrlInfo> idp_login_infos_;
+
+  // The downloaded image data.
+  std::map<GURL, std::unique_ptr<std::string>> downloaded_images_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;

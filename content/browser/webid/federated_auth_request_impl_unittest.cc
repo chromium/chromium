@@ -103,6 +103,9 @@ constexpr char kAccountId[] = "1234";
 constexpr char kAccountIdNicolas[] = "nico_id";
 constexpr char kAccountIdPeter[] = "peter_id";
 constexpr char kAccountIdZach[] = "zach_id";
+constexpr char kAccountPicture[] = "https://idp.example/profilepic";
+constexpr char kAccountPicture404[] = "https://idp.example/404";
+constexpr char kAccountPictureData[] = "picture";
 constexpr char kEmail[] = "ken@idp.example";
 constexpr char kDomainHint[] = "domain@corp.com";
 constexpr char kOtherDomainHint[] = "other_domain@corp.com";
@@ -442,6 +445,7 @@ enum class FetchedEndpoint {
   ACCOUNTS,
   TOKEN,
   WELL_KNOWN,
+  PICTURE,
 };
 
 class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
@@ -596,6 +600,20 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     } else {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(bound_callback));
+    }
+  }
+
+  void DownloadUncredentialedUrl(const GURL& url,
+                                 DownloadCallback callback) override {
+    EXPECT_TRUE(url == GURL(kAccountPicture) || url == GURL(kAccountPicture404))
+        << url;
+    ++num_fetched_[FetchedEndpoint::PICTURE];
+    if (url == GURL(kAccountPicture404)) {
+      std::move(callback).Run(nullptr, 404, "");
+    } else {
+      std::move(callback).Run(
+          std::make_unique<std::string>(kAccountPictureData), 200,
+          "image/jpeg");
     }
   }
 
@@ -5495,6 +5513,37 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsNoMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kZero, 1);
+}
+
+TEST_F(FederatedAuthRequestImplTest, PictureFetch) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts[0].picture =
+      GURL(kAccountPicture);
+  // This ensures we don't fetch client metadata, to test a different codepath.
+  configuration.idp_info[kProviderUrlFull].accounts[0].login_state =
+      LoginState::kSignIn;
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].id, kAccountId);
+  EXPECT_EQ(displayed_accounts()[0].picture_data, kAccountPictureData);
+}
+
+TEST_F(FederatedAuthRequestImplTest, PictureFetchMultipleAccounts) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+  configuration.idp_info[kProviderUrlFull].accounts[0].picture =
+      GURL(kAccountPicture);
+  configuration.idp_info[kProviderUrlFull].accounts[1].picture =
+      GURL(kAccountPicture);
+  configuration.idp_info[kProviderUrlFull].accounts[2].picture =
+      GURL(kAccountPicture404);
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+  ASSERT_EQ(displayed_accounts().size(), 3u);
+  EXPECT_EQ(displayed_accounts()[0].picture_data, kAccountPictureData);
+  EXPECT_EQ(displayed_accounts()[1].picture_data, kAccountPictureData);
+  EXPECT_EQ(displayed_accounts()[2].picture_data, "");
 }
 
 // Test that when FedCmRpContext flag is enabled and rp_context is specified,
