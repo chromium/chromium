@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -18,12 +19,12 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
+import {CrScrollObserverMixin} from '//resources/cr_elements/cr_scroll_observer_mixin.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {Debouncer, microTask, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
@@ -82,7 +83,7 @@ export interface ComposeAppElement {
   };
 }
 
-const ComposeAppElementBase = I18nMixin(CrScrollableMixin(PolymerElement));
+const ComposeAppElementBase = I18nMixin(CrScrollObserverMixin(PolymerElement));
 
 // Enumerates trigger points of compose or regenerate calls.
 // Used to mark where a compose call was made so focus
@@ -295,7 +296,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private animator_: ComposeAppAnimator;
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
-  private bodyResizeObserver_: ResizeObserver;
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeUntrustedDialogCallbackRouter =
       this.apiProxy_.getRouter();
@@ -348,6 +348,12 @@ export class ComposeAppElement extends ComposeAppElementBase {
         });
   }
 
+  // Overridden from CrScrollObserverMixin in order to change the scrolling
+  // container based on the UI Refinements flag.
+  override getContainer(): HTMLElement {
+    return this.enableUiRefinements ? this.$.resultTextContainer : this.$.body;
+  }
+
   private getResponseText_(): TextInput {
     if (this.userResponseText_ !== undefined) {
       return {
@@ -382,19 +388,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.saveComposeAppState_();
       }
     });
-    this.bodyResizeObserver_ = new ResizeObserver(() => {
-      this.scrollCheckDebouncer_ = Debouncer.debounce(
-          this.scrollCheckDebouncer_, timeOut.after(20), () => {
-            this.requestUpdateScroll();
-          });
-    });
-    this.bodyResizeObserver_.observe(this.$.body);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
-    this.bodyResizeObserver_.disconnect();
   }
 
   private debounceSaveComposeAppState_() {

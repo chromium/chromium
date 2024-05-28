@@ -11,6 +11,9 @@
  * is the element being scrolled. There should only be one such element in the
  * DOM.
  * <div id="container">...</div>
+ * Alternatively, clients can set a container element by overriding the
+ * getContainer() method. This method should always return the same element
+ * throughout the life of the client. It is first called in connectedCallback().
  *
  * The mixin will toggles CSS classes on #container indicating the current
  * scroll state.
@@ -38,7 +41,7 @@ export const CrScrollObserverMixinLit =
         override connectedCallback() {
           super.connectedCallback();
 
-          const container = this.getContainer_();
+          const container = this.getContainer();
           this.topProbe_ = document.createElement('div');
           this.bottomProbe_ = document.createElement('div');
           container.prepend(this.topProbe_);
@@ -53,7 +56,7 @@ export const CrScrollObserverMixinLit =
           this.enableScrollObservation(false);
         }
 
-        private getContainer_(): HTMLElement {
+        getContainer(): HTMLElement {
           const container =
               this.shadowRoot!.querySelector<HTMLElement>('#container');
           assert(container);
@@ -65,7 +68,7 @@ export const CrScrollObserverMixinLit =
             // In some rare cases, there could be more than one entry per
             // observed element, in which case the last entry's result
             // stands.
-            const container = this.getContainer_();
+            const container = this.getContainer();
             for (const entry of entries) {
               const target = entry.target;
               if (target === this.topProbe_) {
@@ -85,7 +88,7 @@ export const CrScrollObserverMixinLit =
             }
           };
           return new IntersectionObserver(
-              callback, {root: this.getContainer_(), threshold: 0});
+              callback, {root: this.getContainer(), threshold: 0});
         }
 
         /**
@@ -131,4 +134,8 @@ export const CrScrollObserverMixinLit =
 
 export interface CrScrollObserverMixinLitInterface {
   enableScrollObservation(enable: boolean): void;
+
+  // Defaults to returning #container. Override for different behavior. Do
+  // not override if using via CrContainerShadowMixinLit.
+  getContainer(): HTMLElement;
 }

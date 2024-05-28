@@ -11,6 +11,9 @@
  * is the element being scrolled. There should only be one such element in the
  * DOM.
  * <div id="container">...</div>
+ * Alternatively, clients can set a container element by overriding the
+ * getContainer() method. This method should always return the same element
+ * throughout the life of the client. It is first called in connectedCallback().
  *
  * The mixin will toggle CSS classes on #container indicating the current scroll
  * state.
@@ -39,7 +42,7 @@ export const CrScrollObserverMixin = dedupingMixin(
         override connectedCallback() {
           super.connectedCallback();
 
-          const container = this.getContainer_();
+          const container = this.getContainer();
           this.topProbe_ = document.createElement('div');
           this.bottomProbe_ = document.createElement('div');
           container.prepend(this.topProbe_);
@@ -54,7 +57,8 @@ export const CrScrollObserverMixin = dedupingMixin(
           this.enableScrollObservation(false);
         }
 
-        private getContainer_(): HTMLElement {
+        // Defaults to returning #container. Override for different behavior.
+        getContainer(): HTMLElement {
           const container =
               this.shadowRoot!.querySelector<HTMLElement>('#container');
           assert(container);
@@ -66,7 +70,7 @@ export const CrScrollObserverMixin = dedupingMixin(
             // In some rare cases, there could be more than one entry per
             // observed element, in which case the last entry's result
             // stands.
-            const container = this.getContainer_();
+            const container = this.getContainer();
             for (const entry of entries) {
               const target = entry.target;
               if (target === this.topProbe_) {
@@ -86,7 +90,7 @@ export const CrScrollObserverMixin = dedupingMixin(
             }
           };
           return new IntersectionObserver(
-              callback, {root: this.getContainer_(), threshold: 0});
+              callback, {root: this.getContainer(), threshold: 0});
         }
 
         /**
@@ -132,4 +136,8 @@ export const CrScrollObserverMixin = dedupingMixin(
 
 export interface CrScrollObserverMixinInterface {
   enableScrollObservation(enable: boolean): void;
+
+  // Defaults to returning #container. Override for different behavior. Do
+  // not override if using via CrContainerShadowMixin.
+  getContainer(): HTMLElement;
 }

@@ -809,7 +809,7 @@ suite('ComposeAppLegacyUi', () => {
   });
 
   test('UpdatesScrollableBodyAfterResize', async () => {
-    assertTrue(app.$.body.hasAttribute('scrollable'));
+    assertEquals(app.$.body, app.getContainer());
 
     mockInput('Some fake input.');
     app.$.submitButton.click();
@@ -949,13 +949,14 @@ suite('ComposeAppRefinedUi', () => {
   });
 
   test('UpdatesScrollableResultContainerAfterResize', async () => {
-    assertTrue(app.$.resultTextContainer.hasAttribute('scrollable'));
+    // Assert scrolling container is set correctly.
+    assertEquals(app.$.resultTextContainer, app.getContainer());
     mockInput('Some fake input.');
     app.$.submitButton.click();
 
-    // The results text should not yet be scrollable because the result has not
+    // The results text should not yet be visible because the result has not
     // been fetched yet.
-    assertFalse(app.$.resultTextContainer.classList.contains('can-scroll'));
+    assertFalse(isVisible(app.$.resultTextContainer));
 
     // Results text should be scrollable when a long response is received.
     await testProxy.whenCalled('compose');
@@ -976,6 +977,7 @@ suite('ComposeAppRefinedUi', () => {
     await testProxy.whenCalled('rewrite');
     await mockResponse('Refreshed output.');
     await whenCheck(
-        app.$.body, () => !app.$.body.classList.contains('can-scroll'));
+        app.$.resultTextContainer,
+        () => !app.$.resultTextContainer.classList.contains('can-scroll'));
   });
 });

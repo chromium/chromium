@@ -11,18 +11,6 @@
  * #include=cr-hidden-style cr-icons
  * #css_wrapper_metadata_end */
 
-html,
-:host {
-  --scrollable-border-color: var(--google-grey-300);
-}
-
-@media (prefers-color-scheme: dark) {
-  html,
-  :host {
-    --scrollable-border-color: var(--google-grey-700);
-  }
-}
-
 [actionable] {
   cursor: pointer;
 }

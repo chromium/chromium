@@ -135,12 +135,16 @@
   /* Set scroll-related styles if UI refinements are not enabled. */
   :host(:not([enable-ui-refinements])) #body {
     --scrollbar-width_: 4px;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 1px 0;
     overflow: auto;
     padding-inline-end: calc(20px - var(--scrollbar-width_));
     scrollbar-gutter: stable;
   }
 
-  :host(:not([enable-ui-refinements])) #body.is-scrolled {
+  :host(:not([enable-ui-refinements]))
+      #body.can-scroll:not(.scrolled-to-top) {
     border-top: solid 1px var(--color-compose-dialog-divider);
   }
 
@@ -155,6 +159,24 @@
     * from flickering, and remove scrollbar width from padding. */
     overflow: visible;
     padding-inline-end: 20px;
+  }
+
+  /* Set scroll-related styles if UI refinements are enabled */
+  :host([enable-ui-refinements]) #resultTextContainer {
+    border-color: transparent;
+    border-style: solid;
+    border-width: 1px 0;
+    overflow-y: auto;
+  }
+
+  :host([enable-ui-refinements])
+       #resultTextContainer.can-scroll:not(.scrolled-to-top) {
+    border-top-color: var(--scrollable-border-color);
+  }
+
+  :host([enable-ui-refinements])
+       #resultTextContainer.can-scroll:not(.scrolled-to-bottom) {
+    border-bottom-color: var(--scrollable-border-color);
   }
 
   /* Different elements are made scrollable depending on whether UI refinements
@@ -514,7 +536,7 @@
   </div>
 
   <div id="bodyAndFooter">
-    <div id="body" scrollable$="[[!enableUiRefinements]]">
+    <div id="body">
       <compose-textarea id="textarea" value="{{input_}}"
         readonly="[[submitted_]]" allow-exiting-readonly-mode="[[!loading_]]"
         on-edit-click="onEditClick_" input-params="[[inputParams_]]">
@@ -535,7 +557,7 @@
       <div id="resultContainer" class="result-container"
           hidden="[[hideResults_(hasOutput_, feedbackEnabled_)]]">
         <div id="resultContainerInner">
-          <div id="resultTextContainer" scrollable$="[[enableUiRefinements]]">
+          <div id="resultTextContainer">
             <compose-result-text id="resultText" text-input="[[responseText_]]"
               is-output-complete="{{outputComplete_}}"
               has-output="{{hasOutput_}}"

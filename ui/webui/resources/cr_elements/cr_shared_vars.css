@@ -134,6 +134,7 @@ html {
   --cr-menu-shadow: var(--cr-elevation-2);
   --cr-separator-color: rgba(0, 0, 0, .06);
   --cr-title-text-color: rgb(90, 90, 90);
+  --scrollable-border-color: var(--google-grey-300);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -150,6 +151,7 @@ html {
                       rgba(0, 0, 0, .15) 0 3px 6px 2px;
     --cr-separator-color: rgba(255, 255, 255, .1);
     --cr-title-text-color: var(--cr-primary-text-color);
+    --scrollable-border-color: var(--google-grey-700);
   }
 }
 
