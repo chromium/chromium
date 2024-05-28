@@ -11,6 +11,7 @@
 #include "chrome/browser/page_image_service/android/jni_headers/ImageServiceBridge_jni.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/page_image_service/metrics_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "url/gurl.h"
 
@@ -38,6 +39,13 @@ static jlong JNI_ImageServiceBridge_Init(JNIEnv* env, Profile* profile) {
       page_image_service::ImageServiceFactory::GetForBrowserContext(profile),
       IdentityManagerFactory::GetForProfile(profile));
   return reinterpret_cast<intptr_t>(image_service_bridge);
+}
+
+static std::string JNI_ImageServiceBridge_ClientIdToString(
+    JNIEnv* env,
+    const jint client_id) {
+  return page_image_service::ClientIdToString(
+      static_cast<page_image_service::mojom::ClientId>(client_id));
 }
 
 ImageServiceBridge::ImageServiceBridge(

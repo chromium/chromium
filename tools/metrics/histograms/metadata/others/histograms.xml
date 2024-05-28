@@ -8575,6 +8575,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageImageService.Android.SalientImageUrlFetchResult.{ClientId}"
+    enum="SalientImageUrlFetchResult" expires_after="2025-01-20">
+  <owner>hanxi@google.com</owner>
+  <owner>huangs@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <summary>
+    Records the fetching result of a salient image. The histogram is logged when
+    an salient image is fetched for the {ClientId}. Android-only.
+  </summary>
+  <token key="ClientId" variants="PageImageServiceClientId"/>
+</histogram>
+
 <histogram name="PageImageService.Backend.OptimizationGuide.Result{ClientId}"
     enum="PageImageServiceResult" expires_after="2024-11-03">
   <owner>sophiechang@chromium.org</owner>

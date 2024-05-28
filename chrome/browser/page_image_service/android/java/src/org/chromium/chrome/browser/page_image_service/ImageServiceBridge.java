@@ -14,10 +14,10 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.chrome.browser.page_image_service.ImageServiceMetrics.SalientImageUrlFetchResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.page_image_service.mojom.ClientId;
-import org.chromium.page_image_service.mojom.ClientId.EnumType;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.Map;
 
 /** Allows java access to the native ImageService. */
 public class ImageServiceBridge {
-    private final @EnumType int mClientId;
+    private final @ClientId.EnumType int mClientId;
     private final String mImageFetcherClientName;
     // Cache the results for repeated queries to avoid extra calls through the JNI/network.
     private final Map<GURL, GURL> mSalientImageUrlCache = new HashMap<>();
@@ -41,7 +41,7 @@ public class ImageServiceBridge {
      * @param imageFetcher The fetcher to fetch the image.
      */
     public ImageServiceBridge(
-            @EnumType int clientId,
+            @ClientId.EnumType int clientId,
             @NonNull String imageFetcherClientName,
             @NonNull Profile profile,
             @NonNull ImageFetcher imageFetcher) {
@@ -71,6 +71,7 @@ public class ImageServiceBridge {
      * @param imageSize The size of the salient image.
      * @param callback The callback to receive the salient image url.
      */
+    @Deprecated
     public void fetchImageFor(
             boolean isAccountData,
             @NonNull GURL pageUrl,
@@ -103,7 +104,13 @@ public class ImageServiceBridge {
     void fetchImageUrlFor(
             boolean isAccountData, @NonNull GURL pageUrl, @NonNull Callback<GURL> callback) {
         if (mSalientImageUrlCache.containsKey(pageUrl)) {
-            callback.onResult(mSalientImageUrlCache.get(pageUrl));
+            GURL cacheResult = mSalientImageUrlCache.get(pageUrl);
+            callback.onResult(cacheResult);
+            ImageServiceMetrics.recordFetchImageUrlResult(
+                    mClientId,
+                    cacheResult == null
+                            ? SalientImageUrlFetchResult.FAILED_FROM_CACHE
+                            : SalientImageUrlFetchResult.SUCCEED_FROM_CACHE);
             return;
         }
 
@@ -117,7 +124,17 @@ public class ImageServiceBridge {
                                 (salientImageUrl) -> {
                                     mSalientImageUrlCache.put(pageUrl, salientImageUrl);
                                     callback.onResult(salientImageUrl);
+                                    ImageServiceMetrics.recordFetchImageUrlResult(
+                                            mClientId,
+                                            salientImageUrl == null
+                                                    ? SalientImageUrlFetchResult.FAILED_FROM_NETWORK
+                                                    : SalientImageUrlFetchResult
+                                                            .SUCCEED_FROM_NETWORK);
                                 }));
+    }
+
+    static String clientIdToString(@ClientId.EnumType int clientId) {
+        return ImageServiceBridgeJni.get().clientIdToString(clientId);
     }
 
     boolean isUrlCachedForTesting(GURL pageUrl, GURL imageUrl) {
@@ -131,8 +148,13 @@ public class ImageServiceBridge {
 
     @NativeMethods
     public interface Natives {
+        // Static methods.
         long init(@JniType("Profile*") Profile profile);
 
+        @JniType("std::string")
+        String clientIdToString(@ClientId.EnumType int clientId);
+
+        // Instance methods.
         void destroy(long nativeImageServiceBridge);
 
         void fetchImageUrlFor(
