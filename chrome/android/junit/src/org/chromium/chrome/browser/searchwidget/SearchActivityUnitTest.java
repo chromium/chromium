@@ -885,6 +885,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onResumeWithNative_fromCustomTabs_withoutPackage() {
+        SearchActivity.SEARCH_IN_CCT_APPLY_REFERRER_ID.setForTesting(true);
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         doReturn(null).when(mUtils).getReferrer(any());
         mActivity.onNewIntent(new Intent());
@@ -902,6 +903,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onResumeWithNative_fromCustomTabs_withPackage() {
+        SearchActivity.SEARCH_IN_CCT_APPLY_REFERRER_ID.setForTesting(true);
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         doReturn("com.package.name").when(mUtils).getReferrer(any());
         mActivity.onNewIntent(new Intent());
@@ -914,6 +916,25 @@ public class SearchActivityUnitTest {
 
         verify(mUmaObserver).startUmaSession(eq(ActivityType.CUSTOM_TAB), eq(null), any());
         verify(mSetCustomTabSearchClient).onResult("app-cct-com.package.name");
+        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
+    }
+
+    @Test
+    public void onResumeWithNative_fromCustomTabs_propagationDisabled() {
+        SearchActivity.SEARCH_IN_CCT_APPLY_REFERRER_ID.setForTesting(false);
+        doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        doReturn("com.package.name").when(mUtils).getReferrer(any());
+        mActivity.onNewIntent(new Intent());
+
+        try (var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(SearchActivity.HISTOGRAM_INTENT_REFERRER_VALID)
+                        .build()) {
+            mActivity.onResumeWithNative();
+        }
+
+        verify(mUmaObserver).startUmaSession(eq(ActivityType.CUSTOM_TAB), eq(null), any());
+        verify(mSetCustomTabSearchClient, never()).onResult(any());
         verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
     }
 
