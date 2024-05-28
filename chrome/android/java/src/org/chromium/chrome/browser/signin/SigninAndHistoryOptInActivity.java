@@ -113,7 +113,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         @NoAccountSigninMode
         int noAccountSigninMode =
                 intent.getIntExtra(
-                        ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, NoAccountSigninMode.ADD_ACCOUNT);
+                        ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, NoAccountSigninMode.BOTTOM_SHEET);
         @WithAccountSigninMode
         int withAccountSigninMode =
                 intent.getIntExtra(

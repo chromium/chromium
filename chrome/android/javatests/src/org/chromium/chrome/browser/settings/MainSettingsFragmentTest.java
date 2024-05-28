@@ -352,7 +352,7 @@ public class MainSettingsFragmentTest {
                         any(Activity.class),
                         any(Profile.class),
                         any(AccountPickerBottomSheetStrings.class),
-                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
                         eq(
                                 SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),

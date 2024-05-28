@@ -199,7 +199,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                         mActivity,
                         mProfile,
                         bottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                         SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,

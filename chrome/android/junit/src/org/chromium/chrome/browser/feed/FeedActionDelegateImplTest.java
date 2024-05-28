@@ -126,7 +126,7 @@ public final class FeedActionDelegateImplTest {
                         any(),
                         any(),
                         any(),
-                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
                         eq(
                                 SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
@@ -144,7 +144,7 @@ public final class FeedActionDelegateImplTest {
                         any(),
                         any(),
                         any(),
-                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
                         eq(
                                 SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),

@@ -198,7 +198,7 @@ public class SignInPreference extends Preference
                                         mProfile,
                                         bottomSheetStrings,
                                         SigninAndHistoryOptInCoordinator.NoAccountSigninMode
-                                                .ADD_ACCOUNT,
+                                                .BOTTOM_SHEET,
                                         SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                         SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL,

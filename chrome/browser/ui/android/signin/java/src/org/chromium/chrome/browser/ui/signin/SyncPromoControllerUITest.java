@@ -227,7 +227,7 @@ public class SyncPromoControllerUITest {
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
-                        eq(NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.BOOKMARK_MANAGER));
@@ -315,7 +315,7 @@ public class SyncPromoControllerUITest {
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
-                        eq(NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET),
                         eq(HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.BOOKMARK_MANAGER));
@@ -432,7 +432,7 @@ public class SyncPromoControllerUITest {
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
-                        eq(NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAccessPoint.RECENT_TABS));
     }
@@ -476,7 +476,7 @@ public class SyncPromoControllerUITest {
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
-                        eq(NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAccessPoint.RECENT_TABS));
     }
@@ -520,7 +520,7 @@ public class SyncPromoControllerUITest {
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
-                        eq(NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAccessPoint.RECENT_TABS));
     }

@@ -704,7 +704,7 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                         SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mAccessPoint);
@@ -713,7 +713,7 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                         SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
@@ -733,7 +733,7 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                         SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mAccessPoint);
@@ -742,7 +742,7 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                         SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
@@ -762,7 +762,7 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                         SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                 .CHOOSE_ACCOUNT_BOTTOM_SHEET,
                         mAccessPoint);
@@ -771,7 +771,7 @@ public class SyncPromoController {
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                         SigninAndHistoryOptInCoordinator.WithAccountSigninMode
                                 .CHOOSE_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
