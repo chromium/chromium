@@ -615,12 +615,6 @@ BASE_FEATURE(kAutofillForUnclassifiedFieldsAvailable,
              "AutofillForUnclassifiedFieldsAvailable",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether testing forms using devtools will be available.
-// TODO(crbug.com/40274514): Clean up when launched.
-BASE_FEATURE(kAutofillTestFormWithDevtools,
-             "AutofillTestFormWithDevtools",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether test address profiles will be present in the Autofill popup.
 // TODO(crbug.com/40270486): Clean up when launched.
 BASE_FEATURE(kAutofillTestFormWithTestAddresses,

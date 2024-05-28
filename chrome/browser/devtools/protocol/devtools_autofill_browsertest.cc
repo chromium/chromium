@@ -133,8 +133,7 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
  public:
   DevToolsAutofillTest() {
     feature_list_.InitWithFeatures(
-        {features::kAutofillTestFormWithDevtools,
-         features::kAutofillTestFormWithTestAddresses},
+        {features::kAutofillTestFormWithTestAddresses},
         {});
   }
   void SetUpOnMainThread() override {
