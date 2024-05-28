@@ -1401,7 +1401,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
             ? compose_delegate->GetSuggestion(form, field, trigger_source)
             : std::nullopt;
     if (maybe_compose_suggestion) {
-      suggestions.push_back(*std::move(maybe_compose_suggestion));
+      std::move(callback).Run(/*show_suggestions=*/true,
+                              {*std::move(maybe_compose_suggestion)});
+      return;
     }
   }
 
