@@ -124,6 +124,48 @@ bool BypassBlocklistWildcardForURL(const GURL& url) {
   return false;
 }
 
+// Determines if the left-hand side `lhs` filter takes precedence over the
+// right-hand side `rhs` filter. Returns true if `lhs` takes precedence over
+// `rhs`, false otherwise.
+bool FilterTakesPrecedence(const FilterComponents& lhs,
+                           const FilterComponents& rhs) {
+  // The "*" wildcard in the blocklist is the lowest priority filter.
+  if (!rhs.allow && rhs.IsWildcard()) {
+    return true;
+  }
+
+  if (lhs.match_subdomains && !rhs.match_subdomains) {
+    return false;
+  }
+  if (!lhs.match_subdomains && rhs.match_subdomains) {
+    return true;
+  }
+
+  const size_t host_length = lhs.host.length();
+  const size_t other_host_length = rhs.host.length();
+  if (host_length != other_host_length) {
+    return host_length > other_host_length;
+  }
+
+  const size_t path_length = lhs.path.length();
+  const size_t other_path_length = rhs.path.length();
+  if (path_length != other_path_length) {
+    return path_length > other_path_length;
+  }
+
+  if (lhs.number_of_url_matching_conditions !=
+      rhs.number_of_url_matching_conditions) {
+    return lhs.number_of_url_matching_conditions >
+           rhs.number_of_url_matching_conditions;
+  }
+
+  if (lhs.allow && !rhs.allow) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 // BlocklistSource implementation that blocks URLs, domains and schemes
@@ -220,39 +262,6 @@ URLBlocklist::URLBlocklistState URLBlocklist::GetURLBlocklistState(
 
 size_t URLBlocklist::Size() const {
   return filters_.size();
-}
-
-// static
-bool URLBlocklist::FilterTakesPrecedence(const FilterComponents& lhs,
-                                         const FilterComponents& rhs) {
-  // The "*" wildcard in the blocklist is the lowest priority filter.
-  if (!rhs.allow && rhs.IsWildcard())
-    return true;
-
-  if (lhs.match_subdomains && !rhs.match_subdomains)
-    return false;
-  if (!lhs.match_subdomains && rhs.match_subdomains)
-    return true;
-
-  size_t host_length = lhs.host.length();
-  size_t other_host_length = rhs.host.length();
-  if (host_length != other_host_length)
-    return host_length > other_host_length;
-
-  size_t path_length = lhs.path.length();
-  size_t other_path_length = rhs.path.length();
-  if (path_length != other_path_length)
-    return path_length > other_path_length;
-
-  if (lhs.number_of_url_matching_conditions !=
-      rhs.number_of_url_matching_conditions)
-    return lhs.number_of_url_matching_conditions >
-           rhs.number_of_url_matching_conditions;
-
-  if (lhs.allow && !rhs.allow)
-    return true;
-
-  return false;
 }
 
 URLBlocklistManager::URLBlocklistManager(

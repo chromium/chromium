@@ -71,11 +71,6 @@ class POLICY_EXPORT URLBlocklist {
   size_t Size() const;
 
  private:
-  // Returns true if |lhs| takes precedence over |rhs|.
-  static bool FilterTakesPrecedence(
-      const url_matcher::util::FilterComponents& lhs,
-      const url_matcher::util::FilterComponents& rhs);
-
   base::MatcherStringPattern::ID id_ = 0;
   std::map<base::MatcherStringPattern::ID, url_matcher::util::FilterComponents>
       filters_;
