@@ -118,6 +118,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   void RemoveSidePanelViewStateObserver(SidePanelViewStateObserver* observer);
 
+  void Close(bool supress_animations);
+
  private:
   friend class SidePanelCoordinatorTest;
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
@@ -132,7 +134,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
                 std::nullopt,
             bool supress_animations = false);
-  void Close(bool supress_animations);
   void OnClosed();
 
   views::View* GetContentContainerView() const;

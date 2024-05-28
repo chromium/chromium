@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
+#include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -45,7 +46,9 @@ Browser* BrowserFromWebContents(content::WebContents* web_contents) {
 
 }  // namespace
 
-LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(Profile* profile)
+LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(
+    Profile* profile,
+    lens::LensOverlaySidePanelCoordinator* coordinator)
     : SidePanelWebUIViewT(
           base::RepeatingClosure(),
           base::RepeatingClosure(),
@@ -54,7 +57,19 @@ LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(Profile* profile)
               profile,
               /*task_manager_string_id=*/IDS_SIDE_PANEL_COMPANION_TITLE,
               /*webui_resizes_host=*/false,
-              /*esc_closes_ui=*/false)) {}
+              /*esc_closes_ui=*/false)),
+      coordinator_(coordinator) {}
+
+LensOverlaySidePanelWebView::~LensOverlaySidePanelWebView() {
+  if (coordinator_) {
+    coordinator_->WebViewClosing();
+    coordinator_ = nullptr;
+  }
+}
+
+void LensOverlaySidePanelWebView::ClearCoordinator() {
+  coordinator_ = nullptr;
+}
 
 bool LensOverlaySidePanelWebView::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
@@ -96,8 +111,6 @@ bool LensOverlaySidePanelWebView::HandleKeyboardEvent(
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }
-
-LensOverlaySidePanelWebView::~LensOverlaySidePanelWebView() = default;
 
 BEGIN_METADATA(LensOverlaySidePanelWebView)
 END_METADATA

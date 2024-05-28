@@ -189,6 +189,8 @@ LensOverlayController::LensOverlayController(
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
       base::BindRepeating(&LensOverlayController::WillDiscardContents,
                           weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
+      &LensOverlayController::WillDetach, weak_factory_.GetWeakPtr())));
 
 #if BUILDFLAG(IS_MAC)
   corner_radii_ = {0, 0, 10, 10};
@@ -367,14 +369,6 @@ void LensOverlayController::CloseUIAsync(
     return;
   }
 
-  // If the tab is in the background, the async processes needed if the callback
-  // is coming from the WebUI don't apply and we can call CloseUI directly.
-  if (!tab_->IsInForeground()) {
-    state_ = State::kClosing;
-    CloseUIPart2(dismissal_source);
-    return;
-  }
-
   // Notify the overlay so it can do any animations or cleanup. The page_ is not
   // guaranteed to exist if CloseUIAsync is called during the setup process.
   if (page_) {
@@ -403,6 +397,23 @@ void LensOverlayController::CloseUIAsync(
       base::BindOnce(&LensOverlayController::UnblurBackgroundAndContinueClose,
                      weak_factory_.GetWeakPtr(), dismissal_source),
       kFadeoutAnimationTimeout);
+}
+
+void LensOverlayController::CloseUISync(
+    lens::LensOverlayDismissalSource dismissal_source) {
+  if (state_ == State::kOff) {
+    return;
+  }
+
+  state_ = State::kClosing;
+  if (side_panel_coordinator_->GetCurrentEntryId() ==
+      SidePanelEntry::Id::kLensOverlayResults) {
+    side_panel_state_observer_.Reset();
+    side_panel_coordinator_->Close();
+  }
+
+  RemoveBackgroundBlur();
+  CloseUIPart2(dismissal_source);
 }
 
 // static
@@ -473,7 +484,6 @@ void LensOverlayController::BindSidePanel(
 
 void LensOverlayController::SetSearchboxHandler(
     std::unique_ptr<RealboxHandler> handler) {
-  searchbox_handler_.reset();
   searchbox_handler_ = std::move(handler);
 }
 
@@ -681,13 +691,22 @@ void LensOverlayController::SetSidePanelIsLoadingResults(bool is_loading) {
   }
 }
 
-void LensOverlayController::OnSidePanelEntryDeregistered() {
+void LensOverlayController::OnSidePanelHidden() {
+  // If we're already in the process of closing, continue to do so.
   if (state_ == State::kClosingSidePanel) {
     CHECK(last_dismissal_source_.has_value());
     UnblurBackgroundAndContinueClose(*last_dismissal_source_);
     last_dismissal_source_.reset();
     return;
   }
+
+  // If the tab is not in the foreground, this is not relevant.
+  if (!tab_->IsInForeground()) {
+    return;
+  }
+
+  // The user clicks the close button on the side panel. Begin to close the UI
+  // asynchronously.
   CloseUIAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
 }
 
@@ -785,7 +804,7 @@ class LensOverlayController::UnderlyingWebContentsObserver
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override {
-    lens_overlay_controller_->CloseUIAsync(
+    lens_overlay_controller_->CloseUISync(
         lens::LensOverlayDismissalSource::kPageChanged);
   }
 
@@ -803,8 +822,9 @@ void LensOverlayController::CaptureScreenshot() {
 
   // During initialization and shutdown a capture may not be possible.
   if (!view || !view->IsSurfaceAvailableForCopy()) {
-    CloseUIAsync(
+    CloseUISync(
         lens::LensOverlayDismissalSource::kErrorScreenshotCreationFailed);
+    return;
   }
 
   state_ = State::kScreenshot;
@@ -836,7 +856,7 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
   // this is a multi-process, multi-threaded environment so there may be a
   // TOCTTOU race condition.
   if (bitmap.drawsNothing()) {
-    CloseUIAsync(
+    CloseUISync(
         lens::LensOverlayDismissalSource::kErrorScreenshotCreationFailed);
     return;
   }
@@ -847,7 +867,7 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
           bitmap, lens::features::GetLensOverlayScreenshotRenderQuality(),
           &data)) {
     // TODO(b/334185985): Handle case when screenshot data URI encoding fails.
-    CloseUIAsync(
+    CloseUISync(
         lens::LensOverlayDismissalSource::kErrorScreenshotEncodingFailed);
     return;
   }
@@ -948,6 +968,7 @@ void LensOverlayController::BackgroundUI() {
   overlay_widget_->Hide();
   tab_contents_observer_.reset();
   state_ = State::kBackground;
+
   // TODO(b/335516480): Schedule the UI to be suspended.
 }
 
@@ -1022,6 +1043,7 @@ void LensOverlayController::CloseUIPart2(
   }
 
   permission_bubble_controller_.reset();
+  searchbox_handler_.reset();
   results_side_panel_coordinator_.reset();
 
   side_panel_state_observer_.Reset();
@@ -1037,7 +1059,6 @@ void LensOverlayController::CloseUIPart2(
   overlay_widget_window_session_id_.reset();
   tab_contents_observer_.reset();
 
-  searchbox_handler_.reset();
   side_panel_receiver_.reset();
   side_panel_page_.reset();
   receiver_.reset();
@@ -1063,16 +1084,10 @@ void LensOverlayController::UnblurBackgroundAndContinueClose(
     return;
   }
 
-  // If we are not in a closing flow, do nothing.
-  CHECK(state_ == State::kClosing || state_ == State::kClosingSidePanel);
-
   // To avoid flickering, we need to remove the background blur and wait for a
   // paint before closing the rest of the overlay.
   RemoveBackgroundBlur();
 
-  // This callback can come from the WebUI. CloseUI synchronously destroys the
-  // WebUI. Therefore it is important to dispatch to the call to CloseUIAsync to
-  // avoid re-entrancy.
   auto* ui_layer_compositor = tab_->GetBrowserWindowInterface()
                                   ->GetWebView()
                                   ->holder()
@@ -1171,7 +1186,7 @@ bool LensOverlayController::HandleKeyboardEvent(
 }
 
 void LensOverlayController::OnFullscreenStateChanged() {
-  CloseUIAsync(lens::LensOverlayDismissalSource::kFullscreened);
+  CloseUISync(lens::LensOverlayDismissalSource::kFullscreened);
 }
 
 const GURL& LensOverlayController::GetPageURL() const {
@@ -1257,7 +1272,7 @@ void LensOverlayController::OnSidePanelDidOpen() {
   // If a side panel opens that is not ours, we must close the overlay.
   if (side_panel_coordinator_->GetCurrentEntryId() !=
       SidePanelEntry::Id::kLensOverlayResults) {
-    CloseUIAsync(lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
+    CloseUISync(lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
   }
 }
 
@@ -1266,7 +1281,7 @@ void LensOverlayController::OnSidePanelCloseInterrupted() {
   // opened in the process, we need to close the overlay to not show next to the
   // unwanted side panel.
   if (state_ == State::kClosingOpenedSidePanel) {
-    CloseUIAsync(lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
+    CloseUISync(lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
   }
 }
 
@@ -1305,7 +1320,7 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
   // This is still possible when the controller is in state kScreenshot and the
   // tab was backgrounded. We should close the UI as the overlay has not been
   // created yet.
-  CloseUIAsync(
+  CloseUISync(
       lens::LensOverlayDismissalSource::kTabBackgroundedWhileScreenshotting);
 }
 
@@ -1314,9 +1329,25 @@ void LensOverlayController::WillDiscardContents(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   // Background tab contents discarded.
-  CloseUIAsync(lens::LensOverlayDismissalSource::kTabContentsDiscarded);
+  CloseUISync(lens::LensOverlayDismissalSource::kTabContentsDiscarded);
   old_contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
   LensOverlayControllerTabLookup::CreateForWebContents(new_contents, this);
+}
+
+void LensOverlayController::WillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  // When dragging a tab into a new window, all window-specific state must be
+  // reset. As this flow is not fully functional, close the overlay regardless
+  // of `reason`. https://crbug.com/342921671.
+  switch (reason) {
+    case tabs::TabInterface::DetachReason::kDelete:
+      CloseUISync(lens::LensOverlayDismissalSource::kTabClosed);
+      return;
+    case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
+      CloseUISync(lens::LensOverlayDismissalSource::kTabDragNewWindow);
+      return;
+  }
 }
 
 void LensOverlayController::RemoveBackgroundBlur() {

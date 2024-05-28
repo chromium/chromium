@@ -54,7 +54,13 @@ enum class LensOverlayDismissalSource {
   // The browser entered fullscreen.
   kFullscreened = 11,
 
-  kMaxValue = kFullscreened
+  // The tab was dragged into a new window.
+  kTabDragNewWindow = 12,
+
+  // The tab was closed.
+  kTabClosed = 13,
+
+  kMaxValue = kTabClosed
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 
