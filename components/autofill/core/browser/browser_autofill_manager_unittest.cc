@@ -1746,14 +1746,10 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate()->CheckSuggestions(
       form.fields[0].global_id(),
-      {Suggestion(
-           "Charles",
-           std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(u"")}},
-           Suggestion::Icon::kNoIcon, SuggestionType::kAddressEntry),
-       Suggestion(
-           "Elvis",
-           std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(u"")}},
-           Suggestion::Icon::kNoIcon, SuggestionType::kAddressEntry),
+      {Suggestion("Charles", std::vector<std::vector<Suggestion::Text>>{{}},
+                  Suggestion::Icon::kNoIcon, SuggestionType::kAddressEntry),
+       Suggestion("Elvis", std::vector<std::vector<Suggestion::Text>>{{}},
+                  Suggestion::Icon::kNoIcon, SuggestionType::kAddressEntry),
        AutofillSuggestionGenerator::CreateSeparator(),
        AutofillSuggestionGenerator::CreateManageAddressesEntry()});
 

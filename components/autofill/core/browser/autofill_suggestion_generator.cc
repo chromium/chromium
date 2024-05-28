@@ -765,10 +765,7 @@ CreateSuggestionLabelsWithGranularFillingDetails(
   // field which is not classified as an address, labels should be added because
   // the first-level suggestion is not clickable. The first-level suggestion
   // needs to give plenty of info about the profile.
-  if (field_types.size() == 1 && IsAddressType(trigger_field_type) &&
-      (base::FeatureList::IsEnabled(
-           features::kAutofillGranularFillingAvailable) ||
-       base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping))) {
+  if (field_types.size() == 1 && IsAddressType(trigger_field_type)) {
     return std::vector<std::vector<Suggestion::Text>>(profiles.size());
   }
 
@@ -1094,6 +1091,10 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
     uint64_t trigger_field_max_length) {
+  // TODO(b/): Remove when launching AutofillGranularFillingAvailable.
+  if (profiles.empty()) {
+    return {};
+  }
   std::vector<Suggestion> suggestions;
   std::string app_locale = personal_data().app_locale();
   std::vector<std::vector<Suggestion::Text>> labels =

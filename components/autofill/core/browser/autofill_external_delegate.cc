@@ -1074,23 +1074,20 @@ void AutofillExternalDelegate::FillAutofillFormData(
     Suggestion::BackendId backend_id,
     bool is_preview,
     const AutofillTriggerDetails& trigger_details) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillGranularFillingAvailable)) {
-    // Only address suggestions store the last field types to
-    // fill. This is because this is the only use case where filling
-    // granularies need to be persisted.
-    static constexpr auto kAutofillAddressSuggestions =
-        base::MakeFixedFlatSet<SuggestionType>(
-            {SuggestionType::kAddressEntry, SuggestionType::kFillFullAddress,
-             SuggestionType::kFillFullPhoneNumber,
-             SuggestionType::kFillFullEmail, SuggestionType::kFillFullName,
-             SuggestionType::kFillEverythingFromAddressProfile});
-    const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
-    if (autofill_trigger_field && kAutofillAddressSuggestions.contains(type) &&
-        !is_preview) {
-      last_accepted_address_suggestion_for_address_form_section_
-          [autofill_trigger_field->section()] = type;
-    }
+  // Only address suggestions store the last field types to fill. This is
+  // because this is the only use case where filling granularies need to be
+  // persisted.
+  static constexpr auto kAutofillAddressSuggestions =
+      base::MakeFixedFlatSet<SuggestionType>(
+          {SuggestionType::kAddressEntry, SuggestionType::kFillFullAddress,
+           SuggestionType::kFillFullPhoneNumber, SuggestionType::kFillFullEmail,
+           SuggestionType::kFillFullName,
+           SuggestionType::kFillEverythingFromAddressProfile});
+  const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
+  if (autofill_trigger_field && kAutofillAddressSuggestions.contains(type) &&
+      !is_preview) {
+    last_accepted_address_suggestion_for_address_form_section_
+        [autofill_trigger_field->section()] = type;
   }
 
   mojom::ActionPersistence action_persistence =

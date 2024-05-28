@@ -215,11 +215,8 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
     return FieldFillingSkipReason::kExpiredCards;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillGranularFillingAvailable)) {
-    if (!field_types_to_fill.contains(field_type)) {
-      return FieldFillingSkipReason::kFieldDoesNotMatchTargetFieldsSet;
-    }
+  if (!field_types_to_fill.contains(field_type)) {
+    return FieldFillingSkipReason::kFieldDoesNotMatchTargetFieldsSet;
   }
 
   // A field with a specific type is only allowed to be filled a limited
@@ -703,15 +700,11 @@ void FormFiller::FillOrPreviewForm(
           .was_autofilled_before_security_policy =
               ToOptionalBoolean(is_autofilled_after),
           .had_value_after_filling = ToOptionalBoolean(has_value_after),
-          .filling_method =
-              skip_reasons[autofill_field->global_id()] ==
-                      FieldFillingSkipReason::kNotSkipped
-                  ? base::FeatureList::IsEnabled(
-                        features::kAutofillGranularFillingAvailable)
-                        ? GetFillingMethodFromTargetedFields(
-                              trigger_details.field_types_to_fill)
-                        : FillingMethod::kFullForm
-                  : FillingMethod::kNone,
+          .filling_method = skip_reasons[autofill_field->global_id()] ==
+                                    FieldFillingSkipReason::kNotSkipped
+                                ? GetFillingMethodFromTargetedFields(
+                                      trigger_details.field_types_to_fill)
+                                : FillingMethod::kNone,
       });
     }
     LOG_AF(buffer)

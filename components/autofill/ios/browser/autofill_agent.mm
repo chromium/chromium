@@ -596,7 +596,8 @@ constexpr CGFloat kSuggestionIconWidth = 32;
         minorValue = SysUTF16ToNSString(popup_suggestion.minor_text.value);
       }
 
-      if (!popup_suggestion.labels.empty()) {
+      if (!popup_suggestion.labels.empty() &&
+          !popup_suggestion.labels.front().empty()) {
         DCHECK_EQ(popup_suggestion.labels.size(), 1U);
         DCHECK_EQ(popup_suggestion.labels[0].size(), 1U);
         displayDescription =
