@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertExists, checkEnumVariant} from './assert.js';
+import {assert, assertExists, checkEnumVariant} from './assert.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import {Flag} from './flag.js';
@@ -34,14 +34,18 @@ export enum Source {
   OCR = 'OCR',
 }
 
-interface CurrentChip {
+interface ChipMethods {
+  // Hide the chip element.
+  hide(): void;
+  // Focus the chip. The element receiving focus depends on the type of chip.
+  focus(): void;
+  // Returns if the chip is expanded.
+  expanded?(): boolean;
+}
+
+interface CurrentChip extends ChipMethods {
   // The detected string that is being shown currently.
   content: string;
-  // The chip element for showing the detected content on the UI. Control the
-  // visibility of the chip by toggling the "invisible" class. The chip for
-  // showing text content can be expanded to show the full content by applying
-  // the "expanded" class, instead of showing a one-line preview.
-  element: HTMLElement;
   // The type of scanner that detected the content.
   source: Source;
   // The countdown timer for dismissing the chip.
@@ -285,7 +289,7 @@ function createCopyButton(
 /**
  * Shows an actionable url chip.
  */
-function showUrl(url: string) {
+function showUrl(url: string): ChipMethods {
   const container = dom.get('#barcode-chip-url-container', HTMLDivElement);
   container.classList.remove('invisible');
 
@@ -297,23 +301,33 @@ function showUrl(url: string) {
   chip.onclick = () => {
     ChromeHelper.getInstance().openUrlInBrowser(url);
   };
-  chip.focus();
 
   const copyButton =
       createCopyButton(container, url, I18nString.SNACKBAR_LINK_COPIED);
   const label =
       loadTimeData.getI18nMessage(I18nString.BARCODE_COPY_LINK_BUTTON, url);
   copyButton.setAttribute('aria-label', label);
-  return container;
+
+  return {
+    hide() {
+      container.classList.add('invisible');
+    },
+    focus() {
+      copyButton.focus();
+    },
+  };
 }
 
 /**
  * Shows an actionable text chip.
  *
+ * By default, the chip only shows a one-line preview of text. The chip can be
+ * expanded to show the full content if the text is too long.
+ *
  * TODO(b/311592341): Rename related strings and classes since they are used by
  * both barcode and OCR.
  */
-function showText(text: string) {
+function showText(text: string): ChipMethods {
   const container = dom.get('#barcode-chip-text-container', HTMLDivElement);
   const expandEl = dom.get('#barcode-chip-text-expand', HTMLButtonElement);
   container.classList.remove('expanded');
@@ -338,16 +352,25 @@ function showText(text: string) {
       loadTimeData.getI18nMessage(I18nString.BARCODE_COPY_TEXT_BUTTON, text);
   copyButton.setAttribute('aria-label', label);
 
-  // TODO(b/172879638): There is a race in ChromeVox which will speak the
-  // focused element twice.
-  copyButton.focus();
-  return container;
+  return {
+    hide() {
+      container.classList.add('invisible');
+    },
+    focus() {
+      // TODO(b/172879638): There is a race in ChromeVox which will speak the
+      // focused element twice.
+      copyButton.focus();
+    },
+    expanded() {
+      return container.classList.contains('expanded');
+    },
+  };
 }
 
 /**
  * Shows an actionable wifi chip for connecting Wi-fi.
  */
-function showWifi(wifiConfig: WifiConfig) {
+function showWifi(wifiConfig: WifiConfig): ChipMethods {
   const container = dom.get('#barcode-chip-wifi-container', HTMLDivElement);
   container.classList.remove('invisible');
 
@@ -366,17 +389,26 @@ function showWifi(wifiConfig: WifiConfig) {
     ChromeHelper.getInstance().openWifiDialog(wifiConfig);
   };
 
-  chip.focus();
-  return container;
+  return {
+    hide() {
+      container.classList.add('invisible');
+    },
+    focus() {
+      chip.focus();
+    },
+  };
 }
 
 /**
  * Shows an actionable chip for the string detected from various scanners.
  */
 export function show(content: string, source: Source): void {
-  if (currentChip !== null) {
+  const isShowing = currentChip !== null;
+
+  if (isShowing) {
+    assert(currentChip !== null);
     // Skip updating the chip if it's expanded.
-    if (currentChip.element.classList.contains('expanded')) {
+    if (currentChip.expanded?.() === true) {
       return;
     }
     // Extend the duration by resetting the timeout.
@@ -388,22 +420,28 @@ export function show(content: string, source: Source): void {
 
   dismiss();
 
-  let element: HTMLElement;
+  let chipMethods: ChipMethods|null = null;
   if (source === Source.OCR) {
     // TODO(b/311592341): Check if we can show Wifi and URL chip when the source
     // is OCR.
-    element = showText(content);
+    chipMethods = showText(content);
   } else {
     const wifiConfig = parseWifi(content);
     if (loadTimeData.getChromeFlag(Flag.AUTO_QR) && wifiConfig !== null) {
-      element = showWifi(wifiConfig);
+      chipMethods = showWifi(wifiConfig);
     } else if (isSafeUrl(content)) {
       sendBarcodeDetectedEvent({contentType: BarcodeContentType.URL});
-      element = showUrl(content);
+      chipMethods = showUrl(content);
     } else {
       sendBarcodeDetectedEvent({contentType: BarcodeContentType.TEXT});
-      element = showText(content);
+      chipMethods = showText(content);
     }
+  }
+  assert(chipMethods !== null);
+
+  // Only focus on chip when newly shown.
+  if (!isShowing) {
+    chipMethods.focus();
   }
 
   const chipDuration = state.get(state.State.KEYBOARD_NAVIGATION) ?
@@ -413,7 +451,7 @@ export function show(content: string, source: Source): void {
 
   currentChip = {
     content,
-    element,
+    ...chipMethods,
     source,
     timer,
   };
@@ -427,6 +465,6 @@ export function dismiss(): void {
     return;
   }
   currentChip.timer.stop();
-  currentChip.element.classList.add('invisible');
+  currentChip.hide();
   currentChip = null;
 }
