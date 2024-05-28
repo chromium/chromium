@@ -48,9 +48,6 @@ using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 
 namespace {
 
-// https://crbug.com/40889544
-size_t originalStringCodeUnits = 0;
-
 // Same length as web content/WebKit.
 int kLiveRegionDebounceMillis = 20;
 
@@ -785,10 +782,6 @@ void CollectAncestorRoles(
   std::map<ui::AXNodeID, std::set<ax::mojom::Role>> ancestor_roles;
 
   [attributedString beginEditing];
-
-  // https://crbug.com/40889544
-  NSUInteger leafTextIndex = 0;
-
   for (const AXRange& leafTextRange : *axRange) {
     DCHECK(!leafTextRange.IsNull());
     DCHECK_EQ(leafTextRange.anchor()->GetAnchor(),
@@ -832,39 +825,6 @@ void CollectAncestorRoles(
     DCHECK_LE(static_cast<unsigned long>(anchorStartOffset + leafTextLength),
               attributedString.length);
     NSRange leafRange = NSMakeRange(anchorStartOffset, leafTextLength);
-
-    // https://crbug.com/40889544
-    // Capture info about the suspected cause of
-    // "NSRangeException: NSMutableRLEArray objectAtIndex:effectiveRange:: Out
-    // of bounds", which is thrown if the range provided to
-    // addAttribute:value:range: is out of bounds.
-    leafTextIndex++;
-    if (NSMaxRange(leafRange) > attributedString.length) {
-      // Capture:
-      //   * Current leaf text index and total number of leaves
-      //   * Number of UTF16 code units in the original string and in the
-      //     NSString/NSAttributedString (expect identical)
-      //   * Current leaf text's range
-      //   * The attributed string's length if we had created it by concating
-      //     the GetText()s of the individual leaves, instead of using
-      //     _node->GetTextContentUTF16() in -AXAttributedStringForRange:
-      NSUInteger numberOfLeaves = 0;
-      NSUInteger lengthFromGetTexts = 0;
-      for (const AXRange& nextRange : *axRange) {
-        numberOfLeaves++;
-        lengthFromGetTexts += nextRange.GetText().length();
-      }
-      NSUInteger attributedStringCodeUnits = attributedString.length;
-
-      NSString* info = [NSString
-          stringWithFormat:@"%lu of %lu %lu,%lu %lu,%lu %lu", leafTextIndex,
-                           numberOfLeaves, originalStringCodeUnits,
-                           attributedStringCodeUnits, leafRange.location,
-                           leafRange.length, lengthFromGetTexts];
-      SCOPED_CRASH_KEY_STRING256("AXPlatformNodeCocoa", "addTextAnnotations",
-                                 base::SysNSStringToUTF8(info));
-      base::debug::DumpWithoutCrashing();
-    }
 
     CollectAncestorRoles(*anchor, ancestor_roles);
 
@@ -2080,7 +2040,6 @@ void CollectAncestorRoles(
 
   NSRange range = [(NSValue*)parameter rangeValue];
   std::u16string textContent = _node->GetTextContentUTF16();
-  originalStringCodeUnits = textContent.length();
   if (NSMaxRange(range) > textContent.length())
     return nil;
 
@@ -2105,7 +2064,6 @@ void CollectAncestorRoles(
     return nil;
 
   NSString* text = base::SysUTF16ToNSString(axRange.GetText());
-  originalStringCodeUnits = axRange.GetText().length();
   if (text.length == 0) {
     return nil;
   }
