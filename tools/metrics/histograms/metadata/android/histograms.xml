@@ -3557,6 +3557,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.IsFrozenWhenDisplayed" enum="Boolean"
+    expires_after="2024-10-28">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether the pdf native page is frozen before the tab is displayed,
+    such as being selected from tab switcher or tab strip. Used to determine how
+    often the pdf native page is frozen.
+  </summary>
+</histogram>
+
 <histogram name="Android.PhotoPicker.BitmapScalerTask" units="ms"
     expires_after="2024-06-01">
   <owner>finnur@chromium.org</owner>

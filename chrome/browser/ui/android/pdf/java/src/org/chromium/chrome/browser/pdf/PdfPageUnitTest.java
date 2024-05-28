@@ -28,8 +28,10 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.fakepdf.PdfDocumentRequest;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -49,6 +51,7 @@ public class PdfPageUnitTest {
     @Mock private DestroyableObservableSupplier<Rect> mMarginSupplier;
     @Mock private Context mContext;
     @Mock private LoadUrlParams mLoadUrlParams;
+    @Mock private NativePage mNativePage;
     private Activity mActivity;
     private AutoCloseable mCloseableMocks;
     private PdfInfo mPdfInfo;
@@ -281,5 +284,54 @@ public class PdfPageUnitTest {
         Assert.assertFalse(
                 "It is not pdf navigation when the scheme is not one of content/file/http/https.",
                 result);
+    }
+
+    @Test
+    public void testRecordIsPdfFrozen_NativePageNull() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.IsFrozenWhenDisplayed")
+                        .build();
+        PdfUtils.recordIsPdfFrozen(null);
+        histogramExpectation.assertExpected(
+                "The histogram should not be recorded when the native page is null.");
+    }
+
+    @Test
+    public void testRecordIsPdfFrozen_NativePageIsNotPdf() {
+        doReturn(false).when(mNativePage).isPdf();
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.IsFrozenWhenDisplayed")
+                        .build();
+        PdfUtils.recordIsPdfFrozen(mNativePage);
+        histogramExpectation.assertExpected(
+                "The histogram should not be recorded when the native page is not pdf page.");
+    }
+
+    @Test
+    public void testRecordIsPdfFrozen_PdfIsFrozen() {
+        doReturn(true).when(mNativePage).isPdf();
+        doReturn(true).when(mNativePage).isFrozen();
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Android.Pdf.IsFrozenWhenDisplayed", true)
+                        .build();
+        PdfUtils.recordIsPdfFrozen(mNativePage);
+        histogramExpectation.assertExpected(
+                "The recorded value should be true when the pdf page is frozen.");
+    }
+
+    @Test
+    public void testRecordIsPdfFrozen_PdfIsNotFrozen() {
+        doReturn(true).when(mNativePage).isPdf();
+        doReturn(false).when(mNativePage).isFrozen();
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Android.Pdf.IsFrozenWhenDisplayed", false)
+                        .build();
+        PdfUtils.recordIsPdfFrozen(mNativePage);
+        histogramExpectation.assertExpected(
+                "The recorded value should be false when the pdf page is not frozen.");
     }
 }

@@ -17,6 +17,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.fakepdf.PdfDocumentListener;
 import org.chromium.chrome.browser.fakepdf.PdfDocumentRequest;
 import org.chromium.chrome.browser.fakepdf.PdfViewSettings;
@@ -178,6 +179,23 @@ public class PdfUtils {
                 fragmentManager, String.valueOf(fragmentContainerViewId), fragmentContainerViewId);
         pdfViewerFragment.loadRequest(pdfDocumentRequest, pdfDocumentListener);
         // TODO: pdfViewerFragment.addPdfEventsListener(eventsListener);
+    }
+
+    /**
+     * Record boolean histogram Android.Pdf.IsFrozenWhenDisplayed.
+     *
+     * @param nativePage When the native page is a pdf page, record whether it is frozen before the
+     *     tab is displayed.
+     */
+    public static void recordIsPdfFrozen(NativePage nativePage) {
+        if (nativePage == null) {
+            return;
+        }
+        if (!nativePage.isPdf()) {
+            return;
+        }
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Pdf.IsFrozenWhenDisplayed", nativePage.isFrozen());
     }
 
     static void skipLoadPdfForTesting(boolean skipLoadPdfForTesting) {

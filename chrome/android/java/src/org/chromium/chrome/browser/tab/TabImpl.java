@@ -859,6 +859,7 @@ class TabImpl implements Tab {
             // If the NativePage was frozen while in the background (see NativePageAssassin),
             // recreate the NativePage now.
             NativePage nativePage = getNativePage();
+            PdfUtils.recordIsPdfFrozen(nativePage);
             if (nativePage != null && nativePage.isFrozen()) {
                 maybeShowNativePage(nativePage.getUrl(), true, PdfUtils.getPdfInfo(nativePage));
             }
