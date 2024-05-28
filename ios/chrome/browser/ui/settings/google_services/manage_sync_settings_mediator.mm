@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -227,20 +228,30 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
           toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
       break;
     case SyncSettingsAccountState::kSignedIn:
+      BOOL would_clear_data_on_signout =
+          _authenticationService->HasPrimaryIdentityManaged(
+              signin::ConsentLevel::kSignin) &&
+          base::FeatureList::IsEnabled(
+              kClearDeviceDataOnSignOutForManagedUsers);
       [model addSectionWithIdentifier:SyncDataTypeSectionIdentifier];
       TableViewTextHeaderFooterItem* headerItem =
           [[TableViewTextHeaderFooterItem alloc]
               initWithType:TypesListHeaderOrFooterType];
       headerItem.text = l10n_util::GetNSString(
           IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_HEADER);
+
       [model setHeader:headerItem
           forSectionWithIdentifier:SyncDataTypeSectionIdentifier];
 
       TableViewTextHeaderFooterItem* footerItem =
           [[TableViewTextHeaderFooterItem alloc]
               initWithType:TypesListHeaderOrFooterType];
-      footerItem.subtitle = l10n_util::GetNSString(
-          IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_DESCRIPTION);
+      footerItem.subtitle = headerItem.text =
+          would_clear_data_on_signout
+              ? l10n_util::GetNSString(
+                    IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_DESCRIPTION_FOR_MANAGED_ACCOUNT)
+              : l10n_util::GetNSString(
+                    IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_DESCRIPTION);
       [model setFooter:footerItem
           forSectionWithIdentifier:SyncDataTypeSectionIdentifier];
       break;

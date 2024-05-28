@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -110,6 +111,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  return config;
+}
+
+- (AppLaunchConfiguration)appConfigurationForManagedSignoutTestCase {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
   return config;
 }
 
@@ -210,6 +217,55 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Similar to `testToggleAllowChromeSignin`, but also verifies that an
+// informational message about data loss will be added in the prompt.
+- (void)testToggleAllowChromeSigninForManagedUser {
+  // Restart the app to enable enable the
+  // `kClearDeviceDataOnSignOutForManagedUsers` feature on relaunch.
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:
+          [self appConfigurationForManagedSignoutTestCase]];
+
+  // Sign in with a managed identity.
+  FakeSystemIdentity* fakeManagedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
+
+  // Turn off "Allow Chrome Sign-in" feature, which prompts the user with a
+  // confirmation dialog to sign out.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_text(l10n_util::GetNSString(
+              IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+      performAction:grey_tap()];
+  WaitForSettingDoneButton();
+
+  // Verify that sign-in is disabled.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsSignInCellId)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify signed out.
+  [SigninEarlGrey verifySignedOut];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that canceling the "Allow Chrome sign-in" option does not change the
