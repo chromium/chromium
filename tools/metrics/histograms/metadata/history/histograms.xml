@@ -1762,6 +1762,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="History.Embeddings.Embedder.EmbeddingsGenerationThreadDuration"
+    units="ms" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    The number of milliseconds spent to generate one embeddings vector, measured
+    in thread time. Logged each time an embeddings generation succeeds if
+    ThreadTicks measurement is supported.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.EmbeddingsModelLoadDuration"
     units="ms" expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>

@@ -154,6 +154,7 @@ void PassageEmbedder::GenerateEmbeddings(
         "History.Embeddings.Embedder.TokenizationDuration",
         tokenize_timer.Elapsed());
 
+    base::ElapsedThreadTimer execute_thread_timer;
     base::ElapsedTimer execute_timer;
     std::optional<std::vector<float>> embeddings = Execute(tokenized);
     base::UmaHistogramBoolean(
@@ -162,6 +163,11 @@ void PassageEmbedder::GenerateEmbeddings(
     if (!embeddings) {
       std::move(callback).Run({});
       return;
+    }
+    if (execute_thread_timer.is_supported()) {
+      base::UmaHistogramMediumTimes(
+          "History.Embeddings.Embedder.EmbeddingsGenerationThreadDuration",
+          execute_thread_timer.Elapsed());
     }
     base::UmaHistogramMediumTimes(
         "History.Embeddings.Embedder.EmbeddingsGenerationDuration",
