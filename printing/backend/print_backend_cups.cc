@@ -132,11 +132,9 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
 // static
 std::string PrintBackendCUPS::PrinterDriverInfoFromCUPS(
     const cups_dest_t& printer) {
-  // std::string_view will correctly handle nullptrs from cupsGetOption(),
-  // whereas std::string will not. Thus do not directly assign to `result`.
-  std::string_view info(
-      cupsGetOption(kDriverNameTagName, printer.num_options, printer.options));
-  return std::string(info);
+  const char* info =
+      cupsGetOption(kDriverNameTagName, printer.num_options, printer.options);
+  return info ? info : std::string();
 }
 
 mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
