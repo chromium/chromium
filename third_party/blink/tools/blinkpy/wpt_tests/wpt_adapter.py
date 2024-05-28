@@ -332,6 +332,7 @@ class WPTAdapter:
             runner_options.binary_args.extend([
                 '--headless=old',
                 '--enable-bfcache',
+                '--enable-field-trial-config',
                 # `headless_shell` doesn't send the `Accept-Language` header by
                 # default, so set an arbitrary one that some tests expect.
                 '--accept-lang=en-US,en',
