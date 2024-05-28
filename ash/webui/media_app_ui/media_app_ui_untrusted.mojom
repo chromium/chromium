@@ -37,9 +37,9 @@ interface OcrUntrustedPageHandler {
   // all pages. Called in the following cases:
   //   a) A page is rotated (only the rotated page is dirty, but potentially all
   //      pages will get updated metadata). This case is slightly special as a
-  //      DocumentUpdated() will also be called with the rotated page's ID. This
-  //      method will always be called before DocumentUpdated() for a rotated
-  //      page.
+  //      PageContentsUpdated() will also be called with the rotated page's ID.
+  //      This method will always be called before PageContentsUpdated() for a
+  //      rotated page.
   //   b) A page is deleted. The deleted page will be omitted from the provided
   //      page metadata.
   //   c) A deleted page is re-added (undo page delete). The deleted page's UUID
