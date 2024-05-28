@@ -17,7 +17,7 @@ found in the LICENSE file.
     android:orientation="horizontal">
   <ImageButton
       android:id="@+id/google_bottom_bar_save_button"
-      android:layout_width="@dimen/google_bottom_bar_button_size"
+      android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="@dimen/google_bottom_bar_button_size"
       android:layout_marginTop="@dimen/google_bottom_bar_button_margin_vertical"
@@ -26,11 +26,14 @@ found in the LICENSE file.
       android:layout_gravity="center_vertical"
       android:importantForAccessibility="yes"
       android:contentDescription="@null"
-      android:src="@drawable/bookmark"
-      android:background="@color/google_bottom_bar_background_color" />
+      android:padding="@dimen/google_bottom_bar_button_padding"
+      android:clickable="true"
+      android:focusable="true"
+      android:background="?attr/selectableItemBackground"
+      android:src="@drawable/bookmark" />
   <ImageButton
       android:id="@+id/google_bottom_bar_page_insights_button"
-      android:layout_width="@dimen/google_bottom_bar_button_size"
+      android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="@dimen/google_bottom_bar_button_size"
       android:layout_marginTop="@dimen/google_bottom_bar_button_margin_vertical"
@@ -40,11 +43,14 @@ found in the LICENSE file.
       android:importantForAccessibility="yes"
       android:contentDescription="@null"
       android:visibility="visible"
-      android:src="@drawable/page_insights_icon"
-      android:background="@color/google_bottom_bar_background_color" />
+      android:padding="@dimen/google_bottom_bar_button_padding"
+      android:clickable="true"
+      android:focusable="true"
+      android:background="?attr/selectableItemBackground"
+      android:src="@drawable/bottom_bar_page_insights_icon" />
   <ImageButton
       android:id="@+id/google_bottom_bar_share_button"
-      android:layout_width="@dimen/google_bottom_bar_button_size"
+      android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="@dimen/google_bottom_bar_button_size"
       android:layout_marginTop="@dimen/google_bottom_bar_button_margin_vertical"
@@ -54,6 +60,9 @@ found in the LICENSE file.
       android:importantForAccessibility="yes"
       android:contentDescription="@null"
       android:visibility="visible"
-      android:src="@drawable/ic_share_white_24dp"
-      android:background="@color/google_bottom_bar_background_color" />
+      android:padding="@dimen/google_bottom_bar_button_padding"
+      android:clickable="true"
+      android:focusable="true"
+      android:background="?attr/selectableItemBackground"
+      android:src="@drawable/ic_share_white_24dp" />
 </LinearLayout>
