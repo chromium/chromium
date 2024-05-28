@@ -30,6 +30,7 @@
 #include "base/feature_list.h"
 #include "cc/base/features.h"
 #include "cc/layers/texture_layer.h"
+#include "components/viz/common/features.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -343,8 +344,16 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
   // This makes sure that we do push properties. It is a not needed when canvas
   // hibernation is enabled (since the resource will have changed, it will be
   // pushed), but we do it anyway, since these interactions are subtle.
-  if (page_is_visible && base::FeatureList::IsEnabled(
-                             ::features::kClearCanvasResourcesInBackground)) {
+  //
+  // There is another path where this may happen: when EvictionUnlocksResources
+  // is enabled, compositor frame eviction results in the resource getting
+  // dropped. Here again, make sure that we recover correctly from it. And here
+  // again, this is mostly important when canvas hibernation is disabled.
+  bool resource_may_have_been_dropped =
+      base::FeatureList::IsEnabled(
+          ::features::kClearCanvasResourcesInBackground) ||
+      base::FeatureList::IsEnabled(::features::kEvictionUnlocksResources);
+  if (page_is_visible && resource_may_have_been_dropped) {
     resource_host_->SetNeedsPushProperties();
   }
 
