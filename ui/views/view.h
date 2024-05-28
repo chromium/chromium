@@ -2493,22 +2493,24 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   bool on_theme_changed_called_ = false;
 #endif
 
-  // Accessibility -------------------------------------------------------------
-
-  // Manages the accessibility interface for this View.
-  mutable std::unique_ptr<ViewAccessibility> view_accessibility_;
-
-  // Keeps track of whether accessibility checks for this View have run yet.
-  // They run once inside ::OnPaint() to keep overhead low. The idea is that if
-  // a View is ready to paint it should also be set up to be accessible.
-  bool has_run_accessibility_paint_checks_ = false;
-
   // Observers -----------------------------------------------------------------
 
   base::ObserverList<ViewObserver>::Unchecked observers_;
 
   // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
   LifeCycleState life_cycle_state_ = LifeCycleState::kAlive;
+
+  // Accessibility -------------------------------------------------------------
+
+  // Manages the accessibility interface for this View. Some ViewAccessibility
+  // implementations are `ViewObserver`s, so this must be ordered after
+  // `observers_`.
+  mutable std::unique_ptr<ViewAccessibility> view_accessibility_;
+
+  // Keeps track of whether accessibility checks for this View have run yet.
+  // They run once inside ::OnPaint() to keep overhead low. The idea is that if
+  // a View is ready to paint it should also be set up to be accessible.
+  bool has_run_accessibility_paint_checks_ = false;
 
   // View Controller Interfaces
   base::RepeatingClosureList notify_view_controller_callback_list_;
