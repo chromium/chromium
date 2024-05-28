@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_field_trials.h"
 
+#include "android_webview/common/aw_switches.h"
 #include "base/base_paths_android.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
@@ -209,4 +210,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // New Safe Browsing API is still being rolled out on WebView.
   aw_feature_overrides.DisableFeature(
       safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDebugBlindauth)) {
+    aw_feature_overrides.EnableFeature(net::features::kEnableIpProtectionProxy);
+    aw_feature_overrides.EnableFeature(network::features::kMaskedDomainList);
+  }
 }
