@@ -340,6 +340,16 @@ TEST(IbanTest, IsIbanApplicableInCountry) {
   EXPECT_FALSE(Iban::IsIbanApplicableInCountry("AB"));
 }
 
+TEST(IbanTest, GetIbanSupportedCountry) {
+  // Is an IBAN-supported country.
+  EXPECT_EQ(Iban::IbanSupportedCountry::kKW,
+            Iban::GetIbanSupportedCountry("KW"));
+
+  // Not an IBAN-supported country.
+  EXPECT_EQ(Iban::IbanSupportedCountry::kUnsupported,
+            Iban::GetIbanSupportedCountry("AB"));
+}
+
 // Test that `MatchesPrefixSuffixAndLength()` returns the expected outcome based
 // on the prefix matching when the suffix and length match already.
 TEST(IbanTest, MatchesPrefixSuffixAndLength_Prefix) {

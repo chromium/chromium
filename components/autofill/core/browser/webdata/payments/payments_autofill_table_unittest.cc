@@ -107,7 +107,7 @@ TEST_F(PaymentsAutofillTableTest, Iban) {
   Iban iban;
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   iban.set_identifier(Iban::Guid(guid));
-  iban.SetRawInfo(IBAN_VALUE, u"IE12 BOFI 9000 0112 3456 78");
+  iban.SetRawInfo(IBAN_VALUE, std::u16string(test::kIbanValue16));
   iban.set_nickname(u"My doctor's IBAN");
 
   EXPECT_TRUE(table_->AddLocalIban(iban));
