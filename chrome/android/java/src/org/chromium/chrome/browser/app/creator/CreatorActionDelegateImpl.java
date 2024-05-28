@@ -119,12 +119,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     public void startSigninFlow(@SigninAccessPoint int signinAccessPoint) {
         AccountPickerBottomSheetStrings strings =
                 new AccountPickerBottomSheetStrings.Builder(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_title_for_cormorant_signin)
-                        .setSubtitleStringId(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_subtitle_for_cormorant_signin)
-                        .setDismissButtonStringId(R.string.close)
+                                R.string.signin_account_picker_bottom_sheet_title)
                         .build();
         SigninAndHistoryOptInActivityLauncherImpl.get()
                 .launchActivityIfAllowed(

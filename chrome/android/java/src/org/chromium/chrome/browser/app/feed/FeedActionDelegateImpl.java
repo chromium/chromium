@@ -187,12 +187,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         }
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
-                        .setSubtitleStringId(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
-                        .setDismissButtonStringId(R.string.close)
+                                R.string.signin_account_picker_bottom_sheet_title)
                         .build();
         SigninAndHistoryOptInActivityLauncherImpl.get()
                 .launchActivityIfAllowed(
@@ -211,17 +206,17 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
             @SigninAccessPoint int signinAccessPoint,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid) {
-        AccountPickerBottomSheetStrings bottomSheetStrings =
-                new AccountPickerBottomSheetStrings.Builder(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
-                        .setSubtitleStringId(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
-                        .setDismissButtonStringId(R.string.close)
-                        .build();
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            AccountPickerBottomSheetStrings bottomSheetStrings =
+                    new AccountPickerBottomSheetStrings.Builder(
+                                    R.string
+                                            .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
+                            .setSubtitleStringId(
+                                    R.string
+                                            .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
+                            .setDismissButtonStringId(R.string.cancel)
+                            .build();
             SigninAndHistoryOptInActivityLauncherImpl.get()
                     .launchActivityIfAllowed(
                             mActivity,
@@ -234,6 +229,15 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                             signinAccessPoint);
             return;
         }
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
+                        .setSubtitleStringId(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin_old)
+                        .setDismissButtonStringId(R.string.close)
+                        .build();
         SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
         SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
         SigninBottomSheetCoordinator signinCoordinator =
