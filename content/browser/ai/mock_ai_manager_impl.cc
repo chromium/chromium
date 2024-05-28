@@ -7,7 +7,7 @@
 #include "content/browser/ai/mock_ai_text_session.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 
 namespace content {
 
@@ -21,29 +21,29 @@ MockAIManagerImpl::~MockAIManagerImpl() = default;
 // static
 void MockAIManagerImpl::Create(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
   MockAIManagerImpl* ai =
       MockAIManagerImpl::GetOrCreateForCurrentDocument(render_frame_host);
   ai->receiver_.Bind(std::move(receiver));
 }
 
-void MockAIManagerImpl::CanCreateTextSession(
-    CanCreateTextSessionCallback callback) {
+void MockAIManagerImpl::CanCreateGenericSession(
+    CanCreateGenericSessionCallback callback) {
   std::move(callback).Run(/*can_create=*/true);
 }
 
-void MockAIManagerImpl::CreateTextSession(
-    mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
-    blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
-    CreateTextSessionCallback callback) {
+void MockAIManagerImpl::CreateGenericSession(
+    mojo::PendingReceiver<blink::mojom::ModelGenericSession> receiver,
+    blink::mojom::ModelGenericSessionSamplingParamsPtr sampling_params,
+    CreateGenericSessionCallback callback) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<MockAITextSession>(),
                               std::move(receiver));
   std::move(callback).Run(/*success=*/true);
 }
 
-void MockAIManagerImpl::GetDefaultTextSessionSamplingParams(
-    GetDefaultTextSessionSamplingParamsCallback callback) {
-  std::move(callback).Run(blink::mojom::AITextSessionSamplingParams::New(
+void MockAIManagerImpl::GetDefaultGenericSessionSamplingParams(
+    GetDefaultGenericSessionSamplingParamsCallback callback) {
+  std::move(callback).Run(blink::mojom::ModelGenericSessionSamplingParams::New(
       /*top_k=*/1, /*temperature=*/0));
 }
 
