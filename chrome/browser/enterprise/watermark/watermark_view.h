@@ -60,4 +60,4 @@ class WatermarkView : public views::View {
 
 }  // namespace enterprise_watermark
 
-#endif
+#endif  // CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_VIEW_H_

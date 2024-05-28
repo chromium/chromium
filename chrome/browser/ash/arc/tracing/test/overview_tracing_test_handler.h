@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_TRACING_TEST_OVERVIEW_TRACING_TEST_HANDLER_
-#define CHROME_BROWSER_ASH_ARC_TRACING_TEST_OVERVIEW_TRACING_TEST_HANDLER_
+#ifndef CHROME_BROWSER_ASH_ARC_TRACING_TEST_OVERVIEW_TRACING_TEST_HANDLER_H_
+#define CHROME_BROWSER_ASH_ARC_TRACING_TEST_OVERVIEW_TRACING_TEST_HANDLER_H_
 
 #include "chrome/browser/ash/arc/tracing/overview_tracing_handler.h"
 
@@ -86,4 +86,4 @@ class OverviewTracingTestHandler : public OverviewTracingHandler {
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_TRACING_TEST_OVERVIEW_TRACING_TEST_HANDLER_
+#endif  // CHROME_BROWSER_ASH_ARC_TRACING_TEST_OVERVIEW_TRACING_TEST_HANDLER_H_

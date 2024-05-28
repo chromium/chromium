@@ -21,4 +21,4 @@ class DeviceLogUI : public content::WebUIController {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_DEVICE_LOG_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_DEVICE_LOG_DEVICE_LOG_UI_H_

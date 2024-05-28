@@ -27,4 +27,4 @@ class BatterySaverCardHandler
   mojo::Remote<side_panel::mojom::BatterySaverCard> battery_saver_card_;
 };
 
-#endif
+#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_PERFORMANCE_CONTROLS_BATTERY_SAVER_CARD_HANDLER_H_

@@ -74,4 +74,4 @@ class WatermarkTextArea : public views::Textarea {
   raw_ptr<enterprise_watermark::WatermarkView> watermark_view_;
 };
 
-#endif  // UI_VIEWS_EXAMPLES_WATERMARK_EXAMPLE_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_EXAMPLE_H_

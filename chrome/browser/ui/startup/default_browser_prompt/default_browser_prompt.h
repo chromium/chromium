@@ -21,4 +21,4 @@ void ShowDefaultBrowserPrompt(Profile* profile);
 // Only used within tests to confirm the behavior of the default browser prompt.
 void ShowPromptForTesting();
 
-#endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_H_
+#endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_H_

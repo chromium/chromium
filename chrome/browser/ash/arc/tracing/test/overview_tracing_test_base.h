@@ -71,4 +71,4 @@ class OverviewTracingTestBase : public ash::AshTestBase {
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_TRACING_TEST_OVERVIEW_TRACING_TEST_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_ARC_TRACING_TEST_OVERVIEW_TRACING_TEST_BASE_H_

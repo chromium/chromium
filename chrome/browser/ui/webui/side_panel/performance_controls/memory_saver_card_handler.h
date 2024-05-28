@@ -32,4 +32,4 @@ class MemorySaverCardHandler
   raw_ptr<Profile> profile_;
 };
 
-#endif
+#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_PERFORMANCE_CONTROLS_MEMORY_SAVER_CARD_HANDLER_H_

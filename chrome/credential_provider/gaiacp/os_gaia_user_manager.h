@@ -35,4 +35,4 @@ class OSGaiaUserManager {
 
 }  // namespace credential_provider
 
-#endif
+#endif  // CHROME_CREDENTIAL_PROVIDER_GAIACP_OS_GAIA_USER_MANAGER_H_

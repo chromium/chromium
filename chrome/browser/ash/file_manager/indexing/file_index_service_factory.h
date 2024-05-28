@@ -44,4 +44,4 @@ class FileIndexServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace file_manager
 
-#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_INDEX_INDEX_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_FILE_INDEX_SERVICE_FACTORY_H_

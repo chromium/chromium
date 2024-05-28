@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_MOCK_MEDIA_ROUTER_MEDIA_ROUTER_ACTION_CONTROLLER_H_
-#define CHROME_BROWSER_UI_TOOLBAR_MOCK_MEDIA_ROUTER_MEDIA_ROUTER_ACTION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MOCK_MEDIA_ROUTER_ACTION_CONTROLLER_H_
+#define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MOCK_MEDIA_ROUTER_ACTION_CONTROLLER_H_
 
 #include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,4 +30,4 @@ class MockMediaRouterActionController : public MediaRouterActionController {
   MOCK_METHOD(void, MaybeAddOrRemoveAction, ());
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_MOCK_MEDIA_ROUTER_MEDIA_ROUTER_ACTION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MOCK_MEDIA_ROUTER_ACTION_CONTROLLER_H_

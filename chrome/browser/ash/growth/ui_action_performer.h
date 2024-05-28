@@ -50,4 +50,4 @@ class UiActionPerformer : public growth::ActionPerformer {
   base::ObserverList<Observer> observers_;
 };
 
-#endif  // CHROME_BROWSER_ASH_GROWTH_SHOW_NUDGE_ACTION_PERFORMER_H_
+#endif  // CHROME_BROWSER_ASH_GROWTH_UI_ACTION_PERFORMER_H_
