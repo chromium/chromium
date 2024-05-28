@@ -121,7 +121,7 @@ export class FakeDestinationProvider implements DestinationProvider {
         FETCH_CAPABILITIES_METHOD, this.testDelayMs);
   }
 
-  setCapabiltiies(capabilities: Capabilities): void {
+  setCapabilities(capabilities: Capabilities): void {
     this.methods.setResult(FETCH_CAPABILITIES_METHOD, capabilities);
   }
 }

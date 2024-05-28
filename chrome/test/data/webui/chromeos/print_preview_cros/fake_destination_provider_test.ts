@@ -120,7 +120,7 @@ suite('FakeDestinationProvider', () => {
   // Verify the fetchCapabilities() returns the set capabilities.
   test('set capabilities', async () => {
     const expectedCapabilities = getFakeCapabilities('New Destination');
-    destinationProvider.setCapabiltiies(expectedCapabilities);
+    destinationProvider.setCapabilities(expectedCapabilities);
 
     const capabilities = await destinationProvider.fetchCapabilities(
         /*destinationId=*/ '', PrinterType.LOCAL_PRINTER);

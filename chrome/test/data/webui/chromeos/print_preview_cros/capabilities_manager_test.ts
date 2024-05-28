@@ -89,10 +89,10 @@ suite('CapabilitiesManager', () => {
       'fetch capabilities on active destination changed and cache response',
       async () => {
         // Set the active destination.
-        const activeCapailities = getFakeCapabilities();
+        const activeCapabilities = getFakeCapabilities();
         const activeDestination =
-            createTestDestination(activeCapailities.destinationId);
-        destinationProvider.setCapabiltiies(activeCapailities);
+            createTestDestination(activeCapabilities.destinationId);
+        destinationProvider.setCapabilities(activeCapabilities);
 
         await waitForDestinationManagerLoad();
 
@@ -124,7 +124,7 @@ suite('CapabilitiesManager', () => {
             providerCallCount,
             destinationProvider.getCallCount('fetchCapabilities'));
         assertDeepEquals(
-            activeCapailities, instance.getActiveDestinationCapabilities());
+            activeCapabilities, instance.getActiveDestinationCapabilities());
 
         // Simulate the active destination changing again except this time the
         // cached capabilities result is returned.
@@ -141,6 +141,6 @@ suite('CapabilitiesManager', () => {
             providerCallCount,
             destinationProvider.getCallCount('fetchCapabilities'));
         assertDeepEquals(
-            activeCapailities, instance.getActiveDestinationCapabilities());
+            activeCapabilities, instance.getActiveDestinationCapabilities());
       });
 });
