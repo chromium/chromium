@@ -272,6 +272,7 @@ public class Features {
     // WebViewCompat.isAudioMuted
     public static final String MUTE_AUDIO = "MUTE_AUDIO";
 
-    // WebSettingsCompat.setSpeculativeLoadingEnabled
-    public static final String ENABLE_SPECULATIVE_LOADING = "ENABLE_SPECULATIVE_LOADING";
+    // WebSettingsCompat.setSpeculativeLoadingStatus
+    // WebSettingsCompat.getSpeculativeLoadingStatus
+    public static final String SPECULATIVE_LOADING = "SPECULATIVE_LOADING";
 }

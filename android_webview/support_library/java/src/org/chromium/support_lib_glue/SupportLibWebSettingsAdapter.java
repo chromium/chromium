@@ -436,14 +436,38 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
-    public void setSpeculativeLoadingEnabled(boolean speculativeLoadingEnabled) {
+    public void setSpeculativeLoadingStatus(
+            @SpeculativeLoadingStatus int speculativeLoadingStatus) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.SET_SPECULATIVE_LOADING_ENABLED")) {
-            recordApiCall(ApiCall.SET_SPECULATIVE_LOADING_ENABLED);
-            mAwSettings.setSpeculativeLoadingAllowed(
-                    speculativeLoadingEnabled
-                            ? SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED
-                            : SpeculativeLoadingAllowedFlags.SPECULATIVE_LOADING_DISABLED);
+            recordApiCall(ApiCall.SET_SPECULATIVE_LOADING_STATUS);
+            switch (speculativeLoadingStatus) {
+                case SpeculativeLoadingStatus.DISABLED:
+                    mAwSettings.setSpeculativeLoadingAllowed(
+                            SpeculativeLoadingAllowedFlags.SPECULATIVE_LOADING_DISABLED);
+                    break;
+                case SpeculativeLoadingStatus.PRERENDER_ENABLED:
+                    mAwSettings.setSpeculativeLoadingAllowed(
+                            SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+                    break;
+            }
         }
+    }
+
+    @Override
+    public @SpeculativeLoadingStatus int getSpeculativeLoadingStatus() {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.IS_SPECULATIVE_LOADING_ENABLED")) {
+            recordApiCall(ApiCall.GET_SPECULATIVE_LOADING_STATUS);
+
+            switch (mAwSettings.getSpeculativeLoadingAllowed()) {
+                case SpeculativeLoadingAllowedFlags.SPECULATIVE_LOADING_DISABLED:
+                    return SpeculativeLoadingStatus.DISABLED;
+                case SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED:
+                    return SpeculativeLoadingStatus.PRERENDER_ENABLED;
+            }
+        }
+        // It has a default state so theoretically this case shouldn't happen.
+        throw new IllegalArgumentException("Couldn't retrieve a valid status.");
     }
 }
