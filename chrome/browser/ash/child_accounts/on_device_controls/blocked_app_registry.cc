@@ -4,16 +4,22 @@
 
 #include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_registry.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "blocked_app_registry.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 
 namespace ash::on_device_controls {
+
+constexpr int kMaxUninstalledBlockedAppCount = 100;
 
 namespace {
 
@@ -147,10 +153,46 @@ void BlockedAppRegistry::OnAppUninstalled(const std::string& app_id) {
     return;
   }
 
+  if (GetUninstalledBlockedAppCount() == kMaxUninstalledBlockedAppCount) {
+    RemoveOldestUninstalledApp();
+  }
+
   registry_[app_id].SetUninstallTimestamp(base::Time::Now());
 
   // TODO(b/338247185): Only update value that changed.
   store_.SaveToPref(registry_);
+}
+
+int BlockedAppRegistry::GetUninstalledBlockedAppCount() const {
+  return std::count_if(
+      registry_.begin(), registry_.end(),
+      [](std::pair<std::string, BlockedAppDetails> const& blocked_app) {
+        return !blocked_app.second.IsInstalled();
+      });
+}
+
+void BlockedAppRegistry::RemoveOldestUninstalledApp() {
+  base::Time oldest_uninstall_timestamp = base::Time::Now();
+  std::string oldest_app;
+  for (const auto& app : registry_) {
+    if (!app.second.IsInstalled()) {
+      base::Time uninstall_time = *app.second.uninstall_timestamp();
+      if (uninstall_time < oldest_uninstall_timestamp) {
+        oldest_uninstall_timestamp = uninstall_time;
+        oldest_app = app.first;
+      }
+    }
+  }
+
+  if (oldest_app.empty()) {
+    VLOG(1)
+        << "app-controls: removing oldest uninstalled blocked app - not found";
+    return;
+  }
+
+  VLOG(1) << "app-controls: removing oldest uninstalled blocked app "
+          << oldest_app;
+  RemoveApp(oldest_app);
 }
 
 }  // namespace ash::on_device_controls

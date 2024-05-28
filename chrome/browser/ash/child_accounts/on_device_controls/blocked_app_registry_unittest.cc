@@ -196,4 +196,45 @@ TEST_F(BlockedAppRegistryTest, BlockAndUnblock) {
   EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(app_id));
 }
 
+// Tests that uninstalling more than the max number of allowed blocked apps
+// removes the oldest uninstalled app from the registry.
+TEST_F(BlockedAppRegistryTest, UninstallMaxBlockedApps) {
+  // Register the max number of uninstalled blocked apps
+  const size_t apps_count = 100;
+  std::vector<std::string> all_blocked_apps;
+  for (size_t i = 0; i < apps_count; ++i) {
+    std::string app_name = base::StrCat({"app_name", base::NumberToString(i)});
+    std::string package_name =
+        base::StrCat({"com.example.app", base::NumberToString(i)});
+    std::string app_id = InstallArcApp(package_name, app_name);
+    all_blocked_apps.push_back(app_id);
+
+    registry()->AddApp(app_id);
+    EXPECT_EQ(apps::Readiness::kDisabledByLocalSettings,
+              GetAppReadiness(app_id));
+    EXPECT_EQ(LocalAppState::kBlocked, registry()->GetAppState(app_id));
+
+    UninstallArcApp(package_name);
+  }
+
+  EXPECT_EQ(apps_count, registry()->GetBlockedApps().size());
+
+  const std::string new_app_package = "com.example.new_app";
+  const std::string new_app_id = InstallArcApp(new_app_package, "new_app_name");
+  registry()->AddApp(new_app_id);
+  EXPECT_EQ(apps_count + 1, registry()->GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kBlocked, registry()->GetAppState(new_app_id));
+
+  UninstallArcApp(new_app_package);
+
+  // Check the first uninstalled app added was removed from the registry.
+  const std::string oldest_uninstalled_app = all_blocked_apps[0];
+  EXPECT_EQ(apps_count, registry()->GetBlockedApps().size());
+  ASSERT_FALSE(registry()->GetBlockedApps().contains(oldest_uninstalled_app));
+  EXPECT_EQ(apps::Readiness::kUninstalledByUser,
+            GetAppReadiness(oldest_uninstalled_app));
+  EXPECT_EQ(LocalAppState::kAvailable,
+            registry()->GetAppState(oldest_uninstalled_app));
+}
+
 }  // namespace ash::on_device_controls

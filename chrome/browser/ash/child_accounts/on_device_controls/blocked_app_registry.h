@@ -59,6 +59,10 @@ class BlockedAppRegistry : public apps::AppRegistryCache::Observer {
   void OnAppReady(const std::string& app_id);
   // Called when app is uninstalled.
   void OnAppUninstalled(const std::string& app_id);
+  // Returns the number of blocked apps that are uninstalled.
+  int GetUninstalledBlockedAppCount() const;
+  // Removes the oldest uninstalled blocked app from the registry.
+  void RemoveOldestUninstalledApp();
 
   // The in-memory registry of the locked apps.
   // Maps blocked app id to blocked ap metadata.
