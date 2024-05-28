@@ -278,9 +278,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
 IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
                        StartupPrefSetAsLastAndURLsMultiProfile) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  // Disable "What's New" and the profile picker.
-  PrefService* pref_service = g_browser_process->local_state();
-  pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
+  // Disable the profile picker.
   g_browser_process->local_state()->SetInteger(
       prefs::kBrowserProfilePickerAvailabilityOnStartup,
       static_cast<int>(ProfilePicker::AvailabilityOnStartup::kDisabled));

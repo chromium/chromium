@@ -97,10 +97,6 @@ class BrowserLauncherTest : public InProcessBrowserTest {
   void DisableWelcomePages(const std::vector<Profile*>& profiles) {
     for (Profile* profile : profiles)
       profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
-
-    // Also disable What's New.
-    PrefService* pref_service = g_browser_process->local_state();
-    pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
   }
 
   // Creates a new profile with a URLS startup preference and an open tab.

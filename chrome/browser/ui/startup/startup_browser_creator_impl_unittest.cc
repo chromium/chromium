@@ -366,7 +366,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewTabPage) {
   EXPECT_EQ("pinned", output.tabs[2].url.host());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // If the user's preferences satisfy the conditions, show the What's New page
 // upon startup.
 TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
@@ -427,7 +427,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
 #endif
   EXPECT_THAT(output.tabs, testing::ElementsAreArray(expected_tab_hosts));
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if !BUILDFLAG(IS_ANDROID)
 // If required, a tab for the Privacy Sandbox dialog should be added.
 TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_PrivacySandbox) {
   FakeStartupTabProvider provider(kNewTabPageTabs | kPrivacySandboxTabs);

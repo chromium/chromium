@@ -242,8 +242,6 @@ extern const char kChromeUIVersionHost[];
 extern const char kChromeUIVersionURL[];
 extern const char kChromeUIWelcomeHost[];
 extern const char kChromeUIWelcomeURL[];
-extern const char kChromeUIWhatsNewHost[];
-extern const char kChromeUIWhatsNewURL[];
 extern const char kChromeUIWebuiGalleryHost[];
 
 #if BUILDFLAG(IS_WIN)
@@ -457,6 +455,8 @@ extern const char kChromeUIDiscardsURL[];
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 extern const char kChromeUIWebAppSettingsURL[];
 extern const char kChromeUIWebAppSettingsHost[];
+extern const char kChromeUIWhatsNewHost[];
+extern const char kChromeUIWhatsNewURL[];
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

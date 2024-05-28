@@ -22,7 +22,6 @@ class WebUI;
 }
 
 class BrowserCommandHandler;
-class PrefRegistrySimple;
 class Profile;
 
 // The Web UI controller for the chrome://whats-new page.
@@ -31,8 +30,6 @@ class WhatsNewUI : public ui::MojoWebUIController,
  public:
   explicit WhatsNewUI(content::WebUI* web_ui);
   ~WhatsNewUI() override;
-
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);

@@ -509,10 +509,6 @@ class BrowserServiceLacrosWindowlessBrowserTest
     for (Profile* profile : profiles) {
       profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
     }
-
-    // Also disable What's New.
-    PrefService* pref_service = g_browser_process->local_state();
-    pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
   }
 };
 

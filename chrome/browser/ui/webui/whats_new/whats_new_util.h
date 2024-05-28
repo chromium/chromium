@@ -6,28 +6,11 @@
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_UTIL_H_
 
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
 #include "url/gurl.h"
 
-class Browser;
 class PrefService;
 
 namespace whats_new {
-extern const char kChromeWhatsNewURL[];
-extern const char kChromeWhatsNewURLShort[];
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class LoadEvent {
-  kLoadStart = 0,
-  kLoadSuccess = 1,
-  kLoadFailAndShowError = 2,
-  kLoadFailAndFallbackToNtp = 3,
-  kLoadFailAndCloseTab = 4,
-  kLoadFailAndDoNotShow = 5,
-  kMaxValue = kLoadFailAndDoNotShow,
-};
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // The first value indicates that the logic for showing What's New is running.
@@ -44,8 +27,10 @@ enum class StartupType {
   kMaxValue = kOverridden,
 };
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // Exposed for testing.
 BASE_DECLARE_FEATURE(kForceEnabled);
+#endif
 
 bool IsEnabled();
 
@@ -57,12 +42,14 @@ void LogStartupType(StartupType type);
 // redirect if it fails. Most tests don't expect redirects to occur.
 void DisableRemoteContentForTests();
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // Whether loading remote content has been disabled via
 // DisableRemoteContentForTests().
 bool IsRemoteContentDisabled();
 
 // Allow setting the CHROME_VERSION_MAJOR for tests
 void SetChromeVersionForTests(int chrome_version);
+#endif
 
 // Returns true if the user has not yet seen the What's New page for the
 // current major milestone. When returning true, sets the pref in |local_state|
@@ -79,19 +66,8 @@ void SetChromeVersionForTests(int chrome_version);
 bool ShouldShowForState(PrefService* local_state,
                         bool promotional_tabs_enabled);
 
-// Gets the server side URL for the What's New page for the current version of
-// Chrome. If |may_redirect| is true, return a server URL that will redirect to
-// the closest milestone page. Otherwise, return the direct URL of the current
-// version, which may return 404 if there is no page for this milestone.
-GURL GetServerURL(bool may_redirect);
-
 // Return the startup URL for the WebUI page.
 GURL GetWebUIStartupURL();
-
-// Starts fetching the What's New page and will open the page in |browser| if
-// it exists.
-void StartWhatsNewFetch(Browser* browser);
-
 }  // namespace whats_new
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_UTIL_H_

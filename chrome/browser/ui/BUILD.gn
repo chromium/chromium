@@ -2047,10 +2047,6 @@ static_library("ui") {
       "webui/webui_gallery/webui_gallery_ui.h",
       "webui/webui_util_desktop.cc",
       "webui/webui_util_desktop.h",
-      "webui/whats_new/whats_new_handler.cc",
-      "webui/whats_new/whats_new_handler.h",
-      "webui/whats_new/whats_new_ui.cc",
-      "webui/whats_new/whats_new_ui.h",
       "webui/whats_new/whats_new_util.cc",
       "webui/whats_new/whats_new_util.h",
       "window_sizer/window_sizer.cc",
@@ -4331,6 +4327,12 @@ static_library("ui") {
       "webui/app_settings/web_app_settings_ui.h",
       "webui/browser_switch/browser_switch_ui.cc",
       "webui/browser_switch/browser_switch_ui.h",
+      "webui/whats_new/whats_new_handler.cc",
+      "webui/whats_new/whats_new_handler.h",
+      "webui/whats_new/whats_new_ui.cc",
+      "webui/whats_new/whats_new_ui.h",
+      "webui/whats_new/whats_new_fetcher.cc",
+      "webui/whats_new/whats_new_fetcher.h",
     ]
 
     deps += [

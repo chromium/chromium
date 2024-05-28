@@ -606,7 +606,7 @@ after discussions on the right group.
       <annotation id="ranker_url_fetcher"/>
     </sender>
     <sender name="Whats New">
-      <annotation id="whats_new_handler"/>
+      <annotation id="whats_new_fetcher"/>
     </sender>
   </group>
   <group name="PlusAddresses" hidden="true">

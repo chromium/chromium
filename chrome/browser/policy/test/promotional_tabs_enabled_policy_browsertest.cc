@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_constants.h"
@@ -41,9 +41,6 @@
 #include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/welcome/helpers.h"
-#endif
 
 namespace policy {
 
@@ -61,9 +58,7 @@ class PromotionalTabsEnabledPolicyTest
   PromotionalTabsEnabledPolicyTest() {
     const std::vector<base::test::FeatureRef> kEnabledFeatures = {
       whats_new::kForceEnabled,
-#if !BUILDFLAG(IS_CHROMEOS)
       welcome::kForceEnabled,
-#endif
     };
     scoped_feature_list_.InitWithFeatures(kEnabledFeatures, {});
   }
@@ -83,12 +78,10 @@ class PromotionalTabsEnabledPolicyTest
     // Set policies before the browser starts up.
     PolicyMap policies;
 
-#if !BUILDFLAG(IS_CHROMEOS)
     // Suppress the first-run dialog by disabling metrics reporting.
     policies.Set(key::kMetricsReportingEnabled, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(false),
                  nullptr);
-#endif
 
     // Apply the policy setting under test.
     if (GetParam() != BooleanPolicy::kNotConfigured) {
@@ -105,7 +98,6 @@ class PromotionalTabsEnabledPolicyTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS)
 // Tests that the PromotionalTabsEnabled policy properly suppresses the welcome
 // page for browser first-runs.
 class PromotionalTabsEnabledPolicyWelcomeTest
@@ -142,7 +134,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
                       PolicyTest::BooleanPolicy::kFalse,
                       PolicyTest::BooleanPolicy::kTrue));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the PromotionalTabsEnabled policy properly suppresses the What's
 // New page.
