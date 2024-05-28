@@ -11,6 +11,10 @@
 namespace ash {
 
 DeviceImage::DeviceImage(const std::string& device_key,
+                         const std::string& data_url)
+    : device_key_(device_key), data_url_(data_url) {}
+
+DeviceImage::DeviceImage(const std::string& device_key,
                          const gfx::ImageSkia& image)
     : device_key_(device_key), image_(image) {
   if (!image_.isNull()) {

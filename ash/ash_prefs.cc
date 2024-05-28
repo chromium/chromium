@@ -51,6 +51,7 @@
 #include "ash/system/hotspot/hotspot_info_cache.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
@@ -226,6 +227,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   PowerSoundsController::RegisterLocalStatePrefs(registry);
   PowerNotificationController::RegisterLocalStatePrefs(registry);
   quick_pair::ScanningEnabledProvider::RegisterLocalStatePrefs(registry);
+  InputDeviceSettingsMetadataManager::RegisterLocalStatePrefs(registry);
 
   if (for_test) {
     registry->RegisterBooleanPref(prefs::kOwnerPrimaryMouseButtonRight, false);

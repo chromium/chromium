@@ -9,6 +9,7 @@
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/system/input_device_settings/device_image_downloader.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 
@@ -17,7 +18,11 @@ namespace ash {
 namespace {
 
 const std::string test_device_key = "0000:0001";
-
+// Based on the default ImageSkia produced by `TestImageDownloader`.
+constexpr char kExpectedDataUri[] =
+    "data:image/"
+    "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAUCAIAAAA7jDsBAAAAF0lEQVQokWNk+M+"
+    "ABzDhkxyVHpUmRRoAmpABJ+eiyP8AAAAASUVORK5CYII=";
 }  // namespace
 
 class InputDeviceSettingsMetadataManagerTest : public AshTestBase {
@@ -60,6 +65,17 @@ TEST_F(InputDeviceSettingsMetadataManagerTest, GetDeviceImage) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(InputDeviceSettingsMetadataManagerTest, DeviceImageCached) {
+  manager()->GetDeviceImage(
+      test_device_key,
+      AccountId::FromUserEmailGaiaId("user@example.com", "123"),
+      base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  const auto data_url = manager()->GetCachedDeviceImageDataUri(test_device_key);
+  EXPECT_TRUE(data_url.has_value());
+  EXPECT_EQ(kExpectedDataUri, data_url.value());
 }
 
 }  // namespace ash

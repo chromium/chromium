@@ -923,6 +923,9 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->ClearPref(prefs::kKeyboardsWelcomeNotificationSeen);
     pref_service->ClearPref(prefs::kTouchpadsWelcomeNotificationSeen);
     pref_service->ClearPref(prefs::kPointingSticksWelcomeNotificationSeen);
+    if (local_state_) {
+      local_state_->ClearPref(prefs::kDeviceImagesDictPref);
+    }
   }
 
   // If the flag is disabled, clear all the settings dictionaries.

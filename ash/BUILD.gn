@@ -1793,6 +1793,8 @@ component("ash") {
     "system/input_device_settings/device_image.h",
     "system/input_device_settings/device_image_downloader.cc",
     "system/input_device_settings/device_image_downloader.h",
+    "system/input_device_settings/device_image_storage.cc",
+    "system/input_device_settings/device_image_storage.h",
     "system/input_device_settings/input_device_duplicate_id_finder.cc",
     "system/input_device_settings/input_device_duplicate_id_finder.h",
     "system/input_device_settings/input_device_key_alias_manager.cc",

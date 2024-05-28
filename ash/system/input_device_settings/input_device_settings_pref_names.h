@@ -216,6 +216,10 @@ inline constexpr char kButtonRemappingStaticShortcutAction[] =
 // Last updated dictionary keys.
 inline constexpr char kLastUpdatedKey[] = "last_updated";
 
+// Preference key used to access a dictionary that maps device identifiers
+// to their corresponding image URLs.
+inline constexpr char kDeviceImagesDictPref[] = "settings.devices.images";
+
 }  // namespace ash::prefs
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_PREF_NAMES_H_

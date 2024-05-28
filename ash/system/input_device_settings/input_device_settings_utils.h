@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/gfx/image/image.h"
 
 class AccountId;
 class PrefService;
