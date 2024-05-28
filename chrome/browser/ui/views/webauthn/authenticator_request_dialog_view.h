@@ -104,8 +104,6 @@ class AuthenticatorRequestDialogView
   void ForgotGPMPinPressed();
   void GPMPinOptionChosen(bool is_arbitrary);
 
-  void OnDialogClosing();
-
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 
   raw_ptr<AuthenticatorRequestSheetView, DanglingUntriaged> sheet_ = nullptr;

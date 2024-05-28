@@ -302,10 +302,6 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
   DCHECK(!model_->should_dialog_be_closed());
   model_->observers.AddObserver(this);
 
-  SetCloseCallback(
-      base::BindOnce(&AuthenticatorRequestDialogView::OnDialogClosing,
-                     base::Unretained(this)));
-
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
@@ -353,37 +349,6 @@ void AuthenticatorRequestDialogView::ForgotGPMPinPressed() {
 
 void AuthenticatorRequestDialogView::GPMPinOptionChosen(bool is_arbitrary) {
   sheet_->model()->OnGPMPinOptionChosen(is_arbitrary);
-}
-
-void AuthenticatorRequestDialogView::OnDialogClosing() {
-  // To keep the UI responsive, always allow immediately closing the dialog when
-  // desired; but still trigger cancelling the AuthenticatorRequest unless it is
-  // already complete.
-  //
-  // Note that on most sheets, cancelling will immediately destroy the request,
-  // so this method will be re-entered like so:
-  //
-  //   AuthenticatorRequestDialogView::Close()
-  //   views::DialogClientView::CanClose()
-  //   views::Widget::Close()
-  //   AuthenticatorRequestDialogView::OnStepTransition()
-  //   AuthenticatorRequestDialogController::SetCurrentStep()
-  //   AuthenticatorRequestDialogController::OnRequestComplete()
-  //   ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate()
-  //   content::AuthenticatorImpl::InvokeCallbackAndCleanup()
-  //   content::AuthenticatorImpl::FailWithNotAllowedErrorAndCleanup()
-  //   <<invoke callback>>
-  //   ChromeAuthenticatorRequestDelegate::OnCancelRequest()
-  //   AuthenticatorRequestDialogController::Cancel()
-  //   AuthenticatorRequestDialogView::Cancel()
-  //   AuthenticatorRequestDialogView::Close()  [initial call]
-  //
-  // This should not be a problem as the native widget will never synchronously
-  // close and hence not synchronously destroy the model while it's iterating
-  // over observers in SetCurrentStep().
-  if (model_ && !model_->should_dialog_be_closed()) {
-    Cancel();
-  }
 }
 
 BEGIN_METADATA(AuthenticatorRequestDialogView)
