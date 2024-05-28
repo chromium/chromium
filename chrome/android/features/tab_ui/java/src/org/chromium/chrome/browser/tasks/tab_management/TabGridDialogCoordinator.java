@@ -87,9 +87,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             ViewGroup containerView,
-            TabSwitcherResetHandler resetHandler,
-            TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
-            TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
+            @Nullable TabSwitcherResetHandler resetHandler,
+            @Nullable
+                    TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
+            @Nullable TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
             ScrimCoordinator scrimCoordinator,
             TabGroupTitleEditor tabGroupTitleEditor,
             ViewGroup rootView,

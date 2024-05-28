@@ -292,6 +292,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                             }
                         }
                     });
+            maybeAddPaneAnimationListener(mCurrentAnimationRunner);
 
             mRootView.setVisibility(View.VISIBLE);
             containerView.setVisibility(View.INVISIBLE);
@@ -400,6 +401,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                             doneHiding();
                         }
                     });
+            maybeAddPaneAnimationListener(mCurrentAnimationRunner);
 
             // For start surface transitions the behavior prior to Hub is to instantly switch
             // between layouts. Ideally, there should be a coordinated fade between the layouts, but
@@ -553,6 +555,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                         doneHiding();
                     }
                 });
+        maybeAddPaneAnimationListener(mCurrentAnimationRunner);
 
         selectTabAndHideHubLayout(tabId);
     }
@@ -660,6 +663,16 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                     containerView, FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
         return pane.createHideHubLayoutAnimatorProvider(containerView);
+    }
+
+    private void maybeAddPaneAnimationListener(HubLayoutAnimationRunner animationRunner) {
+        @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+        if (pane == null) return;
+
+        HubLayoutAnimationListener listener = pane.getHubLayoutAnimationListener();
+        if (listener == null) return;
+
+        animationRunner.addListener(listener);
     }
 
     private void queueAnimation() {

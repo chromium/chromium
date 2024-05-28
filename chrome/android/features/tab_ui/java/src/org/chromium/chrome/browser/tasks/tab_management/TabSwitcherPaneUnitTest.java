@@ -50,6 +50,7 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
+import org.chromium.chrome.browser.hub.HubLayoutAnimationListener;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationType;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.PaneHubController;
@@ -92,6 +93,7 @@ public class TabSwitcherPaneUnitTest {
     @Mock private View mCustomView;
     @Mock private DoubleConsumer mOnAlphaChange;
 
+    @Captor ArgumentCaptor<ObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;
     @Captor ArgumentCaptor<OnSharedPreferenceChangeListener> mPriceAnnotationsPrefListenerCaptor;
     @Captor ArgumentCaptor<Callback<Integer>> mOnTabClickedCallbackCaptor;
 
@@ -138,7 +140,7 @@ public class TabSwitcherPaneUnitTest {
                         any(),
                         any(),
                         any(),
-                        any(),
+                        mIsAnimatingSupplierCaptor.capture(),
                         mOnTabClickedCallbackCaptor.capture(),
                         anyBoolean());
         when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.GRID);
@@ -633,6 +635,23 @@ public class TabSwitcherPaneUnitTest {
         mTabModel.addTab(TAB_ID + 2);
         mTabModel.setIndex(2, TabSelectionType.FROM_USER, false);
         assertEquals(2, mActionTester.getActionCount("Commerce.TabGridSwitched.NoPriceDrop"));
+    }
+
+    @Test
+    @SmallTest
+    public void testAnimationListener() {
+        mTabModel.addTab(TAB_ID);
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+
+        assertFalse(mIsAnimatingSupplierCaptor.getValue().get());
+
+        HubLayoutAnimationListener listener = mTabSwitcherPane.getHubLayoutAnimationListener();
+        listener.beforeStart();
+        assertTrue(mIsAnimatingSupplierCaptor.getValue().get());
+
+        listener.afterEnd();
+        assertFalse(mIsAnimatingSupplierCaptor.getValue().get());
     }
 
     private void createSelectedTab() {

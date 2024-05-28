@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
+import org.chromium.chrome.browser.hub.HubLayoutAnimationListener;
 import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
 import org.chromium.chrome.browser.hub.HubLayoutConstants;
 import org.chromium.chrome.browser.hub.LoadHint;
@@ -104,6 +105,18 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     private final TabSwitcherPaneCoordinatorFactory mFactory;
     private final boolean mIsIncognito;
     private final DoubleConsumer mOnToolbarAlphaChange;
+    private final HubLayoutAnimationListener mAnimationListener =
+            new HubLayoutAnimationListener() {
+                @Override
+                public void beforeStart() {
+                    mIsAnimatingSupplier.set(true);
+                }
+
+                @Override
+                public void afterEnd() {
+                    mIsAnimatingSupplier.set(false);
+                }
+            };
 
     private boolean mNativeInitialized;
     private @Nullable PaneHubController mPaneHubController;
@@ -201,6 +214,11 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     @Override
     public @NonNull ObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier() {
         return mReferenceButtonDataSupplier;
+    }
+
+    @Override
+    public @Nullable HubLayoutAnimationListener getHubLayoutAnimationListener() {
+        return mAnimationListener;
     }
 
     @Override

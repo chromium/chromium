@@ -63,6 +63,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Callback<Boolean> mOnVisibilityChanged = this::onVisibilityChanged;
     private final ObservableSupplier<Boolean> mIsVisibleSupplier;
+    private final ObservableSupplier<Boolean> mIsAnimatingSupplier;
     private final TabSwitcherPaneMediator mMediator;
     private final Supplier<Boolean> mTabGridDialogVisibilitySupplier = this::isTabGridDialogVisible;
     private final MultiThumbnailCardProvider mMultiThumbnailCardProvider;
@@ -123,6 +124,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
             mProfileProviderSupplier = profileProviderSupplier;
             mIsVisibleSupplier = isVisibleSupplier;
+            mIsAnimatingSupplier = isAnimatingSupplier;
             mActivity = activity;
             mModalDialogManager = modalDialogManager;
             mParentView = parentView;
@@ -418,6 +420,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private View getTabGridDialogAnimationSourceView(int tabId) {
+        // If we are animating to show or hide the HubLayout, the TabGridDialog should hide or show
+        // via fade instead of animating from a tab. Return null so that this happens.
+        if (mIsAnimatingSupplier.get()) return null;
+
         TabListCoordinator coordinator = mTabListCoordinator;
         int index = coordinator.getTabIndexFromTabId(tabId);
         ViewHolder sourceViewHolder =

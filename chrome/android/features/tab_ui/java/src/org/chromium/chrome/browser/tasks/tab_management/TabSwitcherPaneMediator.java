@@ -430,6 +430,10 @@ public class TabSwitcherPaneMediator
 
     private void onAnimatingChanged(boolean animating) {
         updateBlockTouchInput();
+        DialogController controller = getTabGridDialogController();
+        if (controller != null) {
+            controller.hideDialog(true);
+        }
         notifyBackPressStateChangedInternal();
     }
 

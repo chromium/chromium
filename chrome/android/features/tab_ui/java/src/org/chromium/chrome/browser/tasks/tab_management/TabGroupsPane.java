@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubColorScheme;
 import org.chromium.chrome.browser.hub.HubContainerView;
+import org.chromium.chrome.browser.hub.HubLayoutAnimationListener;
 import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
 import org.chromium.chrome.browser.hub.HubLayoutConstants;
 import org.chromium.chrome.browser.hub.LoadHint;
@@ -155,6 +156,12 @@ public class TabGroupsPane implements Pane {
     @Override
     public ObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier() {
         return mReferenceButtonSupplier;
+    }
+
+    @Nullable
+    @Override
+    public HubLayoutAnimationListener getHubLayoutAnimationListener() {
+        return null;
     }
 
     @NonNull
