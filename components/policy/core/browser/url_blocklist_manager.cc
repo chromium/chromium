@@ -119,14 +119,22 @@ bool BypassBlocklistWildcardForURL(const GURL& url) {
   return false;
 }
 
+bool IsWildcardBlocklist(const FilterComponents& filter) {
+  return !filter.allow && filter.IsWildcard();
+}
+
 // Determines if the left-hand side `lhs` filter takes precedence over the
 // right-hand side `rhs` filter. Returns true if `lhs` takes precedence over
 // `rhs`, false otherwise.
 bool FilterTakesPrecedence(const FilterComponents& lhs,
                            const FilterComponents& rhs) {
   // The "*" wildcard in the blocklist is the lowest priority filter.
-  if (!rhs.allow && rhs.IsWildcard()) {
+  if (IsWildcardBlocklist(rhs)) {
     return true;
+  }
+
+  if (IsWildcardBlocklist(lhs)) {
+    return false;
   }
 
   if (lhs.match_subdomains && !rhs.match_subdomains) {
@@ -229,30 +237,39 @@ bool URLBlocklist::IsURLBlocked(const GURL& url) const {
 
 URLBlocklist::URLBlocklistState URLBlocklist::GetURLBlocklistState(
     const GURL& url) const {
-  std::set<base::MatcherStringPattern::ID> matching_ids =
-      url_matcher_->MatchURL(url);
-
-  const FilterComponents* max = nullptr;
-  for (auto id = matching_ids.begin(); id != matching_ids.end(); ++id) {
-    auto it = filters_.find(*id);
-    DCHECK(it != filters_.end());
-    const FilterComponents& filter = it->second;
-    if (!max || FilterTakesPrecedence(filter, *max))
-      max = &filter;
-  }
-
+  const FilterComponents* highest_priority_filter =
+      GetHighestPriorityFilterFor(url);
   // Default neutral.
-  if (!max)
+  if (!highest_priority_filter) {
     return URLBlocklist::URLBlocklistState::URL_NEUTRAL_STATE;
+  }
 
   // Some of the internal Chrome URLs are not affected by the "*" in the
   // blocklist. Note that the "*" is the lowest priority filter possible, so
   // any higher priority filter will be applied first.
-  if (!max->allow && max->IsWildcard() && BypassBlocklistWildcardForURL(url))
+  if (IsWildcardBlocklist(*highest_priority_filter) &&
+      BypassBlocklistWildcardForURL(url)) {
     return URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
+  }
 
-  return max->allow ? URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
-                    : URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+  return highest_priority_filter->allow
+             ? URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
+             : URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+}
+
+const FilterComponents* URLBlocklist::GetHighestPriorityFilterFor(
+    const GURL& url) const {
+  const FilterComponents* highest_priority_filter = nullptr;
+  for (const auto& pattern_id : url_matcher_->MatchURL(url)) {
+    const auto it = filters_.find(pattern_id);
+    DCHECK(it != filters_.end());
+    const FilterComponents& filter = it->second;
+    if (!highest_priority_filter ||
+        FilterTakesPrecedence(filter, *highest_priority_filter)) {
+      highest_priority_filter = &filter;
+    }
+  }
+  return highest_priority_filter;
 }
 
 URLBlocklistManager::URLBlocklistManager(

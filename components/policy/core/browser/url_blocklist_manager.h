@@ -68,6 +68,11 @@ class POLICY_EXPORT URLBlocklist {
   URLBlocklistState GetURLBlocklistState(const GURL& url) const;
 
  private:
+  // Returns the highest priority filter in `filters_` matching the given URL,
+  // or nullptr if none found.
+  const url_matcher::util::FilterComponents* GetHighestPriorityFilterFor(
+      const GURL& url) const;
+
   base::MatcherStringPattern::ID id_ = 0;
   std::map<base::MatcherStringPattern::ID, url_matcher::util::FilterComponents>
       filters_;
