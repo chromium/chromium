@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/accessibility/media_app/test/test_ax_media_app_untrusted_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -31,6 +33,7 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -68,6 +71,8 @@ namespace {
 constexpr float kTestPageGap = 2.0f;
 constexpr float kTestPageWidth = 3.0f;
 constexpr float kTestPageHeight = 8.0f;
+// The test device pixel ratio.
+constexpr float kTestDisplayPixelRatio = 1.5f;
 
 // Use letters to generate fake IDs for fake page metadata. If more than
 // 26 pages are needed, more characters can be added.
@@ -106,6 +111,13 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
       const AXMediaAppUntrustedHandlerTest&) = delete;
   ~AXMediaAppUntrustedHandlerTest() override = default;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kForceDeviceScaleFactor,
+        base::NumberToString(kTestDisplayPixelRatio));
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_NE(nullptr, AXMediaAppHandlerFactory::GetInstance());
@@ -114,7 +126,8 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
         pageReceiver = pageRemote.InitWithNewPipeAndPassReceiver();
 
     handler_ = std::make_unique<TestAXMediaAppUntrustedHandler>(
-        *browser()->profile(), std::move(pageRemote));
+        *browser()->profile(), browser()->window()->GetNativeWindow(),
+        std::move(pageRemote));
     ASSERT_NE(nullptr, handler_.get());
     // TODO(b/309860428): Delete MediaApp interface - after we implement all
     // Mojo APIs, it should not be needed any more.
@@ -1374,7 +1387,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   constexpr size_t kTestNumPages = 1u;
   constexpr float kViewportWidth = 100.0f;
   constexpr float kViewportHeight = 200.0f;
-  // Backlight sends the offset value in negative floating number.
+  // MediaApp sometimes also sends negative viewport origins.
   constexpr float kViewportXOffset = -10.0f;
   constexpr float kViewportYOffset = -5.0f;
   constexpr float kViewportScale = 1.2f;
@@ -1403,9 +1416,10 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
   EXPECT_EQ(kExpectRect, page_a_rect);
   EXPECT_EQ(
-      gfx::RectF(-kViewportXOffset, -kViewportYOffset,
-                 kTestPageWidth * kViewportScale,
-                 kTestPageHeight * kViewportScale),
+      gfx::RectF(-kViewportXOffset * kViewportScale * kTestDisplayPixelRatio,
+                 -kViewportYOffset * kViewportScale * kTestDisplayPixelRatio,
+                 kTestPageWidth * kViewportScale * kTestDisplayPixelRatio,
+                 kTestPageHeight * kViewportScale * kTestDisplayPixelRatio),
       document_root->data().relative_bounds.transform->MapRect(page_a_rect));
 }
 

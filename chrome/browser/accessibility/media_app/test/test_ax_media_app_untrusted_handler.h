@@ -35,6 +35,7 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
  public:
   TestAXMediaAppUntrustedHandler(
       content::BrowserContext& context,
+      gfx::NativeWindow native_window,
       mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page);
   TestAXMediaAppUntrustedHandler(const TestAXMediaAppUntrustedHandler&) =
       delete;

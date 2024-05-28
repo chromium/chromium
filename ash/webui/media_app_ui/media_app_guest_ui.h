@@ -35,6 +35,7 @@ class MediaAppGuestUIDelegate {
   virtual std::unique_ptr<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
   CreateAndBindOcrHandler(
       content::BrowserContext& context,
+      gfx::NativeWindow native_window,
       mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) = 0;
@@ -106,7 +107,6 @@ class MediaAppGuestUI
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   mojo::Receiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
       untrusted_page_handler_factory_{this};
-  std::unique_ptr<media_app_ui::mojom::OcrUntrustedPageHandler> ocr_handler_;
   std::unique_ptr<MediaAppGuestUIDelegate> delegate_;
 
   base::WeakPtrFactory<MediaAppGuestUI> weak_factory_{this};

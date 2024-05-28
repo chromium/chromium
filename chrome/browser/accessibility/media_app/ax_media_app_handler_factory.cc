@@ -18,11 +18,12 @@ AXMediaAppHandlerFactory::~AXMediaAppHandlerFactory() = default;
 std::unique_ptr<AXMediaAppUntrustedHandler>
 AXMediaAppHandlerFactory::CreateAXMediaAppUntrustedHandler(
     content::BrowserContext& context,
+    gfx::NativeWindow native_window,
     mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
         receiver,
     mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) {
-  auto ax_media_app_handler =
-      std::make_unique<AXMediaAppUntrustedHandler>(context, std::move(page));
+  auto ax_media_app_handler = std::make_unique<AXMediaAppUntrustedHandler>(
+      context, native_window, std::move(page));
   media_app_receivers_.Add(std::move(ax_media_app_handler),
                            std::move(receiver));
   return ax_media_app_handler;

@@ -109,12 +109,13 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
 std::unique_ptr<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
 ChromeMediaAppGuestUIDelegate::CreateAndBindOcrHandler(
     content::BrowserContext& context,
+    gfx::NativeWindow native_window,
     mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
         receiver,
     mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) {
   return ash::AXMediaAppHandlerFactory::GetInstance()
-      ->CreateAXMediaAppUntrustedHandler(context, std::move(receiver),
-                                         std::move(page));
+      ->CreateAXMediaAppUntrustedHandler(context, native_window,
+                                         std::move(receiver), std::move(page));
 }
 
 void ChromeMediaAppGuestUIDelegate::CreateAndBindMahiHandler(

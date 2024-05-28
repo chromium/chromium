@@ -39,6 +39,7 @@
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/gfx/native_widget_types.h"
 
 class SkBitmap;
 
@@ -84,6 +85,7 @@ class AXMediaAppUntrustedHandler
 
   AXMediaAppUntrustedHandler(
       content::BrowserContext& context,
+      gfx::NativeWindow native_window,
       mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page);
   AXMediaAppUntrustedHandler(const AXMediaAppUntrustedHandler&) = delete;
   AXMediaAppUntrustedHandler& operator=(
@@ -158,6 +160,7 @@ class AXMediaAppUntrustedHandler
       ax_mode_observation_{this};
   // This `BrowserContext` will always outlive the WebUI, so this is safe.
   raw_ref<content::BrowserContext> browser_context_;
+  gfx::NativeWindow native_window_;
   mojo::Remote<media_app_ui::mojom::OcrUntrustedPage> media_app_page_;
   gfx::RectF viewport_box_;
   float scale_factor_ = 0.0f;

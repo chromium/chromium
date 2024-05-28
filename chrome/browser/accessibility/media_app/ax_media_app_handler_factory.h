@@ -27,6 +27,7 @@ class AXMediaAppHandlerFactory final {
 
   std::unique_ptr<AXMediaAppUntrustedHandler> CreateAXMediaAppUntrustedHandler(
       content::BrowserContext& context,
+      gfx::NativeWindow native_window,
       mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page);

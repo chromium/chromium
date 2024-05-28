@@ -288,9 +288,10 @@ void MediaAppGuestUI::CreateOcrUntrustedPageHandler(
   if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
     return;
   }
-  ocr_handler_ = delegate_->CreateAndBindOcrHandler(
-      *web_ui()->GetWebContents()->GetBrowserContext(), std::move(receiver),
-      std::move(page));
+  delegate_->CreateAndBindOcrHandler(
+      *web_ui()->GetWebContents()->GetBrowserContext(),
+      web_ui()->GetWebContents()->GetTopLevelNativeWindow(),
+      std::move(receiver), std::move(page));
 }
 
 void MediaAppGuestUI::CreateMahiUntrustedPageHandler(

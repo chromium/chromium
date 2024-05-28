@@ -64,7 +64,8 @@ class AXMediaAppUntrustedHandlerTest : public ChromeRenderViewHostTestHarness {
     // TODO(b/309860428): Delete MediaApp interface - after we implement all
     // Mojo APIs, it should not be needed any more.
     handler_ = std::make_unique<TestAXMediaAppUntrustedHandler>(
-        *web_contents()->GetBrowserContext(), std::move(pageRemote));
+        *web_contents()->GetBrowserContext(),
+        web_contents()->GetTopLevelNativeWindow(), std::move(pageRemote));
 
     handler_->SetMediaAppForTesting(&fake_media_app_);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

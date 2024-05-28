@@ -19,8 +19,9 @@ namespace ash::test {
 
 TestAXMediaAppUntrustedHandler::TestAXMediaAppUntrustedHandler(
     content::BrowserContext& context,
+    gfx::NativeWindow native_window,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page)
-    : AXMediaAppUntrustedHandler(context, std::move(page)) {}
+    : AXMediaAppUntrustedHandler(context, native_window, std::move(page)) {}
 
 TestAXMediaAppUntrustedHandler::~TestAXMediaAppUntrustedHandler() = default;
 

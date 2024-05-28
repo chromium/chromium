@@ -41,6 +41,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -75,8 +76,11 @@ constexpr size_t kMaxPagesPerBatch = 20u;
 
 AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     content::BrowserContext& context,
+    gfx::NativeWindow native_window,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page)
-    : browser_context_(context), media_app_page_(std::move(page)) {
+    : browser_context_(context),
+      native_window_(native_window),
+      media_app_page_(std::move(page)) {
   if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
     return;
   }
@@ -952,9 +956,13 @@ AXMediaAppUntrustedHandler::MakeTransformFromOffsetAndScale() const {
   // `viewport_box_.origin()` represents the offset from which the viewport
   // starts, based on the origin of PDF content; e.g. if it's (-100, -10), it
   // indicates that PDF content starts at (100, 10) from the viewport's origin.
+  const float device_pixel_ratio = display::Screen::GetScreen()
+                                       ->GetDisplayNearestView(native_window_)
+                                       .device_scale_factor();
+  transform->Scale(device_pixel_ratio);
+  transform->Scale(scale_factor_);
   transform->Translate(-viewport_box_.origin().x(),
                        -viewport_box_.origin().y());
-  transform->Scale(scale_factor_, scale_factor_);
   return transform;
 }
 
