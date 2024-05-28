@@ -5,7 +5,7 @@
 // Use `iconVariants` for icon declarations with support for color schemes.
 // In addition to these keys, a size key is allowed with a value of the file
 // path to the image.
-[generate_error_messages] namespace iconVariants {
+[generate_error_messages, nodoc] namespace iconVariants {
   enum ColorScheme { dark, light };
 
   [additionalProperties] dictionary IconVariant {
