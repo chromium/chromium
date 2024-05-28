@@ -18,7 +18,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace safe_browsing {
@@ -39,13 +38,11 @@ UrlCheckerOnSB::OnCompleteCheckResult::OnCompleteCheckResult(
 UrlCheckerOnSB::StartParams::StartParams(
     net::HttpRequestHeaders headers,
     int load_flags,
-    network::mojom::RequestDestination request_destination,
     bool has_user_gesture,
     GURL url,
     std::string method)
     : headers(headers),
       load_flags(load_flags),
-      request_destination(request_destination),
       has_user_gesture(has_user_gesture),
       url(url),
       method(method) {}

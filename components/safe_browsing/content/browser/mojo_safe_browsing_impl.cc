@@ -103,7 +103,6 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     const std::string& method,
     const net::HttpRequestHeaders& headers,
     int32_t load_flags,
-    network::mojom::RequestDestination request_destination,
     bool has_user_gesture,
     bool originated_from_service_worker,
     CreateCheckerAndCheckCallback callback) {

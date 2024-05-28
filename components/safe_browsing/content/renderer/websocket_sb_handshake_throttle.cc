@@ -78,8 +78,7 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
   base::UmaHistogramBoolean("SafeBrowsing.WebSocketCheck.Skipped", false);
   safe_browsing_->CreateCheckerAndCheck(
       frame_token_, url_checker_.BindNewPipeAndPassReceiver(), url, "GET",
-      net::HttpRequestHeaders(), load_flags,
-      network::mojom::RequestDestination::kEmpty, false /* has_user_gesture */,
+      net::HttpRequestHeaders(), load_flags, false /* has_user_gesture */,
       false /* originated_from_service_worker */,
       base::BindOnce(&WebSocketSBHandshakeThrottle::OnCheckResult,
                      weak_factory_.GetWeakPtr()));

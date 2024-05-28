@@ -127,7 +127,6 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
   MockSafeBrowsingUrlChecker(
       const net::HttpRequestHeaders& headers,
       int load_flags,
-      network::mojom::RequestDestination request_destination,
       bool has_user_gesture,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<content::WebContents*()>&
@@ -282,7 +281,6 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
     std::unique_ptr<MockSafeBrowsingUrlChecker> sync_url_checker =
         std::make_unique<MockSafeBrowsingUrlChecker>(
             net::HttpRequestHeaders(), /*load_flags=*/0,
-            network::mojom::RequestDestination::kDocument,
             /*has_user_gesture=*/false, url_checker_delegate_,
             mock_web_contents_getter_.Get(), UnsafeResource::kNoRenderProcessId,
             /*render_frame_token=*/std::nullopt,
@@ -304,8 +302,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
     if (async_check_enabled) {
       std::unique_ptr<MockSafeBrowsingUrlChecker> async_url_checker =
           std::make_unique<MockSafeBrowsingUrlChecker>(
-              net::HttpRequestHeaders(), /*load_flags=*/
-              0, network::mojom::RequestDestination::kDocument,
+              net::HttpRequestHeaders(), /*load_flags=*/0,
               /*has_user_gesture=*/false, url_checker_delegate_,
               mock_web_contents_getter_.Get(),
               UnsafeResource::kNoRenderProcessId,

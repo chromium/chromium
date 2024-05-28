@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
-import "services/network/public/mojom/fetch_api.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/url.mojom";
 
@@ -54,7 +53,6 @@ interface SafeBrowsing {
       string method,
       network.mojom.HttpRequestHeaders headers,
       int32 load_flags,
-      network.mojom.RequestDestination request_destination,
       bool has_user_gesture,
       bool originated_from_service_worker)
           => (pending_receiver<UrlCheckNotifier>? slow_check_notifier,

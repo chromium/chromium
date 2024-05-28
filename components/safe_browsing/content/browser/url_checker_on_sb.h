@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -38,7 +37,6 @@ class UrlCheckerOnSB final {
   struct StartParams {
     StartParams(net::HttpRequestHeaders headers,
                 int load_flags,
-                network::mojom::RequestDestination request_destination,
                 bool has_user_gesture,
                 GURL url,
                 std::string method);
@@ -46,7 +44,6 @@ class UrlCheckerOnSB final {
     ~StartParams();
     net::HttpRequestHeaders headers;
     int load_flags;
-    network::mojom::RequestDestination request_destination;
     bool has_user_gesture;
     const GURL url;
     const std::string method;

@@ -20,7 +20,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -74,7 +73,6 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
  public:
   FakeSafeBrowsing()
       : load_flags_(-1),
-        request_destination_(),
         has_user_gesture_(false),
         originated_from_service_worker_(false) {}
 
@@ -85,7 +83,6 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
       const std::string& method,
       const net::HttpRequestHeaders& headers,
       int32_t load_flags,
-      network::mojom::RequestDestination request_destination,
       bool has_user_gesture,
       bool originated_from_service_worker,
       CreateCheckerAndCheckCallback callback) override {
@@ -95,7 +92,6 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
     method_ = method;
     headers_ = headers;
     load_flags_ = load_flags;
-    request_destination_ = request_destination;
     has_user_gesture_ = has_user_gesture;
     originated_from_service_worker_ = originated_from_service_worker;
     callback_ = std::move(callback);
@@ -114,7 +110,6 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
   std::string method_;
   net::HttpRequestHeaders headers_;
   int32_t load_flags_;
-  network::mojom::RequestDestination request_destination_;
   bool has_user_gesture_;
   bool originated_from_service_worker_;
   CreateCheckerAndCheckCallback callback_;
@@ -208,8 +203,6 @@ TEST_F(WebSocketSBHandshakeThrottleTest, CheckArguments) {
   EXPECT_EQ("GET", safe_browsing_.method_);
   EXPECT_TRUE(safe_browsing_.headers_.GetHeaderVector().empty());
   EXPECT_EQ(0, safe_browsing_.load_flags_);
-  EXPECT_EQ(network::mojom::RequestDestination::kEmpty,
-            safe_browsing_.request_destination_);
   EXPECT_FALSE(safe_browsing_.has_user_gesture_);
   EXPECT_FALSE(safe_browsing_.originated_from_service_worker_);
   EXPECT_TRUE(safe_browsing_.callback_);
