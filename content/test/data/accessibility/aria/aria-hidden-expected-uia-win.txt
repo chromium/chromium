@@ -3,4 +3,3 @@ Document
 ++++Text Name='blockDisplay'
 ++Group
 ++++Text Name='blockDisplay Hiddenfalse'
-++Group Name='blockDisplay Hiddentruefocusable' IsControlElement=false

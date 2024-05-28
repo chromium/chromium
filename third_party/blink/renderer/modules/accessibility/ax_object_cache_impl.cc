@@ -2202,26 +2202,45 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(Node* node) {
   TextChangedWithCleanLayout(node, Get(node));
 }
 
-void AXObjectCacheImpl::FocusableChangedWithCleanLayout(Node* node) {
-  Element* element = To<Element>(node);
-  DCHECK(!element->GetDocument().NeedsLayoutTreeUpdateForNode(*element));
-  AXObject* obj = Get(element);
-  if (!obj)
-    return;
+bool AXObjectCacheImpl::HasBadAriaHidden(const AXObject& obj) const {
+  return nodes_with_bad_aria_hidden.Contains(obj.AXObjectID());
+}
 
-  if (obj->IsAriaHidden()) {
-    // Elements that are hidden but focusable are not ignored. Therefore, if a
-    // hidden element's focusable state changes, it's ignored state must be
-    // recomputed. It may be newly included in the tree, which means the
-    // parents must be updated. We invalidate the entire subtree so that
-    // the inclusion state is recomputed for all nodes potentially in a name
-    // from contents computation.
-    RemoveSubtree(node);
-    return;
+void AXObjectCacheImpl::DiscardBadAriaHidden(AXObject& obj) {
+  // Traverse all the way to the root in case there are multiple
+  // ancestors with aria-hidden. Any aria-hidden="true" on any ancestor will
+  // be ignored.
+  AXObject* bad_aria_hidden_ancestor = nullptr;
+  for (AXObject* ancestor = &obj; ancestor;
+       ancestor = ancestor->ParentObject()) {
+    if (ancestor->AOMPropertyOrARIAAttributeIsTrue(
+            AOMBooleanProperty::kHidden)) {
+      bad_aria_hidden_ancestor = ancestor;
+      nodes_with_bad_aria_hidden.insert(ancestor->AXObjectID());
+    }
   }
+  // Invalidate the subtree and rebuild it now that this aria-hidden has
+  // been marked as bad and will be ignored.
+  CHECK(bad_aria_hidden_ancestor)
+      << "An aria-hidden node did not have an aria-hidden ancestor.";
+  Node* bad_aria_hidden_ancestor_node = bad_aria_hidden_ancestor->GetNode();
+  AXObject* ancestor_to_rebuild = bad_aria_hidden_ancestor->ParentObject();
+  while (ancestor_to_rebuild) {
+    ancestor_to_rebuild->SetNeedsToUpdateChildren();
+    if (ancestor_to_rebuild->IsIncludedInTree()) {
+      break;
+    }
+    ancestor_to_rebuild = ancestor_to_rebuild->ParentObject();
+  }
+  // The root is always included, so ancestor_to_rebuild is never null.
+  DCHECK(ancestor_to_rebuild);
+  RemoveSubtree(bad_aria_hidden_ancestor_node);
+  CHECK(bad_aria_hidden_ancestor->IsDetached());
 
-  // Refresh the focusable state and State::kIgnored on the exposed object.
-  MarkAXObjectDirtyWithCleanLayout(obj);
+  ancestor_to_rebuild->UpdateChildrenIfNecessary();
+  bad_aria_hidden_ancestor = Get(bad_aria_hidden_ancestor_node);
+  CHECK(!bad_aria_hidden_ancestor->IsAriaHiddenRoot());
+  CHECK(!bad_aria_hidden_ancestor->IsAriaHidden());
 }
 
 void AXObjectCacheImpl::DocumentTitleChanged() {
@@ -3549,9 +3568,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     case TreeUpdateReason::kEditableTextContentChanged:
       HandleEditableTextContentChangedWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kFocusableChanged:
-      FocusableChangedWithCleanLayout(node);
-      break;
     case TreeUpdateReason::kIdChanged:
       IdChangedWithCleanLayout(node);
       break;
@@ -3872,6 +3888,16 @@ void AXObjectCacheImpl::HandleNodeLostFocusWithCleanLayout(Node* node) {
 void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
   AXObject* obj = FocusedObject();
 
+  // Repair illegal usage of aria-hidden: it should never contain the focus.
+  // The aria-hidden will be ignored when this occurs.
+  if (obj->IsAriaHidden()) {
+    Node* focused_node = obj->GetNode();
+    DiscardBadAriaHidden(*obj);
+    obj = Get(focused_node);
+    CHECK(obj) << "Object could not be recreated with aria-hidden off.";
+    CHECK(!obj->IsAriaHidden());
+  }
+
   PostNotification(obj, ax::mojom::Event::kFocus);
 
   if (AXObject* active_descendant = obj->ActiveDescendant()) {
@@ -4142,7 +4168,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
   } else if (attr_name == html_names::kIdAttr) {
     DeferTreeUpdate(TreeUpdateReason::kIdChanged, element);
   } else if (attr_name == html_names::kTabindexAttr) {
-    DeferTreeUpdate(TreeUpdateReason::kFocusableChanged, element);
+    MarkElementDirty(element);
   } else if (attr_name == html_names::kValueAttr) {
     HandleValueChanged(element);
   } else if (attr_name == html_names::kDisabledAttr ||

@@ -1,3 +1,6 @@
 Document
-++Button Name='Button 1' IsControlElement=false
-++Button Name='Button 2'
+++Group
+++++Group
+++++++Group IsControlElement=false
+++++++++Button Name='Button 1'
+++++++++Button Name='Button 2'

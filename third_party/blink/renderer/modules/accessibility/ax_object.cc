@@ -594,8 +594,9 @@ const AXObject* FindAncestorWithAriaHidden(const AXObject* start) {
   for (const AXObject* object = start;
        object && !IsA<Document>(object->GetNode());
        object = object->ParentObject()) {
-    if (object->AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden))
+    if (object->IsAriaHiddenRoot()) {
       return object;
+    }
   }
 
   return nullptr;
@@ -3361,13 +3362,10 @@ bool AXObject::ShouldIgnoreForHiddenOrInert(
   }
 
   if (cached_is_aria_hidden_) {
-    // Keep keyboard focusable elements that are aria-hidden in tree, so that
-    // they can still fire events such as focus and value changes.
-    if (!IsKeyboardFocusable()) {
-      if (ignored_reasons)
-        ComputeIsAriaHidden(ignored_reasons);
-      return true;
+    if (ignored_reasons) {
+      ComputeIsAriaHidden(ignored_reasons);
     }
+    return true;
   }
 
   if (cached_is_inert_) {
@@ -3504,6 +3502,17 @@ bool AXObject::ComputeIsInert(IgnoredReasons* ignored_reasons) const {
   return ComputeIsInertViaStyle(GetComputedStyle(), ignored_reasons);
 }
 
+bool AXObject::IsAriaHiddenRoot() const {
+  if (AXObjectCache().HasBadAriaHidden(*this)) {
+    return false;
+  }
+
+  // aria-hidden:true works a bit like display:none.
+  // * aria-hidden=true affects entire subtree.
+  // * aria-hidden=false is a noop.
+  return AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden);
+}
+
 bool AXObject::IsAriaHidden() {
   CheckCanAccessCachedValues();
 
@@ -3521,10 +3530,8 @@ bool AXObject::ComputeIsAriaHidden(IgnoredReasons* ignored_reasons) const {
   if (IsA<Document>(GetNode())) {
     return false;
   }
-  // aria-hidden:true works a bit like display:none.
-  // * aria-hidden=true affects entire subtree.
-  // * aria-hidden=false is a noop.
-  if (AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden)) {
+
+  if (IsAriaHiddenRoot()) {
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXAriaHiddenElement));
     return true;
@@ -4522,13 +4529,10 @@ bool AXObject::IsHiddenForTextAlternativeCalculation(
   // when computing name/description through an aria-labelledby/describedby
   // relation, if the target of the relation is hidden it will expose the entire
   // subtree, including aria-hidden=true nodes. The exception was accounted in
-  // the previous if block, so we are safe to hide any node with
+  // the previous if block, so we are safe to hide any node with a valid
   // aria-hidden=true at this point.
-  if (AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden)) {
-    // We only hide aria-hidden text if the node does not support focus as a
-    // bad authoring correction.
-    if (!CanSetFocusAttribute())
-      return true;
+  if (IsAriaHiddenRoot()) {
+    return true;
   }
 
   return IsHiddenViaStyle();

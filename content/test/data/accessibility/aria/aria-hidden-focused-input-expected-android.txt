@@ -1,3 +1,4 @@
 android.webkit.WebView focusable
-++android.widget.EditText clickable editable_text focusable invisible hint='input 1' input_type=1
-++android.widget.EditText clickable editable_text focusable focused hint='input 2' input_type=1
+++android.view.View
+++++android.widget.EditText clickable editable_text focusable hint='input 1' input_type=1
+++++android.widget.EditText clickable editable_text focusable focused hint='input 2' input_type=1

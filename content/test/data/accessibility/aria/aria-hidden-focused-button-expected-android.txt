@@ -1,3 +1,6 @@
 android.webkit.WebView focusable
-++android.widget.Button role_description='button' clickable focusable invisible name='Button 1'
-++android.widget.Button role_description='button' clickable focusable focused name='Button 2'
+++android.view.View role_description='main'
+++++android.view.View
+++++++android.view.View
+++++++++android.widget.Button role_description='button' clickable focusable name='Button 1'
+++++++++android.widget.Button role_description='button' clickable focusable focused name='Button 2'

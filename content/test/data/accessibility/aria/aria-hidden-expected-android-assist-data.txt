@@ -1,6 +1,3 @@
 WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
-++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {id="blockDisplay"}]
-++++TextView text:"blockDisplay" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
-++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-hidden="false"}, {id="blockDisplayAriaHiddenFalse"}]
-++++TextView text:"blockDisplay Hiddenfalse" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
-++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-hidden="true"}, {id="blockDisplayAriaHiddenTrueFocusable"}, {tabindex="0"}]
+++TextView text:"blockDisplay" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {id="blockDisplay"}]
+++TextView text:"blockDisplay Hiddenfalse" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-hidden="false"}, {id="blockDisplayAriaHiddenFalse"}]

@@ -1,3 +1,4 @@
 Document
-++Edit Name='input 1' IsControlElement=false
-++Edit Name='input 2'
+++Group
+++++Edit Name='input 1'
+++++Edit Name='input 2'

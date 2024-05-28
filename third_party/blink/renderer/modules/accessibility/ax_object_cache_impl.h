@@ -188,6 +188,14 @@ class MODULES_EXPORT AXObjectCacheImpl
   const WTF::Vector<gfx::Rect>* GetOptionsBounds(
       const AXObject& ax_menu_list) const;
 
+  // Return true if the node has previously had aria-hidden="true" that was used
+  // illegally, e.g. focus went inside of it.
+  bool HasBadAriaHidden(const AXObject&) const;
+  // Mark any aria-hidden ancestors of this object as "bad", ignoring their
+  // aria-hidden markup from this point forward, and rebuild the top aria-hidden
+  // element's subtree without the aria-hidden markup.
+  void DiscardBadAriaHidden(AXObject&);
+
   void ImageLoaded(const LayoutObject*) override;
 
   // Removes AXObject backed by passed-in object, if there is one.
@@ -242,7 +250,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void TextChanged(const LayoutObject*) override;
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
 
-  void FocusableChangedWithCleanLayout(Node* node);
   void DocumentTitleChanged() override;
 
   // Returns true if we can immediately process tree updates for this node.
@@ -775,9 +782,9 @@ class MODULES_EXPORT AXObjectCacheImpl
     kAriaPressedChanged = 4,
     kAriaSelectedChanged = 5,
     kDelayEventFromPostNotification = 6,
-    kEditableTextContentChanged = 7,
-    kFocusableChanged = 8,
-    kDidShowMenuListPopup = 9,
+    kDidShowMenuListPopup = 7,
+    kEditableTextContentChanged = 8,
+    kFocusableChanged = 9,
     kIdChanged = 10,
     kMarkDirtyFromHandleScroll = 11,
     kNodeGainedFocus = 12,
@@ -1072,6 +1079,12 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Nodes with document markers that have received accessibility updates.
   HashSet<AXID> nodes_with_spelling_or_grammar_markers_;
+
+  // Container nodes with an bad aria-hidden="true" usage, where the aria-hidden
+  // will be ignored so that the user can navigate the page.
+  // Example, aria-hidden="true" on an element, where focus has gone inside
+  // of the element.
+  HashSet<AXID> nodes_with_bad_aria_hidden;
 
   AXID last_value_change_node_ = ui::AXNodeData::kInvalidAXID;
 

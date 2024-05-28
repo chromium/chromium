@@ -2093,7 +2093,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       R"HTML(<!DOCTYPE html>
           <html>
           <body>
-            <input aria-hidden="true">
+            <input aria-hidden="true" autofocus>
           </body>
           </html>)HTML"));
 

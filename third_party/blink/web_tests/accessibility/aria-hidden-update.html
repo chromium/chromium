@@ -37,10 +37,10 @@ test((t) => {
 
     // Verify that the 3 children are present.
     assert_equals(parent.childAtIndex(0).name, "Button 1", "button1 is first");
-    assert_equals(parent.childAtIndex(1).name, "Button 2", "button2 is second");
+    assert_equals(parent.childAtIndex(1).name, "", "button2 is second");
     assert_equals(parent.childAtIndex(2).name, "Button 3", "button3 is third");
     assert_false(parent.childAtIndex(0).isIgnored);
-    assert_false(parent.childAtIndex(1).isIgnored);
+    assert_true(parent.childAtIndex(1).isIgnored);
     assert_false(parent.childAtIndex(2).isIgnored);
 
     // Make the 1st button hidden. All 3 children should still be present.
@@ -50,11 +50,11 @@ test((t) => {
     button1 = axElementById("button1");
 
     // Verify that the 3 children are present.
-    assert_equals(parent.childAtIndex(0).name, "Button 1", "button1 is first");
-    assert_equals(parent.childAtIndex(1).name, "Button 2", "button2 is second");
+    assert_equals(parent.childAtIndex(0).name, "", "button1 is first");
+    assert_equals(parent.childAtIndex(1).name, "", "button2 is second");
     assert_equals(parent.childAtIndex(2).name, "Button 3", "button3 is third");
-    assert_false(parent.childAtIndex(0).isIgnored);
-    assert_false(parent.childAtIndex(1).isIgnored);
+    assert_true(parent.childAtIndex(0).isIgnored);
+    assert_true(parent.childAtIndex(1).isIgnored);
     assert_false(parent.childAtIndex(2).isIgnored);
 
     // Make the 2nd button not hidden. All 3 children should still be present.
@@ -65,10 +65,10 @@ test((t) => {
 
     // Verify that the 3 children are present.
     parent = axElementById("parent");
-    assert_equals(parent.childAtIndex(0).name, "Button 1", "button1 is first");
+    assert_equals(parent.childAtIndex(0).name, "", "button1 is first");
     assert_equals(parent.childAtIndex(1).name, "Button 2", "button2 is second");
     assert_equals(parent.childAtIndex(2).name, "Button 3", "button3 is third");
-    assert_false(parent.childAtIndex(0).isIgnored);
+    assert_true(parent.childAtIndex(0).isIgnored);
     assert_false(parent.childAtIndex(1).isIgnored);
     assert_false(parent.childAtIndex(2).isIgnored);
 }, "This test makes sure that when aria-hidden changes, the AX hierarchy does not change.");

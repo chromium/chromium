@@ -1,7 +1,8 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++textField invisible name='input 1'
-++++++++genericContainer ignored invisible
-++++++textField invisible name='input 2'
-++++++++genericContainer ignored invisible
+++++++genericContainer
+++++++++textField name='input 1'
+++++++++++genericContainer
+++++++++textField name='input 2'
+++++++++++genericContainer

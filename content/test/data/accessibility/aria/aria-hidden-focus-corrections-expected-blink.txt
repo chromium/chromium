@@ -2,16 +2,16 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++tree
-++++++++treeItem invisible name='outer aria-hidden' selected=false
+++++++++treeItem ignored invisible name='outer aria-hidden' selected=false
 ++++++++++staticText ignored invisible name='outer aria-hidden'
-++++++++treeItem invisible name='outer aria-hidden, grandchildren' selected=false
+++++++++treeItem ignored invisible name='outer aria-hidden, grandchildren' selected=false
 ++++++++++genericContainer ignored invisible
 ++++++++++++genericContainer ignored invisible
 ++++++++++++++staticText ignored invisible name='outer aria-hidden, grandchildren'
 ++++++++group
-++++++++++treeItem invisible name='direct aria-hidden' selected=false
+++++++++++treeItem ignored invisible selected=false
 ++++++++++++staticText ignored invisible name='direct aria-hidden'
-++++++++++treeItem invisible name='direct aria-hidden, grandchildren' selected=false
+++++++++++treeItem ignored invisible selected=false
 ++++++++++++genericContainer ignored invisible
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++++staticText ignored invisible name='direct aria-hidden, grandchildren'

@@ -1,7 +1,7 @@
 rootWebArea name='done'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++button invisible name='Button 1'
+++++++button ignored invisible
 ++++++++staticText ignored invisible name='Button 1'
 ++++++button name='Button 2'
 ++++++++staticText name='Button 2'

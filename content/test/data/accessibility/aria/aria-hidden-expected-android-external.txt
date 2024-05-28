@@ -1,4 +1,3 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++TextView text:"blockDisplay" viewIdResName:"blockDisplay" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
 ++TextView text:"blockDisplay Hiddenfalse" viewIdResName:"blockDisplayAriaHiddenFalse" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++TextView text:"blockDisplay Hiddentruefocusable" viewIdResName:"blockDisplayAriaHiddenTrueFocusable" focusable notVisibleToUser actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
