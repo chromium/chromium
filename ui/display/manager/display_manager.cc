@@ -16,6 +16,7 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -1112,6 +1113,13 @@ void DisplayManager::UpdateDisplays() {
 
 void DisplayManager::UpdateDisplaysWith(
     const DisplayInfoList& updated_display_info_list) {
+  // Catch and report any nested display updates for crbug.com/330166338.
+  if (is_updating_displays_) {
+    base::debug::DumpWithoutCrashing();
+  }
+  base::AutoReset<bool> is_updating_displays_resetter(&is_updating_displays_,
+                                                      true);
+
   BeginEndNotifier notifier(this);
 
   DisplayInfoList new_display_info_list = updated_display_info_list;
@@ -1408,7 +1416,10 @@ void DisplayManager::UpdateDisplaysWith(
 
     const auto primary_index_it = std::find(
         active_display_list_.begin(), active_display_list_.end(), primary);
-    CHECK(primary_index_it != active_display_list_.end());
+    CHECK_EQ(primary.id(), screen_->GetPrimaryDisplay().id())
+        << "Primary changed during displays update.";
+    CHECK(primary_index_it != active_display_list_.end())
+        << "Primary display not in display list.";
     const size_t primary_index =
         std::distance(active_display_list_.begin(), primary_index_it);
     display_changes[primary_index] |= primary_metrics;

@@ -680,6 +680,11 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // See https://crbug.com/632755
   bool is_updating_display_list_ = false;
 
+  // True if the display manager is currently performing an update in
+  // `UpdateDisplaysWith()`. Remove once root cause behind primary display
+  // issue has been resolved (see crbug.com/330166338).
+  bool is_updating_displays_ = false;
+
   DisplayIdList connected_display_id_list_;
 
   bool force_bounds_changed_ = false;
