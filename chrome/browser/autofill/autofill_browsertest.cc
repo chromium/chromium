@@ -436,7 +436,11 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
   // Two valid phone numbers are imported, two invalid ones are removed.
   EXPECT_THAT(
       actual_phone_numbers,
-      UnorderedElementsAreArray({u"4088714567", u"+4940808179000", u"", u""}));
+      UnorderedElementsAreArray({base::FeatureList::IsEnabled(
+                                     features::kAutofillInferCountryCallingCode)
+                                     ? u"14088714567"
+                                     : u"4088714567",
+                                 u"+4940808179000", u"", u""}));
 }
 
 // Prepend country codes when formatting phone numbers if:

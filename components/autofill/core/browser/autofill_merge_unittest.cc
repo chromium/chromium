@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_manager.h"
@@ -145,6 +146,7 @@ class AutofillMergeTest : public testing::DataDrivenTest,
   void MergeProfiles(const std::string& profiles, std::string* merged_profiles);
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestAutofillClient autofill_client_;
   TestPersonalDataManager personal_data_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
@@ -161,6 +163,11 @@ void AutofillMergeTest::SetUp() {
       .set_auto_accept_address_imports(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
       &autofill_client_, &personal_data_, /*history_service=*/nullptr, "en");
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
+       features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
+       features::kAutofillInferCountryCallingCode},
+      /*disabled_features=*/{});
 }
 
 void AutofillMergeTest::TearDown() {

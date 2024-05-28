@@ -2389,7 +2389,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   EXPECT_EQ("Austin", GetFieldValueById("city"));
   EXPECT_EQ("Initech", GetFieldValueById("company"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
-  EXPECT_EQ("5125551234", GetFieldValueById("phone"));
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
+          ? "15125551234"
+          : "5125551234",
+      GetFieldValueById("phone"));
 }
 
 // Test that an 'onchange' event is not fired when a <selectlist> preview
@@ -2670,7 +2674,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Austin", GetFieldValueById("city_form1"));
   EXPECT_EQ("Initech", GetFieldValueById("company_form1"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form1"));
-  EXPECT_EQ("5125551234", GetFieldValueById("phone_form1"));
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
+          ? "15125551234"
+          : "5125551234",
+      GetFieldValueById("phone_form1"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
@@ -2691,7 +2699,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Austin", GetFieldValueById("city_form1"));
   EXPECT_EQ("Initech", GetFieldValueById("company_form1"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form1"));
-  EXPECT_EQ("5125551234", GetFieldValueById("phone_form1"));
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
+          ? "15125551234"
+          : "5125551234",
+      GetFieldValueById("phone_form1"));
 
   refill = ListenForRefill("firstname_form2");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_form2"), this));
@@ -2704,7 +2716,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Austin", GetFieldValueById("city_form2"));
   EXPECT_EQ("Initech", GetFieldValueById("company_form2"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form2"));
-  EXPECT_EQ("5125551234", GetFieldValueById("phone_form2"));
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
+          ? "15125551234"
+          : "5125551234",
+      GetFieldValueById("phone_form2"));
 }
 
 // Test that forms that dynamically change a second time do not get filled.
@@ -3140,7 +3156,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Austin", GetFieldValueById("city_form1"));
   EXPECT_EQ("Initech", GetFieldValueById("company_form1"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form1"));
-  EXPECT_EQ("5125551234", GetFieldValueById("phone_form1"));
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
+          ? "15125551234"
+          : "5125551234",
+      GetFieldValueById("phone_form1"));
 }
 
 // Test that we can Autofill dynamically changing selects that have options
@@ -3189,7 +3209,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Initech", GetFieldValueById("company_syntheticform1"));
   EXPECT_EQ("red.swingline@initech.com",
             GetFieldValueById("email_syntheticform1"));
-  EXPECT_EQ("5125551234", GetFieldValueById("phone_syntheticform1"));
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
+          ? "15125551234"
+          : "5125551234",
+      GetFieldValueById("phone_syntheticform1"));
 }
 
 // Test that we can Autofill dynamically synthetic forms when the select options

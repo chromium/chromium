@@ -8,10 +8,12 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
@@ -365,8 +367,14 @@ INSTANTIATE_TEST_SUITE_P(
         // country, if it's valid.
         PhoneNumberFormatCase(u"2 9374 4000", u"AU", u"+61 2 9374 4000"),
         // Without a country code, formatting returns the number as entered by
-        // user, if it's invalid.
-        PhoneNumberFormatCase(u"415-555-5555", u"AU", u"4155555555"),
+        // user, if it's invalid, unless AutofillInferCountryCallingCode is
+        // enabled.
+        PhoneNumberFormatCase(u"415-555-5555",
+                              u"AU",
+                              base::FeatureList::IsEnabled(
+                                  features::kAutofillInferCountryCallingCode)
+                                  ? u"+614155555555"
+                                  : u"4155555555"),
 
         //////////////////////////
         // US phone in MX.
@@ -405,8 +413,13 @@ INSTANTIATE_TEST_SUITE_P(
         // country.
         // This local AU number is associated with US profile, the number is
         // not a valid US number, therefore formatting will just return what
-        // user entered.
-        PhoneNumberFormatCase(u"02 9374 4000", u"US", u"0293744000"),
+        // user entered, unless AutofillInferCountryCallingCode is.
+        PhoneNumberFormatCase(u"02 9374 4000",
+                              u"US",
+                              base::FeatureList::IsEnabled(
+                                  features::kAutofillInferCountryCallingCode)
+                                  ? u"+10293744000"
+                                  : u"0293744000"),
         // This local GR(Greece) number is formatted as an US number, if it's
         // valid US number.
         PhoneNumberFormatCase(u"22 6800 0090", u"US", u"+1 226-800-0090"),
@@ -430,8 +443,15 @@ INSTANTIATE_TEST_SUITE_P(
         // number.
         PhoneNumberFormatCase(u"+52 55 5342 8400", u"US", u"+52 55 5342 8400"),
         PhoneNumberFormatCase(u"52 55 5342 8400", u"US", u"+52 55 5342 8400"),
-        // This number is not a valid US number, we won't try to format.
-        PhoneNumberFormatCase(u"55 5342 8400", u"US", u"5553428400")));
+        // This number is not a valid US number, we won't try to format. If
+        // AutofillInferCountryCallingCode is enabled, we just add the inferred
+        // code.
+        PhoneNumberFormatCase(u"55 5342 8400",
+                              u"US",
+                              base::FeatureList::IsEnabled(
+                                  features::kAutofillInferCountryCallingCode)
+                                  ? u"+15553428400"
+                                  : u"5553428400")));
 
 INSTANTIATE_TEST_SUITE_P(
     GetFormattedPhoneNumberForDisplay_EdgeCases,
