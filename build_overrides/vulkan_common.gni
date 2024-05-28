@@ -4,7 +4,7 @@
 
 import("//third_party/angle/gni/angle.gni")
 
-vulkan_headers_dir = "//third_party/vulkan-deps/vulkan-headers/src"
+vulkan_headers_dir = "//third_party/vulkan-headers/src"
 
 vulkan_data_subdir = angle_data_dir
 vulkan_gen_subdir = "angle/vulkan"

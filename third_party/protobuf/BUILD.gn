@@ -169,9 +169,9 @@ static_library("protobuf_full") {
 
       # The spirv-fuzz fuzzer tool needs protobuf_full and is not included in
       # Chrome.
-      "//third_party/vulkan-deps/spirv-tools/src:spirv-fuzz",
-      "//third_party/vulkan-deps/spirv-tools/src:spvtools_fuzz",
-      "//third_party/vulkan-deps/spirv-tools/src:spvtools_fuzz_proto",
+      "//third_party/spirv-tools/src:spirv-fuzz",
+      "//third_party/spirv-tools/src:spvtools_fuzz",
+      "//third_party/spirv-tools/src:spvtools_fuzz_proto",
 
       # Some fuzzers for tint need protobuf_full and are not included in Chrome.
       "//third_party/dawn/src/tint/*",

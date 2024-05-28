@@ -1,0 +1,17 @@
+Name: Khronos reference front-end for GLSL and ESSL
+Short Name: glslang
+URL: https://github.com/KhronosGroup/glslang
+Version: N/A
+Revision: 541733a66b1cf4465559c78a8bd857606ac76123
+Security Critical: yes
+Shipped: no
+License: MIT
+License File: LICENSE
+
+Description:
+An OpenGL and OpenGL ES shader front end and validator.
+
+Local Modifications:
+Added OWNERS, README.chromium.
+Ported build rules from CMake to GN.
+5/13/2016 - Updated GN build rules to include new files added in repository.

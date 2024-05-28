@@ -79,9 +79,8 @@ REPLACEMENTS = {
     # Use system libSPIRV-Tools inside ANGLE.
     # These two shims MUST be used together
     # and can only be used if WebGPU is not compiled (use_dawn=false)
-    'vulkan-SPIRV-Headers':
-    'third_party/vulkan-deps/spirv-headers/src/BUILD.gn',
-    'vulkan-SPIRV-Tools': 'third_party/vulkan-deps/spirv-tools/src/BUILD.gn',
+    'vulkan-SPIRV-Headers': 'third_party/spirv-headers/src/BUILD.gn',
+    'vulkan-SPIRV-Tools': 'third_party/spirv-tools/src/BUILD.gn',
     #
     'vulkan_memory_allocator': 'third_party/vulkan_memory_allocator/BUILD.gn',
     'woff2': 'third_party/woff2/BUILD.gn',

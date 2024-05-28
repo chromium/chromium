@@ -203,7 +203,7 @@ source_set("vulkan_types") {
   sources = [ "vulkan_types.h" ]
   public_deps = [ "//ui/gfx" ]
   all_dependent_configs =
-      [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers_config" ]
+      [ "//third_party/vulkan-headers/src:vulkan_headers_config" ]
   configs += [ "//gpu:gpu_implementation" ]
 }
 

@@ -99,7 +99,7 @@ if (enable_vulkan) {
 
     deps = [ "//gpu/ipc/common:vulkan_interface" ]
     public_deps = [
-      "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers",
+      "//third_party/vulkan-headers/src:vulkan_headers",
       "//ui/gfx",
     ]
 
@@ -200,7 +200,7 @@ source_set("config_sources") {
     "//media:media_buildflags",
     "//skia:buildflags",
     "//third_party/re2",
-    "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers",
+    "//third_party/vulkan-headers/src:vulkan_headers",
     "//ui/gfx",
     "//ui/gl",
     "//ui/gl:buildflags",

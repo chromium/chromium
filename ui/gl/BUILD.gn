@@ -246,7 +246,7 @@ component("gl") {
         "//third_party/angle:libGLESv2",
       ]
       if (angle_shared_libvulkan && !is_chromeos) {
-        data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+        data_deps += [ "//third_party/vulkan-loader/src:libvulkan" ]
       }
     }
   }
@@ -272,7 +272,7 @@ component("gl") {
       "//third_party/angle:libGLESv2",
     ]
     if (angle_shared_libvulkan && !is_chromeos) {
-      data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+      data_deps += [ "//third_party/vulkan-loader/src:libvulkan" ]
     }
   }
 
@@ -338,7 +338,7 @@ component("gl") {
       "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
     ]
     if (angle_shared_libvulkan && !is_chromeos) {
-      data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+      data_deps += [ "//third_party/vulkan-loader/src:libvulkan" ]
     }
   }
   if (is_apple) {

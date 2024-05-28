@@ -41,7 +41,7 @@ viz_component("shared_image_format") {
     "//ui/gfx/geometry",
   ]
   if (enable_vulkan) {
-    deps += [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
+    deps += [ "//third_party/vulkan-headers/src:vulkan_headers" ]
   }
 }
 

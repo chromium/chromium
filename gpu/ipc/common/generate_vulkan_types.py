@@ -14,7 +14,7 @@ import typing
 
 from xml.etree import ElementTree
 
-_VK_XML_FILE = "third_party/vulkan-deps/vulkan-headers/src/registry/vk.xml"
+_VK_XML_FILE = "third_party/vulkan-headers/src/registry/vk.xml"
 
 _STRUCTS = [
   "VkExtensionProperties",

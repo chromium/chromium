@@ -55,11 +55,14 @@ default_args = {
   crashpad_dependencies = "chromium"
 
   # Override ANGLE's Vulkan dependencies.
-  angle_vulkan_headers_dir = "//third_party/vulkan-deps/vulkan-headers/src"
-  angle_vulkan_loader_dir = "//third_party/vulkan-deps/vulkan-loader/src"
-  angle_vulkan_tools_dir = "//third_party/vulkan-deps/vulkan-tools/src"
+  angle_vulkan_headers_dir = "//third_party/vulkan-headers/src"
+  angle_vulkan_loader_dir = "//third_party/vulkan-loader/src"
+  angle_vulkan_tools_dir = "//third_party/vulkan-tools/src"
   angle_vulkan_validation_layers_dir =
-      "//third_party/vulkan-deps/vulkan-validation-layers/src"
+      "//third_party/vulkan-validation-layers/src"
+
+  # Override VMA's Vulkan dependencies.
+  vma_vulkan_headers_dir = "//third_party/vulkan-headers/src"
 
   # Overwrite default args declared in the Fuchsia sdk
   fuchsia_sdk_readelf_exec =

@@ -1,0 +1,15 @@
+Name: Khronos Vulkan Utility Libraries
+Short Name: Vulkan Utility Libraries
+Version: N/A
+URL: https://github.com/KhronosGroup/Vulkan-Utility-Libraries
+SOURCE CODE: git clone https://github.com/KhronosGroup/Vulkan-Utility-Libraries.git
+Revision: HEAD
+Security Critical: no
+Shipped: no
+License: Apache 2.0
+License File: src/LICENSE.md
+
+Description:
+
+The Khronos Vulkan Utility Libraries contains the layer settings library and
+miscellaneous utility headers for Vulkan developers.

@@ -1811,7 +1811,7 @@ if (is_linux || is_chromeos) {
           symbol_file = "$root_out_dir/angle_libvulkan.breakpad.$current_cpu"
         }
 
-        deps = [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+        deps = [ "//third_party/vulkan-loader/src:libvulkan" ]
       }
     }
     if (build_with_internal_optimization_guide) {
@@ -1959,7 +1959,7 @@ if (is_chrome_for_testing && is_linux) {
 
   strip_binary("strip_libvulkan_shlib") {
     binary_input = "$root_out_dir/libvulkan.so.1"
-    deps = [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+    deps = [ "//third_party/vulkan-loader/src:libvulkan" ]
   }
 
   strip_binary("strip_libvk_swiftshader_shlib") {

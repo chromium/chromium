@@ -191,7 +191,7 @@ strip_binary("strip_libGLESv2_shlib") {
 
 strip_binary("strip_libvulkan_shlib") {
   binary_input = "$root_out_dir/libvulkan.so.1"
-  deps = [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+  deps = [ "//third_party/vulkan-loader/src:libvulkan" ]
 }
 
 strip_binary("strip_libvk_swiftshader.shlib") {
@@ -389,7 +389,7 @@ group("installer_deps") {
     if (angle_shared_libvulkan && !is_chromeos) {
       public_deps += [
         ":strip_libvulkan_shlib",
-        "//third_party/vulkan-deps/vulkan-loader/src:libvulkan",
+        "//third_party/vulkan-loader/src:libvulkan",
       ]
     }
   }

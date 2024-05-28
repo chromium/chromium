@@ -1,0 +1,16 @@
+Name: Vulkan Loader Components
+Short Name: Vulkan Loader
+Version: N/A
+URL: https://github.com/KhronosGroup/Vulkan-Loader
+SOURCE CODE: git clone https://github.com/KhronosGroup/Vulkan-Loader.git
+Revision: HEAD
+Security Critical: no
+Shipped: yes
+License: Apache 2.0
+License File: src/LICENSE.txt
+
+Description:
+The Vulkan Loader Components are used to build the open-source desktop Vulkan loader. The loader
+is a library that loads the Vulkan entry points and hooks them into the correct layers and the
+client driver (ICD). This is required for using Vulkan layers and applications.
+
