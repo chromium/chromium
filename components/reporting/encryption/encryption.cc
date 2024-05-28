@@ -13,12 +13,14 @@
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "components/reporting/encryption/primitives.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -80,6 +82,10 @@ void Encryptor::Handle::ProduceEncryptedRecord(
           out_shared_secret, out_generatet_public_value)) {
     std::move(cb).Run(base::unexpected(
         Status(error::DATA_LOSS, "Curve25519 shared secret not derived")));
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::FAILED_TO_CREATE_ENCRYPTION_KEY,
+        DataLossErrorReason::MAX_VALUE);
     return;
   }
   encrypted_record.mutable_encryption_info()->mutable_encryption_key()->assign(

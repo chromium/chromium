@@ -13,9 +13,11 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
+#include "components/reporting/util/reporting_errors.h"
 
 namespace reporting {
 
@@ -67,6 +69,9 @@ StatusOr<std::string> MaybeReadFile(const base::FilePath& file_path,
                                     int64_t offset) {
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::FAILED_TO_OPEN_FILE,
+                                  DataLossErrorReason::MAX_VALUE);
     return base::unexpected(Status(
         error::NOT_FOUND, base::StrCat({"Could not open health data file ",
                                         file_path.MaybeAsASCII()})));
@@ -74,6 +79,9 @@ StatusOr<std::string> MaybeReadFile(const base::FilePath& file_path,
 
   base::File::Info file_info;
   if (!file.GetInfo(&file_info) || file_info.size - offset < 0) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::FAILED_TO_READ_FILE_INFO,
+                                  DataLossErrorReason::MAX_VALUE);
     return base::unexpected(
         Status(error::DATA_LOSS, base::StrCat({"Failed to read data file info ",
                                                file_path.MaybeAsASCII()})));
@@ -84,6 +92,9 @@ StatusOr<std::string> MaybeReadFile(const base::FilePath& file_path,
   const int read_result =
       file.Read(offset, result.data(), file_info.size - offset);
   if (read_result != file_info.size - offset) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::FAILED_TO_READ_FILE,
+                                  DataLossErrorReason::MAX_VALUE);
     return base::unexpected(Status(
         error::DATA_LOSS,
         base::StrCat({"Failed to read data file ", file_path.MaybeAsASCII()})));
@@ -97,6 +108,9 @@ Status AppendLine(const base::FilePath& file_path,
   base::File file(file_path,
                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
   if (!file.IsValid()) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::FAILED_TO_OPEN_FILE,
+                                  DataLossErrorReason::MAX_VALUE);
     return Status(error::NOT_FOUND,
                   base::StrCat({"Could not open health data file ",
                                 file_path.MaybeAsASCII()}));
@@ -105,6 +119,9 @@ Status AppendLine(const base::FilePath& file_path,
   const std::string line = base::StrCat({data, "\n"});
   const int write_count = file.Write(0, line.data(), line.size());
   if (write_count < 0 || static_cast<size_t>(write_count) < line.size()) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::FAILED_TO_WRITE_FILE,
+                                  DataLossErrorReason::MAX_VALUE);
     return Status(error::DATA_LOSS,
                   base::StrCat({"Failed to write health data file ",
                                 file_path.MaybeAsASCII(), " write count=",
@@ -153,6 +170,9 @@ Status MaybeWriteFile(const base::FilePath& file_path,
 
   const int write_count = file.Write(0, data.data(), data.size());
   if (write_count < 0 || static_cast<size_t>(write_count) < data.size()) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::FAILED_TO_WRITE_FILE,
+                                  DataLossErrorReason::MAX_VALUE);
     return Status(
         error::DATA_LOSS,
         base::StrCat({"Failed to write data file ", file_path.MaybeAsASCII(),

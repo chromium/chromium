@@ -68,6 +68,60 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Dark"/>
 </enum>
 
+<enum name="DataLossErrorReasonBrowser">
+  <summary>
+    Defined as DataLossErrorReason in
+    components/reporting/util/reporting_errors.h.
+  </summary>
+  <int value="0" label="REPORT_UPLOAD_FAILED"/>
+  <int value="1" label="REPORT_CLIENT_EMPTY_RESPONSE"/>
+  <int value="2" label="REPORT_CLIENT_BAD_RESPONSE_CODE"/>
+  <int value="3" label="NO_HEADERS_FOUND"/>
+  <int value="4" label="UNEXPECTED_UPLOAD_STATUS"/>
+  <int value="5" label="POST_REQUEST_FAILED"/>
+  <int value="6" label="NO_GRANULARITTY_RETURNED"/>
+  <int value="7" label="UNEXPECTED_GRANULARITY"/>
+  <int value="8" label="NO_UPLOAD_URL_RETURNED"/>
+  <int value="9" label="FAILED_TO_OPEN_UPLOAD_FILE"/>
+  <int value="10" label="CORRUPT_SESSION_TOKEN"/>
+  <int value="11" label="FILE_SIZE_MISMATCH"/>
+  <int value="12" label="CANNOT_READ_FILE"/>
+  <int value="13" label="NO_UPLOAD_SIZE_RETURNED"/>
+  <int value="14" label="UNEXPECTED_UPLOAD_RECEIVED_CODE"/>
+  <int value="15" label="NO_UPLOAD_ID_RETURNED"/>
+  <int value="16" label="UPLOAD_JOB_REMOVED"/>
+  <int value="17" label="JOB_LOST_SESSION_TOKEN"/>
+  <int value="18" label="JOB_BACKTRACKED"/>
+  <int value="19" label="JOB_INCOMPLETE"/>
+  <int value="20" label="CORRUPT_RESUMABLE_UPLOAD_URL"/>
+  <int value="21" label="FAILED_UPLOAD_CONTAINS_INVALID_SEQUENCE_INFORMATION"/>
+  <int value="22"
+      label="SPECULATIVE_REPORT_QUEUE_DESTRUCTED_BEFORE_RECORDS_ENQUEUED"/>
+  <int value="23" label="FAILED_TO_CREATE_ENCRYPTION_KEY"/>
+  <int value="24" label="FAILED_TO_READ_HEALTH_DATA"/>
+  <int value="25" label="MISSING_GENERATION_ID"/>
+  <int value="26" label="FAILED_TO_PASE_GENERATION_ID"/>
+  <int value="27" label="INVALID_GENERATION_ID"/>
+  <int value="28" label="ALL_FILE_PATHS_MISSING_GENERATION_ID"/>
+  <int value="29" label="FAILED_TO_OPEN_STORAGE_QUEUE_FILE"/>
+  <int value="30" label="FAILED_TO_WRITE_METADATA"/>
+  <int value="31" label="FAILED_TO_READ_METADATA"/>
+  <int value="32" label="METADATA_GENERATION_ID_OUT_OF_RANGE"/>
+  <int value="33" label="METADATA_GENERATION_MISMATCH"/>
+  <int value="34" label="METADATA_LAST_RECORD_DIGEST_IS_CORRUPT"/>
+  <int value="35" label="FAILED_TO_RESTORE_LAST_RECORD_DIGEST"/>
+  <int value="36" label="FAILED_TO_SERIALIZE_WRAPPED_RECORD"/>
+  <int value="37" label="FAILED_TO_SERIALIZE_ENCRYPTED_RECORD"/>
+  <int value="38" label="FAILED_TO_OPEN_FILE"/>
+  <int value="39" label="FAILED_TO_GET_SIZE_OF_FILE"/>
+  <int value="40" label="FAILED_TO_READ_FILE"/>
+  <int value="41" label="FAILED_TO_WRITE_FILE"/>
+  <int value="42" label="FAILED_TO_OPEN_KEY_FILE"/>
+  <int value="43" label="FAILED_TO_SERIALIZE_KEY"/>
+  <int value="44" label="FAILED_TO_WRITE_KEY"/>
+  <int value="45" label="FAILED_TO_READ_FILE_INFO"/>
+</enum>
+
 <enum name="EnterpriseCloudReportingDestination">
 <!-- This must be kept in sync with
      //components/reporting/proto/synced/record_constants.proto's

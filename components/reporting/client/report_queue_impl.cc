@@ -459,6 +459,11 @@ void SpeculativeReportQueueImpl::PurgePendingProducers(Status status) const {
   while (!pending_record_producers_.empty()) {
     auto head = std::move(pending_record_producers_.front());
     pending_record_producers_.pop();
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::
+            SPECULATIVE_REPORT_QUEUE_DESTRUCTED_BEFORE_RECORDS_ENQUEUED,
+        DataLossErrorReason::MAX_VALUE);
     std::move(head.record_callback).Run(status);
   }
 }

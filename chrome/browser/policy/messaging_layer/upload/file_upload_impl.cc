@@ -69,6 +69,9 @@ StatusOr<std::string> CheckResponseAndGetStatus(
     const std::unique_ptr<::network::SimpleURLLoader> url_loader,
     const scoped_refptr<::net::HttpResponseHeaders> headers) {
   if (!headers) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::NO_HEADERS_FOUND,
+                                  DataLossErrorReason::MAX_VALUE);
     return base::unexpected(
         Status(error::DATA_LOSS,
                base::StrCat({"Network error=",
@@ -79,6 +82,10 @@ StatusOr<std::string> CheckResponseAndGetStatus(
     // Successful upload, retrieve and return upload status.
     std::string upload_status;
     if (!headers->GetNormalizedHeader(kUploadStatusHeader, &upload_status)) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::UNEXPECTED_UPLOAD_STATUS,
+          DataLossErrorReason::MAX_VALUE);
       return base::unexpected(
           Status(error::DATA_LOSS,
                  base::StrCat({"Unexpected upload status=", upload_status})));
@@ -88,6 +95,9 @@ StatusOr<std::string> CheckResponseAndGetStatus(
     return base::unexpected(
         Status(error::UNAUTHENTICATED, "Authentication error"));
   } else {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::POST_REQUEST_FAILED,
+                                  DataLossErrorReason::MAX_VALUE);
     return base::unexpected(
         Status(error::DATA_LOSS,
                base::StrCat({"POST request failed with HTTP status code ",
@@ -102,11 +112,17 @@ StatusOr<int64_t> GetChunkGranularity(
   std::string upload_granularity_string;
   if (!headers->GetNormalizedHeader(kUploadChunkGranularityHeader,
                                     &upload_granularity_string)) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::NO_GRANULARITTY_RETURNED,
+                                  DataLossErrorReason::MAX_VALUE);
     return base::unexpected(
         Status(error::DATA_LOSS, "No granularity returned"));
   }
   if (!base::StringToInt64(upload_granularity_string, &upload_granularity) ||
       upload_granularity <= 0L) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::UNEXPECTED_GRANULARITY,
+                                  DataLossErrorReason::MAX_VALUE);
     return base::unexpected(Status(
         error::DATA_LOSS,
         base::StrCat({"Unexpected granularity=", upload_granularity_string})));
@@ -330,6 +346,10 @@ class FileUploadDelegate::InitContext
 
     const std::string upload_status = status_result.value();
     if (!base::EqualsCaseInsensitiveASCII(upload_status, "active")) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::UNEXPECTED_UPLOAD_STATUS,
+          DataLossErrorReason::MAX_VALUE);
       Complete(base::unexpected(
           Status(error::DATA_LOSS,
                  base::StrCat({"Unexpected upload status=", upload_status}))));
@@ -345,6 +365,9 @@ class FileUploadDelegate::InitContext
 
     std::string upload_url;
     if (!headers->GetNormalizedHeader(kUploadUrlHeader, &upload_url)) {
+      base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                    DataLossErrorReason::NO_UPLOAD_URL_RETURNED,
+                                    DataLossErrorReason::MAX_VALUE);
       Complete(
           base::unexpected(Status(error::DATA_LOSS, "No upload URL returned")));
       return;
@@ -359,6 +382,10 @@ class FileUploadDelegate::InitContext
         base::FilePath(origin_path),
         base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!handle->IsValid()) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::FAILED_TO_OPEN_UPLOAD_FILE,
+          DataLossErrorReason::MAX_VALUE);
       return base::unexpected(Status(
           error::DATA_LOSS,
           base::StrCat({"Cannot open file=", origin_path, " error=",
@@ -636,6 +663,10 @@ class FileUploadDelegate::NextStepContext
         base::FilePath(origin_path),
         base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!handle->IsValid()) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::FAILED_TO_OPEN_UPLOAD_FILE,
+          DataLossErrorReason::MAX_VALUE);
       return base::unexpected(Status(
           error::DATA_LOSS,
           base::StrCat({"Cannot open file=", origin_path, " error=",
@@ -644,6 +675,9 @@ class FileUploadDelegate::NextStepContext
 
     // Verify total size of the file.
     if (total != handle->GetLength()) {
+      base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                    DataLossErrorReason::FILE_SIZE_MISMATCH,
+                                    DataLossErrorReason::MAX_VALUE);
       return base::unexpected(
           Status(error::DATA_LOSS,
                  base::StrCat({"File=", origin_path, " changed size ", " from ",
@@ -656,12 +690,18 @@ class FileUploadDelegate::NextStepContext
         size);  // Initialization is redundant, but std::string mandates it.
     const int read_size = handle->Read(offset, buffer.data(), size);
     if (read_size < 0) {
+      base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                    DataLossErrorReason::CANNOT_READ_FILE,
+                                    DataLossErrorReason::MAX_VALUE);
       return base::unexpected(Status(
           error::DATA_LOSS,
           base::StrCat({"Cannot read file=", origin_path, " error=",
                         base::File::ErrorToString(handle->error_details())})));
     }
     if (read_size != size) {
+      base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                    DataLossErrorReason::CANNOT_READ_FILE,
+                                    DataLossErrorReason::MAX_VALUE);
       return base::unexpected(
           Status(error::DATA_LOSS,
                  base::StrCat({"Failed to read file=", origin_path,
@@ -717,6 +757,9 @@ class FileUploadDelegate::FinalContext
     const auto tokens = base::SplitStringPiece(
         session_token_, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     if (tokens.size() != 2 || tokens[0].empty() || tokens[1].empty()) {
+      base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                    DataLossErrorReason::CORRUPT_SESSION_TOKEN,
+                                    DataLossErrorReason::MAX_VALUE);
       Complete(base::unexpected(Status(
           error::DATA_LOSS,
           base::StrCat({"Corrupt session token `", session_token_, "`"}))));
@@ -725,6 +768,10 @@ class FileUploadDelegate::FinalContext
     origin_path_ = tokens[0];
     resumable_upload_url_ = GURL(tokens[1]);
     if (!resumable_upload_url_.is_valid()) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::CORRUPT_RESUMABLE_UPLOAD_URL,
+          DataLossErrorReason::MAX_VALUE);
       Complete(base::unexpected(
           Status(error::DATA_LOSS,
                  base::StrCat({"Corrupt resumable upload URL=", tokens[1]}))));
@@ -775,6 +822,10 @@ class FileUploadDelegate::FinalContext
       Complete(base::unexpected(
           Status(error::DATA_LOSS,
                  base::StrCat({"Unexpected upload status=", upload_status}))));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::UNEXPECTED_UPLOAD_STATUS,
+          DataLossErrorReason::MAX_VALUE);
       return;
     }
 
@@ -785,6 +836,10 @@ class FileUploadDelegate::FinalContext
                                         &upload_received_string)) {
         Complete(base::unexpected(
             Status(error::DATA_LOSS, "No upload size returned")));
+        base::UmaHistogramEnumeration(
+            reporting::kUmaDataLossErrorReason,
+            DataLossErrorReason::NO_UPLOAD_SIZE_RETURNED,
+            DataLossErrorReason::MAX_VALUE);
         return;
       }
       if (!base::StringToInt64(upload_received_string, &upload_received) ||
@@ -792,6 +847,10 @@ class FileUploadDelegate::FinalContext
         Complete(base::unexpected(Status(
             error::DATA_LOSS,
             base::StrCat({"Unexpected received=", upload_received_string}))));
+        base::UmaHistogramEnumeration(
+            reporting::kUmaDataLossErrorReason,
+            DataLossErrorReason::UNEXPECTED_UPLOAD_RECEIVED_CODE,
+            DataLossErrorReason::MAX_VALUE);
         return;
       }
     }
@@ -827,6 +886,10 @@ class FileUploadDelegate::FinalContext
       Complete(base::unexpected(
           Status(error::DATA_LOSS,
                  base::StrCat({"Unexpected upload status=", upload_status}))));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::UNEXPECTED_UPLOAD_STATUS,
+          DataLossErrorReason::MAX_VALUE);
       return;
     }
 
@@ -842,6 +905,9 @@ class FileUploadDelegate::FinalContext
         upload_id.empty()) {
       Complete(
           base::unexpected(Status(error::DATA_LOSS, "No upload ID returned")));
+      base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                    DataLossErrorReason::NO_UPLOAD_ID_RETURNED,
+                                    DataLossErrorReason::MAX_VALUE);
       return;
     }
 

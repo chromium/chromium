@@ -136,6 +136,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.DataLossErrorReason"
+    enum="DataLossErrorReasonBrowser" expires_after="2025-04-01">
+  <owner>jrhilke@google.com</owner>
+  <owner>src/components/reporting/OWNERS</owner>
+  <summary>
+    Recorded once each time reporting::error::DATA_LOSS is returned in the
+    browser. There is a 1:1 relationship between the UMA values and error
+    messages used with reporting::error::DATA_LOSS so that we can understand
+    exactly which parts of the code are failing.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.EnqueueFailureDestination"
     enum="EnterpriseCloudReportingDestination" expires_after="2024-11-20">
   <owner>vshenvi@google.com</owner>

@@ -40,6 +40,7 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/statusor.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/backoff_entry.h"
@@ -722,11 +723,19 @@ void EncryptedReportingClient::OnReportUploadCompleted(
         Status(error::DATA_LOSS,
                base::StrCat(
                    {"Response code: ", base::NumberToString(response_code)}))));
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::REPORT_CLIENT_BAD_RESPONSE_CODE,
+        DataLossErrorReason::MAX_VALUE);
     return;
   }
   if (!response.has_value()) {
     std::move(callback).Run(base::unexpected(
         Status(error::DATA_LOSS, "Success response is empty")));
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::REPORT_CLIENT_EMPTY_RESPONSE,
+        DataLossErrorReason::MAX_VALUE);
     return;
   }
 

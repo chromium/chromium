@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,6 +40,7 @@
 #include "components/reporting/storage/storage_queue.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/file.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -319,6 +321,10 @@ class Storage::KeyInStorage {
     base::File key_file(key_file_path,
                         base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
     if (!key_file.IsValid()) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::FAILED_TO_OPEN_KEY_FILE,
+          DataLossErrorReason::MAX_VALUE);
       return Status(
           error::DATA_LOSS,
           base::StrCat({"Cannot open key file='", key_file_path.MaybeAsASCII(),
@@ -327,6 +333,10 @@ class Storage::KeyInStorage {
     std::string serialized_key;
     if (!signed_encryption_key.SerializeToString(&serialized_key) ||
         serialized_key.empty()) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::FAILED_TO_SERIALIZE_KEY,
+          DataLossErrorReason::MAX_VALUE);
       return Status(error::DATA_LOSS,
                     base::StrCat({"Failed to seralize key into file='",
                                   key_file_path.MaybeAsASCII(), "'"}));
@@ -334,6 +344,10 @@ class Storage::KeyInStorage {
     const int32_t write_result = key_file.Write(
         /*offset=*/0, serialized_key.data(), serialized_key.size());
     if (write_result < 0) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::FAILED_TO_WRITE_KEY_FILE,
+          DataLossErrorReason::MAX_VALUE);
       return Status(
           error::DATA_LOSS,
           base::StrCat({"File write error=",
@@ -341,6 +355,10 @@ class Storage::KeyInStorage {
                         " file=", key_file_path.MaybeAsASCII()}));
     }
     if (static_cast<size_t>(write_result) != serialized_key.size()) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::FAILED_TO_WRITE_KEY_FILE,
+          DataLossErrorReason::MAX_VALUE);
       return Status(error::DATA_LOSS,
                     base::StrCat({"Failed to seralize key into file='",
                                   key_file_path.MaybeAsASCII(), "'"}));
