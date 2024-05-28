@@ -1561,13 +1561,19 @@ void PasswordFormManager::HandleUsernameFirstFlow(
       // Cache voting data for all candidates outside of the password form.
       // Will send votes only if `should_prefer_username_found_outside_of_form`
       // is true or there is an `IN_FORM_OVERRULE` vote among any of them.
-      for (const auto& it : possible_usernames) {
+      for (const auto& username_candidate : possible_usernames) {
+        // Do not vote on candidates that can not be used.
+        if (!IsPossibleSingleUsernameAvailable(username_candidate.second)) {
+          continue;
+        }
         votes_uploader_->add_single_username_vote_data(SingleUsernameVoteData(
-            it.second.renderer_id, it.second.value,
-            it.second.form_predictions.value_or(FormPredictions()),
+            username_candidate.second.renderer_id,
+            username_candidate.second.value,
+            username_candidate.second.form_predictions.value_or(
+                FormPredictions()),
             form_fetcher_->GetBestMatches(),
             FormMatchesUsername(*parsed_submitted_form_.get(),
-                                it.second.value)));
+                                username_candidate.second.value)));
       }
     } else {
       // Cache voting data for the best possible username candidate user

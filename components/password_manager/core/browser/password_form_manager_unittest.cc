@@ -3530,6 +3530,86 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
   form_manager_->Save();
 }
 
+// Tests that no single username votes are sent on an unrelated website.
+TEST_P(PasswordFormManagerTest, NoSingleUsernameVotingOnUnrelatedWebsite) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
+                            features::kUsernameFirstFlowWithIntermediateValues,
+                            features::
+                                kUsernameFirstFlowWithIntermediateValuesVoting,
+                            features::kUsernameFirstFlowStoreSeveralValues},
+      /*disabled_features=*/{});
+  // Simulate user input in a single username form.
+  constexpr char16_t kPossibleUsername[] = u"possible_username";
+  PossibleUsernameData single_username_data(
+      saved_match_.signon_realm, kSingleUsernameFieldRendererId,
+      kPossibleUsername, base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+
+  // Server has a `SINGLE_USERNAME` prediction for the single username form.
+  single_username_data.form_predictions = MakeSingleUsernamePredictions(
+      kSingleUsernameFormSignature, kSingleUsernameFieldRendererId,
+      kSingleUsernameFieldSignature, /*has_single_username_prediction=*/true);
+
+  // Simulate user input in another single text field form on a different
+  // website.
+  constexpr FormSignature kOtherFormSignature(2000);
+  constexpr FieldRendererId kOtherFieldRendererId(200);
+  constexpr FieldSignature kOtherFieldSignature(4000);
+  PossibleUsernameData unrelated_website_text_field_data(
+      /*signon_realm=*/"https://unrelated-website.com", kOtherFieldRendererId,
+      u"Message", base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+
+  // Server has no predictions for the unrelated field.
+  // `unrelated_website_text_field_data.form_predictions` is required to be set
+  // correctly with field signature, form signature, and field renderer id to be
+  // able to send single username votes.
+  unrelated_website_text_field_data.form_predictions =
+      MakeSingleUsernamePredictions(kOtherFormSignature, kOtherFieldRendererId,
+                                    kOtherFieldSignature,
+                                    /*has_single_username_prediction=*/false);
+
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache(
+          {single_username_data, unrelated_website_text_field_data});
+
+  // Simulate submitting a password form.
+  FormData submitted_form = observed_form_only_password_fields_;
+  CreateFormManager(observed_form_only_password_fields_);
+  fetcher_->NotifyFetchCompleted();
+  submitted_form.fields[0].set_value(u"strongpassword");
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+                                               possible_usernames));
+  EXPECT_EQ(form_manager_->GetPendingCredentials().username_value,
+            single_username_data.value);
+
+  form_manager_->SaveSuggestedUsernameValueToVotesUploader();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Expect a strong positive vote on the single username form.
+  ExpectIsSingleUsernameUpload(
+      kSingleUsernameFormSignature, Field::WEAK, FieldType::SINGLE_USERNAME,
+      IsMostRecentSingleUsernameCandidate::kMostRecentCandidate);
+  // Expect no vote being sent on an unrelated text field.
+  EXPECT_CALL(crowdsourcing_manager(),
+              StartUploadRequest(
+                  IsPasswordUpload(FormSignatureIs(kOtherFormSignature)), _, _))
+      .Times(0);
+#endif
+
+  // Expect upload for the password form. This upload is unrelated to UFF: it
+  // is a result of saving a new password on the password form.
+  EXPECT_CALL(crowdsourcing_manager(),
+              StartUploadRequest(IsPasswordUpload(FormSignatureIs(
+                                     CalculateFormSignature(submitted_form))),
+                                 _, _));
+  form_manager_->Save();
+}
+
 // Tests that server prediction are taken into consideration for offering
 // username on username first flow.
 TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
