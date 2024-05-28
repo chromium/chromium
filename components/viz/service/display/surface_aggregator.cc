@@ -651,7 +651,11 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     if (!gfx::IsNearestRectWithinDistance(rect_in_root_space, 0.01f)) {
       return nullptr;
     }
-    if (!rect_in_root_space.Contains(gfx::RectF(damage_rect_in_root_space))) {
+    // Now, in order to check whether the display rect (gfx::RectF) contains the
+    // damage rect (gfx::Rect), we can safely round the former so that we do not
+    // fail to assign the damage due to 4-6 digits difference.
+    if (!gfx::ToEnclosingRectIgnoringError(rect_in_root_space)
+             .Contains(damage_rect_in_root_space)) {
       return nullptr;
     }
   }
