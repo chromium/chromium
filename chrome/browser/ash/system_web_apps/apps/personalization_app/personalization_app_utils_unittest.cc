@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -258,6 +259,27 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_PublicAccountDemoMode) {
 
   ASSERT_TRUE(IsEligibleForSeaPen(managed_profile))
       << "Demo mode should force enable SeaPen for managed profile";
+}
+
+TEST_F(PersonalizationAppUtilsTest, IsManagedSeaPenWallpaperEnabled_Googler) {
+  const std::string email = "user@google.com";
+  auto* googler_profile = profile_manager().CreateTestingProfile(email);
+  googler_profile->GetPrefs()->SetInteger(ash::prefs::kGenAIWallpaperSettings,
+                                          0);
+  AddAndLoginUser(AccountId::FromUserEmail(email),
+                  user_manager::UserType::kRegular);
+  ASSERT_TRUE(IsManagedSeaPenWallpaperEnabled(googler_profile));
+}
+
+TEST_F(PersonalizationAppUtilsTest,
+       IsManagedSeaPenVcBackgroundEnabled_Googler) {
+  const std::string email = "user@google.com";
+  auto* googler_profile = profile_manager().CreateTestingProfile(email);
+  googler_profile->GetPrefs()->SetInteger(
+      ash::prefs::kGenAIVcBackgroundSettings, 0);
+  AddAndLoginUser(AccountId::FromUserEmail(email),
+                  user_manager::UserType::kRegular);
+  ASSERT_TRUE(IsManagedSeaPenVcBackgroundEnabled(googler_profile));
 }
 
 }  // namespace

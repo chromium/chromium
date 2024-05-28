@@ -163,11 +163,27 @@ bool IsEligibleForSeaPen(Profile* profile) {
 }
 
 bool IsManagedSeaPenWallpaperEnabled(Profile* profile) {
+  // Skip policy check for Googlers.
+  // TODO(b/343219964): remove this bypass codes for Googlers till the policy is
+  // rolled out and Google corp admins have enabled for Googlers.
+  if (gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())) {
+    DVLOG(1) << __func__ << " Google internal account";
+    return true;
+  }
+
   return profile->GetPrefs()->GetInteger(ash::prefs::kGenAIWallpaperSettings) ==
          1;
 }
 
 bool IsManagedSeaPenVcBackgroundEnabled(Profile* profile) {
+  // Skip policy check for Googlers.
+  // TODO(b/343219964): remove this bypass codes for Googlers till the policy is
+  // rolled out and Google corp admins have enabled for Googlers.
+  if (gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())) {
+    DVLOG(1) << __func__ << " Google internal account";
+    return true;
+  }
+
   return profile->GetPrefs()->GetInteger(
              ash::prefs::kGenAIVcBackgroundSettings) == 1;
 }
