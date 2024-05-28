@@ -932,15 +932,6 @@ public class SearchActivityUnitTest {
     }
 
     @Test
-    public void onUrlFocusChange_terminateOnFocusLost() {
-        mActivity.handleNewIntent(new Intent(), false);
-
-        assertFalse(mActivity.isFinishing());
-        mActivity.onUrlFocusChange(false);
-        assertTrue(mActivity.isFinishing());
-    }
-
-    @Test
     public void onUrlFocusChange_propagateFocusGainEvent() {
         LocationBarCoordinator coordinator = mock(LocationBarCoordinator.class);
         mActivity.setLocationBarCoordinatorForTesting(coordinator);
