@@ -155,26 +155,16 @@ public class TestSupport {
         return new ArrayList<>(Arrays.asList(tabletForeignSession));
     }
 
-    /** Makes a SuggestionEntry from ForeignSessionTab and `sourceName`. */
-    static SuggestionEntry makeEntryFromTabAndSourceName(ForeignSessionTab tab, String sourceName) {
-        return new SuggestionEntry(
-                /* sourceName= */ sourceName,
-                /* url= */ tab.url,
-                /* title= */ tab.title,
-                /* timestamp= */ tab.lastActiveTime,
-                /* id= */ tab.id);
-    }
-
     /** Makes a list of sorted SuggestionEntry derived from makeForeignSessionsA(). */
     static List<SuggestionEntry> makeForeignSessionSuggestionsA() {
         // There are 7 tabs total, but TAB3 is invalid, and TAB2 is stale, resulting in 5:
         // TAB6 < TAB5 < TAB1 "My Desktop" < TAB7 "My Tablet" < TAB4.
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
-        suggestions.add(makeEntryFromTabAndSourceName(TAB6, "My Tablet"));
-        suggestions.add(makeEntryFromTabAndSourceName(TAB5, "My Tablet"));
-        suggestions.add(makeEntryFromTabAndSourceName(TAB1, "My Desktop"));
-        suggestions.add(makeEntryFromTabAndSourceName(TAB7, "My Tablet"));
-        suggestions.add(makeEntryFromTabAndSourceName(TAB4, "My Desktop"));
+        suggestions.add(SuggestionEntry.createFromForeignSessionTab("My Tablet", TAB6));
+        suggestions.add(SuggestionEntry.createFromForeignSessionTab("My Tablet", TAB5));
+        suggestions.add(SuggestionEntry.createFromForeignSessionTab("My Desktop", TAB1));
+        suggestions.add(SuggestionEntry.createFromForeignSessionTab("My Tablet", TAB7));
+        suggestions.add(SuggestionEntry.createFromForeignSessionTab("My Desktop", TAB4));
         return suggestions;
     }
 
@@ -182,8 +172,8 @@ public class TestSupport {
     static List<SuggestionEntry> makeForeignSessionSuggestionsB() {
         // Only TAB5 and TAB7 are open, and they got selected. TAB5 < TAB7.
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
-        suggestions.add(makeEntryFromTabAndSourceName(TAB5, "My Tablet"));
-        suggestions.add(makeEntryFromTabAndSourceName(TAB7, "My Tablet"));
+        suggestions.add(SuggestionEntry.createFromForeignSessionTab("My Tablet", TAB5));
+        suggestions.add(SuggestionEntry.createFromForeignSessionTab("My Tablet", TAB7));
         return suggestions;
     }
 
@@ -191,12 +181,11 @@ public class TestSupport {
         assert index == 0 || index == 1;
         GURL[] urlChoices = {JUnitTestGURLs.GOOGLE_URL_DOG, JUnitTestGURLs.GOOGLE_URL_CAT};
         String[] titleChoices = {"Google Dog", "Google Cat"};
-        return new SuggestionEntry(
+        return SuggestionEntry.createFromForeignFields(
                 /* sourceName= */ "Desktop",
                 /* url= */ urlChoices[index],
                 /* title= */ titleChoices[index],
-                /* timestamp= */ makeTimestamp(16, 0, 0),
-                /* id= */ 45);
+                /* timestamp= */ makeTimestamp(16, 0, 0));
     }
 
     static Tab makeMockBrowserTab() {
@@ -228,7 +217,7 @@ public class TestSupport {
             Assert.assertEquals(expectedEntry.url, entry.url);
             Assert.assertEquals(expectedEntry.title, entry.title);
             Assert.assertEquals(expectedEntry.lastActiveTime, entry.lastActiveTime);
-            Assert.assertEquals(expectedEntry.id, entry.id);
+            Assert.assertEquals(expectedEntry.localTabId, entry.localTabId);
         }
     }
 }

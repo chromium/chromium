@@ -81,7 +81,6 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
         assertOneSuggestionWithTitle("Blue 1");
-        Assert.assertEquals(tab, ((LocalTabSuggestionEntry) mResults.suggestions.get(0)).tab);
 
         // Local Tab result becomes empty. This can happen if user closes the suggested tab.
         startFetchAndCaptureCallbacks(
@@ -270,7 +269,6 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         assertOneSuggestionWithTitle("Blue 1");
-        Assert.assertEquals(tab, ((LocalTabSuggestionEntry) mResults.suggestions.get(0)).tab);
 
         // Local Tab result becomes empty, no change in Sync Derived results.
         startFetchAndCaptureCallbacks(
@@ -359,7 +357,6 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         // Only Local Tab results are shown, even though Sync Derived results are available.
         assertOneSuggestionWithTitle("Blue 1");
-        Assert.assertEquals(tab, ((LocalTabSuggestionEntry) mResults.suggestions.get(0)).tab);
 
         // Local Tab result becomes empty. Now Sync Derived results will be requested and used.
         startFetch();
@@ -443,7 +440,8 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
 
     /** Helper to make a Local Tab suggestion result. */
     private SuggestionsResult makeLocalTabSuggestionResult(@ResultStrength int strength, Tab tab) {
-        return new SuggestionsResult(strength, Arrays.asList(new LocalTabSuggestionEntry(tab)));
+        return new SuggestionsResult(
+                strength, Arrays.asList(SuggestionEntry.createFromLocalTab(tab)));
     }
 
     /** Helper to make a Sync Derived suggestion result with 1 suggestion. */

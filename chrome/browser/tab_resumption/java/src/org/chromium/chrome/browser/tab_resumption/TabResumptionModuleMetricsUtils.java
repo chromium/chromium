@@ -121,13 +121,13 @@ public class TabResumptionModuleMetricsUtils {
         if (bundle == null || bundle.entries.size() == 0) return null;
 
         if (bundle.entries.size() == 1) {
-            return (bundle.entries.get(0) instanceof LocalTabSuggestionEntry)
+            return bundle.entries.get(0).isLocalTab()
                     ? ModuleShowConfig.SINGLE_TILE_LOCAL
                     : ModuleShowConfig.SINGLE_TILE_FOREIGN;
         }
 
         // If Local Tab suggestion exists, it's always at index 0.
-        return (bundle.entries.get(0) instanceof LocalTabSuggestionEntry)
+        return bundle.entries.get(0).isLocalTab()
                 ? ModuleShowConfig.DOUBLE_TILE_LOCAL_FOREIGN
                 : ModuleShowConfig.DOUBLE_TILE_FOREIGN_FOREIGN;
     }

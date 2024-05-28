@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -40,16 +40,14 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
         mDataProviderFactory = dataProviderFactory;
         mUrlImageProvider = urlImageProvider;
         mModel = new PropertyModel(TabResumptionModuleProperties.ALL_KEYS);
-        SuggestionClickCallbacks wrappedClickCallbacks =
-                new SuggestionClickCallbacks() {
-                    @Override
-                    public void onSuggestionClickByUrl(GURL gurl) {
-                        mModuleDelegate.onUrlClicked(gurl, getModuleType());
-                    }
-
-                    @Override
-                    public void onSuggestionClickByTabId(int tabId) {
-                        moduleDelegate.onTabClicked(tabId, getModuleType());
+        SuggestionClickCallback wrappedClickCallback =
+                (SuggestionEntry entry) -> {
+                    if (entry.isLocalTab()) {
+                        // TODO(crbug.com/343095625): Add error handling, and use onUrlClicked() as
+                        // fallback.
+                        mModuleDelegate.onTabClicked(entry.localTabId, getModuleType());
+                    } else {
+                        mModuleDelegate.onUrlClicked(entry.url, getModuleType());
                     }
                 };
         mMediator =
@@ -60,7 +58,7 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
                         /* urlImageProvider= */ mUrlImageProvider,
                         /* statusChangedCallback= */ this::showModule,
                         /* seeMoreLinkClickCallback= */ this::onSeeMoreClicked,
-                        /* suggestionClickCallbacks= */ wrappedClickCallbacks);
+                        /* suggestionClickCallback= */ wrappedClickCallback);
         mMediator.startSession(mDataProviderFactory.make());
     }
 

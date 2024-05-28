@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -52,7 +52,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
-    @Mock private SuggestionClickCallbacks mClickCallbacks;
+    @Mock private SuggestionClickCallback mClickCallback;
 
     @Captor private ArgumentCaptor<Callback<SuggestionsResult>> mFetchSuggestionCallbackCaptor;
 
@@ -77,7 +77,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* urlImageProvider= */ mUrlImageProvider,
                         /* statusChangedCallback= */ () -> {},
                         /* seeMoreLinkClickCallback= */ () -> {},
-                        /* suggestionClickCallbacks= */ mClickCallbacks);
+                        /* suggestionClickCallback= */ mClickCallback);
         mMediator.startSession(mDataProvider);
 
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
@@ -144,16 +144,18 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         // TabResumptionDataProvider filters (including staleness) and ranks suggestions. Only test
         // the selection and filtering layer in TabResumptionModuleMediator.
         SuggestionEntry entryValid =
-                new SuggestionEntry(
+                SuggestionEntry.createFromForeignFields(
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(16, 0, 0),
-                        /* id= */ 45);
+                        /* timestamp= */ makeTimestamp(16, 0, 0));
         // Invalid due to empty title.
         SuggestionEntry entryInvalid =
-                new SuggestionEntry(
-                        "Desktop", JUnitTestGURLs.RED_2, "", makeTimestamp(17, 0, 0), 123);
+                SuggestionEntry.createFromForeignFields(
+                        /* sourceName= */ "Desktop",
+                        /* url= */ JUnitTestGURLs.RED_2,
+                        /* title= */ "",
+                        /* timestamp= */ makeTimestamp(17, 0, 0));
 
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
         suggestions.add(entryInvalid);
@@ -181,18 +183,23 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @SmallTest
     public void testTakeMostRecent() {
         SuggestionEntry entryNewest =
-                new SuggestionEntry(
+                SuggestionEntry.createFromForeignFields(
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(16, 0, 0),
-                        /* id= */ 45);
+                        /* timestamp= */ makeTimestamp(16, 0, 0));
         SuggestionEntry entryNewer =
-                new SuggestionEntry(
-                        "Phone", JUnitTestGURLs.RED_2, "Red 2", makeTimestamp(13, 0, 0), 3);
+                SuggestionEntry.createFromForeignFields(
+                        /* sourceName= */ "Phone",
+                        /* url= */ JUnitTestGURLs.RED_2,
+                        /* title= */ "Red 2",
+                        /* timestamp= */ makeTimestamp(13, 0, 0));
         SuggestionEntry entryOldest =
-                new SuggestionEntry(
-                        "Desktop", JUnitTestGURLs.BLUE_1, "Blue 1", makeTimestamp(12, 0, 0), 1000);
+                SuggestionEntry.createFromForeignFields(
+                        /* sourceName= */ "Desktop",
+                        /* url= */ JUnitTestGURLs.BLUE_1,
+                        /* title= */ "Blue 1",
+                        /* timestamp= */ makeTimestamp(12, 0, 0));
 
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
         suggestions.add(entryNewest);

@@ -46,11 +46,10 @@ public class LocalTabTabResumptionDataProviderTest extends TestSupport {
                 (SuggestionsResult results) -> {
                     Assert.assertEquals(results.strength, ResultStrength.STABLE);
                     Assert.assertEquals(1, results.suggestions.size());
-                    LocalTabSuggestionEntry entry1 =
-                            (LocalTabSuggestionEntry) results.suggestions.get(0);
+                    SuggestionEntry entry1 = results.suggestions.get(0);
+                    Assert.assertTrue(entry1.isLocalTab());
                     Assert.assertEquals(JUnitTestGURLs.BLUE_1, entry1.url);
                     Assert.assertEquals("Blue 1", entry1.title);
-                    Assert.assertEquals(tab, entry1.tab);
                     ++mFetchSuggestionsCallbackCounter;
                 });
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);

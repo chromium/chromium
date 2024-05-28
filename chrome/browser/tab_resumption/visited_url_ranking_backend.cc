@@ -45,6 +45,9 @@ using visited_url_ranking::VisitedURLRankingService;
 
 static constexpr FetchSources kForeignSources = {Source::kForeign};
 
+// Must match Java Tab.INVALID_TAB_ID.
+static constexpr int kInvalidTabId = -1;
+
 // FetchOptions::CreateDefaultFetchOptionsForTabResumption() specifies data
 // sources that are currently unavailable. This function returns a simplified
 // FetchOptions instance.
@@ -131,6 +134,9 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
           std::get_if<URLVisitAggregate::TabData>(
               &(aggregate.fetcher_data_map.begin()->second));
       if (tab_data) {
+        // TODO(b/343209609) Assign this properly for local tab handling.
+        bool isLocalTab = false;
+
         Java_VisitedUrlRankingBackend_addSuggestionEntry(
             env_,
             base::android::ConvertUTF8ToJavaString(
@@ -140,7 +146,8 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
             base::android::ConvertUTF16ToJavaString(
                 env_, tab_data->last_active_tab.visit.title),
             tab_data->last_active.InMillisecondsSinceUnixEpoch(),
-            tab_data->last_active_tab.id, j_suggestions_);
+            isLocalTab ? tab_data->last_active_tab.id : kInvalidTabId,
+            j_suggestions_);
       }
 
       // TODO(crbug.com/337858147): Handle URLVisitAggregate::HistoryData case.

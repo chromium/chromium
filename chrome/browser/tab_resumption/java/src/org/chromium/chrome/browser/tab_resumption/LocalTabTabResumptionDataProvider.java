@@ -60,7 +60,7 @@ public class LocalTabTabResumptionDataProvider extends TabResumptionDataProvider
         }
 
         ArrayList<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
-        suggestions.add(new LocalTabSuggestionEntry(mLastActiveTab));
+        suggestions.add(SuggestionEntry.createFromLocalTab(mLastActiveTab));
 
         suggestionsCallback.onResult(new SuggestionsResult(ResultStrength.STABLE, suggestions));
     }

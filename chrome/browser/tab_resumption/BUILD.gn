@@ -9,7 +9,6 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionSuggestionBackend.java",
-    "java/src/org/chromium/chrome/browser/tab_resumption/LocalTabSuggestionEntry.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/LocalTabTabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/LocalTileView.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/MixedTabResumptionDataProvider.java",

@@ -63,12 +63,7 @@ public class ForeignSessionSuggestionBackend implements SuggestionBackend {
                     if (isForeignSessionTabUsable(tab)
                             && currentTimeMs - tab.lastActiveTime <= STALENESS_THRESHOLD_MS) {
                         suggestions.add(
-                                new SuggestionEntry(
-                                        session.name,
-                                        tab.url,
-                                        tab.title,
-                                        tab.lastActiveTime,
-                                        tab.id));
+                                SuggestionEntry.createFromForeignSessionTab(session.name, tab));
                     }
                 }
             }

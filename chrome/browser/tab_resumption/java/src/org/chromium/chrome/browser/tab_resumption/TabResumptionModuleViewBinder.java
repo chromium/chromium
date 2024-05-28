@@ -26,7 +26,7 @@ class TabResumptionModuleViewBinder {
             moduleView.setSeeMoreLinkClickCallback(
                     model.get(TabResumptionModuleProperties.SEE_MORE_LINK_CLICK_CALLBACK));
         } else if (TabResumptionModuleProperties.CLICK_CALLBACK == propertyKey) {
-            moduleView.setClickCallbacks(model.get(TabResumptionModuleProperties.CLICK_CALLBACK));
+            moduleView.setClickCallback(model.get(TabResumptionModuleProperties.CLICK_CALLBACK));
         } else if (TabResumptionModuleProperties.SUGGESTION_BUNDLE == propertyKey) {
             moduleView.setSuggestionBundle(
                     model.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE));

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -17,7 +17,7 @@ interface TabResumptionModuleProperties {
             new WritableObjectPropertyKey();
     WritableObjectPropertyKey<Runnable> SEE_MORE_LINK_CLICK_CALLBACK =
             new WritableObjectPropertyKey();
-    WritableObjectPropertyKey<SuggestionClickCallbacks> CLICK_CALLBACK =
+    WritableObjectPropertyKey<SuggestionClickCallback> CLICK_CALLBACK =
             new WritableObjectPropertyKey();
     WritableObjectPropertyKey<SuggestionBundle> SUGGESTION_BUNDLE = new WritableObjectPropertyKey();
     WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey();

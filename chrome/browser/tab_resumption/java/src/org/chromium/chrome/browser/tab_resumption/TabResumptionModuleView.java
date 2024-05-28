@@ -14,7 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 
 /**
  * The View for the tab resumption module, consisting of a header followed by suggestion tile(s).
@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.Sugge
 public class TabResumptionModuleView extends LinearLayout {
     private TabResumptionTileContainerView mTileContainerView;
     private UrlImageProvider mUrlImageProvider;
-    private SuggestionClickCallbacks mClickCallbacks;
+    private SuggestionClickCallback mClickCallback;
     private SuggestionBundle mBundle;
     private boolean mUseSalientImage;
 
@@ -74,8 +74,8 @@ public class TabResumptionModuleView extends LinearLayout {
                         });
     }
 
-    void setClickCallbacks(SuggestionClickCallbacks clickCallbacks) {
-        mClickCallbacks = clickCallbacks;
+    void setClickCallback(SuggestionClickCallback clickCallback) {
+        mClickCallback = clickCallback;
         renderIfReady();
     }
 
@@ -97,14 +97,14 @@ public class TabResumptionModuleView extends LinearLayout {
     }
 
     private void renderIfReady() {
-        if (mIsSuggestionBundleReady && mUrlImageProvider != null && mClickCallbacks != null) {
+        if (mIsSuggestionBundleReady && mUrlImageProvider != null && mClickCallback != null) {
             if (mBundle == null) {
                 mTileContainerView.removeAllViews();
                 mAllTilesTexts = null;
             } else {
                 mAllTilesTexts =
                         mTileContainerView.renderAllTiles(
-                                mBundle, mUrlImageProvider, mClickCallbacks, mUseSalientImage);
+                                mBundle, mUrlImageProvider, mClickCallback, mUseSalientImage);
             }
             setContentDescriptionOfTabResumption();
         }

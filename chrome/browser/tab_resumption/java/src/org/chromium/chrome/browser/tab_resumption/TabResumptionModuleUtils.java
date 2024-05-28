@@ -21,12 +21,8 @@ public class TabResumptionModuleUtils {
     private static final int DEFAULT_MAX_TILES_NUMBER = 2;
 
     /** Callback to handle click on suggestion tiles. */
-    public interface SuggestionClickCallbacks {
-        // Called to open a URL.
-        void onSuggestionClickByUrl(GURL gurl);
-
-        // Called to switch to an existing Tab.
-        void onSuggestionClickByTabId(int tabId);
+    public interface SuggestionClickCallback {
+        void onSuggestionClicked(SuggestionEntry entry);
     }
 
     /** Overrides getCurrentTime() return value, for testing. */
