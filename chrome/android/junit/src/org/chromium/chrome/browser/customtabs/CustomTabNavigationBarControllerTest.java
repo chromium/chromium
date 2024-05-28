@@ -26,8 +26,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Tests for {@link CustomTabNavigationBarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,6 +39,7 @@ import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarCon
 public class CustomTabNavigationBarControllerTest {
     @Mock private ColorProvider mColorProvider;
     @Mock private CustomTabIntentDataProvider mCustomTabIntentDataProvider;
+    @Mock private CustomTabsConnection mConnection;
     private Window mWindow;
     private Context mContext;
 
@@ -45,6 +49,7 @@ public class CustomTabNavigationBarControllerTest {
         Activity activity = Robolectric.buildActivity(Activity.class).get();
         mWindow = spy(activity.getWindow());
         mContext = activity;
+        CustomTabsConnection.setInstanceForTesting(mConnection);
         when(mCustomTabIntentDataProvider.getColorProvider()).thenReturn(mColorProvider);
     }
 
@@ -109,5 +114,20 @@ public class CustomTabNavigationBarControllerTest {
         verify(mWindow)
                 .setNavigationBarDividerColor(
                         mContext.getColor(org.chromium.chrome.R.color.black_alpha_12));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.P) // Android P+ (>=28) needed for setting divider color.
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
+    public void setsCorrectDividerColorWhenGoogleBottomBarEnabled() {
+        when(mConnection.shouldEnableGoogleBottomBarForIntent(mCustomTabIntentDataProvider))
+                .thenReturn(true);
+        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
+        verify(mWindow)
+                .setNavigationBarColor(
+                        mContext.getColor(R.color.google_bottom_bar_background_color));
+        verify(mWindow)
+                .setNavigationBarDividerColor(
+                        mContext.getColor(R.color.google_bottom_bar_background_color));
     }
 }
