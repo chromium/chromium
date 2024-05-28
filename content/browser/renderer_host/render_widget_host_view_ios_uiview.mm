@@ -537,7 +537,7 @@ static void* kObservingContext = &kObservingContext;
 - (BOOL)textInteractionGesture:(BEGestureType)gestureType
             shouldBeginAtPoint:(CGPoint)point {
   // Check if point is really selectable here.
-  return YES;
+  return NO;
 }
 
 - (void)selectWordForReplacement {
