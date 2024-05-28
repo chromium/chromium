@@ -22,7 +22,7 @@ WrapWithPrefixPrefStore::~WrapWithPrefixPrefStore() {
   target_pref_store_->RemoveObserver(this);
 }
 
-bool WrapWithPrefixPrefStore::GetValue(base::StringPiece key,
+bool WrapWithPrefixPrefStore::GetValue(std::string_view key,
                                        const base::Value** value) const {
   return target_pref_store_->GetValue(AddDottedPrefix(key), value);
 }

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/observer_list.h"
 #include "components/prefs/persistent_pref_store.h"
@@ -41,7 +42,7 @@ class COMPONENTS_PREFS_EXPORT WrapWithPrefixPrefStore
   WrapWithPrefixPrefStore& operator=(const WrapWithPrefixPrefStore&) = delete;
 
   // PrefStore implementation.
-  bool GetValue(base::StringPiece key,
+  bool GetValue(std::string_view key,
                 const base::Value** result) const override;
   base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;

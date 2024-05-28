@@ -9,10 +9,10 @@
 
 #include <iosfwd>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -29,7 +29,7 @@ class BASE_EXPORT Version {
   // Initializes from a decimal dotted version number, like "0.1.1".
   // Each component is limited to a uint32_t. Call IsValid() to learn
   // the outcome.
-  explicit Version(StringPiece version_str);
+  explicit Version(std::string_view version_str);
 
   // Initializes from a vector of components, like {1, 2, 3, 4}. Call IsValid()
   // to learn the outcome.
@@ -44,7 +44,7 @@ class BASE_EXPORT Version {
   // string may end with ".*" (e.g. 1.2.*, 1.*). Any other arrangement with "*"
   // is invalid (e.g. 1.*.3 or 1.2.3*). This functions defaults to standard
   // Version behavior (IsValid) if no wildcard is present.
-  static bool IsValidWildcardString(StringPiece wildcard_string);
+  static bool IsValidWildcardString(std::string_view wildcard_string);
 
   // Returns -1, 0, 1 for <, ==, >. `this` and `other` must both be valid.
   int CompareTo(const Version& other) const;
@@ -53,7 +53,7 @@ class BASE_EXPORT Version {
   // newer version. This function will default to CompareTo if the string does
   // not end in wildcard sequence ".*". IsValidWildcard(wildcard_string) must be
   // true before using this function.
-  int CompareToWildcardString(StringPiece wildcard_string) const;
+  int CompareToWildcardString(std::string_view wildcard_string) const;
 
   // Return the string representation of this version.
   std::string GetString() const;

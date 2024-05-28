@@ -117,8 +117,8 @@ VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputeURLFingerprint(
 
   base::MD5Context ctx;
   base::MD5Init(&ctx);
-  base::MD5Update(&ctx, base::StringPiece(reinterpret_cast<const char*>(salt),
-                                          LINK_SALT_LENGTH));
+  base::MD5Update(&ctx, std::string_view(reinterpret_cast<const char*>(salt),
+                                         LINK_SALT_LENGTH));
   base::MD5Update(&ctx, canonical_url);
 
   base::MD5Digest digest;
@@ -152,22 +152,22 @@ VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputePartitionedFingerprint(
   base::MD5Init(&ctx);
 
   // Salt the hash.
-  base::MD5Update(&ctx, base::StringPiece(reinterpret_cast<const char*>(&salt),
-                                          sizeof(salt)));
+  base::MD5Update(&ctx, std::string_view(reinterpret_cast<const char*>(&salt),
+                                         sizeof(salt)));
 
   // Add the link url.
   base::MD5Update(
-      &ctx, base::StringPiece(link_url.spec().data(), link_url.spec().size()));
+      &ctx, std::string_view(link_url.spec().data(), link_url.spec().size()));
 
   // Add the serialized schemeful top-level site.
   const std::string serialized_site = top_level_site.Serialize();
   base::MD5Update(
-      &ctx, base::StringPiece(serialized_site.data(), serialized_site.size()));
+      &ctx, std::string_view(serialized_site.data(), serialized_site.size()));
 
   // Add the serialized frame origin.
   const std::string serialized_origin = frame_origin.Serialize();
-  base::MD5Update(&ctx, base::StringPiece(serialized_origin.data(),
-                                          serialized_origin.size()));
+  base::MD5Update(&ctx, std::string_view(serialized_origin.data(),
+                                         serialized_origin.size()));
   base::MD5Digest digest;
   base::MD5Final(&digest, &ctx);
 
