@@ -7,7 +7,6 @@
 #include <windows.storage.streams.h>
 #include <wrl/implements.h>
 
-#include "base/strings/string_piece.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/win_util.h"

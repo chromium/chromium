@@ -6,7 +6,6 @@
 
 #include <wrl/implements.h>
 
-#include "base/strings/string_piece.h"
 #include "base/win/scoped_hstring.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"

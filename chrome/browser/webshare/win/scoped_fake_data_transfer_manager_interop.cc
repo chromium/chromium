@@ -7,7 +7,6 @@
 #include <windows.applicationmodel.datatransfer.h>
 #include <wrl/implements.h>
 
-#include "base/strings/string_piece.h"
 #include "base/win/com_init_util.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/webshare/win/fake_data_transfer_manager_interop.h"

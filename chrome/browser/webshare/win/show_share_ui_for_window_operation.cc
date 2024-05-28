@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
