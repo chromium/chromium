@@ -1022,6 +1022,10 @@ class _AvdInstance:
         emulator_cmd.append('-wipe-data')
       if disk_size:
         emulator_cmd.extend(['-partition-size', str(disk_size)])
+      elif not require_fast_start:
+        # This emulator is being run locally, ensure it has a large enough disk.
+        emulator_cmd.extend(['-partition-size', '12000'])
+
       if read_only:
         emulator_cmd.append('-read-only')
       if writable_system:
