@@ -85,6 +85,7 @@ REPLACEMENTS = {
     'vulkan_memory_allocator': 'third_party/vulkan_memory_allocator/BUILD.gn',
     'woff2': 'third_party/woff2/BUILD.gn',
     'zlib': 'third_party/zlib/BUILD.gn',
+    'zstd': 'third_party/zstd/BUILD.gn',
 }
 
 

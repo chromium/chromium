@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_zstd") {
+  packages = [ "libzstd" ]
+}
+
+shim_headers("zstd_headers") {
+  root_path = "src/lib"
+  headers = [
+    "zstd.h",
+    "zstd_errors.h",
+  ]
+}
+
+source_set("compress") {
+  public_configs = [ ":system_zstd" ]
+  public_deps = [ ":zstd_headers" ]
+}
+source_set("decompress") {
+  public_configs = [ ":system_zstd" ]
+  public_deps = [ ":zstd_headers" ]
+}
