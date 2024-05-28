@@ -128,11 +128,13 @@ impl<'a> Iterator for Cmap4Iter<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         loop {
             if let Some(codepoint) = self.cur_range.next() {
-                let glyph_id = self.subtable.lookup_glyph_id(
+                let Some(glyph_id) = self.subtable.lookup_glyph_id(
                     codepoint as u16,
                     self.cur_range_ix,
                     self.cur_start_code,
-                )?;
+                ) else {
+                    continue;
+                };
                 // The table might explicitly map some codepoints to 0. Avoid
                 // returning those here.
                 if glyph_id == GlyphId::NOTDEF {
@@ -458,7 +460,7 @@ impl<'a> Iterator for NonDefaultUvsIter<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{FontRef, GlyphId, TableProvider};
+    use crate::{test_helpers::BeBuffer, FontRef, GlyphId, TableProvider};
 
     #[test]
     fn map_codepoints() {
@@ -514,6 +516,44 @@ mod tests {
             count += 1;
         }
         assert_eq!(count, 2);
+    }
+
+    // Make sure we don't bail early when iterating ranges with holes.
+    // Encounted with Gentium Basic and Gentium Basic Book.
+    // See <https://github.com/googlefonts/fontations/issues/897>
+    #[test]
+    fn cmap4_iter_sparse_range() {
+        #[rustfmt::skip]
+        let cmap4_data: &[u16] = &[
+            // format, length, lang
+            4, 0, 0,
+            // segCountX2
+            4, 
+            // bin search data
+            0, 0, 0,
+            // end code
+            262, 0xFFFF, 
+            // reserved pad
+            0,
+            // start code
+            259, 0xFFFF,
+            // id delta
+            0, 1, 
+            // id range offset
+            4, 0,
+            // glyph ids
+            236, 0, 0, 326,
+        ];
+        let mut buf = BeBuffer::new();
+        for &word in cmap4_data {
+            buf = buf.push(word);
+        }
+        let cmap4 = Cmap4::read(FontData::new(&buf)).unwrap();
+        let mappings = cmap4
+            .iter()
+            .map(|(ch, gid)| (ch, gid.to_u32()))
+            .collect::<Vec<_>>();
+        assert_eq!(mappings, &[(259, 236), (262, 326)]);
     }
 
     #[test]

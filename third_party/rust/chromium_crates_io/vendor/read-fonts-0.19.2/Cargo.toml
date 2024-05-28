@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "read-fonts"
-version = "0.19.1"
+version = "0.19.2"
 description = "Reading OpenType font files."
 readme = "README.md"
 categories = [
@@ -27,7 +27,7 @@ repository = "https://github.com/googlefonts/fontations"
 version = "1.13.1"
 
 [dependencies.font-types]
-version = "0.5.3"
+version = "0.5.4"
 features = ["bytemuck"]
 
 [dependencies.serde]
