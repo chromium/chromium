@@ -4,12 +4,10 @@
 
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
 import '../demo.css.js';
 
 import {CrContainerShadowMixin} from '//resources/cr_elements/cr_container_shadow_mixin.js';
-import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
 import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,8 +19,7 @@ interface ScrollViewDemoElement {
   };
 }
 
-const ScrollViewDemoElementBase =
-    CrContainerShadowMixin(CrScrollableMixin(PolymerElement));
+const ScrollViewDemoElementBase = CrContainerShadowMixin(PolymerElement);
 
 class ScrollViewDemoElement extends ScrollViewDemoElementBase {
   static get is() {
@@ -46,7 +43,6 @@ class ScrollViewDemoElement extends ScrollViewDemoElementBase {
 
   override ready() {
     super.ready();
-    this.updateScrollableContents();
   }
 
   private onItemsLengthChanged_() {
@@ -56,7 +52,6 @@ class ScrollViewDemoElement extends ScrollViewDemoElementBase {
       items.push(i);
     }
     this.items_ = items;
-    this.updateScrollableContents();
   }
 }
 

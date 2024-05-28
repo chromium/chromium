@@ -1,49 +1,36 @@
 <style include="cr-shared-style demo">
-  #layout {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
   /* Parent of #container for CrContainerShadowMixin needs to be flex column. */
   #layout {
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 
   #container {
-    height: 500px;
+    max-height: 300px;
     overflow: auto;
     position: relative;
-    width: 100%;
-  }
-
-  #mockContent {
-    background: linear-gradient(180deg, white, black);
-    height: 200%;
-    width: 100%;
-  }
-
-  #ironListScrollView {
-    max-height: 300px;
     width: 100%;
   }
 
   .item {
     padding: 16px;
     text-align: center;
-    width: 100%;
   }
 
+  .item:focus {
+    background-color: var(--cr-focused-item-color);
+    outline: none;
+  }
+}
+
   .can-scroll-log,
-  .is-scrolled-log,
   .scrolled-to-top-log,
   .scrolled-to-bottom-log {
     display: none;
   }
 
   .can-scroll ~ .can-scroll-log,
-  .is-scrolled ~ .is-scrolled-log,
   .scrolled-to-top ~ .scrolled-to-top-log,
   .scrolled-to-bottom ~ .scrolled-to-bottom-log {
     display: block;
@@ -60,22 +47,10 @@
   }
 </style>
 
-<h1>Scroll view with shadows indicating scroll</h1>
-<div class="demos">
-  <div id="layout">
-    <div id="container" show-bottom-shadow>
-      <div id="mockContent"></div>
-    </div>
-    <div class="can-scroll-log">can scroll</div>
-    <div class="scrolled-to-top-log">scrolled to top</div>
-    <div class="scrolled-to-bottom-log">scrolled to bottom</div>
-  </div>
-</div>
-
-<h1>Scroll view with &lt;iron-list&gt; and dynamic height</h1>
+<h1>Scroll view with shadows indicating scroll and dynamic height</h1>
 <div class="demos">
   <div id="sliderContainer">
-    <label id="sliderLabel">Number of items in iron-list</label>
+    <label id="sliderLabel">Number of items in scrollable container</label>
     <cr-slider id="itemsLengthSlider" min="0" max="30" value="[[items_.length]]"
         aria-labelledby="sliderLabel"
         on-cr-slider-value-changed="onItemsLengthChanged_">
@@ -83,15 +58,14 @@
     [[items_.length]]
   </div>
 
-  <div id="ironListScrollView" scrollable>
-    <iron-list items="[[items_]]" scroll-target="ironListScrollView">
-      <template>
+  <div id="layout">
+    <div id="container" show-bottom-shadow>
+      <template is="dom-repeat" items="[[items_]]">
         <div class="item" tabindex="0">Focusable item</div>
       </template>
-    </iron-list>
+    </div>
+    <div class="can-scroll-log">can scroll</div>
+    <div class="scrolled-to-top-log">scrolled to top</div>
+    <div class="scrolled-to-bottom-log">scrolled to bottom</div>
   </div>
-
-  <div class="can-scroll-log">can scroll</div>
-  <div class="is-scrolled-log">is scrolled</div>
-  <div class="scrolled-to-bottom-log">scrolled to bottom</div>
 </div>
