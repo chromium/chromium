@@ -2332,4 +2332,21 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOff; }));
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
+  Profile* profile = browser()->profile();
+
+  // The default policy is to allow the feature to be enabled.
+  EXPECT_TRUE(LensOverlayController::IsEnabled(profile));
+
+  profile->GetPrefs()->SetInteger(
+      lens::prefs::kLensOverlaySettings,
+      static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kDisabled));
+  EXPECT_FALSE(LensOverlayController::IsEnabled(profile));
+
+  profile->GetPrefs()->SetInteger(
+      lens::prefs::kLensOverlaySettings,
+      static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
+  EXPECT_TRUE(LensOverlayController::IsEnabled(profile));
+}
+
 }  // namespace

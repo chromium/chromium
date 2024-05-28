@@ -18,6 +18,19 @@ class PrefRegistrySyncable;
 namespace lens {
 namespace prefs {
 
+// The possible values for the Lens Overlay enterprise policy. The value is an
+// integer rather than a boolean to allow for additional states to be added in
+// the future.
+enum class LensOverlaySettingsPolicyValue {
+  kEnabled = 0,
+  kDisabled = 1,
+};
+
+// An integer setting indicating whether the Lens Overlay feature is enabled or
+// disabled by the 'LensOverlaySettings' enterprise policy.
+inline constexpr char kLensOverlaySettings[] =
+    "lens.policy.lens_overlay_settings";
+
 // A boolean indicating whether the whether the user has permitted sharing page
 // screenshot with the Lens Overlay server.
 inline constexpr char kLensSharingPageScreenshotEnabled[] =

@@ -2148,6 +2148,7 @@ chromium-metrics-reviews@google.com.
   <int value="1263" label="GenAIWallpaperSettings"/>
   <int value="1264" label="GenAIVcBackgroundSettings"/>
   <int value="1265" label="DynamicCodeSettings"/>
+  <int value="1266" label="LensOverlaySettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

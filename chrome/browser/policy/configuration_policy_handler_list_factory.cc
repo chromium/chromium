@@ -145,6 +145,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
+#include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
 #include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/enterprise/connectors/enterprise_connectors_policy_handler.h"
@@ -2185,6 +2186,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     client_certificates::prefs::kProvisionManagedClientCertificateForUserPrefs,
     base::Value::Type::INTEGER },
 #endif  //
+#if !BUILDFLAG(IS_ANDROID)
+  { key::kLensOverlaySettings,
+    lens::prefs::kLensOverlaySettings,
+    base::Value::Type::INTEGER},
+#endif
 };
 // clang-format on
 
