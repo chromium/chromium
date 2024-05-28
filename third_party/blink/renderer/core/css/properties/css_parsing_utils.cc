@@ -2154,8 +2154,9 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
     }
   }
   // Reject negative values and values > 100%, but not calc() values.
-  if (p1 && p1->IsNumericLiteralValue() &&
-      (p1->GetDoubleValue() < 0.0 || p1->GetDoubleValue() > 100.0)) {
+  if (auto* p1_numeric = DynamicTo<CSSNumericLiteralValue>(p1);
+      p1_numeric && (p1_numeric->ComputePercentage() < 0.0 ||
+                     p1_numeric->ComputePercentage() > 100.0)) {
     return nullptr;
   }
 
@@ -2176,14 +2177,17 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
     }
   }
   // Reject negative values and values > 100%, but not calc() values.
-  if (p2 && p2->IsNumericLiteralValue() &&
-      (p2->GetDoubleValue() < 0.0 || p2->GetDoubleValue() > 100.0)) {
+  if (auto* p2_numeric = DynamicTo<CSSNumericLiteralValue>(p2);
+      p2_numeric && (p2_numeric->ComputePercentage() < 0.0 ||
+                     p2_numeric->ComputePercentage() > 100.0)) {
     return nullptr;
   }
 
   // If both values are literally zero (and not calc()) reject at parse time
-  if (p1 && p2 && p1->IsNumericLiteralValue() && p1->GetDoubleValue() == 0.0f &&
-      p2->IsNumericLiteralValue() && p2->GetDoubleValue() == 0.0) {
+  if (p1 && p2 && p1->IsNumericLiteralValue() &&
+      To<CSSNumericLiteralValue>(p1)->ComputePercentage() == 0.0f &&
+      p2->IsNumericLiteralValue() &&
+      To<CSSNumericLiteralValue>(p2)->ComputePercentage() == 0.0) {
     return nullptr;
   }
 
@@ -2238,8 +2242,9 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenStream& stream,
     }
   }
   // Reject negative values and values > 100%, but not calc() values.
-  if (p1 && p1->IsNumericLiteralValue() &&
-      (p1->GetDoubleValue() < 0.0 || p1->GetDoubleValue() > 100.0)) {
+  if (auto* p1_numeric = DynamicTo<CSSNumericLiteralValue>(p1);
+      p1_numeric && (p1_numeric->ComputePercentage() < 0.0 ||
+                     p1_numeric->ComputePercentage() > 100.0)) {
     stream.Restore(savepoint);
     return nullptr;
   }
@@ -2263,15 +2268,18 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenStream& stream,
     }
   }
   // Reject negative values and values > 100%, but not calc() values.
-  if (p2 && p2->IsNumericLiteralValue() &&
-      (p2->GetDoubleValue() < 0.0 || p2->GetDoubleValue() > 100.0)) {
+  if (auto* p2_numeric = DynamicTo<CSSNumericLiteralValue>(p2);
+      p2_numeric && (p2_numeric->ComputePercentage() < 0.0 ||
+                     p2_numeric->ComputePercentage() > 100.0)) {
     stream.Restore(savepoint);
     return nullptr;
   }
 
   // If both values are literally zero (and not calc()) reject at parse time
-  if (p1 && p2 && p1->IsNumericLiteralValue() && p1->GetDoubleValue() == 0.0f &&
-      p2->IsNumericLiteralValue() && p2->GetDoubleValue() == 0.0) {
+  if (p1 && p2 && p1->IsNumericLiteralValue() &&
+      To<CSSNumericLiteralValue>(p1)->ComputePercentage() == 0.0f &&
+      p2->IsNumericLiteralValue() &&
+      To<CSSNumericLiteralValue>(p2)->ComputePercentage() == 0.0) {
     stream.Restore(savepoint);
     return nullptr;
   }
@@ -6070,8 +6078,8 @@ CSSValue* ConsumePaletteMixFunction(T& range, const CSSParserContext& context) {
     }
     // Reject negative values and values > 100%, but not calc() values.
     if (percentage && percentage->IsNumericLiteralValue() &&
-        (percentage->GetDoubleValue() < 0.0 ||
-         percentage->GetDoubleValue() > 100.0)) {
+        (To<CSSNumericLiteralValue>(percentage)->ComputePercentage() < 0.0 ||
+         To<CSSNumericLiteralValue>(percentage)->ComputePercentage() > 100.0)) {
       return std::make_pair(nullptr, nullptr);
     }
     return std::make_pair(palette, percentage);
@@ -6091,9 +6099,9 @@ CSSValue* ConsumePaletteMixFunction(T& range, const CSSParserContext& context) {
   }
   // If both values are literally zero (and not calc()) reject at parse time.
   if (percentage1 && percentage2 && percentage1->IsNumericLiteralValue() &&
-      percentage1->GetDoubleValue() == 0.0f &&
+      To<CSSNumericLiteralValue>(percentage1)->ComputePercentage() == 0.0f &&
       percentage2->IsNumericLiteralValue() &&
-      percentage2->GetDoubleValue() == 0.0) {
+      To<CSSNumericLiteralValue>(percentage2)->ComputePercentage() == 0.0) {
     return nullptr;
   }
 
