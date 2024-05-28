@@ -145,8 +145,10 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // is called with the selected account id or empty string otherwise.
   // `sign_in_mode` represents whether this is an auto re-authn flow.
   // `new_account_idp` is the account that was just logged in, which should be
-  // prioritized in the UI.
-  virtual void ShowAccountsDialog(
+  // prioritized in the UI. Returns true if the method successfully showed UI.
+  // When false, the caller should assume that the API invocation was terminated
+  // and the cleanup methods invoked.
+  virtual bool ShowAccountsDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
@@ -161,7 +163,10 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Shows a failure UI when the accounts fetch is failed such that it is
   // observable by users. This could happen when an IDP claims that the user is
   // signed in but not respond with any user account during browser fetches.
-  virtual void ShowFailureDialog(
+  // Returns true if the method successfully showed UI. When false, the caller
+  // should assume that the API invocation was terminated and the cleanup
+  // methods invoked.
+  virtual bool ShowFailureDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
@@ -171,8 +176,10 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       DismissCallback dismiss_callback,
       LoginToIdPCallback login_callback);
 
-  // Shows an error UI when the user's sign-in attempt failed.
-  virtual void ShowErrorDialog(
+  // Shows an error UI when the user's sign-in attempt failed. Returns true if
+  // the method successfully showed UI. When false, the caller should assume
+  // that the API invocation was terminated and the cleanup methods invoked.
+  virtual bool ShowErrorDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
@@ -184,8 +191,10 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       MoreDetailsCallback more_details_callback);
 
   // Shows a loading UI when the user triggers a button flow and while waiting
-  // for their accounts to be fetched.
-  virtual void ShowLoadingDialog(const std::string& top_frame_for_display,
+  // for their accounts to be fetched. Returns true if the method successfully
+  // showed UI. When false, the caller should assume that the API invocation was
+  // terminated and the cleanup methods invoked.
+  virtual bool ShowLoadingDialog(const std::string& top_frame_for_display,
                                  const std::string& idp_for_display,
                                  blink::mojom::RpContext rp_context,
                                  blink::mojom::RpMode rp_mode,

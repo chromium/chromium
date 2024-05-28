@@ -95,7 +95,7 @@ class MockAccountSelectionView : public AccountSelectionView {
   MockAccountSelectionView& operator=(const MockAccountSelectionView&) = delete;
 
   MOCK_METHOD(
-      void,
+      bool,
       Show,
       (const std::string& top_frame_for_display,
        const std::optional<std::string>& iframe_for_display,
@@ -105,7 +105,7 @@ class MockAccountSelectionView : public AccountSelectionView {
        const std::optional<content::IdentityProviderData>& new_account_idp),
       (override));
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               ShowFailureDialog,
               (const std::string& top_frame_for_display,
                const std::optional<std::string>& iframe_for_display,
@@ -115,7 +115,7 @@ class MockAccountSelectionView : public AccountSelectionView {
                const content::IdentityProviderMetadata& idp_metadata),
               (override));
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               ShowErrorDialog,
               (const std::string& top_frame_for_display,
                const std::optional<std::string>& iframe_for_display,
@@ -126,7 +126,7 @@ class MockAccountSelectionView : public AccountSelectionView {
                const std::optional<TokenError>& error),
               (override));
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               ShowLoadingDialog,
               (const std::string& top_frame_for_display,
                const std::string& idp_for_display,

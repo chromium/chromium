@@ -720,7 +720,7 @@ class TestDialogController
     idp_signin_status_mismatch_dialog_action_ = action;
   }
 
-  void ShowAccountsDialog(
+  bool ShowAccountsDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
@@ -733,7 +733,7 @@ class TestDialogController
       IdentityRequestDialogController::AccountsDisplayedCallback
           accounts_displayed_callback) override {
     if (!state_) {
-      return;
+      return false;
     }
     state_->displayed_accounts.clear();
 
@@ -784,9 +784,10 @@ class TestDialogController
       case AccountsDialogAction::kNone:
         break;
     }
+    return true;
   }
 
-  void ShowFailureDialog(
+  bool ShowFailureDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
@@ -797,7 +798,7 @@ class TestDialogController
       IdentityRequestDialogController::LoginToIdPCallback
           identity_registry_callback) override {
     if (!state_) {
-      return;
+      return false;
     }
 
     state_->displayed_mismatch_idps.push_back(idp_for_display);
@@ -816,9 +817,10 @@ class TestDialogController
       case IdpSigninStatusMismatchDialogAction::kNone:
         break;
     }
+    return true;
   }
 
-  void ShowErrorDialog(
+  bool ShowErrorDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
@@ -830,7 +832,7 @@ class TestDialogController
       IdentityRequestDialogController::MoreDetailsCallback
           more_details_callback) override {
     if (!state_) {
-      return;
+      return false;
     }
 
     state_->did_show_error_dialog = true;
@@ -858,16 +860,17 @@ class TestDialogController
       case ErrorDialogAction::kNone:
         break;
     }
+    return true;
   }
 
-  void ShowLoadingDialog(const std::string& top_frame_for_display,
+  bool ShowLoadingDialog(const std::string& top_frame_for_display,
                          const std::string& idp_for_display,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode,
                          IdentityRequestDialogController::DismissCallback
                              dismiss_callback) override {
     if (!state_) {
-      return;
+      return false;
     }
 
     state_->did_show_loading_dialog = true;
@@ -880,6 +883,7 @@ class TestDialogController
       case LoadingDialogAction::kNone:
         break;
     }
+    return true;
   }
 
   base::WeakPtr<TestDialogController> AsWeakPtr() {
@@ -3367,7 +3371,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
   DisableApiWhenDialogShownDialogController& operator=(
       DisableApiWhenDialogShownDialogController&) = delete;
 
-  void ShowAccountsDialog(
+  bool ShowAccountsDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
@@ -3384,7 +3388,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
         rp_origin_to_disable_, ApiPermissionStatus::BLOCKED_SETTINGS);
 
     // Call parent class method in order to store callback parameters.
-    TestDialogController::ShowAccountsDialog(
+    return TestDialogController::ShowAccountsDialog(
         top_frame_for_display, iframe_for_display,
         std::move(identity_provider_data), sign_in_mode, rp_mode,
         new_account_idp, std::move(on_selected), std::move(on_add_account),
@@ -7343,7 +7347,7 @@ class TestDialogControllerWithImmediateDismiss : public TestDialogController {
   TestDialogControllerWithImmediateDismiss& operator=(
       TestDialogControllerWithImmediateDismiss&) = delete;
 
-  void ShowAccountsDialog(
+  bool ShowAccountsDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
@@ -7356,9 +7360,10 @@ class TestDialogControllerWithImmediateDismiss : public TestDialogController {
       IdentityRequestDialogController::AccountsDisplayedCallback
           accounts_displayed_callback) override {
     std::move(dismiss_callback).Run(DismissReason::kOther);
+    return false;
   }
 
-  void ShowFailureDialog(
+  bool ShowFailureDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
@@ -7369,6 +7374,7 @@ class TestDialogControllerWithImmediateDismiss : public TestDialogController {
       IdentityRequestDialogController::LoginToIdPCallback
           identity_registry_callback) override {
     std::move(dismiss_callback).Run(DismissReason::kOther);
+    return false;
   }
 };
 

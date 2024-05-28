@@ -85,7 +85,7 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   GetDialogWidget()->ShowInactive();
 }
 
-void FedCmAccountSelectionView::Show(
+bool FedCmAccountSelectionView::Show(
     const std::string& top_frame_etld_plus_one,
     const std::optional<std::string>& iframe_etld_plus_one,
     const std::vector<content::IdentityProviderData>&
@@ -98,11 +98,16 @@ void FedCmAccountSelectionView::Show(
   if (IsIdpSigninPopupOpen()) {
     popup_window_state_ =
         PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp;
-    show_accounts_dialog_callback_ = base::BindOnce(
-        &FedCmAccountSelectionView::Show, weak_ptr_factory_.GetWeakPtr(),
-        top_frame_etld_plus_one, iframe_etld_plus_one,
-        identity_provider_data_list, sign_in_mode, rp_mode, new_account_idp);
-    return;
+    // We need to use ShowNoReturn() here because it is not allowed to bind
+    // WeakPtrs to methods with return values.
+    show_accounts_dialog_callback_ =
+        base::BindOnce(base::IgnoreResult(&FedCmAccountSelectionView::Show),
+                       weak_ptr_factory_.GetWeakPtr(), top_frame_etld_plus_one,
+                       iframe_etld_plus_one, identity_provider_data_list,
+                       sign_in_mode, rp_mode, new_account_idp);
+    // This is considered successful since we are intentionally delaying showing
+    // the UI.
+    return true;
   }
 
   accounts_displayed_callback_ =
@@ -167,7 +172,7 @@ void FedCmAccountSelectionView::Show(
 
     if (!account_selection_view_) {
       delegate_->OnDismiss(DismissReason::kOther);
-      return;
+      return false;
     }
   }
 
@@ -183,7 +188,7 @@ void FedCmAccountSelectionView::Show(
     // return.
     if (!ShowVerifyingSheet(idp_display_data_list_[0].accounts[0],
                             idp_display_data_list_[0])) {
-      return;
+      return false;
     }
   } else if (new_account_idp) {
     // When we just logged in to an account, show that account right away.
@@ -206,7 +211,7 @@ void FedCmAccountSelectionView::Show(
       // ShowVerifyingSheet will call delegate_->OnAccountSelected to proceed.
       if (!ShowVerifyingSheet(new_account_idp_display_data_->accounts[0],
                               *new_account_idp_display_data_)) {
-        return;
+        return false;
       }
     } else {
       state_ = State::REQUEST_PERMISSION;
@@ -259,7 +264,7 @@ void FedCmAccountSelectionView::Show(
 
   if (!GetDialogWidget()) {
     delegate_->OnDismiss(DismissReason::kOther);
-    return;
+    return false;
   }
 
   // Initialize InputEventActivationProtector to handle potentially unintended
@@ -309,13 +314,14 @@ void FedCmAccountSelectionView::Show(
     // placeholder assumption is true i.e. the user has closed the tab.
     modal_account_chooser_state_ = AccountChooserResult::kTabClosed;
   }
+  return true;
 }
 
 void FedCmAccountSelectionView::OnAccountsDisplayed() {
   delegate_->OnAccountsDisplayed();
 }
 
-void FedCmAccountSelectionView::ShowFailureDialog(
+bool FedCmAccountSelectionView::ShowFailureDialog(
     const std::string& top_frame_etld_plus_one,
     const std::optional<std::string>& iframe_etld_plus_one,
     const std::string& idp_etld_plus_one,
@@ -353,7 +359,7 @@ void FedCmAccountSelectionView::ShowFailureDialog(
 
     if (!account_selection_view_) {
       delegate_->OnDismiss(DismissReason::kOther);
-      return;
+      return false;
     }
   }
 
@@ -363,7 +369,7 @@ void FedCmAccountSelectionView::ShowFailureDialog(
 
   if (!GetDialogWidget()) {
     delegate_->OnDismiss(DismissReason::kOther);
-    return;
+    return false;
   }
 
   // Initialize InputEventActivationProtector to handle potentially unintended
@@ -383,9 +389,10 @@ void FedCmAccountSelectionView::ShowFailureDialog(
   // Else:
   // The dialog is not guaranteed to be shown. The dialog will be hidden if the
   // associated web contents are hidden.
+  return true;
 }
 
-void FedCmAccountSelectionView::ShowErrorDialog(
+bool FedCmAccountSelectionView::ShowErrorDialog(
     const std::string& top_frame_etld_plus_one,
     const std::optional<std::string>& iframe_etld_plus_one,
     const std::string& idp_etld_plus_one,
@@ -424,7 +431,7 @@ void FedCmAccountSelectionView::ShowErrorDialog(
 
     if (!account_selection_view_) {
       delegate_->OnDismiss(DismissReason::kOther);
-      return;
+      return false;
     }
   }
 
@@ -434,7 +441,7 @@ void FedCmAccountSelectionView::ShowErrorDialog(
 
   if (!GetDialogWidget()) {
     delegate_->OnDismiss(DismissReason::kOther);
-    return;
+    return false;
   }
 
   // Initialize InputEventActivationProtector to handle potentially unintended
@@ -451,9 +458,10 @@ void FedCmAccountSelectionView::ShowErrorDialog(
   // Else:
   // The dialog is not guaranteed to be shown. The dialog will be hidden if the
   // associated web contents are hidden.
+  return true;
 }
 
-void FedCmAccountSelectionView::ShowLoadingDialog(
+bool FedCmAccountSelectionView::ShowLoadingDialog(
     const std::string& top_frame_etld_plus_one,
     const std::string& idp_etld_plus_one,
     blink::mojom::RpContext rp_context,
@@ -473,7 +481,7 @@ void FedCmAccountSelectionView::ShowLoadingDialog(
 
     if (!account_selection_view_) {
       delegate_->OnDismiss(DismissReason::kOther);
-      return;
+      return false;
     }
   }
 
@@ -481,7 +489,7 @@ void FedCmAccountSelectionView::ShowLoadingDialog(
 
   if (!GetDialogWidget()) {
     delegate_->OnDismiss(DismissReason::kOther);
-    return;
+    return false;
   }
 
   // Initialize InputEventActivationProtector to handle potentially unintended
@@ -497,6 +505,7 @@ void FedCmAccountSelectionView::ShowLoadingDialog(
   // Else:
   // The dialog is not guaranteed to be shown. The dialog will be hidden if the
   // associated web contents are hidden.
+  return true;
 }
 
 void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {

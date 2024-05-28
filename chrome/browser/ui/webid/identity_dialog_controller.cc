@@ -28,7 +28,7 @@ int IdentityDialogController::GetBrandIconIdealSize(
   return AccountSelectionView::GetBrandIconIdealSize(rp_mode);
 }
 
-void IdentityDialogController::ShowAccountsDialog(
+bool IdentityDialogController::ShowAccountsDialog(
     const std::string& top_frame_for_display,
     const std::optional<std::string>& iframe_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
@@ -46,12 +46,12 @@ void IdentityDialogController::ShowAccountsDialog(
   rp_mode_ = rp_mode;
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
-  account_view_->Show(top_frame_for_display, iframe_for_display,
-                      identity_provider_data, sign_in_mode, rp_mode,
-                      new_account_idp);
+  return account_view_->Show(top_frame_for_display, iframe_for_display,
+                             identity_provider_data, sign_in_mode, rp_mode,
+                             new_account_idp);
 }
 
-void IdentityDialogController::ShowFailureDialog(
+bool IdentityDialogController::ShowFailureDialog(
     const std::string& top_frame_for_display,
     const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
@@ -69,12 +69,12 @@ void IdentityDialogController::ShowFailureDialog(
   //   TODO: If the failure dialog is already being shown, notify user that
   //   sign-in attempt failed.
 
-  account_view_->ShowFailureDialog(top_frame_for_display, iframe_for_display,
-                                   idp_for_display, rp_context, rp_mode,
-                                   idp_metadata);
+  return account_view_->ShowFailureDialog(top_frame_for_display,
+                                          iframe_for_display, idp_for_display,
+                                          rp_context, rp_mode, idp_metadata);
 }
 
-void IdentityDialogController::ShowErrorDialog(
+bool IdentityDialogController::ShowErrorDialog(
     const std::string& top_frame_for_display,
     const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
@@ -90,12 +90,12 @@ void IdentityDialogController::ShowErrorDialog(
     account_view_ = AccountSelectionView::Create(this);
   }
 
-  account_view_->ShowErrorDialog(top_frame_for_display, iframe_for_display,
-                                 idp_for_display, rp_context, rp_mode,
-                                 idp_metadata, error);
+  return account_view_->ShowErrorDialog(
+      top_frame_for_display, iframe_for_display, idp_for_display, rp_context,
+      rp_mode, idp_metadata, error);
 }
 
-void IdentityDialogController::ShowLoadingDialog(
+bool IdentityDialogController::ShowLoadingDialog(
     const std::string& top_frame_for_display,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
@@ -106,8 +106,8 @@ void IdentityDialogController::ShowLoadingDialog(
     account_view_ = AccountSelectionView::Create(this);
   }
 
-  account_view_->ShowLoadingDialog(top_frame_for_display, idp_for_display,
-                                   rp_context, rp_mode);
+  return account_view_->ShowLoadingDialog(top_frame_for_display,
+                                          idp_for_display, rp_context, rp_mode);
 }
 
 void IdentityDialogController::OnLoginToIdP(const GURL& idp_config_url,

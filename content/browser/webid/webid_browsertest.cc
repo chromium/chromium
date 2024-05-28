@@ -1268,6 +1268,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
             .Run(config_url,
                  /* account_id=*/"not_real_account",
                  /* is_sign_in= */ true);
+        return true;
       }));
 
   base::RunLoop run_loop;

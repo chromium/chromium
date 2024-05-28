@@ -39,7 +39,7 @@ class IdentityDialogController
   int GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) override;
 
   // content::IdentityRequestDialogController
-  void ShowAccountsDialog(
+  bool ShowAccountsDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
@@ -50,7 +50,7 @@ class IdentityDialogController
       LoginToIdPCallback on_add_account,
       DismissCallback dismiss_callback,
       AccountsDisplayedCallback accounts_displayed_callback) override;
-  void ShowFailureDialog(const std::string& top_frame_for_display,
+  bool ShowFailureDialog(const std::string& top_frame_for_display,
                          const std::optional<std::string>& iframe_for_display,
                          const std::string& idp_for_display,
                          blink::mojom::RpContext rp_context,
@@ -58,7 +58,7 @@ class IdentityDialogController
                          const content::IdentityProviderMetadata& idp_metadata,
                          DismissCallback dismiss_callback,
                          LoginToIdPCallback login_callback) override;
-  void ShowErrorDialog(const std::string& top_frame_for_display,
+  bool ShowErrorDialog(const std::string& top_frame_for_display,
                        const std::optional<std::string>& iframe_for_display,
                        const std::string& idp_for_display,
                        blink::mojom::RpContext rp_context,
@@ -67,7 +67,7 @@ class IdentityDialogController
                        const std::optional<TokenError>& error,
                        DismissCallback dismiss_callback,
                        MoreDetailsCallback more_details_callback) override;
-  void ShowLoadingDialog(const std::string& top_frame_for_display,
+  bool ShowLoadingDialog(const std::string& top_frame_for_display,
                          const std::string& idp_for_display,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode,

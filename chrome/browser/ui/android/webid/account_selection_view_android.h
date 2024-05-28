@@ -22,7 +22,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   ~AccountSelectionViewAndroid() override;
 
   // AccountSelectionView:
-  void Show(
+  bool Show(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
@@ -30,21 +30,21 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
       blink::mojom::RpMode rp_mode,
       const std::optional<content::IdentityProviderData>& new_account_idp)
       override;
-  void ShowFailureDialog(
+  bool ShowFailureDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
       const content::IdentityProviderMetadata& idp_metadata) override;
-  void ShowErrorDialog(const std::string& top_frame_for_display,
+  bool ShowErrorDialog(const std::string& top_frame_for_display,
                        const std::optional<std::string>& iframe_for_display,
                        const std::string& idp_for_display,
                        blink::mojom::RpContext rp_context,
                        blink::mojom::RpMode rp_mode,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
-  void ShowLoadingDialog(const std::string& top_frame_for_display,
+  bool ShowLoadingDialog(const std::string& top_frame_for_display,
                          const std::string& idp_for_display,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode) override;

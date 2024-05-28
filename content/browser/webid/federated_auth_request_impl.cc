@@ -1049,12 +1049,14 @@ void FederatedAuthRequestImpl::RequestToken(
     const GURL& idp_config_url = idp_order_[0];
     auto get_info_it = token_request_get_infos_.find(idp_config_url);
     CHECK(get_info_it != token_request_get_infos_.end());
-    request_dialog_controller_->ShowLoadingDialog(
-        GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
-        FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
-        get_info_it->second.rp_context, rp_mode_,
-        base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
-                       weak_ptr_factory_.GetWeakPtr()));
+    if (!request_dialog_controller_->ShowLoadingDialog(
+            GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
+            FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
+            get_info_it->second.rp_context, rp_mode_,
+            base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                           weak_ptr_factory_.GetWeakPtr()))) {
+      return;
+    }
   }
 
   CHECK(!unique_idps.empty());
@@ -1756,23 +1758,24 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // immediately (for instance on Android when we cannot create a BottomSheet),
   // so invocations after this method should assume that the members may have
   // been cleaned up.
-  // TODO(crbug.com/329261790): Make ShowAccountsDialog() return a boolean and
-  // use that to know when to bail out early from this method.
-  request_dialog_controller_->ShowAccountsDialog(
-      GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
-      idp_data_for_display_,
-      identity_selection_type_ == kExplicit ? SignInMode::kExplicit
-                                            : SignInMode::kAuto,
-      rp_mode_, new_account_idp,
-      base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          /*can_append_hints=*/false),
-      base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&FederatedAuthRequestImpl::OnAccountsDisplayed,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (!request_dialog_controller_->ShowAccountsDialog(
+          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
+          idp_data_for_display_,
+          identity_selection_type_ == kExplicit ? SignInMode::kExplicit
+                                                : SignInMode::kAuto,
+          rp_mode_, new_account_idp,
+          base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              /*can_append_hints=*/false),
+          base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsDisplayed,
+                         weak_ptr_factory_.GetWeakPtr()))) {
+    return;
+  }
+
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 
   if (identity_selection_type_ == kExplicit &&
@@ -1919,23 +1922,19 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   bool has_hints = !idp_info->provider->login_hint.empty() ||
                    !idp_info->provider->domain_hint.empty() ||
                    !idp_info->metadata.requested_label.empty();
-  // TODO(crbug.com/329261790): Make ShowFailureDialog() return boolean and use
-  // the value to know when to bail out of this method.
-  request_dialog_controller_->ShowFailureDialog(
-      GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
-      FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
-      idp_info->metadata,
-      base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          /*can_append_hints=*/true));
 
-  // ShowFailureDialog() may have completed the request synchronously, in which
-  // case we did not really show any failure dialog.
-  if (idp_data_for_display_.empty()) {
+  if (!request_dialog_controller_->ShowFailureDialog(
+          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
+          FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
+          idp_info->metadata,
+          base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              /*can_append_hints=*/true))) {
     return;
   }
+
   CHECK(idp_data_for_display_.size() == 1u);
   fedcm_metrics_->RecordSingleIdpMismatchDialogShown(
       idp_data_for_display_[0], has_shown_mismatch, has_hints);
@@ -2513,19 +2512,21 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
   token_error_ = token_error;
 
   // TODO(crbug.com/40282657): Refactor IdentityCredentialTokenError
-  request_dialog_controller_->ShowErrorDialog(
-      GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
-      FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
-      idp_infos_[idp_config_url]->rp_context, rp_mode_,
-      idp_infos_[idp_config_url]->metadata, token_error,
-      base::BindOnce(&FederatedAuthRequestImpl::OnDismissErrorDialog,
-                     weak_ptr_factory_.GetWeakPtr(), idp_config_url, status,
-                     token_error),
-      token_error && !token_error->url.is_empty()
-          ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
-                           weak_ptr_factory_.GetWeakPtr(), kErrorUrlPopup,
-                           config_url_, token_error->url)
-          : base::NullCallback());
+  if (!request_dialog_controller_->ShowErrorDialog(
+          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
+          FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
+          idp_infos_[idp_config_url]->rp_context, rp_mode_,
+          idp_infos_[idp_config_url]->metadata, token_error,
+          base::BindOnce(&FederatedAuthRequestImpl::OnDismissErrorDialog,
+                         weak_ptr_factory_.GetWeakPtr(), idp_config_url, status,
+                         token_error),
+          token_error && !token_error->url.is_empty()
+              ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
+                               weak_ptr_factory_.GetWeakPtr(), kErrorUrlPopup,
+                               config_url_, token_error->url)
+              : base::NullCallback())) {
+    return;
+  }
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
 

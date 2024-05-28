@@ -65,7 +65,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   ~FedCmAccountSelectionView() override;
 
   // AccountSelectionView:
-  void Show(
+  bool Show(
       const std::string& top_frame_etld_plus_one,
       const std::optional<std::string>& iframe_etld_plus_one,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
@@ -73,21 +73,21 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       blink::mojom::RpMode rp_mode,
       const std::optional<content::IdentityProviderData>& new_account_idp)
       override;
-  void ShowFailureDialog(
+  bool ShowFailureDialog(
       const std::string& top_frame_etld_plus_one,
       const std::optional<std::string>& iframe_etld_plus_one,
       const std::string& idp_etld_plus_one,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
       const content::IdentityProviderMetadata& idp_metadata) override;
-  void ShowErrorDialog(const std::string& top_frame_etld_plus_one,
+  bool ShowErrorDialog(const std::string& top_frame_etld_plus_one,
                        const std::optional<std::string>& iframe_etld_plus_one,
                        const std::string& idp_etld_plus_one,
                        blink::mojom::RpContext rp_context,
                        blink::mojom::RpMode rp_mode,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
-  void ShowLoadingDialog(const std::string& top_frame_etld_plus_one,
+  bool ShowLoadingDialog(const std::string& top_frame_etld_plus_one,
                          const std::string& idp_etld_plus_one,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode) override;

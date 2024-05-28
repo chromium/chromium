@@ -64,8 +64,10 @@ class AccountSelectionView {
   // auto re-authn flow. If it is the auto re-authn flow, `idps_for_display`
   // will only include the single returning account and its IDP.
   // `new_account_idp` represents the account information of a newly logged in
-  // account that ought to be prioritized in the UI.
-  virtual void Show(
+  // account that ought to be prioritized in the UI. Returns true if it was
+  // possible to show UI. If this method could not show UI and called Dismiss,
+  // returns false.
+  virtual bool Show(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
@@ -76,7 +78,9 @@ class AccountSelectionView {
   // Shows a failure UI when the accounts fetch is failed such that it is
   // observable by users. This could happen when an IDP claims that the user is
   // signed in but not respond with any user account during browser fetches.
-  virtual void ShowFailureDialog(
+  // Returns true if it was possible to show UI. If this method could not show
+  // UI and called Dismiss, returns false.
+  virtual bool ShowFailureDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
@@ -84,7 +88,10 @@ class AccountSelectionView {
       blink::mojom::RpMode rp_mode,
       const content::IdentityProviderMetadata& idp_metadata) = 0;
 
-  virtual void ShowErrorDialog(
+  // Shows an error dialog to the user, possibly with a custom error message.
+  // Returns true if it was possible to show UI. If this method could not show
+  // UI and called Dismiss, returns false.
+  virtual bool ShowErrorDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
@@ -93,7 +100,10 @@ class AccountSelectionView {
       const content::IdentityProviderMetadata& idp_metadata,
       const std::optional<TokenError>& error) = 0;
 
-  virtual void ShowLoadingDialog(const std::string& top_frame_for_display,
+  // Shows a loading dialog to the user. Used in the button mode, to acknowledge
+  // the user interaction. Returns true if it was possible to show UI. If this
+  // method could not show UI and called Dismiss, returns false.
+  virtual bool ShowLoadingDialog(const std::string& top_frame_for_display,
                                  const std::string& idp_for_display,
                                  blink::mojom::RpContext rp_context,
                                  blink::mojom::RpMode rp_mode) = 0;

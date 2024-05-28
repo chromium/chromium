@@ -162,7 +162,7 @@ class TestDialogController
   TestDialogController(TestDialogController&) = delete;
   TestDialogController& operator=(TestDialogController&) = delete;
 
-  void ShowAccountsDialog(
+  bool ShowAccountsDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
@@ -181,6 +181,7 @@ class TestDialogController
       std::move(on_selected)
           .Run(GURL(kProviderUrlFull), kAccountId, /*is_sign_in=*/true);
     }
+    return true;
   }
 
  private:

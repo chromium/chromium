@@ -28,7 +28,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       WebContents* web_contents = nullptr);
   ~FakeIdentityRequestDialogController() override;
 
-  void ShowAccountsDialog(
+  bool ShowAccountsDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
@@ -40,7 +40,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       DismissCallback dismmiss_callback,
       AccountsDisplayedCallback accounts_displayed_callback) override;
 
-  void ShowFailureDialog(const std::string& top_frame_for_display,
+  bool ShowFailureDialog(const std::string& top_frame_for_display,
                          const std::optional<std::string>& iframe_for_display,
                          const std::string& idp_for_display,
                          blink::mojom::RpContext rp_context,
@@ -49,7 +49,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
                          DismissCallback dismiss_callback,
                          LoginToIdPCallback login_callback) override;
 
-  void ShowErrorDialog(const std::string& top_frame_for_display,
+  bool ShowErrorDialog(const std::string& top_frame_for_display,
                        const std::optional<std::string>& iframe_for_display,
                        const std::string& idp_for_display,
                        blink::mojom::RpContext rp_context,
@@ -59,7 +59,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
                        DismissCallback dismiss_callback,
                        MoreDetailsCallback more_details_callback) override;
 
-  void ShowLoadingDialog(const std::string& top_frame_for_display,
+  bool ShowLoadingDialog(const std::string& top_frame_for_display,
                          const std::string& idp_for_display,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode,

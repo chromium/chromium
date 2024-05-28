@@ -59,7 +59,7 @@ void IdentityRequestDialogController::SetIsInterceptionEnabled(bool enabled) {
   is_interception_enabled_ = enabled;
 }
 
-void IdentityRequestDialogController::ShowAccountsDialog(
+bool IdentityRequestDialogController::ShowAccountsDialog(
     const std::string& top_frame_for_display,
     const std::optional<std::string>& iframe_for_display,
     const std::vector<IdentityProviderData>& identity_provider_data,
@@ -72,10 +72,12 @@ void IdentityRequestDialogController::ShowAccountsDialog(
     AccountsDisplayedCallback accounts_displayed_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
+    return false;
   }
+  return true;
 }
 
-void IdentityRequestDialogController::ShowFailureDialog(
+bool IdentityRequestDialogController::ShowFailureDialog(
     const std::string& top_frame_for_display,
     const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
@@ -86,10 +88,12 @@ void IdentityRequestDialogController::ShowFailureDialog(
     LoginToIdPCallback login_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
+    return false;
   }
+  return true;
 }
 
-void IdentityRequestDialogController::ShowErrorDialog(
+bool IdentityRequestDialogController::ShowErrorDialog(
     const std::string& top_frame_for_display,
     const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
@@ -101,10 +105,12 @@ void IdentityRequestDialogController::ShowErrorDialog(
     MoreDetailsCallback more_details_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
+    return false;
   }
+  return true;
 }
 
-void IdentityRequestDialogController::ShowLoadingDialog(
+bool IdentityRequestDialogController::ShowLoadingDialog(
     const std::string& top_frame_for_display,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
@@ -112,7 +118,9 @@ void IdentityRequestDialogController::ShowLoadingDialog(
     DismissCallback dismiss_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
+    return false;
   }
+  return true;
 }
 
 std::string IdentityRequestDialogController::GetTitle() const {
