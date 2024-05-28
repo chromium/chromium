@@ -368,8 +368,11 @@ float GetSdrLumForScreenBrightness(float percent, float hdr_max_lum) {
 gfx::DisplayColorSpaces UpdateMaxLuminanceValue(
     const gfx::DisplayColorSpaces display_color_spaces,
     float brightness) {
-  // Ignore luminance changes for SDR-only color spaces
-  if (!display_color_spaces.SupportsHDR()) {
+  // Only change the HDR headroom if the output space is affected by the SDR
+  // brightness level.
+  auto hdr_space = display_color_spaces.GetOutputColorSpace(
+      gfx::ContentColorUsage::kHDR, false);
+  if (!hdr_space.IsAffectedBySDRWhiteLevel()) {
     return display_color_spaces;
   }
 
