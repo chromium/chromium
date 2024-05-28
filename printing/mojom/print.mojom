@@ -125,9 +125,10 @@ enum GenerateDocumentOutline {
 };
 
 // What kind of margins to use.
+[Stable, Extensible]
 enum MarginType {
   // Default varies depending on headers being enabled or not
-  kDefaultMargins,
+  [Default] kDefaultMargins,
   kNoMargins,
   kPrintableAreaMargins,
   kCustomMargins,

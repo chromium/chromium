@@ -93,6 +93,7 @@ import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/passkeys.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom";
+import "chromeos/crosapi/mojom/print_preview_cros.mojom";
 import "chromeos/crosapi/mojom/printing_metrics.mojom";
 import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
@@ -167,8 +168,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 141
-// Next method id: 143
+// Next version: 142
+// Next method id: 144
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -749,6 +750,10 @@ interface Crosapi {
   // Binds the PrintingMetrics interface for chrome.printingMetrics API.
   [MinVersion=86] BindPrintingMetrics@90(
       pending_receiver<PrintingMetrics> receiver);
+
+  // Binds the PrintPreviewCrosDelegate interface.
+  [MinVersion=141] BindPrintPreviewCrosDelegate@143(
+      pending_receiver<PrintPreviewCrosDelegate> receiver);
 
   // Binds the Resource Manager interface for querying resource status.
   // Added in M93.

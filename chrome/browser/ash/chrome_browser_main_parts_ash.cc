@@ -168,6 +168,7 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/kcer/kcer_factory.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
+#include "chrome/browser/chromeos/printing/print_preview/print_preview_webcontents_manager.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/defaults.h"
@@ -1489,6 +1490,10 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 
   if (chromeos::features::IsMahiEnabled()) {
     mahi::MahiWebContentsManager::Get()->Initialize();
+  }
+
+  if (base::FeatureList::IsEnabled(::features::kPrintPreviewCrosPrimary)) {
+    chromeos::PrintPreviewWebcontentsManager::Get()->Initialize();
   }
 
   ChromeBrowserMainPartsLinux::PostBrowserStart();

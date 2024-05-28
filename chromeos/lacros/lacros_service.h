@@ -238,6 +238,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver);
 
   // This may be called on any thread.
+  void BindPrintPreviewCrosDelegate(
+      mojo::PendingReceiver<crosapi::mojom::PrintPreviewCrosDelegate> receiver);
+
+  // This may be called on any thread.
   void BindScreenManagerReceiver(
       mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver);
 

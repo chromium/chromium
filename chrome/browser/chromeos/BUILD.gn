@@ -539,6 +539,10 @@ static_library("test_support") {
     "policy/dlp/test/mock_dlp_crosapi.h",
     "policy/dlp/test/mock_dlp_rules_manager.cc",
     "policy/dlp/test/mock_dlp_rules_manager.h",
+    "printing/print_preview/test/mock_print_preview_crosapi.cc",
+    "printing/print_preview/test/mock_print_preview_crosapi.h",
+    "printing/print_preview/test/scoped_print_preview_webcontents_manager_for_testing.cc",
+    "printing/print_preview/test/scoped_print_preview_webcontents_manager_for_testing.h",
   ]
   public_deps = [
     ":chromeos",

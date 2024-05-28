@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
+#include "chrome/browser/chromeos/printing/print_preview/print_preview_webcontents_manager.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros_factory.h"
 #include "chrome/browser/chromeos/smart_reader/smart_reader_client_impl.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
@@ -63,10 +64,12 @@
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
@@ -321,6 +324,11 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     mahi::MahiWebContentsManager::Get()->Initialize();
   }
 
+  if (base::FeatureList::IsEnabled(::features::kPrintPreviewCrosPrimary) &&
+      chromeos::LacrosService::Get()
+          ->IsAvailable<crosapi::mojom::PrintPreviewCrosDelegate>()) {
+    chromeos::PrintPreviewWebcontentsManager::Get()->Initialize();
+  }
   suggestion_service_ = std::make_unique<SuggestionServiceLacros>();
 }
 

@@ -21,7 +21,7 @@ struct PreviewIds {
 };
 
 // Parameters required to do print preview.
-[EnableIf=enable_print_preview]
+[Stable, EnableIf=enable_print_preview]
 struct RequestPrintPreviewParams {
   [EnableIf=is_chromeos_ash]
   bool is_from_arc = false;

@@ -24,6 +24,8 @@ component("printing") {
     "//base:i18n",
     "//chromeos/crosapi/mojom",
     "//components/device_event_log",
+    "//components/printing/common",
+    "//printing/mojom",
     "//services/network/public/cpp:cpp",
   ]
 
@@ -88,6 +90,19 @@ source_set("unit_tests") {
     "uri_unittest.h",
     "uri_unittest_consistency.cc",
     "usb_printer_id_unittest.cc",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  deps = [
+    "//chromeos/crosapi/mojom",
+    "//components/printing/common",
+    "//printing/mojom",
+  ]
+  sources = [
+    "print_settings_test_util.cc",
+    "print_settings_test_util.h",
   ]
 }
 

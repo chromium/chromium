@@ -20,6 +20,7 @@
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
+#include "chromeos/crosapi/mojom/print_preview_cros.mojom-forward.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "media/gpu/buildflags.h"
@@ -45,6 +46,11 @@ class VideoConferenceManagerAsh;
 namespace auth {
 class InSessionAuth;
 }  // namespace auth
+
+namespace printing {
+class PrintPreviewWebcontentsAdapterAsh;
+}  // namespace printing
+
 }  // namespace ash
 
 namespace crosapi {
@@ -371,6 +377,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::PolicyService> receiver) override;
   void BindPower(mojo::PendingReceiver<mojom::Power> receiver) override;
   void BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) override;
+  void BindPrintPreviewCrosDelegate(
+      mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) override;
   void BindNonclosableAppToastService(
       mojo::PendingReceiver<mojom::NonclosableAppToastService> receiver)
       override;
@@ -602,6 +610,11 @@ class CrosapiAsh : public mojom::Crosapi {
     return payment_app_instance_ash_.get();
   }
 
+  ash::printing::PrintPreviewWebcontentsAdapterAsh*
+  print_preview_webcontents_adapter_ash() {
+    return print_preview_webcontents_adapter_ash_.get();
+  }
+
 #if BUILDFLAG(USE_CUPS)
   PrintingMetricsAsh* printing_metrics_ash() {
     return printing_metrics_ash_.get();
@@ -774,6 +787,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
+  std::unique_ptr<ash::printing::PrintPreviewWebcontentsAdapterAsh>
+      print_preview_webcontents_adapter_ash_;
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SearchControllerFactoryAsh> search_controller_factory_ash_;

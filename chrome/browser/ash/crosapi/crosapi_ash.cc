@@ -124,6 +124,7 @@
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
+#include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
@@ -332,6 +333,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       remoting_ash_(std::make_unique<RemotingAsh>()),
       resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
+      print_preview_webcontents_adapter_ash_(
+          std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
       screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       search_controller_factory_ash_(
@@ -930,6 +933,11 @@ void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {
 void CrosapiAsh::BindNonclosableAppToastService(
     mojo::PendingReceiver<mojom::NonclosableAppToastService> receiver) {
   nonclosable_app_toast_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindPrintPreviewCrosDelegate(
+    mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) {
+  print_preview_webcontents_adapter_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindPrintingMetrics(

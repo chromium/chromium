@@ -4437,6 +4437,7 @@ if (!is_android) {
         "../browser/ash/crosapi/media_ui_ash_browsertest.cc",
         "../browser/ash/crosapi/network_settings_service_ash_browsertest.cc",
         "../browser/ash/crosapi/power_ash_apitest.cc",
+        "../browser/ash/crosapi/print_preview_ash_browsertest.cc",
         "../browser/ash/crosapi/screen_manager_ash_browsertest.cc",
         "../browser/ash/crosapi/suggestion_service_ash_browsertest.cc",
         "../browser/ash/crosapi/task_manager_ash_browsertest.cc",
@@ -4446,6 +4447,7 @@ if (!is_android) {
       ]
       deps += [
         "//chrome/browser/ash/mahi:mahi_ash",
+        "//chromeos/printing:test_support",
         "//components/global_media_controls:test_support",
       ]
 
@@ -4880,6 +4882,7 @@ if (!is_android) {
         "../browser/ash/wmp_browsertest.cc",
         "../browser/chromeos/mahi/mahi_web_contents_manager_browsertest.cc",
         "../browser/chromeos/network/network_portal_signin_window_ash_browsertest.cc",
+        "../browser/chromeos/printing/print_preview/print_preview_webcontents_manager_browsertest.cc",
         "../browser/chromeos/reporting/websites/website_events_observer_ash_browsertest.cc",
         "../browser/chromeos/reporting/websites/website_usage_telemetry_sampler_ash_browsertest.cc",
         "../browser/chromeos/smart_reader/smart_reader_client_browsertest.cc",
@@ -5668,6 +5671,7 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/mahi/mahi_web_contents_manager_browsertest.cc",
       "../browser/chromeos/network/network_portal_signin_window_lacros_browsertest.cc",
       "../browser/chromeos/policy/dlp/dlp_files_controller_lacros_browsertest.cc",
+      "../browser/chromeos/printing/print_preview/print_preview_webcontents_manager_browsertest.cc",
       "../browser/chromeos/reporting/network/network_bandwidth_sampler_lacros_browsertest.cc",
       "../browser/chromeos/reporting/websites/website_events_observer_lacros_browsertest.cc",
       "../browser/chromeos/reporting/websites/website_usage_telemetry_sampler_lacros_browsertest.cc",
@@ -5723,6 +5727,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/policy_ui_lacros_browsertest.cc",
       "../browser/lacros/popup_lacros_browsertest.cc",
       "../browser/lacros/power_api_lacros_browsertest.cc",
+      "../browser/lacros/print_preview_lacros_browsertest.cc",
       "../browser/lacros/remote_apps/remote_apps_proxy_browsertest.cc",
       "../browser/lacros/screen_manager_lacros_browsertest.cc",
       "../browser/lacros/smart_reader_lacros_browsertest.cc",
@@ -5825,6 +5830,7 @@ if (is_chromeos_lacros) {
       "//chromeos/dbus/missive:test_support",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
+      "//chromeos/printing:test_support",
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",

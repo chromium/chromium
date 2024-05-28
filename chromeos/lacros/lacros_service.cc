@@ -103,6 +103,7 @@
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
 #include "chromeos/crosapi/mojom/power.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "chromeos/crosapi/mojom/printing_metrics.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
@@ -568,6 +569,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::PolicyService, &Crosapi::BindPolicyService,
                   Crosapi::MethodMinVersions::kBindPolicyServiceMinVersion>();
   ConstructRemote<
+      crosapi::mojom::PrintPreviewCrosDelegate,
+      &crosapi::mojom::Crosapi::BindPrintPreviewCrosDelegate,
+      Crosapi::MethodMinVersions::kBindPrintPreviewCrosDelegateMinVersion>();
+  ConstructRemote<
       chromeos::remote_apps::mojom::RemoteAppsLacrosBridge,
       &crosapi::mojom::Crosapi::BindRemoteAppsLacrosBridge,
       Crosapi::MethodMinVersions::kBindRemoteAppsLacrosBridgeMinVersion>();
@@ -827,6 +832,16 @@ void LacrosService::BindMetricsReporting(
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<crosapi::mojom::MetricsReporting>,
       &crosapi::mojom::Crosapi::BindMetricsReporting>(std::move(receiver));
+}
+
+void LacrosService::BindPrintPreviewCrosDelegate(
+    mojo::PendingReceiver<crosapi::mojom::PrintPreviewCrosDelegate>
+        pending_receiver) {
+  DCHECK(IsSupported<crosapi::mojom::PrintPreviewCrosDelegate>());
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<crosapi::mojom::PrintPreviewCrosDelegate>,
+      &crosapi::mojom::Crosapi::BindPrintPreviewCrosDelegate>(
+      std::move(pending_receiver));
 }
 
 void LacrosService::BindRemoteAppsLacrosBridge(

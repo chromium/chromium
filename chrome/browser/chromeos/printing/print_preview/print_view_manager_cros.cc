@@ -4,7 +4,10 @@
 
 #include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros.h"
 
+#include <utility>
+
 #include "base/unguessable_token.h"
+#include "chrome/browser/chromeos/printing/print_preview/print_preview_webcontents_manager.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -50,7 +53,10 @@ void PrintViewManagerCros::ShowScriptedPrintPreview(bool source_is_modifiable) {
 }
 
 void PrintViewManagerCros::RequestPrintPreview(
-    ::printing::mojom::RequestPrintPreviewParamsPtr params) {}
+    ::printing::mojom::RequestPrintPreviewParamsPtr params) {
+  PrintPreviewWebcontentsManager::Get()->RequestPrintPreview(
+      token_, web_contents(), std::move(params));
+}
 
 void PrintViewManagerCros::CheckForCancel(int32_t preview_ui_id,
                                           int32_t request_id,
@@ -88,6 +94,7 @@ bool PrintViewManagerCros::PrintPreviewNow(content::RenderFrameHost* rfh,
 }
 
 void PrintViewManagerCros::PrintPreviewDone() {
+  PrintPreviewWebcontentsManager::Get()->PrintPreviewDone(token_);
   render_frame_host_ = nullptr;
 }
 
