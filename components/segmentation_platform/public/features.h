@@ -107,6 +107,9 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformUmaFromSqlDb);
 // Feature flag for having separate models for the Start and NTP surface.
 BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerSplitBySurface);
 
+// Feature flag for enabling the URL visit resumption ranker.
+BASE_DECLARE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker);
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

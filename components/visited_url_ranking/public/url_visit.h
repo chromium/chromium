@@ -89,7 +89,7 @@ struct URLVisitAggregate {
     ~TabData();
     // The last active tab associated with a given URL visit.
     Tab last_active_tab;
-    // Timestamp for when a tab associated wit the given URL visit was last
+    // Timestamp for when a tab associated with the given URL visit was last
     // activated.
     base::Time last_active;
     // Whether there is a tab for the given URL visit that is pinned.

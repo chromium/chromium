@@ -10,6 +10,8 @@
 
 #include "base/check.h"
 #include "base/containers/enum_set.h"
+#include "base/metrics/field_trial_params.h"
+#include "components/visited_url_ranking/public/features.h"
 
 namespace visited_url_ranking {
 
@@ -32,12 +34,15 @@ FetchOptions& FetchOptions::operator=(FetchOptions&& other) = default;
 
 // static
 FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
+  int query_duration = base::GetFieldTrialParamByFeatureAsInt(
+      features::kVisitedURLRankingService,
+      features::kVisitedURLRankingFetchDurationInHoursParam, 24);
   return FetchOptions(
       {
           {Fetcher::kHistory, FetchOptions::kOriginSources},
           {Fetcher::kSession, FetchOptions::kOriginSources},
       },
-      base::Time::Now() - base::Days(1),
+      base::Time::Now() - base::Hours(query_duration),
       {
           URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter,
           URLVisitAggregatesTransformType::kBookmarkData,

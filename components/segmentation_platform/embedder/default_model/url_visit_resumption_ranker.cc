@@ -8,6 +8,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/visited_url_ranking/public/url_visit_schema.h"
@@ -29,6 +30,11 @@ constexpr std::array<MetadataWriter::UMAFeature, 1> kOutput = {
 
 // static
 std::unique_ptr<Config> URLVisitResumptionRanker::GetConfig() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformURLVisitResumptionRanker)) {
+    return nullptr;
+  }
+
   auto config = std::make_unique<Config>();
   config->segmentation_key = kURLVisitResumptionRankerKey;
   config->segmentation_uma_name = kURLVisitResumptionRankerUmaName;

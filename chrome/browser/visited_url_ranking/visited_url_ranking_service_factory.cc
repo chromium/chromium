@@ -30,6 +30,7 @@
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_categories_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_visibility_score_transformer.h"
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
@@ -76,6 +77,10 @@ VisitedURLRankingServiceFactory::~VisitedURLRankingServiceFactory() = default;
 std::unique_ptr<KeyedService>
 VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(features::kVisitedURLRankingService)) {
+    return nullptr;
+  }
+
   auto* profile = Profile::FromBrowserContext(context);
   if (profile->IsOffTheRecord()) {
     return nullptr;

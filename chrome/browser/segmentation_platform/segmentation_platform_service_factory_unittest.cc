@@ -114,7 +114,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformTimeDelaySampling,
           {{"SamplingRate", "1"}}},
          {features::kSegmentationPlatformTabResumptionRanker, {}},
-         {features::kSegmentationPlatformAndroidHomeModuleRanker, {}}},
+         {features::kSegmentationPlatformAndroidHomeModuleRanker, {}},
+         {features::kSegmentationPlatformURLVisitResumptionRanker, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
