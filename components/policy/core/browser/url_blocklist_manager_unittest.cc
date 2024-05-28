@@ -96,39 +96,45 @@ class URLBlocklistManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-}  // namespace
-
 // Returns whether |url| matches the |pattern|.
-bool IsMatch(const std::string& pattern, const std::string& url) {
+bool MatchesPattern(const std::string& pattern, const std::string& url) {
   URLBlocklist blocklist;
-
-  // Add the pattern to blocklist.
-  base::Value::List blocked;
-  blocked.Append(pattern);
-  blocklist.Block(blocked);
-
+  blocklist.Block(base::Value::List().Append(pattern));
   return blocklist.IsURLBlocked(GURL(url));
 }
 
 // Returns the state from blocklist after adding |pattern| to be blocked or
 // allowed depending on |use_allowlist| and checking |url|.
-policy::URLBlocklist::URLBlocklistState GetMatch(const std::string& pattern,
-                                                 const std::string& url,
-                                                 const bool use_allowlist) {
+URLBlocklist::URLBlocklistState GetUrlBlocklistStateAfterAddingPattern(
+    const std::string& pattern,
+    const std::string& url,
+    const bool use_allowlist) {
   URLBlocklist blocklist;
-
-  // Add the pattern to list.
-  base::Value::List blocked;
-  blocked.Append(pattern);
-
   if (use_allowlist) {
-    blocklist.Allow(blocked);
+    blocklist.Allow(base::Value::List().Append(pattern));
   } else {
-    blocklist.Block(blocked);
+    blocklist.Block(base::Value::List().Append(pattern));
   }
-
   return blocklist.GetURLBlocklistState(GURL(url));
 }
+
+// Returns the URL blocklist state after adding the pattern to the blocklist.
+URLBlocklist::URLBlocklistState GetUrlBlocklistStateAfterBlocking(
+    const std::string& pattern,
+    const std::string& url) {
+  return GetUrlBlocklistStateAfterAddingPattern(pattern, url,
+                                                /*use_allowlist=*/false);
+}
+
+// Returns the URL blocklist state after adding the pattern to the allowlist.
+URLBlocklist::URLBlocklistState GetUrlBlocklistStateAfterAllowing(
+    const std::string& pattern,
+    const std::string& url) {
+  return GetUrlBlocklistStateAfterAddingPattern(pattern, url,
+                                                /*use_allowlist=*/true);
+}
+
+}  // namespace
 
 TEST_F(URLBlocklistManagerTest, LoadBlocklistOnCreate) {
   base::Value::List list;
@@ -197,62 +203,69 @@ TEST_P(URLBlocklistManagerParamTest, Filtering) {
   URLBlocklist blocklist;
 
   // Block domain and all subdomains, for any filtered scheme.
-  EXPECT_TRUE(IsMatch("google.com", "http://google.com"));
-  EXPECT_TRUE(IsMatch("google.com", "http://google.com/"));
-  EXPECT_TRUE(IsMatch("google.com", "http://google.com/whatever"));
-  EXPECT_TRUE(IsMatch("google.com", "https://google.com/"));
+  EXPECT_TRUE(MatchesPattern("google.com", "http://google.com"));
+  EXPECT_TRUE(MatchesPattern("google.com", "http://google.com/"));
+  EXPECT_TRUE(MatchesPattern("google.com", "http://google.com/whatever"));
+  EXPECT_TRUE(MatchesPattern("google.com", "https://google.com/"));
   if (use_standard_compliant_non_special_scheme_url_parsing_) {
     // When the feature is enabled, the host part in non-special URLs can be
     // recognized.
-    EXPECT_TRUE(IsMatch("google.com", "bogus://google.com/"));
+    EXPECT_TRUE(MatchesPattern("google.com", "bogus://google.com/"));
   } else {
-    EXPECT_FALSE(IsMatch("google.com", "bogus://google.com/"));
+    EXPECT_FALSE(MatchesPattern("google.com", "bogus://google.com/"));
   }
-  EXPECT_FALSE(IsMatch("google.com", "http://notgoogle.com/"));
-  EXPECT_TRUE(IsMatch("google.com", "http://mail.google.com"));
-  EXPECT_TRUE(IsMatch("google.com", "http://x.mail.google.com"));
-  EXPECT_TRUE(IsMatch("google.com", "https://x.mail.google.com/"));
-  EXPECT_TRUE(IsMatch("google.com", "http://x.y.google.com/a/b"));
-  EXPECT_FALSE(IsMatch("google.com", "http://youtube.com/"));
+  EXPECT_FALSE(MatchesPattern("google.com", "http://notgoogle.com/"));
+  EXPECT_TRUE(MatchesPattern("google.com", "http://mail.google.com"));
+  EXPECT_TRUE(MatchesPattern("google.com", "http://x.mail.google.com"));
+  EXPECT_TRUE(MatchesPattern("google.com", "https://x.mail.google.com/"));
+  EXPECT_TRUE(MatchesPattern("google.com", "http://x.y.google.com/a/b"));
+  EXPECT_FALSE(MatchesPattern("google.com", "http://youtube.com/"));
 
   // Filter only http, ftp and ws schemes.
-  EXPECT_TRUE(IsMatch("http://secure.com", "http://secure.com"));
-  EXPECT_TRUE(IsMatch("http://secure.com", "http://secure.com/whatever"));
-  EXPECT_TRUE(IsMatch("ftp://secure.com", "ftp://secure.com/"));
-  EXPECT_TRUE(IsMatch("ws://secure.com", "ws://secure.com"));
-  EXPECT_FALSE(IsMatch("http://secure.com", "https://secure.com/"));
-  EXPECT_FALSE(IsMatch("ws://secure.com", "wss://secure.com"));
-  EXPECT_TRUE(IsMatch("http://secure.com", "http://www.secure.com"));
-  EXPECT_FALSE(IsMatch("http://secure.com", "https://www.secure.com"));
-  EXPECT_FALSE(IsMatch("ws://secure.com", "wss://www.secure.com"));
+  EXPECT_TRUE(MatchesPattern("http://secure.com", "http://secure.com"));
+  EXPECT_TRUE(
+      MatchesPattern("http://secure.com", "http://secure.com/whatever"));
+  EXPECT_TRUE(MatchesPattern("ftp://secure.com", "ftp://secure.com/"));
+  EXPECT_TRUE(MatchesPattern("ws://secure.com", "ws://secure.com"));
+  EXPECT_FALSE(MatchesPattern("http://secure.com", "https://secure.com/"));
+  EXPECT_FALSE(MatchesPattern("ws://secure.com", "wss://secure.com"));
+  EXPECT_TRUE(MatchesPattern("http://secure.com", "http://www.secure.com"));
+  EXPECT_FALSE(MatchesPattern("http://secure.com", "https://www.secure.com"));
+  EXPECT_FALSE(MatchesPattern("ws://secure.com", "wss://www.secure.com"));
 
   // Filter only a certain path prefix.
-  EXPECT_TRUE(IsMatch("path.to/ruin", "http://path.to/ruin"));
-  EXPECT_TRUE(IsMatch("path.to/ruin", "https://path.to/ruin"));
-  EXPECT_TRUE(IsMatch("path.to/ruin", "http://path.to/ruins"));
-  EXPECT_TRUE(IsMatch("path.to/ruin", "http://path.to/ruin/signup"));
-  EXPECT_TRUE(IsMatch("path.to/ruin", "http://www.path.to/ruin"));
-  EXPECT_FALSE(IsMatch("path.to/ruin", "http://path.to/fortune"));
+  EXPECT_TRUE(MatchesPattern("path.to/ruin", "http://path.to/ruin"));
+  EXPECT_TRUE(MatchesPattern("path.to/ruin", "https://path.to/ruin"));
+  EXPECT_TRUE(MatchesPattern("path.to/ruin", "http://path.to/ruins"));
+  EXPECT_TRUE(MatchesPattern("path.to/ruin", "http://path.to/ruin/signup"));
+  EXPECT_TRUE(MatchesPattern("path.to/ruin", "http://www.path.to/ruin"));
+  EXPECT_FALSE(MatchesPattern("path.to/ruin", "http://path.to/fortune"));
 
   // Filter only a certain path prefix and scheme.
-  EXPECT_TRUE(IsMatch("https://s.aaa.com/path", "https://s.aaa.com/path"));
-  EXPECT_TRUE(IsMatch("https://s.aaa.com/path", "https://s.aaa.com/path/bbb"));
-  EXPECT_FALSE(IsMatch("https://s.aaa.com/path", "http://s.aaa.com/path"));
-  EXPECT_FALSE(IsMatch("https://s.aaa.com/path", "https://aaa.com/path"));
-  EXPECT_FALSE(IsMatch("https://s.aaa.com/path", "https://x.aaa.com/path"));
-  EXPECT_FALSE(IsMatch("https://s.aaa.com/path", "https://s.aaa.com/bbb"));
-  EXPECT_FALSE(IsMatch("https://s.aaa.com/path", "https://s.aaa.com/"));
+  EXPECT_TRUE(
+      MatchesPattern("https://s.aaa.com/path", "https://s.aaa.com/path"));
+  EXPECT_TRUE(
+      MatchesPattern("https://s.aaa.com/path", "https://s.aaa.com/path/bbb"));
+  EXPECT_FALSE(
+      MatchesPattern("https://s.aaa.com/path", "http://s.aaa.com/path"));
+  EXPECT_FALSE(
+      MatchesPattern("https://s.aaa.com/path", "https://aaa.com/path"));
+  EXPECT_FALSE(
+      MatchesPattern("https://s.aaa.com/path", "https://x.aaa.com/path"));
+  EXPECT_FALSE(
+      MatchesPattern("https://s.aaa.com/path", "https://s.aaa.com/bbb"));
+  EXPECT_FALSE(MatchesPattern("https://s.aaa.com/path", "https://s.aaa.com/"));
 
   // Filter only ws and wss schemes.
-  EXPECT_TRUE(IsMatch("ws://ws.aaa.com", "ws://ws.aaa.com"));
-  EXPECT_TRUE(IsMatch("wss://ws.aaa.com", "wss://ws.aaa.com"));
-  EXPECT_FALSE(IsMatch("ws://ws.aaa.com", "http://ws.aaa.com"));
-  EXPECT_FALSE(IsMatch("ws://ws.aaa.com", "https://ws.aaa.com"));
-  EXPECT_FALSE(IsMatch("ws://ws.aaa.com", "ftp://ws.aaa.com"));
+  EXPECT_TRUE(MatchesPattern("ws://ws.aaa.com", "ws://ws.aaa.com"));
+  EXPECT_TRUE(MatchesPattern("wss://ws.aaa.com", "wss://ws.aaa.com"));
+  EXPECT_FALSE(MatchesPattern("ws://ws.aaa.com", "http://ws.aaa.com"));
+  EXPECT_FALSE(MatchesPattern("ws://ws.aaa.com", "https://ws.aaa.com"));
+  EXPECT_FALSE(MatchesPattern("ws://ws.aaa.com", "ftp://ws.aaa.com"));
 
   // Block an ip address.
-  EXPECT_TRUE(IsMatch("123.123.123.123", "http://123.123.123.123/"));
-  EXPECT_FALSE(IsMatch("123.123.123.123", "http://123.123.123.124/"));
+  EXPECT_TRUE(MatchesPattern("123.123.123.123", "http://123.123.123.123/"));
+  EXPECT_FALSE(MatchesPattern("123.123.123.123", "http://123.123.123.124/"));
 
   // Test exceptions to path prefixes, and most specific matches.
   base::Value::List blocked;
@@ -559,151 +572,157 @@ TEST_P(URLBlocklistManagerParamTest, BlocklistBasicCoverage) {
   // [scheme://][.]host[:port][/path][@query]
   // Scheme can be http, https, ftp, chrome, etc. This field is optional, and
   // must be followed by '://'.
-  EXPECT_TRUE(IsMatch("file://*", "file:///abc.txt"));
-  EXPECT_TRUE(IsMatch("file:*", "file:///usr/local/boot.txt"));
-  EXPECT_TRUE(IsMatch("https://*", "https:///abc.txt"));
-  EXPECT_TRUE(IsMatch("ftp://*", "ftp://ftp.txt"));
-  EXPECT_TRUE(IsMatch("chrome://*", "chrome:policy"));
-  EXPECT_TRUE(IsMatch("noscheme", "http://noscheme"));
+  EXPECT_TRUE(MatchesPattern("file://*", "file:///abc.txt"));
+  EXPECT_TRUE(MatchesPattern("file:*", "file:///usr/local/boot.txt"));
+  EXPECT_TRUE(MatchesPattern("https://*", "https:///abc.txt"));
+  EXPECT_TRUE(MatchesPattern("ftp://*", "ftp://ftp.txt"));
+  EXPECT_TRUE(MatchesPattern("chrome://*", "chrome:policy"));
+  EXPECT_TRUE(MatchesPattern("noscheme", "http://noscheme"));
   // Filter custom schemes.
-  EXPECT_TRUE(IsMatch("custom://*", "custom://example_app"));
-  EXPECT_TRUE(IsMatch("custom:*", "custom:example2_app"));
-  EXPECT_FALSE(IsMatch("custom://*", "customs://example_apps"));
-  EXPECT_FALSE(IsMatch("custom://*", "cust*://example_ap"));
-  EXPECT_FALSE(IsMatch("custom://*", "ecustom:example_app"));
-  EXPECT_TRUE(IsMatch("custom://*", "custom:///abc.txt"));
+  EXPECT_TRUE(MatchesPattern("custom://*", "custom://example_app"));
+  EXPECT_TRUE(MatchesPattern("custom:*", "custom:example2_app"));
+  EXPECT_FALSE(MatchesPattern("custom://*", "customs://example_apps"));
+  EXPECT_FALSE(MatchesPattern("custom://*", "cust*://example_ap"));
+  EXPECT_FALSE(MatchesPattern("custom://*", "ecustom:example_app"));
+  EXPECT_TRUE(MatchesPattern("custom://*", "custom:///abc.txt"));
   // Tests for custom scheme patterns that are not supported.
-  EXPECT_FALSE(IsMatch("wrong://app", "wrong://app"));
-  EXPECT_FALSE(IsMatch("wrong ://*", "wrong ://app"));
-  EXPECT_FALSE(IsMatch(" wrong:*", " wrong://app"));
+  EXPECT_FALSE(MatchesPattern("wrong://app", "wrong://app"));
+  EXPECT_FALSE(MatchesPattern("wrong ://*", "wrong ://app"));
+  EXPECT_FALSE(MatchesPattern(" wrong:*", " wrong://app"));
 
-  // Ommitting the scheme matches most standard schemes.
-  EXPECT_TRUE(IsMatch("example.com", "chrome:example.com"));
-  EXPECT_TRUE(IsMatch("example.com", "chrome://example.com"));
-  EXPECT_TRUE(IsMatch("example.com", "file://example.com/"));
-  EXPECT_TRUE(IsMatch("example.com", "ftp://example.com"));
-  EXPECT_TRUE(IsMatch("example.com", "http://example.com"));
-  EXPECT_TRUE(IsMatch("example.com", "https://example.com"));
-  EXPECT_TRUE(IsMatch("example.com", "ws://example.com"));
-  EXPECT_TRUE(IsMatch("example.com", "wss://example.com"));
+  // Omitting the scheme matches most standard schemes.
+  EXPECT_TRUE(MatchesPattern("example.com", "chrome:example.com"));
+  EXPECT_TRUE(MatchesPattern("example.com", "chrome://example.com"));
+  EXPECT_TRUE(MatchesPattern("example.com", "file://example.com/"));
+  EXPECT_TRUE(MatchesPattern("example.com", "ftp://example.com"));
+  EXPECT_TRUE(MatchesPattern("example.com", "http://example.com"));
+  EXPECT_TRUE(MatchesPattern("example.com", "https://example.com"));
+  EXPECT_TRUE(MatchesPattern("example.com", "ws://example.com"));
+  EXPECT_TRUE(MatchesPattern("example.com", "wss://example.com"));
 
-  // Some schemes are not matched when the scheme is ommitted.
-  EXPECT_FALSE(IsMatch("example.com", "about:example.com"));
-  EXPECT_FALSE(IsMatch("example.com/*", "filesystem:///something"));
+  // Some schemes are not matched when the scheme is omitted.
+  EXPECT_FALSE(MatchesPattern("example.com", "about:example.com"));
+  EXPECT_FALSE(MatchesPattern("example.com/*", "filesystem:///something"));
   if (use_standard_compliant_non_special_scheme_url_parsing_) {
     // When the feature is enabled, the host part in non-special URLs can be
     // recognized.
-    EXPECT_TRUE(IsMatch("example.com", "about://example.com"));
-    EXPECT_TRUE(IsMatch("example.com", "custom://example.com"));
-    EXPECT_TRUE(IsMatch("example", "custom://example"));
-    EXPECT_TRUE(IsMatch("example.com", "gopher://example.com"));
+    EXPECT_TRUE(MatchesPattern("example.com", "about://example.com"));
+    EXPECT_TRUE(MatchesPattern("example.com", "custom://example.com"));
+    EXPECT_TRUE(MatchesPattern("example", "custom://example"));
+    EXPECT_TRUE(MatchesPattern("example.com", "gopher://example.com"));
   } else {
-    EXPECT_FALSE(IsMatch("example.com", "about://example.com"));
-    EXPECT_FALSE(IsMatch("example.com", "about:example.com"));
-    EXPECT_FALSE(IsMatch("example", "custom://example"));
-    EXPECT_FALSE(IsMatch("example.com", "gopher://example.com"));
+    EXPECT_FALSE(MatchesPattern("example.com", "about://example.com"));
+    EXPECT_FALSE(MatchesPattern("example.com", "about:example.com"));
+    EXPECT_FALSE(MatchesPattern("example", "custom://example"));
+    EXPECT_FALSE(MatchesPattern("example.com", "gopher://example.com"));
   }
 
   // An optional '.' (dot) can prefix the host field to disable subdomain
   // matching, see below for details.
-  EXPECT_TRUE(IsMatch(".example.com", "http://example.com/path"));
-  EXPECT_FALSE(IsMatch(".example.com", "http://mail.example.com/path"));
-  EXPECT_TRUE(IsMatch("example.com", "http://mail.example.com/path"));
-  EXPECT_TRUE(IsMatch("ftp://.ftp.file", "ftp://ftp.file"));
-  EXPECT_FALSE(IsMatch("ftp://.ftp.file", "ftp://sub.ftp.file"));
+  EXPECT_TRUE(MatchesPattern(".example.com", "http://example.com/path"));
+  EXPECT_FALSE(MatchesPattern(".example.com", "http://mail.example.com/path"));
+  EXPECT_TRUE(MatchesPattern("example.com", "http://mail.example.com/path"));
+  EXPECT_TRUE(MatchesPattern("ftp://.ftp.file", "ftp://ftp.file"));
+  EXPECT_FALSE(MatchesPattern("ftp://.ftp.file", "ftp://sub.ftp.file"));
 
   // The host field is required, and is a valid hostname or an IP address. It
   // can also take the special '*' value, see below for details.
-  EXPECT_TRUE(IsMatch("*", "http://anything"));
-  EXPECT_TRUE(IsMatch("*", "ftp://anything"));
-  EXPECT_TRUE(IsMatch("*", "custom://anything"));
-  EXPECT_TRUE(IsMatch("host", "http://host:8080"));
-  EXPECT_FALSE(IsMatch("host", "file:///host"));
-  EXPECT_TRUE(IsMatch("10.1.2.3", "http://10.1.2.3:8080/path"));
+  EXPECT_TRUE(MatchesPattern("*", "http://anything"));
+  EXPECT_TRUE(MatchesPattern("*", "ftp://anything"));
+  EXPECT_TRUE(MatchesPattern("*", "custom://anything"));
+  EXPECT_TRUE(MatchesPattern("host", "http://host:8080"));
+  EXPECT_FALSE(MatchesPattern("host", "file:///host"));
+  EXPECT_TRUE(MatchesPattern("10.1.2.3", "http://10.1.2.3:8080/path"));
   // No host, will match nothing.
-  EXPECT_FALSE(IsMatch(":8080", "http://host:8080"));
-  EXPECT_FALSE(IsMatch(":8080", "http://:8080"));
+  EXPECT_FALSE(MatchesPattern(":8080", "http://host:8080"));
+  EXPECT_FALSE(MatchesPattern(":8080", "http://:8080"));
 
   // An optional port can come after the host. It must be a valid port value
   // from 1 to 65535.
-  EXPECT_TRUE(IsMatch("host:8080", "http://host:8080/path"));
-  EXPECT_TRUE(IsMatch("host:1", "http://host:1/path"));
+  EXPECT_TRUE(MatchesPattern("host:8080", "http://host:8080/path"));
+  EXPECT_TRUE(MatchesPattern("host:1", "http://host:1/path"));
   // Out of range port.
-  EXPECT_FALSE(IsMatch("host:65536", "http://host:65536/path"));
+  EXPECT_FALSE(MatchesPattern("host:65536", "http://host:65536/path"));
   // Star is not allowed in port numbers.
-  EXPECT_FALSE(IsMatch("example.com:*", "http://example.com"));
-  EXPECT_FALSE(IsMatch("example.com:*", "http://example.com:8888"));
+  EXPECT_FALSE(MatchesPattern("example.com:*", "http://example.com"));
+  EXPECT_FALSE(MatchesPattern("example.com:*", "http://example.com:8888"));
 
   // An optional path can come after port.
-  EXPECT_TRUE(IsMatch("host/path", "http://host:8080/path"));
-  EXPECT_TRUE(IsMatch("host/path/path2", "http://host/path/path2"));
-  EXPECT_TRUE(IsMatch("host/path", "http://host/path/path2"));
+  EXPECT_TRUE(MatchesPattern("host/path", "http://host:8080/path"));
+  EXPECT_TRUE(MatchesPattern("host/path/path2", "http://host/path/path2"));
+  EXPECT_TRUE(MatchesPattern("host/path", "http://host/path/path2"));
 
   // An optional query can come in the end, which is a set of key-value and
   // key-only tokens delimited by '&'. The key-value tokens are separated
   // by '='. A query token can optionally end with a '*' to indicate prefix
   // match. Token order is ignored during matching.
-  EXPECT_TRUE(IsMatch("host?q1=1&q2=2", "http://host?q2=2&q1=1"));
-  EXPECT_FALSE(IsMatch("host?q1=1&q2=2", "http://host?q2=1&q1=2"));
-  EXPECT_FALSE(IsMatch("host?q1=1&q2=2", "http://host?Q2=2&Q1=1"));
-  EXPECT_TRUE(IsMatch("host?q1=1&q2=2", "http://host?q2=2&q1=1&q3=3"));
-  EXPECT_TRUE(IsMatch("host?q1=1&q2=2*", "http://host?q2=21&q1=1&q3=3"));
+  EXPECT_TRUE(MatchesPattern("host?q1=1&q2=2", "http://host?q2=2&q1=1"));
+  EXPECT_FALSE(MatchesPattern("host?q1=1&q2=2", "http://host?q2=1&q1=2"));
+  EXPECT_FALSE(MatchesPattern("host?q1=1&q2=2", "http://host?Q2=2&Q1=1"));
+  EXPECT_TRUE(MatchesPattern("host?q1=1&q2=2", "http://host?q2=2&q1=1&q3=3"));
+  EXPECT_TRUE(MatchesPattern("host?q1=1&q2=2*", "http://host?q2=21&q1=1&q3=3"));
 
   // user:pass fields can be included but will be ignored
   // (e.g. http://user:pass@ftp.example.com/pub/bigfile.iso).
-  EXPECT_TRUE(IsMatch("host.com/path", "http://user:pass@host.com:8080/path"));
   EXPECT_TRUE(
-      IsMatch("ftp://host.com/path", "ftp://user:pass@host.com:8080/path"));
+      MatchesPattern("host.com/path", "http://user:pass@host.com:8080/path"));
+  EXPECT_TRUE(MatchesPattern("ftp://host.com/path",
+                             "ftp://user:pass@host.com:8080/path"));
 
   // Case sensitivity.
   // Scheme is case insensitive.
-  EXPECT_TRUE(IsMatch("suPPort://*", "support:example"));
-  EXPECT_TRUE(IsMatch("FILE://*", "file:example"));
-  EXPECT_TRUE(IsMatch("FILE://*", "FILE://example"));
-  EXPECT_TRUE(IsMatch("FtP:*", "ftp://example"));
-  EXPECT_TRUE(IsMatch("http://example.com", "HTTP://example.com"));
-  EXPECT_TRUE(IsMatch("HTTP://example.com", "http://example.com"));
+  EXPECT_TRUE(MatchesPattern("suPPort://*", "support:example"));
+  EXPECT_TRUE(MatchesPattern("FILE://*", "file:example"));
+  EXPECT_TRUE(MatchesPattern("FILE://*", "FILE://example"));
+  EXPECT_TRUE(MatchesPattern("FtP:*", "ftp://example"));
+  EXPECT_TRUE(MatchesPattern("http://example.com", "HTTP://example.com"));
+  EXPECT_TRUE(MatchesPattern("HTTP://example.com", "http://example.com"));
   // Host is case insensitive.
-  EXPECT_TRUE(IsMatch("http://EXAMPLE.COM", "http://example.com"));
-  EXPECT_TRUE(IsMatch("Example.com", "http://examplE.com/Path?Query=1"));
+  EXPECT_TRUE(MatchesPattern("http://EXAMPLE.COM", "http://example.com"));
+  EXPECT_TRUE(MatchesPattern("Example.com", "http://examplE.com/Path?Query=1"));
   // Path is case sensitive.
-  EXPECT_FALSE(IsMatch("example.com/Path", "http://example.com/path"));
-  EXPECT_TRUE(IsMatch("http://example.com/aB", "http://example.com/aB"));
-  EXPECT_FALSE(IsMatch("http://example.com/aB", "http://example.com/Ab"));
-  EXPECT_FALSE(IsMatch("http://example.com/aB", "http://example.com/ab"));
-  EXPECT_FALSE(IsMatch("http://example.com/aB", "http://example.com/AB"));
+  EXPECT_FALSE(MatchesPattern("example.com/Path", "http://example.com/path"));
+  EXPECT_TRUE(MatchesPattern("http://example.com/aB", "http://example.com/aB"));
+  EXPECT_FALSE(
+      MatchesPattern("http://example.com/aB", "http://example.com/Ab"));
+  EXPECT_FALSE(
+      MatchesPattern("http://example.com/aB", "http://example.com/ab"));
+  EXPECT_FALSE(
+      MatchesPattern("http://example.com/aB", "http://example.com/AB"));
   // Query is case sensitive.
-  EXPECT_FALSE(IsMatch("host/path?Query=1", "http://host/path?query=1"));
+  EXPECT_FALSE(MatchesPattern("host/path?Query=1", "http://host/path?query=1"));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, URLBlocklistManagerParamTest, ::testing::Bool());
 
 // Test for GetURLBlocklistState method.
 TEST_F(URLBlocklistManagerTest, UseBlocklistState) {
-  const policy::URLBlocklist::URLBlocklistState in_blocklist =
-      policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
-  const policy::URLBlocklist::URLBlocklistState in_allowlist =
-      policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
-  const policy::URLBlocklist::URLBlocklistState neutral_state =
-      policy::URLBlocklist::URLBlocklistState::URL_NEUTRAL_STATE;
-
+  using State = URLBlocklist::URLBlocklistState;
   // Test allowlist states.
-  EXPECT_EQ(in_allowlist, GetMatch("example.com", "http://example.com", true));
-  EXPECT_EQ(in_allowlist, GetMatch("http://*", "http://example.com", true));
-  EXPECT_EQ(in_allowlist, GetMatch("custom://*", "custom://app", true));
-  EXPECT_EQ(in_allowlist, GetMatch("custom:*", "custom://app/play", true));
-  EXPECT_EQ(in_allowlist, GetMatch("custom:*", "custom://app:8080", true));
+  EXPECT_EQ(State::URL_IN_ALLOWLIST, GetUrlBlocklistStateAfterAllowing(
+                                         "example.com", "http://example.com"));
+  EXPECT_EQ(State::URL_IN_ALLOWLIST, GetUrlBlocklistStateAfterAllowing(
+                                         "http://*", "http://example.com"));
+  EXPECT_EQ(State::URL_IN_ALLOWLIST,
+            GetUrlBlocklistStateAfterAllowing("custom://*", "custom://app"));
+  EXPECT_EQ(State::URL_IN_ALLOWLIST,
+            GetUrlBlocklistStateAfterAllowing("custom:*", "custom://app/play"));
+  EXPECT_EQ(State::URL_IN_ALLOWLIST,
+            GetUrlBlocklistStateAfterAllowing("custom:*", "custom://app:8080"));
   // Test blocklist states.
-  EXPECT_EQ(in_blocklist, GetMatch("ftp:*", "ftp://server", false));
+  EXPECT_EQ(State::URL_IN_BLOCKLIST,
+            GetUrlBlocklistStateAfterBlocking("ftp:*", "ftp://server"));
   // Test neutral states.
-  EXPECT_EQ(neutral_state, GetMatch("file:*", "http://example.com", true));
-  EXPECT_EQ(neutral_state, GetMatch("https://*", "http://example.com", false));
+  EXPECT_EQ(State::URL_NEUTRAL_STATE,
+            GetUrlBlocklistStateAfterAllowing("file:*", "http://example.com"));
+  EXPECT_EQ(State::URL_NEUTRAL_STATE, GetUrlBlocklistStateAfterBlocking(
+                                          "https://*", "http://example.com"));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Custom BlocklistSource implementation.
 // Custom BlocklistSource implementation.
-class CustomBlocklistSource : public policy::BlocklistSource {
+class CustomBlocklistSource : public BlocklistSource {
  public:
   CustomBlocklistSource() {}
   CustomBlocklistSource(const CustomBlocklistSource&) = delete;
