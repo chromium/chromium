@@ -61,6 +61,7 @@ executable("updater_test") {
 
 copy("signing") {
   sources = [
+    "$root_out_dir/msi_custom_action.dll",
     "$root_out_dir/tag.exe",
     "//chrome/tools/build/win/resedit.py",
     "//third_party/lzma_sdk/bin/win64/7zr.exe",
@@ -69,7 +70,10 @@ copy("signing") {
     "signing/sign.py",
   ]
 
-  deps = [ "//chrome/updater/tools:tag" ]
+  deps = [
+    "//chrome/updater/tools:tag",
+    "//chrome/updater/win/installer:msi_custom_action",
+  ]
 
   outputs = [ "$root_out_dir/UpdaterSigning/{{source_file_part}}" ]
 }
