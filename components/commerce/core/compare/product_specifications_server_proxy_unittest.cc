@@ -45,13 +45,38 @@ const std::string kSimpleResponse = R"(
               "mid": "/g/abcd"
             },
             "title": "Circle",
-            "summary": "Circle is round",
+            "summaryDescription": [
+              {
+                "text": "Circle is round",
+                "url": "http://example.com/circle/"
+              }
+            ],
             "imageUrl": "http://example.com/image.png",
             "productSpecificationValues": [
               {
                 "key": "100000",
-                "descriptions": [
-                  "Red"
+                "specificationDescriptions": [
+                  {
+                    "options": [
+                      {
+                        "description": [
+                          {
+                            "text": "Red",
+                            "url": "http://example.com/red/"
+                          }
+                        ]
+                      }
+                    ],
+                    "label": "Color",
+                    "alternativeText": "The circle color",
+                    "attributeId": "0"
+                  }
+                ],
+                "summaryDescription": [
+                  {
+                    "text": "Descriptions summary",
+                    "url": "http://example.com/descriptions/"
+                  }
                 ]
               }
             ]
@@ -131,9 +156,19 @@ TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
             ASSERT_EQ("Circle", spec->products[0].title);
             ASSERT_EQ("http://example.com/image.png",
                       spec->products[0].image_url.spec());
-            ASSERT_EQ("Red",
-                      spec->products[0].product_dimension_values[100000][0]);
-            ASSERT_EQ("Circle is round", spec->products[0].summary);
+            ASSERT_EQ("Circle is round", spec->products[0].summary[0].text);
+            ASSERT_EQ("http://example.com/circle/",
+                      spec->products[0].summary[0].url.spec());
+
+            const ProductSpecifications::Description& color_desc =
+                spec->products[0]
+                    .product_dimension_values[100000]
+                    .descriptions[0];
+            ASSERT_EQ("Color", color_desc.label);
+            ASSERT_EQ("The circle color", color_desc.alt_text);
+            ASSERT_EQ("Red", color_desc.options[0].descriptions[0].text);
+            ASSERT_EQ("http://example.com/red/",
+                      color_desc.options[0].descriptions[0].url.spec());
 
             looper->Quit();
           },
@@ -170,10 +205,22 @@ TEST_F(ProductSpecificationsServerProxyTest,
                      ASSERT_EQ("Circle", spec->products[0].title);
                      ASSERT_EQ("http://example.com/image.png",
                                spec->products[0].image_url.spec());
+                     ASSERT_EQ("Circle is round",
+                               spec->products[0].summary[0].text);
+                     ASSERT_EQ("http://example.com/circle/",
+                               spec->products[0].summary[0].url.spec());
+
+                     const ProductSpecifications::Description& color_desc =
+                         spec->products[0]
+                             .product_dimension_values[100000]
+                             .descriptions[0];
+                     ASSERT_EQ("Color", color_desc.label);
+                     ASSERT_EQ("The circle color", color_desc.alt_text);
+                     ASSERT_EQ("Red",
+                               color_desc.options[0].descriptions[0].text);
                      ASSERT_EQ(
-                         "Red",
-                         spec->products[0].product_dimension_values[100000][0]);
-                     ASSERT_EQ("Circle is round", spec->products[0].summary);
+                         "http://example.com/red/",
+                         color_desc.options[0].descriptions[0].url.spec());
 
                      looper->Quit();
                    },

@@ -770,8 +770,20 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
   ProductSpecifications::Product product;
   product.product_cluster_id = 12345L;
   product.title = "title";
-  product.product_dimension_values[1] = {"red"};
-  product.summary = "summary";
+
+  ProductSpecifications::Value value;
+  ProductSpecifications::Description desc;
+  ProductSpecifications::Description::Option option;
+  ProductSpecifications::DescriptionText desc_text;
+  desc_text.text = "red";
+  option.descriptions.push_back(desc_text);
+  desc.options.push_back(option);
+  value.descriptions.push_back(desc);
+  product.product_dimension_values[1] = value;
+
+  ProductSpecifications::DescriptionText product_desc;
+  product_desc.text = "summary";
+  product.summary.push_back(std::move(product_desc));
   specs.products.push_back(std::move(product));
 
   shopping_service_->SetResponseForGetProductSpecificationsForUrls(

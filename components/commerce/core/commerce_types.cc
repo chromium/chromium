@@ -17,10 +17,30 @@ ProductSpecifications::ProductSpecifications(const ProductSpecifications&) =
     default;
 ProductSpecifications::~ProductSpecifications() = default;
 
+ProductSpecifications::DescriptionText::DescriptionText() = default;
+ProductSpecifications::DescriptionText::DescriptionText(
+    const ProductSpecifications::DescriptionText&) = default;
+ProductSpecifications::DescriptionText::~DescriptionText() = default;
+
+ProductSpecifications::Description::Description() = default;
+ProductSpecifications::Description::Description(
+    const ProductSpecifications::Description&) = default;
+ProductSpecifications::Description::~Description() = default;
+
+ProductSpecifications::Description::Option::Option() = default;
+ProductSpecifications::Description::Option::Option(
+    const ProductSpecifications::Description::Option&) = default;
+ProductSpecifications::Description::Option::~Option() = default;
+
 ProductSpecifications::Product::Product() = default;
 ProductSpecifications::Product::Product(const ProductSpecifications::Product&) =
     default;
 ProductSpecifications::Product::~Product() = default;
+
+ProductSpecifications::Value::Value() = default;
+ProductSpecifications::Value::Value(const ProductSpecifications::Value&) =
+    default;
+ProductSpecifications::Value::~Value() = default;
 
 MerchantInfo::MerchantInfo() = default;
 MerchantInfo::MerchantInfo(const MerchantInfo&) = default;

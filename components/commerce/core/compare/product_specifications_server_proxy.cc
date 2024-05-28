@@ -23,20 +23,27 @@
 namespace commerce {
 
 namespace {
+const char kAltTextKey[] = "alternativeText";
+const char kDescriptionKey[] = "description";
+const char kGPCKey[] = "gpcId";
+const char kIdentifierKey[] = "identifier";
+const char kIdentifiersKey[] = "identifiers";
+const char kImageURLKey[] = "imageUrl";
+const char kKeyKey[] = "key";
+const char kLabelKey[] = "label";
+const char kMIDKey[] = "mid";
+const char kOptionsKey[] = "options";
 const char kProductSpecificationsKey[] = "productSpecifications";
 const char kProductSpecificationSectionsKey[] = "productSpecificationSections";
 const char kProductSpecificationValuesKey[] = "productSpecificationValues";
 const char kProductIdsKey[] = "productIds";
-const char kKeyKey[] = "key";
+const char kSpecificationDescriptionsKey[] = "specificationDescriptions";
+const char kSummaryKey[] = "summaryDescription";
 const char kTitleKey[] = "title";
 const char kTypeKey[] = "type";
-const char kIdentifierKey[] = "identifier";
-const char kIdentifiersKey[] = "identifiers";
-const char kGPCKey[] = "gpcId";
-const char kMIDKey[] = "mid";
-const char kImageURLKey[] = "imageUrl";
-const char kDescriptionsKey[] = "descriptions";
-const char kSummaryKey[] = "summary";
+
+const char kTextKey[] = "text";
+const char kUrlKey[] = "url";
 
 const char kGPCTypeName[] = "GLOBAL_PRODUCT_CLUSTER_ID";
 
@@ -77,6 +84,104 @@ constexpr net::NetworkTrafficAnnotationTag kShoppingListTrafficAnnotation =
             "chooses to engage with the feature."
           chrome_policy {}
         })");
+
+std::optional<ProductSpecifications::DescriptionText> ParseDescriptionText(
+    const base::Value::Dict* desc_text_dict) {
+  if (!desc_text_dict) {
+    return std::nullopt;
+  }
+
+  std::optional<ProductSpecifications::DescriptionText> description;
+  description.emplace();
+
+  const std::string* description_text = desc_text_dict->FindString(kTextKey);
+  const std::string* description_url = desc_text_dict->FindString(kUrlKey);
+
+  description->text = description_text ? *description_text : "";
+  description->url = description_url ? GURL(*description_url) : GURL();
+
+  return description;
+}
+
+std::optional<ProductSpecifications::Description> ParseDescription(
+    const base::Value::Dict* desc_dict) {
+  if (!desc_dict) {
+    return std::nullopt;
+  }
+
+  std::optional<ProductSpecifications::Description> description;
+  description.emplace();
+
+  const std::string* label = desc_dict->FindString(kLabelKey);
+  const std::string* alt_text = desc_dict->FindString(kAltTextKey);
+
+  description->label = label ? *label : "";
+  description->alt_text = alt_text ? *alt_text : "";
+
+  const base::Value::List* options = desc_dict->FindList(kOptionsKey);
+
+  if (options) {
+    for (const auto& option_value : *options) {
+      ProductSpecifications::Description::Option option;
+
+      if (!option_value.is_dict()) {
+        continue;
+      }
+
+      const base::Value::List* desc_list =
+          option_value.GetIfDict()->FindList(kDescriptionKey);
+      if (desc_list) {
+        for (const auto& list_item : *desc_list) {
+          std::optional<ProductSpecifications::DescriptionText> desc_text =
+              ParseDescriptionText(list_item.GetIfDict());
+          if (desc_text.has_value()) {
+            option.descriptions.push_back(desc_text.value());
+          }
+        }
+      }
+
+      description->options.push_back(std::move(option));
+    }
+  }
+
+  return description;
+}
+
+std::optional<ProductSpecifications::Value> ParseValue(
+    const base::Value::Dict* value_dict) {
+  if (!value_dict) {
+    return std::nullopt;
+  }
+
+  ProductSpecifications::Value value;
+
+  // Process value description
+  const base::Value::List* specs_descriptions_list =
+      value_dict->FindList(kSpecificationDescriptionsKey);
+  if (specs_descriptions_list) {
+    for (const auto& spec_description : *specs_descriptions_list) {
+      std::optional<ProductSpecifications::Description> description =
+          ParseDescription(spec_description.GetIfDict());
+      if (description.has_value()) {
+        value.descriptions.push_back(description.value());
+      }
+    }
+  }
+
+  const base::Value::List* summary_descriptions_list =
+      value_dict->FindList(kSummaryKey);
+  if (summary_descriptions_list) {
+    for (const auto& summary_item : *summary_descriptions_list) {
+      std::optional<ProductSpecifications::DescriptionText> summary =
+          ParseDescriptionText(summary_item.GetIfDict());
+      if (summary.has_value()) {
+        value.summary.push_back(summary.value());
+      }
+    }
+  }
+
+  return value;
+}
 
 }  // namespace
 
@@ -249,14 +354,21 @@ ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
       product.title = *title;
     }
 
+    const base::Value::List* summary_list =
+        spec.GetDict().FindList(kSummaryKey);
+    if (summary_list) {
+      for (const auto& summary_item : *summary_list) {
+        std::optional<ProductSpecifications::DescriptionText> summary =
+            ParseDescriptionText(summary_item.GetIfDict());
+        if (summary.has_value()) {
+          product.summary.push_back(summary.value());
+        }
+      }
+    }
+
     const std::string* image_url = spec.GetDict().FindString(kImageURLKey);
     if (image_url) {
       product.image_url = GURL(*image_url);
-    }
-
-    const std::string* summary = spec.GetDict().FindString(kSummaryKey);
-    if (summary) {
-      product.summary = *summary;
     }
 
     const base::Value::List* product_spec_values =
@@ -278,18 +390,12 @@ ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
         continue;
       }
 
-      const base::Value::List* descriptions_list =
-          spec_value.GetDict().FindList(kDescriptionsKey);
-      if (!descriptions_list) {
-        continue;
-      }
+      std::optional<ProductSpecifications::Value> value_object =
+          ParseValue(spec_value.GetIfDict());
 
-      std::vector<std::string> descriptions;
-      for (const base::Value& description : *descriptions_list) {
-        descriptions.push_back(description.GetString());
+      if (value_object.has_value()) {
+        product.product_dimension_values[value_id] = value_object.value();
       }
-
-      product.product_dimension_values[value_id] = descriptions;
     }
 
     product_specs->products.push_back(product);

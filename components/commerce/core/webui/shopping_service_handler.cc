@@ -191,10 +191,22 @@ shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
     product_ptr->product_cluster_id = product.product_cluster_id;
     product_ptr->title = product.title;
     product_ptr->image_url = product.image_url;
-    product_ptr->summary = product.summary;
+    if (product.summary.size() > 0) {
+      product_ptr->summary = product.summary[0].text;
+    }
 
     for (const auto& [dimen_id, value] : product.product_dimension_values) {
-      product_ptr->product_dimension_values[dimen_id] = value;
+      std::vector<std::string> descriptions;
+
+      for (const auto& description : value.descriptions) {
+        for (const auto& option : description.options) {
+          for (const auto& description_text : option.descriptions) {
+            descriptions.push_back(description_text.text);
+          }
+        }
+      }
+
+      product_ptr->product_dimension_values[dimen_id] = descriptions;
     }
 
     specs_ptr->products.push_back(std::move(product_ptr));
