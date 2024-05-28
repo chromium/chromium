@@ -116,6 +116,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      isInitialSize: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       showSelectedTextContextMenu: {
         type: Boolean,
         value: false,
@@ -148,6 +152,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   // Whether the selection overlay is its initial size, or has changed size.
   private isResized: boolean = false;
+  private isInitialSize: boolean = true;
   private showSelectedTextContextMenu: boolean;
   private showDetectedTextContextMenu: boolean;
   // Location at which to show the context menus.
@@ -556,6 +561,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.isResized =
         Math.abs(newRect.height - this.initialHeight) >= RESIZE_THRESHOLD ||
         Math.abs(newRect.width - this.initialWidth) >= RESIZE_THRESHOLD;
+    if (this.isResized) {
+      this.isInitialSize = false;
+    }
   }
 
   private handleSelectionElementsResize() {
