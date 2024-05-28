@@ -203,14 +203,13 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
                                  int num_temporal_layers,
                                  PixelFormat format) {
   int iframe_interval = config.gop_length.value_or(kDefaultGOPLength);
+  int profile = static_cast<int>(GetAndroidVideoProfile(
+      config.output_profile, config.is_constrained_h264));
   auto mime = MediaCodecUtil::CodecToAndroidMimeType(
       VideoCodecProfileToVideoCodec(config.output_profile));
   MediaFormatPtr result(AMediaFormat_new());
   AMediaFormat_setString(result.get(), AMEDIAFORMAT_KEY_MIME, mime.c_str());
-  // TODO(crbug.com/343199623): Uncomment once we also set level.
-  // int profile = static_cast<int>(GetAndroidVideoProfile(
-  //     config.output_profile, config.is_constrained_h264));
-  // AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PROFILE, profile);
+  AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PROFILE, profile);
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_WIDTH,
                         frame_size.width());
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_HEIGHT,
