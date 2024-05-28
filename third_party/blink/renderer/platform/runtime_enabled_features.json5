@@ -1456,9 +1456,6 @@
       status: "experimental",
     },
     {
-      name: "ExtraWebGLVideoTextureMetadata",
-    },
-    {
       name: "EyeDropperAPI",
       status: {
         // EyeDropper UI is available on ChromeOS, Linux (x11), Mac, and Win.

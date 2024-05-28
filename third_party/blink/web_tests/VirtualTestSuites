@@ -682,15 +682,6 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
-  {
-    "prefix": "webgl-extra-video-texture-metadata",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/webgl/video-metadata"],
-    "exclusive_tests": ["fast/webgl/video-metadata/texImage-video-last-uploaded-metadata.html"],
-    "args": ["--enable-blink-features=ExtraWebGLVideoTextureMetadata",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
 
   "The Wasm code cache test requires access to V8 internals, so only the",
   "virtual test should be run. Additionally the tiering budget is reduced to",

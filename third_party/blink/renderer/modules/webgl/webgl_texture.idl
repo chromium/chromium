@@ -28,8 +28,4 @@
 [
     Exposed=(Window,Worker)
 ] interface WebGLTexture : WebGLObject {
-    [RuntimeEnabled=ExtraWebGLVideoTextureMetadata] readonly attribute unsigned long lastUploadedVideoWidth;
-    [RuntimeEnabled=ExtraWebGLVideoTextureMetadata] readonly attribute unsigned long lastUploadedVideoHeight;
-    [RuntimeEnabled=ExtraWebGLVideoTextureMetadata] readonly attribute double lastUploadedVideoTimestamp;
-    [RuntimeEnabled=ExtraWebGLVideoTextureMetadata] readonly attribute boolean lastUploadedVideoFrameWasSkipped;
 };
