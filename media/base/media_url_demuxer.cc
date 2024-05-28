@@ -56,7 +56,7 @@ void MediaUrlDemuxer::ForwardDurationChangeToDemuxerHost(
 }
 
 void MediaUrlDemuxer::SetHeaders(
-    const base::flat_map<std::string, std::string>& headers) {
+    base::flat_map<std::string, std::string> headers) {
   params_.headers = std::move(headers);
 }
 

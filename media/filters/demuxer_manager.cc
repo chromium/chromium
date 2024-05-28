@@ -402,7 +402,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
   const bool media_player_hls =
       hls_fallback_ == HlsFallbackImplementation::kMediaPlayer;
   if (media_player_hls || client_->IsMediaPlayerRendererClient()) {
-    SetDemuxer(CreateMediaUrlDemuxer(media_player_hls, headers));
+    SetDemuxer(CreateMediaUrlDemuxer(media_player_hls, std::move(headers)));
     return std::move(on_demuxer_created)
         .Run(demuxer_.get(), Pipeline::StartType::kNormal,
              /*is_streaming = */ false,
@@ -633,7 +633,7 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateMediaUrlDemuxer(
           media_task_runner_, loaded_url_, site_for_cookies_, top_frame_origin_,
           has_storage_access_, allow_media_player_renderer_credentials_,
           expect_hls_content);
-  media_url_demuxer->SetHeaders(headers);
+  media_url_demuxer->SetHeaders(std::move(headers));
   return media_url_demuxer;
 }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -68,8 +68,7 @@ class MEDIA_EXPORT MediaResource {
 
   // This method is only used with the MediaUrlDemuxer, to set headers coming
   // from media url params.
-  virtual void SetHeaders(
-      const base::flat_map<std::string, std::string>& headers);
+  virtual void SetHeaders(base::flat_map<std::string, std::string> headers);
 };
 
 }  // namespace media

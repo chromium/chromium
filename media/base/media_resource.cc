@@ -42,7 +42,7 @@ void MediaResource::ForwardDurationChangeToDemuxerHost(
 }
 
 void MediaResource::SetHeaders(
-    const base::flat_map<std::string, std::string>& headers) {
+    base::flat_map<std::string, std::string> headers) {
   // Only implemented by MediaUrlDemuxer, for the MojoRendererService.
   NOTREACHED_IN_MIGRATION();
 }

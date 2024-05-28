@@ -2928,7 +2928,7 @@ void WebMediaPlayerImpl::StartPipeline() {
       load_type_ == kLoadTypeMediaSource, preload_, needs_first_frame_,
       base::BindOnce(&WebMediaPlayerImpl::OnDemuxerCreated,
                      base::Unretained(this)),
-      headers);
+      std::move(headers));
 
   if (!create_demuxer_error.is_ok()) {
     return OnError(std::move(create_demuxer_error));
