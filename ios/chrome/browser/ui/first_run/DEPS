@@ -15,4 +15,8 @@ specific_include_rules = {
   "enterprise_loading_screen_egtest\.mm": [
     "+components/policy/test_support/embedded_policy_test_server.h",
   ],
+  "first_run_test_case_base\.mm": [
+    "+ios/chrome/browser/ui/authentication/signin_matchers.h",
+    "+ios/chrome/browser/ui/authentication/signin_earl_grey.h",
+  ],
 }

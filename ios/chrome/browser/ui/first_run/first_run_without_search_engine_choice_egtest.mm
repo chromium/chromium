@@ -4,21 +4,15 @@
 
 #import "base/i18n/number_formatting.h"
 #import "base/ios/ios_util.h"
-#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
-#import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
-#import "components/search_engines/prepopulated_engines.h"
-#import "components/search_engines/search_engines_switches.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "components/sync/service/sync_prefs.h"
-#import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -34,8 +28,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/first_run/first_run_test_case_base.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
@@ -56,25 +49,10 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
+#import "components/unified_consent/pref_names.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 
 namespace {
-
-// Type of FRE sign-in screen intent.
-typedef NS_ENUM(NSUInteger, FRESigninIntent) {
-  // FRE without enterprise policy.
-  FRESigninIntentRegular,
-  // FRE without forced sign-in policy.
-  FRESigninIntentSigninForcedByPolicy,
-  // FRE without disabled sign-in policy.
-  FRESigninIntentSigninDisabledByPolicy,
-  // FRE with an enterprise policy which is not explicitly handled by another
-  // entry.
-  FRESigninIntentSigninWithPolicy,
-  // FRE with the SyncDisabled enterprise policy.
-  FRESigninIntentSigninWithSyncDisabledPolicy,
-  // FRE with no UMA link in the first screen.
-  FRESigninIntentSigninWithUMAReportingDisabledPolicy,
-};
 
 NSString* const kSyncPassphrase = @"hello";
 
@@ -84,296 +62,10 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                     grey_sufficientlyVisible(), nil);
 }
 
-// Dismisses the remaining screens in FRE after the default browser screen.
-void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
-  id<GREYMatcher> buttonMatcher = grey_allOf(
-      grey_ancestor(grey_accessibilityID(
-          first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
-      grey_accessibilityTrait(UIAccessibilityTraitStaticText),
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
-      nil);
-
-  [[[EarlGrey selectElementWithMatcher:buttonMatcher]
-      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-
-  if ([FirstRunAppInterface isOmniboxPositionChoiceEnabled]) {
-    id<GREYMatcher> omniboxPositionScreenPrimaryButton = grey_allOf(
-        grey_ancestor(grey_accessibilityID(
-            first_run::
-                kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier)),
-        grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
-        nil);
-
-    [[[EarlGrey selectElementWithMatcher:omniboxPositionScreenPrimaryButton]
-        assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-  }
-}
-
 }  // namespace
 
-// Tests first run stages
-@interface FirstRunTestCase : ChromeTestCase
-
-@end
-
-@implementation FirstRunTestCase
-
-- (void)setUp {
-  [[self class] testForStartup];
-  [super setUp];
-
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
-
-  // Because this test suite changes the state of Sync passwords, wait
-  // until the engine is initialized before startup.
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
-}
-
-- (void)tearDown {
-  [SigninEarlGrey signOut];
-
-  // Tests that use `addBookmarkWithSyncPassphrase` must ensure that Sync
-  // data is cleared before tear down to reset the Sync password state.
-  [ChromeEarlGrey
-      waitForSyncEngineInitialized:NO
-                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
-  [ChromeEarlGrey clearFakeSyncServerData];
-
-  // Clear sync prefs for data types.
-  [ChromeEarlGrey
-      clearUserPrefWithName:syncer::SyncPrefs::GetPrefNameForTypeForTesting(
-                                syncer::UserSelectableType::kTabs)];
-  [ChromeEarlGrey
-      clearUserPrefWithName:syncer::SyncPrefs::GetPrefNameForTypeForTesting(
-                                syncer::UserSelectableType::kHistory)];
-
-  // Clear MSBB consent.
-  [ChromeEarlGrey
-      clearUserPrefWithName:unified_consent::prefs::
-                                kUrlKeyedAnonymizedDataCollectionEnabled];
-
-  [super tearDown];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  config.additional_args.push_back(std::string("-") +
-                                   test_switches::kSignInAtStartup);
-  config.additional_args.push_back("-FirstRunForceEnabled");
-  config.additional_args.push_back("true");
-  // Relaunches the app at each test to rewind the startup state.
-  config.relaunch_policy = ForceRelaunchByKilling;
-
-  return config;
-}
-
-#pragma mark - Helper
-
-- (void)relaunchAppWithBrowserSigninMode:(BrowserSigninMode)mode {
-  std::string xmlPolicyValue("<integer>");
-  xmlPolicyValue += base::NumberToString(static_cast<int>(mode));
-  xmlPolicyValue += "</integer>";
-  [self relaunchAppWithPolicyKey:policy::key::kBrowserSignin
-                  xmlPolicyValue:xmlPolicyValue];
-}
-
-// Sets policy value and relaunches the app.
-- (void)relaunchAppWithPolicyKey:(std::string)policyKey
-                  xmlPolicyValue:(std::string)xmlPolicyValue {
-  std::string policyData = std::string("<dict><key>") + policyKey + "</key>" +
-                           xmlPolicyValue + "</dict>";
-  // Configure the policy to force sign-in.
-  AppLaunchConfiguration config = self.appConfigurationForTestCase;
-  config.additional_args.push_back(
-      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
-  config.additional_args.push_back(policyData);
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-}
-
-// Checks that the sign-in screen for enterprise is displayed.
-- (void)verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
-    (FRESigninIntent)FRESigninIntent {
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
-  NSString* title = nil;
-  NSString* subtitle = nil;
-  NSArray* disclaimerStrings = nil;
-  switch (FRESigninIntent) {
-    case FRESigninIntentRegular:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      subtitle = l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
-      ];
-      break;
-    case FRESigninIntentSigninForcedByPolicy:
-      title =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED);
-      subtitle = l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED);
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
-      ];
-      break;
-    case FRESigninIntentSigninDisabledByPolicy:
-      if ([ChromeEarlGrey isIPadIdiom]) {
-        title =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD);
-      } else {
-        title = l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE);
-      }
-      subtitle =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE);
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
-      ];
-      break;
-    case FRESigninIntentSigninWithSyncDisabledPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      // Note: With SyncDisabled, the "benefits" string is not used.
-      subtitle =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
-      ];
-      break;
-    case FRESigninIntentSigninWithPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      subtitle = l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
-      ];
-      break;
-    case FRESigninIntentSigninWithUMAReportingDisabledPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      subtitle = l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-      ];
-      break;
-  }
-  // Validate the Title text.
-  [[self elementInteractionWithGreyMatcher:grey_allOf(
-                                               grey_text(title),
-                                               grey_sufficientlyVisible(), nil)
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      assertWithMatcher:grey_notNil()];
-  // Validate the Subtitle text.
-  [[self elementInteractionWithGreyMatcher:grey_allOf(
-                                               grey_text(subtitle),
-                                               grey_sufficientlyVisible(), nil)
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      assertWithMatcher:grey_notNil()];
-  // Validate the Managed text.
-  [self verifyDisclaimerFooterWithStrings:disclaimerStrings];
-}
-
-// Checks the disclaimer footer with the list of strings. `strings` can contain
-// "BEGIN_LINK" and "END_LINK" for URL tags.
-- (void)verifyDisclaimerFooterWithStrings:(NSArray*)strings {
-  NSString* disclaimerText = [strings componentsJoinedByString:@" "];
-  // Remove URL tags.
-  disclaimerText =
-      [disclaimerText stringByReplacingOccurrencesOfString:@"BEGIN_LINK"
-                                                withString:@""];
-  disclaimerText =
-      [disclaimerText stringByReplacingOccurrencesOfString:@"END_LINK"
-                                                withString:@""];
-  // Check the footer.
-  [[self elementInteractionWithGreyMatcher:grey_allOf(
-                                               grey_text(disclaimerText),
-                                               grey_sufficientlyVisible(), nil)
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      assertWithMatcher:grey_notNil()];
-}
-
-// Checks that the default browser screen is displayed.
-- (void)verifyDefaultBrowserIsDisplayed {
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(
-              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-- (void)acceptSyncOrHistory {
-  // Accept the history opt-in screen.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
-      performAction:grey_tap()];
-}
-
-- (void)verifySyncOrHistoryEnabled:(BOOL)enabled {
-  if (enabled) {
-    GREYAssertTrue([ChromeEarlGrey isSyncHistoryDataTypeSelected],
-                   @"History sync was unexpectedly disabled.");
-  } else {
-    GREYAssertFalse([ChromeEarlGrey isSyncHistoryDataTypeSelected],
-                    @"History sync was unexpectedly enabled.");
-  }
-}
-
-// Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
-// scroll.
-- (GREYElementInteraction*)
-    elementInteractionWithGreyMatcher:(id<GREYMatcher>)matcher
-                 scrollViewIdentifier:(NSString*)scrollViewIdentifier {
-  id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(scrollViewIdentifier);
-  // Needs to scroll slowly to make sure to not miss a cell if it is not
-  // currently on the screen. It should not be bigger than the visible part
-  // of the collection view.
-  id<GREYAction> searchAction = grey_scrollInDirection(kGREYDirectionDown, 200);
-  return [[EarlGrey selectElementWithMatcher:matcher]
-         usingSearchAction:searchAction
-      onElementWithMatcher:scrollViewMatcher];
-}
-
-@end
-
 // Test first run stages without search engine choice
-@interface FirstRunWithoutSearchEngineChoiceTestCase : FirstRunTestCase
+@interface FirstRunWithoutSearchEngineChoiceTestCase : FirstRunTestCaseBase
 
 @end
 
@@ -657,7 +349,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
+  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -685,7 +377,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
+  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -717,7 +409,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is off.
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
+  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
 }
@@ -770,7 +462,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
+  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
   // Close settings.
@@ -807,7 +499,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
+  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
   // Close settings.
@@ -838,7 +530,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
+  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
 }
@@ -926,7 +618,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeSupervisedIdentity];
   // Check sync is on.
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
+  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -1605,124 +1297,4 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       assertWithMatcher:grey_notNil()];
 }
 
-@end
-
-// Tests first run stages with search engine choice
-@interface FirstRunWithSearchEngineChoiceTestCase : FirstRunTestCase
-
-@end
-
-@implementation FirstRunWithSearchEngineChoiceTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // Need to use `switches::kEeaListCountryOverride` as the country to list all
-  // the search engines. This is to make sure the more button appears.
-  config.additional_args.push_back(
-      "--" + std::string(switches::kSearchEngineChoiceCountry) + "=" +
-      switches::kEeaListCountryOverride);
-  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
-  config.additional_args.push_back(
-      "--" + std::string(switches::kForceSearchEngineChoiceScreen));
-  config.additional_args.push_back("true");
-  return config;
-}
-
-- (void)setUp {
-  [super setUp];
-  // Make sure the search engine has been reset, to avoid any issues if it was
-  // not by a previous test.
-  [SettingsAppInterface resetSearchEngine];
-}
-
-- (void)tearDown {
-  // Reset the search engine for any other tests.
-  [SettingsAppInterface resetSearchEngine];
-  [super tearDown];
-}
-
-#pragma mark - Tests
-
-// Tests that the Search Engine Choice screen is displayed, that the primary
-// button is correctly updated when the user selects a search engine then
-// scrolls down and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenSelectThenScroll {
-  // Skips sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      performAction:grey_tap()];
-  // Checks that the choice screen is shown
-  [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
-
-  // Verifies that the primary button is initially the "More" button.
-  id<GREYMatcher> moreButtonMatcher =
-      grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
-  [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-      assertWithMatcher:grey_allOf(grey_enabled(), grey_notNil(), nil)];
-
-  // Selects a search engine.
-  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
-      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
-  [SearchEngineChoiceEarlGreyUI
-      selectSearchEngineCellWithName:searchEngineToSelect
-                     scrollDirection:kGREYDirectionDown
-                              amount:50];
-  // Taps the primary button. This scrolls the table down to the bottom.
-  [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-  // Verify that the "More" button has been removed.
-  [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-      assertWithMatcher:grey_nil()];
-  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
-  [SearchEngineChoiceEarlGreyUI
-      verifyDefaultSearchEngineSetting:searchEngineToSelect];
-}
-
-// Tests that the Search Engine Choice screen is displayed, that the
-// primary button is correctly updated when the user scrolls down then selects a
-// search engine and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenScrollThenSelect {
-  // Skips sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      performAction:grey_tap()];
-  // Checks that the choice screen is shown
-  [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
-
-  // Verifies that the primary button is initially the "More" button.
-  id<GREYMatcher> moreButtonMatcher =
-      grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
-  [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-      assertWithMatcher:grey_allOf(grey_enabled(), grey_notNil(), nil)];
-
-  // Taps the primary button. This scrolls the table down to the bottom.
-  [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-
-  // Verifies that the primary button is now the disabled "Set as Default"
-  // button.
-  id<GREYMatcher> primaryActionButtonMatcher =
-      grey_accessibilityID(kSetAsDefaultSearchEngineIdentifier);
-  [[EarlGrey selectElementWithMatcher:primaryActionButtonMatcher]
-      assertWithMatcher:grey_allOf(grey_not(grey_enabled()), grey_notNil(),
-                                   nil)];
-
-  // Selects a search engine.
-  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
-      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
-  [SearchEngineChoiceEarlGreyUI
-      selectSearchEngineCellWithName:searchEngineToSelect
-                     scrollDirection:kGREYDirectionUp
-                              amount:300];
-  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
-
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
-  [SearchEngineChoiceEarlGreyUI
-      verifyDefaultSearchEngineSetting:searchEngineToSelect];
-}
 @end

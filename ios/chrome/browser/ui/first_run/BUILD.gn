@@ -180,7 +180,10 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "enterprise_loading_screen_egtest.mm",
-    "first_run_egtest.mm",
+    "first_run_search_engine_choice_egtest.mm",
+    "first_run_test_case_base.h",
+    "first_run_test_case_base.mm",
+    "first_run_without_search_engine_choice_egtest.mm",
   ]
   deps = [
     ":constants",
