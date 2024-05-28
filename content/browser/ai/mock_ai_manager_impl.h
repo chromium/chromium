@@ -9,22 +9,21 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 
 namespace content {
 
 // The mock implementation of `blink::mojom::ModelManager` used for testing.
 class MockAIManagerImpl : public content::DocumentUserData<MockAIManagerImpl>,
-                          public blink::mojom::ModelManager {
+                          public blink::mojom::AIManager {
  public:
   MockAIManagerImpl(const MockAIManagerImpl&) = delete;
   MockAIManagerImpl& operator=(const MockAIManagerImpl&) = delete;
 
   ~MockAIManagerImpl() override;
 
-  static void Create(
-      content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ModelManager> receiver);
+  static void Create(content::RenderFrameHost* render_frame_host,
+                     mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
  private:
   friend class DocumentUserData<MockAIManagerImpl>;
@@ -33,18 +32,17 @@ class MockAIManagerImpl : public content::DocumentUserData<MockAIManagerImpl>,
   explicit MockAIManagerImpl(content::RenderFrameHost* rfh);
 
   // `blink::mojom::ModelManager` implementation.
-  void CanCreateGenericSession(
-      CanCreateGenericSessionCallback callback) override;
+  void CanCreateTextSession(CanCreateTextSessionCallback callback) override;
 
-  void CreateGenericSession(
-      mojo::PendingReceiver<::blink::mojom::ModelGenericSession> receiver,
-      blink::mojom::ModelGenericSessionSamplingParamsPtr sampling_params,
-      CreateGenericSessionCallback callback) override;
+  void CreateTextSession(
+      mojo::PendingReceiver<::blink::mojom::AITextSession> receiver,
+      blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+      CreateTextSessionCallback callback) override;
 
-  void GetDefaultGenericSessionSamplingParams(
-      GetDefaultGenericSessionSamplingParamsCallback callback) override;
+  void GetDefaultTextSessionSamplingParams(
+      GetDefaultTextSessionSamplingParamsCallback callback) override;
 
-  mojo::Receiver<blink::mojom::ModelManager> receiver_{this};
+  mojo::Receiver<blink::mojom::AIManager> receiver_{this};
 };
 
 }  // namespace content

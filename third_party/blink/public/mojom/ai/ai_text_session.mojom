@@ -51,9 +51,9 @@ interface ModelStreamingResponder {
 };
 
 // A session for a model that allows executing an input and streaming the output.
-interface ModelGenericSession {
-  // Executes model on the given input.
-  Execute(string input, pending_remote<ModelStreamingResponder> pending_responder);
+interface AITextSession {
+  // Prompts the model on the given input.
+  Prompt(string input, pending_remote<ModelStreamingResponder> pending_responder);
   // Destroys the session.
   Destroy();
 };

@@ -10,7 +10,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 
 using ::testing::AtMost;
 using ::testing::NiceMock;
@@ -42,8 +42,7 @@ TEST_F(AIManagerImplTest, NoUAFWithInvalidOnDeviceModelPath) {
       optimization_guide::switches::kOnDeviceModelExecutionOverride,
       "invalid-on-device-model-file-path");
 
-  base::MockCallback<
-      blink::mojom::ModelManager::CanCreateGenericSessionCallback>
+  base::MockCallback<blink::mojom::AIManager::CanCreateTextSessionCallback>
       callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(AtMost(1))
@@ -52,7 +51,7 @@ TEST_F(AIManagerImplTest, NoUAFWithInvalidOnDeviceModelPath) {
 
   AIManagerImpl* ai_manager =
       AIManagerImpl::GetOrCreateForCurrentDocument(main_rfh());
-  ai_manager->CanCreateGenericSession(callback.Get());
+  ai_manager->CanCreateTextSession(callback.Get());
 
   // The callback may still be pending, delete the WebContents and destroy the
   // associated RFH, which should not result in a UAF.

@@ -14,7 +14,7 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom-shared.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
 
 using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
@@ -84,7 +84,7 @@ void AITextSession::ModelExecutionCallback(
   }
 }
 
-void AITextSession::Execute(
+void AITextSession::Prompt(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
