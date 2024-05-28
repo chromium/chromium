@@ -235,7 +235,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         setHasOptionsMenu(true);
 
         if (shouldReplaceSyncSettingsWithAccountSettings()) {
-            getActivity().setTitle(R.string.account_section_header);
+            // Set title with an empty string to have no title on the top of the page.
+            getActivity().setTitle("");
 
             SettingsUtils.addPreferencesFromResource(
                     this, R.xml.unified_account_settings_preferences);
