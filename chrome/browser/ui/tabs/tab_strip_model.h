@@ -865,6 +865,10 @@ class TabStripModel : public TabGroupController {
                             bool pin,
                             bool active);
 
+  // Updates the `contents_data_` and sends out observer notifications for
+  // removing an existing tab in  the tabstrip.
+  std::unique_ptr<tabs::TabModel> RemoveTabFromIndexImpl(int index);
+
   // Sends group notifications for a tab at `index` based on its initial_group
   // and `final_group` and updates the `group_model_`.
   void TabGroupStateChanged(
@@ -880,8 +884,8 @@ class TabStripModel : public TabGroupController {
   void AddTabToGroupModel(const tab_groups::TabGroupId& group);
 
   // Checks if the `contents_data_` is in a valid order. This checks for
-  // pinned tabs placement and group contiguity.
-  bool ValidateTabStripModel();
+  // pinned tabs placement, group contiguity and selected tabs validity.
+  void ValidateTabStripModel();
 
   // Changes the pinned state of the tab at `index`, moving it in the process if
   // necessary. Returns the new index of the tab.
