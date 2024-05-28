@@ -34,6 +34,7 @@ storage::FileSystemContext* GetFileSystemContextForProfile(Profile* profile) {
 
 void GetRecentFiles(Profile* profile,
                     ash::RecentSource::FileType file_type,
+                    fmp::VolumeType volume_type,
                     ash::RecentModel::GetRecentFilesCallback callback) {
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       GetFileSystemContextForProfile(profile);
@@ -50,8 +51,7 @@ void GetRecentFiles(Profile* profile,
   options.file_type = file_type;
   options.scan_timeout = kScanTimeout,
   options.source_specs = {
-      ash::RecentSourceSpec{.volume_type = fmp::VolumeType::kDownloads},
-      ash::RecentSourceSpec{.volume_type = fmp::VolumeType::kDrive},
+      ash::RecentSourceSpec{.volume_type = volume_type},
   };
 
   model->GetRecentFiles(file_system_context.get(), GURL(), /*query=*/"",
@@ -109,6 +109,7 @@ void PickerFileSuggester::GetRecentLocalImages(
     RecentLocalImagesCallback callback) {
   GetRecentFiles(
       profile_, ash::RecentSource::FileType::kImage,
+      fmp::VolumeType::kDownloads,
       base::BindOnce(&PickerFileSuggester::OnGetRecentLocalImages,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -116,7 +117,7 @@ void PickerFileSuggester::GetRecentLocalImages(
 void PickerFileSuggester::GetRecentDriveFiles(
     RecentDriveFilesCallback callback) {
   GetRecentFiles(
-      profile_, ash::RecentSource::FileType::kAll,
+      profile_, ash::RecentSource::FileType::kAll, fmp::VolumeType::kDrive,
       base::BindOnce(&PickerFileSuggester::OnGetRecentDriveFiles,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -127,11 +128,8 @@ void PickerFileSuggester::OnGetRecentLocalImages(
   std::vector<LocalFile> files;
   files.reserve(recent_files.size());
   for (const ash::RecentFile& recent_file : recent_files) {
-    const storage::FileSystemURL& url = recent_file.url();
-    if (url.type() == storage::kFileSystemTypeLocal) {
-      const base::FilePath& path = url.path();
-      files.push_back({.title = app_list::GetFileTitle(path), .path = path});
-    }
+    const base::FilePath& path = recent_file.url().path();
+    files.push_back({.title = app_list::GetFileTitle(path), .path = path});
   }
   std::move(callback).Run(std::move(files));
 }
