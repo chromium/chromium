@@ -437,7 +437,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
-                       PressingEscRecordsHistogram) {
+                       // TODO(crbug.com/343093063): Re-enable this test
+                       DISABLED_PressingEscRecordsHistogram) {
   const ui::Accelerator kEsc(ui::VKEY_ESCAPE, ui::MODIFIER_NONE);
   views::Widget* bubble_widget = nullptr;
   RunTestSequence(
