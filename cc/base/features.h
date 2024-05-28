@@ -5,6 +5,8 @@
 #ifndef CC_BASE_FEATURES_H_
 #define CC_BASE_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -188,10 +190,8 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBatchedCopySharedImage);
 // a frame while scrolling without any input events. Late arriving events are
 // then enqueued for the next VSync.
 //
-// When this feature is enabled we will instead wait until
-// `kWaitForLateScrollEventsDeadlineRatio` of the frame interval for input.
-// During this time scroll events will be dispatched immediately. At the
-// deadline we will resume frame production and enqueuing input.
+// When this feature is enabled we will use the corresponding mode definted by
+// `kScrollEventDispatchModeParamName`.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWaitForLateScrollEvents);
 CC_BASE_EXPORT extern const base::FeatureParam<double>
     kWaitForLateScrollEventsDeadlineRatio;
@@ -205,6 +205,24 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDontAlwaysPushPictureLayerImpls);
 // to be used when prerender initial navigation is happening in background.
 // Please see crbug.com/41496019 for more details.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWarmUpCompositor);
+
+// Modes for `kWaitForLateScrollEvents` changing event dispatch. Where the
+// default is to just always enqueue scroll events.
+//
+// `kScrollEventDispatchModeNameDispatchScrollEventsImmediately` will wait for
+// `kWaitForLateScrollEventsDeadlineRatio` of the frame interval for input.
+// During this time scroll events will be dispatched immediately. At the
+// deadline we will resume frame production and enqueuing input.
+//
+// `kScrollEventDispatchModeNameUseScrollPredictorForEmptyQueue` checks when
+// we begin frame production, if the event queue is empty, we will generate a
+// new prediction and dispatch a synthetic scroll event.
+CC_BASE_EXPORT extern const base::FeatureParam<std::string>
+    kScrollEventDispatchMode;
+CC_BASE_EXPORT extern const char
+    kScrollEventDispatchModeDispatchScrollEventsImmediately[];
+CC_BASE_EXPORT extern const char
+    kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[];
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

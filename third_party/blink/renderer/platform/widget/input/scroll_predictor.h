@@ -7,14 +7,11 @@
 
 #include <vector>
 
+#include "third_party/blink/public/mojom/input/gesture_event.mojom-blink.h"
 #include "third_party/blink/renderer/platform/widget/input/event_with_callback.h"
 #include "third_party/blink/renderer/platform/widget/input/prediction/filter_factory.h"
 #include "ui/base/prediction/input_predictor.h"
 #include "ui/base/prediction/prediction_metrics_handler.h"
-
-namespace cc {
-class ScrollUpdateEventMetrics;
-}
 
 namespace blink {
 
@@ -46,6 +43,15 @@ class PLATFORM_EXPORT ScrollPredictor {
       base::TimeTicks frame_time,
       base::TimeDelta frame_interval);
 
+  // Resamples the current GestureScrollUpdate events at the given `frame_time`.
+  std::unique_ptr<EventWithCallback> GenerateSyntheticScrollUpdate(
+      base::TimeTicks frame_time,
+      base::TimeDelta frame_interval,
+      mojom::blink::GestureDevice gesture_device,
+      int modifiers);
+
+  bool HasPrediction() const;
+
  private:
   friend class test::InputHandlerProxyEventQueueTest;
   friend class test::ScrollPredictorTest;
@@ -57,12 +63,10 @@ class PLATFORM_EXPORT ScrollPredictor {
   // Update the prediction with GestureScrollUpdate deltaX and deltaY
   void UpdatePrediction(const WebInputEvent& event, base::TimeTicks frame_time);
 
-  // Apply resampled deltaX/deltaY to gesture events
+  // Apply resampled deltaX/deltaY to gesture events.
   void ResampleEvent(base::TimeTicks frame_time,
                      base::TimeDelta frame_interval,
-                     WebInputEvent* event,
-                     ui::LatencyInfo* latency_info,
-                     cc::ScrollUpdateEventMetrics* metrics);
+                     WebInputEvent* event);
 
   // Reports metrics scores UMA histogram based on the metrics defined
   // in |PredictionMetricsHandler|

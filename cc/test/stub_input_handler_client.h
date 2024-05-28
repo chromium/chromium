@@ -28,7 +28,8 @@ class StubInputHandlerClient : public InputHandlerClient {
   void DeliverInputForHighLatencyMode() override {}
   void DidFinishImplFrame() override {}
   bool HasQueuedInput() const override;
-  void SetWaitForLateScrollEvents(bool enabled) override {}
+  void SetScrollEventDispatchMode(
+      InputHandlerClient::ScrollEventDispatchMode mode) override {}
 };
 
 }  // namespace cc

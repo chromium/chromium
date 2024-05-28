@@ -1025,7 +1025,8 @@ class TestInputHandlerClient : public InputHandlerClient {
   void DeliverInputForHighLatencyMode() override {}
   void DidFinishImplFrame() override {}
   bool HasQueuedInput() const override { return false; }
-  void SetWaitForLateScrollEvents(bool enabled) override {}
+  void SetScrollEventDispatchMode(
+      InputHandlerClient::ScrollEventDispatchMode mode) override {}
 
   gfx::PointF last_set_scroll_offset() { return last_set_scroll_offset_; }
 

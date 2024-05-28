@@ -113,6 +113,23 @@ struct CC_EXPORT InputHandlerScrollResult {
 
 class CC_EXPORT InputHandlerClient {
  public:
+  enum class ScrollEventDispatchMode {
+    // Scroll events arriving will be enqueued to be dispatched during the next
+    // `DeliverInputForBeginFrame`.
+    kEnqueueScrollEvents,
+
+    // Scroll events arriving will be dispatched immediately, if
+    // `DeliverInputForBeginFrame` was called while scrolling, with no input
+    // events in the queue. This will occur until frame production has started,
+    // or completed.
+    kDispatchScrollEventsImmediately,
+
+    // If there are no queued events when `DeliverInputForBeginFrame` is called,
+    // while we are scrolling. We will generate a new prediction, and then
+    // dispatch a synthetic `GestureScrollUpdate` using the prediction.
+    kUseScrollPredictorForEmptyQueue,
+  };
+
   InputHandlerClient(const InputHandlerClient&) = delete;
   virtual ~InputHandlerClient() = default;
 
@@ -133,7 +150,7 @@ class CC_EXPORT InputHandlerClient {
   virtual void DeliverInputForHighLatencyMode() = 0;
   virtual void DidFinishImplFrame() = 0;
   virtual bool HasQueuedInput() const = 0;
-  virtual void SetWaitForLateScrollEvents(bool enabled) = 0;
+  virtual void SetScrollEventDispatchMode(ScrollEventDispatchMode mode) = 0;
 
  protected:
   InputHandlerClient() = default;

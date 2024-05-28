@@ -4,6 +4,8 @@
 
 #include "cc/base/features.h"
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_features.h"
@@ -214,5 +216,14 @@ BASE_FEATURE(kDontAlwaysPushPictureLayerImpls,
 BASE_FEATURE(kWarmUpCompositor,
              "WarmUpCompositor",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kScrollEventDispatchMode(
+    &kWaitForLateScrollEvents,
+    "mode",
+    "EnqueueScrollEvents");
+constexpr const char kScrollEventDispatchModeDispatchScrollEventsImmediately[] =
+    "DispatchScrollEventsImmediately";
+constexpr const char kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[] =
+    "UseScrollPredictorForEmptyQueue";
 
 }  // namespace features

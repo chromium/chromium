@@ -4,6 +4,7 @@
 
 #include "cc/input/input_handler.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -34,6 +35,22 @@ namespace cc {
 namespace {
 
 enum SlowScrollMetricThread { MAIN_THREAD, CC_THREAD };
+
+InputHandlerClient::ScrollEventDispatchMode GetScrollEventDispatchMode() {
+  const std::string mode_name = ::features::kScrollEventDispatchMode.Get();
+  if (mode_name ==
+      ::features::kScrollEventDispatchModeDispatchScrollEventsImmediately) {
+    return InputHandlerClient::ScrollEventDispatchMode::
+        kDispatchScrollEventsImmediately;
+  } else if (mode_name ==
+             ::features::
+                 kScrollEventDispatchModeUseScrollPredictorForEmptyQueue) {
+    return InputHandlerClient::ScrollEventDispatchMode::
+        kUseScrollPredictorForEmptyQueue;
+  }
+
+  return InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents;
+}
 
 }  // namespace
 
@@ -68,8 +85,8 @@ void InputHandler::BindToClient(InputHandlerClient* client) {
   DCHECK(input_handler_client_ == nullptr);
   input_handler_client_ = client;
   input_handler_client_->SetPrefersReducedMotion(prefers_reduced_motion_);
-  input_handler_client_->SetWaitForLateScrollEvents(
-      base::FeatureList::IsEnabled(::features::kWaitForLateScrollEvents));
+  input_handler_client_->SetScrollEventDispatchMode(
+      GetScrollEventDispatchMode());
 }
 
 InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,

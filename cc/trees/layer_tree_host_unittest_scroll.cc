@@ -2286,7 +2286,8 @@ class MockInputHandlerClient : public InputHandlerClient {
   void DeliverInputForHighLatencyMode() override {}
   void DidFinishImplFrame() override {}
   bool HasQueuedInput() const override { return false; }
-  void SetWaitForLateScrollEvents(bool enabled) override {}
+  void SetScrollEventDispatchMode(
+      InputHandlerClient::ScrollEventDispatchMode mode) override {}
 };
 
 // This is a regression test, see crbug.com/639046.

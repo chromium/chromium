@@ -105,6 +105,7 @@ void ScrollInputHandler::DidFinishImplFrame() {}
 bool ScrollInputHandler::HasQueuedInput() const {
   return false;
 }
-void ScrollInputHandler::SetWaitForLateScrollEvents(bool enabled) {}
+void ScrollInputHandler::SetScrollEventDispatchMode(
+    cc::InputHandlerClient::ScrollEventDispatchMode mode) {}
 
 }  // namespace ui
