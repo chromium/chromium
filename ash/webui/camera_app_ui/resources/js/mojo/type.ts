@@ -58,6 +58,7 @@ export type {
   EventsSenderRemote,
 } from '../../mojom/ash/webui/camera_app_ui/events_sender.mojom-webui.js';
 export type {
+  Line as OcrResultLine,
   OcrResult,
 } from '../../mojom/ash/webui/camera_app_ui/ocr.mojom-webui.js';
 export {

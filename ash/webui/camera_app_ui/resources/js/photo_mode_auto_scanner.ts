@@ -21,6 +21,16 @@ export const SLOWDOWN_DELAY = 3 * 60 * 1000;
 // The delay interval after `SLOWDOWN_DELAY` of idle in milliseconds.
 export const SCAN_INTERVAL_SLOW = 1000;
 
+export interface ScanResult {
+  // The detected content.
+  value: string;
+  // The distance between the center of the detected content and the center of
+  // the image. The distance should be normalized by the dimensions of the
+  // source image, meaning it's a value between 0 (center) and `Math.hypot(0.5,
+  // 0.5)` (corner).
+  distance: number;
+}
+
 // The last created `PhotoModeAutoScanner` instance.
 let instance: PhotoModeAutoScanner|null = null;
 
@@ -39,12 +49,25 @@ export function getInstanceForTest(): PhotoModeAutoScanner {
   return assertExists(instance);
 }
 
+const INITIAL_CLOSEST_CONTENT = {
+  source: null,
+  distance: Infinity,
+};
+
 export class PhotoModeAutoScanner {
   private slowdownTimer: OneShotTimer|null = null;
 
   private barcodeRunner: AsyncIntervalRunner|null = null;
 
   private ocrRunner: AsyncIntervalRunner|null = null;
+
+  // `closestContent` tracks the detected content that is closest to the center
+  // of the preview, since we have multiple scanners running simultaneously. See
+  // `handleDetectedResult()` for more details.
+  private closestContent: {
+    source: scannerChip.Source|null,
+    distance: ScanResult['distance'],
+  } = INITIAL_CLOSEST_CONTENT;
 
   /**
    * The number of OCR scans, only used in tests. Reset when calling `stop()`.
@@ -110,10 +133,10 @@ export class PhotoModeAutoScanner {
     const barcodeScanner = new BarcodeScanner(this.video, () => {});
     return new AsyncIntervalRunner(async (stopped) => {
       const result = await barcodeScanner.scan();
-      if (stopped.isSignaled() || result === null) {
+      if (stopped.isSignaled()) {
         return;
       }
-      scannerChip.show(result, scannerChip.Source.BARCODE);
+      this.handleDetectedResult(result, scannerChip.Source.BARCODE);
     }, interval);
   }
 
@@ -127,11 +150,49 @@ export class PhotoModeAutoScanner {
       }
       this.ocrScanCount += 1;
       this.ocrScanTime += performance.now() - startTime;
-      if (result.lines.length === 0) {
-        return;
+      // TODO(b/341616441): Remove this once we find a way to prevent OCR from
+      // detecting content in barcodes. Set `distance` to `Infinity` to make
+      // it always larger than the `distance`s from barcode scanner.
+      if (result !== null) {
+        result.distance = Infinity;
       }
-      const text = result.lines.map((line) => line.text).join('\n');
-      scannerChip.show(text, scannerChip.Source.OCR);
+      this.handleDetectedResult(result, scannerChip.Source.OCR);
     }, interval);
+  }
+
+
+  /**
+   * Checks detected results from scanners and decides whether to show them.
+   *
+   * When a scanner detects nothing, meaning there is a `source` but not a
+   * `distance`, if `source` matches `closestContent.source`, reset
+   * `closestContent` to its initial state, allowing other scanners to beat the
+   * `distance`.
+   *
+   * When a scanner detects content, meaning there is a `source` and a finite
+   * `distance`, show the content and set the value of `closestContent` if one
+   * of the following conditions is met:
+   *   - `closestContent` is in its initial state.
+   *   - `source` matches `closestContent.source`.
+   *   - `distance` is smaller than `closestContent.distance`.
+   */
+  private handleDetectedResult(
+      result: ScanResult|null, source: scannerChip.Source) {
+    if (result === null) {
+      if (source === this.closestContent.source) {
+        this.closestContent = INITIAL_CLOSEST_CONTENT;
+      }
+      return;
+    }
+    const {value, distance} = result;
+    if (this.closestContent === INITIAL_CLOSEST_CONTENT ||
+        source === this.closestContent.source ||
+        distance < this.closestContent.distance) {
+      this.closestContent = {
+        source,
+        distance,
+      };
+      scannerChip.show(value, source);
+    }
   }
 }

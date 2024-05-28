@@ -4,13 +4,15 @@
 
 import {assertInstanceof} from '../assert.js';
 import * as Comlink from '../lib/comlink.js';
-import {SCAN_INTERVAL} from '../photo_mode_auto_scanner.js';
+import {SCAN_INTERVAL, ScanResult} from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
 import {getSanitizedScriptUrl} from '../trusted_script_url_policy_util.js';
 import {lazySingleton} from '../util.js';
 
 import {AsyncIntervalRunner} from './async_interval.js';
 import {BarcodeWorker} from './barcode_worker.js';
+
+type BoundingBox = DetectedBarcode['boundingBox'];
 
 // If any dimension of the video exceeds this size, the image would be cropped
 // and/or scaled before scanning to speed up the detection.
@@ -55,9 +57,9 @@ export class BarcodeScanner {
         return;
       }
 
-      const code = await this.scan();
-      if (!stopped.isSignaled() && code !== null) {
-        this.callback(code);
+      const result = await this.scan();
+      if (!stopped.isSignaled() && result !== null) {
+        this.callback(result.value);
       }
     }, scanIntervalMs);
   }
@@ -102,12 +104,43 @@ export class BarcodeScanner {
   /**
    * Scans barcodes from the current frame.
    *
-   * @return The detected barcode value, or null if no barcode is detected.
+   * @return `ScanResult` which contains the detected barcode value and the
+   * distance of the barcode to the center of the frame, or null if no barcode
+   * is detected.
    */
-  async scan(): Promise<string|null> {
+  async scan(): Promise<ScanResult|null> {
     const frame = await this.grabFrameForScan();
-    const value =
+    const {width, height} = frame;
+    const codes =
         await getBarcodeWorker().detect(Comlink.transfer(frame, [frame]));
-    return value;
+    if (codes.length === 0) {
+      return null;
+    }
+    let minDistance = Infinity;
+    let valueWithMinDistance = '';
+    for (const code of codes) {
+      const distance =
+          getNormalizedDistanceToCenter(code.boundingBox, width, height);
+      if (distance < minDistance) {
+        minDistance = distance;
+        valueWithMinDistance = code.rawValue;
+      }
+    }
+    return {
+      value: valueWithMinDistance,
+      distance: minDistance,
+    };
   }
+}
+
+function getNormalizedDistanceToCenter(
+    boundingBox: BoundingBox, imageWidth: number, imageHeight: number) {
+  const {top, right, bottom, left} = boundingBox;
+  const x = left + right / 2;
+  const y = top + bottom / 2;
+  const distance = Math.hypot(
+      x / imageWidth - 0.5,
+      y / imageHeight - 0.5,
+  );
+  return distance;
 }
