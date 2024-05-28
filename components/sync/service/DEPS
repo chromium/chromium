@@ -16,6 +16,7 @@ include_rules = [
   "+components/sync/protocol",
   "+components/sync/test",
   "+components/trusted_vault",
+  "+crypto",
   "+net",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

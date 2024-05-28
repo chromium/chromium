@@ -275,7 +275,8 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
 }
 
 void SyncServiceImpl::RegisterTrustedVaultSyntheticFieldTrialsIfNecessary() {
-  if (trusted_vault_auto_upgrade_synthetic_field_trial_registered_) {
+  if (registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_
+          .has_value()) {
     // Registration function already invoked. It cannot be invoked twice, as
     // runtime changes to the group assignment is not supported (e.g. signout).
     return;
@@ -295,7 +296,7 @@ void SyncServiceImpl::RegisterTrustedVaultSyntheticFieldTrialsIfNecessary() {
     return;
   }
 
-  trusted_vault_auto_upgrade_synthetic_field_trial_registered_ = true;
+  registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_ = group;
   sync_client_->RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(group);
 }
 
@@ -416,6 +417,16 @@ void SyncServiceImpl::Initialize() {
   RecordSyncInitialState(GetDisableReasons(),
                          is_sync_feature_requested_for_metrics,
                          user_settings_->IsInitialSyncFeatureSetupComplete());
+
+  if (registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_
+          .has_value() &&
+      base::FeatureList::IsEnabled(
+          syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrial)) {
+    CHECK(registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_
+              ->is_valid());
+    registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_
+        ->LogValidationMetricsUponOnProfileLoad(GetAccountInfo().gaia);
+  }
 
   ModelTypeSet data_types_to_track =
       Intersection(GetRegisteredDataTypes(), ProtocolTypes());

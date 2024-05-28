@@ -40,6 +40,7 @@
 #include "components/sync/service/sync_service_crypto.h"
 #include "components/sync/service/sync_stopped_reporter.h"
 #include "components/sync/service/sync_user_settings_impl.h"
+#include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/version_info/channel.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -523,8 +524,10 @@ class SyncServiceImpl : public SyncService,
   bool should_record_trusted_vault_error_shown_on_startup_ = true;
 
   // Whether or not SyncClient was exercised to register synthetic field trials
-  // related to trusted vault passphrase.
-  bool trusted_vault_auto_upgrade_synthetic_field_trial_registered_ = false;
+  // related to trusted vault passphrase, and if yes which precise group was
+  // registered.
+  std::optional<TrustedVaultAutoUpgradeSyntheticFieldTrialGroup>
+      registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_;
 
   const bool sync_poll_immediately_on_every_startup_;
 

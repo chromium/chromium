@@ -105,6 +105,7 @@ static_library("service") {
     "//components/sync/invalidations",
     "//components/version_info",
     "//components/version_info:generate_version_info",
+    "//crypto",
     "//services/network/public/cpp",
   ]
 
