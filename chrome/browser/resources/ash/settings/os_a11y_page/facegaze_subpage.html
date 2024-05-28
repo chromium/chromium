@@ -1,0 +1,20 @@
+<style include="settings-shared">
+  :host {
+    --cr-section-indent-width: 60px;
+  }
+
+  .background {
+    background-color: var(--page-backdrop-bg-color);
+  }
+
+  settings-toggle-button,
+  cr-link-row {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+</style>
+
+<div class="background">
+  <facegaze-cursor-card prefs="{{prefs}}"></facegaze-cursor-card>
+  <facegaze-actions-card prefs="{{prefs}}"></facegaze-actions-card>
+</div>

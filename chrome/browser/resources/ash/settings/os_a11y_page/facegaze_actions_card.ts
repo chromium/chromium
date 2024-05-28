@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * 'facegaze-actions-card' is the card element containing facegaze
+ *  action settings.
+ */
+
 import '../controls/settings_dropdown_menu.js';
+import '../os_settings_page/settings_card.js';
+import '../settings_shared.css.js';
+import '../os_settings_page/os_settings_animated_pages.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
@@ -16,22 +25,22 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {Route, routes} from '../router.js';
 
-import {getTemplate} from './facegaze_facial_expression_subpage.html.js';
+import {getTemplate} from './facegaze_actions_card.html.js';
 
-const SettingsFaceGazeFacialExpressionSubpageElementBase =
+const SettingsFaceGazeActionsCardBase =
     DeepLinkingMixin(RouteObserverMixin(
         WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
 
-export interface SettingsFaceGazeFacialExpressionSubpageElement {
+export interface SettingsFaceGazeActionsCard {
   $: {
     recognitionConfidenceRepeat: DomRepeat,
   };
 }
 
-export class SettingsFaceGazeFacialExpressionSubpageElement extends
-    SettingsFaceGazeFacialExpressionSubpageElementBase {
+export class SettingsFaceGazeActionsCard extends
+    SettingsFaceGazeActionsCardBase {
   static get is() {
-    return 'settings-facegaze-facial-expression-subpage' as const;
+    return 'facegaze-actions-card' as const;
   }
 
   static get template() {
@@ -407,7 +416,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
-    if (route !== routes.MANAGE_FACEGAZE_FACIAL_EXPRESSIONS_SETTINGS) {
+    if (route !== routes.MANAGE_FACEGAZE_SETTINGS) {
       return;
     }
 
@@ -416,7 +425,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
 
   // These values correspond to FacialGesture in
   // accessibility_common/facegaze/gesture_detector.ts, except "deselect".
-  // TODO(b:322510392): Localize these strings.
+  // TODO(b:341770655): Localize these strings.
   private getGestureMenuOptions_(): DropdownMenuOptionList {
     return [
       {value: 'deselect', name: '(none)', hidden: false},
@@ -522,7 +531,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       const mouseClickGestures = macrosToGestures.get(macro);
       if (mouseClickGestures && mouseClickGestures.length > 0) {
         value =
-            mouseClickGestures[0];  // TODO(b:322510392): support multi-select.
+            mouseClickGestures[0];  // TODO(b:341770655): support multi-select.
       }
     }
     return {
@@ -727,7 +736,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         {...assignedGestures});
 
     // Force polymer to update the objects.
-    // TODO(b:322510392): This isn't working consistently.
+    // TODO(b:341770655): This isn't working consistently.
     this.leftClickMenuOptions_ = [];
     this.rightClickMenuOptions_ = [];
     this.longClickLeftMenuOptions_ = [];
@@ -849,11 +858,9 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsFaceGazeFacialExpressionSubpageElement.is]:
-        SettingsFaceGazeFacialExpressionSubpageElement;
+    [SettingsFaceGazeActionsCard.is]: SettingsFaceGazeActionsCard;
   }
 }
 
 customElements.define(
-    SettingsFaceGazeFacialExpressionSubpageElement.is,
-    SettingsFaceGazeFacialExpressionSubpageElement);
+    SettingsFaceGazeActionsCard.is, SettingsFaceGazeActionsCard);

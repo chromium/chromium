@@ -11,6 +11,12 @@
     padding-inline-start: 0;
   }
 
+  #details {
+    align-items: center;
+    display: flex;
+    flex: auto;
+  }
+
   .start-padding {
     padding-inline-start: var(--cr-section-padding);
   }
@@ -19,6 +25,10 @@
   cr-link-row {
     padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-padding);
+  }
+
+  #facegaze-icon {
+    padding-inline-end: var(--cr-section-padding);
   }
 </style>
 
@@ -119,35 +129,46 @@
     </div>
   </div>
 </template>
-<!-- TODO(b/299724949): Add deep link focus ID -->
+<!-- TODO(b/341770655): Add deep link focus ID -->
 <template is="dom-if" if="[[isAccessibilityFaceGazeEnabled_]]">
-  <settings-toggle-button
-      id="faceGazeToggle"
-      pref="{{prefs.settings.a11y.face_gaze.enabled}}"
-      icon="os-settings:face-gaze"
-      label="$i18n{accessibilityFaceGazeLabel}"
-      sub-label="$i18n{accessibilityFaceGazeDescription}">
-  </settings-toggle-button>
-  <iron-collapse opened="[[prefs.settings.a11y.face_gaze.enabled.value]]">
-    <div>
-      <!-- TODO(b/299725221): Open the FaceGaze cursor control settings -->
-      <cr-link-row id="faceGazeCursorControlButton"
-          class="sub-item"
-          label="$i18n{accessibilityFaceGazeSettings}"
-          sub-label="$i18n{accessibilityFaceGazeSettingsDescription}"
-          on-click="onFaceGazeCursorSettingsClick_">
-      </cr-link-row>
+  <div class="settings-box two-line start-padding">
+    <div id="faceGazeDescription"
+        class="flex layout horizontal center link-wrapper"
+        on-click="onFaceGazeSettingsClick_">
+      <div id="details" aria-hidden="true">
+        <span id="facegaze-icon" aria-hidden="true">
+          <iron-icon slot="icon" icon="os-settings:face-gaze">
+          </iron-icon>
+        </span>
+        <div class="flex settings-box-text">
+          <div id="faceGazeTitleText">
+            $i18n{accessibilityFaceGazeLabel}
+          </div>
+          <div id="faceGazeDescriptionText" class="cr-secondary-text label">
+            $i18n{accessibilityFaceGazeDescription}
+          </div>
+        </div>
+      </div>
+      <template is="dom-if"
+          if="[[prefs.settings.a11y.face_gaze.enabled.value]]">
+        <cr-icon-button \
+            id="faceGazeSubpageButton"
+            class="subpage-arrow"
+            label="$i18n{accessibilityFaceGazeLabel}"
+            on-click="onFaceGazeSettingsClick_"
+            class="sub-item">
+        </cr-icon-button>
+        <div class="separator"></div>
+      </template>
+      <cr-toggle
+          id="faceGazeToggle"
+          checked="{{prefs.settings.a11y.face_gaze.enabled.value}}"
+          aria-labeledby="faceGazeTitleText"
+          aria-describedby="faceGazeDescriptionText"
+          on-checked-changed="onFaceGazeToggleChange_">
+      </cr-toggle>
     </div>
-    <div>
-      <!-- TODO(b/299725221): Open the FaceGaze facial expressions settings -->
-      <cr-link-row id="faceGazeFacialExpressionsButton"
-          class="sub-item"
-          label="$i18n{accessibilityFaceGazeFacialExpressionsSettings}"
-          sub-label="$i18n{accessibilityFaceGazeFacialExpressionsSettingsDescription}"
-          on-click="onFaceGazeFacialExpressionsSettingsClick_">
-      </cr-link-row>
-    </div>
-  </iron-collapse>
+  </div>
 </template>
 <settings-toggle-button
     id="largeCursorEnabledControl"

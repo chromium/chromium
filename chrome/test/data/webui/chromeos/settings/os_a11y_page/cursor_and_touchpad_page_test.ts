@@ -6,6 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsCursorAndTouchpadPageElement} from 'chrome://os-settings/lazy_load.js';
 import {createRouterForTesting, CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -589,7 +590,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
   }
 
   test(
-      'face gaze feature does not show if the feature flag is disabled',
+      'face control feature does not show if the feature flag is disabled',
       async () => {
         loadTimeData.overrideValues({
           isAccessibilityFaceGazeEnabled: false,
@@ -597,45 +598,81 @@ suite('<settings-cursor-and-touchpad-page>', () => {
 
         await initPage();
         const faceGazeToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#faceGazeToggle');
+            page.shadowRoot!.querySelector<CrToggleElement>('#faceGazeToggle');
         assertEquals(null, faceGazeToggle);
       });
 
   test(
-      'face tracking feature shows if the feature flag is enabled',
-      async () => {
+      'face control feature shows if the feature flag is enabled', async () => {
         loadTimeData.overrideValues({
           isAccessibilityFaceGazeEnabled: true,
         });
 
         await initPage();
         const faceGazeToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#faceGazeToggle');
+            page.shadowRoot!.querySelector<CrToggleElement>('#faceGazeToggle');
         assert(faceGazeToggle);
         assertTrue(isVisible(faceGazeToggle));
 
-        const faceGazeCursorControlButton =
-            page.shadowRoot!.querySelector('#faceGazeCursorControlButton');
-        assert(faceGazeCursorControlButton);
-        assertFalse(isVisible(faceGazeCursorControlButton));
-
-        const faceGazeFacialExpressionsButton =
-            page.shadowRoot!.querySelector('#faceGazeFacialExpressionsButton');
-        assert(faceGazeFacialExpressionsButton);
-        assertFalse(isVisible(faceGazeFacialExpressionsButton));
-
         assertFalse(faceGazeToggle.checked);
+        assertFalse(faceGazeToggle.hasAttribute('checked'));
         assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
-        faceGazeToggle.click();
 
+        // FaceGaze settings subpage button is missing until the feature is
+        // enabled.
+        let faceGazeSubpageButton = page.shadowRoot!.querySelector<HTMLElement>(
+            '#faceGazeSubpageButton');
+        assertEquals(null, faceGazeSubpageButton);
+
+        faceGazeToggle.click();
         await waitBeforeNextRender(page);
         flush();
+
         assertTrue(faceGazeToggle.checked);
+        assertTrue(faceGazeToggle.hasAttribute('checked'));
         assertTrue(page.prefs.settings.a11y.face_gaze.enabled.value);
-        assertTrue(isVisible(faceGazeCursorControlButton));
-        assertTrue(isVisible(faceGazeFacialExpressionsButton));
+
+        // Subpage button now present.
+        faceGazeSubpageButton = page.shadowRoot!.querySelector<HTMLElement>(
+            '#faceGazeSubpageButton');
+        assert(faceGazeSubpageButton);
+        assertTrue(isVisible(faceGazeSubpageButton));
+
+        // Clicking on it should update the route.
+        faceGazeSubpageButton.click();
+        assertEquals(
+            routes.MANAGE_FACEGAZE_SETTINGS, Router.getInstance().currentRoute);
+      });
+
+  test(
+      'can reach face control settings from description when enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          isAccessibilityFaceGazeEnabled: true,
+        });
+        await initPage();
+
+        const row =
+            page.shadowRoot!.querySelector<HTMLElement>('#faceGazeDescription');
+        assert(row);
+        assertTrue(isVisible(row));
+
+        // Nothing happens if face control is not enabled.
+        row.click();
+        assertEquals(
+            routes.A11Y_CURSOR_AND_TOUCHPAD, Router.getInstance().currentRoute);
+
+        const faceGazeToggle =
+            page.shadowRoot!.querySelector<CrToggleElement>('#faceGazeToggle');
+        assert(faceGazeToggle);
+        faceGazeToggle.click();
+        await waitBeforeNextRender(page);
+        flush();
+
+        // Clicking on it now should update the route.
+        row.click();
+        assertEquals(
+            routes.MANAGE_FACEGAZE_SETTINGS, Router.getInstance().currentRoute);
       });
 
   test('Mouse keys feature disabled.', async () => {

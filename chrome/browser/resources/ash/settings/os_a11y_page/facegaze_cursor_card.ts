@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * 'facegaze-cursor-card' is the card element containing facegaze cursor
+ * settings.
+ */
+
 import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../controls/settings_slider.js';
@@ -15,19 +21,19 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
-import {getTemplate} from './facegaze_cursor_subpage.html.js';
+import {getTemplate} from './facegaze_cursor_card.html.js';
 
-const SettingsFaceGazeCursorSubpageElementBase = DeepLinkingMixin(
+const FacegazeCursorCardBase = DeepLinkingMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-export interface SettingsFaceGazeCursorSubpageElement {
+export interface FacegazeCursorCard {
   $: {};
 }
 
-export class SettingsFaceGazeCursorSubpageElement extends
-    SettingsFaceGazeCursorSubpageElementBase {
+export class FacegazeCursorCard extends
+    FacegazeCursorCardBase {
   static get is() {
-    return 'settings-facegaze-cursor-subpage' as const;
+    return 'facegaze-cursor-card' as const;
   }
 
   static get template() {
@@ -54,7 +60,7 @@ export class SettingsFaceGazeCursorSubpageElement extends
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
-    if (route !== routes.MANAGE_FACEGAZE_CURSOR_SETTINGS) {
+    if (route !== routes.MANAGE_FACEGAZE_SETTINGS) {
       return;
     }
 
@@ -64,11 +70,9 @@ export class SettingsFaceGazeCursorSubpageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsFaceGazeCursorSubpageElement.is]:
-        SettingsFaceGazeCursorSubpageElement;
+    [FacegazeCursorCard.is]: FacegazeCursorCard;
   }
 }
 
 customElements.define(
-    SettingsFaceGazeCursorSubpageElement.is,
-    SettingsFaceGazeCursorSubpageElement);
+    FacegazeCursorCard.is, FacegazeCursorCard);

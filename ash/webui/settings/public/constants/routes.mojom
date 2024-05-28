@@ -180,8 +180,7 @@ enum Subpage {
   kAudioAndCaptions = 1509,
   kSelectToSpeak = 1510,
   kChromeVox = 1511,
-  kFaceGazeCursorSettings = 1512,
-  kFaceGazeFacialExpressionsSettings = 1513,
+  kFaceGazeSettings = 1512,
 
   // Note: Reset section has no subpages.
 
@@ -344,10 +343,8 @@ const string kAudioAndCaptionsSubpagePath = "audioAndCaptions";
 const string kTextToSpeechSubpagePath = "manageAccessibility/tts";
 const string kSwitchAccessOptionsSubpagePath =
     "manageAccessibility/switchAccess";
-const string kFaceGazeCursorSettingsSubpagePath =
-    "manageAccessibility/faceGazeCursor";
-const string kFaceGazeFacialExpressionsSettingsSubpagePath =
-    "manageAccessibility/faceGazeExpressions";
+const string kFaceGazeSettingsSubpagePath =
+    "manageAccessibility/faceGaze";
 
 // Reset section.
 const string kResetSectionPath = "osReset";
