@@ -9,9 +9,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {parseArgs} from 'node:util';
 
-// Regular expression to extract CSS Content from within <style>...</style>
-// tags. The 'd' flag is needed to obtain the start/end indices of the match.
-const CSS_REGEX = /<style(?<deps>[\s\S][^>]{0,})>(?<content>[\s\S]+)<\/style>/d;
+// Regular expression to extract CSS Content from within <style>...</style> or
+// <style include="...">...</style> tags. The 'd' flag is needed to obtain the
+// start/end indices of the match.
+const CSS_REGEX = /<style(?<deps>[^>]*)?>(?<content>[^]+)<\/style>/d;
 
 // Header to place on top of the newly created CSS file.
 const CSS_FILE_HEADER = `/* Copyright 2024 The Chromium Authors
