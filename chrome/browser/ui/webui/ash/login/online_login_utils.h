@@ -36,8 +36,6 @@ namespace login {
 struct GaiaContext {
   GaiaContext();
   GaiaContext(GaiaContext const&);
-  // Forces Gaia to reload.
-  bool force_reload = false;
 
   // Email of the current user.
   std::string email;

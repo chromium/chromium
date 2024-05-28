@@ -138,7 +138,6 @@ void LockScreenReauthHandler::LoadAuthenticatorParam() {
 
   authenticator_state_ = AuthenticatorState::LOADING;
   login::GaiaContext context;
-  context.force_reload = true;
   context.email = email_;
   context.gaia_id = user_manager::UserManager::Get()
                         ->GetPrimaryUser()

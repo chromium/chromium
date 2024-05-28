@@ -406,9 +406,6 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     const bool* collect_stats_consent) {
   base::Value::Dict params;
 
-  // TODO(https://crbug.com/1338102): Looks like `forceReload` isn't used
-  //                                  anywhere further. Remove?
-  params.Set("forceReload", context.force_reload);
   params.Set("gaiaId", context.gaia_id);
   params.Set("readOnlyEmail", true);
   params.Set("email", context.email);
@@ -1404,7 +1401,6 @@ void GaiaScreenHandler::LoadAuthenticator(bool force) {
 
   frame_state_ = FRAME_STATE_LOADING;
   login::GaiaContext context;
-  context.force_reload = force;
   context.email = populated_account_id_.GetUserEmail();
 
   if (!context.email.empty()) {

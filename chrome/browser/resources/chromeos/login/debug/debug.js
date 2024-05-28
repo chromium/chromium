@@ -774,7 +774,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             screen.loadAuthenticator({
               chromeType: 'chromedevice',
               enterpriseManagedDevice: false,
-              forceReload: true,
               gaiaPath: 'embedded/setup/v2/chromeos',
               gaiaUrl: 'https://accounts.google.com/',
               hl: loadTimeData.getString('app_locale'),
