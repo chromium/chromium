@@ -25,7 +25,7 @@
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
-#include "content/browser/renderer_host/input/touch_emulator.h"
+#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
@@ -732,15 +732,16 @@ class InputHandler::InputInjector
     }
 
     widget_host_->Focus();
-    widget_host_->GetTouchEmulator()->Enable(
-        TouchEmulator::Mode::kInjectingTouchEvents,
-        ui::GestureProviderConfigType::CURRENT_PLATFORM);
+    widget_host_->GetTouchEmulator(/*create_if_necessary=*/true)
+        ->Enable(TouchEmulator::Mode::kInjectingTouchEvents,
+                 ui::GestureProviderConfigType::CURRENT_PLATFORM);
     base::OnceClosure closure = base::BindOnce(
         &DispatchTouchEventCallback::sendSuccess, std::move(callback));
     for (size_t i = 0; i < events.size(); i++) {
-      widget_host_->GetTouchEmulator()->InjectTouchEvent(
-          events[i], widget_host_->GetView(),
-          i == events.size() - 1 ? std::move(closure) : base::OnceClosure());
+      widget_host_->GetTouchEmulator(/*create_if_necessary=*/true)
+          ->InjectTouchEvent(events[i], widget_host_->GetView(),
+                             i == events.size() - 1 ? std::move(closure)
+                                                    : base::OnceClosure());
     }
     MaybeSelfDestruct();
   }

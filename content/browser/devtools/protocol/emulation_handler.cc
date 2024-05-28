@@ -19,7 +19,7 @@
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/browser/idle/idle_manager_impl.h"
-#include "content/browser/renderer_host/input/touch_emulator.h"
+#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -892,15 +892,17 @@ void EmulationHandler::UpdateTouchEventEmulationState() {
   DCHECK(!host_->GetParentOrOuterDocument());
 
   if (touch_emulation_enabled_) {
-    if (auto* touch_emulator =
-            host_->GetRenderWidgetHost()->GetTouchEmulator()) {
+    if (auto* touch_emulator = host_->GetRenderWidgetHost()->GetTouchEmulator(
+            /*create_if_necessary=*/true)) {
       touch_emulator->Enable(
           TouchEmulator::Mode::kEmulatingTouchFromMouse,
           TouchEmulationConfigurationToType(touch_emulation_configuration_));
     }
   } else {
-    if (auto* touch_emulator = host_->GetRenderWidgetHost()->GetTouchEmulator())
+    if (auto* touch_emulator = host_->GetRenderWidgetHost()->GetTouchEmulator(
+            /*create_if_necessary=*/true)) {
       touch_emulator->Disable();
+    }
   }
   GetWebContents()->SetForceDisableOverscrollContent(touch_emulation_enabled_);
 }

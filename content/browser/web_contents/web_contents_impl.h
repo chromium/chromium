@@ -46,6 +46,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
+#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/common/content_export.h"
@@ -146,6 +147,7 @@ class SiteInstanceGroup;
 class TestWCDelegateForDialogsAndFullscreen;
 class TestWebContents;
 class TextInputManager;
+class TouchEmulatorImpl;
 class WakeLockContextHost;
 class WebContentsDelegate;
 class WebContentsImpl;
@@ -184,18 +186,20 @@ using PageVisibilityState = blink::mojom::PageVisibilityState;
 
 using ClipboardPasteData = content::ClipboardPasteData;
 
-class CONTENT_EXPORT WebContentsImpl : public WebContents,
-                                       public FrameTree::Delegate,
-                                       public RenderFrameHostDelegate,
-                                       public RenderViewHostDelegate,
-                                       public RenderWidgetHostDelegate,
-                                       public RenderFrameHostManager::Delegate,
-                                       public PageDelegate,
-                                       public blink::mojom::ColorChooserFactory,
-                                       public NavigationControllerDelegate,
-                                       public NavigatorDelegate,
-                                       public ui::NativeThemeObserver,
-                                       public ui::ColorProviderSourceObserver {
+class CONTENT_EXPORT WebContentsImpl
+    : public WebContents,
+      public FrameTree::Delegate,
+      public RenderFrameHostDelegate,
+      public RenderViewHostDelegate,
+      public RenderWidgetHostDelegate,
+      public RenderFrameHostManager::Delegate,
+      public PageDelegate,
+      public blink::mojom::ColorChooserFactory,
+      public NavigationControllerDelegate,
+      public NavigatorDelegate,
+      public ui::NativeThemeObserver,
+      public ui::ColorProviderSourceObserver,
+      public RenderWidgetHostInputEventRouter::Delegate {
  public:
   class FriendWrapper;
 
@@ -1158,6 +1162,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool ShouldPreserveAbortedURLs() override;
   void NotifyNavigationStateChangedFromController(
       InvalidateTypes changed_flags) override;
+
+  //  RenderWidgetHostInputEventRouter::Delegate -------------------------------
+  TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
 
   // Invoked before a form repost warning is shown.
   void NotifyBeforeFormRepostWarningShow() override;
@@ -2319,6 +2326,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
   std::unique_ptr<RenderWidgetHostInputEventRouter> rwh_input_event_router_;
+
+  std::unique_ptr<TouchEmulatorImpl> touch_emulator_;
 
   // TextInputManager tracks the IME-related state for all the
   // RenderWidgetHostViews on this WebContents. Only exists on the outermost

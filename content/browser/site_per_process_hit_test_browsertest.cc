@@ -26,7 +26,7 @@
 #include "components/viz/test/host_frame_sink_manager_test_api.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/cursor_manager.h"
-#include "content/browser/renderer_host/input/touch_emulator.h"
+#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -2083,7 +2083,8 @@ class SitePerProcessEmulatedTouchBrowserTest
                             position_in_root));
 
     // Enable touch emulation.
-    auto* touch_emulator = router->GetTouchEmulator();
+    auto* touch_emulator =
+        root_rwhv->host()->GetTouchEmulator(/*create_if_necessary=*/true);
     ASSERT_TRUE(touch_emulator);
     touch_emulator->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
                            ui::GestureProviderConfigType::CURRENT_PLATFORM);

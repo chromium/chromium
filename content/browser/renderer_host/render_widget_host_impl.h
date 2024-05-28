@@ -112,7 +112,7 @@ class RenderWidgetHostFactory;
 class SiteInstanceGroup;
 class SyntheticGestureController;
 class TimeoutMonitor;
-class TouchEmulator;
+class TouchEmulatorImpl;
 class VisibleTimeRequestTrigger;
 
 // This implements the RenderWidgetHost interface that is exposed to
@@ -576,8 +576,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // swapped, and presented).
   void WaitForInputProcessed(base::OnceClosure callback);
 
-  // Returns an emulator for this widget. See TouchEmulator for more details.
-  TouchEmulator* GetTouchEmulator();
+  // Returns an pointer to the existing touch emulator serving this host if
+  // |create_if_necessary| is false. If true, calling this function will force
+  // creation of a TouchEmulator.
+  TouchEmulatorImpl* GetTouchEmulator(bool create_if_necessary);
 
   // Queues a synthetic gesture for testing purposes.  Invokes the on_complete
   // callback when the gesture is finished running.
@@ -1216,11 +1218,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 #if BUILDFLAG(IS_MAC)
   device::mojom::WakeLock* GetWakeLock();
 #endif
-
-  // Returns a pointer to the touch emulator serving this host, but only if it
-  // already exists; calling this function will not force creation of a
-  // TouchEmulator.
-  TouchEmulator* GetExistingTouchEmulator();
 
   void CreateSyntheticGestureControllerIfNecessary();
 

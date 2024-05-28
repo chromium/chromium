@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_EMULATOR_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_EMULATOR_H_
+#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_EMULATOR_IMPL_H_
+#define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_EMULATOR_IMPL_H_
 
 #include <memory>
 
@@ -12,9 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
-#include "content/common/content_export.h"
-#include "third_party/blink/public/common/input/web_touch_event.h"
-#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "content/common/input/touch_emulator.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
@@ -24,43 +22,35 @@ namespace blink {
 class WebKeyboardEvent;
 class WebMouseEvent;
 class WebMouseWheelEvent;
-}
+}  // namespace blink
 
 namespace content {
 
 class RenderWidgetHostViewInput;
 
-// Emulates touch input. See TouchEmulator::Mode for more details.
-class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
+class CONTENT_EXPORT TouchEmulatorImpl : public TouchEmulator {
  public:
-  enum class Mode {
-    // Emulator will consume incoming mouse events and transform them
-    // into touches and gestures.
-    kEmulatingTouchFromMouse,
-    // Emulator will not consume incoming mouse events and instead will
-    // wait for manually injected touch events.
-    kInjectingTouchEvents
-  };
+  TouchEmulatorImpl(TouchEmulatorClient* client, float device_scale_factor);
 
-  TouchEmulator(TouchEmulatorClient* client, float device_scale_factor);
+  TouchEmulatorImpl(const TouchEmulatorImpl&) = delete;
+  TouchEmulatorImpl& operator=(const TouchEmulatorImpl&) = delete;
 
-  TouchEmulator(const TouchEmulator&) = delete;
-  TouchEmulator& operator=(const TouchEmulator&) = delete;
+  ~TouchEmulatorImpl() override;
 
-  ~TouchEmulator() override;
+  // TouchEmulator implementation.
+  void SetDeviceScaleFactor(float device_scale_factor) override;
+  void SetDoubleTapSupportForPageEnabled(bool enabled) override;
+  bool IsEnabled() const override;
+  bool HandleTouchEvent(const blink::WebTouchEvent& event) override;
+  void OnGestureEventAck(const blink::WebGestureEvent& event,
+                         RenderWidgetHostViewInput* target_view) override;
+  void OnViewDestroyed(RenderWidgetHostViewInput* destroyed_view) override;
+  bool HandleTouchEventAck(
+      const blink::WebTouchEvent& event,
+      blink::mojom::InputEventResultState ack_result) override;
 
   void Enable(Mode mode, ui::GestureProviderConfigType config_type);
   void Disable();
-
-  // Call when device scale factor changes.
-  void SetDeviceScaleFactor(float device_scale_factor);
-
-  // See GestureProvider::SetDoubleTapSupportForPageEnabled.
-  void SetDoubleTapSupportForPageEnabled(bool enabled);
-
-  // Note that TouchEmulator should always listen to touch events and their acks
-  // (even in disabled state) to track native stream presence.
-  bool enabled() const { return !!gesture_provider_; }
 
   // Returns |true| if the event was consumed. Consumed event should not
   // propagate any further.
@@ -69,18 +59,6 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
                         RenderWidgetHostViewInput* target_view);
   bool HandleMouseWheelEvent(const blink::WebMouseWheelEvent& event);
   bool HandleKeyboardEvent(const blink::WebKeyboardEvent& event);
-  bool HandleTouchEvent(const blink::WebTouchEvent& event);
-
-  void OnGestureEventAck(const blink::WebGestureEvent& event,
-                         RenderWidgetHostViewInput* target_view);
-
-  // Called to notify the TouchEmulator when a view is destroyed.
-  void OnViewDestroyed(RenderWidgetHostViewInput* destroyed_view);
-
-  // Returns |true| if the event ack was consumed. Consumed ack should not
-  // propagate any further.
-  bool HandleTouchEventAck(const blink::WebTouchEvent& event,
-                           blink::mojom::InputEventResultState ack_result);
 
   // Injects a touch event to be processed for gestures and optionally
   // forwarded to the client. Only works in kInjectingTouchEvents mode.
@@ -185,4 +163,4 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_EMULATOR_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_EMULATOR_IMPL_H_

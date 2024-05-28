@@ -4,6 +4,7 @@
 
 #include "content/test/mock_render_widget_host_delegate.h"
 
+#include "base/notimplemented.h"
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -50,7 +51,7 @@ void MockRenderWidgetHostDelegate::SelectAll() {}
 
 void MockRenderWidgetHostDelegate::CreateInputEventRouter() {
   rwh_input_event_router_ = std::make_unique<RenderWidgetHostInputEventRouter>(
-      GetHostFrameSinkManager());
+      GetHostFrameSinkManager(), this);
 }
 
 RenderWidgetHostInputEventRouter*
@@ -98,6 +99,12 @@ MockRenderWidgetHostDelegate::GetDelegatedInkRenderer(
     delegated_ink_point_renderer_.reset_on_disconnect();
   }
   return delegated_ink_point_renderer_.get();
+}
+
+TouchEmulator* MockRenderWidgetHostDelegate::GetTouchEmulator(
+    bool create_if_necessary) {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 }  // namespace content

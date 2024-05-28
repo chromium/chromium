@@ -19,8 +19,8 @@
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "content/browser/renderer_host/cursor_manager.h"
-#include "content/browser/renderer_host/input/touch_emulator.h"
 #include "content/common/input/render_input_router.h"
+#include "content/common/input/touch_emulator.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/compositor/compositor.h"
@@ -179,7 +179,7 @@ void TouchEventAckQueue::ProcessAckedTouchEvents() {
     return;
 
   TouchEmulator* touch_emulator =
-      client_->has_touch_emulator() ? client_->GetTouchEmulator() : nullptr;
+      client_->GetTouchEmulator(/*create_if_necessary=*/false);
   while (!ack_queue_.empty() && ack_queue_.front().touch_event_ack_status ==
                                     TouchEventAckStatus::TouchEventAcked) {
     TouchEventAckQueue::AckData ack_data = ack_queue_.front();
@@ -346,8 +346,10 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewInputDestroyed(
     }
   }
 
-  if (touch_emulator_)
-    touch_emulator_->OnViewDestroyed(view);
+  auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false);
+  if (touch_emulator) {
+    touch_emulator->OnViewDestroyed(view);
+  }
 
   if (view == touch_target_) {
     touch_target_ = nullptr;
@@ -429,7 +431,8 @@ void RenderWidgetHostInputEventRouter::ClearAllObserverRegistrations() {
 }
 
 RenderWidgetHostInputEventRouter::RenderWidgetHostInputEventRouter(
-    viz::HitTestDataProvider* provider)
+    viz::HitTestDataProvider* provider,
+    Delegate* delegate)
     : last_mouse_move_target_(nullptr),
       last_mouse_move_root_view_(nullptr),
       last_emulated_event_root_view_(nullptr),
@@ -437,8 +440,10 @@ RenderWidgetHostInputEventRouter::RenderWidgetHostInputEventRouter(
       active_touches_(0),
       hit_test_provider_(provider),
       event_targeter_(std::make_unique<RenderWidgetTargeter>(this)),
+      delegate_(delegate),
       touch_event_ack_queue_(new TouchEventAckQueue(this)) {
   DCHECK(hit_test_provider_);
+  CHECK(delegate_);
   hit_test_provider_->AddHitTestRegionObserver(this);
 }
 
@@ -650,8 +655,10 @@ void RenderWidgetHostInputEventRouter::DispatchMouseEvent(
   // When touch emulation is active, mouse events have to act like touch
   // events, which requires that there be implicit capture between MouseDown
   // and MouseUp.
+
+  auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false);
   if (mouse_event.GetType() == blink::WebInputEvent::Type::kMouseDown &&
-      touch_emulator_ && touch_emulator_->enabled()) {
+      touch_emulator && touch_emulator->IsEnabled()) {
     mouse_capture_target_ = target;
   }
 
@@ -1900,8 +1907,9 @@ void RenderWidgetHostInputEventRouter::DispatchEventToTarget(
   if (blink::WebInputEvent::IsTouchEventType(event->GetType())) {
     auto& touch_event = *static_cast<blink::WebTouchEvent*>(event);
     TouchEventWithLatencyInfo touch_with_latency(touch_event, latency);
-    if (touch_emulator_ &&
-        touch_emulator_->HandleTouchEvent(touch_with_latency.event)) {
+    auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false);
+    if (touch_emulator &&
+        touch_emulator->HandleTouchEvent(touch_with_latency.event)) {
       // We cheat a little bit here, and assume that we know that even if the
       // target is a RenderWidgetHostViewChildFrame, that it would only try to
       // forward the ack to the root view anyways, so we send it there directly.
@@ -1929,13 +1937,9 @@ void RenderWidgetHostInputEventRouter::DispatchEventToTarget(
   NOTREACHED_IN_MIGRATION();
 }
 
-TouchEmulator* RenderWidgetHostInputEventRouter::GetTouchEmulator() {
-  if (!touch_emulator_) {
-    touch_emulator_ =
-        std::make_unique<TouchEmulator>(this, last_device_scale_factor_);
-  }
-
-  return touch_emulator_.get();
+TouchEmulator* RenderWidgetHostInputEventRouter::GetTouchEmulator(
+    bool create_if_necessary) {
+  return delegate_->GetTouchEmulator(create_if_necessary);
 }
 
 void RenderWidgetHostInputEventRouter::ForwardEmulatedGestureEvent(
@@ -1979,8 +1983,10 @@ void RenderWidgetHostInputEventRouter::SetCursor(const ui::Cursor& cursor) {
 
   last_device_scale_factor_ =
       last_mouse_move_root_view_->GetDeviceScaleFactor();
-  if (touch_emulator_)
-    touch_emulator_->SetDeviceScaleFactor(last_device_scale_factor_);
+  auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false);
+  if (touch_emulator) {
+    touch_emulator->SetDeviceScaleFactor(last_device_scale_factor_);
+  }
   if (auto* cursor_manager = last_mouse_move_root_view_->GetCursorManager()) {
     for (auto it : owner_map_) {
       if (it.second)
@@ -2012,8 +2018,10 @@ void RenderWidgetHostInputEventRouter::OnAggregatedHitTestRegionListUpdated(
 void RenderWidgetHostInputEventRouter::SetMouseCaptureTarget(
     RenderWidgetHostViewInput* target,
     bool capture) {
-  if (touch_emulator_ && touch_emulator_->enabled())
+  auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false);
+  if (touch_emulator && touch_emulator->IsEnabled()) {
     return;
+  }
 
   if (capture) {
     mouse_capture_target_ = target;

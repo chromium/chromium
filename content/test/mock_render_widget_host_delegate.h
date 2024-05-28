@@ -19,7 +19,9 @@ namespace content {
 
 class RenderWidgetHostImpl;
 
-class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
+class MockRenderWidgetHostDelegate
+    : public RenderWidgetHostDelegate,
+      public RenderWidgetHostInputEventRouter::Delegate {
  public:
   MockRenderWidgetHostDelegate();
 
@@ -67,6 +69,9 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() override;
   gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
       ui::Compositor* compositor) override;
+
+  //  RenderWidgetHostInputEventRouter::Delegate
+  TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
 
  private:
   std::unique_ptr<NativeWebKeyboardEvent> last_event_;

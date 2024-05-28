@@ -74,7 +74,14 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       public TouchEmulatorClient,
       public viz::HitTestRegionObserver {
  public:
-  explicit RenderWidgetHostInputEventRouter(viz::HitTestDataProvider* provider);
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual TouchEmulator* GetTouchEmulator(bool create_if_necessary) = 0;
+  };
+
+  explicit RenderWidgetHostInputEventRouter(viz::HitTestDataProvider* provider,
+                                            Delegate* delegate);
 
   RenderWidgetHostInputEventRouter(const RenderWidgetHostInputEventRouter&) =
       delete;
@@ -117,10 +124,11 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
                            RenderWidgetHostViewInput* owner);
   void RemoveFrameSinkIdOwner(const viz::FrameSinkId& id);
 
-  TouchEmulator* GetTouchEmulator();
-  // Since GetTouchEmulator will lazily create a touch emulator, the following
-  // accessor allows testing for its existence without causing it to be created.
-  bool has_touch_emulator() const { return touch_emulator_.get(); }
+  // Returns the existing TouchEmulator if |create_if_necessary| is false, else
+  // creates a touch emulator.
+  TouchEmulator* GetTouchEmulator(bool create_if_necessary);
+
+  float last_device_scale_factor() { return last_device_scale_factor_; }
 
   // Returns the RenderWidgetHostViewInput inside the |root_view| at |point|
   // where |point| is with respect to |root_view|'s coordinates. If a RWHI is
@@ -456,7 +464,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   std::unique_ptr<RenderWidgetTargeter> event_targeter_;
   bool events_being_flushed_ = false;
 
-  std::unique_ptr<TouchEmulator> touch_emulator_;
+  raw_ptr<Delegate> delegate_;
   std::unique_ptr<TouchEventAckQueue> touch_event_ack_queue_;
 
   // The coordinates that are determined by the renderer process on MouseDown

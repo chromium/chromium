@@ -193,6 +193,7 @@ source_set("common") {
     "input/timeout_monitor.h",
     "input/touch_action_filter.cc",
     "input/touch_action_filter.h",
+    "input/touch_emulator.h",
     "input/touch_event_stream_validator.cc",
     "input/touch_event_stream_validator.h",
     "input/touch_timeout_handler.cc",

@@ -62,7 +62,7 @@
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/input/fling_scheduler.h"
-#include "content/browser/renderer_host/input/touch_emulator.h"
+#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -1342,7 +1342,8 @@ void RenderWidgetHostImpl::SetPageFocus(bool focused) {
       UnlockKeyboard();
     }
 
-    if (auto* touch_emulator = GetExistingTouchEmulator()) {
+    if (auto* touch_emulator =
+            GetTouchEmulator(/*create_if_necessary=*/false)) {
       touch_emulator->CancelTouch();
     }
   } else if (keyboard_lock_allowed_) {
@@ -1372,7 +1373,7 @@ void RenderWidgetHostImpl::SetPageFocus(bool focused) {
 }
 
 void RenderWidgetHostImpl::LostCapture() {
-  if (auto* touch_emulator = GetExistingTouchEmulator()) {
+  if (auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false)) {
     touch_emulator->CancelTouch();
   }
 
@@ -1517,7 +1518,7 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
     return;
   }
 
-  auto* touch_emulator = GetExistingTouchEmulator();
+  auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false);
   if (touch_emulator &&
       touch_emulator->HandleMouseEvent(mouse_event, GetView())) {
     return;
@@ -1548,7 +1549,7 @@ void RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(
     return;
   }
 
-  auto* touch_emulator = GetExistingTouchEmulator();
+  auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false);
   if (touch_emulator && touch_emulator->HandleMouseWheelEvent(wheel_event)) {
     return;
   }
@@ -1781,7 +1782,7 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
     }
   }
 
-  auto* touch_emulator = GetExistingTouchEmulator();
+  auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false);
   if (touch_emulator && touch_emulator->HandleKeyboardEvent(key_event)) {
     return;
   }
@@ -2152,7 +2153,7 @@ void RenderWidgetHostImpl::NotifyScreenInfoChanged() {
   }
 
   // The delegate may not have an input event router in tests.
-  if (auto* touch_emulator = GetExistingTouchEmulator()) {
+  if (auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false)) {
     touch_emulator->SetDeviceScaleFactor(GetScaleFactorForView(view_.get()));
   }
 }
@@ -2959,21 +2960,14 @@ bool RenderWidgetHostImpl::IsAutoscrollInProgress() {
   return autoscroll_in_progress_;
 }
 
-TouchEmulator* RenderWidgetHostImpl::GetTouchEmulator() {
+TouchEmulatorImpl* RenderWidgetHostImpl::GetTouchEmulator(
+    bool create_if_necessary) {
   if (!delegate_ || !delegate_->GetInputEventRouter()) {
     return nullptr;
   }
 
-  return delegate_->GetInputEventRouter()->GetTouchEmulator();
-}
-
-TouchEmulator* RenderWidgetHostImpl::GetExistingTouchEmulator() {
-  if (!delegate_ || !delegate_->GetInputEventRouter() ||
-      !delegate_->GetInputEventRouter()->has_touch_emulator()) {
-    return nullptr;
-  }
-
-  return delegate_->GetInputEventRouter()->GetTouchEmulator();
+  return static_cast<TouchEmulatorImpl*>(
+      delegate_->GetInputEventRouter()->GetTouchEmulator(create_if_necessary));
 }
 
 void RenderWidgetHostImpl::TextInputStateChanged(
@@ -3434,7 +3428,7 @@ void RenderWidgetHostImpl::OnGestureEventAck(
 
   // If the TouchEmulator didn't exist when this GestureEvent was sent, we
   // shouldn't create it here.
-  if (auto* touch_emulator = GetExistingTouchEmulator()) {
+  if (auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false)) {
     touch_emulator->OnGestureEventAck(event.event, GetView());
   }
 
@@ -3862,7 +3856,7 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
 
   bool is_mobile_optimized = metadata.is_mobile_optimized;
   input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized);
-  if (auto* touch_emulator = GetExistingTouchEmulator()) {
+  if (auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false)) {
     touch_emulator->SetDoubleTapSupportForPageEnabled(!is_mobile_optimized);
   }
 

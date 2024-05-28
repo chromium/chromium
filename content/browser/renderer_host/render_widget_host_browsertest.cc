@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/permissions/permission_controller_impl.h"
-#include "content/browser/renderer_host/input/touch_emulator.h"
+#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -236,7 +236,7 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
 // given a unique_touch_event_id of 0, then a crash will occur.
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
                        TouchEmulatorPinchWithGestureFling) {
-  auto* touch_emulator = host()->GetTouchEmulator();
+  auto* touch_emulator = host()->GetTouchEmulator(/*create_if_necessary=*/true);
   touch_emulator->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
                          ui::GestureProviderConfigType::GENERIC_MOBILE);
   touch_emulator->SetPinchGestureModeForTesting(true);
@@ -297,9 +297,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
                        MAYBE_TouchEmulator) {
-  host()->GetTouchEmulator()->Enable(
-      TouchEmulator::Mode::kEmulatingTouchFromMouse,
-      ui::GestureProviderConfigType::GENERIC_MOBILE);
+  host()
+      ->GetTouchEmulator(/*create_if_necessary=*/true)
+      ->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
+               ui::GestureProviderConfigType::GENERIC_MOBILE);
 
   TestInputEventObserver observer;
   host()->AddInputEventObserver(&observer);
@@ -448,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
             dispatched_events[1]);
 
   // Turn off emulation during a pinch.
-  host()->GetTouchEmulator()->Disable();
+  host()->GetTouchEmulator(/*create_if_necessary=*/true)->Disable();
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchCancel,
             observer.acked_touch_event_type());
   dispatched_events = observer.GetAndResetDispatchedEventTypes();
@@ -466,9 +467,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
   EXPECT_EQ(blink::WebInputEvent::Type::kMouseMove, dispatched_events[0]);
 
   // Turn on emulation.
-  host()->GetTouchEmulator()->Enable(
-      TouchEmulator::Mode::kEmulatingTouchFromMouse,
-      ui::GestureProviderConfigType::GENERIC_MOBILE);
+  host()
+      ->GetTouchEmulator(/*create_if_necessary=*/true)
+      ->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
+               ui::GestureProviderConfigType::GENERIC_MOBILE);
 
   // Another touch.
   SimulateRoutedMouseEvent(blink::WebInputEvent::Type::kMouseDown, 10, 120, 0,
@@ -498,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
   EXPECT_EQ(0u, observer.GetAndResetDispatchedEventTypes().size());
 
   // Turn off emulation during a scroll.
-  host()->GetTouchEmulator()->Disable();
+  host()->GetTouchEmulator(/*create_if_necessary=*/true)->Disable();
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchCancel,
             observer.acked_touch_event_type());
 

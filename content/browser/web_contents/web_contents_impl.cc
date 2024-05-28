@@ -92,6 +92,7 @@
 #include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -1263,6 +1264,8 @@ WebContentsImpl::~WebContentsImpl() {
   }
 
   FullscreenContentsSet(GetBrowserContext())->erase(this);
+
+  touch_emulator_.reset();
 
   rwh_input_event_router_.reset();
 
@@ -3939,7 +3942,7 @@ RenderWidgetHostInputEventRouter* WebContentsImpl::GetInputEventRouter() {
     if (!rwh_input_event_router_.get()) {
       rwh_input_event_router_ =
           std::make_unique<RenderWidgetHostInputEventRouter>(
-              GetHostFrameSinkManager());
+              GetHostFrameSinkManager(), this);
     }
   }
   return rwh_input_event_router_.get();
@@ -6719,6 +6722,18 @@ bool WebContentsImpl::ShouldPreserveAbortedURLs() {
 void WebContentsImpl::NotifyNavigationStateChangedFromController(
     InvalidateTypes changed_flags) {
   NotifyNavigationStateChanged(changed_flags);
+}
+
+TouchEmulator* WebContentsImpl::GetTouchEmulator(bool create_if_necessary) {
+  CHECK(rwh_input_event_router_);
+
+  if (!touch_emulator_ && create_if_necessary) {
+    touch_emulator_ = std::make_unique<TouchEmulatorImpl>(
+        rwh_input_event_router_.get(),
+        rwh_input_event_router_->last_device_scale_factor());
+  }
+
+  return touch_emulator_.get();
 }
 
 void WebContentsImpl::DidNavigateMainFramePreCommit(

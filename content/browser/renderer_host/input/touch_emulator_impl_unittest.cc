@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/touch_emulator.h"
+#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 
 #include <stddef.h>
 
@@ -48,7 +48,7 @@ class TouchEmulatorTest : public testing::Test,
 
   // testing::Test
   void SetUp() override {
-    emulator_ = std::make_unique<TouchEmulator>(this, 1.0f);
+    emulator_ = std::make_unique<TouchEmulatorImpl>(this, 1.0f);
     emulator_->SetDoubleTapSupportForPageEnabled(false);
     emulator_->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
                       ui::GestureProviderConfigType::GENERIC_MOBILE);
@@ -93,7 +93,7 @@ class TouchEmulatorTest : public testing::Test,
                               RenderWidgetHostViewInput* target) override {}
 
  protected:
-  TouchEmulator* emulator() const {
+  TouchEmulatorImpl* emulator() const {
     return emulator_.get();
   }
 
@@ -257,7 +257,7 @@ class TouchEmulatorTest : public testing::Test,
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<TouchEmulator> emulator_;
+  std::unique_ptr<TouchEmulatorImpl> emulator_;
   std::vector<WebInputEvent::Type> forwarded_events_;
   base::TimeTicks last_event_time_;
   base::TimeDelta event_time_delta_;
@@ -587,7 +587,7 @@ TEST_F(TouchEmulatorTest, CancelAfterDisableDoesNotCrash) {
 }
 
 TEST_F(TouchEmulatorTest, ConstructorWithHighDeviceScaleDoesNotCrash) {
-  TouchEmulator(this, 4.0f);
+  TouchEmulatorImpl(this, 4.0f);
 }
 
 TEST_F(TouchEmulatorTest, CursorScaleFactor) {
@@ -606,7 +606,7 @@ TEST_F(TouchEmulatorTest, CursorScaleFactor) {
   emulator()->SetDeviceScaleFactor(1.0f);
   EXPECT_EQ(1.0f, GetCursorScaleFactor());
 
-  TouchEmulator another(this, 4.0f);
+  TouchEmulatorImpl another(this, 4.0f);
   EXPECT_EQ(1.0f, GetCursorScaleFactor());
   another.Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
                  ui::GestureProviderConfigType::GENERIC_MOBILE);
