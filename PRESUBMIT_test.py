@@ -1015,10 +1015,17 @@ class IncludeGuardTest(unittest.TestCase):
           '#error "Failed to include content/common/foo_messages.h"',
           '#endif',
         ]),
+        MockAffectedFile('chrome/renderer/thing/qux.h', [
+          '// Comment',
+          '#ifndef CHROME_RENDERER_THING_QUX_H_',
+          '#define CHROME_RENDERER_THING_QUX_H_',
+          'struct Boaty;',
+          '#endif',
+        ]),
       ]
     msgs = PRESUBMIT.CheckForIncludeGuards(
         mock_input_api, mock_output_api)
-    expected_fail_count = 8
+    expected_fail_count = 10
     self.assertEqual(expected_fail_count, len(msgs),
                      'Expected %d items, found %d: %s'
                      % (expected_fail_count, len(msgs), msgs))
@@ -1029,36 +1036,45 @@ class IncludeGuardTest(unittest.TestCase):
 
     self.assertIn('content/browser/test1.h', msgs[1].message)
     self.assertIn('Recommended name: CONTENT_BROWSER_TEST1_H_',
-                     msgs[1].message)
+                  msgs[1].message)
 
     self.assertEqual(msgs[2].items, ['content/browser/test2.h:3'])
     self.assertEqual(msgs[2].message,
                      'Missing "#define CONTENT_BROWSER_TEST2_H_" for '
                      'include guard')
 
-    self.assertEqual(msgs[3].items, ['content/browser/spleling.h:1'])
-    self.assertEqual(msgs[3].message,
+    self.assertIn('content/browser/internal.h', msgs[3].message)
+    self.assertIn('Recommended #endif comment: // CONTENT_BROWSER_INTERNAL_H_',
+                  msgs[3].message)
+
+    self.assertEqual(msgs[4].items, ['content/browser/spleling.h:1'])
+    self.assertEqual(msgs[4].message,
                      'Header using the wrong include guard name '
                      'CONTENT_BROWSER_SPLLEING_H_')
 
-    self.assertIn('content/browser/foo+bar.h', msgs[4].message)
+    self.assertIn('content/browser/foo+bar.h', msgs[5].message)
     self.assertIn('Recommended name: CONTENT_BROWSER_FOO_BAR_H_',
-                  msgs[4].message)
+                  msgs[5].message)
 
-    self.assertEqual(msgs[5].items, ['content/NotInBlink.h:1'])
-    self.assertEqual(msgs[5].message,
+    self.assertEqual(msgs[6].items, ['content/NotInBlink.h:1'])
+    self.assertEqual(msgs[6].message,
                      'Header using the wrong include guard name '
                      'NotInBlink_h')
 
-    self.assertEqual(msgs[6].items, ['third_party/blink/InBlink.h:1'])
-    self.assertEqual(msgs[6].message,
+    self.assertEqual(msgs[7].items, ['third_party/blink/InBlink.h:1'])
+    self.assertEqual(msgs[7].message,
                      'Header using the wrong include guard name '
                      'InBlink_h')
 
-    self.assertEqual(msgs[7].items, ['third_party/blink/AlsoInBlink.h:1'])
-    self.assertEqual(msgs[7].message,
+    self.assertEqual(msgs[8].items, ['third_party/blink/AlsoInBlink.h:1'])
+    self.assertEqual(msgs[8].message,
                      'Header using the wrong include guard name '
                      'WrongInBlink_h')
+
+    self.assertIn('chrome/renderer/thing/qux.h', msgs[9].message)
+    self.assertIn('Recommended #endif comment: // CHROME_RENDERER_THING_QUX_H_',
+                  msgs[9].message)
+
 
 class AccessibilityRelnotesFieldTest(unittest.TestCase):
   def testRelnotesPresent(self):

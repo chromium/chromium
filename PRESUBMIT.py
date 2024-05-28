@@ -6191,6 +6191,7 @@ def CheckForIncludeGuards(input_api, output_api):
         guard_name = None
         guard_line_number = None
         seen_guard_end = False
+        bypass_checks_at_end_of_file = False
 
         file_with_path = input_api.os_path.normpath(f.LocalPath())
         base_file_name = input_api.os_path.splitext(
@@ -6228,7 +6229,7 @@ def CheckForIncludeGuards(input_api, output_api):
         for line_number, line in enumerate(f.NewContents()):
             if ('no-include-guard-because-multiply-included' in line
                     or 'no-include-guard-because-pch-file' in line):
-                guard_name = 'DUMMY'  # To not trigger check outside the loop.
+                bypass_checks_at_end_of_file = True
                 break
 
             if guard_name is None:
@@ -6273,6 +6274,9 @@ def CheckForIncludeGuards(input_api, output_api):
                                 % (guard_name), [f.LocalPath()]))
                         break  # Nothing else to check and enough to warn once.
 
+        if bypass_checks_at_end_of_file:
+            continue
+
         if guard_name is None:
             errors.append(
                 output_api.PresubmitPromptWarning(
@@ -6281,6 +6285,12 @@ def CheckForIncludeGuards(input_api, output_api):
                     'This check can be disabled by having the string\n'
                     '"no-include-guard-because-multiply-included" or\n'
                     '"no-include-guard-because-pch-file" in the header.'
+                    % (f.LocalPath(), expected_guard)))
+        elif not seen_guard_end:
+            errors.append(
+                output_api.PresubmitPromptWarning(
+                    'Incorrect or missing include guard #endif in %s\n'
+                    'Recommended #endif comment: // %s'
                     % (f.LocalPath(), expected_guard)))
 
     return errors
