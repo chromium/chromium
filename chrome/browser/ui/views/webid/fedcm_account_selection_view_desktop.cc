@@ -74,15 +74,9 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   //   one to focus on the content area and one to focus on the clickable
   //   2. user typing will be interrupted because the widget that's not
   //   gated by user gesture would take the focus
-  // However, from accessibility's perspective, when the widget is
-  // displayed, there would be announcement with it and it would be better
-  // to focus on the widget such that the user could have more context and
-  // interact with it easily.
-  if (accessibility_state_utils::IsScreenReaderEnabled()) {
-    GetDialogWidget()->Show();
-    return;
-  }
-  GetDialogWidget()->ShowInactive();
+  // TODO(crbug.com/41482141): figure out how to address this issue without
+  // causing additional problems such as obscuring other browser UIs.
+  GetDialogWidget()->Show();
 }
 
 bool FedCmAccountSelectionView::Show(
