@@ -1746,8 +1746,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SigninDisabledNotificationShown"
-    enum="SigninAccessPoint" expires_after="2024-06-30">
-  <owner>birnie@google.com</owner>
+    enum="SigninAccessPoint" expires_after="2024-10-20">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
