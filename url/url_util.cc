@@ -126,6 +126,8 @@ struct SchemeRegistry {
       // Temporarily opted-out. See https://crrev.com/c/5547181.
       kAlmanac,
       kCrosApps,
+      // Temporarily opted-out. See https://crrev.com/c/5569365.
+      kDrivefs,
   };
 
   // Schemes with a predefined default custom handler.
