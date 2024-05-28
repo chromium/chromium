@@ -27,7 +27,7 @@ import java.util.Set;
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the ViewElement is in
  * the right state.
  */
-class ViewElementInState implements ElementInState {
+public class ViewElementInState implements ElementInState {
     private final ViewElement mViewElement;
     private final @Nullable Condition mGate;
 
@@ -55,8 +55,7 @@ class ViewElementInState implements ElementInState {
         }
 
         switch (mViewElement.getScope()) {
-            case Scope.CONDITIONAL_STATE_SCOPED:
-            case Scope.SHARED:
+            case Scope.SCOPED:
                 mExitCondition = new NotDisplayedAnymoreCondition(viewMatcher);
                 break;
             case Scope.UNSCOPED:
@@ -81,9 +80,7 @@ class ViewElementInState implements ElementInState {
     @Override
     public @Nullable Condition getExitCondition(Set<String> destinationElementIds) {
         switch (mViewElement.getScope()) {
-            case Scope.CONDITIONAL_STATE_SCOPED:
-                return mExitCondition;
-            case Scope.SHARED:
+            case Scope.SCOPED:
                 return destinationElementIds.contains(getId()) ? null : mExitCondition;
             case Scope.UNSCOPED:
                 return null;

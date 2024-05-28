@@ -36,12 +36,11 @@ public class ViewElement {
      */
     public static final int MIN_DISPLAYED_PERCENT = 90;
 
-    @IntDef({Scope.CONDITIONAL_STATE_SCOPED, Scope.SHARED, Scope.UNSCOPED})
+    @IntDef({Scope.SCOPED, Scope.UNSCOPED})
     @Retention(RetentionPolicy.SOURCE)
     @interface Scope {
-        int CONDITIONAL_STATE_SCOPED = 0;
-        int SHARED = 1;
-        int UNSCOPED = 2;
+        int SCOPED = 0;
+        int UNSCOPED = 1;
     }
 
     private final Matcher<View> mViewMatcher;
@@ -60,7 +59,7 @@ public class ViewElement {
      * <p>This is a good default method to the declare ViewElements; when in doubt, use this.
      */
     public static ViewElement sharedViewElement(Matcher<View> viewMatcher) {
-        return new ViewElement(viewMatcher, Scope.SHARED, Options.DEFAULT);
+        return new ViewElement(viewMatcher, Scope.SCOPED, Options.DEFAULT);
     }
 
     /**
@@ -73,24 +72,7 @@ public class ViewElement {
      * Matcher<View>).
      */
     public static ViewElement sharedViewElement(Matcher<View> viewMatcher, Options options) {
-        return new ViewElement(viewMatcher, Scope.SHARED, options);
-    }
-
-    /** Version of {@link #scopedViewElement(Matcher, Options)} using default Options. */
-    public static ViewElement scopedViewElement(Matcher<View> viewMatcher) {
-        return new ViewElement(viewMatcher, Scope.CONDITIONAL_STATE_SCOPED, Options.DEFAULT);
-    }
-
-    /**
-     * Create a ConditionalState-scoped ViewElement that matches |viewMatcher|.
-     *
-     * <p>ViewElements are matched to View instances as ENTER conditions.
-     *
-     * <p>ConditionalState-scoped ViewElements are the most restrictive; they generate an EXIT
-     * condition that no View is matched under any circumstances.
-     */
-    public static ViewElement scopedViewElement(Matcher<View> viewMatcher, Options options) {
-        return new ViewElement(viewMatcher, Scope.CONDITIONAL_STATE_SCOPED, options);
+        return new ViewElement(viewMatcher, Scope.SCOPED, options);
     }
 
     /** Version of {@link #unscopedViewElement(Matcher, Options)} using default Options. */

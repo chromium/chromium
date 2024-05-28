@@ -12,7 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewElement.viewElement;
 
 import androidx.test.espresso.Espresso;
 
@@ -30,9 +30,9 @@ import java.util.List;
 // TODO(crbug/324919909): Migrate TabListEditorTestingRobot to here.
 public class HubTabSwitcherListEditorFacility extends Facility<HubTabSwitcherBaseStation> {
     public static final ViewElement TAB_LIST_EDITOR_LAYOUT =
-            scopedViewElement(withId(R.id.selectable_list));
+            viewElement(withId(R.id.selectable_list));
     public static final ViewElement TAB_LIST_EDITOR_RECYCLER_VIEW =
-            scopedViewElement(
+            viewElement(
                     allOf(
                             isDescendantOfA(withId(R.id.selectable_list)),
                             withId(R.id.tab_list_recycler_view)));
@@ -50,7 +50,7 @@ public class HubTabSwitcherListEditorFacility extends Facility<HubTabSwitcherBas
         elements.declareView(TAB_LIST_EDITOR_LAYOUT);
         elements.declareView(TAB_LIST_EDITOR_RECYCLER_VIEW);
         elements.declareView(
-                ViewElement.scopedViewElement(
+                viewElement(
                         allOf(
                                 withText(getSelectionModeNumberText()),
                                 withId(R.id.down),
