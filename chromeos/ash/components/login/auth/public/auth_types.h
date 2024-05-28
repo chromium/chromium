@@ -32,4 +32,4 @@ using PasswordInput = base::StrongAlias<class PasswordInputTag, std::string>;
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_RECOVERY_AUTH_TYPES_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_TYPES_H_

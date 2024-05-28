@@ -37,4 +37,4 @@ class FakeIconDecoder : public IconDecoder {
 }  // namespace phonehub
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE+_ICON_DECODER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_ICON_DECODER_H_

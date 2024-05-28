@@ -132,4 +132,4 @@ class PasswordAuthView : public FactorAuthView,
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_PASSWORD_AUTH_VIEW_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_VIEWS_PASSWORD_AUTH_VIEW_H_

@@ -43,4 +43,4 @@ class ScopedLogMessage {
 
 }  // namespace ash::quick_start
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_LOGGING_LOGGING_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_QUICK_START_LOGGING_H_

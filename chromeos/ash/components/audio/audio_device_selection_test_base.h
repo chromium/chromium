@@ -83,4 +83,4 @@ class AudioDeviceSelectionTestBase : public testing::Test {
 };
 }  // namespace ash
 
-#endif
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_SELECTION_TEST_BASE_H_
