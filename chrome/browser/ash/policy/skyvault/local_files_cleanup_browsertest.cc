@@ -23,7 +23,10 @@ namespace policy::local_user_files {
 class LocalFilesCleanupTest : public policy::PolicyTest {
  public:
   LocalFilesCleanupTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+    // Disable SkyVaultV2 - cleanup doesn't apply for GA.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kSkyVault},
+        /*disabled_features=*/{features::kSkyVaultV2});
   }
   ~LocalFilesCleanupTest() override = default;
 
@@ -55,7 +58,8 @@ IN_PROC_BROWSER_TEST_F(LocalFilesCleanupTest, Cleanup) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(base::DirectoryExists(temp_dir.Take()));
   histogram_tester_.ExpectUniqueSample("SkyVault.LocalUserFilesCleanupCount",
-                                       /*sample=*/1, /*count=*/1);
+                                       /*sample=*/1,
+                                       /*expected_bucket_count=*/1);
 }
 
 }  // namespace policy::local_user_files
