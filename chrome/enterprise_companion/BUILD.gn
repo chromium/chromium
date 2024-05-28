@@ -4,6 +4,8 @@ source_set("base") {
   sources = [
     "enterprise_companion.cc",
     "enterprise_companion.h",
+    "enterprise_companion_service.cc",
+    "enterprise_companion_service.h",
     "lock.cc",
     "lock.h",
   ]
@@ -26,6 +28,7 @@ test("enterprise_companion_tests") {
   testonly = true
 
   sources = [
+    "enterprise_companion_service_unittest.cc",
     "enterprise_companion_unittest.cc",
     "test/run_all_unittests.cc",
   ]
