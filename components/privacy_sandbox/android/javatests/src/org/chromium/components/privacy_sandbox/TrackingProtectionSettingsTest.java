@@ -6,14 +6,18 @@ package org.chromium.components.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -91,6 +95,25 @@ public class TrackingProtectionSettingsTest {
         launchTrackingProtectionSettings();
 
         onView(withText(R.string.privacy_sandbox_tracking_protection_description))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testIpFpProtectionsDisplayedInLaunchUI() {
+        when(mDelegate.isBlockAll3PCDEnabled()).thenReturn(true);
+        when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
+        when(mDelegate.shouldDisplayIpProtection()).thenReturn(true);
+        when(mDelegate.shouldDisplayFingerprintingProtection()).thenReturn(true);
+
+        launchTrackingProtectionSettings();
+
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(withText(containsString("Learn how limiting")))));
+        onView(withText(containsString("Learn how IP protection"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Learn how limiting digital")))
                 .check(matches(isDisplayed()));
     }
 }
