@@ -13,28 +13,27 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Msgs} from './msgs.js';
 
+type AutomationNode = chrome.automation.AutomationNode;
+type TtsVoice = chrome.tts.TtsVoice;
+
+interface TextWithLocale {
+  text: string;
+  locale: string;
+}
+
 export class LocaleOutputHelper {
-  /** @private */
-  constructor() {
-    /**
-     * @const
-     * @private {string}
-     */
-    LocaleOutputHelper.BROWSER_UI_LOCALE_ =
-        chrome.i18n.getUILanguage().toLowerCase();
-    /** @private {string} */
-    this.currentLocale_ = LocaleOutputHelper.BROWSER_UI_LOCALE_ || '';
-    /** @private {string} */
+  private availableVoices_: TtsVoice[];
+  private currentLocale_: string;
+  private lastSpokenLocale_: string;
+
+  static instance: LocaleOutputHelper;
+
+  private constructor() {
+    this.currentLocale_ = BROWSER_UI_LOCALE || '';
     this.lastSpokenLocale_ = this.currentLocale_;
-    /**
-     * Confidence threshold to meet before assigning sub-node language.
-     * @const
-     * @private {number}
-     */
-    LocaleOutputHelper.PROBABILITY_THRESHOLD_ = 0.9;
-    /** @private {!Array<!chrome.tts.TtsVoice>} */
     this.availableVoices_ = [];
-    const setAvailableVoices = () => {
+
+    const setAvailableVoices = (): void => {
       chrome.tts.getVoices(voices => {
         this.availableVoices_ = voices || [];
       });
@@ -48,14 +47,12 @@ export class LocaleOutputHelper {
 
   /**
    * Computes |this.currentLocale_| and |outputString|, and returns them.
-   * @param {string} text
-   * @param {chrome.automation.AutomationNode} contextNode The AutomationNode
-   *     that owns |text|.
-   * @return {!{text: string, locale: string}}
+   * @param contextNode The AutomationNode that owns |text|.
    */
-  computeTextAndLocale(text, contextNode) {
+  computeTextAndLocale(text: string, contextNode: AutomationNode)
+      : TextWithLocale {
     if (!text || !contextNode) {
-      return {text, locale: LocaleOutputHelper.BROWSER_UI_LOCALE_};
+      return {text, locale: BROWSER_UI_LOCALE};
     }
 
     // Prefer the node's detected locale and fall back on the author-assigned
@@ -79,11 +76,11 @@ export class LocaleOutputHelper {
       }
     } else {
       // Alert the user that no voice is available for |newLocale|.
-      this.setCurrentLocale_(LocaleOutputHelper.BROWSER_UI_LOCALE_);
+      this.setCurrentLocale_(BROWSER_UI_LOCALE);
       const displayLanguage =
           chrome.accessibilityPrivate.getDisplayNameForLocale(
               newLocale /* Locale to translate */,
-              LocaleOutputHelper.BROWSER_UI_LOCALE_ /* Target locale */);
+              BROWSER_UI_LOCALE /* Target locale */);
       outputString =
           Msgs.getMsg('voice_unavailable_for_language', [displayLanguage]);
     }
@@ -91,26 +88,16 @@ export class LocaleOutputHelper {
     return {text: outputString, locale: this.currentLocale_};
   }
 
-  /**
-   * @param {string} nodeLocale
-   * @return {string}
-   * @private
-   */
-  computeNewLocale_(nodeLocale) {
+  private computeNewLocale_(nodeLocale: string): string {
     nodeLocale = nodeLocale.toLowerCase();
     if (LocaleOutputHelper.isValidLocale_(nodeLocale)) {
       return nodeLocale;
     }
 
-    return LocaleOutputHelper.BROWSER_UI_LOCALE_;
+    return BROWSER_UI_LOCALE;
   }
 
-  /**
-   * @param {string} targetLocale
-   * @return {boolean}
-   * @private
-   */
-  hasVoiceForLocale_(targetLocale) {
+  private hasVoiceForLocale_(targetLocale: string): boolean {
     const components = targetLocale.split('-');
     if (!components || components.length === 0) {
       return false;
@@ -130,22 +117,13 @@ export class LocaleOutputHelper {
     return false;
   }
 
-  /**
-   * @param {string} locale
-   * @private
-   */
-  setCurrentLocale_(locale) {
+  private setCurrentLocale_(locale: string): void {
     if (LocaleOutputHelper.isValidLocale_(locale)) {
       this.currentLocale_ = locale;
     }
   }
 
-  /**
-   * @param {string} newLocale
-   * @return {boolean}
-   * @private
-   */
-  shouldAnnounceLocale_(newLocale) {
+  private shouldAnnounceLocale_(newLocale: string): boolean {
     const [lastSpokenLanguage, lastSpokenCountry] =
         this.lastSpokenLocale_.split('-');
     const [newLanguage, newCountry] = newLocale.split('-');
@@ -164,10 +142,8 @@ export class LocaleOutputHelper {
 
   // =============== Static Methods ==============
 
-  /**
-   * Creates a singleton instance of LocaleOutputHelper.
-   */
-  static init() {
+  /** Creates a singleton instance of LocaleOutputHelper. */
+  static init(): void {
     if (LocaleOutputHelper.instance !== undefined) {
       throw new Error(
           'LocaleOutputHelper is a singleton, can only initialize once');
@@ -176,18 +152,14 @@ export class LocaleOutputHelper {
     LocaleOutputHelper.instance = new LocaleOutputHelper();
   }
 
-  /**
-   * @param {string} locale
-   * @return {boolean}
-   * @private
-   */
-  static isValidLocale_(locale) {
+  private static isValidLocale_(locale: string): boolean {
     return chrome.accessibilityPrivate.getDisplayNameForLocale(
                locale, locale) !== '';
   }
 }
 
-/** @type {LocaleOutputHelper} */
-LocaleOutputHelper.instance;
+// Local to module.
+
+const BROWSER_UI_LOCALE = chrome.i18n.getUILanguage().toLowerCase();
 
 TestImportManager.exportForTesting(LocaleOutputHelper);
