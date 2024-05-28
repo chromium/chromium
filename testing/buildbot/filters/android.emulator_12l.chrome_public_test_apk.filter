@@ -153,9 +153,6 @@
 # crbug.com/1513296
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testRedirectedExternalNavigationWithUserGesture
 
-# crbug.com/1513300
--org.chromium.chrome.browser.segmentation_platform.ContextualPageActionControllerTest.testContextualPageModelExecution_OnReaderModePage
-
 # crbug.com/1513301
 -org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromTabSwitcherActionMenu
 
