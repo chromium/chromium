@@ -1354,8 +1354,14 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
 
     // Key events can lead to this being deleted.
     if (!this_ref) {
-      event->StopPropagation();
-      return ui::POST_DISPATCH_NONE;
+      // Don't stop event propagation for Shift-Esc because it is
+      // supposed to open the Task Manager on Windows and Linux.
+      if (event->IsShiftDown() && event->key_code() == ui::VKEY_ESCAPE) {
+        return ui::POST_DISPATCH_PERFORM_DEFAULT;
+      } else {
+        event->StopPropagation();
+        return ui::POST_DISPATCH_NONE;
+      }
     }
 
     if (!IsEditableCombobox() && !event->stopped_propagation()) {
@@ -1745,6 +1751,11 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       break;
 
     case ui::VKEY_ESCAPE:
+      // Fully exit the menu, when Shift-Esc is pressed.
+      if (event.IsShiftDown()) {
+        Cancel(ExitType::kAll);
+        break;
+      }
       if (!state_.item->GetParentMenuItem() ||
           (!state_.item->GetParentMenuItem()->GetParentMenuItem() &&
            (!state_.item->SubmenuIsShowing()))) {
