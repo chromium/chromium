@@ -27,4 +27,4 @@ class ManagementBubble : public LoginTooltipView {
 };
 
 }  // namespace ash
-#endif  // ASH_LOGIN_UI_AUTH_ERROR_BUBBLE_H_
+#endif  // ASH_LOGIN_UI_MANAGEMENT_BUBBLE_H_

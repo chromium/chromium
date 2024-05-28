@@ -27,4 +27,4 @@ enum class SnapPosition { kNone, kPrimary, kSecondary };
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_WM_SPLITVIEW_SPLIT_VIEW_TYPES_H_

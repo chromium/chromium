@@ -55,4 +55,4 @@ class ASH_EXPORT NetworkListTetherHostsHeaderView : public RoundedContainer,
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_NETWORK_TETHER_HOSTS_NETWORK_LIST_HEADER_VIEW_H_
+#endif  // ASH_SYSTEM_NETWORK_NETWORK_LIST_TETHER_HOSTS_HEADER_VIEW_H_

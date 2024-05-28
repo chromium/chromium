@@ -67,4 +67,4 @@ class ASH_EXPORT ModifierKeyComboRecorder
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_ACCELERATORS_MODIFIER_KEY_COMBO_RECORDER_H_

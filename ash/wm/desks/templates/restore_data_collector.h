@@ -95,4 +95,4 @@ class RestoreDataCollector {
 
 }  // namespace ash
 
-#endif  // #define ASH_WM_DESKS_TEMPLATES_RESTORE_DATA_COLLECTOR_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_RESTORE_DATA_COLLECTOR_H_

@@ -57,4 +57,4 @@ class MockProjectorClient : public ProjectorClient,
 
 }  // namespace ash
 
-#endif  // ASH_PROJECTOR_TEST_MOCK_PROJECTOR_CLIENT_H_
+#endif  // ASH_PUBLIC_CPP_TEST_MOCK_PROJECTOR_CLIENT_H_

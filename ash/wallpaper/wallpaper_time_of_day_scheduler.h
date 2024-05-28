@@ -33,4 +33,4 @@ class WallpaperTimeOfDayScheduler : public ScheduledFeature {
 
 }  // namespace ash
 
-#endif  // ASH_WALLPAPER_WALLPAPER_DAILY_REFRESH_SCHEDULER_H_
+#endif  // ASH_WALLPAPER_WALLPAPER_TIME_OF_DAY_SCHEDULER_H_

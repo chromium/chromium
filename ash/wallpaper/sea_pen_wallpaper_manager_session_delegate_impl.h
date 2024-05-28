@@ -31,4 +31,4 @@ class SeaPenWallpaperManagerSessionDelegateImpl
 
 }  // namespace ash
 
-#endif  // ASH_WALLPAPER_SEA_PEN_WALLPAPER_MANAGER_SESSION_DELEGATE_H_
+#endif  // ASH_WALLPAPER_SEA_PEN_WALLPAPER_MANAGER_SESSION_DELEGATE_IMPL_H_

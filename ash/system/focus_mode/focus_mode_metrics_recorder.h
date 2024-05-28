@@ -50,4 +50,4 @@ class ASH_EXPORT FocusModeMetricsRecorder
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_METRICS_RECODER_H_
+#endif  // ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_METRICS_RECORDER_H_

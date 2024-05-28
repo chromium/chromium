@@ -89,4 +89,4 @@ class ASH_EXPORT RoundedDisplayFrameFactory {
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_ROUNDED_DISPLAY_ROUNDED_DISPLAY_FRAME_FACTORY_H_

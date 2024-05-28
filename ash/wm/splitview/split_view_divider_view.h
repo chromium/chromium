@@ -109,4 +109,4 @@ class SplitViewDividerView : public views::View,
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_VIEW_H_

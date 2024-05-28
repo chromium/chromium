@@ -78,4 +78,4 @@ class ASH_EXPORT MultiCaptureServiceClient
 
 }  // namespace ash
 
-#endif  // ASH_VIDEO_CAPTURE_MULTI_CAPTURE_SERVICE_CLIENT_H_
+#endif  // ASH_MULTI_CAPTURE_MULTI_CAPTURE_SERVICE_CLIENT_H_

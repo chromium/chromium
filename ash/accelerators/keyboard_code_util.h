@@ -43,4 +43,4 @@ ASH_EXPORT const gfx::VectorIcon* GetSearchOrLauncherVectorIcon();
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_ACCELERATORS_KEYBOARD_CODE_UTIL_H_

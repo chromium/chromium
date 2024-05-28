@@ -139,4 +139,4 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_PICKER_PICKER_CONTROLLER_H_

@@ -56,4 +56,4 @@ using PickerRichMedia = std::variant<PickerTextMedia,
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_PICKER_INSERT_MEDIA_REQUEST_H_
+#endif  // ASH_PICKER_PICKER_RICH_MEDIA_H_

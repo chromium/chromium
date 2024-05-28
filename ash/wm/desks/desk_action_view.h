@@ -75,4 +75,4 @@ class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_WM_DESKS_DESK_ACTION_VIEW_H_

@@ -101,4 +101,4 @@ class ASH_PUBLIC_EXPORT PickerClient {
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_PUBLIC_CPP_PICKER_PICKER_CLIENT_H_

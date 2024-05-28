@@ -55,4 +55,4 @@ class ASH_EXPORT PickerWidget : public views::Widget {
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_VIEWS_PICKER_VIEW_H_
+#endif  // ASH_PICKER_VIEWS_PICKER_WIDGET_H_

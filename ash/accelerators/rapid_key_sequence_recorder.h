@@ -46,4 +46,4 @@ class ASH_EXPORT RapidKeySequenceRecorder
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_ACCELERATORS_RAPID_KEY_SEQUENCE_RECORDER_H_

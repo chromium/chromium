@@ -125,4 +125,4 @@ views::Widget* FindWidgetWithNameAndWaitIfNeeded(const std::string& name);
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_TEST_ASH_TEST_UTIL_H_

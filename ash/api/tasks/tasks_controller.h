@@ -36,4 +36,4 @@ class ASH_EXPORT TasksController : public SessionObserver {
 
 }  // namespace ash::api
 
-#endif  // ASH_API_TASKS_TASKS_DELEGATE_H_
+#endif  // ASH_API_TASKS_TASKS_CONTROLLER_H_

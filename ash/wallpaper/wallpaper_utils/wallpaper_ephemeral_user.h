@@ -18,4 +18,4 @@ ASH_EXPORT bool IsEphemeralUser(const AccountId& account_id);
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_EPHEMERAL_USER_H_

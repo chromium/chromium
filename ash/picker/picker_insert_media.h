@@ -36,4 +36,4 @@ ASH_EXPORT void InsertMediaToInputField(PickerRichMedia media,
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_PICKER_INSERT_MEDIA_REQUEST_H_
+#endif  // ASH_PICKER_PICKER_INSERT_MEDIA_H_

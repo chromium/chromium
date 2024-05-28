@@ -36,4 +36,4 @@ class FakeDiskSpaceInstance : public mojom::DiskSpaceInstance {
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_TEST_FAKE_STORAGE_MANAGER_INSTANCE_H_
+#endif  // ASH_COMPONENTS_ARC_TEST_FAKE_DISK_SPACE_INSTANCE_H_

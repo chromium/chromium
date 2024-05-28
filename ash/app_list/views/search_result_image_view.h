@@ -83,4 +83,4 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_VIEWS_SEARCH_RESULT_INLINE_ICON_VIEW_H_
+#endif  // ASH_APP_LIST_VIEWS_SEARCH_RESULT_IMAGE_VIEW_H_

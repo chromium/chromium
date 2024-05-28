@@ -43,4 +43,4 @@ class ASH_EXPORT PickerPasteRequest : public aura::client::FocusChangeObserver {
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_PICKER_INSERT_MEDIA_REQUEST_H_
+#endif  // ASH_PICKER_PICKER_PASTE_REQUEST_H_

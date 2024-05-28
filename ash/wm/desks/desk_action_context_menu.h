@@ -110,4 +110,4 @@ class DeskActionContextMenu : public views::ContextMenuController,
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_WM_DESKS_DESK_ACTION_CONTEXT_MENU_H_

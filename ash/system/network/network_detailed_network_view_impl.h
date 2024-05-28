@@ -82,4 +82,4 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_NETWORK_NETWORK_DETAILED_NETWORK_VIEW_H_
+#endif  // ASH_SYSTEM_NETWORK_NETWORK_DETAILED_NETWORK_VIEW_IMPL_H_

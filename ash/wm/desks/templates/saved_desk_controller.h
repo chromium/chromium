@@ -144,4 +144,4 @@ class ASH_EXPORT SavedDeskController : public SessionObserver,
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_CONTROLLER_H_

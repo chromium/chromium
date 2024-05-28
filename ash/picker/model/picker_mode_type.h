@@ -20,4 +20,4 @@ enum class PickerModeType {
 
 }
 
-#endif
+#endif  // ASH_PICKER_MODEL_PICKER_MODE_TYPE_H_

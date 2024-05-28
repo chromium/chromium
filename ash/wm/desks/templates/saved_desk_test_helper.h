@@ -66,4 +66,4 @@ class SavedDeskTestHelper {
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_TEST_HELPER_H_

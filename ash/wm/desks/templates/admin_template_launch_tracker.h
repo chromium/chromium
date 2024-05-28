@@ -136,4 +136,4 @@ class ASH_EXPORT AdminTemplateLaunchTracker {
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_WM_DESKS_TEMPLATES_ADMIN_TEMPLATE_LAUNCH_TRACKER_H_

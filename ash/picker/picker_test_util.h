@@ -42,4 +42,4 @@ void ASH_EXPORT PressAndReleaseKey(views::Widget& widget,
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_PICKER_PICKER_TEST_UTIL_H_

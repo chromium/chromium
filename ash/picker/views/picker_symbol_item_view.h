@@ -35,4 +35,4 @@ class ASH_EXPORT PickerSymbolItemView : public PickerItemView {
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_VIEWS_PICKER_EMOJI_ITEM_VIEW_H_
+#endif  // ASH_PICKER_VIEWS_PICKER_SYMBOL_ITEM_VIEW_H_
