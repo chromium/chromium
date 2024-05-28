@@ -85,6 +85,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @DisabledTest(message = "https://crbug.com/335305496")
     public void testFullscreenVideoDetectedOnlyWhenPlaying() throws Throwable {
         enterFullscreen();
 
