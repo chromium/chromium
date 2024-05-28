@@ -324,6 +324,8 @@ void VolumeManager::Initialize() {
   if (local_user_files_allowed_) {
     // Add local folders - MyFiles and ARC if enabled.
     OnLocalUserFilesEnabled();
+  } else {
+    OnLocalUserFilesDisabled();
   }
 
   // Subscribe to DriveIntegrationService.
@@ -1604,13 +1606,12 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
   }
 }
 
-void VolumeManager::MountDownloadsVolume() {
+void VolumeManager::MountDownloadsVolume(bool read_only) {
   const base::FilePath localVolume =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
   const bool success = RegisterDownloadsMountPoint(profile_, localVolume);
   DCHECK(success);
-
-  DoMountEvent(Volume::CreateForDownloads(localVolume));
+  DoMountEvent(Volume::CreateForDownloads(localVolume, {}, nullptr, read_only));
   if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
     if (auto volume = CreateForFuseBoxDownloads(profile_, fusebox_daemon_.get(),
                                                 "fusebox Downloads")) {
@@ -1720,6 +1721,12 @@ void VolumeManager::OnLocalUserFilesDisabled() {
   CHECK(!policy::local_user_files::LocalUserFilesAllowed());
   UnsubscribeAndUnmountArc();
   UnmountDownloadsVolume();
+  if (base::FeatureList::IsEnabled(features::kSkyVaultV2) &&
+      read_only_local_folders_) {
+    // Keep the volume in GA version. It will be removed after migration.
+    // TODO(aidazolic): Do not mount if the local files migration succeeded.
+    MountDownloadsVolume(true);
+  }
 }
 
 }  // namespace file_manager

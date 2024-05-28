@@ -11,6 +11,7 @@ import {canHaveSubDirectories, isDirectoryEntry, isDriveRootEntryList, isEntrySc
 import {getIcon} from '../../common/js/file_type.js';
 import type {FilesAppDirEntry, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
+import {isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
@@ -563,11 +564,16 @@ function findVolumeByType(volumes: VolumeMap, volumeType: VolumeType): Volume|
  */
 export function getMyFiles(state: State):
     {myFilesVolume: null|Volume, myFilesEntry: null|VolumeEntry|EntryList} {
-  if (state.preferences?.localUserFilesAllowed === false) {
-    return {
-      myFilesEntry: null,
-      myFilesVolume: null,
-    };
+  const localFilesAllowed = state.preferences?.localUserFilesAllowed !== false;
+  if (!isSkyvaultV2Enabled()) {
+    // Return null for TT version.
+    // For GA version we show local files in read-only mode, if present.
+    if (!localFilesAllowed) {
+      return {
+        myFilesEntry: null,
+        myFilesVolume: null,
+      };
+    }
   }
 
   const {volumes} = state;
@@ -577,7 +583,7 @@ export function getMyFiles(state: State):
       null;
   let myFilesEntryList =
       getEntry(state, myFilesEntryListKey) as EntryList | null;
-  if (!myFilesVolumeEntry && !myFilesEntryList) {
+  if (localFilesAllowed && !myFilesVolumeEntry && !myFilesEntryList) {
     myFilesEntryList =
         new EntryList(str('MY_FILES_ROOT_LABEL'), RootType.MY_FILES);
     appendEntry(state, myFilesEntryList);

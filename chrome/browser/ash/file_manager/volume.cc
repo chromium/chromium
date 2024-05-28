@@ -138,7 +138,8 @@ std::unique_ptr<Volume> Volume::CreateForDrive(base::FilePath drive_path) {
 std::unique_ptr<Volume> Volume::CreateForDownloads(
     base::FilePath downloads_path,
     base::FilePath optional_fusebox_path,
-    const char* optional_fusebox_volume_label) {
+    const char* optional_fusebox_volume_label,
+    bool read_only) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_DOWNLOADS_DIRECTORY;
   // Keep source_path empty.
@@ -147,6 +148,7 @@ std::unique_ptr<Volume> Volume::CreateForDownloads(
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ = GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL);
   volume->watchable_ = true;
+  volume->is_read_only_ = read_only;
 
   if (!optional_fusebox_path.empty()) {
     // Leaving the type_ as VOLUME_TYPE_DOWNLOADS_DIRECTORY means that, for

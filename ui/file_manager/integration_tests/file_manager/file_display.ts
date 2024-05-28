@@ -1009,11 +1009,10 @@ export async function fileDisplayLocalFilesDisabledUnmountRemovable() {
   // Ensure two volumes are mounted.
   await remoteCall.waitForVolumesCount(2);
 
-  // Enable SkyVault, this should unmount Downloads.
+  // Enable SkyVault.
   await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
   await sendTestMessage(
       {name: 'setDefaultLocation', defaultLocation: 'google_drive'});
-  await remoteCall.waitForVolumesCount(1);
 
   // Open Files app without specifying the initial directory/root.
   const appId = await remoteCall.openNewWindow(null, null);

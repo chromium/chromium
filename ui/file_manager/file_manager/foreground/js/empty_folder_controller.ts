@@ -56,6 +56,7 @@ export class EmptyFolderController {
   private store_: Store = getStore();
   private volumes_: (Record<VolumeId, Volume>)|null = null;
   private uiEntries_: FileKey[] = [];
+  private localUserFilesAllowed_: boolean|undefined = true;
   protected isScanning_ = false;
   protected label_: HTMLElement;
 
@@ -89,16 +90,17 @@ export class EmptyFolderController {
       return;
     }
 
+    const localUserFilesAllowed = state.preferences?.localUserFilesAllowed;
     if (this.volumes_ !== state.volumes ||
-        this.uiEntries_ !== state.uiEntries) {
-      // TODO(aidazolic): Remove myFilesEntryList if local files are disabled.
+        this.uiEntries_ !== state.uiEntries ||
+        this.localUserFilesAllowed_ !== localUserFilesAllowed) {
+      // MyFiles might still be present as an UI entry, in case the migration is
+      // in process.
       const filteredUIEntries = state.uiEntries.filter(
           uiEntryKey => uiEntryKey !== myFilesEntryListKey &&
               uiEntryKey !== recentRootKey);
-      const localUserFilesDisallowed =
-          state.preferences?.localUserFilesAllowed === false;
       if (Object.values(state.volumes).length === 0 &&
-          filteredUIEntries.length === 0 && localUserFilesDisallowed) {
+          filteredUIEntries.length === 0 && localUserFilesAllowed === false) {
         this.showFilesystemError_();
       } else {
         this.resetUi_(/*setImageVisible*/ true);
@@ -106,6 +108,7 @@ export class EmptyFolderController {
       }
       this.volumes_ = state.volumes;
       this.uiEntries_ = state.uiEntries;
+      this.localUserFilesAllowed_ = localUserFilesAllowed;
     }
   }
 
