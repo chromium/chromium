@@ -16080,6 +16080,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_PIN_ENTRY_ERROR_SAME_AS_CURRENT" desc="Error message. Displayed when the user attempts to set a new PIN code for their security key (an external physical device for user authentication), and the new PIN is the same as the currently set PIN.">
         Create a new PIN that's different from your current PIN
       </message>
+      <message name="IDS_WEBAUTHN_USE_PHONE_WITH_NAME" desc="Text that appears on a button to save or use a passkey on the user's phone. It identifies the phone by name.">
+        Use <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 6 Pro</ex></ph>
+      </message>
 
       <!-- WebAuthn authenticator internal user verification -->
       <message name="IDS_WEBAUTHN_INLINE_ENROLLMENT_CANCEL_LABEL" desc="The label on a button allowing users to skip fingerprint registration when setting up a fingerprint enabled authenticator.">
