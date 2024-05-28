@@ -22,6 +22,9 @@ constexpr char kAlmanacOobeAppsEndpoint[] = "v1/oobe";
 // Maximum size of the response is 1MB.
 constexpr int kMaxResponseSizeInBytes = 1024 * 1024;
 
+constexpr char kServerErrorHistogramName[] =
+    "Apps.OobeAppRecommendationsService.ServerResponseCodes";
+
 // Description of the network request.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation(
@@ -82,7 +85,7 @@ void GetAppsAndUseCases(const apps::DeviceInfo& device_info,
   QueryAlmanacApi<oobe::proto::OOBEListResponse>(
       url_loader_factory, kTrafficAnnotation, BuildRequestBody(device_info),
       kAlmanacOobeAppsEndpoint, kMaxResponseSizeInBytes,
-      /*error_histogram_name=*/std::nullopt,
+      kServerErrorHistogramName,
       base::BindOnce(&MakeResponseOptional).Then(std::move(callback)));
 }
 

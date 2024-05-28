@@ -2574,6 +2574,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.OobeAppRecommendationsService.ServerResponseCodes"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-01">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    The combined http and net error codes the Almanac server responds with after
+    a request is made during the Onboarding flow in ChromeOS OOBE when user
+    enters the Device Use-Case screen.
+  </summary>
+</histogram>
+
 <histogram
     name="Apps.OpenedAppListSearchResultFromSearchBoxV2.{AnyNonAppBrowserWindowOpenAndNotMinimized}"
     enum="AppListSearchResult" expires_after="2023-12-17">
