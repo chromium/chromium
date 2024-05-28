@@ -12,11 +12,6 @@
 
 namespace enterprise_data_protection {
 
-// Controls attaching the source of a clipboard interaction to scanning requests
-// and to reported events.
-// TODO(b/325454406): Clean up this experiment when needed.
-BASE_DECLARE_FEATURE(kEnableSourceInPasteReports);
-
 // This function checks if a paste is allowed to proceed according to the
 // following policies:
 // - DataLeakPreventionRulesList

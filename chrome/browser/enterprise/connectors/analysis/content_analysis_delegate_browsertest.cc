@@ -1525,18 +1525,10 @@ class ContentAnalysisDelegateBlockingSettingBrowserTest
  public:
   ContentAnalysisDelegateBlockingSettingBrowserTest()
       : ContentAnalysisDelegateBrowserTestBase(machine_scope()) {
-    // `kEnableSourceInPasteReports` is always enabled for these tests since the
-    // extra source information being attached to scan requests and reports is
-    // independent from the setting validation done by this test.
     if (is_resumable()) {
-      scoped_feature_list_.InitWithFeatures(
-          {kResumableUploadEnabled,
-           enterprise_data_protection::kEnableSourceInPasteReports},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(kResumableUploadEnabled);
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          {enterprise_data_protection::kEnableSourceInPasteReports},
-          {kResumableUploadEnabled});
+      scoped_feature_list_.InitAndDisableFeature(kResumableUploadEnabled);
     }
   }
 

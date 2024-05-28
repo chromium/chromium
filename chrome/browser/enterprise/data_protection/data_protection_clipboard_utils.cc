@@ -188,10 +188,6 @@ bool SkipDataControlOrContentAnalysisChecks(
 std::string GetClipboardSourceString(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination) {
-  if (!base::FeatureList::IsEnabled(kEnableSourceInPasteReports)) {
-    return "";
-  }
-
   if (!source.browser_context()) {
     return "CLIPBOARD";
   }
@@ -504,10 +500,6 @@ void IsCopyRestrictedByDialog(
 }
 
 }  // namespace
-
-BASE_FEATURE(kEnableSourceInPasteReports,
-             "EnableSourceInPasteReports",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 void PasteIfAllowedByPolicy(
     const content::ClipboardEndpoint& source,
