@@ -690,10 +690,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // caller shall not close them, or use them after the VideoFrame is destroyed.
   // For such use cases, use dup() to obtain your own copy of the FDs.
   int GetDmabufFd(size_t i) const;
-
-  // Returns true if both VideoFrames are backed by DMABUF memory and point
-  // to the same set of DMABUFs, meaning that both frames use the same memory.
-  bool IsSameDmaBufsAs(const VideoFrame& frame) const;
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -914,14 +910,11 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  class DmabufHolder;
 
   // Dmabufs for the frame, used when storage is STORAGE_DMABUFS. Size is either
   // equal or less than the number of planes of the frame. If it is less, then
   // the memory area represented by the last FD contains the remaining planes.
-  // If a STORAGE_DMABUFS frame is wrapped into another, the wrapping frame
-  // will get an extra reference to the FDs (i.e. no duplication is involved).
-  scoped_refptr<DmabufHolder> dmabuf_fds_;
+  std::vector<base::ScopedFD> dmabuf_fds_;
 
   friend scoped_refptr<VideoFrame>
   WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(

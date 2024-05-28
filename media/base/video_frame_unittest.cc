@@ -579,14 +579,23 @@ TEST(VideoFrame, WrapExternalDmabufs) {
   auto wrapped_frame = VideoFrame::WrapVideoFrame(
       frame, frame->format(), visible_rect, visible_rect.size());
   ASSERT_NE(wrapped_frame, nullptr);
-  ASSERT_EQ(wrapped_frame->IsSameDmaBufsAs(*frame), true);
+  ASSERT_EQ(frame->NumDmabufFds(), wrapped_frame->NumDmabufFds());
+  for (size_t i = 0; i < frame->NumDmabufFds(); ++i) {
+    ASSERT_EQ(frame->GetDmabufFd(i), wrapped_frame->GetDmabufFd(i));
+  }
 
   // Multi-level wrapping should share same memory as well.
   auto wrapped_frame2 = VideoFrame::WrapVideoFrame(
       wrapped_frame, frame->format(), visible_rect, visible_rect.size());
   ASSERT_NE(wrapped_frame2, nullptr);
-  ASSERT_EQ(wrapped_frame2->IsSameDmaBufsAs(*wrapped_frame), true);
-  ASSERT_EQ(wrapped_frame2->IsSameDmaBufsAs(*frame), true);
+  ASSERT_EQ(frame->NumDmabufFds(), wrapped_frame2->NumDmabufFds());
+  for (size_t i = 0; i < frame->NumDmabufFds(); ++i) {
+    ASSERT_EQ(frame->GetDmabufFd(i), wrapped_frame2->GetDmabufFd(i));
+  }
+  ASSERT_EQ(wrapped_frame->NumDmabufFds(), wrapped_frame2->NumDmabufFds());
+  for (size_t i = 0; i < wrapped_frame2->NumDmabufFds(); ++i) {
+    ASSERT_EQ(wrapped_frame->GetDmabufFd(i), wrapped_frame2->GetDmabufFd(i));
+  }
 }
 #endif
 

@@ -314,26 +314,6 @@ static std::optional<VideoFrameLayout> GetDefaultLayout(
   return VideoFrameLayout::CreateWithPlanes(format, coded_size, planes);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// This class allows us to embed a vector<ScopedFD> into a scoped_refptr, and
-// thus to have several VideoFrames share the same set of DMABUF FDs.
-class VideoFrame::DmabufHolder
-    : public base::RefCountedThreadSafe<DmabufHolder> {
- public:
-  DmabufHolder() = default;
-  DmabufHolder(std::vector<base::ScopedFD>&& fds) : fds_(std::move(fds)) {}
-
-  const std::vector<base::ScopedFD>& fds() const { return fds_; }
-  size_t size() const { return fds_.size(); }
-
- private:
-  std::vector<base::ScopedFD> fds_;
-
-  friend class base::RefCountedThreadSafe<DmabufHolder>;
-  ~DmabufHolder() = default;
-};
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
 // static
 bool VideoFrame::IsValidConfig(VideoPixelFormat format,
                                StorageType storage_type,
@@ -880,8 +860,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
          sizeof(frame->mailbox_holders_));
   frame->mailbox_holders_and_gmb_release_cb_ =
       ReleaseMailboxAndGpuMemoryBufferCB();
-  frame->dmabuf_fds_ =
-      base::MakeRefCounted<DmabufHolder>(std::move(dmabuf_fds));
+  frame->dmabuf_fds_ = std::move(dmabuf_fds);
   DCHECK(frame->HasDmaBufs());
 
   return frame;
@@ -1063,12 +1042,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
       wrapping_frame->data_[i] = frame->data_[i];
     }
   }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  DCHECK(frame->dmabuf_fds_);
-  // If there are any |dmabuf_fds_| plugged in, we should refer them too.
-  wrapping_frame->dmabuf_fds_ = frame->dmabuf_fds_;
-#endif
 
   if (frame->storage_type() == STORAGE_SHMEM) {
     DCHECK(frame->shm_region_ && frame->shm_region_->IsValid());
@@ -1544,7 +1517,10 @@ scoped_refptr<gpu::ClientSharedImage> VideoFrame::shared_image(
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 size_t VideoFrame::NumDmabufFds() const {
-  return dmabuf_fds_->size();
+  if (wrapped_frame_) {
+    return wrapped_frame_->NumDmabufFds();
+  }
+  return dmabuf_fds_.size();
 }
 
 bool VideoFrame::HasDmaBufs() const {
@@ -1552,15 +1528,12 @@ bool VideoFrame::HasDmaBufs() const {
 }
 
 int VideoFrame::GetDmabufFd(size_t i) const {
+  if (wrapped_frame_) {
+    return wrapped_frame_->GetDmabufFd(i);
+  }
+
   DCHECK_EQ(storage_type_, STORAGE_DMABUFS);
-
-  return dmabuf_fds_->fds()[i].get();
-}
-
-bool VideoFrame::IsSameDmaBufsAs(const VideoFrame& frame) const {
-  return storage_type_ == STORAGE_DMABUFS &&
-         frame.storage_type_ == STORAGE_DMABUFS &&
-         &dmabuf_fds_->fds() == &frame.dmabuf_fds_->fds();
+  return dmabuf_fds_[i].get();
 }
 #endif
 
@@ -1659,9 +1632,6 @@ VideoFrame::VideoFrame(const VideoFrameLayout& layout,
       storage_type_(storage_type),
       visible_rect_(Intersection(visible_rect, gfx::Rect(layout.coded_size()))),
       natural_size_(natural_size),
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-      dmabuf_fds_(base::MakeRefCounted<DmabufHolder>()),
-#endif
       timestamp_(timestamp),
       unique_id_(GetNextID()) {
   DCHECK(IsValidConfigInternal(format(), frame_control_type, coded_size(),
