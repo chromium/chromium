@@ -101,6 +101,9 @@
 // Layout guide for the cell's content.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
 
+// The menu button displayed in the top right corner of the cell.
+@property(nonatomic, strong) UIButton* overflowMenuButton;
+
 // Button to autofill the current form with the address' data.
 @property(nonatomic, strong) UIButton* autofillFormButton;
 
@@ -108,6 +111,14 @@
 @property(nonatomic, weak) ManualFillAddress* address;
 
 @end
+
+namespace {
+
+// Vertical spacing between the top of the cell and the top of the overflow
+// menu.
+constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
+
+}  // namespace
 
 @implementation ManualFillAddressCell
 
@@ -240,9 +251,11 @@
     self.lastNameButton.hidden = YES;
   }
 
+  UIView* trailingView =
+      IsKeyboardAccessoryUpgradeEnabled() ? self.overflowMenuButton : nil;
   LayViewsHorizontallyWhenPossible(nameLineViews, self.layoutGuide,
                                    self.dynamicConstraints,
-                                   nameGroupVerticalLeadChips);
+                                   nameGroupVerticalLeadChips, trailingView);
 
   // Holds the chip buttons related to the company name that are vertical leads.
   NSMutableArray<UIView*>* companyGroupVerticalLeadChips =
@@ -395,6 +408,13 @@
     [self.contentView addSubview:self.addressLabel];
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.addressLabel ], self.layoutGuide);
+  } else {
+    self.overflowMenuButton = CreateOverflowMenuButton();
+    [self.contentView addSubview:self.overflowMenuButton];
+    [staticConstraints
+        addObject:[self.overflowMenuButton.topAnchor
+                      constraintEqualToAnchor:self.contentView.topAnchor
+                                     constant:kOverflowMenuButtonTopSpacing]];
   }
 
   self.firstNameButton =

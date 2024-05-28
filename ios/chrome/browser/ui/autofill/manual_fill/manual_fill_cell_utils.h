@@ -117,6 +117,17 @@ void AppendHorizontalConstraintsForViews(
 
 // Adds constraints like `AppendHorizontalConstraintsForViews` above
 // but with given `options`.
+void AppendHorizontalConstraintsForViews(
+    NSMutableArray<NSLayoutConstraint*>* constraints,
+    NSArray<UIView*>* views,
+    UILayoutGuide* layout_guide,
+    CGFloat margin,
+    AppendConstraints options);
+
+// Adds constraints like `AppendHorizontalConstraintsForViews` above,
+// but with the given `trailing_view`, which is a view that is attached to the
+// trailing side of the cell. The last view of `views` is therefore constraint
+// to not overlap `trailing_view` when valid (i.e., when not `nil`).
 // TODO(crbug.com/326398845): Remove the `margin` parameter once the Keyboard
 // Accessory Upgrade feature has launched both on iPhone and iPad.
 void AppendHorizontalConstraintsForViews(
@@ -124,7 +135,8 @@ void AppendHorizontalConstraintsForViews(
     NSArray<UIView*>* views,
     UILayoutGuide* layout_guide,
     CGFloat margin,
-    AppendConstraints options);
+    AppendConstraints options,
+    UIView* trailing_view);
 
 // Creates and adds constraints to `constraints` with the goal of laying as many
 // `views` as possible horizontally. The available horizontal space is
@@ -137,6 +149,18 @@ void LayViewsHorizontallyWhenPossible(
     UILayoutGuide* guide,
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSMutableArray<UIView*>* vertical_lead_views);
+
+// Creates and adds constraints like `LayViewsHorizontallyWhenPossible` above,
+// but with a given `first_row_trailing_view` that should be taken into account
+// when laying the first row of views. `first_row_trailing_view` being a view
+// that's attached to the trailing side of the cell and limiting the space
+// available horizontally.
+void LayViewsHorizontallyWhenPossible(
+    NSArray<UIView*>* views,
+    UILayoutGuide* guide,
+    NSMutableArray<NSLayoutConstraint*>* constraints,
+    NSMutableArray<UIView*>* vertical_lead_views,
+    UIView* first_row_trailing_view);
 
 // Creates a blank label with autoresize mask off and adjustable font size.
 UILabel* CreateLabel();

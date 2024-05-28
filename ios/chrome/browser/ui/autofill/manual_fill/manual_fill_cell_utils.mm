@@ -64,6 +64,10 @@ constexpr CGFloat kVerticalSpacingBetweenLabeledChips = 8;
 // Height and width of the overflow menu button displayed in the cell's header.
 constexpr CGFloat kOverflowMenuButtonSize = 24;
 
+// Minimum spacing that a cell's trailing view should have with the view on its
+// left.
+constexpr CGFloat kTrailingViewMinLeadingSpacing = 8;
+
 // Top and bottom padding for the virtual card instruction view.
 constexpr CGFloat kVirtualCardInstructionsVerticalPadding = 8;
 
@@ -119,16 +123,19 @@ CGFloat GetViewWidth(UIView* view) {
 }
 
 // Creates and adds constraints to `constraints`, so as to horizontally lay out
-// the given `views`. Then, adds the first view to `vertical_lead_views` to mark
-// the start of a new row of views.
+// the given `views`, while taking the `trailing_view` into account. Then, adds
+// the first view to `vertical_lead_views` to mark the start of a new row of
+// views.
 void LayViewsHorizontally(NSArray<UIView*>* views,
                           UILayoutGuide* guide,
                           NSMutableArray<NSLayoutConstraint*>* constraints,
-                          NSMutableArray<UIView*>* vertical_lead_views) {
+                          NSMutableArray<UIView*>* vertical_lead_views,
+                          UIView* trailing_view) {
   AppendHorizontalConstraintsForViews(
       constraints, views, guide, 0,
       AppendConstraintsHorizontalSyncBaselines |
-          AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+          AppendConstraintsHorizontalEqualOrSmallerThanGuide,
+      trailing_view);
   [vertical_lead_views addObject:views.firstObject];
 }
 
@@ -234,6 +241,17 @@ void AppendHorizontalConstraintsForViews(
     UILayoutGuide* layout_guide,
     CGFloat margin,
     AppendConstraints options) {
+  AppendHorizontalConstraintsForViews(constraints, views, layout_guide, margin,
+                                      options, nil);
+}
+
+void AppendHorizontalConstraintsForViews(
+    NSMutableArray<NSLayoutConstraint*>* constraints,
+    NSArray<UIView*>* views,
+    UILayoutGuide* layout_guide,
+    CGFloat margin,
+    AppendConstraints options,
+    UIView* trailing_view) {
   if (views.count == 0) {
     return;
   }
@@ -256,26 +274,40 @@ void AppendHorizontalConstraintsForViews(
     is_first_view = NO;
   }
 
-  if (options & AppendConstraintsHorizontalEqualOrSmallerThanGuide) {
+  // If there's a `trailing_view`, constraint the trailing anchor of the last
+  // view to `trailing_view`'s leading anchor. Otherwise constraint the last
+  // view's trailing anchor to the `layout_guide`'s trailing anchor.
+  UIView* last_view = views.lastObject;
+  if (trailing_view) {
     [constraints
-        addObject:[views.lastObject.trailingAnchor
+        addObject:
+            [last_view.trailingAnchor
+                constraintLessThanOrEqualToAnchor:trailing_view.leadingAnchor
+                                         constant:
+                                             -kTrailingViewMinLeadingSpacing]];
+    [constraints
+        addObject:[trailing_view.trailingAnchor
+                      constraintEqualToAnchor:layout_guide.trailingAnchor]];
+
+  } else if (options & AppendConstraintsHorizontalEqualOrSmallerThanGuide) {
+    [constraints
+        addObject:[last_view.trailingAnchor
                       constraintLessThanOrEqualToAnchor:layout_guide
                                                             .trailingAnchor
                                                constant:-margin]];
 
   } else {
     [constraints
-        addObject:[views.lastObject.trailingAnchor
+        addObject:[last_view.trailingAnchor
                       constraintEqualToAnchor:layout_guide.trailingAnchor
                                      constant:-margin]];
     // Give all remaining space to the last button, minus margin, as per UX.
-    [views.lastObject
+    [last_view
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
-    [views.lastObject
-        setContentHuggingPriority:UILayoutPriorityDefaultLow
-                          forAxis:UILayoutConstraintAxisHorizontal];
+    [last_view setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                 forAxis:UILayoutConstraintAxisHorizontal];
   }
 
   if (options & AppendConstraintsHorizontalSyncBaselines) {
@@ -288,11 +320,29 @@ void LayViewsHorizontallyWhenPossible(
     UILayoutGuide* guide,
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSMutableArray<UIView*>* vertical_lead_views) {
+  LayViewsHorizontallyWhenPossible(views, guide, constraints,
+                                   vertical_lead_views, nil);
+}
+
+void LayViewsHorizontallyWhenPossible(
+    NSArray<UIView*>* views,
+    UILayoutGuide* guide,
+    NSMutableArray<NSLayoutConstraint*>* constraints,
+    NSMutableArray<UIView*>* vertical_lead_views,
+    UIView* first_row_trailing_view) {
   if (!views || !views.count) {
     return;
   }
 
+  // `first_row_trailing_view` should only be considered for the first row.
+  BOOL should_consider_trailing_view = first_row_trailing_view;
   CGFloat available_width = GetLayoutGuideWidth(guide);
+  if (should_consider_trailing_view) {
+    // Remove the width of the `first_row_trailing_view` and its leading spacing
+    // from the `available_width`.
+    available_width -= (GetViewWidth(first_row_trailing_view) +
+                        kTrailingViewMinLeadingSpacing);
+  }
   NSMutableArray<UIView*>* horizontal_views = [[NSMutableArray alloc] init];
 
   for (UIView* view in views) {
@@ -304,8 +354,10 @@ void LayViewsHorizontallyWhenPossible(
       [horizontal_views addObject:view];
       available_width -= (view_width + GetHorizontalSpacingBetweenChips());
     } else {
-      LayViewsHorizontally(horizontal_views, guide, constraints,
-                           vertical_lead_views);
+      LayViewsHorizontally(
+          horizontal_views, guide, constraints, vertical_lead_views,
+          should_consider_trailing_view ? first_row_trailing_view : nil);
+      should_consider_trailing_view = NO;
 
       // Start new row of views.
       [horizontal_views removeAllObjects];
@@ -315,8 +367,9 @@ void LayViewsHorizontallyWhenPossible(
     }
   }
 
-  LayViewsHorizontally(horizontal_views, guide, constraints,
-                       vertical_lead_views);
+  LayViewsHorizontally(
+      horizontal_views, guide, constraints, vertical_lead_views,
+      should_consider_trailing_view ? first_row_trailing_view : nil);
 }
 
 UILabel* CreateLabel() {
@@ -416,6 +469,7 @@ UIStackView* CreateHeaderView(UIView* icon,
 UIButton* CreateOverflowMenuButton() {
   ExtendedTouchTargetButton* menu_button =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  menu_button.translatesAutoresizingMaskIntoConstraints = NO;
   menu_button.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 

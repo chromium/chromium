@@ -92,6 +92,14 @@ id<GREYMatcher> AddressManualFillViewTab() {
       nil);
 }
 
+// Matcher for the overflow menu button shown in the address cells.
+id<GREYMatcher> OverflowMenuButton() {
+  return grey_allOf(
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL),
+      grey_interactable(), nullptr);
+}
+
 // Matcher for the "Autofill Form" button shown in the address cells.
 id<GREYMatcher> AutofillFormButton() {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -407,6 +415,27 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
   // Verify that the page is filled properly.
   [self verifyAddressInfoHasBeenFilled:autofill::test::GetFullProfile()];
+}
+
+// Tests that the overflow menu button is only visible when the Keyboard
+// Accessory Upgrade feature is enabled.
+- (void)testOverflowMenuVisibility {
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the address manual fill view.
+  OpenAddressManualFillView();
+
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+        assertWithMatcher:grey_notVisible()];
+  }
 }
 
 #pragma mark - Private

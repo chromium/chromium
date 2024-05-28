@@ -305,9 +305,9 @@ constexpr CGFloat kCardIconWidth = 40;
   // regular buttons.
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableVirtualCards)) {
-      AppendHorizontalConstraintsForViews(
-          staticConstraints, @[ self.virtualCardInstructionTextView ],
-          self.layoutGuide);
+    AppendHorizontalConstraintsForViews(
+        staticConstraints, @[ self.virtualCardInstructionTextView ],
+        self.layoutGuide);
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.cardNumberLabeledChip ], self.layoutGuide,
         kChipsHorizontalMargin,
