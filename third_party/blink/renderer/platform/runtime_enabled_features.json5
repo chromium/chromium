@@ -1983,7 +1983,7 @@
     },
     {
       name: "HitTestOpaqueness",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "HrefTranslate",
