@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_TEST_SUPPORT_H_
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_TEST_SUPPORT_H_
 
+#include <set>
 #include <vector>
 
 #include "base/time/time.h"
@@ -31,7 +32,9 @@ history::AnnotatedVisit GenerateSampleAnnotatedVisit(
 URLVisitAggregate CreateSampleURLVisitAggregate(
     const GURL& url,
     float visibility_score = 1.0f,
-    base::Time time = base::Time::Now());
+    base::Time time = base::Time::Now(),
+    std::set<Fetcher> fetchers = {Fetcher::kHistory, Fetcher::kSession,
+                                  Fetcher::kTabModel});
 
 }  // namespace visited_url_ranking
 

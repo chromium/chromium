@@ -18,7 +18,8 @@ using segmentation_platform::processing::ProcessedValue;
 
 namespace visited_url_ranking {
 
-class URLVisitUtilTest : public testing::Test {};
+class URLVisitUtilTest : public testing::Test,
+                         public ::testing::WithParamInterface<Fetcher> {};
 
 TEST_F(URLVisitUtilTest, CreateInputContextFromURLVisitAggregate) {
   auto aggregate = CreateSampleURLVisitAggregate(GURL(kSampleSearchUrl));
@@ -46,5 +47,25 @@ TEST_F(URLVisitUtilTest, CreateInputContextFromURLVisitAggregate) {
   ASSERT_TRUE(visit_count);
   EXPECT_EQ(visit_count.value(), ProcessedValue::FromFloat(1.0f));
 }
+
+TEST_P(URLVisitUtilTest, CreateInputContextFromURLVisitAggregateSingleFetcher) {
+  const auto fetcher = GetParam();
+  auto aggregate = CreateSampleURLVisitAggregate(GURL(kSampleSearchUrl), 1.0f,
+                                                 base::Time::Now(), {fetcher});
+  scoped_refptr<InputContext> input_context =
+      AsInputContext(kURLVisitAggregateSchema, aggregate);
+  ASSERT_EQ(input_context->metadata_args.size(), kNumInputs);
+
+  for (const auto& field_schema : kURLVisitAggregateSchema) {
+    EXPECT_TRUE(input_context->metadata_args.find(field_schema.name) !=
+                input_context->metadata_args.end());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         URLVisitUtilTest,
+                         ::testing::Values(Fetcher::kHistory,
+                                           Fetcher::kSession,
+                                           Fetcher::kTabModel));
 
 }  // namespace visited_url_ranking

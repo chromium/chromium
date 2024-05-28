@@ -37,6 +37,13 @@ scoped_refptr<InputContext> AsInputContext(
           ? std::get_if<URLVisitAggregate::TabData>(
                 &url_visit_aggregate.fetcher_data_map.at(Fetcher::kSession))
           : nullptr;
+  if (!tab_data &&
+      url_visit_aggregate.fetcher_data_map.find(Fetcher::kTabModel) !=
+          url_visit_aggregate.fetcher_data_map.end()) {
+    tab_data = std::get_if<URLVisitAggregate::TabData>(
+        &url_visit_aggregate.fetcher_data_map.at(Fetcher::kTabModel));
+  }
+
   auto* history_data =
       (url_visit_aggregate.fetcher_data_map.find(Fetcher::kHistory) !=
        url_visit_aggregate.fetcher_data_map.end())

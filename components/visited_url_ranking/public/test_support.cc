@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -45,23 +46,38 @@ history::AnnotatedVisit GenerateSampleAnnotatedVisit(
 
 URLVisitAggregate CreateSampleURLVisitAggregate(const GURL& url,
                                                 float visibility_score,
-                                                base::Time time) {
+                                                base::Time time,
+                                                std::set<Fetcher> fetchers) {
   URLVisitAggregate visit_aggregate;
   visit_aggregate.bookmarked = true;
 
   const std::u16string kSampleTitle(u"sample_title");
-  visit_aggregate.fetcher_data_map.emplace(
-      Fetcher::kHistory,
-      URLVisitAggregate::HistoryData(GenerateSampleAnnotatedVisit(
-          1, kSampleTitle, url, true, "foreign_session_guid", visibility_score,
-          {}, time)));
-  visit_aggregate.fetcher_data_map.emplace(
-      Fetcher::kSession, URLVisitAggregate::TabData(URLVisitAggregate::Tab(
-                             1,
-                             URLVisit(url, kSampleTitle, time,
-                                      syncer::DeviceInfo::FormFactor::kUnknown,
-                                      URLVisit::Source::kLocal),
-                             "sample_tag", "sample_session_name")));
+  if (fetchers.contains(Fetcher::kHistory)) {
+    visit_aggregate.fetcher_data_map.emplace(
+        Fetcher::kHistory,
+        URLVisitAggregate::HistoryData(GenerateSampleAnnotatedVisit(
+            1, kSampleTitle, url, true, "foreign_session_guid",
+            visibility_score, {}, time)));
+  }
+  if (fetchers.contains(Fetcher::kSession)) {
+    visit_aggregate.fetcher_data_map.emplace(
+        Fetcher::kSession,
+        URLVisitAggregate::TabData(URLVisitAggregate::Tab(
+            1,
+            URLVisit(url, kSampleTitle, time,
+                     syncer::DeviceInfo::FormFactor::kUnknown,
+                     URLVisit::Source::kLocal),
+            "sample_tag", "sample_session_name")));
+  }
+  if (fetchers.contains(Fetcher::kTabModel)) {
+    visit_aggregate.fetcher_data_map.emplace(
+        Fetcher::kTabModel,
+        URLVisitAggregate::TabData(URLVisitAggregate::Tab(
+            1, URLVisit(url, kSampleTitle, time,
+                        syncer::DeviceInfo::FormFactor::kUnknown,
+                        URLVisit::Source::kLocal))));
+  }
+
   return visit_aggregate;
 }
 
