@@ -1137,7 +1137,7 @@ class CC_PAINT_EXPORT SaveLayerFiltersOp final : public PaintOpWithFlags {
                               const PaintFlags* flags,
                               SkCanvas* canvas,
                               const PlaybackParams& params);
-  bool IsValid() const { return true; }
+  bool IsValid() const { return flags.IsValid(); }
   bool EqualsForTesting(const SaveLayerFiltersOp& other) const;
   bool HasSaveLayerOps() const { return true; }
   HAS_SERIALIZATION_FUNCTIONS();
