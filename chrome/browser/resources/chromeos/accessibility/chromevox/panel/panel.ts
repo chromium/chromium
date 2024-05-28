@@ -405,78 +405,8 @@ export class Panel implements PanelInterface {
       return;
     }
 
-    if (!this.menuManager_.activeMenu) {
+    if (!this.menuManager_.onKeyDown(event)) {
       return;
-    }
-
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
-      return;
-    }
-
-    // We need special logic for navigating the search bar.
-    // If left/right arrow are pressed, we should adjust the search bar's
-    // cursor. We only want to advance the active menu if we are at the
-    // beginning/end of the search bar's contents.
-    if (this.menuManager_.searchMenu &&
-        event.target === this.menuManager_.searchMenu.searchBar) {
-      switch (event.key) {
-        case 'ArrowLeft':
-        case 'ArrowRight':
-          if (event.target.hasOwnProperty('value')) {
-            const target = event.target as unknown as {
-              value: string,
-              selectionStart: number,
-            };
-            const cursorIndex = target.selectionStart +
-                (event.key === 'ArrowRight' ? 1 : -1);
-            const queryLength = target.value.length;
-            if (cursorIndex >= 0 && cursorIndex <= queryLength) {
-              return;
-            }
-          }
-          break;
-        case ' ':
-          return;
-      }
-    }
-
-    switch (event.key) {
-      case 'ArrowLeft':
-        this.menuManager_.advanceActiveMenuBy(-1);
-        break;
-      case 'ArrowRight':
-        this.menuManager_.advanceActiveMenuBy(1);
-        break;
-      case 'ArrowUp':
-        this.menuManager_.advanceItemBy(-1);
-        break;
-      case 'ArrowDown':
-        this.menuManager_.advanceItemBy(1);
-        break;
-      case 'Escape':
-        this.closeMenusAndRestoreFocus();
-        break;
-      case 'PageUp':
-        this.menuManager_.advanceItemBy(10);
-        break;
-      case 'PageDown':
-        this.menuManager_.advanceItemBy(-10);
-        break;
-      case 'Home':
-        this.menuManager_.scrollToTop();
-        break;
-      case 'End':
-        this.menuManager_.scrollToBottom();
-        break;
-      case 'Enter':
-      case ' ':
-        this.pendingCallback_ =
-            this.menuManager_.getCallbackForCurrentItem() as AsyncCallback;
-        this.closeMenusAndRestoreFocus();
-        break;
-      default:
-        // Don't mark this event as handled.
-        return;
     }
 
     event.preventDefault();
