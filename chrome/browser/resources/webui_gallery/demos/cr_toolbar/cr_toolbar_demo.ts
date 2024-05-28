@@ -44,7 +44,7 @@ export class CrToolbarDemoElement extends CrLitElement {
   protected clearLabel_: string = 'Clear search';
   protected log_: string[] = [];
   protected menuLabel_: string = 'Menu';
-  protected narrow_: boolean;
+  protected narrow_?: boolean;
   protected narrowThreshold_: number = 1000;
   protected pageName_: string = 'Demo';
   protected searchPrompt_: string = 'Search through some content';

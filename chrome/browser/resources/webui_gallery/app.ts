@@ -168,7 +168,6 @@ export class WebuiGalleryAppElement extends CrLitElement {
       src: 'cr_url_list_item/cr_url_list_item_demo.js',
     },
   ];
-  private path_: string = '';
 
   override firstUpdated() {
     ColorChangeUpdater.forDocument().start();

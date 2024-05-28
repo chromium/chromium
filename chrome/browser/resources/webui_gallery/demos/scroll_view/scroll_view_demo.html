@@ -1,68 +1,19 @@
-<style include="cr-shared-style demo">
-  /* Parent of #container for CrContainerShadowMixin needs to be flex column. */
-  #layout {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  #container {
-    max-height: 300px;
-    overflow: auto;
-    position: relative;
-    width: 100%;
-  }
-
-  .item {
-    padding: 16px;
-    text-align: center;
-  }
-
-  .item:focus {
-    background-color: var(--cr-focused-item-color);
-    outline: none;
-  }
-}
-
-  .can-scroll-log,
-  .scrolled-to-top-log,
-  .scrolled-to-bottom-log {
-    display: none;
-  }
-
-  .can-scroll ~ .can-scroll-log,
-  .scrolled-to-top ~ .scrolled-to-top-log,
-  .scrolled-to-bottom ~ .scrolled-to-bottom-log {
-    display: block;
-  }
-
-  #sliderContainer {
-    align-items: center;
-    display: flex;
-    gap: 12px;
-  }
-
-  #itemsLengthSlider {
-    width: 200px;
-  }
-</style>
-
 <h1>Scroll view with shadows indicating scroll and dynamic height</h1>
 <div class="demos">
   <div id="sliderContainer">
     <label id="sliderLabel">Number of items in scrollable container</label>
-    <cr-slider id="itemsLengthSlider" min="0" max="30" value="[[items_.length]]"
+    <cr-slider id="itemsLengthSlider" min="0" max="30"
+        .value="${this.items_.length}"
         aria-labelledby="sliderLabel"
-        on-cr-slider-value-changed="onItemsLengthChanged_">
+        @cr-slider-value-changed="${this.onItemsLengthChanged_}">
     </cr-slider>
-    [[items_.length]]
+    ${this.items_.length}
   </div>
 
   <div id="layout">
     <div id="container" show-bottom-shadow>
-      <template is="dom-repeat" items="[[items_]]">
-        <div class="item" tabindex="0">Focusable item</div>
-      </template>
+      ${this.items_.map(
+           _item => html`<div class="item" tabindex="0">Focusable item</div>`)}
     </div>
     <div class="can-scroll-log">can scroll</div>
     <div class="scrolled-to-top-log">scrolled to top</div>

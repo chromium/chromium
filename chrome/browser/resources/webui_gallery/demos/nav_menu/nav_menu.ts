@@ -65,7 +65,7 @@ export class NavMenuElement extends CrLitElement {
       path: '/path-3',
     },
   ];
-  selectedIndex: number;
+  selectedIndex?: number;
   showIcons: boolean = false;
   showRipples: boolean = false;
 

@@ -31,10 +31,10 @@ build_webui("build") {
     "demos/cr_tooltip/cr_tooltip_demo.css",
     "demos/cr_url_list_item/cr_url_list_item_demo.css",
     "demos/demo.css",
-    "demos/demo_lit.css",
     "demos/md_select/md_select_demo.css",
     "demos/nav_menu/nav_menu_demo.css",
     "demos/progress_indicators/progress_indicator_demo.css",
+    "demos/scroll_view/scroll_view_demo.css",
     "demos/side_panel/sp_components_demo.css",
   ]
 
@@ -79,7 +79,6 @@ build_webui("build") {
   ts_deps = [
     "//chrome/browser/resources/side_panel/shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

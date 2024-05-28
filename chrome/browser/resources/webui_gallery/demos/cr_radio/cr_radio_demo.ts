@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from '../demo_lit.css.js';
+import {getCss} from '../demo.css.js';
 
 import {getHtml} from './cr_radio_demo.html.js';
 
@@ -30,7 +30,7 @@ export class CrRadioDemoElement extends CrLitElement {
     };
   }
 
-  protected selectedRadioOption_: string;
+  protected selectedRadioOption_?: string;
 
   protected onSelectedRadioOptionChanged_(e: CustomEvent<{value: string}>) {
     this.selectedRadioOption_ = e.detail.value;

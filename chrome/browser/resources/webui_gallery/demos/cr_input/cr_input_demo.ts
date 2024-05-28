@@ -43,12 +43,12 @@ export class CrInputDemoElement extends CrLitElement {
     };
   }
 
-  protected emailValue_: string;
-  protected numberValue_: string;
-  protected pinValue_: string;
-  protected searchValue_: string;
-  protected textValue_: string;
-  protected textareaValue_: string;
+  protected emailValue_?: string;
+  protected numberValue_?: string;
+  protected pinValue_?: string;
+  protected searchValue_?: string;
+  protected textValue_?: string;
+  protected textareaValue_?: string;
 
   protected onClearSearchClick_() {
     this.searchValue_ = '';

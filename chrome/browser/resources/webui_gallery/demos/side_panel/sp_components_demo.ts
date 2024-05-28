@@ -68,7 +68,7 @@ export class SpComponentsDemoElement extends CrLitElement {
   ];
   protected showBadges_: boolean = false;
   protected urlCount_: number = 15;
-  protected urls_: UrlItem[];
+  protected urls_: UrlItem[] = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

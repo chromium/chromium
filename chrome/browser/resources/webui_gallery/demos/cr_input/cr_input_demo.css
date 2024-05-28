@@ -4,11 +4,11 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=../demo_lit.css.js
+ * #import=../demo.css.js
  * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit cr-icons-lit demo-lit
+ * #include=cr-hidden-style-lit cr-icons-lit demo
  * #css_wrapper_metadata_end */
 
 cr-input,

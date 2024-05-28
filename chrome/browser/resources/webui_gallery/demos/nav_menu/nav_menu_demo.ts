@@ -43,7 +43,7 @@ export class NavMenuDemoElement extends CrLitElement {
   }
 
   protected isDrawerOpen_: boolean = false;
-  protected selectedIndex_: number;
+  protected selectedIndex_?: number;
   protected showIcons_: boolean = true;
   protected showRipples_: boolean = true;
 

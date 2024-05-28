@@ -8,7 +8,7 @@ import '//resources/cr_elements/icons_lit.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from '../demo_lit.css.js';
+import {getCss} from '../demo.css.js';
 
 import {getHtml} from './cr_chip_demo.html.js';
 

@@ -6,7 +6,7 @@ import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from '../demo_lit.css.js';
+import {getCss} from '../demo.css.js';
 
 import {getHtml} from './cr_checkbox_demo.html.js';
 
@@ -29,7 +29,7 @@ export class CrCheckboxDemoElement extends CrLitElement {
     };
   }
 
-  protected myValue_: boolean;
+  protected myValue_?: boolean;
 
   protected onCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.myValue_ = e.detail.value;

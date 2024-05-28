@@ -6,7 +6,7 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from '../demo_lit.css.js';
+import {getCss} from '../demo.css.js';
 
 import {getHtml} from './cr_toggle_demo.html.js';
 
@@ -29,7 +29,7 @@ export class CrToggleDemoElement extends CrLitElement {
     };
   }
 
-  protected checked_: boolean;
+  protected checked_?: boolean;
 
   protected onCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.checked_ = e.detail.value;
