@@ -82,8 +82,8 @@ std::string PowerBookmarkSyncBridge::GetClientTag(
   return GetStorageKey(entity_data);
 }
 
-void PowerBookmarkSyncBridge::GetData(StorageKeyList storage_keys,
-                                      DataCallback callback) {
+void PowerBookmarkSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                               DataCallback callback) {
   WritePowersToSyncData(delegate_->GetPowersForGUIDs(storage_keys),
                         std::move(callback));
 }
