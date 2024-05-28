@@ -47,7 +47,7 @@ BASE_FEATURE(kEnforceNoExecutableFileHandles,
 // 1-5% or lower than the control group.
 BASE_FEATURE(kNotReachedIsFatal,
              "NotReachedIsFatal",
-             FEATURE_ENABLED_BY_DEFAULT);
+             FEATURE_DISABLED_BY_DEFAULT);
 
 // Optimizes parsing and loading of data: URLs.
 BASE_FEATURE(kOptimizeDataUrls, "OptimizeDataUrls", FEATURE_ENABLED_BY_DEFAULT);
