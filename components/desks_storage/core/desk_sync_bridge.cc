@@ -239,8 +239,8 @@ std::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void DeskSyncBridge::GetData(StorageKeyList storage_keys,
-                             DataCallback callback) {
+void DeskSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                      DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& uuid : storage_keys) {
