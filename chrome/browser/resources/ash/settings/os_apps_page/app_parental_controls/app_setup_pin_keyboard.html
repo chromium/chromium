@@ -1,5 +1,5 @@
 <style include="settings-shared">
-  #pinMismatchErrorDiv {
+  #problemDiv {
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -11,15 +11,16 @@
 
   /* Hide this using 'visibility: hidden' instead of 'hidden' so that the
       dialog does not resize when there are no problems to display. */
-  #pinMismatchErrorDiv[invisible] {
+  #problemDiv[invisible] {
     visibility: hidden;
   }
 </style>
-<pin-keyboard id="pinKeyboard" on-submit="onPinSubmit_"
-    value="{{pinKeyboardValue_}}" disabled="[[isSetPinCallPending_]]">
-  <div id="pinMismatchErrorDiv" invisible$="[[!showPinMismatchError_]]">
-      <span aria-live="assertive">
-        $i18n{appParentalControlsPinMismatchErrorText}
-      </span>
+<pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
+  on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
+  disabled="[[isSetPinCallPending_]]">
+  <div id="problemDiv" invisible$="[[!problemMessage_]]">
+    <span aria-live="assertive">
+      [[problemMessage_]]
+    </span>
   </div>
 </pin-keyboard>

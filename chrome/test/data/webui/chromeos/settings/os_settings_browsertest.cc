@@ -1493,6 +1493,13 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestAppParentalControlsEnabled,
       "block_app_item_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestAppParentalControlsEnabled,
+                       OsAppsPageAppParentalControlsPageAppSetupPinKeyboard) {
+  RunSettingsTest(
+      "os_apps_page/app_parental_controls_page/"
+      "app_setup_pin_keyboard_test.js");
+}
+
 IN_PROC_BROWSER_TEST_P(
     OSSettingsRevampMochaTest,
     OsAppsPageManageIsolatedWebAppsPageManageIsolatedWebAppsSubpage) {

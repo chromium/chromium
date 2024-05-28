@@ -20,7 +20,9 @@
     <div id="pinSetupDialogSubtitle">[[getSubtitle_(isConfirmStep_)]]</div>
     <div id="setupPinKeyboardDiv" class="settings-box continuation">
       <app-setup-pin-keyboard id="setupPinKeyboard"
-        is-confirm-step="{{isConfirmStep_}}" prefs="{{prefs}}">
+        is-confirm-step="{{isConfirmStep_}}"
+        prefs="{{prefs}}"
+        enable-submit="{{enableSubmit_}}">
       </app-setup-pin-keyboard>
     </div>
   </div>
@@ -28,7 +30,8 @@
     <cr-button class="cancel-button" on-click="onCancelClick_">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" on-click="onPinSubmit_">
+    <cr-button class="action-button" on-click="onPinSubmit_"
+      disabled$="[[!enableSubmit_]]">
       <span>[[getContinueMessage_(isConfirmStep_)]]</span>
     </cr-button>
   </div>

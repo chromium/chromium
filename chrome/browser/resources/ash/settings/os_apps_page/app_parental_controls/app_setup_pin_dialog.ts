@@ -21,14 +21,14 @@ import {AppSetupPinKeyboardElement} from './app_setup_pin_keyboard.js';
 
 const AppSetupPinDialogElementBase = I18nMixin(PolymerElement);
 
-interface AppSetupPinDialogElement {
+export interface AppSetupPinDialogElement {
   $: {
     dialog: CrDialogElement,
     setupPinKeyboard: AppSetupPinKeyboardElement,
   };
 }
 
-class AppSetupPinDialogElement extends AppSetupPinDialogElementBase {
+export class AppSetupPinDialogElement extends AppSetupPinDialogElementBase {
   static get is() {
     return 'app-setup-pin-dialog' as const;
   }
@@ -46,9 +46,15 @@ class AppSetupPinDialogElement extends AppSetupPinDialogElementBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Whether the submit button should be clickable.
+       */
+      enableSubmit_: Boolean,
     };
   }
 
+  private enableSubmit_: boolean;
   private isConfirmStep_: boolean;
 
   override ready(): void {
