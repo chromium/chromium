@@ -113,7 +113,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
 
   void AllocateGpuMemoryBuffer(
       gfx::GpuMemoryBufferId id,
-      int client_id,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
@@ -152,7 +151,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
 
   uint64_t ClientIdToTracingId(int client_id) const;
   void OnGpuMemoryBufferAllocated(int gpu_service_version,
-                                  int client_id,
                                   gfx::GpuMemoryBufferId id,
                                   gfx::GpuMemoryBufferHandle handle);
 
@@ -172,8 +170,8 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // Used to cancel pending requests on shutdown.
   base::WaitableEvent shutdown_event_;
 
-  std::unordered_map<int, PendingBuffers> pending_buffers_;
-  std::unordered_map<int, AllocatedBuffers> allocated_buffers_;
+  PendingBuffers pending_buffers_;
+  AllocatedBuffers allocated_buffers_;
 
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
 

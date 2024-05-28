@@ -39,6 +39,8 @@ namespace viz {
 
 namespace {
 
+constexpr int kHostGpuMemoryBufferManagerId = 1;
+
 bool MustSignalGmbConfigReadyForTest() {
 #if BUILDFLAG(IS_OZONE)
   // Some Ozone platforms (Ozone/X11) require GPU process initialization to
@@ -335,7 +337,7 @@ class HostGpuMemoryBufferManagerTest
     auto gpu_memory_buffer_support =
         std::make_unique<gpu::GpuMemoryBufferSupport>();
     gpu_memory_buffer_manager_ = std::make_unique<HostGpuMemoryBufferManager>(
-        std::move(gpu_service_provider), 1,
+        std::move(gpu_service_provider), kHostGpuMemoryBufferManagerId,
         std::move(gpu_memory_buffer_support),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     if (MustSignalGmbConfigReadyForTest())
@@ -426,7 +428,6 @@ TEST_P(HostGpuMemoryBufferManagerTest,
   }
 
   const auto buffer_id = static_cast<gfx::GpuMemoryBufferId>(1);
-  const int client_id = 2;
   // SCANOUT cannot be used if native gpu memory buffer is not supported.
   struct {
     gfx::BufferUsage usage;
@@ -441,7 +442,7 @@ TEST_P(HostGpuMemoryBufferManagerTest,
     gfx::GpuMemoryBufferHandle allocated_handle;
     base::RunLoop runloop;
     gpu_memory_buffer_manager()->AllocateGpuMemoryBuffer(
-        buffer_id, client_id, config.size, config.format, config.usage,
+        buffer_id, config.size, config.format, config.usage,
         gpu::kNullSurfaceHandle,
         base::BindOnce(
             [](gfx::GpuMemoryBufferHandle* allocated_handle,
@@ -490,12 +491,11 @@ TEST_P(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
   // Request allocation. No allocation should happen yet.
   gfx::GpuMemoryBufferHandle allocated_handle;
   const auto buffer_id = static_cast<gfx::GpuMemoryBufferId>(1);
-  const int client_id = 2;
   const gfx::Size size(10, 20);
   const gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   const gfx::BufferUsage usage = gfx::BufferUsage::GPU_READ;
   gpu_memory_buffer_manager()->AllocateGpuMemoryBuffer(
-      buffer_id, client_id, size, format, usage, gpu::kNullSurfaceHandle,
+      buffer_id, size, format, usage, gpu::kNullSurfaceHandle,
       base::BindOnce(
           [](gfx::GpuMemoryBufferHandle* allocated_handle,
              gfx::GpuMemoryBufferHandle handle) {
@@ -503,14 +503,16 @@ TEST_P(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
           },
           &allocated_handle));
   EXPECT_EQ(1, gpu_service()->GetAllocationRequestsCount());
-  EXPECT_TRUE(gpu_service()->IsAllocationRequestAt(0, buffer_id, client_id));
+  EXPECT_TRUE(gpu_service()->IsAllocationRequestAt(
+      0, buffer_id, kHostGpuMemoryBufferManagerId));
   EXPECT_TRUE(allocated_handle.is_null());
 
   // Simulate a connection error from gpu. HGMBManager should retry allocation
   // request.
   gpu_service()->SimulateConnectionError();
   EXPECT_EQ(2, gpu_service()->GetAllocationRequestsCount());
-  EXPECT_TRUE(gpu_service()->IsAllocationRequestAt(1, buffer_id, client_id));
+  EXPECT_TRUE(gpu_service()->IsAllocationRequestAt(
+      1, buffer_id, kHostGpuMemoryBufferManagerId));
   EXPECT_TRUE(allocated_handle.is_null());
 
   // Send an allocated buffer corresponding to the first request on the old gpu.
