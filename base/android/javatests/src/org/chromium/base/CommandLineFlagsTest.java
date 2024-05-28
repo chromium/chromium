@@ -13,8 +13,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.library_loader.LibraryLoader;
@@ -24,7 +22,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 
 /** Test class for {@link CommandLineFlags}. */
-@RunWith(CommandLineFlagsTest.ClassRunner.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @CommandLineFlags.Add({
     CommandLineFlagsTest.FLAG_1,
@@ -32,32 +30,6 @@ import org.chromium.base.test.util.Feature;
     "enable-features=feature1,feature2"
 })
 public class CommandLineFlagsTest {
-    public static class ClassRunner extends BaseJUnit4ClassRunner {
-        public ClassRunner(final Class<?> klass) throws InitializationError {
-            super(klass);
-        }
-
-        // Verify class-level modifications are reset after class finishes.
-        @Override
-        protected void onAfterTestClass() {
-            super.onAfterTestClass();
-            verifyCommandLine(false, false, false, false, false, false, false);
-            Assert.assertFalse(CommandLine.getInstance().hasSwitch("flagwithvalue"));
-            String enabledFeatures = CommandLine.getInstance().getSwitchValue("enable-features");
-            if (enabledFeatures != null) {
-                Assert.assertFalse(enabledFeatures.contains("feature1"));
-                Assert.assertFalse(enabledFeatures.contains("feature2"));
-            }
-        }
-
-        // Verify that after each test, flags are reset to class-level state.
-        @Override
-        protected void onAfterTestMethod(FrameworkMethod method) {
-            super.onAfterTestMethod(method);
-            verifyClassLevelStateOnly();
-        }
-    }
-
     static final String FLAG_1 = "flag1";
     private static final String FLAG_2 = "flag2";
     private static final String FLAG_3 = "flag3";

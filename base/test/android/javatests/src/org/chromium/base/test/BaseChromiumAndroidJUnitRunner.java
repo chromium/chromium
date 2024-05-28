@@ -28,11 +28,9 @@ import dalvik.system.DexFile;
 import org.junit.runner.Request;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
-import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -152,10 +150,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     @Override
     public void onStart() {
         Bundle arguments = InstrumentationRegistry.getArguments();
-        String timeoutScale = arguments.getString(EXTRA_TIMEOUT_SCALE);
-        if (timeoutScale != null) {
-            ScalableTimeout.setScale(Float.valueOf(timeoutScale));
-        }
         if (sTestListMode) {
             Log.w(
                     TAG,
@@ -171,6 +165,11 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     }
 
     private void initTestRunner(Bundle arguments) {
+        String timeoutScale = arguments.getString(EXTRA_TIMEOUT_SCALE);
+        if (timeoutScale != null) {
+            ScalableTimeout.setScale(Float.valueOf(timeoutScale));
+        }
+        // Full name required because the super class has a nested class of the same name.
         org.chromium.base.test.ActivityFinisher.finishAll();
         BaseJUnit4ClassRunner.clearJobSchedulerJobs();
         clearDataDirectory(sInMemorySharedPreferencesContext);
@@ -482,18 +481,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
 
         try {
-            org.chromium.base.test.ActivityFinisher.finishAll();
             writeClangCoverageProfileIfEnabled();
-
-            // There is a bug on L and below that DestroyActivitiesRule does not cause onStop and
-            // onDestroy. On other versions, DestroyActivitiesRule may still fail flakily. Ignore
-            // lifetime asserts if that is the case.
-            if (!ApplicationStatus.isInitialized()
-                    || ApplicationStatus.isEveryActivityDestroyed()) {
-                LifetimeAssert.assertAllInstancesDestroyedForTesting();
-            } else {
-                LifetimeAssert.resetForTesting();
-            }
         } catch (Exception e) {
             // It's not possible (as far as I know) to update already reported test results, so we
             // send another status update have the instrumentation test instance parse it.

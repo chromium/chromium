@@ -18,6 +18,8 @@ import androidx.test.internal.util.AndroidRunnerParams;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -252,9 +254,35 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
             return;
         }
 
-        onBeforeTestClass();
+        // Work-around for androidx's InstrumentationResultPrinter not reporting failures from
+        // @AfterClass (its isAnyTestStarted() reports false, so the results are not printed).
+        notifier.addListener(
+                new RunListener() {
+                    Failure mPendingFailure;
+
+                    @Override
+                    public void testFailure(Failure failure) {
+                        mPendingFailure = failure;
+                    }
+
+                    @Override
+                    public void testFinished(Description description) {
+                        mPendingFailure = null;
+                    }
+
+                    @Override
+                    public void testSuiteFinished(Description description) {
+                        if (mPendingFailure != null) {
+                            // Fire tests like Class#null.
+                            notifier.fireTestStarted(description);
+                            // This causes the failure to be reported twice for listeners (oh well).
+                            notifier.fireTestFailure(mPendingFailure);
+                            notifier.fireTestFinished(description);
+                        }
+                    }
+                });
+
         super.run(notifier);
-        onAfterTestClass();
     }
 
     static void clearJobSchedulerJobs() {
@@ -267,6 +295,36 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
             if (testMethod.getAnnotation(RequiresRestart.class) != null) return;
             LibraryLoader.setBrowserProcessStartupBlockedForTesting();
         }
+    }
+
+    @Override
+    protected Statement classBlock(RunNotifier notifier) {
+        Statement innerStatement = super.classBlock(notifier);
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                onBeforeTestClass();
+                Throwable exception = null;
+                try {
+                    innerStatement.evaluate();
+                } catch (Throwable t) {
+                    exception = t;
+                }
+                try {
+                    onAfterTestClass(exception == null);
+                } catch (Throwable inner) {
+                    if (exception != null) {
+                        Log.e(TAG, "Unexpected exception in onAfterTestClass()", inner);
+                        exception.addSuppressed(inner);
+                    } else {
+                        exception = inner;
+                    }
+                }
+                if (exception != null) {
+                    throw exception;
+                }
+            }
+        };
     }
 
     @Override
@@ -285,10 +343,11 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
                     exception = t;
                 }
                 try {
-                    onAfterTestMethod(method);
+                    onAfterTestMethod(method, exception == null);
                 } catch (Throwable t) {
                     // Ensure original exception is not lost if onAfterTestMethod() throws.
                     if (exception != null) {
+                        t.addSuppressed(exception);
                         Log.e(TAG, "Unexpected exception in onAfterTestMethod()", t);
                     } else {
                         exception = t;
@@ -334,9 +393,11 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         }
     }
 
-    private void performExtraAssertions(FrameworkMethod method) throws Throwable {
+    protected void performExtraAssertions(FrameworkMethod method) throws Throwable {
         SharedPreferencesTestUtil.assertNoOnDiskSharedPreferences();
-
+        // For non-unit tests, we check lifetime asserts only in onAfterTestClass() because it is
+        // not valid to check them until all Activities are finished (which we enforce only between
+        // test classes to not be too slow).
         Batch annotation = method.getDeclaringClass().getAnnotation(Batch.class);
         if (annotation != null && annotation.value().equals(Batch.UNIT_TESTS)) {
             if (method.getAnnotation(RequiresRestart.class) != null) return;
@@ -344,10 +405,15 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         }
     }
 
-    protected void onAfterTestMethod(FrameworkMethod method) {
+    protected void onAfterTestMethod(FrameworkMethod method, boolean testPassed) {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         for (TestHook hook : getPostTestHooks()) {
             hook.run(targetContext, method);
+        }
+
+        // Lifetime checking is not accurate when a test fails.
+        if (!testPassed) {
+            LifetimeAssert.resetForTesting();
         }
 
         // Do not reset things here for state we may want to persist when set via @BeforeClass.
@@ -371,12 +437,18 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         }
     }
 
-    protected void onAfterTestClass() {
-        CommandLineFlags.tearDownClass();
+    protected void onAfterTestClass(boolean afterClassPassed) {
         // Run resetters on UI thread so as to minimize the number of failed thread check
         // assertions, and to match the semantics of Robolectric's runners.
         BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
                 ResettersForTesting::afterClassHooksDidExecute);
+        ActivityFinisher.finishAll();
+        CommandLineFlags.tearDownClass();
+        if (afterClassPassed) {
+            LifetimeAssert.assertAllInstancesDestroyedForTesting();
+        } else {
+            LifetimeAssert.resetForTesting();
+        }
     }
 
     /** Loop through all the {@code SkipCheck}s to confirm whether a test should be ignored */
