@@ -487,16 +487,16 @@ OzoneImageBacking::OzoneImageBacking(
 }
 
 OzoneImageBacking::~OzoneImageBacking() {
-    for (auto& item : per_context_cached_textures_holders_) {
-      item.first->RemoveObserver(this);
-      // We only need to remove textures here. If the context was lost or
-      // destroyed, there would be no entries in the cache as this is managed
-      // via ::OnGLContextLostOrDestroy.
-      if (item.second->GetCacheCount() <= 1) {
-        DestroyTexturesOnContext(item.second.get(), item.first);
-      }
-      item.second->OnRemovedFromCache();
+  for (auto& [context, holder] : per_context_cached_textures_holders_) {
+    context->RemoveObserver(this);
+    // We only need to remove textures here. If the context was lost or
+    // destroyed, there would be no entries in the cache as this is managed
+    // via ::OnGLContextLostOrDestroy.
+    if (holder->GetCacheCount() <= 1) {
+      DestroyTexturesOnContext(holder.get(), context);
     }
+    holder->OnRemovedFromCache();
+  }
 }
 
 std::unique_ptr<VaapiImageRepresentation> OzoneImageBacking::ProduceVASurface(
@@ -688,12 +688,12 @@ bool OzoneImageBacking::BeginAccess(bool readonly,
 
   // We don't wait for read-after-read.
   if (!readonly) {
-    for (auto& fence : read_fences_) {
+    for (auto& [stream, fence] : read_fences_) {
       // Wait on fence only if reading from stream different than current
       // stream.
-      if (fence.first != access_stream) {
-        DCHECK(!fence.second.is_null());
-        fences->emplace_back(std::move(fence.second));
+      if (stream != access_stream) {
+        DCHECK(!fence.is_null());
+        fences->emplace_back(std::move(fence));
       }
     }
     read_fences_.clear();
