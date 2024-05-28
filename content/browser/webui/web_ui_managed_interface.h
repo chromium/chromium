@@ -46,21 +46,19 @@ using WebUIManagedInterfaceNoPageHandler = void;
 //
 // TODO(crbug.com/40257252): provide helpers to retrieve InterfaceImpl objects.
 template <typename InterfaceImpl, typename PageHandler, typename Page = void>
+  requires(!std::is_void_v<PageHandler> || !std::is_void_v<Page>)
 class WebUIManagedInterface : public WebUIManagedInterfaceBase {
  public:
-  template <typename T>
-  using EnableIfNotVoid = std::enable_if_t<!std::is_void_v<T>>;
-  template <typename T>
-  using EnableIfVoid = std::enable_if_t<std::is_void_v<T>>;
-
-  template <typename T = Page, typename = EnableIfVoid<T>>
+  template <typename T = Page>
+    requires(std::is_void_v<T>)
   static void Create(WebUIController* web_ui_controller,
                      mojo::PendingReceiver<PageHandler> pending_receiver) {
     return WebUIManagedInterface::Create(
         web_ui_controller, std::move(pending_receiver), mojo::NullRemote());
   }
 
-  template <typename T = PageHandler, typename = EnableIfVoid<T>>
+  template <typename T = PageHandler>
+    requires(std::is_void_v<T>)
   static void Create(WebUIController* webui_controller,
                      mojo::PendingRemote<Page> pending_remote) {
     return WebUIManagedInterface::Create(webui_controller, mojo::NullReceiver(),
@@ -70,10 +68,6 @@ class WebUIManagedInterface : public WebUIManagedInterfaceBase {
   static void Create(WebUIController* webui_controller,
                      mojo::PendingReceiver<PageHandler> pending_receiver,
                      mojo::PendingRemote<Page> pending_remote) {
-    static_assert(
-        !std::is_void_v<PageHandler> || !std::is_void_v<Page>,
-        "Either PageHandler must be non-void or Page must be non-void.");
-
     auto interface_impl = std::make_unique<InterfaceImpl>();
     auto* interface_impl_ptr = interface_impl.get();
     interface_impl->webui_controller_ = webui_controller;
@@ -98,13 +92,15 @@ class WebUIManagedInterface : public WebUIManagedInterfaceBase {
   // storage before constructing `InterfaceImpl`.
   virtual void OnReady() {}
 
-  template <typename P = PageHandler, typename = EnableIfNotVoid<P>>
+  template <typename P = PageHandler>
+    requires(!std::is_void_v<P>)
   mojo::Receiver<PageHandler>& receiver() {
     CHECK(ready_) << "Mojo endpoints are not ready. Please use OnReady().";
     return page_handler_receiver_.value();
   }
 
-  template <typename P = Page, typename = EnableIfNotVoid<P>>
+  template <typename P = Page>
+    requires(!std::is_void_v<P>)
   mojo::Remote<Page>& remote() {
     CHECK(ready_) << "Mojo endpoints are not ready. Please use OnReady().";
     return page_remote_;
