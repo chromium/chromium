@@ -40,6 +40,7 @@ using visited_url_ranking::Fetcher;
 using visited_url_ranking::FetchOptions;
 using visited_url_ranking::ResultStatus;
 using visited_url_ranking::URLVisitAggregate;
+using visited_url_ranking::URLVisitAggregatesTransformType;
 using visited_url_ranking::VisitedURLRankingService;
 
 static constexpr FetchSources kForeignSources = {Source::kForeign};
@@ -55,7 +56,10 @@ FetchOptions CreateFetchOptionsForTabResumption(base::Time current_time,
           {Fetcher::kSession,
            fetch_local_tabs ? FetchOptions::kOriginSources : kForeignSources},
       },
-      current_time - base::Days(1), {});
+      current_time - base::Days(1),
+      {
+          URLVisitAggregatesTransformType::kDefaultAppUrlFilter,
+      });
 }
 
 // Class to manage tab resumption fetch and rank flow, containing required

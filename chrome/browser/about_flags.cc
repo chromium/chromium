@@ -2498,19 +2498,26 @@ const FeatureEntry::FeatureParam
         {"use_default_app_filter", "true"},
         {"use_salient_image", "true"},
 };
-const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2[] = {
-    {"enable_v2", "true"}};
-const FeatureEntry::FeatureParam kTabResumptionModules_v2_salient_image[] = {
+const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm1[] = {
+    {"disable_blend", "true"},
+    {"enable_v2", "true"},
+    {"show_see_more", "true"},
+};
+const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm2[] = {
     {"enable_v2", "true"},
     {"show_see_more", "true"},
     {"use_salient_image", "true"},
 };
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_v2_single_tile_with_salient_image[] = {
-        {"enable_v2", "true"},
-        {"max_tiles_number", "1"},
-        {"show_see_more", "true"},
-        {"use_salient_image", "true"},
+const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm3[] = {
+    {"disable_blend", "true"},     {"enable_v2", "true"},
+    {"max_tiles_number", "1"},     {"show_see_more", "true"},
+    {"use_salient_image", "true"},
+};
+const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm4[] = {
+    {"disable_blend", "true"},
+    {"enable_v2", "true"},
+    {"show_see_more", "true"},
+    {"use_salient_image", "true"},
 };
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_ml[] = {
     {"enable_v2", "true"},
@@ -2526,14 +2533,14 @@ const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
     {"Default app filter + Salient image + single tile",
      kTabResumptionModule_single_tile_with_salient_image,
      std::size(kTabResumptionModule_single_tile_with_salient_image), nullptr},
-    {"V2", kTabResumptionModule_enable_v2,
-     std::size(kTabResumptionModule_enable_v2), nullptr},
-    {"V2 + Salient image", kTabResumptionModules_v2_salient_image,
-     std::size(kTabResumptionModules_v2_salient_image), nullptr},
-    {"V2 + Salient image + single tile",
-     kTabResumptionModule_v2_single_tile_with_salient_image,
-     std::size(kTabResumptionModule_v2_single_tile_with_salient_image),
-     nullptr},
+    {"V2 Arm1", kTabResumptionModule_enable_v2_arm1,
+     std::size(kTabResumptionModule_enable_v2_arm1), nullptr},
+    {"V2 Arm2", kTabResumptionModule_enable_v2_arm2,
+     std::size(kTabResumptionModule_enable_v2_arm2), nullptr},
+    {"V2 Arm3", kTabResumptionModule_enable_v2_arm3,
+     std::size(kTabResumptionModule_enable_v2_arm3), nullptr},
+    {"V2 Arm4", kTabResumptionModule_enable_v2_arm4,
+     std::size(kTabResumptionModule_enable_v2_arm4), nullptr},
     {"V2 ML (collect data)", kTabResumptionModule_enable_v2_ml,
      std::size(kTabResumptionModule_enable_v2_ml), nullptr},
 };
