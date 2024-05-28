@@ -41,8 +41,6 @@
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
@@ -74,7 +72,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
-#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/ozone_platform.h"  // nogncheck
 #endif
 
 using TP = ThemeProperties;
@@ -912,20 +910,8 @@ void ThemeService::OnThemeBuiltFromExtension(
 
   // Offer to revert to the old theme.
   if (can_revert_theme && !suppress_infobar && extension->is_theme()) {
-    // FindTabbedBrowser() is called with |match_original_profiles| true because
-    // a theme install in either a normal or incognito window for a profile
-    // affects all normal and incognito windows for that profile.
-    Browser* browser = chrome::FindTabbedBrowser(profile_, true);
-    if (browser) {
-      content::WebContents* web_contents =
-          browser->tab_strip_model()->GetActiveWebContents();
-      if (web_contents) {
-        ThemeInstalledInfoBarDelegate::Create(
-            infobars::ContentInfoBarManager::FromWebContents(web_contents),
-            ThemeServiceFactory::GetForProfile(profile_), extension->name(),
-            extension->id(), std::move(reinstaller));
-      }
-    }
+    ThemeInstalledInfoBarDelegate::CreateForLastActiveTab(
+        profile_, extension->name(), extension->id(), std::move(reinstaller));
   }
 }
 

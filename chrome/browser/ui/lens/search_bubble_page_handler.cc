@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 
 namespace lens {
 

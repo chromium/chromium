@@ -23,7 +23,7 @@ assert(enable_extensions)
 assert(enable_supervised_users)
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
-static_library("extensions") {
+source_set("extensions") {
   sources = [
     "active_install_data.cc",
     "active_install_data.h",
@@ -778,6 +778,9 @@ static_library("extensions") {
 
     # TODO(crbug.com/41437292): Remove this circular dependency.
     "//chrome/browser/safe_browsing",
+
+    # TODO(crbug.com/343037853): Remove this circular dependency.
+    "//chrome/browser/themes",
   ]
 
   # Since browser and browser_extensions actually depend on each other,
@@ -814,9 +817,9 @@ static_library("extensions") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser:ntp_background_proto",
-    "//chrome/browser:theme_properties",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/themes",
 
     # Only for allow_circular_includes_from
     "//chrome/browser/apps/app_service/app_icon",

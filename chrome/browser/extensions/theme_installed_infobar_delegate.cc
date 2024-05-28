@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <utility>
 
@@ -15,12 +16,37 @@
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "extensions/browser/extension_system.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// static
+void ThemeInstalledInfoBarDelegate::CreateForLastActiveTab(
+    Profile* profile,
+    const std::string& theme_name,
+    const std::string& theme_id,
+    std::unique_ptr<ThemeService::ThemeReinstaller> prev_theme_reinstaller) {
+  // FindTabbedBrowser() is called with |match_original_profiles| true because
+  // a theme install in either a normal or incognito window for a profile
+  // affects all normal and incognito windows for that profile.
+  Browser* browser =
+      chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/true);
+  if (browser) {
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    if (web_contents) {
+      ThemeInstalledInfoBarDelegate::Create(
+          infobars::ContentInfoBarManager::FromWebContents(web_contents),
+          ThemeServiceFactory::GetForProfile(profile), theme_name, theme_id,
+          std::move(prev_theme_reinstaller));
+    }
+  }
+}
 
 // static
 void ThemeInstalledInfoBarDelegate::Create(

@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
