@@ -14962,6 +14962,34 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
       is_file_origin_key,
       bool_to_crash_key(origin.scheme() == url::kFileScheme));
 
+  static auto* const is_data_url_key = base::debug::AllocateCrashKeyString(
+      "is_data_url", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(
+      is_data_url_key, bool_to_crash_key(url.SchemeIs(url::kDataScheme)));
+
+  static auto* const is_srcdoc_url_key = base::debug::AllocateCrashKeyString(
+      "is_srcdoc_url", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(is_srcdoc_url_key,
+                                 bool_to_crash_key(url.IsAboutSrcdoc()));
+
+  static auto* const is_loaddatawithbaseurl_key =
+      base::debug::AllocateCrashKeyString("is_loaddatawithbaseurl_navrequest",
+                                          base::debug::CrashKeySize::Size32);
+  bool is_loaddatawithbaseurl =
+      navigation_request && navigation_request->IsLoadDataWithBaseURL();
+  base::debug::SetCrashKeyString(is_loaddatawithbaseurl_key,
+                                 bool_to_crash_key(is_loaddatawithbaseurl));
+
+  static auto* const is_loaddatawithbaseurl_samedoc_key =
+      base::debug::AllocateCrashKeyString("is_loaddatawithbaseurl_samedoc",
+                                          base::debug::CrashKeySize::Size32);
+  bool is_loaddatawithbaseurl_samedoc =
+      is_same_document_navigation &&
+      renderer_url_info_.was_loaded_from_load_data_with_base_url;
+  base::debug::SetCrashKeyString(
+      is_loaddatawithbaseurl_samedoc_key,
+      bool_to_crash_key(is_loaddatawithbaseurl_samedoc));
+
   static auto* const site_lock_key = base::debug::AllocateCrashKeyString(
       "site_lock", base::debug::CrashKeySize::Size256);
   base::debug::SetCrashKeyString(
@@ -14972,6 +15000,13 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
       "process_lock", base::debug::CrashKeySize::Size256);
   base::debug::SetCrashKeyString(process_lock_key,
                                  GetProcess()->GetProcessLock().ToString());
+
+  static auto* const is_process_locked_key =
+      base::debug::AllocateCrashKeyString("is_process_locked",
+                                          base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(
+      is_process_locked_key,
+      bool_to_crash_key(GetProcess()->GetProcessLock().is_locked_to_site()));
 
   if (!GetSiteInstance()->IsDefaultSiteInstance()) {
     static auto* const original_url_origin_key =
