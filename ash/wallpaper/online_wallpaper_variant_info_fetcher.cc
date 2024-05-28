@@ -23,6 +23,8 @@
 namespace ash {
 namespace {
 
+OnlineWallpaperVariantInfoFetcher* g_instance = nullptr;
+
 // The filtered results from a set of backdrop::Images for a given |location|
 // and |unit_id| value.
 class VariantMatches {
@@ -101,10 +103,22 @@ OnlineWallpaperVariantInfoFetcher::OnlineWallpaperRequest::
 OnlineWallpaperVariantInfoFetcher::OnlineWallpaperRequest::
     ~OnlineWallpaperRequest() = default;
 
-OnlineWallpaperVariantInfoFetcher::OnlineWallpaperVariantInfoFetcher() =
-    default;
-OnlineWallpaperVariantInfoFetcher::~OnlineWallpaperVariantInfoFetcher() =
-    default;
+OnlineWallpaperVariantInfoFetcher::OnlineWallpaperVariantInfoFetcher() {
+  DCHECK_EQ(nullptr, g_instance);
+  g_instance = this;
+}
+
+OnlineWallpaperVariantInfoFetcher::~OnlineWallpaperVariantInfoFetcher() {
+  DCHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+// static
+OnlineWallpaperVariantInfoFetcher*
+OnlineWallpaperVariantInfoFetcher::GetInstance() {
+  DCHECK(g_instance);
+  return g_instance;
+}
 
 void OnlineWallpaperVariantInfoFetcher::SetClient(
     WallpaperControllerClient* client) {

@@ -316,9 +316,6 @@ std::unique_ptr<WallpaperInfo> CreateOnlineWallpaperInfo(
 // static
 std::unique_ptr<WallpaperControllerImpl> WallpaperControllerImpl::Create(
     PrefService* local_state) {
-  auto online_wallpaper_variant_fetcher =
-      std::make_unique<OnlineWallpaperVariantInfoFetcher>();
-
   std::unique_ptr<WallpaperPrefManager> pref_manager =
       g_test_pref_manager ? std::move(g_test_pref_manager)
                           : WallpaperPrefManager::Create(local_state);
@@ -329,8 +326,7 @@ std::unique_ptr<WallpaperControllerImpl> WallpaperControllerImpl::Create(
           : std::make_unique<WallpaperImageDownloaderImpl>();
 
   return std::make_unique<WallpaperControllerImpl>(
-      std::move(pref_manager), std::move(online_wallpaper_variant_fetcher),
-      std::move(wallpaper_image_downloader));
+      std::move(pref_manager), std::move(wallpaper_image_downloader));
 }
 
 // static
@@ -347,10 +343,8 @@ void WallpaperControllerImpl::SetWallpaperImageDownloaderForTesting(
 
 WallpaperControllerImpl::WallpaperControllerImpl(
     std::unique_ptr<WallpaperPrefManager> pref_manager,
-    std::unique_ptr<OnlineWallpaperVariantInfoFetcher> online_fetcher,
     std::unique_ptr<WallpaperImageDownloader> image_downloader)
     : pref_manager_(std::move(pref_manager)),
-      variant_info_fetcher_(std::move(online_fetcher)),
       blur_manager_(std::make_unique<WallpaperBlurManager>()),
       wallpaper_reload_delay_(kWallpaperReloadDelay),
       wallpaper_image_downloader_(std::move(image_downloader)),
@@ -634,7 +628,7 @@ void WallpaperControllerImpl::StartDecodeFromPath(
 void WallpaperControllerImpl::SetClient(WallpaperControllerClient* client) {
   wallpaper_controller_client_ = client;
   pref_manager_->SetClient(client);
-  variant_info_fetcher_->SetClient(client);
+  variant_info_fetcher_.SetClient(client);
   google_photos_wallpaper_manager_.SetClient(client);
 }
 
@@ -917,7 +911,7 @@ void WallpaperControllerImpl::SetTimeOfDayWallpaper(
       base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
                      set_wallpaper_weak_factory_.GetWeakPtr(),
                      WallpaperType::kOnline, std::move(callback));
-  variant_info_fetcher_->FetchTimeOfDayWallpaper(
+  variant_info_fetcher_.FetchTimeOfDayWallpaper(
       account_id, wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId,
       std::move(on_fetch));
 }
@@ -1647,7 +1641,7 @@ void WallpaperControllerImpl::OnCheckpointChanged(
     return;
   }
 
-  variant_info_fetcher_->FetchOnlineWallpaper(
+  variant_info_fetcher_.FetchOnlineWallpaper(
       account_id, info,
       base::BindOnce(&WallpaperControllerImpl::RepaintOnlineWallpaper,
                      set_wallpaper_weak_factory_.GetWeakPtr()));
@@ -2961,9 +2955,8 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
                          std::move(on_done));
       // Fetch can fail if wallpaper_controller_client has been cleared or
       // |info| is malformed.
-      if (!variant_info_fetcher_->FetchDailyWallpaper(
-              account_id, info,
-              std::move(fetch_callback))) {
+      if (!variant_info_fetcher_.FetchDailyWallpaper(
+              account_id, info, std::move(fetch_callback))) {
         // Could not start fetch of wallpaper variants. Likely because the
         // chrome client isn't ready. Schedule for later.
         NOTREACHED_IN_MIGRATION() << "Failed to initiate daily wallpaper fetch";
@@ -3082,9 +3075,8 @@ void WallpaperControllerImpl::HandleDailyWallpaperInfoSyncedIn(
   OnlineWallpaperVariantInfoFetcher::FetchParamsCallback callback =
       base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
                      weak_factory_.GetWeakPtr(), info.type, base::DoNothing());
-  if (!variant_info_fetcher_->FetchDailyWallpaper(
-          account_id, info,
-          std::move(callback))) {
+  if (!variant_info_fetcher_.FetchDailyWallpaper(account_id, info,
+                                                 std::move(callback))) {
     NOTREACHED_IN_MIGRATION() << "Fetch of daily wallpaper info failed.";
   }
 }
@@ -3126,8 +3118,8 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
                      set_wallpaper_weak_factory_.GetWeakPtr(), info.type,
                      base::DoNothing());
 
-  variant_info_fetcher_->FetchOnlineWallpaper(account_id, info,
-                                              std::move(callback));
+  variant_info_fetcher_.FetchOnlineWallpaper(account_id, info,
+                                             std::move(callback));
 }
 
 void WallpaperControllerImpl::CleanUpBeforeSettingUserWallpaperInfo(

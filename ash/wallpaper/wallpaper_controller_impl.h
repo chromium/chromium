@@ -112,7 +112,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // non-production members i.e. in tests.
   explicit WallpaperControllerImpl(
       std::unique_ptr<WallpaperPrefManager> pref_manager,
-      std::unique_ptr<OnlineWallpaperVariantInfoFetcher> fetcher,
       std::unique_ptr<WallpaperImageDownloader> image_downloader);
 
   WallpaperControllerImpl(const WallpaperControllerImpl&) = delete;
@@ -791,7 +790,7 @@ class ASH_EXPORT WallpaperControllerImpl
   std::unique_ptr<WallpaperWindowStateManager> window_state_manager_;
 
   // Delegate to resolve online wallpaper variants.
-  std::unique_ptr<OnlineWallpaperVariantInfoFetcher> variant_info_fetcher_;
+  OnlineWallpaperVariantInfoFetcher variant_info_fetcher_;
 
   // Manages the state of wallpaper blur.
   const std::unique_ptr<WallpaperBlurManager> blur_manager_;
