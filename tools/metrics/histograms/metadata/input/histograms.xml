@@ -1400,6 +1400,8 @@ chromium-metrics-reviews@google.com.
     <variant name="FreeformRewrite"
         summary="The user initiated Copyeditor by trying to rewrite their
                  text with a freeform prompt"/>
+    <variant name="InvalidInput"
+        summary="The user is triggering from an invalid input"/>
     <variant name="NotAllowed"
         summary="The user is not allowed to use the feature"/>
     <variant name="Rephrase"

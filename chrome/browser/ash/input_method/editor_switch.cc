@@ -289,12 +289,17 @@ bool EditorSwitch::IsAllowedForUse() const {
 }
 
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
+  if (!IsAllowedForUse()) {
+    return EditorOpportunityMode::kNotAllowedForUse;
+  }
+
   if (IsInputTypeAllowed(context_->input_type())) {
     return context_->selected_text_length() > 0
                ? EditorOpportunityMode::kRewrite
                : EditorOpportunityMode::kWrite;
   }
-  return EditorOpportunityMode::kNone;
+
+  return EditorOpportunityMode::kInvalidInput;
 }
 
 std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {

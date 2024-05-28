@@ -157,8 +157,8 @@ TEST_P(EditorStateMetrics, RecordsForNotAllowed) {
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
-  EditorMetricsRecorder metrics_recorder(&context,
-                                         EditorOpportunityMode::kNone);
+  EditorMetricsRecorder metrics_recorder(
+      &context, EditorOpportunityMode::kNotAllowedForUse);
 
   metrics_recorder.LogEditorState(state);
 
@@ -166,6 +166,22 @@ TEST_P(EditorStateMetrics, RecordsForNotAllowed) {
       "InputMethod.Manta.Orca.States.NotAllowed", state, 1);
   histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.NotAllowed",
                                      1);
+}
+
+TEST_P(EditorStateMetrics, RecordsForInvalidInput) {
+  const EditorStates& state = GetParam();
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context,
+                                         EditorOpportunityMode::kInvalidInput);
+
+  metrics_recorder.LogEditorState(state);
+
+  histogram_tester_.ExpectBucketCount(
+      "InputMethod.Manta.Orca.States.InvalidInput", state, 1);
+  histogram_tester_.ExpectTotalCount(
+      "InputMethod.Manta.Orca.States.InvalidInput", 1);
 }
 
 TEST_P(EditorStateMetrics, RecordsRephraseSegmentForRewrite) {
@@ -350,8 +366,50 @@ TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForNotAllowed) {
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(
+      &context, EditorOpportunityMode::kNotAllowedForUse);
+
+  metrics_recorder.SetTone(EditorTone::kRephrase);
+  metrics_recorder.LogEditorState(state);
+  metrics_recorder.SetTone(EditorTone::kEmojify);
+  metrics_recorder.LogEditorState(state);
+  metrics_recorder.SetTone(EditorTone::kShorten);
+  metrics_recorder.LogEditorState(state);
+  metrics_recorder.SetTone(EditorTone::kElaborate);
+  metrics_recorder.LogEditorState(state);
+  metrics_recorder.SetTone(EditorTone::kFormalize);
+  metrics_recorder.LogEditorState(state);
+  metrics_recorder.SetTone(EditorTone::kFreeformRewrite);
+  metrics_recorder.LogEditorState(state);
+  metrics_recorder.SetTone(EditorTone::kUnset);
+  metrics_recorder.LogEditorState(state);
+  metrics_recorder.SetTone(EditorTone::kUnknown);
+  metrics_recorder.LogEditorState(state);
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Rephrase",
+                                     0);
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Emojify",
+                                     0);
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Shorten",
+                                     0);
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Elaborate",
+                                     0);
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Formalize",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "InputMethod.Manta.Orca.States.FreeformRewrite", 0);
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Unset", 0);
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Unknown",
+                                     0);
+}
+
+TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForInvalidInput) {
+  const EditorStates& state = GetParam();
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context,
-                                         EditorOpportunityMode::kNone);
+                                         EditorOpportunityMode::kInvalidInput);
 
   metrics_recorder.SetTone(EditorTone::kRephrase);
   metrics_recorder.LogEditorState(state);

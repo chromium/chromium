@@ -239,7 +239,8 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kBlocked,
-            .expected_editor_opportunity_mode = EditorOpportunityMode::kNone,
+            .expected_editor_opportunity_mode =
+                EditorOpportunityMode::kInvalidInput,
             .expected_blocked_reasons =
                 {EditorBlockedReason::kBlockedByInputType},
         },

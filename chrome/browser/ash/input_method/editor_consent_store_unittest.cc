@@ -56,7 +56,7 @@ TEST_F(EditorConsentStoreTest,
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context,
-                                         EditorOpportunityMode::kNone);
+                                         EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
   store.ProcessConsentAction(ConsentAction::kDeclined);
@@ -71,7 +71,7 @@ TEST_F(EditorConsentStoreTest,
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context,
-                                         EditorOpportunityMode::kNone);
+                                         EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
   store.ProcessConsentAction(ConsentAction::kApproved);
@@ -86,7 +86,7 @@ TEST_F(EditorConsentStoreTest,
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context,
-                                         EditorOpportunityMode::kNone);
+                                         EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
   store.ProcessConsentAction(ConsentAction::kDeclined);
@@ -103,7 +103,7 @@ TEST_F(EditorConsentStoreTest,
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context,
-                                         EditorOpportunityMode::kNone);
+                                         EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
   // Switch on the orca toggle in the setting page.

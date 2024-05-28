@@ -71,8 +71,10 @@ std::string_view AsString(const EditorOpportunityMode& mode) {
       return "Write";
     case EditorOpportunityMode::kRewrite:
       return "Rewrite";
-    case EditorOpportunityMode::kNone:
+    case EditorOpportunityMode::kNotAllowedForUse:
       return "NotAllowed";
+    case EditorOpportunityMode::kInvalidInput:
+      return "InvalidInput";
   }
 }
 
@@ -267,7 +269,8 @@ void EditorMetricsRecorder::LogEditorState(EditorStates state) {
 
 void EditorMetricsRecorder::LogNumberOfCharactersInserted(
     int number_of_characters) {
-  if (mode_ == EditorOpportunityMode::kNone) {
+  if (mode_ == EditorOpportunityMode::kInvalidInput ||
+      mode_ == EditorOpportunityMode::kNotAllowedForUse) {
     return;
   }
 
@@ -296,7 +299,8 @@ void EditorMetricsRecorder::LogNumberOfCharactersInserted(
 
 void EditorMetricsRecorder::LogNumberOfCharactersSelectedForInsert(
     int number_of_characters) {
-  if (mode_ == EditorOpportunityMode::kNone) {
+  if (mode_ == EditorOpportunityMode::kInvalidInput ||
+      mode_ == EditorOpportunityMode::kNotAllowedForUse) {
     return;
   }
 
@@ -326,7 +330,8 @@ void EditorMetricsRecorder::LogNumberOfCharactersSelectedForInsert(
 
 void EditorMetricsRecorder::LogNumberOfResponsesFromServer(
     int number_of_responses) {
-  if (mode_ == EditorOpportunityMode::kNone) {
+  if (mode_ == EditorOpportunityMode::kInvalidInput ||
+      mode_ == EditorOpportunityMode::kNotAllowedForUse) {
     return;
   }
 
@@ -355,7 +360,8 @@ void EditorMetricsRecorder::LogNumberOfResponsesFromServer(
 
 void EditorMetricsRecorder::LogLengthOfLongestResponseFromServer(
     int number_of_characters) {
-  if (mode_ == EditorOpportunityMode::kNone) {
+  if (mode_ == EditorOpportunityMode::kInvalidInput ||
+      mode_ == EditorOpportunityMode::kNotAllowedForUse) {
     return;
   }
 

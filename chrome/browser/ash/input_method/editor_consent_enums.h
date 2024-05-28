@@ -47,9 +47,10 @@ enum class ConsentStatus : int {
 enum class EditorMode { kBlocked, kConsentNeeded, kRewrite, kWrite };
 
 enum class EditorOpportunityMode {
-  kNone,
+  kInvalidInput,
   kRewrite,
   kWrite,
+  kNotAllowedForUse,
 };
 
 // Defines the reason why the editor is blocked.
