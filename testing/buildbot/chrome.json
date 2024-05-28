@@ -2425,6 +2425,7 @@
         "cros_img": "brya-release/R124-15823.16.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests BRYA_RELEASE_BETA",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "BRYA_RELEASE_BETA"
@@ -2435,6 +2436,7 @@
         "cros_img": "brya-release/R125-15843.0.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests BRYA_RELEASE_DEV",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "BRYA_RELEASE_DEV"
@@ -2444,6 +2446,7 @@
         "cros_board": "brya",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests BRYA_RELEASE_LKGM",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
@@ -2455,6 +2458,7 @@
         "cros_img": "brya-release/R123-15786.48.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests BRYA_RELEASE_STABLE",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "BRYA_RELEASE_STABLE"
@@ -2465,6 +2469,7 @@
         "cros_img": "fizz-release/R124-15823.16.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests FIZZ_RELEASE_BETA",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "FIZZ_RELEASE_BETA"
@@ -2475,6 +2480,7 @@
         "cros_img": "fizz-release/R125-15843.0.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests FIZZ_RELEASE_DEV",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "FIZZ_RELEASE_DEV"
@@ -2484,6 +2490,7 @@
         "cros_board": "fizz",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests FIZZ_RELEASE_LKGM",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
@@ -2495,6 +2502,7 @@
         "cros_img": "fizz-release/R123-15786.48.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests FIZZ_RELEASE_STABLE",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "FIZZ_RELEASE_STABLE"
@@ -2505,6 +2513,7 @@
         "cros_img": "guybrush-release/R124-15823.16.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests GUYBRUSH_RELEASE_BETA",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "GUYBRUSH_RELEASE_BETA"
@@ -2515,6 +2524,7 @@
         "cros_img": "guybrush-release/R125-15843.0.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests GUYBRUSH_RELEASE_DEV",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "GUYBRUSH_RELEASE_DEV"
@@ -2524,6 +2534,7 @@
         "cros_board": "guybrush",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests GUYBRUSH_RELEASE_LKGM",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
@@ -2535,6 +2546,7 @@
         "cros_img": "guybrush-release/R123-15786.48.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests GUYBRUSH_RELEASE_STABLE",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "GUYBRUSH_RELEASE_STABLE"
@@ -2545,6 +2557,7 @@
         "cros_img": "puff-release/R124-15823.16.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests PUFF_RELEASE_BETA",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "PUFF_RELEASE_BETA"
@@ -2555,6 +2568,7 @@
         "cros_img": "puff-release/R125-15843.0.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests PUFF_RELEASE_DEV",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "PUFF_RELEASE_DEV"
@@ -2564,6 +2578,7 @@
         "cros_board": "puff",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests PUFF_RELEASE_LKGM",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
@@ -2575,6 +2590,7 @@
         "cros_img": "puff-release/R123-15786.48.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests PUFF_RELEASE_STABLE",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "variant_id": "PUFF_RELEASE_STABLE"
@@ -2589,6 +2605,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2607,6 +2624,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2624,6 +2642,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2643,6 +2662,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2661,6 +2681,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2679,6 +2700,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2696,6 +2718,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2715,6 +2738,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2733,6 +2757,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2751,6 +2776,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2768,6 +2794,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2787,6 +2814,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2805,6 +2833,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2823,6 +2852,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2840,6 +2870,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
@@ -2859,6 +2890,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",

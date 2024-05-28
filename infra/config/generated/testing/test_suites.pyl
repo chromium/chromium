@@ -7474,6 +7474,9 @@
 
     'lacros_skylab_tests_amd64_generic': {
       'lacros_skylab_tests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_BRYA_RELEASE_LKGM',
           'CROS_FIZZ_RELEASE_LKGM',
@@ -7482,6 +7485,9 @@
         ],
       },
       'lacros_skylab_tests_version_skew': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_BRYA_RELEASE_BETA',
           'CROS_BRYA_RELEASE_DEV',
@@ -7498,6 +7504,9 @@
         ],
       },
       'lacros_skylab_tests_with_gtests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_BRYA_RELEASE_LKGM',
           'CROS_FIZZ_RELEASE_LKGM',
@@ -7506,6 +7515,9 @@
         ],
       },
       'lacros_skylab_tests_with_gtests_version_skew': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_BRYA_RELEASE_BETA',
           'CROS_BRYA_RELEASE_DEV',

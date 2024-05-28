@@ -1257,6 +1257,9 @@ targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_tests_amd64_generic",
     basic_suites = {
         "lacros_skylab_tests_version_skew": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_BRYA_RELEASE_DEV",
                 "CROS_BRYA_RELEASE_BETA",
@@ -1273,6 +1276,9 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "lacros_skylab_tests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_BRYA_RELEASE_LKGM",
                 "CROS_FIZZ_RELEASE_LKGM",
@@ -1281,6 +1287,9 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "lacros_skylab_tests_with_gtests_version_skew": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_BRYA_RELEASE_DEV",
                 "CROS_BRYA_RELEASE_BETA",
@@ -1297,6 +1306,9 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "lacros_skylab_tests_with_gtests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_BRYA_RELEASE_LKGM",
                 "CROS_FIZZ_RELEASE_LKGM",
