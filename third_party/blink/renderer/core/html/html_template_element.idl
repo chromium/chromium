@@ -42,7 +42,7 @@
     // to a shadow root; since the template no longer exists, these reflections
     // don't have anything to reflect.
     [Reflect,ReflectOnly=("open","closed")] attribute DOMString shadowRootMode;
-    [CEReactions,Reflect,RuntimeEnabled=TemplateDelegatesFocusReflection] attribute boolean shadowRootDelegatesFocus;
+    [CEReactions,Reflect] attribute boolean shadowRootDelegatesFocus;
     [CEReactions,Reflect] attribute boolean shadowRootClonable;
     [Reflect, RuntimeEnabled=ElementGetHTML] attribute boolean shadowRootSerializable;
 

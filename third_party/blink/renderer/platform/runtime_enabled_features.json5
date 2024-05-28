@@ -3854,13 +3854,6 @@
       name: "SystemWakeLock",
       status: "experimental",
     },
-    {
-      // Killswitch for the reflection of <template shadowrootdelegatesfocus>
-      // attribute. This can be removed in M126 assuming no issues are
-      // encountered.
-      name: "TemplateDelegatesFocusReflection",
-      status: "stable",
-    },
     // For unit tests.
     {
       // This is for testing copied_from_base_feature_if.
