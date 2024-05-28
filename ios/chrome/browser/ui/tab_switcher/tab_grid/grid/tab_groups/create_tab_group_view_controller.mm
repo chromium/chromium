@@ -33,7 +33,7 @@ const CGFloat kMaxHeight = 600;
 
 // View constants.
 const CGFloat kHorizontalMargin = 32;
-const CGFloat kdotAndFieldContainerMargin = 44;
+const CGFloat kDotAndFieldContainerMargin = 24;
 const CGFloat kDotTitleSeparationMargin = 12;
 const CGFloat kSyncGroupTopConstant = 8;
 const CGFloat kContainersMaxWidth = 400;
@@ -722,7 +722,7 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
         constraintLessThanOrEqualToAnchor:dotAndFieldContainer.leadingAnchor],
     [_cancelButtonCompact.topAnchor
         constraintEqualToAnchor:container.topAnchor
-                       constant:kdotAndFieldContainerMargin],
+                       constant:kDotAndFieldContainerMargin],
     [_creationButtonCompact.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:dotAndFieldContainer
                                                  .trailingAnchor],
@@ -731,7 +731,7 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
                        constant:-kHorizontalMargin],
     [_creationButtonCompact.topAnchor
         constraintEqualToAnchor:container.topAnchor
-                       constant:kdotAndFieldContainerMargin],
+                       constant:kDotAndFieldContainerMargin],
     [_colorsScrollView.bottomAnchor
         constraintEqualToAnchor:container.bottomAnchor],
   ];
@@ -743,7 +743,7 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
   [NSLayoutConstraint activateConstraints:@[
     [dotAndFieldContainer.topAnchor
         constraintEqualToAnchor:container.topAnchor
-                       constant:kdotAndFieldContainerMargin],
+                       constant:kDotAndFieldContainerMargin],
     [dotAndFieldContainer.heightAnchor
         constraintGreaterThanOrEqualToConstant:kButtonsHeight],
     dotAndFieldWidth,
