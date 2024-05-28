@@ -99,11 +99,14 @@ RecentDiskSource::RecentDiskSource::CallContext::CallContext(
 
 RecentDiskSource::RecentDiskSource::CallContext::~CallContext() = default;
 
-RecentDiskSource::RecentDiskSource(std::string mount_point_name,
-                                   bool ignore_dotfiles,
-                                   int max_depth,
-                                   std::string uma_histogram_name)
-    : mount_point_name_(std::move(mount_point_name)),
+RecentDiskSource::RecentDiskSource(
+    extensions::api::file_manager_private::VolumeType volume_type,
+    std::string mount_point_name,
+    bool ignore_dotfiles,
+    int max_depth,
+    std::string uma_histogram_name)
+    : RecentSource(volume_type),
+      mount_point_name_(std::move(mount_point_name)),
       ignore_dotfiles_(ignore_dotfiles),
       max_depth_(max_depth),
       uma_histogram_name_(std::move(uma_histogram_name)) {

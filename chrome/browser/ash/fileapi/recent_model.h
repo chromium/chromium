@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/fileapi/file_accumulator.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -33,12 +34,26 @@ class FileSystemContext;
 
 namespace ash {
 
+// The specifications of conditions on recent sources. Only volumes of the given
+// type are searched for recent files.
+struct RecentSourceSpec {
+  // The type of volume that is to be scanned.
+  extensions::api::file_manager_private::VolumeType volume_type;
+};
+
 // The options that impact how the search for recent files is carried out. The
 // default values for the options is to look for files that were modified in the
 // last 30 days, with no limit to how long the scan can take, returning any type
 // of files, but no more than 1000. If possible files will be returned from the
 // recent cache.
+//
+// It is critical that you specify the source_list to be all sources that you
+// wish to search. By default the source list is empty, meaning that nothing
+// is searched.
 struct RecentModelOptions {
+  RecentModelOptions();
+  ~RecentModelOptions();
+
   // How far back to accept files.
   base::TimeDelta now_delta = base::Days(30);
 
@@ -56,6 +71,11 @@ struct RecentModelOptions {
 
   // The type of files to be returned.
   RecentSource::FileType file_type = RecentSource::FileType::kAll;
+
+  // A vector of recent sources specifications. Only sources matching the
+  // specification are going to be used when retrieving recent files. This field
+  // must be non-empty.
+  std::vector<RecentSourceSpec> source_specs;
 };
 
 // Implements a service that returns files matching a given query, type, with
@@ -66,14 +86,19 @@ struct RecentModelOptions {
 // FileSystemContext* context = GetFileSystemContextForRenderFrameHost(
 //     user_profile, render_frame_host());
 //
-// // Requests files with names containing "foo", modified within the last
-// // 30 days, classified as image (jpg, png, etc.), without deleting cache
-// // from the previous call.
+// // Requests files from local disk, with names containing "foo", modified
+// // within the last 30 days (default), classified as image (jpg, png, etc.),
+// // without deleting cache from the previous call (default).
+// ash::RecentModelOptions options;
+// options.file_type = ash::RecentSource::FileType::kImage
+// options.source_spec = {
+//   { .volume_type = VolumeType::kDownloads },
+// };
 // model->GetRecentFiles(
 //     context,
 //     GURL("chrome://file-manager/"),
-//     "foobar",
-//     RecentModelOptions::Default(),
+//     "foo",
+//     options,
 //     std::move(callback));
 //
 // In addition to the above flow, one can set the maximum duration for the

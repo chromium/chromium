@@ -1033,11 +1033,17 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
     return RespondNow(Error("Cannot convert category to file type"));
   }
 
-  ash::RecentModelOptions options = {
-      .now_delta = base::Days(params->cutoff_days),
-      .max_files = 1000u,
-      .invalidate_cache = params->invalidate_cache,
-      .file_type = file_type,
+  ash::RecentModelOptions options;
+  options.now_delta = base::Days(params->cutoff_days);
+  options.max_files = 1000u;
+  options.invalidate_cache = params->invalidate_cache;
+  options.file_type = file_type;
+  options.source_specs = {
+      {.volume_type = fmp::VolumeType::kCrostini},
+      {.volume_type = fmp::VolumeType::kMediaView},
+      {.volume_type = fmp::VolumeType::kDownloads},
+      {.volume_type = fmp::VolumeType::kDrive},
+      {.volume_type = fmp::VolumeType::kProvided},
   };
 
   if (base::FeatureList::IsEnabled(ash::features::kFSPsInRecents)) {

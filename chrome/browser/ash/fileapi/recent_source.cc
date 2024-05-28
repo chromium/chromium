@@ -39,7 +39,9 @@ bool RecentSource::Params::IsLate() const {
 
 RecentSource::Params::~Params() = default;
 
-RecentSource::RecentSource() = default;
+RecentSource::RecentSource(
+    extensions::api::file_manager_private::VolumeType volume_type)
+    : volume_type_(volume_type) {}
 
 RecentSource::~RecentSource() = default;
 

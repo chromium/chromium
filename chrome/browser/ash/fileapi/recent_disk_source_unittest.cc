@@ -77,6 +77,7 @@ struct TestParams {
       const std::string& mount_point_name,
       const std::string& uma_histogram_name) {
     return std::make_unique<RecentDiskSource>(
+        extensions::api::file_manager_private::VolumeType::kTesting,
         mount_point_name, ignore_dot_files_, max_depth_, uma_histogram_name);
   }
 

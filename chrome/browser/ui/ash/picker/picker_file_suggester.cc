@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -21,6 +22,7 @@ namespace {
 
 using LocalFile = PickerFileSuggester::LocalFile;
 using DriveFile = PickerFileSuggester::DriveFile;
+namespace fmp = extensions::api::file_manager_private;
 
 constexpr base::TimeDelta kMaxFileRecencyDelta = base::Days(30);
 constexpr base::TimeDelta kScanTimeout = base::Seconds(1);
@@ -43,10 +45,13 @@ void GetRecentFiles(Profile* profile,
   if (!model) {
     return;
   }
-  ash::RecentModelOptions options = {
-      .now_delta = kMaxFileRecencyDelta,
-      .scan_timeout = kScanTimeout,
-      .file_type = file_type,
+  ash::RecentModelOptions options;
+  options.now_delta = kMaxFileRecencyDelta;
+  options.file_type = file_type;
+  options.scan_timeout = kScanTimeout,
+  options.source_specs = {
+      ash::RecentSourceSpec{.volume_type = fmp::VolumeType::kDownloads},
+      ash::RecentSourceSpec{.volume_type = fmp::VolumeType::kDrive},
   };
 
   model->GetRecentFiles(file_system_context.get(), GURL(), /*query=*/"",

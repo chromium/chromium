@@ -47,7 +47,11 @@ class FileProducer {
 // All member functions must be called on the UI thread.
 class FakeRecentSource : public RecentSource {
  public:
+  // Creates a recent source for kTesting volume type.
   FakeRecentSource();
+  // Creates a recent source with the specified volume type.
+  FakeRecentSource(
+      extensions::api::file_manager_private::VolumeType volume_type);
 
   FakeRecentSource(const FakeRecentSource&) = delete;
   FakeRecentSource& operator=(const FakeRecentSource&) = delete;

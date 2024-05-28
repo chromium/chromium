@@ -66,6 +66,8 @@ using ::testing::VariantWith;
 using MockSearchResultsCallback =
     testing::MockFunction<PickerClientImpl::CrosSearchResultsCallback>;
 
+namespace fmp = extensions::api::file_manager_private;
+
 bool CreateTestFile(const base::FilePath& path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   if (!base::WriteFile(path, "test_file")) {
@@ -83,9 +85,10 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
 }
 
 std::unique_ptr<KeyedService> BuildTestRecentModelFactory(
+    fmp::VolumeType volume_type,
     std::vector<ash::RecentFile> files,
     content::BrowserContext* context) {
-  auto source = std::make_unique<ash::FakeRecentSource>();
+  auto source = std::make_unique<ash::FakeRecentSource>(volume_type);
   source->AddProducer(std::make_unique<ash::FileProducer>(
       /*lag=*/base::Milliseconds(0), std::move(files)));
 
@@ -148,10 +151,11 @@ ash::RecentFile CreateRecentFile(const base::FilePath& path,
 }
 
 void SetRecentFiles(TestingProfile* profile,
+                    fmp::VolumeType volume_type,
                     std::vector<ash::RecentFile> files) {
   ash::RecentModelFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile,
-      base::BindRepeating(BuildTestRecentModelFactory, std::move(files)));
+      profile, base::BindRepeating(BuildTestRecentModelFactory, volume_type,
+                                   std::move(files)));
 }
 
 drivefs::FakeMetadata CreateFakeDriveFsMetadata(const base::FilePath& path) {
@@ -205,6 +209,7 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
          base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)},
         {ash::RecentModelFactory::GetInstance(),
          base::BindRepeating(&BuildTestRecentModelFactory,
+                             fmp::VolumeType::kDownloads,
                              std::vector<ash::RecentFile>{})},
         {drive::DriveIntegrationServiceFactory::GetInstance(),
          base::BindRepeating(&BuildTestDriveIntegrationService,
@@ -324,7 +329,7 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
-  SetRecentFiles(profile(),
+  SetRecentFiles(profile(), fmp::VolumeType::kDownloads,
                  {
                      CreateRecentFile(base::FilePath("aaa.jpg"),
                                       storage::kFileSystemTypeLocal),
@@ -361,7 +366,7 @@ TEST_F(PickerClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
-  SetRecentFiles(profile(),
+  SetRecentFiles(profile(), fmp::VolumeType::kDownloads,
                  {
                      CreateRecentFile(base::FilePath("abc.jpg"),
                                       storage::kFileSystemTypeLocal,
@@ -397,7 +402,7 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
       CreateFakeDriveFsMetadata(base::FilePath("bbb.mp4")));
   GetFakeDriveFs().SetMetadata(
       CreateFakeDriveFsMetadata(base::FilePath("ccc.png")));
-  SetRecentFiles(profile(),
+  SetRecentFiles(profile(), fmp::VolumeType::kDrive,
                  {
                      CreateRecentFile(mount_path.AppendASCII("aaa.jpg"),
                                       storage::kFileSystemTypeDriveFs),
@@ -433,7 +438,7 @@ TEST_F(PickerClientImplTest,
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
-  SetRecentFiles(profile(),
+  SetRecentFiles(profile(), fmp::VolumeType::kDrive,
                  {
                      CreateRecentFile(base::FilePath("abc.jpg"),
                                       storage::kFileSystemTypeDriveFs),
@@ -448,7 +453,7 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
-  SetRecentFiles(profile(),
+  SetRecentFiles(profile(), fmp::VolumeType::kDrive,
                  {
                      CreateRecentFile(base::FilePath("abc.jpg"),
                                       storage::kFileSystemTypeDriveFs,

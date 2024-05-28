@@ -28,6 +28,8 @@ namespace ash {
 
 namespace {
 
+namespace fmp = extensions::api::file_manager_private;
+
 base::Time ModifiedTime(int64_t seconds_since_unix_epoch) {
   return base::Time::FromSecondsSinceUnixEpoch(seconds_since_unix_epoch);
 }
@@ -121,6 +123,13 @@ class RecentModelTest : public testing::Test {
   RecentModelTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  void SetUp() override {
+    source_specs_.emplace_back(
+        RecentSourceSpec{.volume_type = fmp::VolumeType::kTesting});
+  }
+
+  void TearDown() override { source_specs_.clear(); }
+
  protected:
   using RecentSourceList = std::vector<std::unique_ptr<RecentSource>>;
   using RecentSourceListFactory = base::RepeatingCallback<RecentSourceList()>;
@@ -151,10 +160,12 @@ class RecentModelTest : public testing::Test {
     options.file_type = file_type;
     options.invalidate_cache = invalidate_cache;
     options.now_delta = cutoff_delta;
+    options.source_specs = source_specs_;
 
     return GetRecentFiles(model, options);
   }
 
+  std::vector<RecentSourceSpec> source_specs_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
@@ -308,6 +319,7 @@ TEST_F(RecentModelTest, MultipleRequests) {
   // First request; fills files_1. We use query "aaa"
   RecentModelOptions options;
   options.max_files = 10;
+  options.source_specs = source_specs_;
   model->GetRecentFiles(
       /*file_system_context=*/nullptr, /*origin=*/GURL(),
       /*query=*/"aaa", options,
@@ -348,6 +360,8 @@ TEST(RecentModelCacheTest, GetRecentFiles_InvalidateCache) {
   RecentModelOptions options;
   options.max_files = 10;
   options.now_delta = base::TimeDelta::Max();
+  options.source_specs.emplace_back(
+      RecentSourceSpec{.volume_type = fmp::VolumeType::kTesting});
   std::vector<RecentFile> files1 = GetRecentFiles(model.get(), options);
   ASSERT_EQ(4u, files1.size());
 
@@ -363,6 +377,26 @@ TEST(RecentModelCacheTest, GetRecentFiles_InvalidateCache) {
   options.invalidate_cache = true;
   std::vector<RecentFile> files3 = GetRecentFiles(model.get(), options);
   ASSERT_EQ(0u, files3.size());
+}
+
+TEST(RecentModelSourceRestrictions, QueryNonexistingSources) {
+  content::BrowserTaskEnvironment task_environment;
+  std::unique_ptr<RecentModel> model =
+      RecentModel::CreateForTest(BuildDefaultSources());
+
+  RecentModelOptions options;
+  options.max_files = 10;
+  options.now_delta = base::TimeDelta::Max();
+  options.source_specs.emplace_back(
+      RecentSourceSpec{.volume_type = fmp::VolumeType::kDrive});
+  options.source_specs.emplace_back(
+      RecentSourceSpec{.volume_type = fmp::VolumeType::kDownloads});
+  std::vector<RecentFile> files = GetRecentFiles(model.get(), options);
+  // Test sources have kTesting as the volume type; thus fetching files from
+  // other volumes should result in empty recent files vector.
+  EXPECT_TRUE(files.empty());
+  // Manual shutdown to clear sources_ vector in the model.
+  model->Shutdown();
 }
 
 }  // namespace ash

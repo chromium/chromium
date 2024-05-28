@@ -244,6 +244,7 @@ include_rules = [
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions/extension_constants.h",
   "+chrome/common/extensions/manifest_handlers/app_launch_info.h",
+  "+chrome/common/extensions/api/file_manager_private.h",
   "+chrome/common/pref_names.h",
   "+chrome/common/url_constants.h",
   "+chrome/common/webui_url_constants.h",

@@ -33,10 +33,12 @@ class RecentDiskSource : public RecentSource {
   // Does nothing if no volume is registered at `mount_point_name`.
   // If `ignore_dotfiles` is true, recents will ignore directories and files
   // starting with a dot. Set `max_depth` to zero for unlimited depth.
-  RecentDiskSource(std::string mount_point_name,
-                   bool ignore_dotfiles,
-                   int max_depth,
-                   std::string uma_histogram_name);
+  RecentDiskSource(
+      extensions::api::file_manager_private::VolumeType volume_type,
+      std::string mount_point_name,
+      bool ignore_dotfiles,
+      int max_depth,
+      std::string uma_histogram_name);
 
   RecentDiskSource(const RecentDiskSource&) = delete;
   RecentDiskSource& operator=(const RecentDiskSource&) = delete;

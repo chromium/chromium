@@ -69,7 +69,13 @@ FakeRecentSource::CallContext::CallContext(CallContext&& context)
       active_producer_count(context.active_producer_count) {}
 FakeRecentSource::CallContext::~CallContext() = default;
 
-FakeRecentSource::FakeRecentSource() {}
+FakeRecentSource::FakeRecentSource()
+    : FakeRecentSource(
+          extensions::api::file_manager_private::VolumeType::kTesting) {}
+
+FakeRecentSource::FakeRecentSource(
+    extensions::api::file_manager_private::VolumeType volume_type)
+    : RecentSource(volume_type) {}
 
 FakeRecentSource::~FakeRecentSource() = default;
 

@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/fileapi/recent_drive_source.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -31,6 +32,8 @@ using content::BrowserThread;
 namespace ash {
 
 namespace {
+
+namespace fmp = extensions::api::file_manager_private;
 
 // Helper method that transfers files that qualify, based on the cut-off time
 // to the accumulator. Used either when a recent source completes the work or
@@ -66,12 +69,14 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
 
   // Crostini.
   sources.emplace_back(std::make_unique<RecentDiskSource>(
+      fmp::VolumeType::kCrostini,
       file_manager::util::GetCrostiniMountPointName(profile),
       /*ignore_dotfiles=*/true, /*max_depth=*/4,
       "FileBrowser.Recent.LoadCrostini"));
 
   // Downloads / MyFiles.
   sources.emplace_back(std::make_unique<RecentDiskSource>(
+      fmp::VolumeType::kDownloads,
       file_manager::util::GetDownloadsMountPointName(profile),
       /*ignore_dotfiles=*/true, /*unlimited max_depth=*/0,
       "FileBrowser.Recent.LoadDownloads"));
@@ -93,6 +98,7 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
         continue;
       }
       sources.emplace_back(std::make_unique<RecentDiskSource>(
+          fmp::VolumeType::kProvided,
           volume->mount_path().BaseName().AsUTF8Unsafe(),
           /*ignore_dot_files=*/true, /*max_depth=*/0,
           "FileBrowser.Recent.LoadFileSystemProvider"));
@@ -103,6 +109,10 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
 }
 
 }  // namespace
+
+RecentModelOptions::RecentModelOptions() = default;
+
+RecentModelOptions::~RecentModelOptions() = default;
 
 RecentModel::CallContext::CallContext(const SearchCriteria& criteria,
                                       GetRecentFilesCallback callback)
@@ -174,12 +184,25 @@ void RecentModel::GetRecentFiles(
 
   auto context =
       std::make_unique<CallContext>(search_criteria, std::move(callback));
+  // The source list should never be empty, as this means somebody wants recent
+  // files from without specifying even a single source.
+  DCHECK(!options.source_specs.empty());
+  std::set<fmp::VolumeType> volume_filter;
+  for (const RecentSourceSpec& restriction : options.source_specs) {
+    volume_filter.emplace(restriction.volume_type);
+  }
+
+  size_t source_count = 0;
   for (const auto& source : sources_) {
-    context->active_sources.insert(source.get());
+    auto it = volume_filter.find(source->volume_type());
+    if (it != volume_filter.end()) {
+      context->active_sources.insert(source.get());
+      ++source_count;
+    }
   }
   context_map_.AddWithID(std::move(context), this_call_id);
 
-  if (sources_.empty()) {
+  if (source_count == 0) {
     OnSearchCompleted(this_call_id);
     return;
   }

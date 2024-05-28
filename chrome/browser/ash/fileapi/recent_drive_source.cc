@@ -48,7 +48,9 @@ RecentDriveSource::CallContext::CallContext(CallContext&& context)
 
 RecentDriveSource::CallContext::~CallContext() = default;
 
-RecentDriveSource::RecentDriveSource(Profile* profile) : profile_(profile) {
+RecentDriveSource::RecentDriveSource(Profile* profile)
+    : RecentSource(extensions::api::file_manager_private::VolumeType::kDrive),
+      profile_(profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 

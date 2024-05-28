@@ -12,6 +12,7 @@
 #include "base/i18n/string_search.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
@@ -123,8 +124,18 @@ class RecentSource {
   // of the `call_id` passed in the `params` of the GetRecentFiles` method.
   virtual std::vector<RecentFile> Stop(const int32_t call_id) = 0;
 
+  // Returns the volume type that is serviced by this recent source.
+  extensions::api::file_manager_private::VolumeType volume_type() const {
+    return volume_type_;
+  }
+
  protected:
-  RecentSource();
+  // Creates a new recent source that handles a volume of the given type.
+  explicit RecentSource(
+      extensions::api::file_manager_private::VolumeType volume_type);
+
+ private:
+  extensions::api::file_manager_private::VolumeType volume_type_;
 };
 
 // A common to all recent sources function for checking a file name against the

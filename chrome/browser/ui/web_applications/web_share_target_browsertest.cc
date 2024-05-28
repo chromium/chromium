@@ -187,10 +187,15 @@ class WebShareTargetBrowserTest : public WebAppBrowserTestBase {
     const scoped_refptr<storage::FileSystemContext> file_system_context =
         file_manager::util::GetFileSystemContextForRenderFrameHost(
             profile(), contents->GetPrimaryMainFrame());
+    ash::RecentModelOptions options;
+    options.source_specs.emplace_back(ash::RecentSourceSpec{
+        .volume_type =
+            extensions::api::file_manager_private::VolumeType::kTesting,
+    });
     ash::RecentModelFactory::GetForProfile(profile())->GetRecentFiles(
         file_system_context.get(),
         /*origin=*/GURL(),
-        /*query=*/"", ash::RecentModelOptions{},
+        /*query=*/"", options,
         base::BindLambdaForTesting(
             [&result, &run_loop](const std::vector<ash::RecentFile>& files) {
               result = files.size();
