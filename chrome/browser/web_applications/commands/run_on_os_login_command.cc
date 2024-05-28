@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -81,6 +82,11 @@ void RunOnOsLoginCommand::OnShutdown(
 void RunOnOsLoginCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
 
+  if (!lock_->registrar().IsLocallyInstalled(app_id_)) {
+    Abort(RunOnOsLoginCommandCompletionState::kAppNotLocallyInstalled);
+    return;
+  }
+
   switch (set_or_sync_mode_) {
     case RunOnOsLoginAction::kSetModeInDBAndOS:
       SetRunOnOsLoginMode();
@@ -114,11 +120,6 @@ void RunOnOsLoginCommand::Abort(
 }
 
 void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
-  if (!lock_->registrar().IsLocallyInstalled(app_id_)) {
-    Abort(RunOnOsLoginCommandCompletionState::kAppNotLocallyInstalled);
-    return;
-  }
-
   const auto current_mode = lock_->registrar().GetAppRunOnOsLoginMode(app_id_);
 
   // Early return if policy does not allow the user to change value, or if the
@@ -148,10 +149,6 @@ void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
 }
 
 void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
-  if (!lock_->registrar().IsLocallyInstalled(app_id_)) {
-    Abort(RunOnOsLoginCommandCompletionState::kAppNotLocallyInstalled);
-    return;
-  }
   login_mode_ = lock_->registrar().GetAppRunOnOsLoginMode(app_id_).value;
 
   // This is temporary solution for preinstalled apps getting fully installed.
@@ -187,11 +184,16 @@ void RunOnOsLoginCommand::OnOsIntegrationSynchronized() {
     // Note: minimized isn't supported yet, and gets turned into kWindowed.
     ScopedRegistryUpdate save_state_to_old_expected_value =
         lock_->sync_bridge().BeginUpdate();
-    save_state_to_old_expected_value->UpdateApp(app_id_)
-        ->SetRunOnOsLoginOsIntegrationState(login_mode_.value() !=
-                                                    RunOnOsLoginMode::kNotRun
-                                                ? RunOnOsLoginMode::kWindowed
-                                                : RunOnOsLoginMode::kNotRun);
+    WebApp* app_to_update =
+        save_state_to_old_expected_value->UpdateApp(app_id_);
+    // TODO(crbug.com/343247630): Investigate why this app no longer exists and
+    // causes a crash. See crbug.com/342097315 for more information.
+    if (app_to_update) {
+      app_to_update->SetRunOnOsLoginOsIntegrationState(
+          login_mode_.value() != RunOnOsLoginMode::kNotRun
+              ? RunOnOsLoginMode::kWindowed
+              : RunOnOsLoginMode::kNotRun);
+    }
   }
 
   CompleteAndSelfDestruct(CommandResult::kSuccess);
