@@ -862,10 +862,6 @@
       status: "stable",
     },
     {
-      name: "CSSFirstLetterTextRewrite",
-      status: "stable",
-    },
-    {
       name: "CSSFontSizeAdjust",
       status: "experimental",
     },
