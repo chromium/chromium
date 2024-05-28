@@ -6,6 +6,10 @@ package org.chromium.base.test.transit;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
+import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,22 +25,121 @@ public abstract class Transition {
         void triggerTransition();
     }
 
+    private static final String TAG = "Transit";
+    private static int sLastTripId;
+
+    protected final int mId;
     protected final TransitionOptions mOptions;
+    protected final List<ConditionalState> mExitedStates;
+    protected final List<ConditionalState> mEnteredStates;
     @Nullable protected final Trigger mTrigger;
 
-    Transition(TransitionOptions options, @Nullable Trigger trigger) {
+    protected List<ConditionWait> mWaits;
+
+    Transition(
+            TransitionOptions options,
+            List<ConditionalState> exitedStates,
+            List<ConditionalState> enteredStates,
+            @Nullable Trigger trigger) {
+        mId = ++sLastTripId;
         mOptions = options;
+        mExitedStates = exitedStates;
+        mEnteredStates = enteredStates;
         mTrigger = trigger;
+    }
+
+    void transitionSync() {
+        Log.i(TAG, "%s: started", toDebugString());
+        onBeforeTransition();
+        performTransitionWithRetries();
+        onAfterTransition();
+        Log.i(TAG, "%s: finished", toDebugString());
+
+        PublicTransitConfig.maybePauseAfterTransition(this);
+    }
+
+    protected void onBeforeTransition() {
+        for (ConditionalState exited : mExitedStates) {
+            exited.setStateTransitioningFrom();
+        }
+        for (ConditionalState entered : mEnteredStates) {
+            entered.setStateTransitioningTo();
+        }
+
+        mWaits = createWaits();
+        try {
+            ConditionWaiter.preCheck(mWaits, mOptions, mTrigger);
+        } catch (CriteriaNotSatisfiedException e) {
+            throw newTransitionException(e);
+        }
+        for (ConditionWait wait : mWaits) {
+            wait.getCondition().onStartMonitoring();
+        }
+    }
+
+    protected void performTransitionWithRetries() {
+        if (mOptions.mTries == 1) {
+            triggerTransition();
+            Log.i(TAG, "%s: waiting for conditions", toDebugString());
+            waitUntilConditionsFulfilled();
+        } else {
+            for (int tryNumber = 1; tryNumber <= mOptions.mTries; tryNumber++) {
+                try {
+                    triggerTransition();
+                    Log.i(
+                            TAG,
+                            "%s: try #%d/%d, waiting for conditions",
+                            toDebugString(),
+                            tryNumber,
+                            mOptions.mTries);
+                    waitUntilConditionsFulfilled();
+                    break;
+                } catch (TravelException e) {
+                    Log.w(TAG, "%s: try #%d failed", toDebugString(), tryNumber, e);
+                    if (tryNumber >= mOptions.mTries) {
+                        throw e;
+                    }
+                }
+            }
+        }
     }
 
     protected void triggerTransition() {
         if (mTrigger != null) {
+            Log.i(TAG, "%s: will run trigger", toDebugString());
             try {
                 mTrigger.triggerTransition();
+                Log.i(TAG, "%s: finished running trigger", toDebugString());
             } catch (Exception e) {
                 throw TravelException.newTravelException(
                         "Exception thrown by Transition trigger for " + toDebugString(), e);
             }
+        } else {
+            Log.i(TAG, "%s is triggerless", toDebugString());
+        }
+    }
+
+    protected void waitUntilConditionsFulfilled() {
+        // Throws CriteriaNotSatisfiedException if any conditions aren't met within the timeout and
+        // prints the state of all conditions. The timeout can be reduced when explicitly looking
+        // for flakiness due to tight timeouts.
+        try {
+            ConditionWaiter.waitFor(mWaits, mOptions);
+        } catch (AssertionError e) {
+            throw newTransitionException(e);
+        }
+    }
+
+    protected void onAfterTransition() {
+        for (ConditionalState exited : mExitedStates) {
+            exited.setStateFinished();
+        }
+        for (ConditionalState entered : mEnteredStates) {
+            entered.setStateActive();
+        }
+
+        for (ConditionWait wait : mWaits) {
+            wait.getCondition().onStopMonitoring();
         }
     }
 
@@ -52,6 +155,9 @@ public abstract class Transition {
 
     /** Should return a String representation of the Transition for debugging. */
     public abstract String toDebugString();
+
+    /** Should create the {@link ConditionWait}s. */
+    protected abstract List<ConditionWait> createWaits();
 
     @Override
     public String toString() {

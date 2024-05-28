@@ -6,10 +6,8 @@ package org.chromium.base.test.transit;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Log;
 import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
 import org.chromium.base.test.transit.ConditionalState.Phase;
-import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,92 +19,18 @@ import java.util.Set;
  * point.
  */
 class Trip extends Transition {
-    private static final String TAG = "Transit";
-    private final int mId;
-
     private final Station mOrigin;
     private final Station mDestination;
 
-    private List<ConditionWait> mWaits;
-
-    private static int sLastTripId;
-
     Trip(Station origin, Station destination, TransitionOptions options, Trigger trigger) {
-        super(options, trigger);
+        super(options, List.of(origin), List.of(destination), trigger);
         mOrigin = origin;
         mDestination = destination;
-        mId = ++sLastTripId;
     }
 
-    void transitionSync() {
-        // TODO(crbug.com/333735412): Unify Trip#travelSyncInternal(), FacilityCheckIn#enterSync()
-        // and FacilityCheckOut#exitSync().
-        embark();
-        Log.i(TAG, "Trip %d: Embarked at %s towards %s", mId, mOrigin, mDestination);
-
-        if (mOptions.mTries == 1) {
-            triggerTransition();
-            Log.i(TAG, "Trip %d: Triggered transition, waiting to arrive at %s", mId, mDestination);
-            waitUntilArrival();
-        } else {
-            for (int tryNumber = 1; tryNumber <= mOptions.mTries; tryNumber++) {
-                try {
-                    triggerTransition();
-                    Log.i(
-                            TAG,
-                            "Trip %d: Triggered transition (try #%d/%d), waiting to arrive at %s",
-                            mId,
-                            tryNumber,
-                            mOptions.mTries,
-                            mDestination);
-                    waitUntilArrival();
-                    break;
-                } catch (TravelException e) {
-                    Log.w(TAG, "Try #%d failed", tryNumber, e);
-                    if (tryNumber >= mOptions.mTries) {
-                        throw e;
-                    }
-                }
-            }
-        }
-
-        Log.i(TAG, "Trip %d: Arrived at %s", mId, mDestination);
-
-        PublicTransitConfig.maybePauseAfterTransition(mDestination);
-    }
-
-    private void embark() {
-        mOrigin.setStateTransitioningFrom();
-        mDestination.setStateTransitioningTo();
-
-        mWaits = calculateConditionWaits(mOrigin, mDestination, getTransitionConditions());
-        try {
-            ConditionWaiter.preCheck(mWaits, mOptions, mTrigger);
-        } catch (CriteriaNotSatisfiedException e) {
-            throw newTransitionException(e);
-        }
-        for (ConditionWait wait : mWaits) {
-            wait.getCondition().onStartMonitoring();
-        }
-    }
-
-    private void waitUntilArrival() {
-        // Throws CriteriaNotSatisfiedException if any conditions aren't met within the timeout and
-        // prints the state of all conditions. The timeout can be reduced when explicitly looking
-        // for flakiness due to tight timeouts.
-        try {
-            ConditionWaiter.waitFor(mWaits, mOptions);
-        } catch (AssertionError e) {
-            throw newTransitionException(e);
-        }
-
-        mOrigin.setStateFinished();
-        mDestination.setStateActive();
-        for (ConditionWait waits : mWaits) {
-            waits.getCondition().onStopMonitoring();
-        }
-
-        TrafficControl.notifyActiveStationChanged(mDestination);
+    @Override
+    protected List<ConditionWait> createWaits() {
+        return calculateConditionWaits(mOrigin, mDestination, getTransitionConditions());
     }
 
     private static ArrayList<ConditionWait> calculateConditionWaits(
@@ -157,7 +81,13 @@ class Trip extends Transition {
     }
 
     @Override
+    protected void onAfterTransition() {
+        super.onAfterTransition();
+        TrafficControl.notifyActiveStationChanged(mDestination);
+    }
+
+    @Override
     public String toDebugString() {
-        return String.format("Trip from %s to %s", mOrigin, mDestination);
+        return String.format("Trip %d (%s to %s)", mId, mOrigin, mDestination);
     }
 }
