@@ -61,6 +61,26 @@ bool HostMatches(const network::mojom::blink::CSPSource& source,
   return source.host == host;
 }
 
+bool HostMatches(const network::mojom::blink::CSPSource& source,
+                 const KURL& url) {
+  // Chromium currently has an issue handling non-special URLs. The url.Host()
+  // function returns an empty string for them. See
+  // crbug.com/40063064 for details.
+  //
+  // In the future, once non-special URLs are fully supported, we might consider
+  // checking the host information for them too.
+  //
+  // For now, we check `url.IsStandard()` to maintain consistent behavior
+  // regardless of the url::StandardCompliantNonSpecialSchemeURLParsing feature
+  // state.
+  if (!url.IsStandard()) {
+    return HostMatches(source, "");
+  }
+  return base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)
+             ? HostMatches(source, url.HostView())
+             : HostMatches(source, url.Host());
+}
+
 bool PathMatches(const network::mojom::blink::CSPSource& source,
                  const String& url_path) {
   if (source.path.empty() || (source.path == "/" && url_path.empty()))
@@ -161,10 +181,7 @@ bool CSPSourceMatches(const network::mojom::blink::CSPSource& source,
     return false;
   }
 
-  return HostMatches(source,
-                     base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)
-                         ? url.HostView()
-                         : url.Host()) &&
+  return HostMatches(source, url) &&
          ports_match != PortMatchingResult::kNotMatching && paths_match;
 }
 
@@ -184,10 +201,7 @@ bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
     return true;
   }
 
-  bool hosts_match =
-      HostMatches(source, base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)
-                              ? url.HostView()
-                              : url.Host());
+  bool hosts_match = HostMatches(source, url);
   PortMatchingResult ports_match = PortMatches(
       source, source.scheme, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
       url.Protocol());
