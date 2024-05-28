@@ -47,6 +47,7 @@
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/ai/ai_manager_impl.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
@@ -97,7 +98,6 @@
 #include "chrome/browser/memory/chrome_browser_main_extra_parts_memory.h"
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
-#include "chrome/browser/model_execution/model_manager_impl.h"
 #include "chrome/browser/navigation_predictor/anchor_element_preloader.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -8431,10 +8431,10 @@ bool ChromeContentBrowserClient::ShouldSuppressAXLoadComplete(
          url == GURL(chrome::kChromeUINewTabPageURL);
 }
 
-void ChromeContentBrowserClient::BindModelManager(
+void ChromeContentBrowserClient::BindAIManager(
     content::RenderFrameHost* rfh,
     mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
-  ModelManagerImpl::Create(rfh, std::move(receiver));
+  AIManagerImpl::Create(rfh, std::move(receiver));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

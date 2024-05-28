@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/model_execution/model_manager_impl.h"
+#include "chrome/browser/ai/ai_manager_impl.h"
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -15,7 +15,7 @@
 using ::testing::AtMost;
 using ::testing::NiceMock;
 
-class ModelManagerImplTest : public ChromeRenderViewHostTestHarness {
+class AIManagerImplTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -36,7 +36,7 @@ class ModelManagerImplTest : public ChromeRenderViewHostTestHarness {
 
 // Tests that involve invalid on-device model file paths should not crash when
 // the associated RFH is destroyed.
-TEST_F(ModelManagerImplTest, NoUAFWithInvalidOnDeviceModelPath) {
+TEST_F(AIManagerImplTest, NoUAFWithInvalidOnDeviceModelPath) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(
       optimization_guide::switches::kOnDeviceModelExecutionOverride,
@@ -50,9 +50,9 @@ TEST_F(ModelManagerImplTest, NoUAFWithInvalidOnDeviceModelPath) {
       .WillOnce(
           testing::Invoke([&](bool can_create) { EXPECT_FALSE(can_create); }));
 
-  ModelManagerImpl* model_manager =
-      ModelManagerImpl::GetOrCreateForCurrentDocument(main_rfh());
-  model_manager->CanCreateGenericSession(callback.Get());
+  AIManagerImpl* ai_manager =
+      AIManagerImpl::GetOrCreateForCurrentDocument(main_rfh());
+  ai_manager->CanCreateGenericSession(callback.Get());
 
   // The callback may still be pending, delete the WebContents and destroy the
   // associated RFH, which should not result in a UAF.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MODEL_EXECUTION_MODEL_EXECUTION_SESSION_H_
-#define CHROME_BROWSER_MODEL_EXECUTION_MODEL_EXECUTION_SESSION_H_
+#ifndef CHROME_BROWSER_AI_AI_TEXT_SESSION_H_
+#define CHROME_BROWSER_AI_AI_TEXT_SESSION_H_
 
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -12,15 +12,15 @@
 
 // The implementation of `blink::mojom::ModelGenericSession`, which exposes the
 // single stream-based `Execute()` API for model execution.
-class ModelExecutionSession : public blink::mojom::ModelGenericSession {
+class AITextSession : public blink::mojom::ModelGenericSession {
  public:
-  explicit ModelExecutionSession(
+  explicit AITextSession(
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session> session);
-  ModelExecutionSession(const ModelExecutionSession&) = delete;
-  ModelExecutionSession& operator=(const ModelExecutionSession&) = delete;
+  AITextSession(const AITextSession&) = delete;
+  AITextSession& operator=(const AITextSession&) = delete;
 
-  ~ModelExecutionSession() override;
+  ~AITextSession() override;
 
   // `blink::mojom::ModelGenericSession` implementation.
   void Execute(const std::string& input,
@@ -41,7 +41,7 @@ class ModelExecutionSession : public blink::mojom::ModelGenericSession {
   // `Execute()` call.
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;
 
-  base::WeakPtrFactory<ModelExecutionSession> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AITextSession> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_MODEL_EXECUTION_MODEL_EXECUTION_SESSION_H_
+#endif  // CHROME_BROWSER_AI_AI_TEXT_SESSION_H_

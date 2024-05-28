@@ -2924,7 +2924,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // today to suppress the event when the user navigates to the new tab page.
   virtual bool ShouldSuppressAXLoadComplete(RenderFrameHost* rfh);
 
-  virtual void BindModelManager(
+  virtual void BindAIManager(
       RenderFrameHost* rfh,
       mojo::PendingReceiver<blink::mojom::ModelManager> receiver);
 

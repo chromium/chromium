@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MODEL_EXECUTION_MOCK_MODEL_MANAGER_H_
-#define CONTENT_BROWSER_MODEL_EXECUTION_MOCK_MODEL_MANAGER_H_
+#ifndef CONTENT_BROWSER_AI_MOCK_AI_MANAGER_IMPL_H_
+#define CONTENT_BROWSER_AI_MOCK_AI_MANAGER_IMPL_H_
 
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -11,24 +11,26 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 
-// The mock implementation of `blink::mojom::ModelManager` used for testing.
-class MockModelManager : public content::DocumentUserData<MockModelManager>,
-                         public blink::mojom::ModelManager {
- public:
-  MockModelManager(const MockModelManager&) = delete;
-  MockModelManager& operator=(const MockModelManager&) = delete;
+namespace content {
 
-  ~MockModelManager() override;
+// The mock implementation of `blink::mojom::ModelManager` used for testing.
+class MockAIManagerImpl : public content::DocumentUserData<MockAIManagerImpl>,
+                          public blink::mojom::ModelManager {
+ public:
+  MockAIManagerImpl(const MockAIManagerImpl&) = delete;
+  MockAIManagerImpl& operator=(const MockAIManagerImpl&) = delete;
+
+  ~MockAIManagerImpl() override;
 
   static void Create(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ModelManager> receiver);
 
  private:
-  friend class DocumentUserData<MockModelManager>;
+  friend class DocumentUserData<MockAIManagerImpl>;
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  explicit MockModelManager(content::RenderFrameHost* rfh);
+  explicit MockAIManagerImpl(content::RenderFrameHost* rfh);
 
   // `blink::mojom::ModelManager` implementation.
   void CanCreateGenericSession(
@@ -45,4 +47,6 @@ class MockModelManager : public content::DocumentUserData<MockModelManager>,
   mojo::Receiver<blink::mojom::ModelManager> receiver_{this};
 };
 
-#endif  // CONTENT_BROWSER_MODEL_EXECUTION_MOCK_MODEL_MANAGER_H_
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_AI_MOCK_AI_MANAGER_IMPL_H_
