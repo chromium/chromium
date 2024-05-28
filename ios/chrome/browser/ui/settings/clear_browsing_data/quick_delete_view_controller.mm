@@ -155,7 +155,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  CHECK(self.presentationHandler);
   [self.presentationHandler dismissQuickDelete];
 }
 

@@ -70,7 +70,7 @@ using chrome_test_util::SettingsMenuPrivacyButton;
 }
 
 // Returns a matcher for the row with the `timeRange` on the popup menu.
-- (id<GREYMatcher>)popoverCellMenuItemWithTimeRange:(NSString*)timeRange {
+- (id<GREYMatcher>)popupCellMenuItemWithTimeRange:(NSString*)timeRange {
   return grey_allOf(
       grey_not(grey_accessibilityID(kQuickDeletePopUpButtonIdentifier)),
       ContextMenuItemWithAccessibilityLabel(timeRange), nil);
@@ -78,9 +78,9 @@ using chrome_test_util::SettingsMenuPrivacyButton;
 
 // Returns a matcher for the actual button with the `timeRange` inside the time
 // range popup row.
-- (id<GREYMatcher>)popupCellButtonWithTimeRange:(NSString*)timeRange {
+- (id<GREYMatcher>)popupCellWithTimeRange:(NSString*)timeRange {
   return grey_allOf(grey_accessibilityID(kQuickDeletePopUpButtonIdentifier),
-                    ContextMenuItemWithAccessibilityLabel(timeRange), nil);
+                    grey_text(timeRange), nil);
 }
 
 // Tests if the Quick Delete UI is shown correctly from Privacy settings.
@@ -128,8 +128,7 @@ using chrome_test_util::SettingsMenuPrivacyButton;
 
 // Tests the selection time range for the browsing data deletion: the time range
 // selection is shown with the pref value and a new selection updates the pref.
-// TODO(crbug.com/341306396): Reenable after fix.
-- (void)DISALBED_testTimeRangeForDeletionSelection {
+- (void)testTimeRangeForDeletionSelection {
   // Set pref to the last hour.
   [ChromeEarlGrey
       setIntegerValue:static_cast<int>(browsing_data::TimePeriod::LAST_HOUR)
@@ -150,7 +149,7 @@ using chrome_test_util::SettingsMenuPrivacyButton;
   [[EarlGrey
       selectElementWithMatcher:
           [self
-              popupCellButtonWithTimeRange:
+              popupCellWithTimeRange:
                   l10n_util::GetNSString(
                       IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR)]]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -158,14 +157,14 @@ using chrome_test_util::SettingsMenuPrivacyButton;
   // Tap on the time range button.
   [[EarlGrey selectElementWithMatcher:
                  grey_text(l10n_util::GetNSString(
-                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR))]
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE))]
       performAction:grey_tap()];
 
   // Tap on the past week option on the popup menu.
   [[EarlGrey
       selectElementWithMatcher:
           [self
-              popoverCellMenuItemWithTimeRange:
+              popupCellMenuItemWithTimeRange:
                   l10n_util::GetNSString(
                       IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK)]]
       performAction:grey_tap()];
@@ -174,7 +173,7 @@ using chrome_test_util::SettingsMenuPrivacyButton;
   [[EarlGrey
       selectElementWithMatcher:
           [self
-              popoverCellMenuItemWithTimeRange:
+              popupCellMenuItemWithTimeRange:
                   l10n_util::GetNSString(
                       IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK)]]
       assertWithMatcher:grey_notVisible()];
@@ -184,7 +183,7 @@ using chrome_test_util::SettingsMenuPrivacyButton;
   [[EarlGrey
       selectElementWithMatcher:
           [self
-              popupCellButtonWithTimeRange:
+              popupCellWithTimeRange:
                   l10n_util::GetNSString(
                       IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK)]]
       assertWithMatcher:grey_sufficientlyVisible()];

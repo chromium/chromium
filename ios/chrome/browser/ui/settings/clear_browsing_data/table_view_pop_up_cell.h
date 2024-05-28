@@ -7,8 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-// TableViewCell that displays a pop-up menu bottom on the right side and a one
-// line title on the left side.
+// TableViewPopUpCell that only contains a PopUpMenuControl. It displays a
+// pop-up menu when tapped. It has static title on the left and the menu
+// selection on the right.
 @interface TableViewPopUpCell : UITableViewCell
 
 // Menu to display when the cell is touched. The UIAction selected is displayed
