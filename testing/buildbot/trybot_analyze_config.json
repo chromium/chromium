@@ -73,9 +73,11 @@
       "tools/grit/.*",
       "tools/mb/.*",
       "tools/metrics/histograms/histograms.xml",
+      "tools/msan/.*",
       "tools/perf/.*",
       "tools/telemetry/.*",
       "tools/traffic_annotation/scripts/.*",
+      "tools/ubsan/.*",
       "ui/webui/resources/.*(css|html|js)"
     ]
   },
