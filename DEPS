@@ -1536,7 +1536,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/harfbuzz/harfbuzz.git' + '@' + Var('harfbuzz_revision'),
 
   'src/third_party/instrumented_libs': {
-    'url': Var('chromium_git') + '/chromium/third_party/instrumented_libraries.git' + '@' + 'f75a3f1cdded4fed506e00411243a6a5c6634b43',
+    'url': Var('chromium_git') + '/chromium/third_party/instrumented_libraries.git' + '@' + 'c592f48a2e6004f0e07ebaec1b2a9cfdc578bf76',
     'condition': 'checkout_instrumented_libraries',
   },
 
