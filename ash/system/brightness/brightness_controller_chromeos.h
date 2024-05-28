@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 
 class AccountId;
@@ -66,6 +67,7 @@ class ASH_EXPORT BrightnessControllerChromeos
       base::OnceCallback<void(std::optional<bool>)> callback) override;
 
   // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
@@ -82,9 +84,11 @@ class ASH_EXPORT BrightnessControllerChromeos
   void RecordHistogramForBrightnessAction(BrightnessAction brightness_action);
   void OnGetBrightnessAfterLogin(std::optional<double> brightness_percent);
   void RestoreBrightnessSettings(const AccountId& account_id);
+  void RestoreBrightnessSettingsOnFirstLogin();
 
   raw_ptr<PrefService> local_state_;
   raw_ptr<SessionControllerImpl> session_controller_;
+  raw_ptr<PrefService> active_pref_service_;
 
   // The current AccountId, used to set and retrieve prefs. Expected to be
   // nullopt on the login screen, but will be set on login.
@@ -97,6 +101,14 @@ class ASH_EXPORT BrightnessControllerChromeos
   // Used for metrics recording. True if and only if a brightness adjustment has
   // occurred.
   bool has_brightness_been_adjusted_ = false;
+
+  // True if the ambient light sensor value has already been restored for a
+  // user's first login.
+  bool has_ambient_light_sensor_been_restored_for_new_user_ = false;
+
+  // This PrefChangeRegistrar is used to check when the synced profile pref for
+  // the ambient light sensor value has finished syncing.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::WeakPtrFactory<BrightnessControllerChromeos> weak_ptr_factory_{this};
 };

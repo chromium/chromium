@@ -20,8 +20,10 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user_type.h"
 
 namespace ash {
 
@@ -1082,6 +1084,201 @@ TEST_F(BrightnessControllerChromeosTest,
                           "After reboot, the brightness level should be equal "
                           "to the initial brightness for the first user (after "
                           "switching from the second user).");
+}
+
+TEST_F(BrightnessControllerChromeosTest,
+       RestoreAutoBrightnessForNewUser_FlagEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableBrightnessControlInSettings);
+
+  // Set initial ALS status and brightness level.
+  power_manager_client()->SetAmbientLightSensorEnabled(true);
+  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+
+  // Clear user sessions and reset to the primary login screen.
+  ClearLogin();
+
+  // On the login screen, select and login with an existing user.
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+  LoginScreenFocusAccount(account_id);
+  SimulateUserLogin(kUserEmail);
+
+  // The ambient light sensor should be enabled by default.
+  ExpectAmbientLightSensorEnabled(
+      true, "Ambient light sensor should be enabled by default.");
+
+  // Verify that the synced ambient light sensor profile pref value has a
+  // default value of true.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
+  // There should not be a KnownUser pref set initially because there hasn't
+  // been a change to the ambient light sensor status yet.
+  user_manager::KnownUser known_user(local_state());
+  EXPECT_FALSE(
+      HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+
+  // Disable the ambient light sensor by manually changing the brightness.
+  brightness_control_delegate()->HandleBrightnessDown();
+  // Wait for AmbientLightSensorEnabledChange observer to be notified.
+  run_loop_.RunUntilIdle();
+
+  ExpectAmbientLightSensorEnabled(
+      false,
+      "Ambient light sensor should be disabled for first user after manually "
+      "changing the brightness.");
+
+  // After the ambient light sensor status is disabled, the KnownUser pref
+  // should be stored with the correct value (false).
+  EXPECT_TRUE(
+      HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  EXPECT_FALSE(
+      GetDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  // The synced profile pref should also have the correct value (false).
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
+
+  // Simulate a reboot, which resets the value of the ambient light sensor and
+  // the screen brightness.
+  ClearLogin();
+  power_manager_client()->SetAmbientLightSensorEnabled(true);
+  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+
+  // Simulate a login with a second user, as if it's that user's first time
+  // logging in on this device.
+  SimulateNewUserFirstLogin(kUserEmailSecondary);
+
+  // The value of the synced profile pref for the ambient light sensor should be
+  // true by default, and the ambient light sensor should be enabled.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
+  ExpectAmbientLightSensorEnabled(
+      true, "Ambient light sensor should be enabled for new users.");
+
+  // Before logging in the first user, manually set the synced pref to false to
+  // simulate the pref finishing syncing to the new device.
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  pref_service->SetBoolean(prefs::kDisplayAmbientLightSensorLastEnabled, false);
+
+  // Now, login the first user again, as if it's that user's first time
+  // logging in on this device.
+  SimulateNewUserFirstLogin(kUserEmail);
+
+  // The value of the synced profile pref for the ambient light sensor should be
+  // false, because on the "other device" that value was set to false.
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
+  // As a result, the local state pref for ambient light sensor status should be
+  // disabled, and the ambient light sensor should be disabled.
+  EXPECT_TRUE(
+      HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  EXPECT_FALSE(
+      GetDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  ExpectAmbientLightSensorEnabled(
+      false,
+      "Ambient light sensor should be disabled for first user after logging in "
+      "from a new device.");
+}
+
+TEST_F(BrightnessControllerChromeosTest,
+       RestoreAutoBrightnessForNewUser_FlagDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kEnableBrightnessControlInSettings);
+
+  // Set initial ALS status and brightness level.
+  power_manager_client()->SetAmbientLightSensorEnabled(true);
+  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+
+  // Clear user sessions and reset to the primary login screen.
+  ClearLogin();
+
+  // On the login screen, select and login with an existing user.
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+  LoginScreenFocusAccount(account_id);
+  SimulateUserLogin(kUserEmail);
+
+  // The ambient light sensor should be enabled by default.
+  ExpectAmbientLightSensorEnabled(
+      true, "Ambient light sensor should be enabled by default.");
+
+  // Verify that the synced ambient light sensor profile pref value has a
+  // default value of true.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
+  // There should not be a KnownUser pref set initially because there hasn't
+  // been a change to the ambient light sensor status yet.
+  user_manager::KnownUser known_user(local_state());
+  EXPECT_FALSE(
+      HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+
+  // Disable the ambient light sensor by manually changing the brightness.
+  brightness_control_delegate()->HandleBrightnessDown();
+  // Wait for AmbientLightSensorEnabledChange observer to be notified.
+  run_loop_.RunUntilIdle();
+
+  ExpectAmbientLightSensorEnabled(
+      false,
+      "Ambient light sensor should be disabled for first user after manually "
+      "changing the brightness.");
+
+  // After the ambient light sensor status is disabled, the KnownUser pref
+  // should be stored with the correct value (false).
+  EXPECT_TRUE(
+      HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  EXPECT_FALSE(
+      GetDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  // The synced profile pref should also have the correct value (false).
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
+
+  // Simulate a reboot, which resets the value of the ambient light sensor and
+  // the screen brightness.
+  ClearLogin();
+  power_manager_client()->SetAmbientLightSensorEnabled(true);
+  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+
+  // Simulate a login with a second user, as if it's that user's first time
+  // logging in on this device.
+  SimulateNewUserFirstLogin(kUserEmailSecondary);
+
+  // The value of the synced profile pref for the ambient light sensor should be
+  // true by default, and the ambient light sensor should be enabled.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
+  ExpectAmbientLightSensorEnabled(
+      true, "Ambient light sensor should be enabled for new users.");
+
+  // Before logging in the first user, manually set the synced pref to false to
+  // simulate the pref finishing syncing to the new device.
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  pref_service->SetBoolean(prefs::kDisplayAmbientLightSensorLastEnabled, false);
+
+  // Now, login the first user again, as if it's that user's first time
+  // logging in on this device.
+  SimulateNewUserFirstLogin(kUserEmail);
+
+  // The value of the synced profile pref for the ambient light sensor should be
+  // false, because on the "other device" that value was set to false.
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
+  // However, because the brightness-control flag is disabled, the ambient light
+  // sensor preference will not be restored, and thus the ambient light sensor
+  // should be disabled.
+  ExpectAmbientLightSensorEnabled(
+      true,
+      "Ambient light sensor should be enabled for first user after logging in "
+      "from a new device.");
 }
 
 }  // namespace ash
