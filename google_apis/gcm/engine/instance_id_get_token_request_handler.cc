@@ -67,4 +67,10 @@ void InstanceIDGetTokenRequestHandler::ReportStatusToUMA(
   }
 }
 
+void InstanceIDGetTokenRequestHandler::ReportNetErrorCodeToUMA(
+    int net_error_code) {
+  base::UmaHistogramSparse("InstanceID.GetToken.RequestNetErrorCode",
+                           std::abs(net_error_code));
+}
+
 }  // namespace gcm
