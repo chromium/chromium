@@ -16,47 +16,29 @@ const TARGET = BridgeConstants.LearnMode.TARGET;
 const Action = BridgeConstants.LearnMode.Action;
 
 export class LearnModeBridge {
-  /** @return {!Promise} */
-  static clearTouchExploreOutputTime() {
+  static clearTouchExploreOutputTime(): Promise<void> {
     return BridgeHelper.sendMessage(
         TARGET, Action.CLEAR_TOUCH_EXPLORE_OUTPUT_TIME);
   }
 
-  /**
-   * @param {string} gesture
-   * @return {!Promise}
-   */
-  static onAccessibilityGesture(gesture) {
+  static onAccessibilityGesture(gesture: string): Promise<void> {
     return BridgeHelper.sendMessage(
         TARGET, Action.ON_ACCESSIBILITY_GESTURE, gesture);
   }
 
-  /**
-   * @param {BrailleKeyEvent} event
-   * @return {!Promise}
-   */
-  static onBrailleKeyEvent(event) {
+  static onBrailleKeyEvent(event: BrailleKeyEvent): Promise<void> {
     return BridgeHelper.sendMessage(TARGET, Action.ON_BRAILLE_KEY_EVENT, event);
   }
 
-  /**
-   * @param {Event} event
-   * @return {!Promise}
-   */
-  static onKeyDown(event) {
+  static onKeyDown(event: KeyboardEvent): Promise<void> {
     return BridgeHelper.sendMessage(TARGET, Action.ON_KEY_DOWN, event);
   }
 
-  /**
-   * @param {Event} event
-   * @return {!Promise}
-   */
-  static onKeyUp(event) {
+  static onKeyUp(event: KeyboardEvent): Promise<void> {
     return BridgeHelper.sendMessage(TARGET, Action.ON_KEY_UP, event);
   }
 
-  /** @return {!Promise} */
-  static ready() {
+  static ready(): Promise<void> {
     return BridgeHelper.sendMessage(TARGET, Action.READY);
   }
 }
