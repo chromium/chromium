@@ -185,15 +185,6 @@ NavigationQueueingFeatureLevel GetNavigationQueueingFeatureLevel() {
 }
 
 bool ShouldAvoidRedundantNavigationCancellations() {
-  // If the experimental early RenderFrameHost swap for history navigations is
-  // turned on, this must return true so that when the old RFH is unloaded as
-  // part of the early swap, this doesn't cancel the navigation that's still
-  // ongoing in the new RFH.
-  if (base::FeatureList::IsEnabled(
-          features::kEarlyDocumentSwapForBackForwardTransitions)) {
-    return true;
-  }
-
   return GetNavigationQueueingFeatureLevel() >=
          NavigationQueueingFeatureLevel::kAvoidRedundantCancellations;
 }

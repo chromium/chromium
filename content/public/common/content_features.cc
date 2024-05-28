@@ -321,13 +321,6 @@ BASE_FEATURE(kDrawCutoutEdgeToEdge,
              "DrawCutoutEdgeToEdge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable early swapping of RenderFrameHosts during some back/forward
-// navigations. This is an experimental feature intended to support new kinds of
-// navigation transitions. See https://crbug.com/1480129.
-BASE_FEATURE(kEarlyDocumentSwapForBackForwardTransitions,
-             "EarlyDocumentSwapForBackForwardTransitions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable establishing the GPU channel early in renderer startup.
 BASE_FEATURE(kEarlyEstablishGpuChannel,
              "EarlyEstablishGpuChannel",

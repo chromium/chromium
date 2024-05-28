@@ -1048,12 +1048,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   std::unique_ptr<StoredPage> CollectPage(
       std::unique_ptr<RenderFrameHostImpl> main_render_frame_host);
 
-  // Helper to determine whether the provided navigation should perform an early
-  // RenderFrameHost swap for a back/forward navigation, to support a navigation
-  // transition. This is an experimental feature, see https://crbug.com/1480129.
-  bool ShouldPerformEarlySwapForNavigationTransition(
-      NavigationRequest* request);
-
   // Update `render_frame_host`'s opener in the renderer process in response to
   // the opener being modified (e.g., with window.open or being set to null) in
   // another renderer process.

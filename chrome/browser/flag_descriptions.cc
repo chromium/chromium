@@ -1319,16 +1319,6 @@ const char kExperimentalRgbKeyboardPatternsName[] =
 const char kExperimentalRgbKeyboardPatternsDescription[] =
     "Enable experimental RGB Keyboard patterns support on supported devices.";
 
-const char kEarlyDocumentSwapForBackForwardTransitionsName[] =
-    "Early document swap for back/forward navigations";
-const char kEarlyDocumentSwapForBackForwardTransitionsDescription[] =
-    "Enable early swapping of RenderFrameHosts during some back/forward "
-    "navigations. "
-    "This is a highly experimental feature intended to support new kinds of "
-    "navigation transitions. When enabled, the old document will be unloaded "
-    "shortly after starting some back/forward navigations to a new document, "
-    "without waiting for the new navigation to complete.";
-
 const char kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName[] =
     "Enable friendlier safe browsing settings enhanced protection";
 const char

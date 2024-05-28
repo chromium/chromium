@@ -1293,7 +1293,7 @@ class CONTENT_EXPORT NavigationRequest
     kNone = 0,
     kInitialFrame = 1,
     kCrashedFrame = 2,
-    kNavigationTransition = 3,
+    kNavigationTransition = 3,  // DEPRECATED
     kMaxValue = kNavigationTransition,
   };
 

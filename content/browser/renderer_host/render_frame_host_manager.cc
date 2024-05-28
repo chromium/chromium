@@ -1373,41 +1373,6 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
   }
 }
 
-bool RenderFrameHostManager::ShouldPerformEarlySwapForNavigationTransition(
-    NavigationRequest* request) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEarlyDocumentSwapForBackForwardTransitions)) {
-    return false;
-  }
-
-  // Early swaps are allowed in outermost main frames only, as that's where
-  // a navigation transition may be shown.
-  if (!frame_tree_node_->IsOutermostMainFrame()) {
-    return false;
-  }
-
-  // Same-document navigations stay in the same RenderFrameHost and hence
-  // cannot do the early swap.
-  if (request->IsSameDocument()) {
-    return false;
-  }
-
-  // Only browser-initiated navigations are eligible for navigation transitions.
-  if (request->IsRendererInitiated()) {
-    return false;
-  }
-
-  // Check for back/forward history navigations.  These should have both the
-  // dest_site_instance() set from the NavigationEntry and have the back/forward
-  // page transition.  Note that this explicitly excludes reloads.
-  //
-  // TODO(alexmos, creis): For now, the early swap is done for all back/forward
-  // navigations.  In the future, there will be other APIs for deciding when to
-  // do it.
-  return request->dest_site_instance() &&
-         (request->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK);
-}
-
 void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
     NavigationRequest* request,
     bool is_called_after_did_start_navigation) {
@@ -1429,9 +1394,6 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
     return;
   }
 
-  using EarlySwapType = NavigationRequest::EarlyRenderFrameHostSwapType;
-  EarlySwapType early_swap_type = EarlySwapType::kNone;
-
   // Currently, the early swap might be invoked in two places:
   // - (Legacy timing) At the very beginning of navigation, as part of picking
   //   the target RenderFrameHost via GetFrameHostForNavigation().
@@ -1441,17 +1403,17 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
   // `is_called_after_did_start_navigation` determines which timing was used
   // (legacy timing when false, new timing when true).  Currently, the legacy
   // timing is used when doing early RenderFrameHost swap for initial and
-  // crashed frames, and the new timing is used for experimental early swaps for
-  // back/forward navigations. Eventually, we want to only have the new timing
-  // and to move all early swaps to happen after
-  // DidStartNavigation/WillStartRequest.  See crbug.com/1467011.
+  // crashed frames. We want to only have the new timing and to move all early
+  // swaps to happen after DidStartNavigation/WillStartRequest.
+  // See crbug.com/1467011.
   if (is_called_after_did_start_navigation) {
-    // Perform the early swap for navigations that will be subject to navigation
-    // transitions.
-    if (ShouldPerformEarlySwapForNavigationTransition(request)) {
-      early_swap_type = EarlySwapType::kNavigationTransition;
-    }
-  } else if (!render_frame_host_->IsRenderFrameLive()) {
+    return;
+  }
+
+  using EarlySwapType = NavigationRequest::EarlyRenderFrameHostSwapType;
+  EarlySwapType early_swap_type = EarlySwapType::kNone;
+
+  if (!render_frame_host_->IsRenderFrameLive()) {
     // Currently, non-live frames do the early swap before reaching
     // DidStartNavigation.  This is possible in two cases: (1) if a frame's
     // process dies (e.g., due to a crash or OOM), and (2) if we navigate a
