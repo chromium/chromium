@@ -1,1 +1,2 @@
+CONSOLE MESSAGE: `float` property is not supported correctly inside an element with `display: ruby` or `display: ruby-text`.
 crbug.com/681423: Don't clear floats when moving just some of the children of a ruby column. This test passes if it does not crash.

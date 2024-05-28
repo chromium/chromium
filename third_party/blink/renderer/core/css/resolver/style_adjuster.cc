@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
@@ -640,10 +641,22 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
   // We need to avoid to inlinify children of a <fieldset>, which creates a
   // dedicated LayoutObject and it assumes only block children.
   if (layout_parent_style.InlinifiesChildren() &&
-      !builder.HasOutOfFlowPosition() && !builder.IsFloating() &&
+      !builder.HasOutOfFlowPosition() &&
       !(element && IsA<HTMLFieldSetElement>(element->parentNode()))) {
-    builder.SetIsInInlinifyingDisplay();
-    builder.SetDisplay(EquivalentInlineDisplay(builder.Display()));
+    if (RuntimeEnabledFeatures::RubyLineBreakableEnabled() &&
+        builder.IsFloating()) {
+      builder.SetFloating(EFloat::kNone);
+      element->GetDocument().AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              ConsoleMessage::Source::kRendering, ConsoleMessage::Level::kInfo,
+              "`float` property is not supported correctly inside an element "
+              "with `display: ruby` or `display: ruby-text`."),
+          true);
+    }
+    if (!builder.IsFloating()) {
+      builder.SetIsInInlinifyingDisplay();
+      builder.SetDisplay(EquivalentInlineDisplay(builder.Display()));
+    }
   }
 
   if (builder.Display() == EDisplay::kBlock) {

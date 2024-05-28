@@ -7295,6 +7295,7 @@ crbug.com/332068449 [ Mac ] external/wpt/focus/cross-origin-ancestor-activeeleme
 crbug.com/330761492 external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html [ Failure Pass ]
 
 # RubyLineBreakable
+crbug.com/324111880 external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Failure ]
 crbug.com/324111880 fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
 
 # secure-payment-confirmation tests failed due to set_spc_transaction_mode not implemented
