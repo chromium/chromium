@@ -1298,11 +1298,6 @@ class StartSurfaceMediator
     }
 
     @Override
-    public boolean showScrollableMvt() {
-        return true;
-    }
-
-    @Override
     public int getStartMargin() {
         return mStartMargin;
     }

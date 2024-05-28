@@ -53,6 +53,6 @@ found in the LICENSE file.
     <dimen name="section_tab_selected_bg_elevation">@dimen/default_elevation_0</dimen>
 
     <!-- NewTabPage dimensions -->
-    <dimen name="search_box_lateral_margin_polish">16dp</dimen>
+    <dimen name="search_box_lateral_margin">16dp</dimen>
     <dimen name="tile_grid_layout_bleed">8dp</dimen>
 </resources>

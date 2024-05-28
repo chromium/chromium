@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
@@ -1170,16 +1169,13 @@ public class NewTabPage
                                         mNewTabPageLayout.findViewById(
                                                 R.id.tab_switcher_module_container_stub))
                                 .inflate();
-        updateSingleTabCardContainerMargins(mSingleTabCardContainer);
         mSingleTabSwitcherCoordinator =
                 new SingleTabSwitcherCoordinator(
                         mActivity,
                         mSingleTabCardContainer,
-                        mActivityLifecycleDispatcher,
                         mTabModelSelector,
                         true,
                         mIsTablet,
-                        isScrollableMvtEnabled(mContext),
                         mostRecentTab,
                         this::onSingleTabCardClicked,
                         /* seeMoreLinkClickedCallback= */ null,
@@ -1203,7 +1199,6 @@ public class NewTabPage
                                         mNewTabPageLayout.findViewById(
                                                 R.id.home_modules_recycler_view_stub))
                                 .inflate();
-        updateSingleTabCardContainerMargins(mHomeModulesContainer);
         ObservableSupplier<Profile> profileSupplier =
                 new ObservableSupplierImpl<>(mTab.getProfile());
         mHomeModulesCoordinator =
@@ -1237,26 +1232,6 @@ public class NewTabPage
             // Updates the mHomeSurfaceTracker since the Tab of the NTP is closed.
             mHomeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(null, null);
         }
-    }
-
-    /** Updates the margins for the single tab card container based on the type of MV tiles. */
-    private void updateSingleTabCardContainerMargins(ViewGroup view) {
-        if (!mIsNtpAsHomeSurfaceEnabled || mIsSurfacePolishEnabled) return;
-
-        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) view.getLayoutParams();
-
-        marginLayoutParams.topMargin =
-                -mNewTabPageLayout
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.ntp_single_tab_card_top_margin);
-        marginLayoutParams.bottomMargin =
-                mNewTabPageLayout
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.ntp_single_tab_card_bottom_margin)
-                        - mNewTabPageLayout
-                                .getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.feed_header_tab_list_view_top_bottom_margin);
     }
 
     static boolean isScrollableMvtEnabled(Context context) {
@@ -1324,11 +1299,6 @@ public class NewTabPage
     }
 
     @Override
-    public boolean showScrollableMvt() {
-        return isScrollableMvtEnabled(mContext);
-    }
-
-    @Override
     public int getStartMargin() {
         boolean isInNarrowWindowOnTablet =
                 mIsTablet
@@ -1336,7 +1306,7 @@ public class NewTabPage
                                 mIsTablet, mFeedSurfaceProvider.getUiConfig());
         int marginResourceId =
                 isInNarrowWindowOnTablet
-                        ? R.dimen.search_box_lateral_margin_polish
+                        ? R.dimen.search_box_lateral_margin
                         : R.dimen.mvt_container_lateral_margin_polish;
         return mContext.getResources().getDimensionPixelSize(marginResourceId);
     }

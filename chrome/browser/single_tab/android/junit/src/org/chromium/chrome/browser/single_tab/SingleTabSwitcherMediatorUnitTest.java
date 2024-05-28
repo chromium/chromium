@@ -121,9 +121,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         mPropertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
         mMediator =
                 createMediator(
-                        /* singleTabCardClickedCallback= */ null,
-                        /* isSurfacePolishEnabled= */ false,
-                        /* moduleDelegate= */ null);
+                        /* singleTabCardClickedCallback= */ null, /* moduleDelegate= */ null);
     }
 
     @After
@@ -132,46 +130,9 @@ public class SingleTabSwitcherMediatorUnitTest {
     }
 
     @Test
-    public void showAndHide() {
-        assertNotNull(mPropertyModel.get(FAVICON));
-        assertNotNull(mPropertyModel.get(CLICK_LISTENER));
-        assertFalse(mPropertyModel.get(IS_VISIBLE));
-        mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
-        mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
-
-        mMediator.showTabSwitcherView(true);
-        verify(mTabModelFilterProvider)
-                .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
-        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
-        verify(mTabListFaviconProvider)
-                .getFaviconDrawableForUrlAsync(
-                        eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
-        assertTrue(mPropertyModel.get(IS_VISIBLE));
-        verify(mTabSwitcherViewObserver).startedShowing();
-        verify(mTabSwitcherViewObserver).finishedShowing();
-        assertEquals(mPropertyModel.get(TITLE), mTitle);
-
-        mPropertyModel.get(CLICK_LISTENER).onClick(null);
-        verify(mOnTabSelectingListener).onTabSelecting(eq(mTabId));
-
-        mMediator.hideTabSwitcherView(true);
-        assertFalse(mPropertyModel.get(IS_VISIBLE));
-        assertEquals(mPropertyModel.get(TITLE), "");
-        verify(mTabSwitcherViewObserver).startedHiding();
-        verify(mTabSwitcherViewObserver).finishedHiding();
-
-        mMediator.removeTabSwitcherViewObserver(mTabSwitcherViewObserver);
-        mMediator.setOnTabSelectingListener(null);
-    }
-
-    @Test
     public void showAndHideHomeModule() {
         when(mModuleDelegate.getHostSurfaceType()).thenReturn(HostSurface.START_SURFACE);
-        mMediator =
-                createMediator(
-                        mSingleTabCardClickedCallback,
-                        /* isSurfacePolishEnabled= */ true,
-                        mModuleDelegate);
+        mMediator = createMediator(mSingleTabCardClickedCallback, mModuleDelegate);
         assertNotNull(mMediator.getTabSelectingListenerForTesting());
 
         int activeIndex = 1;
@@ -206,13 +167,7 @@ public class SingleTabSwitcherMediatorUnitTest {
     }
 
     @Test
-    public void showAndHide_SurfacePolish() {
-        mMediator =
-                createMediator(
-                        /* singleTabCardClickedCallback= */ null,
-                        /* isSurfacePolishEnabled= */ true,
-                        null);
-
+    public void showAndHide() {
         assertNotNull(mPropertyModel.get(FAVICON));
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));
         assertFalse(mPropertyModel.get(IS_VISIBLE));
@@ -375,9 +330,7 @@ public class SingleTabSwitcherMediatorUnitTest {
     }
 
     private SingleTabSwitcherMediator createMediator(
-            Callback<Integer> singleTabCardClickedCallback,
-            boolean isSurfacePolishEnabled,
-            ModuleDelegate moduleDelegate) {
+            Callback<Integer> singleTabCardClickedCallback, ModuleDelegate moduleDelegate) {
         return new SingleTabSwitcherMediator(
                 ContextUtils.getApplicationContext(),
                 mPropertyModel,
@@ -385,7 +338,6 @@ public class SingleTabSwitcherMediatorUnitTest {
                 mTabListFaviconProvider,
                 mTabContentManager,
                 singleTabCardClickedCallback,
-                isSurfacePolishEnabled,
                 moduleDelegate);
     }
 }

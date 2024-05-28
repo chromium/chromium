@@ -20,8 +20,6 @@ found in the LICENSE file.
     <!-- NTP dimensions -->
     <dimen name="ntp_search_box_transition_length">60dp</dimen>
     <dimen name="ntp_wide_card_lateral_margins">48dp</dimen>
-    <dimen name="ntp_single_tab_card_top_margin">48dp</dimen>
-    <dimen name="ntp_single_tab_card_bottom_margin">40dp</dimen>
 
     <!-- Recent tabs page -->
     <dimen name="recent_tabs_visible_separator_padding">28dp</dimen>

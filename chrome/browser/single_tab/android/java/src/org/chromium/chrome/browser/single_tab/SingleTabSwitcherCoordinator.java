@@ -19,8 +19,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -44,7 +42,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
     private final SingleTabSwitcherOnNtpMediator mMediatorOnNtp;
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabSwitcher.TabListDelegate mTabListDelegate;
-    private final boolean mIsSurfacePolishEnabled;
     private boolean mIsShownOnNtp;
     private TabObserver mLastActiveTabObserver;
     private Tab mLastActiveTab;
@@ -58,11 +55,9 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
     public SingleTabSwitcherCoordinator(
             @NonNull Activity activity,
             @NonNull ViewGroup container,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector,
             boolean isShownOnNtp,
             boolean isTablet,
-            boolean isScrollableMvtEnabled,
             Tab mostRecentTab,
             @Nullable Callback<Integer> singleTabCardClickedCallback,
             @Nullable Runnable seeMoreLinkClickedCallback,
@@ -73,7 +68,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
         mIsShownOnNtp = isShownOnNtp;
         mLastActiveTab = mostRecentTab;
         mSnapshotParentViewRunnable = snapshotParentViewRunnable;
-        mIsSurfacePolishEnabled = isSurfacePolishEnabled();
         PropertyModel propertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
         mContainer = container;
         mModuleDelegate = moduleDelegate;
@@ -91,10 +85,8 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
                 new TabListFaviconProvider(
                         activity,
                         false,
-                        mIsSurfacePolishEnabled
-                                ? org.chromium.chrome.browser.tab_ui.R.dimen
-                                        .favicon_corner_radius_polished
-                                : R.dimen.default_favicon_corner_radius);
+                        org.chromium.chrome.browser.tab_ui.R.dimen
+                                .favicon_corner_radius_for_single_tab_switcher);
         if (!mIsShownOnNtp) {
             mMediator =
                     new SingleTabSwitcherMediator(
@@ -102,9 +94,8 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
                             propertyModel,
                             tabModelSelector,
                             mTabListFaviconProvider,
-                            mIsSurfacePolishEnabled ? tabContentManager : null,
+                            tabContentManager,
                             singleTabCardClickedCallback,
-                            mIsSurfacePolishEnabled,
                             moduleDelegate);
             mMediatorOnNtp = null;
         } else {
@@ -112,15 +103,13 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
                     new SingleTabSwitcherOnNtpMediator(
                             activity,
                             propertyModel,
-                            activityLifecycleDispatcher,
                             tabModelSelector,
                             mTabListFaviconProvider,
                             mostRecentTab,
-                            isScrollableMvtEnabled,
                             singleTabCardClickedCallback,
                             seeMoreLinkClickedCallback,
-                            mIsSurfacePolishEnabled ? tabContentManager : null,
-                            mIsSurfacePolishEnabled && isTablet ? uiConfig : null,
+                            tabContentManager,
+                            isTablet ? uiConfig : null,
                             isTablet,
                             moduleDelegate);
             mMediator = null;
@@ -320,9 +309,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
 
     /** Returns the layout resource id for the single tab card. */
     public static int getModuleLayoutId() {
-        return ChromeFeatureList.sSurfacePolish.isEnabled()
-                ? R.layout.single_tab_module_layout
-                : R.layout.single_tab_view_layout;
+        return R.layout.single_tab_module_layout;
     }
 
     public void destroy() {
@@ -375,10 +362,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
         if (mMediatorOnNtp == null) return false;
 
         return mMediatorOnNtp.isVisible();
-    }
-
-    private boolean isSurfacePolishEnabled() {
-        return ChromeFeatureList.sSurfacePolish.isEnabled();
     }
 
     @Override

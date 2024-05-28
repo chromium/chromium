@@ -81,11 +81,9 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
                 new SingleTabSwitcherCoordinator(
                         mActivity,
                         /* container= */ null,
-                        /* activityLifecycleDispatcher= */ null,
                         mTabModelSelectorSupplier.get(),
                         isShownOnNtp,
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                        moduleDelegateHost.showScrollableMvt(),
                         isShownOnNtp ? moduleDelegate.getTrackingTab() : null,
                         singleTabCardClickedCallback,
                         seeMoreLinkClickedCallback,

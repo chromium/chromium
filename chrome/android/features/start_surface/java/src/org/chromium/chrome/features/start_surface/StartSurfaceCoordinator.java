@@ -525,11 +525,9 @@ public class StartSurfaceCoordinator implements StartSurface {
                     new SingleTabSwitcherCoordinator(
                             mActivity,
                             mView.getCardTabSwitcherContainer(),
-                            null,
                             mTabModelSelector,
                             /* isShownOnNtp= */ false,
                             /* isTablet= */ false,
-                            /* isScrollableMvtEnabled= */ true,
                             /* mostRecentTab= */ null,
                             /* singleTabCardClickedCallback= */ null,
                             /* seeMoreLinkClickedCallback= */ null,

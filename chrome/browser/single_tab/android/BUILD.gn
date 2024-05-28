@@ -43,11 +43,9 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/favicon_background.xml",
-    "java/res/drawable/single_tab_background.xml",
     "java/res/drawable/single_tab_card_ripple.xml",
     "java/res/drawable/single_tab_thumbnail_background.xml",
     "java/res/layout/single_tab_module_layout.xml",
-    "java/res/layout/single_tab_view_layout.xml",
 
     #"java/res/values/colors.xml",
     "java/res/values/dimens.xml",
@@ -63,7 +61,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/single_tab/SingleTabModuleViewBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/single_tab/SingleTabSwitcherMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/single_tab/SingleTabSwitcherOnNtpMediatorUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/single_tab/SingleTabViewBinderUnitTest.java",
   ]
 
   deps = [

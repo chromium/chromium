@@ -1315,7 +1315,7 @@ public class NewTabPageLayout extends LinearLayout {
 
         int lateralPaddingId =
                 mIsInNarrowWindowOnTablet
-                        ? R.dimen.search_box_lateral_margin_polish
+                        ? R.dimen.search_box_lateral_margin
                         : R.dimen.mvt_container_lateral_margin_polish;
         int lateralPaddingsForNtp = getResources().getDimensionPixelSize(lateralPaddingId);
         marginLayoutParams.leftMargin = lateralPaddingsForNtp;
@@ -1325,8 +1325,7 @@ public class NewTabPageLayout extends LinearLayout {
     private void updateSearchBoxWidthForPolish() {
         if (mIsInNarrowWindowOnTablet) {
             mSearchBoxTwoSideMargin =
-                    getResources().getDimensionPixelSize(R.dimen.search_box_lateral_margin_polish)
-                            * 2;
+                    getResources().getDimensionPixelSize(R.dimen.search_box_lateral_margin) * 2;
             // Invalidates |mIsHalfMvtLandscape| or |mIsHalfMvtPortrait| to recalculate them in
             // onMeasure().
             if (getResources().getConfiguration().orientation

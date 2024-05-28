@@ -66,7 +66,6 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     private TabModelSelectorObserver mTabModelSelectorObserver;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
-    private final boolean mIsSurfacePolishEnabled;
     private TabSwitcher.OnTabSelectingListener mTabSelectingListener;
     private boolean mShouldIgnoreNextSelect;
     private boolean mSelectedTabDidNotChangedAfterShown;
@@ -86,13 +85,11 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             TabListFaviconProvider tabListFaviconProvider,
             TabContentManager tabContentManager,
             @Nullable Callback<Integer> singleTabCardClickedCallback,
-            boolean isSurfacePolishEnabled,
             @Nullable ModuleDelegate moduleDelegate) {
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
         mTabListFaviconProvider = tabListFaviconProvider;
         mContext = context;
-        mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         mThumbnailProvider = getThumbnailProvider(tabContentManager);
         if (mThumbnailProvider != null) {
             mThumbnailSize = getThumbnailSize(mContext);
@@ -176,9 +173,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
                             Tab tab = normalTabModel.getTabAt(selectedTabIndex);
                             mPropertyModel.set(TITLE, tab.getTitle());
-                            if (mIsSurfacePolishEnabled) {
-                                mPropertyModel.set(URL, getDomainUrl(tab.getUrl()));
-                            }
+                            mPropertyModel.set(URL, getDomainUrl(tab.getUrl()));
                             if (mTabTitleAvailableTime == null) {
                                 mTabTitleAvailableTime = SystemClock.elapsedRealtime();
                             }
@@ -225,8 +220,6 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     private void mayUpdateTabThumbnail(Tab tab) {
-        if (!mIsSurfacePolishEnabled) return;
-
         mThumbnailProvider.getTabThumbnailWithCallback(
                 tab.getId(),
                 mThumbnailSize,
@@ -269,10 +262,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         mPropertyModel.set(IS_VISIBLE, false);
         mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
         mPropertyModel.set(TITLE, "");
-        if (mIsSurfacePolishEnabled) {
-            mPropertyModel.set(TAB_THUMBNAIL, null);
-            mPropertyModel.set(URL, "");
-        }
+        mPropertyModel.set(TAB_THUMBNAIL, null);
+        mPropertyModel.set(URL, "");
 
         for (TabSwitcherViewObserver observer : mObservers) {
             observer.startedHiding();
@@ -407,10 +398,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                 (Drawable favicon) -> {
                     mPropertyModel.set(FAVICON, favicon);
                 });
-        if (mIsSurfacePolishEnabled) {
-            mPropertyModel.set(URL, getDomainUrl(tab.getUrl()));
-            mayUpdateTabThumbnail(tab);
-        }
+        mPropertyModel.set(URL, getDomainUrl(tab.getUrl()));
+        mayUpdateTabThumbnail(tab);
     }
 
     private void selectTheCurrentTab() {
