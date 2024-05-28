@@ -958,6 +958,26 @@ TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
 }
 
 TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
+       TryToShowTouchToFillFailsIfFlagOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillSkipAndroidBottomSheetForIban);
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearAllLocalData();
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .AddAsLocalIban(std::move(iban));
+
+  EXPECT_CALL(autofill_client_, ShowTouchToFillIban).Times(0);
+  TryToShowTouchToFill(/*expected_success=*/false);
+
+  browser_autofill_manager_.reset();
+}
+
+TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
        SafelyHideTouchToFillInDtor) {
   autofill_client_.ExpectDelegateWeakPtrFromShowInvalidatedOnHideForIbans();
   TryToShowTouchToFill(/*expected_success=*/true);
