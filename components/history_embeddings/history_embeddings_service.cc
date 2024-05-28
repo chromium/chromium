@@ -284,8 +284,8 @@ void HistoryEmbeddingsService::SendQualityLog(const std::string& query,
                 UI_SURFACE_OMNIBOX_HISTORY_SCOPE
           : optimization_guide::proto::UiSurface::UI_SURFACE_HISTORY_PAGE);
 
-  size_t i = 0;
-  for (const ScoredUrlRow& scored_url_row : result) {
+  for (size_t i = 0; i < result.size(); ++i) {
+    const ScoredUrlRow& scored_url_row = result[i];
     optimization_guide::proto::DocumentShown* document_shown =
         quality_proto->add_top_documents_shown();
     document_shown->set_url(scored_url_row.row.url().spec());
@@ -299,8 +299,6 @@ void HistoryEmbeddingsService::SendQualityLog(const std::string& query,
         scored_url_row.scored_url.passage_embedding.GetData();
     passage_data->mutable_embedding()->mutable_floats()->mutable_values()->Add(
         embedding.begin(), embedding.end());
-
-    i++;
   }
 
   // The data is sent when `log_entry` destructs. There may eventually
