@@ -17,7 +17,6 @@ base/profiler 2 2
 base/sampling_heap_profiler 1 1
 base/synchronization 3 2
 base/test 1 1
-base/test/android/javatests/src/org/chromium/base/test/util 1 1
 base/test/data/pe_image_reader 1 1
 build 10 3
 build/android 4 2
@@ -490,7 +489,7 @@ third_party/blink/web_tests/wpt_internal/attribution-reporting 1 1
 third_party/blink/web_tests/wpt_internal/fenced_frame/resources 1 1
 third_party/blink/web_tests/wpt_internal/hid 1 1
 third_party/blink/web_tests/wpt_internal/html/semantics/parser-blocking-stylesheets 6 5
-third_party/blink/web_tests/wpt_internal/webgpu/canvas_webgpu_access 1 1
+third_party/blink/web_tests/wpt_internal/webgpu/canvas_webgpu_transfer 1 1
 third_party/boringssl 1 1
 third_party/brotli 2 1
 third_party/brotli/enc 1 1

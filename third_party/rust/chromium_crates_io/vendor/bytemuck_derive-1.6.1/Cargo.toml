@@ -12,8 +12,13 @@
 [package]
 edition = "2018"
 name = "bytemuck_derive"
-version = "1.6.0"
+version = "1.6.1"
 authors = ["Lokathor <zefria@gmail.com>"]
+build = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "derive proc-macros for `bytemuck`"
 readme = "README.md"
 keywords = [
@@ -30,7 +35,12 @@ repository = "https://github.com/Lokathor/bytemuck"
 
 [lib]
 name = "bytemuck_derive"
+path = "src/lib.rs"
 proc-macro = true
+
+[[test]]
+name = "basic"
+path = "tests/basic.rs"
 
 [dependencies.proc-macro2]
 version = "1.0.60"
