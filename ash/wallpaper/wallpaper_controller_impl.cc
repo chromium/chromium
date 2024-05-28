@@ -1700,6 +1700,21 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
                        weak_factory_.GetWeakPtr(), account_id));
   }
 
+  WallpaperInfo local_info;
+  bool has_local_info =
+      pref_manager_->GetLocalWallpaperInfo(account_id, &local_info);
+  if (IsOobeState() && has_local_info &&
+      local_info.type == WallpaperType::kDefault &&
+      features::IsTimeOfDayWallpaperEnabled()) {
+    // Sets the time of day wallpaper as the default wallpaper on active user
+    // pref changed during OOBE flow.
+    SetTimeOfDayWallpaper(
+        account_id,
+        base::BindOnce(
+            &WallpaperControllerImpl::OnTimeOfDayWallpaperSetAfterOobe,
+            weak_factory_.GetWeakPtr()));
+  }
+
   if (wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id)) {
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(pref_service);
@@ -1708,27 +1723,12 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
         base::BindRepeating(&WallpaperControllerImpl::SyncLocalAndRemotePrefs,
                             weak_factory_.GetWeakPtr(), account_id));
 
-    WallpaperInfo local_info;
     WallpaperInfo synced_info;
     bool has_synced_info =
         pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info);
-    bool has_local_info =
-        pref_manager_->GetLocalWallpaperInfo(account_id, &local_info);
     DVLOG(1) << " has_synced_info=" << has_synced_info
              << " has_local_info=" << has_local_info
              << " is_oobe_state=" << IsOobeState();
-    if (IsOobeState() && !has_synced_info && has_local_info &&
-        local_info.type == WallpaperType::kDefault &&
-        features::IsTimeOfDayWallpaperEnabled()) {
-      // Sets the time of day wallpaper as the default wallpaper on active user
-      // pref changed during OOBE flow.
-      SetTimeOfDayWallpaper(
-          account_id,
-          base::BindOnce(
-              &WallpaperControllerImpl::OnTimeOfDayWallpaperSetAfterOobe,
-              weak_factory_.GetWeakPtr()));
-      return;
-    }
 
     // Migrate wallpaper info to syncable prefs.
     if (!has_synced_info && has_local_info &&
