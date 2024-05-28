@@ -4,48 +4,38 @@
 
 syntax = "proto3";
 
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
 option java_outer_classname = "HistoryDocumentProto";
 
-package optimization_guide.proto;
+message HistoryQueryLoggingData {
+  HistoryQueryRequest request = 1;
 
-import "components/optimization_guide/proto/features/common_quality_data.proto";
+  HistoryQueryResponse response = 2;
 
+  HistoryQueryQuality quality = 3;
+}
+
+// Protos for the AiData representing the flow where Chrome sends the user query
+// to the server, the server returns an embedding and the client computes a
+// ranking of the documents.
+
+// Next ID: 2
 message HistoryQueryRequest {
   reserved 1;
 }
 
+// Next ID: 3
 message HistoryQueryResponse {
   reserved 1, 2;
 }
 
-message PassageData {
-  // The embedding for this passage.
-  Embedding embedding = 1;
-  // The text of the passage.
-  string text = 2;
-  // How the passage was scored against the query.
-  float score = 3;
-}
-
-message DocumentShown {
-  reserved 1;
-  // The full URL of the document shown to the user.
-  string url = 2;
-  repeated PassageData passages = 3;
-  // Whether the user clicked the shown document.
-  bool was_clicked = 4;
-}
-
-enum UiSurface {
-  UI_SURFACE_UNSPECIFIED = 0;
-  UI_SURFACE_HISTORY_PAGE = 1;
-  UI_SURFACE_OMNIBOX_HISTORY_SCOPE = 2;
-}
-
-// Next Id: 7
+// Next Id: 8
 message HistoryQueryQuality {
   // The history search query entered by the user.
   string query = 4;
@@ -71,12 +61,40 @@ message HistoryQueryQuality {
 
   // If specified, this is the number of days of history the user requested
   // to search. For example, search may be narrowed to yesterday or last week.
-  // If abasent, all available history is used for search.
+  // If absent, all available history is used for search.
   optional uint32 num_days = 7;
 }
 
-message HistoryQueryLoggingData {
-  HistoryQueryRequest request = 1;
-  HistoryQueryResponse response = 2;
-  HistoryQueryQuality quality = 3;
+// Next ID: 5
+message DocumentShown {
+  // The full URL of the document shown to the user.
+  string url = 2;
+
+  repeated PassageData passages = 3;
+
+  // Whether the user clicked the shown document.
+  bool was_clicked = 4;
+
+  reserved 1;
+}
+
+// Next ID: 4
+message PassageData {
+  // The embedding for this passage.
+  Embedding embedding = 1;
+
+  // The text of the passage.
+  string text = 2;
+
+  // How the passage was scored against the query.
+  float score = 3;
+}
+
+// Next ID: 3
+enum UiSurface {
+  UI_SURFACE_UNSPECIFIED = 0;
+
+  UI_SURFACE_HISTORY_PAGE = 1;
+
+  UI_SURFACE_OMNIBOX_HISTORY_SCOPE = 2;
 }
