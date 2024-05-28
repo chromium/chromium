@@ -12,31 +12,26 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
  * Create one command to pass to the ChromeVox Panel.
  */
 export class PanelCommand {
-  /**
-   * @param {PanelCommandType} type The type of command.
-   * @param {string|{groups:Array}=} opt_data
-   *     Optional data associated with the command.
-   */
-  constructor(type, opt_data) {
+  type: PanelCommandType;
+  data?: string|Object;
+
+  constructor(type: PanelCommandType, data?: string|Object) {
     this.type = type;
-    this.data = opt_data;
+    this.data = data;
   }
 
-  /**
-   * @return {Window}
-   */
-  getPanelWindow() {
+  getPanelWindow(): Window {
     const views = chrome.extension.getViews();
     for (let i = 0; i < views.length; i++) {
-      if (views[i].location.href.indexOf('panel/panel.html') > 0) {
-        return views[i];
+      if (views[i]['location'].href.indexOf('panel/panel.html') > 0) {
+        return views[i] as Window;
       }
     }
     throw new Error('Could not find the panel window');
   }
 
-  waitForPanel() {
-    return new Promise(resolve => {
+  waitForPanel(): Promise<void> {
+    return new Promise<void>(resolve => {
       const panelWindow = this.getPanelWindow();
       if (panelWindow.document.readyState === 'complete') {
         // The panel may already have loaded. In this case, resolve() and
@@ -49,11 +44,8 @@ export class PanelCommand {
     });
   }
 
-  /**
-   * Send this command to the ChromeVox Panel window.
-   * @return {!Promise}
-   */
-  async send() {
+  /** Send this command to the ChromeVox Panel window. */
+  async send(): Promise<void> {
     // Do not send commands to the ChromeVox Panel window until it has finished
     // loading and is ready to receive commands.
     await this.waitForPanel();
@@ -62,23 +54,18 @@ export class PanelCommand {
   }
 }
 
-
-/**
- * Possible panel commands.
- * @enum {string}
- */
-export const PanelCommandType = {
-  CLEAR_SPEECH: 'clear_speech',
-  ADD_NORMAL_SPEECH: 'add_normal_speech',
-  ADD_ANNOTATION_SPEECH: 'add_annotation_speech',
-  CLOSE_CHROMEVOX: 'close_chromevox',
-  UPDATE_BRAILLE: 'update_braille',
-  OPEN_MENUS: 'open_menus',
-  OPEN_MENUS_MOST_RECENT: 'open_menus_most_recent',
-  SEARCH: 'search',
-  TUTORIAL: 'tutorial',
-  ENABLE_TEST_HOOKS: 'enable_test_hooks',
-};
+export enum PanelCommandType {
+  CLEAR_SPEECH = 'clear_speech',
+  ADD_NORMAL_SPEECH = 'add_normal_speech',
+  ADD_ANNOTATION_SPEECH = 'add_annotation_speech',
+  CLOSE_CHROMEVOX = 'close_chromevox',
+  UPDATE_BRAILLE = 'update_braille',
+  OPEN_MENUS = 'open_menus',
+  OPEN_MENUS_MOST_RECENT = 'open_menus_most_recent',
+  SEARCH = 'search',
+  TUTORIAL = 'tutorial',
+  ENABLE_TEST_HOOKS = 'enable_test_hooks',
+}
 
 TestImportManager.exportForTesting(
     PanelCommand, ['PanelCommandType', PanelCommandType]);
