@@ -77,6 +77,10 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   // during preload scanning.
   bool lcpp_encountered_lcp_in_html = false;
 
+  // Measures `InlineNode::ShapeText` performance per document.
+  base::TimeDelta accumulated_shape_text_elapsed_time_;
+  base::TimeDelta max_shape_text_elapsed_time_;
+
   friend class Document;
 };
 

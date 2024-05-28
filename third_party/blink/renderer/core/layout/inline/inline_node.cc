@@ -9,6 +9,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
@@ -1329,6 +1330,16 @@ void InlineNode::ShapeText(InlineItemsData* data,
                            const HeapVector<InlineItem>* previous_items,
                            const Font* override_font) const {
   TRACE_EVENT0("fonts", "InlineNode::ShapeText");
+  base::ScopedClosureRunner scoped_closure_runner(WTF::BindOnce(
+      [](base::ElapsedTimer timer, Document* document) {
+        if (document) {
+          document->MaybeRecordShapeTextElapsedTime(timer.Elapsed());
+        }
+      },
+      base::ElapsedTimer(),
+      WrapWeakPersistent(GetLayoutBox() ? &GetLayoutBox()->GetDocument()
+                                        : nullptr)));
+
   const String& text_content = data->text_content;
   HeapVector<InlineItem>* items = &data->items;
 

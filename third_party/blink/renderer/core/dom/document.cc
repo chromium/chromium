@@ -4139,6 +4139,16 @@ bool Document::CheckCompletedInternal() {
       lcpp->OnOutermostMainFrameDocumentLoad();
       fetcher_->MaybeRecordLCPPSubresourceMetrics(Url());
     }
+    if (!data_->accumulated_shape_text_elapsed_time_.is_zero()) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Blink.Layout.InlineNode::ShapeText.TotalTime.InOutermostMainFrame",
+          data_->accumulated_shape_text_elapsed_time_);
+    }
+    if (!data_->max_shape_text_elapsed_time_.is_zero()) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Blink.Layout.InlineNode::ShapeText.MaxTime.InOutermostMainFrame",
+          data_->max_shape_text_elapsed_time_);
+    }
   }
 
   return true;
@@ -7742,6 +7752,16 @@ FontMatchingMetrics* Document::GetFontMatchingMetrics() {
   font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(
       dom_window_, GetTaskRunner(TaskType::kInternalDefault));
   return font_matching_metrics_.get();
+}
+
+void Document::MaybeRecordShapeTextElapsedTime(base::TimeDelta elapsed_time) {
+  if (!IsInOutermostMainFrame() || IsLoadCompleted() ||
+      IsInitialEmptyDocument() || !Url().ProtocolIsInHTTPFamily()) {
+    return;
+  }
+  data_->accumulated_shape_text_elapsed_time_ += elapsed_time;
+  data_->max_shape_text_elapsed_time_ =
+      std::max(data_->max_shape_text_elapsed_time_, elapsed_time);
 }
 
 bool Document::AllowInlineEventHandler(Node* node,
