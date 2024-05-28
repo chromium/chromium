@@ -214,16 +214,9 @@ struct GPMEnclaveController::DownloadedAccountState {
   std::vector<base::Time> lskf_expiries;
 };
 
-namespace {
-
-#if BUILDFLAG(IS_MAC)
-constexpr char kICloudKeychainRecoveryKeyAccessGroup[] =
-    MAC_TEAM_IDENTIFIER_STRING ".com.google.common.folsom";
-#endif  // BUILDFLAG(IS_MAC)
-
 // EnclaveUserVerificationMethod enumerates the possible ways that user
 // verification will be performed for an enclave transaction.
-enum class EnclaveUserVerificationMethod {
+enum class GPMEnclaveController::EnclaveUserVerificationMethod {
   // No user verification will be performed.
   kNone,
   // The user will enter a GPM PIN.
@@ -243,6 +236,16 @@ enum class EnclaveUserVerificationMethod {
   // The request cannot be satisfied.
   kUnsatisfiable,
 };
+
+using EnclaveUserVerificationMethod =
+    GPMEnclaveController::EnclaveUserVerificationMethod;
+
+namespace {
+
+#if BUILDFLAG(IS_MAC)
+constexpr char kICloudKeychainRecoveryKeyAccessGroup[] =
+    MAC_TEAM_IDENTIFIER_STRING ".com.google.common.folsom";
+#endif  // BUILDFLAG(IS_MAC)
 
 // Pick an enclave user verification method for a specific request.
 EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
@@ -771,9 +774,10 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
 }
 
 void GPMEnclaveController::SetAccountStateReady() {
-  switch (PickEnclaveUserVerificationMethod(
+  uv_method_ = PickEnclaveUserVerificationMethod(
       user_verification_requirement_, have_added_device_,
-      enclave_manager_->has_wrapped_pin(), enclave_manager_->uv_key_state())) {
+      enclave_manager_->has_wrapped_pin(), enclave_manager_->uv_key_state());
+  switch (*uv_method_) {
     case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
     case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
     case EnclaveUserVerificationMethod::kNone:
@@ -1101,9 +1105,7 @@ void GPMEnclaveController::StartEnclaveTransaction(
   // is in memory.
   bool use_unwrapped_secret = false;
 
-  switch (PickEnclaveUserVerificationMethod(
-      user_verification_requirement_, have_added_device_,
-      enclave_manager_->has_wrapped_pin(), enclave_manager_->uv_key_state())) {
+  switch (*uv_method_) {
     case EnclaveUserVerificationMethod::kNone:
       request->signing_callback =
           enclave_manager_->HardwareKeySigningCallback();
