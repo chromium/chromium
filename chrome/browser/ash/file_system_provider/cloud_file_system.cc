@@ -599,9 +599,11 @@ void CloudFileSystem::OnCloseFileCompleted(
           << "}";
   // Closing is always final. Even if an error happened, we remove it from the
   // list of opened files.
-  const auto& opened_file = opened_files_.extract(file_handle);
   if (content_cache_) {
-    content_cache_->CloseFile(opened_file.mapped());
+    const auto& opened_file = opened_files_.extract(file_handle);
+    if (!opened_file.empty()) {
+      content_cache_->CloseFile(opened_file.mapped());
+    }
   }
   std::move(callback).Run(result);
 }
@@ -631,8 +633,10 @@ void CloudFileSystem::OnWriteFileCompleted(
           << "}";
   if (content_cache_ && result == base::File::FILE_OK) {
     const auto& opened_file = opened_files_.extract(file_handle);
-    // The cached file is now out of date.
-    content_cache_->Evict(opened_file.mapped().file_path);
+    if (!opened_file.empty()) {
+      // The cached file is now out of date.
+      content_cache_->Evict(opened_file.mapped().file_path);
+    }
   }
   std::move(callback).Run(result);
 }
