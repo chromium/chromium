@@ -9,7 +9,7 @@ others are optional, and are currently unused.
 ### Setting up a chroot
 
 Building the libraries requires `apt-get source`, so the build must be done from
-an Ubuntu 20.04 environment. The preferred way is using a chroot. To get
+an Ubuntu 24.04 environment. The preferred way is using a chroot. To get
 started, install `debootstrap` and `schroot`. If you're running a Debian-based
 distro, run:
 
@@ -17,13 +17,13 @@ distro, run:
 sudo apt install debootstrap schroot
 ```
 
-Create a configuration for a Focal chroot:
+Create a configuration for a Noble chroot:
 
 ```shell
-cat | sudo tee /etc/schroot/chroot.d/focal_amd64.conf > /dev/null <<EOF
-[focal_amd64]
-description=Ubuntu 20.04 Focal for amd64
-directory=/srv/chroot/focal_amd64
+cat | sudo tee /etc/schroot/chroot.d/noble_amd64.conf > /dev/null <<EOF
+[noble_amd64]
+description=Ubuntu 24.04 Noble for amd64
+directory=/srv/chroot/noble_amd64
 personality=linux
 root-users=$USER
 type=directory
@@ -34,8 +34,8 @@ EOF
 Bootstrap the chroot:
 
 ```shell
-sudo mkdir -p /srv/chroot/focal_amd64
-sudo debootstrap --variant=buildd --arch=amd64 focal /srv/chroot/focal_amd64 http://archive.ubuntu.com/ubuntu/
+sudo mkdir -p /srv/chroot/noble_amd64
+sudo debootstrap --variant=buildd --arch=amd64 noble /srv/chroot/noble_amd64 http://archive.ubuntu.com/ubuntu/
 ```
 
 If your `$HOME` directory is not `/home` (as is the case on gLinux), then route
@@ -49,40 +49,40 @@ sudo mount --bind "$HOME" /home
 Populate `sources.list`:
 
 ```shell
-cat | sudo tee -a /srv/chroot/focal_amd64/etc/apt/sources.list > /dev/null <<EOF
-deb     http://archive.ubuntu.com/ubuntu/ focal          main restricted universe
-deb-src	http://archive.ubuntu.com/ubuntu/ focal          main restricted universe
-deb     http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe
-deb-src http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe
-deb     http://archive.ubuntu.com/ubuntu/ focal-updates  main restricted universe
-deb-src http://archive.ubuntu.com/ubuntu/ focal-updates  main restricted universe
+cat | sudo tee -a /srv/chroot/noble_amd64/etc/apt/sources.list > /dev/null <<EOF
+deb     http://archive.ubuntu.com/ubuntu/ noble          main restricted universe
+deb-src	http://archive.ubuntu.com/ubuntu/ noble          main restricted universe
+deb     http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe
+deb-src http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe
+deb     http://archive.ubuntu.com/ubuntu/ noble-updates  main restricted universe
+deb-src http://archive.ubuntu.com/ubuntu/ noble-updates  main restricted universe
 EOF
 ```
 
 Enter the chroot and install the necessary packages:
 
 ```shell
-schroot -c focal_amd64 -u root --directory /home/dev/chromium/src
+schroot -c noble_amd64 -u root --directory /home/dev/chromium/src
 apt update
 apt upgrade
-apt install lsb-release sudo python pkg-config libgtk2.0-bin libdrm-dev help2man git fakeroot gyp
+apt install lsb-release sudo python-is-python3 pkg-config libgtk2.0-bin libdrm-dev help2man git fakeroot gyp patchelf
 ```
 
 Install library packages:
 
 ```shell
-third_party/instrumented_libs/focal/scripts/install-build-deps.sh
+third_party/instrumented_libs/noble/scripts/install-build-deps.sh
 ```
 
 Change to a non-root user:
 ```shell
 exit
-schroot -c focal_amd64 -u `whoami` --directory /home/dev/chromium/src
+schroot -c noble_amd64 -u `whoami` --directory /home/dev/chromium/src
 ```
 
 On your host, mount `/dev/shm/`.  Replace `*` with the actual path if you have multiple chroots.
 ```shell
-sudo mount --bind /dev/shm /run/schroot/mount/focal_amd64-*/dev/shm
+sudo mount --bind /dev/shm /run/schroot/mount/noble_amd64-*/dev/shm
 ```
 
 Add `depot_tools` to your `PATH`. For example, I have it in `~/dev/depot_tools`,
@@ -96,7 +96,7 @@ Now we're ready to build the libraries. A clean build takes a little over 8
 minutes on a 72-thread machine.
 
 ```shell
-third_party/instrumented_libs/scripts/build_and_package.py --parallel -j $(nproc) all focal
+third_party/instrumented_libs/scripts/build_and_package.py --parallel -j $(nproc) all noble
 ```
 
 ## Uploading the libraries
@@ -135,8 +135,8 @@ This can be useful for restarting from scratch with a new chroot, e.g. to
 validate the build instructions above.
 
 ```shell
-sudo rm /etc/schroot/chroot.d/focal_amd64.conf
-sudo rm -rf /srv/chroot/focal_amd64
+sudo rm /etc/schroot/chroot.d/noble_amd64.conf
+sudo rm -rf /srv/chroot/noble_amd64
 ```
 
 If `rm` complains about active mount points, list the active chroot session(s):
@@ -145,10 +145,10 @@ schroot --list --all-sessions
 ```
 Which should print something like:
 ```
-session:focal_amd64-714a3c01-9dbf-4c98-81c1-90ab8c4c61fe
+session:noble_amd64-714a3c01-9dbf-4c98-81c1-90ab8c4c61fe
 ```
 
 Then shutdown the chroot session with:
 ```shell
-schroot -e -c focal_amd64-714a3c01-9dbf-4c98-81c1-90ab8c4c61fe
+schroot -e -c noble_amd64-714a3c01-9dbf-4c98-81c1-90ab8c4c61fe
 ```
