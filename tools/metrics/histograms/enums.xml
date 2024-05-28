@@ -30429,6 +30429,16 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Not sent"/>
 </enum>
 
+<enum name="PrivacySandboxStorageUserSegmentByRecentActivity">
+  <int value="0" label="kHasBrowserApp"/>
+  <int value="1" label="kHasAGSACCT"/>
+  <int value="2" label="kHasNonAGSACCT"/>
+  <int value="3" label="kHasPWA"/>
+  <int value="4" label="kHasTWA"/>
+  <int value="5" label="kHasWebapp"/>
+  <int value="6" label="kOther"/>
+</enum>
+
 <enum name="ProbeResult">
   <int value="0" label="No internet"/>
   <int value="1" label="Server error"/>

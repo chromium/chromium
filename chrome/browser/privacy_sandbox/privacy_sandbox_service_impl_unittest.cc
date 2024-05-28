@@ -24,6 +24,8 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -33,6 +35,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/privacy_sandbox/mock_privacy_sandbox_settings.h"
@@ -95,6 +98,8 @@ using PromptType = PrivacySandboxService::PromptType;
 
 #if BUILDFLAG(IS_ANDROID)
 using ActivityType = PrivacySandboxService::PrivacySandboxStorageActivityType;
+using UserSegment =
+    PrivacySandboxService::PrivacySandboxStorageUserSegmentByRecentActivity;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using enum privacy_sandbox_test_util::StateKey;
@@ -2952,11 +2957,23 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticeEnabledNoRestrictionsTest,
 #if BUILDFLAG(IS_ANDROID)
 class PrivacySandboxActivityTypeStorageTests
     : public PrivacySandboxServiceTest {
+ public:
+  PrivacySandboxActivityTypeStorageTests()
+      : local_state_(std::make_unique<ScopedTestingLocalState>(
+            TestingBrowserProcess::GetGlobal())) {}
+
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxActivityTypeStorage,
         {{"last-n-launches", "5"}, {"within-x-days", "2"}});
   }
+
+ protected:
+  base::HistogramTester histogram_tester;
+  ScopedTestingLocalState* local_state() { return local_state_.get(); }
+
+ private:
+  std::unique_ptr<ScopedTestingLocalState> local_state_;
 };
 
 TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyListOverflow) {
@@ -3112,4 +3129,283 @@ TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyTimeBackwards) {
                  .GetDict()
                  .Find("activity_type"));
 }
-#endif  // BUIDLFLAG(IS_ANDROID)
+
+class PrivacySandboxActivityTypeStorageMetricsTests
+    : public PrivacySandboxServiceTest {
+ public:
+  PrivacySandboxActivityTypeStorageMetricsTests()
+      : local_state_(std::make_unique<ScopedTestingLocalState>(
+            TestingBrowserProcess::GetGlobal())) {}
+
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxActivityTypeStorage,
+        {{"last-n-launches", "100"}, {"within-x-days", "60"}});
+  }
+
+  struct PercentageMetricValues {
+    int AGSACCTPercent = 0;
+    int AGSACCTBucketCount = 1;
+    int BrAppPercent = 0;
+    int BrAppBucketCount = 1;
+    int NonAGSACCTPercent = 0;
+    int NonAGSACCTBucketCount = 1;
+    int TWAPercent = 0;
+    int TWABucketCount = 1;
+    int WebappPercent = 0;
+    int WebappBucketCount = 1;
+    int WebAPKPercent = 0;
+    int WebAPKBucketCount = 1;
+  };
+
+  void TestMetricValues(PercentageMetricValues values) {
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.AGSACCT",
+        values.AGSACCTPercent, values.AGSACCTBucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp",
+        values.BrAppPercent, values.BrAppBucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.NonAGSACCT",
+        values.NonAGSACCTPercent, values.NonAGSACCTBucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.TWA", values.TWAPercent,
+        values.TWABucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.WebApp",
+        values.WebappPercent, values.WebappBucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.WebApk",
+        values.WebAPKPercent, values.WebAPKBucketCount);
+  }
+
+ protected:
+  base::HistogramTester histogram_tester;
+  ScopedTestingLocalState* local_state() { return local_state_.get(); }
+
+ private:
+  std::unique_ptr<ScopedTestingLocalState> local_state_;
+};
+
+TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
+       VerifyMetricsRecordsLength) {
+  local_state()->Get()->SetInt64(
+      metrics::prefs::kMetricsReportingEnabledTimestamp,
+      (base::Time::Now() - base::Days(10)).ToTimeT());
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 1, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 2, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 3, 1);
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 4, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 5, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 6, 1);
+}
+
+TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
+       VerifyMetricsPercentages) {
+  local_state()->Get()->SetInt64(
+      metrics::prefs::kMetricsReportingEnabledTimestamp,
+      (base::Time::Now() - base::Days(10)).ToTimeT());
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  TestMetricValues({.AGSACCTPercent = 100});
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kNonAGSACustomTab);
+  TestMetricValues({.AGSACCTPercent = 50,
+                    .BrAppBucketCount = 2,
+                    .NonAGSACCTPercent = 50,
+                    .TWABucketCount = 2,
+                    .WebappBucketCount = 2,
+                    .WebAPKBucketCount = 2});
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  TestMetricValues({.AGSACCTPercent = 33,
+                    .BrAppBucketCount = 3,
+                    .NonAGSACCTPercent = 33,
+                    .TWAPercent = 33,
+                    .WebappBucketCount = 3,
+                    .WebAPKBucketCount = 3});
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  TestMetricValues({.AGSACCTPercent = 50,
+                    .AGSACCTBucketCount = 2,
+                    .BrAppBucketCount = 4,
+                    .NonAGSACCTPercent = 25,
+                    .TWAPercent = 25,
+                    .WebappBucketCount = 4,
+                    .WebAPKBucketCount = 4});
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  TestMetricValues({.AGSACCTPercent = 40,
+                    .BrAppBucketCount = 5,
+                    .NonAGSACCTPercent = 20,
+                    .TWAPercent = 20,
+                    .WebappBucketCount = 5,
+                    .WebAPKPercent = 20});
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  TestMetricValues({.AGSACCTPercent = 33,
+                    .AGSACCTBucketCount = 2,
+                    .BrAppBucketCount = 6,
+                    .NonAGSACCTPercent = 17,
+                    .TWAPercent = 33,
+                    .TWABucketCount = 2,
+                    .WebappBucketCount = 6,
+                    .WebAPKPercent = 17});
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
+  TestMetricValues({.AGSACCTPercent = 29,
+                    .BrAppBucketCount = 7,
+                    .NonAGSACCTPercent = 14,
+                    .TWAPercent = 29,
+                    .WebappPercent = 14,
+                    .WebAPKPercent = 14});
+
+  browser_task_environment()->FastForwardBy(base::Days(61));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  // Since 61 days have passed, the activity log gets cleared because it is
+  // passed our within-x-days feature param.
+  TestMetricValues({.BrAppPercent = 100,
+                    .NonAGSACCTBucketCount = 2,
+                    .TWABucketCount = 3,
+                    .WebappBucketCount = 7,
+                    .WebAPKBucketCount = 5});
+}
+
+TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
+       VerifyUserSegmentMetrics) {
+  local_state()->Get()->SetInt64(
+      metrics::prefs::kMetricsReportingEnabledTimestamp,
+      (base::Time::Now() - base::Days(10)).ToTimeT());
+  for (int i = 0; i < 10; ++i) {
+    privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
+  }
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment", 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasWebapp, 1);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment", 0);
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasTWA, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasTWA, 2);
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasPWA, 1);
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasPWA, 2);
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kNonAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasNonAGSACCT, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasNonAGSACCT, 2);
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasAGSACCT, 1);
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kNonAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasAGSACCT, 2);
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasBrowserApp, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasBrowserApp, 2);
+
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment", 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment",
+      UserSegment::kHasBrowserApp, 1);
+
+  for (int i = 0; i < 9; ++i) {
+    privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  }
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasBrowserApp, 10);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kHasAGSACCT, 3);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment",
+      UserSegment::kHasBrowserApp, 10);
+
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment",
+      UserSegment::kOther, 0);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment",
+      UserSegment::kOther, 0);
+}
+
+TEST_F(PrivacySandboxActivityTypeStorageMetricsTests, VerifyNoMetrics) {
+  // Set the kMetricsReportingEnabledTimestamp of UMA opt in to 10 days in the
+  // future and we should receive no metrics on any of the data in the Activity
+  // Type storage list. The list should still be populated to a size of 10
+  // records.
+  local_state()->Get()->SetInt64(
+      metrics::prefs::kMetricsReportingEnabledTimestamp,
+      (base::Time::Now() + base::Days(10)).ToTimeT());
+  for (int i = 0; i < 10; ++i) {
+    privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  }
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.AGSACCT", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.NonAGSACCT", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.TWA", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.WebApp", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 0);
+  EXPECT_EQ(10u,
+            prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord).size());
+}
+#endif  // BUILDFLAG(IS_ANDROID)

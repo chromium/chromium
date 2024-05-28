@@ -496,6 +496,100 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment"
+    enum="PrivacySandboxStorageUserSegmentByRecentActivity"
+    expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the user segment based on the 10 most recent records. Recorded at
+    most once on Clank startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment"
+    enum="PrivacySandboxStorageUserSegmentByRecentActivity"
+    expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the user segment based on the 20 most recent records. Recorded at
+    most once on Clank startup.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.AGSACCT"
+    units="%" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the percentage of AGSACCT activity type launches. Recorded once on
+    Clank startup.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.BrApp" units="%"
+    expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the percentage of BrApp activity type launches. Recorded once on
+    Clank startup.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.NonAGSACCT"
+    units="%" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the percentage of NonAGSACCT activity type launches. Recorded once
+    on Clank startup.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.TWA" units="%"
+    expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the percentage of TWA activity type launches. Recorded once on Clank
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.WebApk"
+    units="%" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the percentage of WebApk activity type launches. Recorded once on
+    Clank startup.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.ActivityTypeStorage.Percentage.WebApp"
+    units="%" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the percentage of WebApp activity type launches. Recorded once on
+    Clank startup.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.ActivityTypeStorage.RecordsLength"
+    units="count" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the size of the activity type record log. Recorded once on Clank
+    startup.
+  </summary>
+</histogram>
+
+<histogram
     name="PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-07-13">
   <owner>alexmt@chromium.org</owner>

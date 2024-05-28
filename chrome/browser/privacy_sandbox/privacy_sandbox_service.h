@@ -293,6 +293,8 @@ class PrivacySandboxService : public KeyedService {
   // component, we can create an accurate heuristic to identify distinct user
   // groups based on their Chrome usage patterns. This will enable us to tailor
   // the user experience for specific launches in the near future.
+  //
+  // LINT.IfChange(PrivacySandboxStorageActivityType)
   enum class PrivacySandboxStorageActivityType {
     kTabbed,              // BrApp
     kAGSACustomTab,       // AGSA-CCT
@@ -304,8 +306,25 @@ class PrivacySandboxService : public KeyedService {
     kWebApk,  // PWA
     kMaxValue = kWebApk,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+
   virtual void RecordActivityType(
       PrivacySandboxStorageActivityType type) const = 0;
+
+  // Enum used for recording metrics about Clank Activity Type Storage
+  //
+  // LINT.IfChange(PrivacySandboxStorageUserSegmentByRecentActivity)
+  enum class PrivacySandboxStorageUserSegmentByRecentActivity {
+    kHasBrowserApp,
+    kHasAGSACCT,
+    kHasNonAGSACCT,
+    kHasPWA,
+    kHasTWA,
+    kHasWebapp,
+    kOther,
+    kMaxValue = kOther,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 

@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -29,6 +30,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -1460,7 +1462,129 @@ bool PrivacySandboxServiceImpl::IsM1PrivacySandboxEffectivelyManaged(
              prefs::kPrivacySandboxM1AdMeasurementEnabled);
 }
 
+// TODO(b/341978070): Move Clank Activity Type Impl into it's own service.
 #if BUILDFLAG(IS_ANDROID)
+void RecordPercentageMetrics(const base::Value::List& activity_type_record) {
+  using ActivityType = PrivacySandboxService::PrivacySandboxStorageActivityType;
+  std::unordered_map<ActivityType, int> activity_type_counts{
+      {ActivityType::kTabbed, 0},
+      {ActivityType::kAGSACustomTab, 0},
+      {ActivityType::kNonAGSACustomTab, 0},
+      {ActivityType::kTrustedWebActivity, 0},
+      {ActivityType::kWebapp, 0},
+      {ActivityType::kWebApk, 0}};
+  for (const base::Value& record : activity_type_record) {
+    std::optional<int> activity_type_int =
+        record.GetDict().FindInt("activity_type");
+    CHECK(activity_type_int.has_value());
+    ActivityType activity_type =
+        static_cast<ActivityType>(activity_type_int.value());
+    activity_type_counts[activity_type]++;
+  }
+
+  std::unordered_map<ActivityType, int> activity_type_percentages;
+  // Set each activity type percentage based on the count / total_records.
+  for (const auto& [key, value] : activity_type_counts) {
+    double raw_percentage = (value * 100.0) / activity_type_record.size();
+    activity_type_percentages[key] = std::round(raw_percentage);
+  }
+
+  constexpr auto kTypesToHistogramSuffix =
+      base::MakeFixedFlatMap<ActivityType, std::string_view>(
+          {{ActivityType::kTabbed, "BrApp"},
+           {ActivityType::kAGSACustomTab, "AGSACCT"},
+           {ActivityType::kNonAGSACustomTab, "NonAGSACCT"},
+           {ActivityType::kTrustedWebActivity, "TWA"},
+           {ActivityType::kWebapp, "WebApp"},
+           {ActivityType::kWebApk, "WebApk"}});
+
+  // Emit all the histograms with each percentage value.
+  for (const auto& [type, suffix] : kTypesToHistogramSuffix) {
+    DCHECK(activity_type_percentages.contains(type));
+    base::UmaHistogramPercentage(
+        base::StrCat(
+            {"PrivacySandbox.ActivityTypeStorage.Percentage.", suffix}),
+        activity_type_percentages[type]);
+  }
+}
+
+void RecordUserSegmentMetrics(const base::Value::List& activity_type_record,
+                              int records_in_a_row) {
+  // If a different value for records_in_a_row is needed for these metrics,
+  // tools/metrics/histograms/metadata/privacy/histograms.xml needs to be
+  // updated with new histograms. Currently, only 10MostRecentRecordsUserSegment
+  // and 20MostRecentRecordsUserSegment histograms are necessary.
+  DCHECK(records_in_a_row == 10 || records_in_a_row == 20);
+  // Can't emit user segment metrics when the size of the list is less than
+  // records_in_a_row
+  if (activity_type_record.size() < static_cast<size_t>(records_in_a_row)) {
+    return;
+  }
+  using ActivityType = PrivacySandboxService::PrivacySandboxStorageActivityType;
+  using SegmentType =
+      PrivacySandboxService::PrivacySandboxStorageUserSegmentByRecentActivity;
+
+  // Helper function to get the activity type from a base::Value
+  auto GetActivityType = [](const base::Value& record) -> ActivityType {
+    std::optional<int> activity_type_int =
+        record.GetDict().FindInt("activity_type");
+    CHECK(activity_type_int.has_value());
+    return static_cast<ActivityType>(activity_type_int.value());
+  };
+
+  std::unordered_set<ActivityType> encountered_activities;
+  for (int i = 0; i < records_in_a_row; ++i) {
+    encountered_activities.insert(GetActivityType(activity_type_record[i]));
+  }
+
+  SegmentType segment_type = SegmentType::kOther;
+  if (encountered_activities.contains(ActivityType::kTabbed)) {
+    segment_type = SegmentType::kHasBrowserApp;
+  } else if (encountered_activities.contains(ActivityType::kAGSACustomTab)) {
+    segment_type = SegmentType::kHasAGSACCT;
+  } else if (encountered_activities.contains(ActivityType::kNonAGSACustomTab)) {
+    segment_type = SegmentType::kHasNonAGSACCT;
+  } else if (encountered_activities.contains(ActivityType::kWebApk)) {
+    segment_type = SegmentType::kHasPWA;
+  } else if (encountered_activities.contains(
+                 ActivityType::kTrustedWebActivity)) {
+    segment_type = SegmentType::kHasTWA;
+  } else if (encountered_activities.contains(ActivityType::kWebapp)) {
+    segment_type = SegmentType::kHasWebapp;
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PrivacySandbox.ActivityTypeStorage.",
+                    base::NumberToString(records_in_a_row),
+                    "MostRecentRecordsUserSegment"}),
+      segment_type);
+}
+
+void RecordActivityTypeMetrics(const base::Value::List& activity_type_record,
+                               base::Time current_time) {
+  int total_records = static_cast<int>(activity_type_record.size());
+  auto* oldest_record_timestamp_ptr =
+      activity_type_record[total_records - 1].GetDict().Find("timestamp");
+  CHECK(oldest_record_timestamp_ptr);
+  std::optional<base::Time> oldest_record_timestamp =
+      base::ValueToTime(*oldest_record_timestamp_ptr);
+  base::Time uma_enabled_timestamp =
+      base::Time::FromTimeT(g_browser_process->local_state()->GetInt64(
+          metrics::prefs::kMetricsReportingEnabledTimestamp));
+  // If a user has opted in, but the opt-in date is after the oldest record
+  // timestamp in the activity type list, then no metrics should be emitted.
+  if (oldest_record_timestamp.value() < uma_enabled_timestamp) {
+    return;
+  }
+  // Min: 1, Max: 201 (exclusive), Buckets: 200 (in case the max total records
+  // changes from 100).
+  base::UmaHistogramCustomCounts(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength",
+      static_cast<int>(activity_type_record.size()), 1, 201, 200);
+  RecordPercentageMetrics(activity_type_record);
+  RecordUserSegmentMetrics(activity_type_record, 10);
+  RecordUserSegmentMetrics(activity_type_record, 20);
+}
+
 void PrivacySandboxServiceImpl::RecordActivityType(
     PrivacySandboxStorageActivityType type) const {
   // Activity type launches can only be recorded if they fall within a specific
@@ -1488,15 +1612,23 @@ void PrivacySandboxServiceImpl::RecordActivityType(
   // The list is ordered from most recent records in the beginning of the list
   // and old records at the end of the list.
   for (const base::Value& child : old_activity_type_record) {
-    auto child_timestamp =
-        base::ValueToTime(*(child.GetDict().Find("timestamp"))).value();
-    if (current_time >= child_timestamp &&
-        child_timestamp >= oldest_timestamp_allowed &&
+    const base::Value* child_timestamp_ptr = child.GetDict().Find("timestamp");
+    if (!child_timestamp_ptr) {
+      continue;
+    }
+    std::optional<base::Time> child_timestamp =
+        base::ValueToTime(*child_timestamp_ptr);
+    if (!child_timestamp.has_value()) {
+      continue;
+    }
+    if (current_time >= child_timestamp.value() &&
+        child_timestamp.value() >= oldest_timestamp_allowed &&
         new_activity_type_record.size() <
             static_cast<size_t>(last_n_launches)) {
       new_activity_type_record.Append(child.Clone());
     }
   }
+  RecordActivityTypeMetrics(new_activity_type_record, current_time);
   pref_service_->SetList(prefs::kPrivacySandboxActivityTypeRecord,
                          std::move(new_activity_type_record));
 }
