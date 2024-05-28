@@ -61,8 +61,8 @@ void InSessionAuth::RequestLegacyWebAuthn(
     const std::string& rp_id,
     const std::string& window_id,
     RequestLegacyWebAuthnCallback callback) {
-  // TODO(b/342097802): Implement RequestLegacyWebAuthn method.
-  std::move(callback).Run(false);
+  ash::InSessionAuthDialogController::Get()->ShowLegacyWebAuthnDialog(
+      rp_id, window_id, std::move(callback));
 }
 
 void InSessionAuth::OnAuthComplete(RequestTokenCallback callback,

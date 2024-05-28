@@ -48,6 +48,11 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
   void SetTokenProvider(
       InSessionAuthTokenProvider* auth_token_provider) override;
 
+  void ShowLegacyWebAuthnDialog(
+      const std::string& rp_id,
+      const std::string& window_id,
+      WebAuthNDialogController::FinishCallback on_auth_complete) override;
+
   // AuthAttemptConsumer:
   void OnUserAuthAttemptRejected() override;
   void OnUserAuthAttemptConfirmed(

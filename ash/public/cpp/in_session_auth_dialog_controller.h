@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
+#include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
@@ -34,6 +35,12 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
       Reason reason,
       const std::optional<std::string>& prompt,
       auth_panel::AuthCompletionCallback on_auth_complete) = 0;
+
+  // Summons the WebAuthn UI dialog that authenticates the user.
+  virtual void ShowLegacyWebAuthnDialog(
+      const std::string& rp_id,
+      const std::string& window_id,
+      WebAuthNDialogController::FinishCallback on_auth_complete) = 0;
 
   // Must be called with a non null auth_token_provider prior to calling
   // `ShowAuthDialog`.

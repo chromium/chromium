@@ -25,17 +25,12 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "ui/platform_window/platform_window.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void OnRequestToken(base::OnceCallback<void(bool)> callback,
-                    chromeos::auth::mojom::RequestTokenReplyPtr reply) {
-  std::move(callback).Run(/*success=*/!reply.is_null());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 PasskeyInSessionAuthProvider* g_instance = nullptr;
 PasskeyInSessionAuthProvider* g_override = nullptr;
@@ -63,19 +58,31 @@ class PasskeyInSessionAuthProviderImpl : public PasskeyInSessionAuthProvider {
     if (!lacros_service->IsAvailable<chromeos::auth::mojom::InSessionAuth>() ||
         lacros_service
                 ->GetInterfaceVersion<chromeos::auth::mojom::InSessionAuth>() <
-            static_cast<int>(chromeos::auth::mojom::InSessionAuth::
-                                 MethodMinVersions::kRequestTokenMinVersion)) {
+            static_cast<int>(
+                chromeos::auth::mojom::InSessionAuth::MethodMinVersions::
+                    kRequestLegacyWebAuthnMinVersion)) {
       FIDO_LOG(ERROR)
           << "Failed to perform UV because InSessionAuth is not available";
       std::move(result_callback).Run(false);
       return;
     }
-    // TODO(crbug.com/40187814): Implement a passkeys-specific in-session auth
-    // reason.
+    auto* host = views::DesktopWindowTreeHostLacros::From(window->GetHost());
+    if (!host) {
+      FIDO_LOG(ERROR)
+          << "Failed to perform UV because window host can't be found";
+      std::move(result_callback).Run(false);
+      return;
+    }
+    auto* platform_window = host->platform_window();
+    if (!platform_window) {
+      FIDO_LOG(ERROR)
+          << "Failed to perform UV because platform window can't be found";
+      std::move(result_callback).Run(false);
+      return;
+    }
     lacros_service->GetRemote<chromeos::auth::mojom::InSessionAuth>()
-        ->RequestToken(
-            chromeos::auth::mojom::Reason::kAccessPasswordManager, std::nullopt,
-            base::BindOnce(&OnRequestToken, std::move(result_callback)));
+        ->RequestLegacyWebAuthn(rp_id, platform_window->GetWindowUniqueId(),
+                                std::move(result_callback));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };

@@ -13,6 +13,7 @@
 #include "ash/in_session_auth/in_session_auth_dialog_contents_view.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
+#include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
@@ -30,6 +31,7 @@
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/components/webauthn/webauthn_request_registrar.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -140,6 +142,22 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
          account_id))
         ->Show();
   }
+}
+
+void InSessionAuthDialogControllerImpl::ShowLegacyWebAuthnDialog(
+    const std::string& rp_id,
+    const std::string& window_id,
+    WebAuthNDialogController::FinishCallback on_auth_complete) {
+  aura::Window* source_window =
+      chromeos::webauthn::WebAuthnRequestRegistrar::Get()
+          ->GetWindowForRequestId(window_id);
+  if (!source_window) {
+    LOG(ERROR) << "Can't find the window for the given window id.";
+    std::move(on_auth_complete).Run(false);
+    return;
+  }
+  WebAuthNDialogController::Get()->ShowAuthenticationDialog(
+      source_window, rp_id, std::move(on_auth_complete));
 }
 
 void InSessionAuthDialogControllerImpl::SetTokenProvider(
