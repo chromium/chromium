@@ -6,6 +6,8 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
@@ -299,6 +301,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
   config.features_enabled.push_back(kTabGroupsInGrid);
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
+  config.features_enabled.push_back(kTabGroupSync);
   return config;
 }
 
@@ -892,6 +895,38 @@ void DeleteGroupAtIndex(int group_cell_index) {
       selectElementWithMatcher:GroupViewTitle(l10n_util::GetPluralNSStringF(
                                    IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests the different explanation text (signed in/out) in the creation screen.
+- (void)testTabGroupCreationScreenExplanation {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open the creation view.
+  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabelId(
+                     IDS_IOS_TAB_GROUP_CREATION_SAVED_EXPLANATION)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Cancel the creation.
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCancelButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Sign in.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey setSelectedType:syncer::UserSelectableType::kTabs
+                          enabled:YES];
+
+  // Open the creation view.
+  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabelId(
+                     IDS_IOS_TAB_GROUP_CREATION_SYNC_EXPLANATION)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Cancel the creation.
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCancelButtonMatcher()]
+      performAction:grey_tap()];
 }
 
 @end

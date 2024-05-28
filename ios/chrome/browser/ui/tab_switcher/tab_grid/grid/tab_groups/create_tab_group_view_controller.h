@@ -25,10 +25,12 @@ class TabGroup;
 // Mutator to handle model changes.
 @property(nonatomic, weak) id<TabGroupCreationMutator> mutator;
 
-// Initiates a CreateTabGroupViewController with `handler` to handle user
-// action. `tabGroup` can be nil in case we are in creation mode and not in
-// edition mode.
-- (instancetype)initWithTabGroup:(const TabGroup*)tabGroup;
+// Initiates a CreateTabGroupViewController in `editMode`. If NO, then the view
+// controller is in creation mode. `tabSynced` represents whether the tabs are
+// synced across devices.
+- (instancetype)initWithEditMode:(BOOL)editMode
+                       incognito:(BOOL)incognito
+                       tabSynced:(BOOL)tabSynced;
 
 @end
 

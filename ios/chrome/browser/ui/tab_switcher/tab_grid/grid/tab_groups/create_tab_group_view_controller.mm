@@ -35,6 +35,7 @@ const CGFloat kMaxHeight = 600;
 const CGFloat kHorizontalMargin = 32;
 const CGFloat kdotAndFieldContainerMargin = 44;
 const CGFloat kDotTitleSeparationMargin = 12;
+const CGFloat kSyncGroupTopConstant = 8;
 const CGFloat kContainersMaxWidth = 400;
 
 // Group color selection constants.
@@ -84,8 +85,12 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
   NSArray<GroupTabInfo*>* _tabGroupInfos;
   // Snapshots views container.
   UIView* _snapshotsContainer;
-  // Tab group to edit.
-  const TabGroup* _tabGroup;
+  // Whether it is to edit a group (vs creation).
+  BOOL _editMode;
+  // Whether this is an incognito group.
+  BOOL _incognito;
+  // Whether the user is syncing tabs.
+  BOOL _tabSynced;
   // Number of selected items.
   NSInteger _numberOfSelectedItems;
   // Title of the group.
@@ -119,13 +124,17 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
   BOOL _keyboardDisplayed;
 }
 
-- (instancetype)initWithTabGroup:(const TabGroup*)tabGroup {
+- (instancetype)initWithEditMode:(BOOL)editMode
+                       incognito:(BOOL)incognito
+                       tabSynced:(BOOL)tabSynced {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
   self = [super init];
   if (self) {
-    _tabGroup = tabGroup;
+    _editMode = editMode;
+    _incognito = incognito;
+    _tabSynced = tabSynced;
 
     [self createColorSelectionButtons];
     CHECK_NE([_colorSelectionButtons count], 0u)
@@ -241,6 +250,24 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
   return dotView;
 }
 
+// Returns the view containing the explanation string for synced groups.
+- (UIView*)syncGroupExplanation {
+  UILabel* label = [[UILabel alloc] init];
+  label.numberOfLines = 2;
+  label.textAlignment = NSTextAlignmentCenter;
+  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  label.adjustsFontForContentSizeCategory = YES;
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  label.text =
+      _tabSynced
+          ? l10n_util::GetNSString(IDS_IOS_TAB_GROUP_CREATION_SYNC_EXPLANATION)
+          : l10n_util::GetNSString(
+                IDS_IOS_TAB_GROUP_CREATION_SAVED_EXPLANATION);
+
+  return label;
+}
+
 // Returns the configured full primary title (colored dot and text title).
 - (UIView*)configuredDotAndFieldContainer {
   UIView* titleBackground = [[UIView alloc] initWithFrame:CGRectZero];
@@ -342,7 +369,7 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
   };
   NSMutableAttributedString* attributedString =
       [[NSMutableAttributedString alloc]
-          initWithString:_tabGroup ? l10n_util::GetNSString(
+          initWithString:_editMode ? l10n_util::GetNSString(
                                          IDS_IOS_TAB_GROUP_CREATION_DONE)
                                    : l10n_util::GetNSString(
                                          IDS_IOS_TAB_GROUP_CREATION_BUTTON)
@@ -365,7 +392,7 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
 
 // Hides the current view without doing anything else.
 - (void)cancelButtonTapped {
-  if (_tabGroup) {
+  if (_editMode) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGroupUserCanceledGroupEdition"));
   } else {
@@ -598,7 +625,10 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
 
 // Configures the view and all subviews when there is enough space.
 - (void)createConfigurations {
+  BOOL shouldDisplaySyncLabel =
+      IsTabGroupSyncEnabled() && !_editMode && !_incognito;
   UIView* dotAndFieldContainer = [self configuredDotAndFieldContainer];
+  UIView* syncGroupExplanation = [self syncGroupExplanation];
   UILayoutGuide* snapshotsContainerLayoutGuide = [[UILayoutGuide alloc] init];
   _snapshotsContainer = [self configuredSnapshotsContainer];
   _colorsScrollView = [self listOfColorView];
@@ -609,6 +639,14 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
 
   UIView* container = [[UIView alloc] init];
   container.translatesAutoresizingMaskIntoConstraints = NO;
+
+  // The view just above the snapshots, for constraints.
+  UIView* viewAboveSnapshots =
+      shouldDisplaySyncLabel ? syncGroupExplanation : dotAndFieldContainer;
+
+  if (shouldDisplaySyncLabel) {
+    [container addSubview:syncGroupExplanation];
+  }
 
   [container addSubview:dotAndFieldContainer];
   [container addSubview:_snapshotsContainer];
@@ -648,7 +686,7 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
                        constant:kColorListBottomMargin],
 
     [snapshotsContainerLayoutGuide.topAnchor
-        constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
+        constraintEqualToAnchor:viewAboveSnapshots.bottomAnchor
                        constant:kSnapshotViewVerticalMargin],
 
     [_snapshotsContainer.centerXAnchor
@@ -729,6 +767,18 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
     [container.heightAnchor constraintLessThanOrEqualToConstant:kMaxHeight],
     keyboardConstraint,
   ]];
+
+  if (shouldDisplaySyncLabel) {
+    [NSLayoutConstraint activateConstraints:@[
+      [syncGroupExplanation.widthAnchor
+          constraintLessThanOrEqualToAnchor:dotAndFieldContainer.widthAnchor],
+      [syncGroupExplanation.centerXAnchor
+          constraintEqualToAnchor:dotAndFieldContainer.centerXAnchor],
+      [syncGroupExplanation.topAnchor
+          constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
+                         constant:kSyncGroupTopConstant],
+    ]];
+  }
 }
 
 // Returns the view which contains all the selected tabs' snapshot which will be

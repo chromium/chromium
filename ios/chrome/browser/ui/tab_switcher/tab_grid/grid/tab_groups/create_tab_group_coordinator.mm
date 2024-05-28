@@ -5,10 +5,15 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_coordinator.h"
 
 #import "base/check.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_mediator.h"
@@ -80,19 +85,30 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  Browser* browser = self.browser;
+  ChromeBrowserState* browserState = browser->GetBrowserState();
+  BOOL editMode = _tabGroup != nullptr;
+  BOOL incognito = browserState->IsOffTheRecord();
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+  BOOL tabSynced =
+      syncService && syncService->GetUserSettings()->GetSelectedTypes().Has(
+                         syncer::UserSelectableType::kTabs);
   _viewController =
-      [[CreateTabGroupViewController alloc] initWithTabGroup:_tabGroup];
+      [[CreateTabGroupViewController alloc] initWithEditMode:editMode
+                                                   incognito:incognito
+                                                   tabSynced:tabSynced];
 
   if (_tabGroup) {
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupEditionWithConsumer:_viewController
                                tabGroup:_tabGroup
-                           webStateList:self.browser->GetWebStateList()];
+                           webStateList:browser->GetWebStateList()];
   } else {
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupCreationWithConsumer:_viewController
                             selectedTabs:_identifiers
-                            webStateList:self.browser->GetWebStateList()];
+                            webStateList:browser->GetWebStateList()];
   }
   _viewController.mutator = _mediator;
   _viewController.delegate = self;
