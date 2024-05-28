@@ -183,6 +183,7 @@
   E_CPONLY(kColorSysStateRippleNeutralOnProminent) \
   E_CPONLY(kColorSysStateRippleNeutralOnSubtle) \
   E_CPONLY(kColorSysStateRipplePrimary) \
+  E_CPONLY(kColorSysStateScrim) \
   E_CPONLY(kColorSysStateFocusRing) \
   E_CPONLY(kColorSysStateFocusHighlight) \
   E_CPONLY(kColorSysStateTextHighlight) \
