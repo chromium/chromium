@@ -35,12 +35,35 @@ class JSONRequest;
 
 namespace enclave {
 
+// Represents an error encountered while parsing a response from the enclave
+// service. This can be parsing errors or specified errors returned from the
+// service.
+// If the service returned an error response, `index` indicates which response
+// in the array contained the error. `index` is -1 if there was an error
+// parsing the response.
+// `error_code` when present represents a code received in an error response
+// from the enclave. `error_string` when present represents a string received in
+// an error response from the enclave, or a description of the parsing error
+// encountered.
+struct COMPONENT_EXPORT(DEVICE_FIDO) ErrorResponse {
+  explicit ErrorResponse(std::string error);
+  ErrorResponse(int index, int error_code);
+  ErrorResponse(int index, std::string error);
+  ~ErrorResponse();
+  ErrorResponse(ErrorResponse&);
+  ErrorResponse(ErrorResponse&&);
+
+  int index = -1;
+  std::optional<int> error_code;
+  std::optional<std::string> error_string;
+};
+
 // Parses a decrypted assertion command response from the enclave.
 // If there are multiple request responses in the array, it assumes the last
 // one is for the GetAssertion.
-// Returns one of: A successful response, an error code received from the
-//                 enclave, or a string describing an unhandled failure.
-absl::variant<AuthenticatorGetAssertionResponse, int, std::string>
+// Returns one of: A successful response, or a struct containing details of
+//                 the error.
+absl::variant<AuthenticatorGetAssertionResponse, ErrorResponse>
     COMPONENT_EXPORT(DEVICE_FIDO)
         ParseGetAssertionResponse(cbor::Value response_value,
                                   base::span<const uint8_t> credential_id);
@@ -49,12 +72,10 @@ absl::variant<AuthenticatorGetAssertionResponse, int, std::string>
 // If there are multiple request responses in the array, it assumes the last
 // one is for the MakeCredential.
 // Returns one of: A pair containing the response and the new passkey entity,
-//                 an error code received from the enclave, or a string
-//                 describing an unhandled failure.
+//                 a struct containing details of the error.
 absl::variant<std::pair<AuthenticatorMakeCredentialResponse,
                         sync_pb::WebauthnCredentialSpecifics>,
-              int,
-              std::string>
+              ErrorResponse>
     COMPONENT_EXPORT(DEVICE_FIDO)
         ParseMakeCredentialResponse(cbor::Value response,
                                     const CtapMakeCredentialRequest& request,

@@ -1150,6 +1150,9 @@ void GPMEnclaveController::StartEnclaveTransaction(
       request->user_verified = true;
       request->uv_key_creation_callback =
           enclave_manager_->UserVerifyingKeyCreationCallback();
+      request->unregister_callback =
+          base::BindOnce(&EnclaveManager::Unenroll,
+                         enclave_manager_->GetWeakPtr(), base::DoNothing());
       break;
     case EnclaveUserVerificationMethod::kUnsatisfiable:
       NOTREACHED_NORETURN();

@@ -271,11 +271,16 @@ class EnclaveManager : public EnclaveManagerInterface {
   // Clears the registration as if we were starting from scratch.
   void ClearRegistrationForTesting();
 
+  // Toggle invariant checks.
+  static void EnableInvariantChecksForTesting(bool enable);
+
   // Create a wrapped PIN, suitable for putting into a simulated security domain
   // member.
   static std::string MakeWrappedPINForTesting(
       base::span<const uint8_t> security_domain_secret,
       std::string_view pin);
+
+  base::WeakPtr<EnclaveManager> GetWeakPtr();
 
  private:
   class StateMachine;

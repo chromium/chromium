@@ -418,7 +418,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_Failures) {
     std::vector<uint8_t> cred_id = {0, 1, 2};
     auto parse_result =
         ParseGetAssertionResponse(std::move(response_cbor), cred_id);
-    EXPECT_TRUE(absl::holds_alternative<std::string>(parse_result))
+    EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result) &&
+                absl::get<ErrorResponse>(parse_result).error_string.has_value())
         << "Failed GetAssertion response parsing for: " << test_case.name;
   }
 }
@@ -483,7 +484,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_StringFailures) {
     auto parse_result = ParseMakeCredentialResponse(
         std::move(response_cbor), ctap_request, kWrappedSecretVersion,
         /*user_verified=*/false);
-    EXPECT_TRUE(absl::holds_alternative<std::string>(parse_result))
+    EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result) &&
+                absl::get<ErrorResponse>(parse_result).error_string.has_value())
         << "Failed MakeCredential response parsing for: " << test_case.name;
   }
 }
@@ -496,8 +498,9 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_IntegerFailure) {
   auto parse_result =
       ParseGetAssertionResponse(std::move(response_cbor), cred_id);
 
-  EXPECT_TRUE(absl::holds_alternative<int>(parse_result));
-  EXPECT_EQ(absl::get<int>(parse_result), 2);
+  EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result));
+  EXPECT_TRUE(absl::get<ErrorResponse>(parse_result).error_code.has_value());
+  EXPECT_EQ(*absl::get<ErrorResponse>(parse_result).error_code, 2);
 }
 
 TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_IntegerFailure) {
@@ -514,8 +517,9 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_IntegerFailure) {
       std::move(response_cbor), ctap_request, kWrappedSecretVersion,
       /*user_verified=*/false);
 
-  EXPECT_TRUE(absl::holds_alternative<int>(parse_result));
-  EXPECT_EQ(absl::get<int>(parse_result), 2);
+  EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result));
+  EXPECT_TRUE(absl::get<ErrorResponse>(parse_result).error_code.has_value());
+  EXPECT_EQ(*absl::get<ErrorResponse>(parse_result).error_code, 2);
 }
 
 }  // namespace enclave

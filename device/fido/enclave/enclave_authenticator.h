@@ -104,6 +104,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   void CompleteGetAssertionRequest(
       CtapDeviceResponseCode status,
       std::vector<AuthenticatorGetAssertionResponse> responses);
+  void ProcessErrorResponse(const ErrorResponse& error);
 
   const std::array<uint8_t, 8> id_;
   const NetworkContextFactory network_context_factory_;
@@ -114,6 +115,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   std::unique_ptr<PendingGetAssertionRequest> pending_get_assertion_request_;
   std::unique_ptr<PendingMakeCredentialRequest>
       pending_make_credential_request_;
+
+  // Set to true when the request included a deferred UV key creation.
+  bool includes_new_uv_key_ = false;
 
   base::WeakPtrFactory<EnclaveAuthenticator> weak_factory_{this};
 };

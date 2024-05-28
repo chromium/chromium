@@ -137,6 +137,7 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
           std::move(request), std::move(options), std::move(callback));
 
   if (ui_request_->uv_key_creation_callback) {
+    includes_new_uv_key_ = true;
     std::move(ui_request_->uv_key_creation_callback)
         .Run(base::BindOnce(
             &EnclaveAuthenticator::DispatchMakeCredentialWithNewUVKey,
@@ -195,6 +196,7 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
       request, options, std::move(callback));
 
   if (ui_request_->uv_key_creation_callback) {
+    includes_new_uv_key_ = true;
     std::move(ui_request_->uv_key_creation_callback)
         .Run(base::BindOnce(
             &EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey,
@@ -257,28 +259,9 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   auto parse_result = ParseMakeCredentialResponse(
       std::move(*response), pending_make_credential_request_->request,
       *ui_request_->key_version, ui_request_->user_verified);
-  // TODO(enclave): This should identify and handle failures of AddUVKey
-  // requests, and signal these back to the EnclaveManager to unregister the
-  // device.
-  if (absl::holds_alternative<std::string>(parse_result)) {
-    FIDO_LOG(ERROR) << base::StrCat(
-        {"Error in registration response from server: ",
-         absl::get<std::string>(parse_result)});
-    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
-    return;
-  }
-  if (absl::holds_alternative<int>(parse_result)) {
-    int code = absl::get<int>(parse_result);
-    if (ui_request_->pin_result_callback &&
-        (code == kIncorrectPIN || code == kPINLocked)) {
-      std::move(ui_request_->pin_result_callback)
-          .Run(code == kIncorrectPIN ? PINValidationResult::kIncorrect
-                                     : PINValidationResult::kLocked);
-    }
-    FIDO_LOG(DEBUG) << base::StrCat(
-        {"Received an error response from the enclave: ",
-         base::NumberToString(code)});
-    CompleteRequestWithError(EnclaveErrorToCtapResponseCode(code));
+  if (absl::holds_alternative<ErrorResponse>(parse_result)) {
+    auto& error_details = absl::get<ErrorResponse>(parse_result);
+    ProcessErrorResponse(error_details);
     return;
   }
 
@@ -305,28 +288,9 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
   const std::string& cred_id_str = ui_request_->entity->credential_id();
   auto parse_result = ParseGetAssertionResponse(
       std::move(*response), base::as_bytes(base::make_span(cred_id_str)));
-  if (absl::holds_alternative<std::string>(parse_result)) {
-    FIDO_LOG(ERROR) << base::StrCat(
-        {"Error in assertion response from server: ",
-         absl::get<std::string>(parse_result)});
-    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
-    return;
-  }
-  // TODO(enclave): This should identify and handle failures of AddUVKey
-  // requests, and signal these back to the EnclaveManager to unregister the
-  // device.
-  if (absl::holds_alternative<int>(parse_result)) {
-    int code = absl::get<int>(parse_result);
-    if (ui_request_->pin_result_callback &&
-        (code == kIncorrectPIN || code == kPINLocked)) {
-      std::move(ui_request_->pin_result_callback)
-          .Run(code == kIncorrectPIN ? PINValidationResult::kIncorrect
-                                     : PINValidationResult::kLocked);
-    }
-    FIDO_LOG(DEBUG) << base::StrCat(
-        {"Received an error response from the enclave: ",
-         base::NumberToString(code)});
-    CompleteRequestWithError(EnclaveErrorToCtapResponseCode(code));
+  if (absl::holds_alternative<ErrorResponse>(parse_result)) {
+    auto& error_details = absl::get<ErrorResponse>(parse_result);
+    ProcessErrorResponse(error_details);
     return;
   }
   if (ui_request_->pin_result_callback) {
@@ -385,6 +349,52 @@ void EnclaveAuthenticator::CompleteGetAssertionRequest(
           std::move(pending_get_assertion_request_->callback), status,
           std::move(responses)));
   pending_get_assertion_request_.reset();
+}
+
+void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
+  if (includes_new_uv_key_ && error.index < 1) {
+    // An error was received while trying to register a new UV key. If
+    // the error index is 1 or more then the error is specific to a request
+    // following the UV key submission, which is fine. Otherwise the UV key
+    // was not successfully submitted which is fatal to the device's
+    // enclave service registration.
+    std::move(ui_request_->unregister_callback).Run();
+    if (error.error_string.has_value()) {
+      FIDO_LOG(ERROR)
+          << "Failed UV key submission. Error in registration response from "
+             "server: "
+          << *error.error_string;
+      CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    } else {
+      CHECK(error.error_code.has_value());
+      FIDO_LOG(DEBUG)
+          << "Failed UV key submission. Received an error response from the "
+             "enclave: "
+          << *error.error_code;
+      CompleteRequestWithError(
+          EnclaveErrorToCtapResponseCode(*error.error_code));
+    }
+    return;
+  }
+  if (error.error_string.has_value()) {
+    FIDO_LOG(ERROR) << base::StrCat(
+        {"Error in registration response from server: ", *error.error_string});
+    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    return;
+  }
+
+  CHECK(error.error_code.has_value());
+  int code = *error.error_code;
+  if (ui_request_->pin_result_callback &&
+      (code == kIncorrectPIN || code == kPINLocked)) {
+    std::move(ui_request_->pin_result_callback)
+        .Run(code == kIncorrectPIN ? PINValidationResult::kIncorrect
+                                   : PINValidationResult::kLocked);
+  }
+  FIDO_LOG(DEBUG) << base::StrCat(
+      {"Received an error response from the enclave: ",
+       base::NumberToString(code)});
+  CompleteRequestWithError(EnclaveErrorToCtapResponseCode(code));
 }
 
 void EnclaveAuthenticator::Cancel() {}
