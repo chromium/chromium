@@ -213,3 +213,5 @@ then wrap in cling film and freeze for up to 2 months.
 There was a test
 
 Interesting first commit.
+
+If debugging is the process of removing bugs, then programming must be the process of putting them in.
