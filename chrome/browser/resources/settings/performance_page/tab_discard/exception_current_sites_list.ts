@@ -9,14 +9,14 @@ import '../../site_favicon.js';
 
 import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import type {CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
-import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {ScrollableMixinInterface} from '../../scrollable_mixin.js';
+import {ScrollableMixin} from '../../scrollable_mixin.js';
 import {convertDateToWindowsEpoch} from '../../time.js';
 import type {PerformanceBrowserProxy} from '../performance_browser_proxy.js';
 import {PerformanceBrowserProxyImpl} from '../performance_browser_proxy.js';
@@ -36,8 +36,8 @@ type Site = string;
 
 type Constructor<T> = new (...args: any[]) => T;
 const ExceptionCurrentSitesListElementBase =
-    ListPropertyUpdateMixin(CrScrollableMixin(PrefsMixin(PolymerElement))) as
-    Constructor<ListPropertyUpdateMixinInterface&CrScrollableMixinInterface&
+    ListPropertyUpdateMixin(ScrollableMixin(PrefsMixin(PolymerElement))) as
+    Constructor<ListPropertyUpdateMixinInterface&ScrollableMixinInterface&
                 PrefsMixinInterface&PolymerElement>;
 
 export class ExceptionCurrentSitesListElement extends

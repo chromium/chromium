@@ -15,10 +15,11 @@ import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../settings_shared.css.js';
 import './startup_url_dialog.js';
 
-import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {ScrollableMixin} from '../scrollable_mixin.js';
 
 import {EDIT_STARTUP_URL_EVENT} from './startup_url_entry.js';
 import {getTemplate} from './startup_urls_page.html.js';
@@ -27,7 +28,7 @@ import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy
 
 
 const SettingsStartupUrlsPageElementBase =
-    CrScrollableMixin(WebUiListenerMixin(PolymerElement));
+    ScrollableMixin(WebUiListenerMixin(PolymerElement));
 
 export class SettingsStartupUrlsPageElement extends
     SettingsStartupUrlsPageElementBase {

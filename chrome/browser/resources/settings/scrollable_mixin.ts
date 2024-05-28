@@ -46,11 +46,11 @@ type IronListElementWithExtras = IronListElement&{
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const CrScrollableMixin = dedupingMixin(
+export const ScrollableMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
-    Constructor<CrScrollableMixinInterface> => {
-      class CrScrollableMixin extends superClass implements
-          CrScrollableMixinInterface {
+    Constructor<ScrollableMixinInterface> => {
+      class ScrollableMixin extends superClass implements
+          ScrollableMixinInterface {
         private resizeObserver_: ResizeObserver;
 
         constructor(...args: any[]) {
@@ -210,10 +210,10 @@ export const CrScrollableMixin = dedupingMixin(
           }
         }
       }
-      return CrScrollableMixin;
+      return ScrollableMixin;
     });
 
-export interface CrScrollableMixinInterface {
+export interface ScrollableMixinInterface {
   updateScrollableContents(): void;
   requestUpdateScroll(): void;
   saveScroll(list: IronListElement): void;

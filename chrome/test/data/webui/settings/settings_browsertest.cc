@@ -333,6 +333,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SafetyCheckPage) {
   RunTest("settings/safety_check_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, ScrollableMixin) {
+  RunTest("settings/scrollable_mixin_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, Search) {
   RunTest("settings/search_settings_test.js", "mocha.run()");
 }

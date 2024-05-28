@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import 'chrome://settings/settings.js';
 
-import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {ScrollableMixin} from 'chrome://settings/settings.js';
+import type {IronListElement} from 'chrome://settings/lazy_load.js';
 import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 // clang-format on
 
-suite('cr-scrollable-mixin', function() {
-  const TestElementBase = CrScrollableMixin(PolymerElement);
+suite('settings-scrollable-mixin', function() {
+  const TestElementBase = ScrollableMixin(PolymerElement);
 
   class TestElement extends TestElementBase {
     static get is() {
@@ -62,7 +62,7 @@ suite('cr-scrollable-mixin', function() {
         testElement.shadowRoot!.querySelector<HTMLElement>('#container')!;
     ironList = testElement.shadowRoot!.querySelector('iron-list')!;
 
-    // Wait for CrScrollableBehavior to set the initial scrollable class
+    // Wait for ScrollableMixin to set the initial scrollable class
     // properties.
     window.requestAnimationFrame(() => {
       waitBeforeNextRender(testElement).then(done);
@@ -104,8 +104,8 @@ suite('cr-scrollable-mixin', function() {
   });
 });
 
-suite('cr-scrollable-mixin items', function() {
-  const TestElementBase = CrScrollableMixin(PolymerElement);
+suite('settings-scrollable-mixin items', function() {
+  const TestElementBase = ScrollableMixin(PolymerElement);
 
   class TestElement extends TestElementBase {
     static get is() {
@@ -157,7 +157,7 @@ suite('cr-scrollable-mixin items', function() {
     document.body.appendChild(testElement);
     ironList = testElement.shadowRoot!.querySelector('iron-list')!;
 
-    // Wait for CrScrollableBehavior to set the initial scrollable class
+    // Wait for ScrollableMixin to set the initial scrollable class
     // properties.
     window.requestAnimationFrame(() => {
       waitBeforeNextRender(testElement).then(done);

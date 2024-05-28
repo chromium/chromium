@@ -15,13 +15,13 @@ import '../controls/settings_checkbox_list_entry.js';
 import '../settings_shared.css.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import type {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsCheckboxListEntryElement} from '../controls/settings_checkbox_list_entry.js';
+import {ScrollableMixin} from '../scrollable_mixin.js';
 
 import {getTemplate} from './add_languages_dialog.html.js';
 import type {LanguageHelper} from './languages_types.js';
@@ -41,7 +41,7 @@ interface Repeaterevent extends Event {
 }
 
 const SettingsAddLanguagesDialogElementBase =
-    CrScrollableMixin(FindShortcutMixin(I18nMixin(PolymerElement)));
+    ScrollableMixin(FindShortcutMixin(I18nMixin(PolymerElement)));
 
 export class SettingsAddLanguagesDialogElement extends
     SettingsAddLanguagesDialogElementBase {
