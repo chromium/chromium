@@ -1613,8 +1613,8 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   UpdateCommandAndActionEnabled(IDC_SEND_TAB_TO_SELF, kActionSendTabToSelf,
                                 CanSendTabToSelf(browser_));
 
-  command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR,
-                                        CanGenerateQrCode(browser_));
+  UpdateCommandAndActionEnabled(IDC_QRCODE_GENERATOR, kActionQrCodeGenerator,
+                                CanGenerateQrCode(browser_));
 
   if (features::IsChromeRefresh2023()) {
     ChromeTranslateClient* chrome_translate_client =

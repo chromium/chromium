@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_side_panel_utils.h"
@@ -309,5 +310,17 @@ void BrowserActions::InitializeBrowserActions() {
                            base::Unretained(browser)),
                        kActionShowTranslate, IDS_SHOW_TRANSLATE,
                        IDS_TOOLTIP_TRANSLATE, kTranslateIcon)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(base::BindRepeating(
+                           [](Browser* browser, actions::ActionItem* item,
+                              actions::ActionInvocationContext context) {
+                             chrome::GenerateQRCode(browser);
+                           },
+                           base::Unretained(browser)),
+                       kActionQrCodeGenerator, IDS_APP_MENU_CREATE_QR_CODE,
+                       IDS_APP_MENU_CREATE_QR_CODE, kQrCodeChromeRefreshIcon)
+          .SetEnabled(false)
           .Build());
 }

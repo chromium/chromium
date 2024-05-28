@@ -43691,6 +43691,8 @@ should be able to be added at any place in this file.
   <suffix name="PinnedNewIncognitoWindowButton"
       label="Pinned new incognito window button"/>
   <suffix name="PinnedPrintButton" label="Pinned print button"/>
+  <suffix name="PinnedQrCodeGeneratorButton"
+      label="Pinned QR code generator button"/>
   <suffix name="PinnedSendTabToSelfButton"
       label="Pinned send tab to self button"/>
   <suffix name="PinnedShowBookmarkSidePanelButton"
