@@ -31,7 +31,7 @@ class StackSamplerTestDelegate;
 // Sample StackSamplingProfiler usage:
 //
 //   // Create and customize params as desired.
-//   base::StackStackSamplingProfiler::SamplingParams params;
+//   base::StackSamplingProfiler::SamplingParams params;
 //
 //   // Create a ProfileBuilder subclass to process the profiles.
 //   class ProfileBuilder : public base::ProfileBuilder {...}
