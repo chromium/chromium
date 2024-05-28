@@ -176,8 +176,25 @@ if (result.cached) {
 * Avoid re-entrancy. Control flow should remain as localized as possible.
 Bad (unnecessary delegation, re-entrancy)
 ```cpp
+class CarFactory {
+  std::unique_ptr<Car> CreateCar() {
+    if (!CanCreateCar()) {
+      return nullptr;
+    }
+    if (FactoryIsBusy() && !delegate->ShouldShowCarIfFactoryIsBusy()) {
+      return nullptr;
+    }
+    return std::make_unique<Car>();
+  }
+
+  bool CanCreateCar();
+  bool FactoryIsBusy();
+
+  Delegate* delegate_ = nullptr;
+};
+
 class CarSalesPerson : public Delegate {
-  // Can return nullptr, in which case no car is shown
+  // Can return nullptr, in which case no car is shown.
   std::unique_ptr<Car> ShowCar() {
     return car_factory_->CreateCar();
   }
@@ -186,29 +203,28 @@ class CarSalesPerson : public Delegate {
   // Whether the car should be shown, even if the factory is busy.
   bool ShouldShowCarIfFactoryIsBusy() override;
 
-  CarFactory* car_factory_;
-};
-
-class CarFactory {
-  std::unique_ptr<Car> CreateCar() {
-    if (!CanCreateCar())
-      return nullptr;
-    if (FactoryIsBusy() && !delegate->ShouldShowCarIfFactoryIsBusy())
-      return nullptr;
-    return std::make_unique<Car>();
-  }
-
-  bool CanCreateCar();
-  bool FactoryIsBusy();
-
-  Delegate* delegate_;
+  CarFactory* car_factory_ = nullptr;
 };
 ```
 
 Good, version 1: Remove delegation. Pass all relevant state to CarFactory so that CreateCar() does not depend on non-local state.
 ```cpp
+class CarFactory {
+  std::unique_ptr<Car> CreateCar(bool show_even_if_factory_is_busy) {
+    if (!CanCreateCar()) {
+      return nullptr;
+    }
+    if (FactoryIsBusy() && !show_even_if_factory_is_busy) {
+      return nullptr;
+    }
+    return std::make_unique<Car>();
+  }
+  bool CanCreateCar();
+  bool FactoryIsBusy();
+};
+
 class CarSalesPerson {
-  // Can return nullptr, in which case no car is shown
+  // Can return nullptr, in which case no car is shown.
   std::unique_ptr<Car> ShowCar() {
     return car_factory_->CreateCar(ShouldShowCarIfFactoryIsBusy());
   }
@@ -216,44 +232,34 @@ class CarSalesPerson {
   // Whether the car should be shown, even if the factory is busy.
   bool ShouldShowCarIfFactoryIsBusy();
 
-  CarFactory* car_factory_;
-};
-
-class CarFactory {
-  std::unique_ptr<Car> CreateCar(bool show_even_if_factory_is_busy) {
-    if (!CanCreateCar())
-      return nullptr;
-    if (FactoryIsBusy() && !show_even_if_factory_is_busy)
-      return nullptr;
-    return std::make_unique<Car>();
-  }
-  bool CanCreateCar();
-  bool FactoryIsBusy();
+  CarFactory* car_factory_ = nullptr;
 };
 ```
 
 Good, version 2: Remove delegation. CreateCar always creates a car (fewer conditionals). State only flows from CarFactory to CarSalesPerson (and never backwards).
 ```cpp
+class CarFactory {
+  bool CanCreateCar();
+  bool FactoryIsBusy();
+  // Never returns nullptr.
+  std::unique_ptr<Car> CreateCar();
+};
+
 class CarSalesPerson {
   // Can return nullptr, in which case no car is shown
   std::unique_ptr<Car> ShowCar() {
-    if (!car_factory_->CanCreateCar())
+    if (!car_factory_->CanCreateCar()) {
       return nullptr;
-    if (car_factory_->FactoryIsBusy() && !ShouldShowCarIfFactoryIsBusy())
+    }
+    if (car_factory_->FactoryIsBusy() && !ShouldShowCarIfFactoryIsBusy()) {
       return nullptr;
+    }
     return car_factory_->CreateCar();
   }
 
   // Whether the car should be shown, even if the factory is busy.
   bool ShouldShowCarIfFactoryIsBusy();
-  CarFactory* car_factory_;
-};
-
-class CarFactory {
-  bool CanCreateCar();
-  bool FactoryIsBusy();
-  // never returns nullptr.
-  std::unique_ptr<Car> CreateCar();
+  CarFactory* car_factory_ = nullptr;
 };
 ```
 
