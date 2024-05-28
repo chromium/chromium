@@ -12,7 +12,9 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** A transition into and/or out of {@link ConditionalState}s. */
 public abstract class Transition {
@@ -170,6 +172,50 @@ public abstract class Transition {
         } else {
             return mOptions.mTransitionConditions;
         }
+    }
+
+    protected static ArrayList<ConditionWait> calculateConditionWaits(
+            Elements originElements,
+            Elements destinationElements,
+            List<Condition> transitionConditions) {
+        ArrayList<ConditionWait> waits = new ArrayList<>();
+
+        // Create ENTER Conditions for Views that should appear and LogicalElements that should
+        // be true.
+        Set<String> destinationElementIds = new HashSet<>();
+        for (ElementInState element : destinationElements.getElementsInState()) {
+            destinationElementIds.add(element.getId());
+            @Nullable Condition enterCondition = element.getEnterCondition();
+            if (enterCondition != null) {
+                waits.add(new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
+            }
+        }
+
+        // Add extra ENTER Conditions.
+        for (Condition enterCondition : destinationElements.getOtherEnterConditions()) {
+            waits.add(new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
+        }
+
+        // Create EXIT Conditions for Views that should disappear and LogicalElements that should
+        // be false.
+        for (ElementInState element : originElements.getElementsInState()) {
+            Condition exitCondition = element.getExitCondition(destinationElementIds);
+            if (exitCondition != null) {
+                waits.add(new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+            }
+        }
+
+        // Add extra EXIT Conditions.
+        for (Condition exitCondition : originElements.getOtherExitConditions()) {
+            waits.add(new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+        }
+
+        // Add transition (TRSTN) conditions
+        for (Condition condition : transitionConditions) {
+            waits.add(new ConditionWait(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
+        }
+
+        return waits;
     }
 
     /**

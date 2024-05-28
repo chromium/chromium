@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,22 +35,7 @@ class FacilityCheckIn extends Transition {
 
     @Override
     protected List<ConditionWait> createWaits() {
-        ArrayList<ConditionWait> waits = new ArrayList<>();
-
-        for (ElementInState element : mFacility.getElements().getElementsInState()) {
-            Condition enterCondition = element.getEnterCondition();
-            if (enterCondition != null) {
-                waits.add(new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
-            }
-        }
-
-        for (Condition enterCondition : mFacility.getElements().getOtherEnterConditions()) {
-            waits.add(new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
-        }
-
-        for (Condition condition : getTransitionConditions()) {
-            waits.add(new ConditionWait(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
-        }
-        return waits;
+        return calculateConditionWaits(
+                Elements.EMPTY, mFacility.getElements(), getTransitionConditions());
     }
 }

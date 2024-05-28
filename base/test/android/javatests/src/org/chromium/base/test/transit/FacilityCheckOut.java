@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,21 +35,7 @@ class FacilityCheckOut extends Transition {
 
     @Override
     protected List<ConditionWait> createWaits() {
-        ArrayList<ConditionWait> waits = new ArrayList<>();
-        for (ElementInState element : mFacility.getElements().getElementsInState()) {
-            Condition exitCondition = element.getExitCondition(Collections.EMPTY_SET);
-            if (exitCondition != null) {
-                waits.add(new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
-            }
-        }
-
-        for (Condition exitCondition : mFacility.getElements().getOtherExitConditions()) {
-            waits.add(new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
-        }
-
-        for (Condition condition : getTransitionConditions()) {
-            waits.add(new ConditionWait(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
-        }
-        return waits;
+        return calculateConditionWaits(
+                mFacility.getElements(), Elements.EMPTY, getTransitionConditions());
     }
 }
