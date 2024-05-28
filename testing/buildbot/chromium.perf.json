@@ -341,7 +341,6 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
-            "device_os": "UQ1A.240205.002",
             "device_os_flavor": "google",
             "device_type": "felix",
             "os": "Android",

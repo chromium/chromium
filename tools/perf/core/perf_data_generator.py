@@ -688,7 +688,7 @@ BUILDERS = {
             'pool': 'chrome.tests.perf',
             'os': 'Android',
             'device_type': 'felix',
-            'device_os': 'UQ1A.240205.002',
+            # 'device_os': 'UQ1A.240205.002', # relax before all pixel folds are reimaged
             'device_os_flavor': 'google',
         },
     },
