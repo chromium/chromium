@@ -2087,6 +2087,9 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
     cascade.AddInterpolations(&animations, CascadeOrigin::kAnimation);
     cascade.AddInterpolations(&transitions, CascadeOrigin::kTransition);
 
+    // Note: this applies the same filter to pseudo elements as its originating
+    // element since state.GetElement() returns the originating element when
+    // resolving style for pseudo elements.
     CascadeFilter filter = state.GetElement().GetCascadeFilter();
     if (state.StyleBuilder().StyleType() == kPseudoIdMarker) {
       filter = filter.Add(CSSProperty::kValidForMarker, false);
@@ -2271,6 +2274,11 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     //
     // TODO(sesse): Why don't we have this problem when we use
     // a different initial style for <img>?
+    can_use_cache = false;
+  }
+  if (!state.GetElement().GetCascadeFilter().IsEmpty()) {
+    // The result of applying properties with the same matching declarations can
+    // be different if the cascade filter is different.
     can_use_cache = false;
   }
 
@@ -2604,6 +2612,9 @@ void StyleResolver::ApplyPropertiesFromCascade(StyleResolverState& state,
     old_style = state.StyleBuilder().CloneStyle();
   }
 
+  // Note: this applies the same filter to pseudo elements as its originating
+  // element since state.GetElement() returns the originating element when
+  // resolving style for pseudo elements.
   CascadeFilter filter = state.GetElement().GetCascadeFilter();
 
   // In order to use-count whether or not legacy overlapping properties

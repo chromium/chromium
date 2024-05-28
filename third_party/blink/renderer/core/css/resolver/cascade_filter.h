@@ -85,6 +85,8 @@ class CORE_EXPORT CascadeFilter {
     return ~((v ? flag : 0) ^ flags_) & (mask_ & flag);
   }
 
+  bool IsEmpty() const { return mask_ == 0; }
+
  private:
   CascadeFilter(CSSProperty::Flags mask, CSSProperty::Flags flags)
       : mask_(mask), flags_(flags) {}
