@@ -426,11 +426,6 @@ public class ProcessInitializationHandler {
         SearchWidgetProvider.initialize();
         QuickActionSearchWidgetProvider.initialize();
 
-        HistoryDeletionBridge.getInstance()
-                .addObserver(
-                        new ContentCaptureHistoryDeletionObserver(
-                                () -> PlatformContentCaptureController.getInstance()));
-
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
         setProcessStateSummaryForAnrs(true);
 
@@ -530,6 +525,11 @@ public class ProcessInitializationHandler {
     @CallSuper
     protected void handleProfileDependentPostNativeInitialization(Profile profile) {
         FeedPositionUtils.cacheSegmentationResult(profile);
+
+        HistoryDeletionBridge.getForProfile(profile)
+                .addObserver(
+                        new ContentCaptureHistoryDeletionObserver(
+                                () -> PlatformContentCaptureController.getInstance()));
     }
 
     /**

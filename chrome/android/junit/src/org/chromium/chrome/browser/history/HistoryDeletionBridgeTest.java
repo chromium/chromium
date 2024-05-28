@@ -15,6 +15,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /** Unit tests for HistoryDeletionBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -30,13 +31,15 @@ public class HistoryDeletionBridgeTest {
 
     @Mock HistoryDeletionInfo mHistoryDeletionInfo;
 
+    @Mock Profile mProfile;
+
     HistoryDeletionBridge mHistoryDeletionBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mocker.mock(HistoryDeletionBridgeJni.TEST_HOOKS, mNativeMocks);
-        mHistoryDeletionBridge = new HistoryDeletionBridge();
+        mHistoryDeletionBridge = new HistoryDeletionBridge(mProfile);
     }
 
     @Test

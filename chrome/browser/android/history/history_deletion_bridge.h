@@ -10,6 +10,8 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 
+class Profile;
+
 namespace history {
 class HistoryService;
 }  // namespace history
@@ -18,10 +20,13 @@ class HistoryService;
 // events that originate in native code and forwards them to Java.
 class HistoryDeletionBridge : public history::HistoryServiceObserver {
  public:
-  explicit HistoryDeletionBridge(const base::android::JavaRef<jobject>& j_this);
+  HistoryDeletionBridge(const base::android::JavaRef<jobject>& j_this,
+                        Profile* profile);
 
   HistoryDeletionBridge(const HistoryDeletionBridge&) = delete;
   HistoryDeletionBridge& operator=(const HistoryDeletionBridge&) = delete;
+
+  void Destroy(JNIEnv* env);
 
   // history::HistoryServiceObserver.
   void OnHistoryDeletions(history::HistoryService* history_service,
