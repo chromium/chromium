@@ -26,6 +26,7 @@ import {MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail}
 import {getSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
+import {logNumWordsInTextQuery} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 
 export interface SeaPenInputQueryElement {
@@ -108,6 +109,8 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   private onClickInputQuerySearchButton_(event: Event) {
     assert(this.textValue_, 'input query should not be empty.');
+    // This only works for English. We only support English queries for now.
+    logNumWordsInTextQuery(this.textValue_.split(/\s+/).length);
     const query: SeaPenQuery = {
       textQuery: this.textValue_,
     };

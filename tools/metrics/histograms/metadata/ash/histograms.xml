@@ -7289,6 +7289,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.SeaPen.WordCount" units="int" expires_after="2024-12-31">
+  <owner>pzliu@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the number of words in the SeaPen text query when the user clicks
+    the create button.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SeaPen.{AppName}.RecentImage.ActionMenu"
     enum="SeaPenActionMenuItem" expires_after="2025-03-30">
   <owner>thuongphan@google.com</owner>

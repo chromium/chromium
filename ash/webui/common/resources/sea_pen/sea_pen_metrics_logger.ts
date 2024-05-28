@@ -9,6 +9,7 @@ const enum HistogramName {
   SEA_PEN_TEMPLATE_SUBPAGE = 'Ash.SeaPen.Template',
   SEA_PEN_THUMBNAIL_CLICKED = 'Ash.SeaPen.ThumbnailClicked',
   SEA_PEN_CREATE_BUTTON = 'Ash.SeaPen.CreateButton',
+  SEA_PEN_WORD_COUNT = 'Ash.SeaPen.WordCount',
 }
 
 // Numerical values are used for metrics; do not change or reuse values.
@@ -60,4 +61,9 @@ export function logSeaPenThumbnailClicked(templateId: SeaPenTemplateId) {
   chrome.metricsPrivate.recordEnumerationValue(
       HistogramName.SEA_PEN_THUMBNAIL_CLICKED, templateId,
       SeaPenTemplateId.MAX_VALUE + 1);
+}
+
+export function logNumWordsInTextQuery(wordCount: number) {
+  chrome.metricsPrivate.recordCount(
+      HistogramName.SEA_PEN_WORD_COUNT, wordCount);
 }
