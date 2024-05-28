@@ -58,15 +58,6 @@ constexpr gfx::Insets kButtonContainerInsets =
 constexpr gfx::Insets kTextContainerInsets = gfx::Insets(kContainerPadding);
 constexpr gfx::Size kImagePreferredSize(/*width=*/kImageWidth, /*height=*/236);
 
-// Placeholder texts
-// TODO(b/339528642): Replace with real strings.
-const std::u16string kTestTitleText = u"Disclaimer title";
-const std::u16string kTestSecondaryButtonText = u"No thanks";
-const std::u16string kTestPrimaryButtonText = u"Try it";
-const std::u16string kTestBodyText =
-    u"Body text that is multi-line which means it can span from one line to up "
-    u"to three lines for this case.";
-
 // Font lists
 const gfx::FontList body_text_font_list =
     gfx::FontList({"Google Sans", "Roboto"},
@@ -87,9 +78,7 @@ views::StyledLabel::RangeStyleInfo GetBodyTextStyle() {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-// Placeholder link text and url.
-const std::u16string kTestLinkText = u"Google link";
+// Placeholder url.
 constexpr char kTestURL[] = "https://www.google.com";
 
 // Opens the passed in `url` in a new tab.
@@ -104,6 +93,15 @@ views::StyledLabel::RangeStyleInfo GetLinkTextStyle() {
   link_style.override_color_id = static_cast<ui::ColorId>(ui::kColorSysPrimary);
   return link_style;
 }
+#else
+// Placeholder texts
+// TODO(b/339528642): Replace with real strings.
+const std::u16string kTestTitleText = u"Disclaimer title";
+const std::u16string kTestSecondaryButtonText = u"No thanks";
+const std::u16string kTestPrimaryButtonText = u"Try it";
+const std::u16string kTestBodyText =
+    u"Body text that is multi-line which means it can span from one line to up "
+    u"to three lines for this case.";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 views::Builder<views::StyledLabel> GetTextBodyBuilder(
@@ -123,6 +121,22 @@ std::u16string GetTitle() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+std::u16string GetAcceptButtonText() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_MAGIC_BOOST_DISCLAIMER_ACCEPT_BUTTON);
+#else
+  return kTestPrimaryButtonText;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+std::u16string GetDeclineButtonText() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_MAGIC_BOOST_DISCLAIMER_DECLINE_BUTTON);
+#else
+  return kTestSecondaryButtonText;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return GetTextBodyBuilder(
@@ -135,17 +149,19 @@ views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
 views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::vector<size_t> offsets;
+  const std::u16string link_text =
+      l10n_util::GetStringUTF16(IDS_MAGIC_BOOST_DISCLAIMER_TERMS_LINK_TEXT);
   const std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO, {kTestLinkText}, &offsets);
+      IDS_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO, {link_text}, &offsets);
 
   return views::Builder<views::StyledLabel>()
       .SetText(text)
       .AddStyleRange(gfx::Range(0, offsets.at(0)), GetBodyTextStyle())
       .AddStyleRange(
-          gfx::Range(offsets.at(0), offsets.at(0) + kTestLinkText.length()),
+          gfx::Range(offsets.at(0), offsets.at(0) + link_text.length()),
           GetLinkTextStyle())
       .AddStyleRange(
-          gfx::Range(offsets.at(0) + kTestLinkText.length(), text.length()),
+          gfx::Range(offsets.at(0) + link_text.length(), text.length()),
           GetBodyTextStyle())
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false);
@@ -167,14 +183,16 @@ views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
 views::Builder<views::StyledLabel> GetParagraphFourBuilder() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::vector<size_t> offsets;
+  const std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_MAGIC_BOOST_DISCLAIMER_LEARN_MORE_LINK_TEXT);
   const std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR, {kTestLinkText}, &offsets);
+      IDS_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR, {link_text}, &offsets);
 
   return views::Builder<views::StyledLabel>()
       .SetText(text)
       .AddStyleRange(gfx::Range(0, offsets.at(0)), GetBodyTextStyle())
       .AddStyleRange(
-          gfx::Range(offsets.at(0), offsets.at(0) + kTestLinkText.length()),
+          gfx::Range(offsets.at(0), offsets.at(0) + link_text.length()),
           GetLinkTextStyle())
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false);
@@ -222,9 +240,9 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView()
               .SetBorder(views::CreateEmptyBorder(kButtonContainerInsets))
               .AddChildren(
                   views::Builder<views::MdTextButton>()
-                      .SetText(kTestSecondaryButtonText)
+                      .SetText(GetDeclineButtonText())
                       .SetID(magic_boost::ViewId::DisclaimerViewDeclineButton)
-                      .SetAccessibleName(kTestSecondaryButtonText)
+                      .SetAccessibleName(GetDeclineButtonText())
                       // Sets the button's height to a customized
                       // `kButtonHeight` instead of using the default height.
                       .SetMaxSize(gfx::Size(kImageWidth, kButtonHeight))
@@ -235,8 +253,8 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView()
                   views::Builder<views::MdTextButton>()
                       .CopyAddressTo(&accept_button_)
                       .SetID(magic_boost::ViewId::DisclaimerViewAcceptButton)
-                      .SetText(kTestPrimaryButtonText)
-                      .SetAccessibleName(kTestPrimaryButtonText)
+                      .SetText(GetAcceptButtonText())
+                      .SetAccessibleName(GetAcceptButtonText())
                       .SetMaxSize(gfx::Size(kImageWidth, kButtonHeight))
                       .SetStyle(ui::ButtonStyle::kProminent)
                       .SetCallback(base::BindRepeating(
