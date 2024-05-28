@@ -82,6 +82,13 @@ class PlusAddressService : public KeyedService,
       std::u16string_view focused_field_value,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
+  void OnPlusAddressSuggestionShown(
+      autofill::AutofillManager& manager,
+      autofill::FormGlobalId form,
+      autofill::FieldGlobalId field,
+      SuggestionContext suggestion_context,
+      autofill::AutofillClient::PasswordFormType form_type,
+      autofill::SuggestionType suggestion_type) override;
 
   // PlusAddressWebDataService::Observer:
   void OnWebDataChangedBySync(

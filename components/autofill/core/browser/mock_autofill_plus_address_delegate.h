@@ -29,6 +29,15 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               RecordAutofillSuggestionEvent,
               (SuggestionEvent),
               (override));
+  MOCK_METHOD(void,
+              OnPlusAddressSuggestionShown,
+              (AutofillManager&,
+               FormGlobalId,
+               FieldGlobalId,
+               SuggestionContext,
+               AutofillClient::PasswordFormType,
+               SuggestionType),
+              (override));
 };
 
 }  // namespace autofill

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace url {
@@ -63,6 +64,35 @@ class AutofillPlusAddressDelegate {
   // Logs Autofill suggestion events related to plus addresses.
   virtual void RecordAutofillSuggestionEvent(
       SuggestionEvent suggestion_event) = 0;
+
+  // An enum describing the context in which a plus address suggestion was
+  // shown. These values are persisted to logs - do not modify or remove them.
+  enum SuggestionContext {
+    // The plus address suggestion was shown alongside Autofill profile
+    // suggestions because the user focused on a field classified as an email
+    // field.
+    kAutofillProfileOnEmailField = 0,
+    // The plus address suggestion was not shown explicitly, but the user
+    // performed Autofill profile filling on a domain for which they already had
+    // a plus address.
+    kAutofillProfileOnOtherField = 1,
+    // The plus address suggestion was shown alongside Autocomplete suggestions.
+    kAutocomplete = 2,
+    // The plus address suggestion was shown because the user entered via manual
+    // fallback.
+    kManualFallback = 3,
+    kMaxValue = kManualFallback
+  };
+  // Starts a session for logging a form submission UKM specific to plus
+  // addresses. `suggestion_type` is the type of the first shown plus address
+  // suggestion.
+  virtual void OnPlusAddressSuggestionShown(
+      AutofillManager& manager,
+      FormGlobalId form,
+      FieldGlobalId field,
+      SuggestionContext suggestion_context,
+      AutofillClient::PasswordFormType form_type,
+      SuggestionType suggestion_type) = 0;
 };
 
 }  // namespace autofill

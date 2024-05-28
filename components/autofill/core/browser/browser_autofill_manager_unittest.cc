@@ -142,6 +142,7 @@ using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Property;
+using ::testing::Ref;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
@@ -7872,9 +7873,16 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
 // Tests that address suggestions are queried and shown for email fields.
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShown) {
+  using enum AutofillPlusAddressDelegate::SuggestionContext;
+  using enum AutofillClient::PasswordFormType;
   EXPECT_CALL(plus_address_delegate(), GetSuggestions)
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
+  EXPECT_CALL(
+      plus_address_delegate(),
+      OnPlusAddressSuggestionShown(
+          Ref(*browser_autofill_manager_), _, _, kAutofillProfileOnEmailField,
+          kNoPasswordForm, SuggestionType::kCreateNewPlusAddress));
 
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(
@@ -7897,6 +7905,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 // Tests that only Plus Address suggestions are shown when the trigger source is
 // a manual fallback for plus addresses.
 TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
+  using enum AutofillPlusAddressDelegate::SuggestionContext;
+  using enum AutofillClient::PasswordFormType;
   EXPECT_CALL(
       plus_address_delegate(),
       GetSuggestions(
@@ -7904,6 +7914,10 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
           AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses))
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
+  EXPECT_CALL(plus_address_delegate(),
+              OnPlusAddressSuggestionShown(
+                  Ref(*browser_autofill_manager_), _, _, kManualFallback,
+                  kNoPasswordForm, SuggestionType::kCreateNewPlusAddress));
 
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});

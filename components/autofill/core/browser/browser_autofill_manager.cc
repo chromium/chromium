@@ -1374,12 +1374,17 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
   if (IsPlusAddressesManuallyTriggered(trigger_source)) {
     // The list of suggestions is never empty. It contains either existing plus
     // addresses or the option to create a new one.
+    const AutofillClient::PasswordFormType password_form_type =
+        client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                        field.global_id());
     suggestions = client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
-        client().IsOffTheRecord(),
-        client().ClassifyAsPasswordForm(*this, form.global_id(),
-                                        field.global_id()),
-        field.value(), trigger_source);
+        client().IsOffTheRecord(), password_form_type, field.value(),
+        trigger_source);
+    client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
+        *this, form.global_id(), field.global_id(),
+        AutofillPlusAddressDelegate::SuggestionContext::kManualFallback,
+        password_form_type, suggestions[0].type);
     std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
     return;
   }
@@ -2832,17 +2837,25 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     if (context.focused_field &&
         context.focused_field->Type().group() == FieldTypeGroup::kEmail &&
         client().GetPlusAddressDelegate()) {
+      const AutofillClient::PasswordFormType password_form_type =
+          client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                          field.global_id());
       std::vector<Suggestion> plus_address_suggestions =
           client().GetPlusAddressDelegate()->GetSuggestions(
               client().GetLastCommittedPrimaryMainFrameOrigin(),
-              client().IsOffTheRecord(),
-              client().ClassifyAsPasswordForm(*this, form.global_id(),
-                                              field.global_id()),
-              field.value(), trigger_source);
-      suggestions.insert(
-          suggestions.cbegin(),
-          std::make_move_iterator(plus_address_suggestions.begin()),
-          std::make_move_iterator(plus_address_suggestions.end()));
+              client().IsOffTheRecord(), password_form_type, field.value(),
+              trigger_source);
+      if (!plus_address_suggestions.empty()) {
+        client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
+            *this, form.global_id(), field.global_id(),
+            AutofillPlusAddressDelegate::SuggestionContext::
+                kAutofillProfileOnEmailField,
+            password_form_type, plus_address_suggestions[0].type);
+        suggestions.insert(
+            suggestions.cbegin(),
+            std::make_move_iterator(plus_address_suggestions.begin()),
+            std::make_move_iterator(plus_address_suggestions.end()));
+      }
     }
   }
 

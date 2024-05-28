@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
@@ -528,6 +529,16 @@ bool PlusAddressService::IsSupportedOrigin(const url::Origin& origin) const {
 void PlusAddressService::RecordAutofillSuggestionEvent(
     SuggestionEvent suggestion_event) {
   PlusAddressMetrics::RecordAutofillSuggestionEvent(suggestion_event);
+}
+
+void PlusAddressService::OnPlusAddressSuggestionShown(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form,
+    autofill::FieldGlobalId field,
+    SuggestionContext suggestion_context,
+    autofill::AutofillClient::PasswordFormType form_type,
+    autofill::SuggestionType suggestion_type) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace plus_addresses
