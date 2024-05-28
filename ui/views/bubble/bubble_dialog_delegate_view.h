@@ -537,8 +537,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 // view.
 // TODO(pbos): Migrate existing uses of BubbleDialogDelegateView to directly
 // inherit or use BubbleDialogDelegate.
-class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
-                                              public View {
+class VIEWS_EXPORT BubbleDialogDelegateView : public View,
+                                              public BubbleDialogDelegate {
   METADATA_HEADER(BubbleDialogDelegateView, View)
 
  public:
