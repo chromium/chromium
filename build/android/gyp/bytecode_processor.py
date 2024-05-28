@@ -11,7 +11,7 @@ import logging
 import pathlib
 import shlex
 import sys
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from util import build_utils
 from util import dep_utils
@@ -114,91 +114,123 @@ def _EnsureDirectClasspathIsComplete(
         missing_class_to_caller[dep_to] = dep_from
 
   if missing_class_to_caller:
-    potential_targets_to_missing_classes: Dict[
-        Tuple, List[str]] = collections.defaultdict(list)
-    for missing_class in missing_class_to_caller:
-      potential_targets = tuple(sorted(dep_to_target[missing_class]))
-      potential_targets_to_missing_classes[potential_targets].append(
-          missing_class)
+    _ProcessMissingDirectClasspathDeps(missing_class_to_caller, dep_to_target,
+                                       gn_target, output_dir,
+                                       warnings_as_errors, auto_add_deps)
 
-    class_lookup_index = None
-    deps_to_add_programatically = set()
-    for (potential_targets,
-         missing_classes) in potential_targets_to_missing_classes.items():
-      # No need to disambiguate if there's just one choice.
-      if len(potential_targets) == 1:
-        deps_to_add_programatically.add(potential_targets[0])
-        continue
 
-      # Rather than just picking any of the potential targets, we want to use
-      # dep_utils.ClassLookupIndex to ensure we respect the preferred dep if any
-      # exists for the missing deps. It is necessary to obtain the preferred dep
-      # status of these potential targets by matching them to a ClassEntry.
-      target_name_to_class_entry: Dict[str, dep_utils.ClassEntry] = {}
-      for missing_class in missing_classes:
-        # Lazily create the ClassLookupIndex in case all potential_targets lists
-        # are only 1 element in length.
-        if class_lookup_index is None:
-          class_lookup_index = dep_utils.ClassLookupIndex(
-              pathlib.Path(output_dir), should_build=False)
-        for class_entry in class_lookup_index.match(missing_class):
-          target_name_to_class_entry[class_entry.target] = class_entry
-      potential_class_entries = [
-          target_name_to_class_entry[t] for t in potential_targets
-      ]
-      potential_class_entries = dep_utils.DisambiguateDeps(
-          potential_class_entries)
-      deps_to_add_programatically.add(potential_class_entries[0].target)
+def _ProcessMissingDirectClasspathDeps(
+    missing_class_to_caller: Dict[str, str],
+    dep_to_target: Dict[str, Set[str]],
+    gn_target: str,
+    output_dir: str,
+    warnings_as_errors: bool,
+    auto_add_deps: bool,
+):
+  potential_targets_to_missing_classes: Dict[
+      Tuple, List[str]] = collections.defaultdict(list)
+  for missing_class in missing_class_to_caller:
+    potential_targets = tuple(sorted(dep_to_target[missing_class]))
+    potential_targets_to_missing_classes[potential_targets].append(
+        missing_class)
 
-    cmd = dep_utils.CreateAddDepsCommand(gn_target,
-                                         sorted(deps_to_add_programatically))
+  deps_to_add_programatically = _DisambiguateMissingDeps(
+      potential_targets_to_missing_classes, output_dir=output_dir)
 
-    def print_and_maybe_exit():
-      print('=' * 30 + ' Dependency Checks Failed ' + '=' * 30)
-      print(f'Target: {gn_target}')
-      print('Direct classpath is incomplete. To fix, add deps on:')
-      for (potential_targets,
-           missing_classes) in potential_targets_to_missing_classes.items():
-        if len(potential_targets) == 1:
-          print(f' * {potential_targets[0]}')
-        else:
-          print(f' * One of {", ".join(potential_targets)}')
-        for missing_class in missing_classes:
-          caller = missing_class_to_caller[missing_class]
-          print(f'     ** {missing_class} (needed by {caller})')
-      print('\nHint: Run the following command to add the missing deps:')
-      print(f'    {shlex.join(cmd)}\n')
-      if warnings_as_errors:
-        sys.exit(1)
+  cmd = dep_utils.CreateAddDepsCommand(gn_target,
+                                       sorted(deps_to_add_programatically))
 
-    if not auto_add_deps:
-      print_and_maybe_exit()
-    else:
-
-      failed = False
-      try:
-        stdout = build_utils.CheckOutput(cmd,
-                                         cwd=build_utils.DIR_SOURCE_ROOT,
-                                         fail_on_output=warnings_as_errors)
-        if f'Unable to find {gn_target}' in stdout:
-          # This can happen if a target's deps are stored in a variable instead
-          # of a list and then simply assigned: `deps = deps_variable`. These
-          # need to be manually added to the `deps_variable`.
-          failed = True
-      except build_utils.CalledProcessError as e:
-        if NO_VALID_GN_STR in e.output:
-          failed = True
-        else:
-          raise
-
-      build_file_path = dep_utils.GnTargetToBuildFilePath(gn_target)
-      if failed:
-        print(f'Unable to auto-add missing dep(s) to {build_file_path}.')
-        print_and_maybe_exit()
+  if not auto_add_deps:
+    _PrintAndMaybeExit(potential_targets_to_missing_classes,
+                       missing_class_to_caller, gn_target, warnings_as_errors,
+                       cmd)
+  else:
+    failed = False
+    try:
+      stdout = build_utils.CheckOutput(cmd,
+                                       cwd=build_utils.DIR_SOURCE_ROOT,
+                                       fail_on_output=warnings_as_errors)
+      if f'Unable to find {gn_target}' in stdout:
+        # This can happen if a target's deps are stored in a variable instead
+        # of a list and then simply assigned: `deps = deps_variable`. These
+        # need to be manually added to the `deps_variable`.
+        failed = True
+    except build_utils.CalledProcessError as e:
+      if NO_VALID_GN_STR in e.output:
+        failed = True
       else:
-        gn_target_name = gn_target.split(':', 1)[-1]
-        print(f'Successfully updated "{gn_target_name}" in {build_file_path} '
-              f'with missing direct deps: {deps_to_add_programatically}')
+        raise
+
+    build_file_path = dep_utils.GnTargetToBuildFilePath(gn_target)
+    if failed:
+      print(f'Unable to auto-add missing dep(s) to {build_file_path}.')
+      _PrintAndMaybeExit(potential_targets_to_missing_classes,
+                         missing_class_to_caller, gn_target, warnings_as_errors)
+    else:
+      gn_target_name = gn_target.split(':', 1)[-1]
+      print(f'Successfully updated "{gn_target_name}" in {build_file_path} '
+            f'with missing direct deps: {deps_to_add_programatically}')
+
+
+def _DisambiguateMissingDeps(
+    potential_targets_to_missing_classes: Dict[Tuple, List[str]],
+    output_dir: str,
+):
+  deps_to_add_programatically = set()
+  class_lookup_index = None
+  for (potential_targets,
+       missing_classes) in potential_targets_to_missing_classes.items():
+    # No need to disambiguate if there's just one choice.
+    if len(potential_targets) == 1:
+      deps_to_add_programatically.add(potential_targets[0])
+      continue
+
+    # Rather than just picking any of the potential targets, we want to use
+    # dep_utils.ClassLookupIndex to ensure we respect the preferred dep if any
+    # exists for the missing deps. It is necessary to obtain the preferred dep
+    # status of these potential targets by matching them to a ClassEntry.
+    target_name_to_class_entry: Dict[str, dep_utils.ClassEntry] = {}
+    for missing_class in missing_classes:
+      # Lazily create the ClassLookupIndex in case all potential_targets lists
+      # are only 1 element in length.
+      if class_lookup_index is None:
+        class_lookup_index = dep_utils.ClassLookupIndex(
+            pathlib.Path(output_dir), should_build=False)
+      for class_entry in class_lookup_index.match(missing_class):
+        target_name_to_class_entry[class_entry.target] = class_entry
+    potential_class_entries = [
+        target_name_to_class_entry[t] for t in potential_targets
+    ]
+    potential_class_entries = dep_utils.DisambiguateDeps(
+        potential_class_entries)
+    deps_to_add_programatically.add(potential_class_entries[0].target)
+  return deps_to_add_programatically
+
+
+def _PrintAndMaybeExit(
+    potential_targets_to_missing_classes: Dict[Tuple, List[str]],
+    missing_class_to_caller: Dict[str, str],
+    gn_target: str,
+    warnings_as_errors: bool,
+    cmd: Optional[List[str]] = None,
+):
+  print('=' * 30 + ' Dependency Checks Failed ' + '=' * 30)
+  print(f'Target: {gn_target}')
+  print('Direct classpath is incomplete. To fix, add deps on:')
+  for (potential_targets,
+       missing_classes) in potential_targets_to_missing_classes.items():
+    if len(potential_targets) == 1:
+      print(f' * {potential_targets[0]}')
+    else:
+      print(f' * One of {", ".join(potential_targets)}')
+    for missing_class in missing_classes:
+      caller = missing_class_to_caller[missing_class]
+      print(f'     ** {missing_class} (needed by {caller})')
+  if cmd:
+    print('\nHint: Run the following command to add the missing deps:')
+    print(f'    {shlex.join(cmd)}\n')
+  if warnings_as_errors:
+    sys.exit(1)
 
 
 def main(argv):
@@ -255,8 +287,7 @@ def main(argv):
       full_classpath_jars=args.full_classpath_jars,
       full_classpath_gn_targets=args.full_classpath_gn_targets,
       warnings_as_errors=args.warnings_as_errors,
-      auto_add_deps=args.auto_add_deps,
-  )
+      auto_add_deps=args.auto_add_deps)
   logging.info('Check completed.')
 
   if args.stamp:
