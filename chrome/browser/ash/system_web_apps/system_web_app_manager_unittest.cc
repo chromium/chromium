@@ -37,7 +37,9 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
 #include "url/gurl.h"
@@ -45,6 +47,8 @@
 namespace ash {
 
 namespace {
+using testing::ElementsAre;
+
 const char kSettingsAppInternalName[] = "OSSettings";
 const char kCameraAppInternalName[] = "Camera";
 
@@ -53,6 +57,9 @@ GURL AppUrl1() {
 }
 GURL AppUrl2() {
   return GURL(content::GetWebUIURL("system-app2"));
+}
+GURL AppUrl3() {
+  return GURL(content::GetWebUIURL("system-app3"));
 }
 
 std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInstallInfo(
@@ -75,12 +82,6 @@ web_app::WebAppInstallInfoFactory GetApp2WebAppInfoFactory() {
   static auto factory = base::BindRepeating(&GetWebAppInstallInfo, AppUrl2());
   return factory;
 }
-
-struct SystemAppData {
-  GURL url;
-  GURL icon_url;
-  web_app::ExternalInstallSource source;
-};
 
 class SystemWebAppWaiter {
  public:
@@ -183,23 +184,6 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
         web_app::GenerateAppId(/*manifest_id=*/std::nullopt, install_url));
   }
 
-  void InitRegistrarWithSystemApps(
-      const std::vector<SystemAppData>& system_app_data_list) {
-    DCHECK(provider().registrar_unsafe().is_empty());
-    DCHECK(!system_app_data_list.empty());
-
-    for (const SystemAppData& data : system_app_data_list) {
-      std::unique_ptr<web_app::WebApp> web_app = web_app::test::CreateWebApp(
-          data.url, web_app::WebAppManagement::Type::kSystem);
-      const webapps::AppId app_id = web_app->app_id();
-      {
-        web_app::ScopedRegistryUpdate update =
-            provider().sync_bridge_unsafe().BeginUpdate();
-        update->CreateApp(std::move(web_app));
-      }
-    }
-  }
-
   void StartAndWaitForAppsToSynchronize() {
     SystemWebAppWaiter waiter(&system_web_app_manager());
     system_web_app_manager().Start();
@@ -225,14 +209,15 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
   // Simulate System Apps and a regular app that were installed in the
   // previous session.
-  InitRegistrarWithSystemApps(
-      {{AppUrl1(), GURL(content::GetWebUIURL("system-app1/app.ico")),
-        web_app::ExternalInstallSource::kSystemInstalled},
-       {AppUrl2(), GURL(content::GetWebUIURL("system-app2/app.ico")),
-        web_app::ExternalInstallSource::kSystemInstalled},
-       {GURL(content::GetWebUIURL("system-app3")),
-        GURL(content::GetWebUIURL("system-app3/app.ico")),
-        web_app::ExternalInstallSource::kInternalDefault}});
+  web_app::test::InstallDummyWebApp(
+      profile(), "App1", AppUrl1(),
+      webapps::WebappInstallSource::SYSTEM_DEFAULT);
+  web_app::test::InstallDummyWebApp(
+      profile(), "App2", AppUrl2(),
+      webapps::WebappInstallSource::SYSTEM_DEFAULT);
+  web_app::test::InstallDummyWebApp(
+      profile(), "App3", AppUrl3(),
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   SystemWebAppDelegateMap system_apps;
   system_apps.emplace(SystemWebAppType::SETTINGS,
@@ -258,12 +243,11 @@ TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
   options.only_use_app_info_factory = true;
   options.system_app_type = SystemWebAppType::SETTINGS;
   options.app_info_factory = GetApp1WebAppInfoFactory();
-  std::vector<web_app::ExternalInstallOptions> expected_install_options_list = {
-      options};
-  EXPECT_EQ(externally_managed_app_manager().install_requests(),
-            expected_install_options_list);
-  EXPECT_EQ(std::vector<GURL>({}),
-            externally_managed_app_manager().uninstall_requests());
+
+  EXPECT_THAT(externally_managed_app_manager().install_requests(),
+              ElementsAre(options));
+  EXPECT_THAT(externally_managed_app_manager().uninstall_requests(),
+              ElementsAre(AppUrl2()));
 }
 
 TEST_F(SystemWebAppManagerTest, AlwaysUpdate) {
@@ -367,15 +351,13 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
 
   // Changing the install URL of a system app propagates even without a
   // version change.
-  const GURL kAppUrl3(content::GetWebUIURL("system-app3"));
-
   {
     SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         SystemWebAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
-            SystemWebAppType::SETTINGS, kSettingsAppInternalName, kAppUrl3,
-            base::BindRepeating(&GetWebAppInstallInfo, kAppUrl3)));
+            SystemWebAppType::SETTINGS, kSettingsAppInternalName, AppUrl3(),
+            base::BindRepeating(&GetWebAppInstallInfo, AppUrl3())));
 
     system_apps.emplace(SystemWebAppType::CAMERA,
                         std::make_unique<UnittestingSystemAppDelegate>(
@@ -391,7 +373,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
   EXPECT_FALSE(install_requests[6].force_reinstall);
   EXPECT_FALSE(IsInstalled(AppUrl1()));
   EXPECT_TRUE(IsInstalled(AppUrl2()));
-  EXPECT_TRUE(IsInstalled(kAppUrl3));
+  EXPECT_TRUE(IsInstalled(AppUrl3()));
 }
 
 TEST_F(SystemWebAppManagerTest, UpdateOnVersionChangeEvenIfIconsBroken) {
