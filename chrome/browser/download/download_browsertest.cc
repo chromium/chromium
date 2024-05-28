@@ -1208,6 +1208,45 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
   EXPECT_TRUE(VerifyNoDownloads());
 }
 
+// Fenced frame forces download sandbox flag, which should prevent downloads
+// from fenced frames.
+IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
+                       FencedFrameSandboxFlagBlockDownload) {
+  https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(https_test_server()->Start());
+  const GURL main_url = https_test_server()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  const GURL fenced_frame_url =
+      https_test_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
+
+  content::WebContentsConsoleObserver console_observer(GetWebContents());
+  console_observer.SetPattern("*Download is disallowed*");
+
+  // Attempt a download by clicking the anchor element with download attribute
+  // within the fenced frame.
+  constexpr char kADownloadScript[] = R"(
+      var a = document.createElement('a');
+      a.setAttribute('href', 'foo.zip');
+      a.download = '';
+      document.body.appendChild(a);
+      a.click();
+    )";
+
+  EXPECT_TRUE(ExecJs(fenced_frame_rfh, kADownloadScript));
+  EXPECT_TRUE(console_observer.Wait());
+  ASSERT_FALSE(console_observer.messages().empty());
+  EXPECT_EQ(console_observer.GetMessageAt(0),
+            "Download is disallowed. The frame initiating or instantiating the "
+            "download is sandboxed, but the flag ‘allow-downloads’ is not set. "
+            "See https://www.chromestatus.com/feature/5706745674465280 for "
+            "more details.");
+  EXPECT_TRUE(VerifyNoDownloads());
+}
+
 // Download a 0-size file with a content-disposition header, verify that the
 // download tab opened and the file exists as the filename specified in the
 // header.  This also ensures we properly handle empty file downloads.
