@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -16,6 +17,8 @@
 #include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view_factory.h"
+#include "chromeos/ash/components/auth_panel/impl/views/login_textfield.h"
+#include "chromeos/ash/components/auth_panel/impl/views/password_auth_view.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,6 +32,30 @@
 #include "ui/views/layout/layout_types.h"
 
 namespace ash {
+
+AuthPanel::TestApi::TestApi(AuthPanel* auth_panel) : auth_panel_(auth_panel) {}
+
+AuthPanel::TestApi::~TestApi() = default;
+
+PasswordAuthView* AuthPanel::TestApi::GetPasswordAuthView() {
+  auto password_view_wrapper =
+      auth_panel_->views_[AshAuthFactor::kLocalPassword]
+          ? auth_panel_->views_[AshAuthFactor::kLocalPassword]
+          : auth_panel_->views_[AshAuthFactor::kGaiaPassword];
+
+  auto children = password_view_wrapper->GetChildrenInZOrder();
+
+  // Each wrapper should only contain a single FactorAuthView.
+  // Verify this invariant here.
+  CHECK(children.size() == 1);
+
+  return static_cast<PasswordAuthView*>(children.front());
+}
+
+void AuthPanel::TestApi::SetSubmitPasswordCallback(
+    auth_panel::SubmitPasswordCallback callback) {
+  auth_panel_->store_->submit_password_callback_ = std::move(callback);
+}
 
 AuthPanel::AuthPanel(
     std::unique_ptr<FactorAuthViewFactory> view_factory,

@@ -181,7 +181,7 @@ void InSessionAuthDialogControllerImpl::OnUserAuthAttemptConfirmed(
       base::BindRepeating(
           &InSessionAuthDialogControllerImpl::OnAuthPanelPreferredSizeChanged,
           weak_factory_.GetWeakPtr()),
-      connector);
+      connector, AuthHub::Get());
 
   out_consumer = contents_view->GetAuthPanel();
   dialog_ = CreateAuthDialogWidget(std::move(contents_view));

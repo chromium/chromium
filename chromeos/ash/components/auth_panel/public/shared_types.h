@@ -5,9 +5,17 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_PUBLIC_SHARED_TYPES_H_
 #define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_PUBLIC_SHARED_TYPES_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+
+namespace ash {
+
+class AuthHubConnector;
+
+}  // namespace ash
 
 namespace ash::auth_panel {
 
@@ -21,6 +29,9 @@ using AuthCompletionCallback =
     base::OnceCallback<void(bool success,
                             const ash::AuthProofToken& token,
                             base::TimeDelta timeout)>;
+
+using SubmitPasswordCallback = base::RepeatingCallback<
+    void(AuthHubConnector*, AshAuthFactor, const std::string&)>;
 
 }  // namespace ash::auth_panel
 

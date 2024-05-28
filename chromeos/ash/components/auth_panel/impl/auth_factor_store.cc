@@ -45,6 +45,9 @@ AuthFactorStore::AuthFactorStore(Shell* shell,
   // capslock if `ime_controller` is not available.
   state_.InitializePasswordViewState(
       ime_controller == nullptr ? false : ime_controller->IsCapsLockEnabled());
+
+  submit_password_callback_ =
+      base::BindRepeating(&AuthEngineApi::AuthenticateWithPassword);
 }
 
 AuthFactorStore::~AuthFactorStore() = default;
@@ -163,8 +166,8 @@ void AuthFactorStore::SubmitPassword(const std::string& password) {
   // for it would not have been shown. Check this invariant here.
   CHECK(password_type_.has_value());
 
-  AuthEngineApi::AuthenticateWithPassword(auth_hub_connector_,
-                                          password_type_.value(), password);
+  submit_password_callback_.Run(auth_hub_connector_, password_type_.value(),
+                                password);
 }
 
 }  // namespace ash
