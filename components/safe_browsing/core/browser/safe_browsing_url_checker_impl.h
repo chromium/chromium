@@ -57,7 +57,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     kUnknown = 0,
     // A skipped check occurs in the following scenarios:
     //  - The URL is allowlisted (not the high-confidence allowlist).
-    //  - The request destination can't be checked.
     //  - It's a debugging URL like chrome://safe-browsing/match?type=malware.
     //  - The URL real-time check is unable to run, but |can_check_db_| is false
     //  so no other checks can run either.

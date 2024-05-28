@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -41,8 +40,6 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   //
 
   void CancelCheck(Client* client) override;
-  bool CanCheckRequestDestination(
-      network::mojom::RequestDestination request_destination) const override;
   bool CanCheckUrl(const GURL& url) const override;
   bool CheckBrowseUrl(
       const GURL& url,
@@ -85,9 +82,6 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
 
   // Requests currently outstanding.  This owns the ptrs.
   std::vector<raw_ptr<ClientRequest, VectorExperimental>> current_requests_;
-
-  base::flat_set<network::mojom::RequestDestination>
-      request_destinations_to_check_;
 
   // Whether the service is running. 'enabled_' is used by the
   // RemoteSafeBrowsingDatabaseManager on the IO thread during normal

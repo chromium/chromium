@@ -436,23 +436,6 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
       continue;
     }
 
-    // TODO(crbug.com/324108312): Remove this check when
-    // kSafeBrowsingSkipSubresources is launched.
-    if (!database_manager_->CanCheckRequestDestination(
-            network::mojom::RequestDestination::kDocument)) {
-      UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Skipped",
-                                network::mojom::RequestDestination::kDocument);
-
-      if (!RunNextCallbackAndMaybeDeleteSelf(
-              /*proceed=*/true, /*showed_interstitial=*/false,
-              /*has_post_commit_interstitial_skipped=*/false,
-              PerformedCheck::kCheckSkipped)) {
-        return;
-      }
-
-      continue;
-    }
-
     UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Checked",
                               network::mojom::RequestDestination::kDocument);
 

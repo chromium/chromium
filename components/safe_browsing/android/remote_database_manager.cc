@@ -31,10 +31,6 @@ namespace safe_browsing {
 using IsInAllowlistResult = RealTimeUrlChecksAllowlist::IsInAllowlistResult;
 namespace {
 
-// Android field trial for controlling types_to_check.
-const char kAndroidFieldExperiment[] = "SafeBrowsingAndroid";
-const char kAndroidTypesToCheckParam[] = "types_to_check";
-
 constexpr char kCanCheckUrlBaseHistogramName[] = "SB2.RemoteCall.CanCheckUrl";
 
 void LogCanCheckUrl(bool can_check_url, CheckBrowseUrlType check_type) {
@@ -117,66 +113,10 @@ void RemoteSafeBrowsingDatabaseManager::ClientRequest::OnRequestDone(
 // RemoteSafeBrowsingDatabaseManager methods
 //
 
-// TODO(nparker): Add more tests for this class
 RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager()
     : SafeBrowsingDatabaseManager(content::GetUIThreadTaskRunner({}),
                                   content::GetIOThreadTaskRunner({})),
-      enabled_(false) {
-  // Avoid memory allocations growing the underlying vector. Although this
-  // usually wastes a bit of memory, it will still be less than the default
-  // vector allocation strategy.
-  request_destinations_to_check_.reserve(
-      static_cast<int>(network::mojom::RequestDestination::kMaxValue) + 1);
-  // Decide which request destinations to check. These three are the minimum.
-  request_destinations_to_check_.insert(
-      network::mojom::RequestDestination::kDocument);
-  request_destinations_to_check_.insert(
-      network::mojom::RequestDestination::kIframe);
-  request_destinations_to_check_.insert(
-      network::mojom::RequestDestination::kFrame);
-  request_destinations_to_check_.insert(
-      network::mojom::RequestDestination::kFencedframe);
-
-  // The param is expected to be a comma-separated list of ints
-  // corresponding to the enum types.  We're keeping this finch
-  // control around so we can add back types if they later become dangerous.
-  const std::string ints_str = base::GetFieldTrialParamValue(
-      kAndroidFieldExperiment, kAndroidTypesToCheckParam);
-  if (ints_str.empty()) {
-    // By default, we check all types except a few.
-    static_assert(
-        network::mojom::RequestDestination::kMaxValue ==
-            network::mojom::RequestDestination::kSharedStorageWorklet,
-        "Decide if new request destination should be skipped on mobile.");
-    for (int t_int = 0;
-         t_int <=
-         static_cast<int>(network::mojom::RequestDestination::kMaxValue);
-         t_int++) {
-      network::mojom::RequestDestination t =
-          static_cast<network::mojom::RequestDestination>(t_int);
-      switch (t) {
-        case network::mojom::RequestDestination::kStyle:
-        case network::mojom::RequestDestination::kImage:
-        case network::mojom::RequestDestination::kFont:
-          break;
-        default:
-          request_destinations_to_check_.insert(t);
-      }
-    }
-  } else {
-    // Use the finch param.
-    for (const std::string& val_str : base::SplitString(
-             ints_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-      int i;
-      if (base::StringToInt(val_str, &i) && i >= 0 &&
-          i <=
-              static_cast<int>(network::mojom::RequestDestination::kMaxValue)) {
-        request_destinations_to_check_.insert(
-            static_cast<network::mojom::RequestDestination>(i));
-      }
-    }
-  }
-}
+      enabled_(false) {}
 
 RemoteSafeBrowsingDatabaseManager::~RemoteSafeBrowsingDatabaseManager() {
   DCHECK(!enabled_);
@@ -194,11 +134,6 @@ void RemoteSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
       return;
     }
   }
-}
-
-bool RemoteSafeBrowsingDatabaseManager::CanCheckRequestDestination(
-    network::mojom::RequestDestination request_destination) const {
-  return request_destinations_to_check_.count(request_destination) > 0;
 }
 
 bool RemoteSafeBrowsingDatabaseManager::CanCheckUrl(const GURL& url) const {

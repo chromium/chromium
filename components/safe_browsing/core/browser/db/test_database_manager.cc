@@ -25,12 +25,6 @@ void TestSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   NOTIMPLEMENTED();
 }
 
-bool TestSafeBrowsingDatabaseManager::CanCheckRequestDestination(
-    network::mojom::RequestDestination request_destination) const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 bool TestSafeBrowsingDatabaseManager::CanCheckUrl(const GURL& url) const {
   NOTIMPLEMENTED();
   return (url != GURL("about:blank"));

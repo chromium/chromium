@@ -30,8 +30,6 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 
   // TestSafeBrowsingDatabaseManager implementation:
   // These are implemented as needed to return stubbed values.
-  bool CanCheckRequestDestination(
-      network::mojom::RequestDestination request_destination) const override;
   bool CheckBrowseUrl(
       const GURL& url,
       const SBThreatTypeSet& threat_types,

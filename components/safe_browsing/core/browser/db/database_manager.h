@@ -23,7 +23,6 @@
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -120,10 +119,6 @@ class SafeBrowsingDatabaseManager
   //
   // Methods to check whether the database manager supports a certain feature.
   //
-
-  // Returns true if this request destination should be checked.
-  virtual bool CanCheckRequestDestination(
-      network::mojom::RequestDestination request_destination) const = 0;
 
   // Returns true if the url's scheme can be checked.
   virtual bool CanCheckUrl(const GURL& url) const = 0;

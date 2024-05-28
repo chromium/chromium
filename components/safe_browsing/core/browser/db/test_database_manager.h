@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 
 namespace safe_browsing {
 
@@ -28,8 +27,6 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
 
   // SafeBrowsingDatabaseManager implementation:
   void CancelCheck(Client* client) override;
-  bool CanCheckRequestDestination(
-      network::mojom::RequestDestination request_destination) const override;
   bool CanCheckUrl(const GURL& url) const override;
   bool CheckBrowseUrl(
       const GURL& url,

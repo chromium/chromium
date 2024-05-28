@@ -379,12 +379,6 @@ void V4LocalDatabaseManager::CancelCheck(Client* client) {
   }
 }
 
-bool V4LocalDatabaseManager::CanCheckRequestDestination(
-    network::mojom::RequestDestination request_destination) const {
-  // We check all destinations since most checks are fast.
-  return true;
-}
-
 bool V4LocalDatabaseManager::CanCheckUrl(const GURL& url) const {
   return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kFtpScheme) ||
          url.SchemeIsWSOrWSS();

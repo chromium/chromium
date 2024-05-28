@@ -109,10 +109,6 @@ void FakeSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   size_t erased = checks_.erase(client);
   CHECK_EQ(erased, 1u);
 }
-bool FakeSafeBrowsingDatabaseManager::CanCheckRequestDestination(
-    network::mojom::RequestDestination /* request_destination */) const {
-  return true;
-}
 
 safe_browsing::ThreatSource
 FakeSafeBrowsingDatabaseManager::GetBrowseUrlThreatSource(

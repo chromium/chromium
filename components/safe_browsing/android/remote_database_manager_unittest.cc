@@ -22,7 +22,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -129,24 +128,6 @@ class RemoteDatabaseManagerTest : public testing::Test {
     db_ = nullptr;
   }
 
-  // Setup the two field trial params.  These are read in db_'s ctor.
-  void SetFieldTrialParams(const std::string types_to_check_val) {
-    variations::testing::ClearAllVariationIDs();
-    variations::testing::ClearAllVariationParams();
-
-    const std::string group_name = "GroupFoo";  // Value not used
-    const std::string experiment_name = "SafeBrowsingAndroid";
-    ASSERT_TRUE(
-        base::FieldTrialList::CreateFieldTrial(experiment_name, group_name));
-
-    std::map<std::string, std::string> params;
-    if (!types_to_check_val.empty())
-      params["types_to_check"] = types_to_check_val;
-
-    ASSERT_TRUE(
-        base::AssociateFieldTrialParams(experiment_name, group_name, params));
-  }
-
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestUrlCheckInterceptor> url_interceptor_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -199,54 +180,6 @@ TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashRealtime) {
       /*expected_bucket_count=*/1);
   histogram_tester_.ExpectTotalCount("SB2.RemoteCall.CanCheckUrl.HashDatabase",
                                      /*expected_count=*/0);
-}
-
-TEST_F(RemoteDatabaseManagerTest, DestinationsToCheckDefault) {
-  // Most are true, a few are false.
-  for (int t_int = 0;
-       t_int <= static_cast<int>(network::mojom::RequestDestination::kMaxValue);
-       t_int++) {
-    network::mojom::RequestDestination t =
-        static_cast<network::mojom::RequestDestination>(t_int);
-    switch (t) {
-      case network::mojom::RequestDestination::kStyle:
-      case network::mojom::RequestDestination::kImage:
-      case network::mojom::RequestDestination::kFont:
-        EXPECT_FALSE(db_->CanCheckRequestDestination(t));
-        break;
-      default:
-        EXPECT_TRUE(db_->CanCheckRequestDestination(t));
-        break;
-    }
-  }
-}
-
-TEST_F(RemoteDatabaseManagerTest, DestinationsToCheckFromTrial) {
-  SetFieldTrialParams("7,16,blah, 20");
-  // Stop the current DB and start a new one to consume the new field trial
-  // params.
-  db_->StopOnSBThread(/*shutdown=*/false);
-  db_ = new RemoteSafeBrowsingDatabaseManager();
-  db_->StartOnSBThread(test_shared_loader_factory_, GetTestV4ProtocolConfig());
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kDocument));  // defaulted
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kIframe));
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kFrame));
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kFencedframe));
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kStyle));
-  EXPECT_FALSE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kScript));
-  EXPECT_FALSE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kImage));
-  // ...
-  EXPECT_FALSE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kVideo));
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kWorker));
 }
 
 TEST_F(RemoteDatabaseManagerTest, ThreatSource) {

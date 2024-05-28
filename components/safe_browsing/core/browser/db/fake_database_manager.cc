@@ -39,11 +39,6 @@ void FakeSafeBrowsingDatabaseManager::SetHighConfidenceAllowlistMatchResult(
   high_confidence_allowlist_match_urls_[url] = match_allowlist;
 }
 
-bool FakeSafeBrowsingDatabaseManager::CanCheckRequestDestination(
-    network::mojom::RequestDestination request_destination) const {
-  return true;
-}
-
 bool FakeSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,

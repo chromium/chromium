@@ -81,11 +81,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     return false;
   }
 
-  bool CanCheckRequestDestination(
-      network::mojom::RequestDestination request_destination) const override {
-    return true;
-  }
-
   ThreatSource GetBrowseUrlThreatSource(
       CheckBrowseUrlType check_type) const override {
     return ThreatSource::UNKNOWN;
