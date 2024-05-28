@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -27,6 +28,24 @@ namespace {
 
 const char kGpmPinResetReauthUrl[] =
     "https://passwords.google.com/encryption/pin/reset";
+
+// The kdi parameter here was generated from the following protobuf:
+//
+// {
+//   operation: RETRIEVAL
+//   retrieval_inputs: {
+//     security_domain_name: "hw_protected"
+//   }
+// }
+//
+// And then converted to bytes with:
+//
+// % gqui --outfile=rawproto:/tmp/out.pb from textproto:/tmp/input \
+//       proto gaia_frontend.ClientDecryptableKeyDataInputs
+//
+// Then the contents of `/tmp/out.pb` need to be base64url-encoded to produce
+// the "kdi" parameter's value.
+const char kKdi[] = "CAESDgoMaHdfcHJvdGVjdGVk";
 
 GURL GetGpmResetPinUrl() {
   std::string command_line_url =
@@ -127,24 +146,8 @@ class AuthenticatorRequestWindow
     GURL url;
     switch (step_) {
       case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
-        // The kdi parameter here was generated from the following protobuf:
-        //
-        // {
-        //   operation: RETRIEVAL
-        //   retrieval_inputs: {
-        //     security_domain_name: "hw_protected"
-        //   }
-        // }
-        //
-        // And then converted to bytes with:
-        //
-        // % gqui --outfile=rawproto:/tmp/out.pb from textproto:/tmp/input \
-        //       proto gaia_frontend.ClientDecryptableKeyDataInputs
-        //
-        // Then the contents of `/tmp/out.pb` need to be base64url-encoded to
-        // produce the "kdi" parameter's value.
         url = GaiaUrls::GetInstance()->gaia_url().Resolve(
-            "/encryption/unlock/desktop?kdi=CAESDgoMaHdfcHJvdGVjdGVk");
+            base::StrCat({"/encryption/unlock/desktop?kdi=", kKdi}));
         device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
         break;
 
@@ -226,4 +229,9 @@ void ShowAuthenticatorRequestWindow(content::WebContents* web_contents,
                                     AuthenticatorRequestDialogModel* model) {
   // This object owns itself.
   new AuthenticatorRequestWindow(web_contents, model);
+}
+
+bool IsAuthenticatorRequestWindowUrl(const GURL& url) {
+  std::string kdi;
+  return net::GetValueForKeyInQuery(url, "kdi", &kdi) && kdi == kKdi;
 }

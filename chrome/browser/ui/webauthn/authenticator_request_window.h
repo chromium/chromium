@@ -9,10 +9,15 @@ namespace content {
 class WebContents;
 }
 
+class GURL;
+
 struct AuthenticatorRequestDialogModel;
 
 // Open a dialog window to render a step of the WebAuthn UI.
 void ShowAuthenticatorRequestWindow(content::WebContents* web_contents,
                                     AuthenticatorRequestDialogModel* model);
+
+// Returns true if the specified `url` can be served by the WebAuthn UI.
+bool IsAuthenticatorRequestWindowUrl(const GURL& url);
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_WINDOW_H_
