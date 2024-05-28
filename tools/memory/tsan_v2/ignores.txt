@@ -4,6 +4,8 @@
 # Please think twice before you add or remove these rules.
 # Data races should typically go to suppressions.txt.
 
+[thread]
+
 # See http://crbug.com/102327
 fun:*ThreadData*Initialize*
 
