@@ -9,9 +9,10 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 type Annotation = any;
 
-interface Interval {
-  start: number;
-  end: number;
+/** The serialized format of a spannable. */
+export interface SerializedSpannable {
+  string: string;
+  spans: SerializedSpan[];
 }
 
 export class Spannable {
@@ -413,6 +414,11 @@ export class MultiSpannable extends Spannable {
 
 // Local to module.
 
+interface Interval {
+  start: number;
+  end: number;
+}
+
 /** An annotation with its start and end points. */
 interface SpanStruct {
   value: Annotation;
@@ -425,12 +431,6 @@ interface SerializeInfo {
   name: string;
   fromJson: (json: SerializedSpan) => Annotation;
   toJson?: () => SerializedSpan;
-}
-
-/** The serialized format of a spannable. */
-interface SerializedSpannable {
-  string: string;
-  spans: SerializedSpan[];
 }
 
 /** The format of a single annotation in a serialized spannable. */
