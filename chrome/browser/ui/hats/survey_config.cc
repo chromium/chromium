@@ -30,6 +30,8 @@ constexpr char kHatsSurveyTriggerAutofillAddressUserPerception[] =
     "autofill-address-users-perception";
 constexpr char kHatsSurveyTriggerAutofillCreditCardUserPerception[] =
     "autofill-credit-card-users-perception";
+constexpr char kHatsSurveyTriggerAutofillPasswordUserPerception[] =
+    "autofill-password-users-perception";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
 constexpr char kHatsSurveyTriggerDownloadWarningBubbleBypass[] =
@@ -402,7 +404,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "Manually filled to an unknown type", "Total corrected",
           "Total filled", "Total unfilled", "Total manually filled",
           "Total number of fields"});
-
+  survey_configs.emplace_back(
+      &password_manager::features::kAutofillPasswordUserPerceptionSurvey,
+      kHatsSurveyTriggerAutofillPasswordUserPerception, std::nullopt,
+      std::vector<std::string>{},
+      std::vector<std::string>{"Filling assistance"});
   survey_configs.emplace_back(&features::kAutofillAddressSurvey,
                               kHatsSurveyTriggerAutofillAddress);
   survey_configs.emplace_back(&features::kAutofillCardSurvey,

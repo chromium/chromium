@@ -14,6 +14,12 @@ BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
              "AutoApproveSharedPasswordUpdatesFromSameSender",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_FEATURE(kAutofillPasswordUserPerceptionSurvey,
+             "AutofillPasswordUserPerceptionSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kAuthenticateUsingNewWindowsHelloApi,
              "AuthenticateUsingNewWindowsHelloApi",
