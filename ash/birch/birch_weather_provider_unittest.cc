@@ -46,6 +46,11 @@ class StubBirchClient : public BirchClient {
   BirchDataProvider* GetMostVisitedProvider() override { return &provider_; }
   BirchDataProvider* GetSelfShareProvider() override { return &provider_; }
   BirchDataProvider* GetReleaseNotesProvider() override { return &provider_; }
+  BirchDataProvider* GetWeatherV2Provider() override {
+    // Null because V2 provider and the weather provider tested in this test
+    // suite never coexist.
+    return nullptr;
+  }
 
   void WaitForRefreshTokens(base::OnceClosure callback) override {
     did_wait_for_refresh_tokens_ = true;
@@ -61,7 +66,8 @@ class BirchWeatherProviderTest : public AshTestBase {
  public:
   BirchWeatherProviderTest() {
     feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather}, {});
+        {features::kForestFeature, features::kBirchWeather},
+        {features::kBirchWeatherV2});
   }
   ~BirchWeatherProviderTest() override = default;
 

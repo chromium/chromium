@@ -25,6 +25,7 @@ class ASH_EXPORT BirchClient {
   virtual BirchDataProvider* GetMostVisitedProvider() = 0;
   virtual BirchDataProvider* GetSelfShareProvider() = 0;
   virtual BirchDataProvider* GetReleaseNotesProvider() = 0;
+  virtual BirchDataProvider* GetWeatherV2Provider() = 0;
 
   // Waits for refresh tokens to be loaded then calls `callback`. Calls
   // `callback` immediately if tokens are already loaded. Only one waiter

@@ -454,6 +454,7 @@ Refer to README.md for content description and update process.
  <item id="weather_icon" added_in_milestone="123" content_hash_code="07bd5365" os_list="chromeos" file_path="ash/birch/birch_weather_provider.cc" />
  <item id="chromeos_picker_gif_media_fetcher" added_in_milestone="124" content_hash_code="0674a2dd" os_list="chromeos" file_path="ash/picker/picker_asset_fetcher_impl.cc" />
  <item id="birch_calendar_provider" added_in_milestone="124" content_hash_code="07af9ecc" os_list="chromeos" file_path="chrome/browser/ui/ash/birch/birch_calendar_fetcher.cc" />
+ <item id="birch_weather_provider" added_in_milestone="127" content_hash_code="0204cb6d" os_list="chromeos" file_path="chrome/browser/ui/ash/birch/birch_weather_v2_provider.cc" />
  <item id="recovery_key_store_fetch" added_in_milestone="124" content_hash_code="05d9dc45" os_list="linux,windows,chromeos" file_path="chrome/browser/webauthn/enclave_manager.cc" />
  <item id="product_specifications_fetcher" added_in_milestone="123" content_hash_code="050058ef" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/compare/product_specifications_server_proxy.cc" />
  <item id="enterprise_logo_fetcher" added_in_milestone="124" content_hash_code="000f6a7b" os_list="linux,windows,android,chromeos" file_path="chrome/browser/enterprise/browser_management/browser_management_service.cc" />

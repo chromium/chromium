@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/ash/birch/birch_recent_tabs_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_release_notes_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_self_share_provider.h"
+#include "chrome/browser/ui/ash/birch/birch_weather_v2_provider.h"
 #include "chrome/browser/ui/ash/birch/refresh_token_waiter.h"
 
 namespace ash {
@@ -39,6 +41,11 @@ BirchKeyedService::BirchKeyedService(Profile* profile)
       release_notes_provider_(
           std::make_unique<BirchReleaseNotesProvider>(profile)),
       self_share_provider_(std::make_unique<BirchSelfShareProvider>(profile)),
+      weather_v2_provider_(std::make_unique<BirchWeatherV2Provider>(
+          profile,
+          base::BindRepeating([](std::vector<BirchWeatherItem> items) {
+            Shell::Get()->birch_model()->SetWeatherItems(std::move(items));
+          }))),
       refresh_token_waiter_(std::make_unique<RefreshTokenWaiter>(profile)) {
   calendar_provider_->Initialize();
   Shell::Get()->birch_model()->SetClientAndInit(this);
@@ -80,6 +87,10 @@ BirchDataProvider* BirchKeyedService::GetSelfShareProvider() {
   return self_share_provider_.get();
 }
 
+BirchDataProvider* BirchKeyedService::GetWeatherV2Provider() {
+  return weather_v2_provider_.get();
+}
+
 void BirchKeyedService::WaitForRefreshTokens(base::OnceClosure callback) {
   refresh_token_waiter_->Wait(std::move(callback));
 }
@@ -96,6 +107,7 @@ void BirchKeyedService::ShutdownBirch() {
   shell_observation_.Reset();
   Shell::Get()->birch_model()->SetClientAndInit(nullptr);
   calendar_provider_->Shutdown();
+  weather_v2_provider_->Shutdown();
 }
 
 }  // namespace ash
