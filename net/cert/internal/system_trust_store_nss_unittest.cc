@@ -154,21 +154,6 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
             trust.ToDebugString());
 }
 
-// Tests that SystemTrustStore created for NSS without allowing trust for
-// certificate stored on user slots.
-TEST_F(SystemTrustStoreNSSTest, NoUserSlots) {
-  std::unique_ptr<SystemTrustStore> system_trust_store =
-      CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
-          std::make_unique<TrustStoreChrome>(), nullptr);
-
-  ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
-
-  bssl::CertificateTrust trust =
-      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
-            trust.ToDebugString());
-}
-
 }  // namespace
 
 }  // namespace net

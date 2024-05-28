@@ -142,6 +142,11 @@ TrustStoreNSS::ListCertsResult& TrustStoreNSS::ListCertsResult::operator=(
 
 TrustStoreNSS::TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting)
     : user_slot_trust_setting_(std::move(user_slot_trust_setting)) {
+  if (absl::holds_alternative<crypto::ScopedPK11Slot>(
+          user_slot_trust_setting_)) {
+    CHECK(absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_) !=
+          nullptr);
+  }
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
   if (!CERT_CreateSubjectCertListForChromium) {
     LOG(WARNING) << "CERT_CreateSubjectCertListForChromium is not available";
@@ -217,10 +222,6 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
   crypto::ScopedCERTCertList cert_list;
   if (absl::holds_alternative<crypto::ScopedPK11Slot>(
           user_slot_trust_setting_)) {
-    if (absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_) ==
-        nullptr) {
-      return results;
-    }
     cert_list.reset(PK11_ListCertsInSlot(
         absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()));
   } else {
@@ -262,25 +263,6 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
 bssl::CertificateTrust TrustStoreNSS::GetTrust(
     const bssl::ParsedCertificate* cert) {
   crypto::EnsureNSSInit();
-  // If trust settings are only being used from a specified slot, and that slot
-  // is nullptr, there's nothing to do. This corresponds to the case where we
-  // wanted to get the builtin roots from NSS still but not user-added roots.
-  // Since the built-in roots are now coming from Chrome Root Store in this
-  // case, there is nothing to do here.
-  //
-  // (This ignores slots that would have been allowed by the "read-only
-  // internal slots" part of IsCertAllowedForTrust, I don't think that actually
-  // matters though.)
-  //
-  // TODO(crbug.com/40890963): once the non-CRS paths have been removed,
-  // perhaps remove this entirely and just have the caller not create a
-  // TrustStoreNSS at all in this case (or does it still need the
-  // SyncGetIssuersOf to find NSS temp certs in that case?)
-  if (absl::holds_alternative<crypto::ScopedPK11Slot>(
-          user_slot_trust_setting_) &&
-      absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_) == nullptr) {
-    return bssl::CertificateTrust::ForUnspecified();
-  }
 
   SECItem der_cert;
   der_cert.data = const_cast<uint8_t*>(cert->der_cert().data());

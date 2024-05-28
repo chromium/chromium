@@ -166,12 +166,15 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
 
     std::unique_ptr<net::SystemTrustStore> trust_store;
 #if BUILDFLAG(IS_CHROMEOS)
-    trust_store =
-        net::CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
-            std::move(chrome_root),
-            user_slot_restriction_ ? crypto::ScopedPK11Slot(PK11_ReferenceSlot(
-                                         user_slot_restriction_.get()))
-                                   : nullptr);
+    if (user_slot_restriction_) {
+      trust_store =
+          net::CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
+              std::move(chrome_root), crypto::ScopedPK11Slot(PK11_ReferenceSlot(
+                                          user_slot_restriction_.get())));
+    } else {
+      trust_store =
+          net::CreateChromeOnlySystemTrustStore(std::move(chrome_root));
+    }
 #else
     if (instance_params.include_system_trust_store) {
       trust_store =
