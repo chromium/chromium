@@ -23,8 +23,10 @@ template <typename ReplyType>
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 cryptohome::MountError ReplyToMountError(const std::optional<ReplyType>& reply);
 
-// Returns a CryptohomeErrorCode code from |reply|, returning
-// CRYPTOHOME_ERROR_NOT_SET if the reply is well-formed and there is no error.
+// Returns an ErrorWrapper, which consists of both
+// CryptohomeErrorCode and CryptohomeErrorInfo, extracted from |reply|. Return
+// CRYPTOHOME_ERROR_NOT_SET as CryptohomeErrorCode if the reply is well-formed
+// and there is no error.
 template <typename ReplyType>
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)::cryptohome::ErrorWrapper
     ReplyToCryptohomeError(const std::optional<ReplyType>& reply);
