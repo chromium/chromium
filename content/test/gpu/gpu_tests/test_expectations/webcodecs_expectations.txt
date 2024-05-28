@@ -146,7 +146,6 @@ crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_av01.0.04M.0
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_2 [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_3 [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_2 [ RetryOnFailure ]
-crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_3 [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp8_prefer-software_layers_2 [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp8_prefer-software_layers_3 [ RetryOnFailure ]
 
