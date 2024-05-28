@@ -169,6 +169,14 @@ BASE_FEATURE(kV8SingleThreadedGCInBackground,
              "V8SingleThreadedGCInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kV8SingleThreadedGCInBackgroundParallelPause,
+             "V8SingleThreadedGCInBackgroundParallelPause",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kV8SingleThreadedGCInBackgroundNoIncrementalMarking,
+             "V8SingleThreadedGCInBackgroundNoIncrementalMarking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use V8 efficiency mode for tiering decisions.
 BASE_FEATURE(kV8EfficiencyModeTiering,
              "V8EfficiencyModeTiering",

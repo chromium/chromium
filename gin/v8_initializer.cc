@@ -322,6 +322,13 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8SingleThreadedGCInBackground,
                          "--single-threaded-gc-in-background",
                          "--no-single-threaded-gc-in-background");
+  SetV8FlagsIfOverridden(features::kV8SingleThreadedGCInBackgroundParallelPause,
+                         "--parallel-pause-for-gc-in-background",
+                         "--no-parallel-pause-for-gc-in-background");
+  SetV8FlagsIfOverridden(
+      features::kV8SingleThreadedGCInBackgroundNoIncrementalMarking,
+      "--no-incremental-marking-for-gc-in-background",
+      "--incremental-marking-for-gc-in-background");
   SetV8FlagsIfOverridden(features::kV8DecommitPooledPages,
                          "--decommit-pooled-pages",
                          "--no-decommit-pooled-pages");
