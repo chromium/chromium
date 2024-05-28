@@ -350,6 +350,7 @@ try_.orchestrator_builder(
     # are addressed
     #use_orchestrator_pool = True,
     tryjob = try_.job(
+        experiment_percentage = 100,
         location_filters = [
             "sandbox/win/.+",
             "sandbox/policy/win/.+",
