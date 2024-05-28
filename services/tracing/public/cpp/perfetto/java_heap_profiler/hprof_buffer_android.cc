@@ -72,7 +72,7 @@ void HprofBuffer::SkipId() {
 }
 
 const char* HprofBuffer::DataPosition() {
-  return reinterpret_cast<const char*>((data_ + offset_).get());
+  return reinterpret_cast<const char*>(data_ + offset_);
 }
 
 uint32_t HprofBuffer::SizeOfType(uint32_t index) {

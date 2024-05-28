@@ -6,11 +6,9 @@
 #define MEDIA_BASE_BIT_READER_H_
 
 #include <stdint.h>
-
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "media/base/bit_reader_core.h"
 #include "media/base/media_export.h"
 
@@ -60,7 +58,7 @@ class MEDIA_EXPORT BitReader : private BitReaderCore::ByteStreamProvider {
   const int initial_size_;
 
   // Pointer to the next unread byte in the stream.
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> data_;
+  const uint8_t* data_;
 
   // Bytes left in the stream.
   int bytes_left_;

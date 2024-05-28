@@ -47,7 +47,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/memory/raw_ptr.h"
 #include "media/parsers/media_parsers_export.h"
 
 namespace media {
@@ -122,11 +121,9 @@ class MEDIA_PARSERS_EXPORT Vp8BoolDecoder {
   // Returns true iff we have ran out of bits.
   bool OutOfBuffer();
 
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> user_buffer_;
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
-      user_buffer_start_;
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
-      user_buffer_end_;
+  const uint8_t* user_buffer_;
+  const uint8_t* user_buffer_start_;
+  const uint8_t* user_buffer_end_;
   size_t value_;
   int count_;
   size_t range_;

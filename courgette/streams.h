@@ -17,12 +17,11 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>  // for FILE*
-
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "courgette/memory_allocator.h"
 #include "courgette/region.h"
+
 
 namespace courgette {
 
@@ -116,12 +115,9 @@ class SourceStream {
   bool Skip(size_t byte_count);
 
  private:
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
-      start_;  // Points to start of buffer.
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
-      end_;  // Points to first location after buffer.
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
-      current_;  // Points into buffer at current read location.
+  const uint8_t* start_;    // Points to start of buffer.
+  const uint8_t* end_;      // Points to first location after buffer.
+  const uint8_t* current_;  // Points into buffer at current read location.
 };
 
 // A SinkStream accumulates writes into a buffer that it owns.  The stream is

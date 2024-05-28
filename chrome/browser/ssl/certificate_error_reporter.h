@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "url/gurl.h"
 
@@ -76,7 +75,7 @@ class CertificateErrorReporter {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   GURL upload_url_;
 
-  raw_ptr<const uint8_t> server_public_key_;
+  const uint8_t* server_public_key_;
   const uint32_t server_public_key_version_;
 };
 

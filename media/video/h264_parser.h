@@ -16,7 +16,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/base/video_codecs.h"
@@ -66,11 +65,11 @@ struct MEDIA_EXPORT H264NALU {
 
   // After (without) start code; we don't own the underlying memory
   // and a shallow copy should be made when copying this struct.
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> data = nullptr;
-  off_t size = 0;  // From after start code to start code of next NALU (or EOS).
+  const uint8_t* data;
+  off_t size;  // From after start code to start code of next NALU (or EOS).
 
-  int nal_ref_idc = 0;
-  int nal_unit_type = 0;
+  int nal_ref_idc;
+  int nal_unit_type;
 };
 
 enum {
@@ -312,8 +311,7 @@ struct MEDIA_EXPORT H264SliceHeader {
 
   bool idr_pic_flag;         // from NAL header
   int nal_ref_idc;           // from NAL header
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
-      nalu_data;             // from NAL header
+  const uint8_t* nalu_data;  // from NAL header
   off_t nalu_size;           // from NAL header
   off_t header_bit_size;     // calculated
 
@@ -585,7 +583,7 @@ class MEDIA_EXPORT H264Parser {
   Result ParseDecRefPicMarking(H264SliceHeader* shdr);
 
   // Pointer to the current NALU in the stream.
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> stream_;
+  const uint8_t* stream_;
 
   // Bytes left in the stream after the current NALU.
   off_t bytes_left_;

@@ -11,7 +11,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "media/parsers/media_parsers_export.h"
 #include "media/parsers/vp8_bool_decoder.h"
 
@@ -117,57 +116,56 @@ struct MEDIA_PARSERS_EXPORT Vp8FrameHeader {
     COPY_GOLDEN_TO_ALT = 2,
   };
 
-  FrameType frame_type = FrameType::KEYFRAME;
-  uint8_t version = 0;
-  bool is_experimental = false;
-  bool show_frame = false;
-  size_t first_part_size = 0;
+  FrameType frame_type;
+  uint8_t version;
+  bool is_experimental;
+  bool show_frame;
+  size_t first_part_size;
 
-  uint16_t width = 0;
-  uint8_t horizontal_scale = 0;
-  uint16_t height = 0;
-  uint8_t vertical_scale = 0;
+  uint16_t width;
+  uint8_t horizontal_scale;
+  uint16_t height;
+  uint8_t vertical_scale;
 
-  Vp8SegmentationHeader segmentation_hdr{};
-  Vp8LoopFilterHeader loopfilter_hdr{};
-  Vp8QuantizationHeader quantization_hdr{};
+  Vp8SegmentationHeader segmentation_hdr;
+  Vp8LoopFilterHeader loopfilter_hdr;
+  Vp8QuantizationHeader quantization_hdr;
 
-  size_t num_of_dct_partitions = 0;
+  size_t num_of_dct_partitions;
 
-  Vp8EntropyHeader entropy_hdr{};
+  Vp8EntropyHeader entropy_hdr;
 
-  bool refresh_entropy_probs = false;
-  bool refresh_golden_frame = false;
-  bool refresh_alternate_frame = false;
-  GoldenRefreshMode copy_buffer_to_golden =
-      GoldenRefreshMode::NO_GOLDEN_REFRESH;
-  AltRefreshMode copy_buffer_to_alternate = AltRefreshMode::NO_ALT_REFRESH;
-  uint8_t sign_bias_golden = 0;
-  uint8_t sign_bias_alternate = 0;
-  bool refresh_last = false;
+  bool refresh_entropy_probs;
+  bool refresh_golden_frame;
+  bool refresh_alternate_frame;
+  GoldenRefreshMode copy_buffer_to_golden;
+  AltRefreshMode copy_buffer_to_alternate;
+  uint8_t sign_bias_golden;
+  uint8_t sign_bias_alternate;
+  bool refresh_last;
 
-  bool mb_no_skip_coeff = false;
-  uint8_t prob_skip_false = 0;
-  uint8_t prob_intra = 0;
-  uint8_t prob_last = 0;
-  uint8_t prob_gf = 0;
+  bool mb_no_skip_coeff;
+  uint8_t prob_skip_false;
+  uint8_t prob_intra;
+  uint8_t prob_last;
+  uint8_t prob_gf;
 
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> data = nullptr;
-  size_t frame_size = 0;
+  const uint8_t* data;
+  size_t frame_size;
 
-  size_t dct_partition_sizes[kMaxDCTPartitions] = {};
+  size_t dct_partition_sizes[kMaxDCTPartitions];
   // Offset in bytes from data.
-  off_t first_part_offset = 0;
+  off_t first_part_offset;
   // Offset in bits from first_part_offset.
-  off_t macroblock_bit_offset = 0;
+  off_t macroblock_bit_offset;
 
   // Bool decoder state
-  uint8_t bool_dec_range = 0;
-  uint8_t bool_dec_value = 0;
-  uint8_t bool_dec_count = 0;
+  uint8_t bool_dec_range;
+  uint8_t bool_dec_value;
+  uint8_t bool_dec_count;
 
   // Color range information.
-  bool is_full_range = false;
+  bool is_full_range;
 };
 
 // A parser for raw VP8 streams as specified in RFC 6386.
@@ -207,7 +205,7 @@ class MEDIA_PARSERS_EXPORT Vp8Parser {
   Vp8LoopFilterHeader curr_loopfilter_hdr_;
   Vp8EntropyHeader curr_entropy_hdr_;
 
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> stream_;
+  const uint8_t* stream_;
   size_t bytes_left_;
   Vp8BoolDecoder bd_;
 };

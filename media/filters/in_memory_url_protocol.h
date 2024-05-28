@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "media/filters/ffmpeg_glue.h"
 
 namespace media {
@@ -37,7 +36,7 @@ class MEDIA_EXPORT InMemoryUrlProtocol : public FFmpegURLProtocol {
   bool IsStreaming() override;
 
  private:
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> data_;
+  const uint8_t* data_;
   int64_t size_;
   int64_t position_;
   bool streaming_;

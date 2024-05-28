@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 
 namespace courgette {
 
@@ -52,7 +51,7 @@ class Region {
   const uint8_t* end() const { return start_ + length_; }
 
  private:
-  raw_ptr<const uint8_t, AllowPtrArithmetic> start_;
+  const uint8_t* start_;
   size_t length_;
 
   void operator=(const Region&);  // Disallow assignment operator.

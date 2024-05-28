@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -44,8 +43,8 @@ class MEDIA_EXPORT WebMWebVTTParser {
   void ParseLine(std::string* line);
 
   // Represents the portion of the stream that has not been consumed yet.
-  raw_ptr<const uint8_t, AllowPtrArithmetic> ptr_;
-  const raw_ptr<const uint8_t> ptr_end_;
+  const uint8_t* ptr_;
+  const uint8_t* const ptr_end_;
 };
 
 }  // namespace media

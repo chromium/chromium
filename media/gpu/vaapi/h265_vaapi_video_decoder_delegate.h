@@ -7,7 +7,6 @@
 
 #include <va/va.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/h265_decoder.h"
@@ -95,7 +94,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   // one DecoderBuffer, so the memory will still be accessible until the frame
   // is done. |last_slice_data_| being non-null indicates we have a valid
   // |slice_param_| filled.
-  raw_ptr<const uint8_t> last_slice_data_{nullptr};
+  const uint8_t* last_slice_data_{nullptr};
   size_t last_slice_size_{0};
   std::string last_transcrypt_params_;
 

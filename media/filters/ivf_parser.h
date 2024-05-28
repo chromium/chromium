@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
-
 namespace media {
 
 const uint8_t kIvfHeaderSignature[] = {'D', 'K', 'I', 'F'};
@@ -69,10 +67,10 @@ class IvfParser {
   bool ParseFileHeader(IvfFileHeader* file_header);
 
   // Current reading position of input stream.
-  raw_ptr<const uint8_t, AllowPtrArithmetic> ptr_;
+  const uint8_t* ptr_;
 
   // The end position of input stream.
-  raw_ptr<const uint8_t, AllowPtrArithmetic> end_;
+  const uint8_t* end_;
 };
 
 }  // namespace media

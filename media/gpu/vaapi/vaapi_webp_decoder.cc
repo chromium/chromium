@@ -161,8 +161,7 @@ VaapiImageDecodeStatus VaapiWebPDecoder::AllocateVASurfaceAndSubmitVABuffers(
        {VAProbabilityBufferType, sizeof(prob_buf), &prob_buf},
        {VAPictureParameterBufferType, sizeof(pic_param), &pic_param},
        {VASliceParameterBufferType, sizeof(slice_param), &slice_param},
-       {VASliceDataBufferType, parse_result->frame_size,
-        parse_result->data.get()}});
+       {VASliceDataBufferType, parse_result->frame_size, parse_result->data}});
 
   return success ? VaapiImageDecodeStatus::kSuccess
                  : VaapiImageDecodeStatus::kSubmitVABuffersFailed;

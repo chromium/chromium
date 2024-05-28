@@ -13,7 +13,6 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -64,7 +63,7 @@ struct LatencyInfoEnabledInitializer {
           kTraceCategoriesForAsyncEvents)) {
   }
 
-  raw_ptr<const unsigned char> latency_info_enabled;
+  const unsigned char* latency_info_enabled;
 };
 
 static base::LazyInstance<LatencyInfoEnabledInitializer>::Leaky

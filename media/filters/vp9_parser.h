@@ -20,7 +20,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_export.h"
@@ -331,7 +330,7 @@ class MEDIA_EXPORT Vp9Parser {
     void Reset() { ptr = nullptr; }
 
     // Starting address of the frame.
-    raw_ptr<const uint8_t, AllowPtrArithmetic> ptr = nullptr;
+    const uint8_t* ptr = nullptr;
 
     // Size of the frame in bytes.
     off_t size = 0;
@@ -434,7 +433,7 @@ class MEDIA_EXPORT Vp9Parser {
   void UpdateSlots(Vp9Parser::Context* context);
 
   // Current address in the bitstream buffer.
-  raw_ptr<const uint8_t> stream_;
+  const uint8_t* stream_;
 
   // Remaining bytes in stream_.
   off_t bytes_left_;
