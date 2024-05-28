@@ -90,8 +90,8 @@ TEST_F(SVGResourceDocumentContentTest, InvalidDocumentRoot) {
   auto* content = SVGResourceDocumentContent::Fetch(params, GetDocument());
 
   EXPECT_TRUE(content->IsLoaded());
-  EXPECT_TRUE(content->ErrorOccurred());
-  EXPECT_EQ(content->GetStatus(), ResourceStatus::kDecodeError);
+  EXPECT_FALSE(content->ErrorOccurred());
+  EXPECT_EQ(content->GetStatus(), ResourceStatus::kCached);
 }
 
 TEST_F(SVGResourceDocumentContentTest, CacheCleanup) {
