@@ -152,11 +152,15 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
       base::FeatureList::IsEnabled(display::features::kUseHDRTransferFunction);
 
   if (is_hdr_capable_ &&
+      display_snapshot.color_space() == gfx::ColorSpace::CreateHDR10() &&
       base::FeatureList::IsEnabled(
           display::features::kEnableExternalDisplayHDR10Mode)) {
     output_primaries = SkNamedPrimariesExt::kRec2020;
     SetColorspaceProperty(display_snapshot.color_space());
     SetHdrOutputMetadata(display_snapshot.color_space());
+  } else {
+    SetColorspaceProperty(gfx::ColorSpace::CreateSRGB());
+    ClearHdrOutputMetadata();
   }
 #endif
   drm_->plane_manager()->SetOutputColorSpace(crtc_, output_primaries);
@@ -358,6 +362,26 @@ gfx::HDRStaticMetadata::Eotf DrmDisplay::GetEotf(
   }
 }
 
+bool DrmDisplay::ClearHdrOutputMetadata() {
+  DCHECK(connector_);
+
+  ScopedDrmPropertyPtr hdr_output_metadata_property(
+      drm_->GetProperty(connector_.get(), kHdrOutputMetadata));
+  if (!hdr_output_metadata_property) {
+    PLOG(INFO) << "'" << kHdrOutputMetadata << "' property doesn't exist.";
+    return false;
+  }
+
+  if (!drm_->SetProperty(connector_->connector_id,
+                         hdr_output_metadata_property->prop_id, 0)) {
+    PLOG(INFO) << "Cannot set '" << kHdrOutputMetadata
+               << "' property on connector " << connector_->connector_id;
+    return false;
+  }
+
+  return true;
+}
+
 bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   DCHECK(connector_);
   DCHECK(hdr_static_metadata_.has_value());
@@ -409,6 +433,11 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   ScopedDrmPropertyBlob hdr_output_metadata_property_blob =
       drm_->CreatePropertyBlob(hdr_output_metadata_blob.get(),
                                sizeof(drm_hdr_output_metadata));
+  if (!hdr_output_metadata_property_blob) {
+    PLOG(INFO) << "Cannot create '" << kHdrOutputMetadata << "' property blob.";
+    return false;
+  }
+
   ScopedDrmPropertyPtr hdr_output_metadata_property(
       drm_->GetProperty(connector_.get(), kHdrOutputMetadata));
   if (!hdr_output_metadata_property) {
@@ -416,7 +445,8 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
     return false;
   }
 
-  if (!drm_->SetProperty(connector_->connector_id,
+  if (!hdr_output_metadata_property->prop_id ||
+      !drm_->SetProperty(connector_->connector_id,
                          hdr_output_metadata_property->prop_id,
                          hdr_output_metadata_property_blob->id())) {
     PLOG(INFO) << "Cannot set '" << kHdrOutputMetadata << "' property.";
@@ -427,19 +457,19 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
 
 bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
   DCHECK(connector_);
-  DCHECK(hdr_static_metadata_.has_value());
   ScopedDrmPropertyPtr color_space_property(
       drm_->GetProperty(connector_.get(), kColorSpace));
   if (!color_space_property) {
     PLOG(INFO) << "'" << kColorSpace << "' property doesn't exist.";
     return false;
   }
-  if (!drm_->SetProperty(
+  if (!color_space_property->prop_id ||
+      !drm_->SetProperty(
           connector_->connector_id, color_space_property->prop_id,
           GetEnumValueForName(*drm_, color_space_property->prop_id,
                               GetNameForColorspace(color_space)))) {
     PLOG(INFO) << "Cannot set '" << GetNameForColorspace(color_space)
-               << "' to 'Colorspace' property.";
+               << "' to '" << kColorSpace << "' property.";
     return false;
   }
   return true;

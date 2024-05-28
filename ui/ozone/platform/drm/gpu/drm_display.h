@@ -106,6 +106,7 @@ class DrmDisplay {
  private:
   gfx::HDRStaticMetadata::Eotf GetEotf(
       const gfx::ColorSpace::TransferID transfer_id);
+  bool ClearHdrOutputMetadata();
 
   const int64_t display_id_;
   const int64_t base_connector_id_;
