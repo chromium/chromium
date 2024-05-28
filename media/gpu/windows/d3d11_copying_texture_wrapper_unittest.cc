@@ -92,7 +92,7 @@ class MockTexture2DWrapper : public Texture2DWrapper {
   MockTexture2DWrapper() {}
 
   D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                             MailboxHolderArray* mailbox_dest,
+                             gpu::MailboxHolder* mailbox_dest,
                              gfx::ColorSpace* output_color_space) override {
     // Pretend we created an arbitrary color space, so that we're sure that it
     // is returned from the copying wrapper.
@@ -235,7 +235,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
 
   // TODO: check |gpu_task_runner_|.
 
-  MailboxHolderArray mailboxes;
+  gpu::MailboxHolder mailbox;
   gfx::ColorSpace input_color_space = gfx::ColorSpace::CreateSRGBLinear();
   gfx::ColorSpace output_color_space;
   EXPECT_EQ(wrapper
@@ -249,8 +249,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
   if (GetProcessorProxyInit())
     EXPECT_EQ(texture_wrapper_raw->gpu_task_runner_, gpu_task_runner_);
   EXPECT_EQ(
-      wrapper
-          ->ProcessTexture(input_color_space, &mailboxes, &output_color_space)
+      wrapper->ProcessTexture(input_color_space, &mailbox, &output_color_space)
           .is_ok(),
       ProcessTextureSucceeds());
 

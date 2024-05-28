@@ -81,7 +81,7 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   // |output_color_space| will be set, on success, to the color space that the
   // processed texture has.
   D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                             MailboxHolderArray* mailbox_dest,
+                             gpu::MailboxHolder* mailbox_dest,
                              gfx::ColorSpace* output_color_space);
   ComD3D11Texture2D Texture() const;
   D3D11Status::Or<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;

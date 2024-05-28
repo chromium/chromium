@@ -33,7 +33,6 @@ namespace media {
 class D3D11PictureBuffer;
 
 using CommandBufferHelperPtr = scoped_refptr<CommandBufferHelper>;
-using MailboxHolderArray = gpu::MailboxHolder[VideoFrame::kMaxPlanes];
 using GetCommandBufferHelperCB =
     base::RepeatingCallback<CommandBufferHelperPtr()>;
 
@@ -71,7 +70,7 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
   // Import |texture|, |array_slice| and return the mailbox(es) that can be
   // used to refer to it.
   virtual D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                                     MailboxHolderArray* mailbox_dest_out,
+                                     gpu::MailboxHolder* mailbox_dest_out,
                                      gfx::ColorSpace* output_color_space) = 0;
 
   virtual void SetStreamHDRMetadata(
@@ -114,7 +113,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   D3D11Status BeginSharedImageAccess() override;
 
   D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                             MailboxHolderArray* mailbox_dest,
+                             gpu::MailboxHolder* mailbox_dest,
                              gfx::ColorSpace* output_color_space) override;
 
   void SetStreamHDRMetadata(const gfx::HDRMetadata& stream_metadata) override;
@@ -135,7 +134,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
    public:
     GpuResources(OnErrorCB on_error_cb,
                  GetCommandBufferHelperCB get_helper_cb,
-                 const std::vector<gpu::Mailbox>& mailboxes,
+                 const gpu::Mailbox& mailbox,
                  const gfx::Size& size,
                  const gfx::ColorSpace& color_space,
                  DXGI_FORMAT dxgi_format,
@@ -150,8 +149,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
 
    private:
     scoped_refptr<CommandBufferHelper> helper_;
-    std::vector<std::unique_ptr<gpu::SharedImageRepresentationFactoryRef>>
-        shared_images_;
+    std::unique_ptr<gpu::SharedImageRepresentationFactoryRef> shared_image_;
     base::WeakPtrFactory<GpuResources> weak_factory_{this};
   };
 
@@ -164,7 +162,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   gfx::Size size_;
   gfx::ColorSpace color_space_;
   base::SequenceBound<GpuResources> gpu_resources_;
-  MailboxHolderArray mailbox_holders_;
+  gpu::MailboxHolder mailbox_holder_;
   DXGI_FORMAT dxgi_format_;
 
   std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep_;

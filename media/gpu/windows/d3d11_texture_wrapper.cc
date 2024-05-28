@@ -45,14 +45,6 @@ bool SupportsFormat(DXGI_FORMAT dxgi_format) {
   }
 }
 
-size_t NumPlanes(DXGI_FORMAT dxgi_format) {
-  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    return 1;
-  }
-
-  return GetFormatPlaneCount(dxgi_format);
-}
-
 viz::SharedImageFormat DXGIFormatToMultiPlanarSharedImageFormat(
     DXGI_FORMAT dxgi_format) {
   switch (dxgi_format) {
@@ -109,7 +101,7 @@ D3D11Status DefaultTexture2DWrapper::BeginSharedImageAccess() {
 
 D3D11Status DefaultTexture2DWrapper::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
-    MailboxHolderArray* mailbox_dest,
+    gpu::MailboxHolder* mailbox_dest,
     gfx::ColorSpace* output_color_space) {
   // If we've received an error, then return it to our caller.  This is probably
   // from some previous operation.
@@ -119,11 +111,7 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
     shared_image_access_.reset();
   }
 
-  // TODO(liberato): make sure that |mailbox_holders_| is zero-initialized in
-  // case we don't use all the planes.
-  for (size_t i = 0; i < VideoFrame::kMaxPlanes; i++) {
-    (*mailbox_dest)[i] = mailbox_holders_[i];
-  }
+  *mailbox_dest = mailbox_holder_;
 
   // We're just binding, so the output and output color spaces are the same.
   *output_color_space = input_color_space;
@@ -146,15 +134,12 @@ D3D11Status DefaultTexture2DWrapper::Init(
   if (!SupportsFormat(dxgi_format_))
     return D3D11Status::Codes::kUnsupportedTextureFormatForBind;
 
-  // Generate mailboxes and holders.
+  // Generate mailbox and holder.
   // TODO(liberato): Verify that this is really okay off the GPU main thread.
   // The current implementation is.
-  std::vector<gpu::Mailbox> mailboxes;
-  for (size_t plane = 0; plane < NumPlanes(dxgi_format_); plane++) {
-    mailboxes.push_back(gpu::Mailbox::Generate());
-    mailbox_holders_[plane] = gpu::MailboxHolder(
-        mailboxes[plane], gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES);
-  }
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  mailbox_holder_ =
+      gpu::MailboxHolder(mailbox, gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES);
 
   picture_buffer_gpu_resource_init_done_cb_ =
       std::move(picture_buffer_gpu_resource_init_done_cb);
@@ -172,7 +157,7 @@ D3D11Status DefaultTexture2DWrapper::Init(
                      weak_factory_.GetWeakPtr()));
   gpu_resources_ = base::SequenceBound<GpuResources>(
       std::move(gpu_task_runner), std::move(on_error_cb),
-      std::move(get_helper_cb), std::move(mailboxes), size_, color_space_,
+      std::move(get_helper_cb), std::move(mailbox), size_, color_space_,
       dxgi_format_, video_device_, texture, array_slice,
       std::move(picture_buffer), std::move(gpu_resource_init_cb));
   return D3D11Status::Codes::kOk;
@@ -201,7 +186,7 @@ void DefaultTexture2DWrapper::OnGPUResourceInitDone(
 DefaultTexture2DWrapper::GpuResources::GpuResources(
     OnErrorCB on_error_cb,
     GetCommandBufferHelperCB get_helper_cb,
-    const std::vector<gpu::Mailbox>& mailboxes,
+    const gpu::Mailbox& mailbox,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     DXGI_FORMAT dxgi_format,
@@ -260,53 +245,40 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
             base::win::ScopedHandle(shared_handle), texture);
   }
 
-  std::vector<std::unique_ptr<gpu::SharedImageBacking>> shared_image_backings;
   auto caps =
       helper_->GetSharedImageStub()->shared_context_state()->GetGLFormatCaps();
-  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    DCHECK_EQ(mailboxes.size(), 1u);
-    // The target must be GL_TEXTURE_EXTERNAL_OES as the texture is not created
-    // with D3D11_BIND_RENDER_TARGET bind flag and so it cannot be bound to the
-    // framebuffer. To prevent Skia trying to bind it for read pixels, we need
-    // it to be GL_TEXTURE_EXTERNAL_OES.
-    std::unique_ptr<gpu::SharedImageBacking> backing =
-        gpu::D3DImageBacking::Create(
-            mailboxes[0], DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
-            size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            usage, "VideoTexture", texture, std::move(dxgi_shared_handle_state),
-            caps, GL_TEXTURE_EXTERNAL_OES, array_slice, /*plane_index=*/0u);
-    if (backing) {
-      // Need to clear the backing since the D3D11 Video Decoder will initialize
-      // the textures.
-      backing->SetCleared();
-      shared_image_backings.push_back(std::move(backing));
-    }
-  } else {
-    shared_image_backings = gpu::D3DImageBacking::CreateFromVideoTexture(
-        mailboxes, dxgi_format, size, usage, array_slice, caps, texture,
-        std::move(dxgi_shared_handle_state));
-  }
-  if (shared_image_backings.empty()) {
+  // The target must be GL_TEXTURE_EXTERNAL_OES as the texture is not created
+  // with D3D11_BIND_RENDER_TARGET bind flag and so it cannot be bound to the
+  // framebuffer. To prevent Skia trying to bind it for read pixels, we need
+  // it to be GL_TEXTURE_EXTERNAL_OES.
+  std::unique_ptr<gpu::SharedImageBacking> backing =
+      gpu::D3DImageBacking::Create(
+          mailbox, DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format), size,
+          color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+          "VideoTexture", texture, std::move(dxgi_shared_handle_state), caps,
+          GL_TEXTURE_EXTERNAL_OES, array_slice, /*plane_index=*/0u);
+
+  if (!backing) {
     std::move(on_error_cb)
         .Run(std::move(D3D11Status::Codes::kCreateSharedImageFailed));
     return;
   }
-  DCHECK_EQ(shared_image_backings.size(), NumPlanes(dxgi_format));
+  // Need to clear the backing since the D3D11 Video Decoder will initialize
+  // the textures.
+  backing->SetCleared();
 
   auto* shared_image_manager = helper_->GetSharedImageManager();
   auto* memory_type_tracker = helper_->GetMemoryTypeTracker();
-  for (auto& backing : shared_image_backings) {
-    shared_images_.push_back(shared_image_manager->Register(
-        std::move(backing), memory_type_tracker));
-  }
+  shared_image_ =
+      shared_image_manager->Register(std::move(backing), memory_type_tracker);
 
   std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep =
-      shared_image_manager->ProduceVideoDecode(video_device.Get(), mailboxes[0],
+      shared_image_manager->ProduceVideoDecode(video_device.Get(), mailbox,
                                                memory_type_tracker);
   if (!shared_image_rep) {
     std::move(on_error_cb)
         .Run(D3D11Status::Codes::kProduceVideoDecodeImageRepresentationFailed);
-    shared_images_.clear();
+    shared_image_ = nullptr;
     return;
   }
 

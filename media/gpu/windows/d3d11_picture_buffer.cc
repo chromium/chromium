@@ -76,7 +76,7 @@ D3D11Status D3D11PictureBuffer::Init(
 
 D3D11Status D3D11PictureBuffer::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
-    MailboxHolderArray* mailbox_dest,
+    gpu::MailboxHolder* mailbox_dest,
     gfx::ColorSpace* output_color_space) {
   return texture_wrapper_->ProcessTexture(input_color_space, mailbox_dest,
                                           output_color_space);

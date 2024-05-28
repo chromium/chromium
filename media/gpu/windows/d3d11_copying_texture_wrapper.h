@@ -36,7 +36,7 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
   D3D11Status BeginSharedImageAccess() override;
 
   D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                             MailboxHolderArray* mailbox_dest,
+                             gpu::MailboxHolder* mailbox_dest,
                              gfx::ColorSpace* output_color_space) override;
 
   D3D11Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,

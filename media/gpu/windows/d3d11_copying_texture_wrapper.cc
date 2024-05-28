@@ -35,7 +35,7 @@ D3D11Status CopyingTexture2DWrapper::BeginSharedImageAccess() {
 
 D3D11Status CopyingTexture2DWrapper::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
-    MailboxHolderArray* mailbox_dest,
+    gpu::MailboxHolder* mailbox_dest,
     gfx::ColorSpace* output_color_space) {
   // Acquire keyed mutex for VideoProcessorBlt ops.
   D3D11Status status = output_texture_wrapper_->BeginSharedImageAccess();

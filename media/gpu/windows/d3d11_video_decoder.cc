@@ -902,10 +902,10 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     picture_color_space = config_.color_space_info().ToGfxColorSpace();
   }
 
-  MailboxHolderArray mailbox_holders;
+  gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
   gfx::ColorSpace output_color_space;
   D3D11Status result = picture_buffer->ProcessTexture(
-      picture_color_space, &mailbox_holders, &output_color_space);
+      picture_color_space, &mailbox_holders[0], &output_color_space);
   if (!result.is_ok()) {
     NotifyError(std::move(result).AddHere());
     return false;
@@ -961,10 +961,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
                                                     : config_.hdr_metadata());
   }
 
-  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    frame->set_shared_image_format_type(
-        SharedImageFormatType::kSharedImageFormat);
-  }
+  frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
 
   frame->metadata().is_webgpu_compatible = use_shared_handle_;
 
