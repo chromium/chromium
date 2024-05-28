@@ -32,6 +32,18 @@ class Verdict {
   static Verdict MergePasteVerdicts(Verdict source_verdict,
                                     Verdict destination_verdict);
 
+  // Creates a combination of two `Verdict`s for a single warning copy action.
+  // `source_only_verdict` represents the verdict against no specific
+  // destination (aka a copy warning dialog verdict, and `os_clipboard_verdict`
+  // represents the verdict deciding if data should be shared with the OS
+  // clipboard. The resulting verdict should only contain triggered rules meant
+  // to be reported.
+  //
+  // This function should only be called when a warning dialog is about to be
+  // showned, so the level of the returned verdict is always `kWarn`.
+  static Verdict MergeCopyWarningVerdicts(Verdict source_only_verdict,
+                                          Verdict os_clipboard_verdict);
+
   ~Verdict();
   Verdict(Verdict&&);
   Verdict& operator=(Verdict&&);

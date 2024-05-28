@@ -43,6 +43,27 @@ Verdict Verdict::MergePasteVerdicts(Verdict source_verdict,
   return destination_verdict;
 }
 
+// static
+Verdict Verdict::MergeCopyWarningVerdicts(Verdict source_only_verdict,
+                                          Verdict os_clipboard_verdict) {
+  CHECK_NE(source_only_verdict.level(), Rule::Level::kBlock);
+  CHECK(source_only_verdict.level() == Rule::Level::kWarn ||
+        os_clipboard_verdict.level() == Rule::Level::kWarn);
+
+  // For OS clipboard verdicts, only the "warn" level actually triggers a
+  // dialog (`kBlock` means "don't share data with the OS clipboard" and
+  // `kReport` is unsupported), so the triggered rules of `os_clipboard_verdict`
+  // shouldn't be merged into `source_only_verdict` for non-`kWarn` values.
+  if (os_clipboard_verdict.level() == Rule::Level::kWarn) {
+    source_only_verdict.triggered_rules_.insert(
+        os_clipboard_verdict.triggered_rules().begin(),
+        os_clipboard_verdict.triggered_rules().end());
+  }
+
+  source_only_verdict.level_ = Rule::Level::kWarn;
+  return source_only_verdict;
+}
+
 Verdict::Verdict(Rule::Level level, TriggeredRules triggered_rules)
     : level_(level), triggered_rules_(std::move(triggered_rules)) {}
 

@@ -287,6 +287,27 @@ void MaybeReportDataControlsPaste(const content::ClipboardEndpoint& source,
   }
 }
 
+void MaybeReportDataControlsCopy(const content::ClipboardEndpoint& source,
+                                 const content::ClipboardMetadata& metadata,
+                                 const data_controls::Verdict& verdict,
+                                 bool bypassed = false) {
+  auto* reporting_service =
+      data_controls::ReportingServiceFactory::GetForBrowserContext(
+          source.browser_context());
+
+  // `reporting_service` can be null for incognito browser contexts, so since
+  // there's no reporting in that case we just return early.
+  if (!reporting_service) {
+    return;
+  }
+
+  if (bypassed) {
+    reporting_service->ReportCopyWarningBypassed(source, metadata, verdict);
+  } else {
+    reporting_service->ReportCopy(source, metadata, verdict);
+  }
+}
+
 void OnDataControlsPasteWarning(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
@@ -420,10 +441,11 @@ void OnDataControlsCopyWarning(
     const content::ClipboardEndpoint& source,
     const content::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
+    data_controls::Verdict verdict,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback,
     bool bypassed) {
   if (bypassed) {
-    // TODO(b/303640183): Add bypass reporting logic.
+    MaybeReportDataControlsCopy(source, metadata, verdict, /*bypassed=*/true);
     IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));
     return;
   }
@@ -445,9 +467,8 @@ void IsCopyRestrictedByDialog(
           ->GetCopyRestrictedBySourceVerdict(
               *source.data_transfer_endpoint()->GetURL());
 
-  // TODO(b/302340176): Add support for verdicts other than "block".
-  // TODO(b/303640183): Add reporting logic.
   if (source_only_verdict.level() == data_controls::Rule::Level::kBlock) {
+    MaybeReportDataControlsCopy(source, metadata, source_only_verdict);
     data_controls::DataControlsDialog::Show(
         source.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
@@ -464,12 +485,19 @@ void IsCopyRestrictedByDialog(
 
   if (source_only_verdict.level() == data_controls::Rule::Level::kWarn ||
       os_clipboard_verdict.level() == data_controls::Rule::Level::kWarn) {
+    auto verdict = data_controls::Verdict::MergeCopyWarningVerdicts(
+        std::move(source_only_verdict), std::move(os_clipboard_verdict));
+    MaybeReportDataControlsCopy(source, metadata, verdict);
     data_controls::DataControlsDialog::Show(
         source.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
         base::BindOnce(&OnDataControlsCopyWarning, source, metadata, data,
-                       std::move(callback)));
+                       std::move(verdict), std::move(callback)));
     return;
+  }
+
+  if (source_only_verdict.level() == data_controls::Rule::Level::kReport) {
+    MaybeReportDataControlsCopy(source, metadata, source_only_verdict);
   }
 
   IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));

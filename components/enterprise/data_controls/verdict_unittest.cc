@@ -48,7 +48,7 @@ TEST(DataControlVerdictTest, Level) {
   ASSERT_EQ(Allow().level(), Rule::Level::kAllow);
 }
 
-TEST(DataControlVerdictTest, MergedLevel_NotSet) {
+TEST(DataControlVerdictTest, MergedPasteVerdictsLevel_NotSet) {
   ASSERT_EQ(Verdict::MergePasteVerdicts(NotSet(), NotSet()).level(),
             Rule::Level::kNotSet);
   ASSERT_EQ(Verdict::MergePasteVerdicts(NotSet(), Report()).level(),
@@ -61,7 +61,7 @@ TEST(DataControlVerdictTest, MergedLevel_NotSet) {
             Rule::Level::kAllow);
 }
 
-TEST(DataControlVerdictTest, MergedLevel_Report) {
+TEST(DataControlVerdictTest, MergedPasteVerdictsLevel_Report) {
   ASSERT_EQ(Verdict::MergePasteVerdicts(Report(), NotSet()).level(),
             Rule::Level::kReport);
   ASSERT_EQ(Verdict::MergePasteVerdicts(Report(), Report()).level(),
@@ -74,7 +74,7 @@ TEST(DataControlVerdictTest, MergedLevel_Report) {
             Rule::Level::kAllow);
 }
 
-TEST(DataControlVerdictTest, MergedLevel_Warn) {
+TEST(DataControlVerdictTest, MergedPasteVerdictsLevel_Warn) {
   ASSERT_EQ(Verdict::MergePasteVerdicts(Warn(), NotSet()).level(),
             Rule::Level::kWarn);
   ASSERT_EQ(Verdict::MergePasteVerdicts(Warn(), Report()).level(),
@@ -87,7 +87,7 @@ TEST(DataControlVerdictTest, MergedLevel_Warn) {
             Rule::Level::kAllow);
 }
 
-TEST(DataControlVerdictTest, MergedLevel_Block) {
+TEST(DataControlVerdictTest, MergedPasteVerdictsLevel_Block) {
   ASSERT_EQ(Verdict::MergePasteVerdicts(Block(), NotSet()).level(),
             Rule::Level::kBlock);
   ASSERT_EQ(Verdict::MergePasteVerdicts(Block(), Report()).level(),
@@ -100,7 +100,7 @@ TEST(DataControlVerdictTest, MergedLevel_Block) {
             Rule::Level::kAllow);
 }
 
-TEST(DataControlVerdictTest, MergedLevel_Allow) {
+TEST(DataControlVerdictTest, MergedPasteVerdictsLevel_Allow) {
   ASSERT_EQ(Verdict::MergePasteVerdicts(Allow(), NotSet()).level(),
             Rule::Level::kAllow);
   ASSERT_EQ(Verdict::MergePasteVerdicts(Allow(), Report()).level(),
@@ -111,6 +111,33 @@ TEST(DataControlVerdictTest, MergedLevel_Allow) {
             Rule::Level::kAllow);
   ASSERT_EQ(Verdict::MergePasteVerdicts(Allow(), Allow()).level(),
             Rule::Level::kAllow);
+}
+
+TEST(DataControlVerdictTest, MergedCopyWarningVerdictsLevel) {
+  ASSERT_EQ(Verdict::MergeCopyWarningVerdicts(Warn(), Block()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergeCopyWarningVerdicts(Warn(), Warn()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergeCopyWarningVerdicts(Warn(), Report()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergeCopyWarningVerdicts(Warn(), Allow()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergeCopyWarningVerdicts(Warn(), NotSet()).level(),
+            Rule::Level::kWarn);
+
+  // This is enforced through a CHECK in `MergeCopyWarningVerdicts` as a
+  // blocking "source-only verdict" shouldn't reach code that calls this
+  // function.
+  // ASSERT_EQ(Verdict::MergeCopyWarningVerdicts(Block(), Warn()),
+  //           Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergeCopyWarningVerdicts(Warn(), Warn()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergeCopyWarningVerdicts(Report(), Warn()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergeCopyWarningVerdicts(Allow(), Warn()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergeCopyWarningVerdicts(NotSet(), Warn()).level(),
+            Rule::Level::kWarn);
 }
 
 TEST(DataControlVerdictTest, TriggeredRules) {
@@ -133,7 +160,7 @@ TEST(DataControlVerdictTest, TriggeredRules) {
   EXPECT_EQ(block.triggered_rules().at(kBlockRuleID), kBlockRuleName);
 }
 
-TEST(DataControlVerdictTest, MergedTriggeredRules) {
+TEST(DataControlVerdictTest, MergedPasteVerdictsTriggeredRules) {
   // Two verdicts with the same triggered rule merge correctly and don't
   // internally duplicate the rule in two.
   auto merged_warnings = Verdict::MergePasteVerdicts(Warn(), Warn());
@@ -148,6 +175,35 @@ TEST(DataControlVerdictTest, MergedTriggeredRules) {
   EXPECT_EQ(all_merged.triggered_rules().size(), 1u);
   EXPECT_TRUE(all_merged.triggered_rules().count(kBlockRuleID));
   EXPECT_EQ(all_merged.triggered_rules().at(kBlockRuleID), kBlockRuleName);
+}
+
+TEST(DataControlVerdictTest, MergedCopyWarningVerdictsTriggeredRules) {
+  // Two verdicts with the same triggered rule merge correctly and don't
+  // internally duplicate the rule in two.
+  auto merged_warnings = Verdict::MergePasteVerdicts(Warn(), Warn());
+  EXPECT_EQ(merged_warnings.triggered_rules().size(), 1u);
+  EXPECT_TRUE(merged_warnings.triggered_rules().count(kWarnRuleID));
+  EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleID), kWarnRuleName);
+
+  // Triggered rules in the OS clipboard verdict are only kept if it's a
+  // warning.
+  auto report_and_warn = Verdict::MergeCopyWarningVerdicts(Report(), Warn());
+  EXPECT_EQ(report_and_warn.triggered_rules().size(), 2u);
+  EXPECT_TRUE(report_and_warn.triggered_rules().count(kReportRuleID));
+  EXPECT_TRUE(report_and_warn.triggered_rules().count(kWarnRuleID));
+  EXPECT_EQ(report_and_warn.triggered_rules().at(kReportRuleID),
+            kReportRuleName);
+  EXPECT_EQ(report_and_warn.triggered_rules().at(kWarnRuleID), kWarnRuleName);
+
+  auto warn_and_block = Verdict::MergeCopyWarningVerdicts(Warn(), Block());
+  EXPECT_EQ(warn_and_block.triggered_rules().size(), 1u);
+  EXPECT_TRUE(warn_and_block.triggered_rules().count(kWarnRuleID));
+  EXPECT_EQ(warn_and_block.triggered_rules().at(kWarnRuleID), kWarnRuleName);
+
+  auto warn_and_report = Verdict::MergeCopyWarningVerdicts(Warn(), Report());
+  EXPECT_EQ(warn_and_report.triggered_rules().size(), 1u);
+  EXPECT_TRUE(warn_and_report.triggered_rules().count(kWarnRuleID));
+  EXPECT_EQ(warn_and_report.triggered_rules().at(kWarnRuleID), kWarnRuleName);
 }
 
 }  // namespace data_controls
