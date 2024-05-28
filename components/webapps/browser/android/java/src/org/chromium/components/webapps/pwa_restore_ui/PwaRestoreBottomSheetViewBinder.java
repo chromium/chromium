@@ -46,6 +46,9 @@ class PwaRestoreBottomSheetViewBinder {
         } else if (propertyKey.equals(PwaRestoreProperties.EXPANDED_BUTTON_LABEL)) {
             ((Button) view.getContentView().findViewById(R.id.restore_button))
                     .setText(model.get(PwaRestoreProperties.EXPANDED_BUTTON_LABEL));
+        } else if (propertyKey.equals(PwaRestoreProperties.EXPANDED_BUTTON_ENABLED)) {
+            ((Button) view.getContentView().findViewById(R.id.restore_button))
+                    .setEnabled(model.get(PwaRestoreProperties.EXPANDED_BUTTON_ENABLED));
         } else if (propertyKey.equals(PwaRestoreProperties.BACK_BUTTON_ON_CLICK_CALLBACK)) {
             view.setBackButtonListener(
                     model.get(PwaRestoreProperties.BACK_BUTTON_ON_CLICK_CALLBACK));

@@ -99,6 +99,7 @@ class PwaRestoreBottomSheetMediator {
         }
         mModel.set(PwaRestoreProperties.APPS, appList);
         mModel.set(PwaRestoreProperties.DESELECT_BUTTON_ENABLED, false);
+        mModel.set(PwaRestoreProperties.EXPANDED_BUTTON_ENABLED, false);
     }
 
     private void onRestoreButtonClicked() {
@@ -137,6 +138,7 @@ class PwaRestoreBottomSheetMediator {
         }
 
         mModel.set(PwaRestoreProperties.DESELECT_BUTTON_ENABLED, somethingSelected);
+        mModel.set(PwaRestoreProperties.EXPANDED_BUTTON_ENABLED, somethingSelected);
     }
 
     PropertyModel getModel() {
