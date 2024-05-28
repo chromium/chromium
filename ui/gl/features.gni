@@ -13,8 +13,7 @@ declare_args() {
 
   # Should EGL support be compiled?
   # Can be overriden to test during bring up of EGL support on other platforms.
-  use_egl =
-      is_win || is_android || is_linux || is_chromeos || is_fuchsia || is_apple
+  use_egl = true
 
   # Should Dawn support be compiled to back the WebGPU implementation?
   # Also controls linking Dawn dependencies in such as SPIRV-Tools/SPIRV-Cross.
