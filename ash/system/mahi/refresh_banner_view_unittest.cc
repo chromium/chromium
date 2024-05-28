@@ -159,4 +159,15 @@ TEST_F(RefreshBannerViewTest, Metrics) {
   histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 1);
 }
 
+TEST_F(RefreshBannerViewTest, ClipPathUpdatedOnVisibilityChange) {
+  RefreshBannerView banner_view(ui_controller());
+  ASSERT_FALSE(banner_view.GetVisible());
+  banner_view.SetBounds(0, 0, 200, 200);
+  // Changing the visibility should result in the clip path being updated.
+  banner_view.SetClipPath(SkPath::Rect(SkRect::MakeWH(100, 100)));
+  auto previous_clip_path = banner_view.clip_path();
+  banner_view.SetVisible(true);
+  EXPECT_NE(banner_view.clip_path(), previous_clip_path);
+}
+
 }  // namespace ash

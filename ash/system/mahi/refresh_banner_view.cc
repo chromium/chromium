@@ -182,13 +182,24 @@ void RefreshBannerView::Hide() {
   }
 }
 
-void RefreshBannerView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+void RefreshBannerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   SetClipPath(GetClipPath(GetContentsBounds().size()));
+}
 
+void RefreshBannerView::ViewHierarchyChanged(
+    const views::ViewHierarchyChangedDetails& details) {
   // Make sure the refresh banner is always shown on top.
   if (layer() && layer()->parent()) {
     layer()->parent()->StackAtTop(layer());
   }
+}
+
+void RefreshBannerView::VisibilityChanged(View* starting_from,
+                                          bool is_visible) {
+  if (!is_visible || GetContentsBounds().size().IsZero()) {
+    return;
+  }
+  SetClipPath(GetClipPath(GetContentsBounds().size()));
 }
 
 views::View* RefreshBannerView::GetView() {

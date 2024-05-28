@@ -38,6 +38,9 @@ class ASH_EXPORT RefreshBannerView : public views::FlexLayoutView,
  private:
   // views::FlexLayoutView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override;
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
 
   // MahiUiController::Delegate:
   views::View* GetView() override;
