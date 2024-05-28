@@ -361,8 +361,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _dismissWebAndAppSettingDetailsController =
       GetApplicationContext()
           ->GetSystemIdentityManager()
-          ->PresentWebAndAppSettingDetailsController(identity,
-                                                     self.viewController, YES);
+          ->PresentWebAndAppSettingDetailsController(
+              identity, self.viewController, /*animated=*/YES,
+              base::DoNothing());
 }
 
 - (void)openPersonalizeGoogleServices {
@@ -464,7 +465,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
               self.authService->GetPrimaryIdentity(
                   signin::ConsentLevel::kSignin),
               self.viewController,
-              /*animated=*/YES);
+              /*animated=*/YES, base::DoNothing());
 }
 
 #pragma mark - SignoutActionSheetCoordinatorDelegate

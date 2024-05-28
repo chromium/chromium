@@ -132,37 +132,40 @@ class SystemIdentityManager {
   void RemoveObserver(SystemIdentityManagerObserver* observer);
 
   // Presents a new Account Details view and returns a callback that can be
-  // used to dismiss the view (can be ignore if not needed). `identity` is the
-  // identity used to present the view, `view_controller` is the view used to
-  // present the details, `animated` controls whether the view is presented
-  // with an animation.
-  // TODO(crbug.com/40056250): Remove virtual for this method.
-  virtual DismissViewCallback PresentAccountDetailsController(
+  // used to dismiss the view (can be ignore if not needed).
+  // * `identity` is the identity used to present the view.
+  // * `view_controller` is the view used to present the details.
+  // * `animated` controls whether the view is presented with an animation.
+  // * `dismissal_completion` is called once the dialog is dismissed.
+  DismissViewCallback PresentAccountDetailsController(
       id<SystemIdentity> identity,
       UIViewController* view_controller,
-      bool animated);
+      bool animated,
+      base::OnceClosure dismissal_completion);
 
   // Presents a new Web and App Setting Details view and returns a callback
   // that can be used to dismiss the view (can be ignore if not needed).
-  // `identity` is the identity used to present the view, `view_controller`
-  // is the view used to present the details, `animated` controls whether the
-  // view is presented with an animation.
-  // TODO(crbug.com/40056250): Remove virtual for this method.
-  virtual DismissViewCallback PresentWebAndAppSettingDetailsController(
+  // * `identity` is the identity used to present the view.
+  // * `view_controller` is the view used to present the details.
+  // * `animated` controls whether the view is presented with an animation.
+  // * `dismissal_completion` is called once the dialog is dismissed.
+  DismissViewCallback PresentWebAndAppSettingDetailsController(
       id<SystemIdentity> identity,
       UIViewController* view_controller,
-      bool animated);
+      bool animated,
+      base::OnceClosure dismissal_completion);
 
   // Presents a new Linked Services Settings Details view and returns a callback
   // that can be used to dismiss the view (can be ignore if not needed).
-  // `identity` is the identity used to present the view, `view_controller`
-  // is the view used to present the details, `animated` controls whether the
-  // view is presented with an animation.
-  // TODO(crbug.com/40056250): Remove virtual for this method.
-  virtual DismissViewCallback PresentLinkedServicesSettingsDetailsController(
+  // * `identity` is the identity used to present the view.
+  // * `view_controller` is the view used to present the details.
+  // * `animated` controls whether the view is presented with an animation.
+  // * `dismissal_completion` is called once the dialog is dismissed.
+  DismissViewCallback PresentLinkedServicesSettingsDetailsController(
       id<SystemIdentity> identity,
       UIViewController* view_controller,
-      bool animated);
+      bool animated,
+      base::OnceClosure dismissal_completion);
 
   // Returns whether signin is supported by the provider.
   virtual bool IsSigninSupported() = 0;
@@ -263,19 +266,16 @@ class SystemIdentityManager {
 
   // Presents a new Account Details view and returns a callback that can be
   // used to dismiss the view (can be ignore if not needed).
-  // TODO(crbug.com/40056250): Make this method pure virtual.
   virtual DismissViewCallback PresentAccountDetailsController(
-      PresentDialogConfiguration configuration);
+      PresentDialogConfiguration configuration) = 0;
   // Presents a new Web and App Setting Details view and returns a callback
   // that can be used to dismiss the view (can be ignore if not needed).
-  // TODO(crbug.com/40056250): Make this method pure virtual.
   virtual DismissViewCallback PresentWebAndAppSettingDetailsController(
-      PresentDialogConfiguration configuration);
+      PresentDialogConfiguration configuration) = 0;
   // Presents a new Linked Services Settings Details view and returns a callback
   // that can be used to dismiss the view (can be ignore if not needed).
-  // TODO(crbug.com/40056250): Make this method pure virtual.
   virtual DismissViewCallback PresentLinkedServicesSettingsDetailsController(
-      PresentDialogConfiguration configuration);
+      PresentDialogConfiguration configuration) = 0;
 
   // The SystemIdentityManager is sequence-affine. This is protected to
   // allow sub-classes access to the member field for use in DCHECK().

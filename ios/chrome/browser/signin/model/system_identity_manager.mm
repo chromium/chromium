@@ -79,11 +79,13 @@ void SystemIdentityManager::RemoveObserver(
 DismissViewCallback SystemIdentityManager::PresentAccountDetailsController(
     id<SystemIdentity> identity,
     UIViewController* view_controller,
-    bool animated) {
+    bool animated,
+    base::OnceClosure dismissal_completion) {
   SystemIdentityManager::PresentDialogConfiguration configuration;
   configuration.identity = identity;
   configuration.view_controller = view_controller;
   configuration.animated = animated;
+  configuration.dismissal_completion = std::move(dismissal_completion);
   return PresentAccountDetailsController(std::move(configuration));
 }
 
@@ -91,11 +93,13 @@ DismissViewCallback
 SystemIdentityManager::PresentWebAndAppSettingDetailsController(
     id<SystemIdentity> identity,
     UIViewController* view_controller,
-    bool animated) {
+    bool animated,
+    base::OnceClosure dismissal_completion) {
   SystemIdentityManager::PresentDialogConfiguration configuration;
   configuration.identity = identity;
   configuration.view_controller = view_controller;
   configuration.animated = animated;
+  configuration.dismissal_completion = std::move(dismissal_completion);
   return PresentWebAndAppSettingDetailsController(std::move(configuration));
 }
 
@@ -103,11 +107,13 @@ DismissViewCallback
 SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
     id<SystemIdentity> identity,
     UIViewController* view_controller,
-    bool animated) {
+    bool animated,
+    base::OnceClosure dismissal_completion) {
   SystemIdentityManager::PresentDialogConfiguration configuration;
   configuration.identity = identity;
   configuration.view_controller = view_controller;
   configuration.animated = animated;
+  configuration.dismissal_completion = std::move(dismissal_completion);
   return PresentLinkedServicesSettingsDetailsController(
       std::move(configuration));
 }
@@ -133,21 +139,4 @@ void SystemIdentityManager::FireIdentityAccessTokenRefreshFailed(
   for (auto& observer : observers_) {
     observer.OnIdentityAccessTokenRefreshFailed(identity, error);
   }
-}
-
-DismissViewCallback SystemIdentityManager::PresentAccountDetailsController(
-    SystemIdentityManager::PresentDialogConfiguration configuration) {
-  NOTREACHED_NORETURN();
-}
-
-DismissViewCallback
-SystemIdentityManager::PresentWebAndAppSettingDetailsController(
-    SystemIdentityManager::PresentDialogConfiguration configuration) {
-  NOTREACHED_NORETURN();
-}
-
-DismissViewCallback
-SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
-    SystemIdentityManager::PresentDialogConfiguration configuration) {
-  NOTREACHED_NORETURN();
 }

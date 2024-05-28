@@ -91,7 +91,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       GetApplicationContext()
           ->GetSystemIdentityManager()
           ->PresentWebAndAppSettingDetailsController(identity, _viewController,
-                                                     YES);
+                                                     /*animated=*/YES,
+                                                     base::DoNothing());
 }
 
 - (void)openLinkedGoogleServicesDialog {
@@ -107,7 +108,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       GetApplicationContext()
           ->GetSystemIdentityManager()
           ->PresentLinkedServicesSettingsDetailsController(
-              identity, _viewController, YES);
+              identity, _viewController, /*animated=*/YES, base::DoNothing());
 }
 
 @end

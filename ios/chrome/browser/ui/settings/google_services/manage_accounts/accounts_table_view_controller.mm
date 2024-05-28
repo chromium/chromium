@@ -600,7 +600,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       GetApplicationContext()
           ->GetSystemIdentityManager()
           ->PresentAccountDetailsController(identity, self,
-                                            /*animated=*/YES);
+                                            /*animated=*/YES,
+                                            base::DoNothing());
 }
 
 // Handles the account remove action from
