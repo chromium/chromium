@@ -47,6 +47,7 @@ import org.chromium.net.test.FailurePhase;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -2318,6 +2319,9 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK},
+            reason = "b/343146969")
     public void testFailures() throws Exception {
         throwOrCancel(FailureType.CANCEL_SYNC, ResponseStep.ON_RECEIVED_REDIRECT, false, false);
         throwOrCancel(FailureType.CANCEL_ASYNC, ResponseStep.ON_RECEIVED_REDIRECT, false, false);
@@ -2345,6 +2349,30 @@ public class CronetUrlRequestTest {
                 true,
                 false);
         throwOrCancel(FailureType.THROW_SYNC, ResponseStep.ON_READ_COMPLETED, true, true);
+    }
+
+    @Test
+    @SmallTest
+    public void testCancelBeforeResponse() throws IOException {
+        // Use a hanging server to prevent race between getting a response and cancel().
+        // Cronet only records the responseInfo once onResponseStarted is called.
+        try (ServerSocket hangingServer = new ServerSocket(0)) {
+            String url = "http://localhost:" + hangingServer.getLocalPort();
+            TestUrlRequestCallback callback = new TestUrlRequestCallback();
+            UrlRequest.Builder builder =
+                    mTestRule
+                            .getTestFramework()
+                            .getEngine()
+                            .newUrlRequestBuilder(url, callback, callback.getExecutor());
+            UrlRequest urlRequest = builder.build();
+            urlRequest.start();
+            hangingServer.accept();
+            urlRequest.cancel();
+            callback.blockForDone();
+
+            assertResponseStepCanceled(callback);
+            assertThat(callback.getResponseInfo()).isNull();
+        }
     }
 
     @Test

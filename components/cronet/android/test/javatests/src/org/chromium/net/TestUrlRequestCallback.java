@@ -322,6 +322,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         assertThat(mError).isNull();
 
         mResponseStep = ResponseStep.ON_CANCELED;
+        mResponseInfo = info;
         mOnCanceledCalled = true;
         openDone();
         mBlockOnTerminalState.block();

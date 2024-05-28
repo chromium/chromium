@@ -1553,6 +1553,29 @@ public class BidirectionalStreamTest {
 
     @Test
     @SmallTest
+    public void testCancelBeforeResponse() {
+        // Use a hanging endpoint to prevent race between getting a response and cancel().
+        // Cronet only records the responseInfo once onResponseHeadersReceived is called.
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        BidirectionalStream.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newBidirectionalStreamBuilder(
+                                Http2TestServer.getHangingRequestUrl(),
+                                callback,
+                                callback.getExecutor());
+        BidirectionalStream stream = builder.build();
+        stream.start();
+        stream.cancel();
+        callback.blockForDone();
+
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_CANCELED);
+        assertThat(callback.getResponseInfo()).isNull();
+    }
+
+    @Test
+    @SmallTest
     public void testThrowOnSucceeded() {
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         callback.setFailure(FailureType.THROW_SYNC, ResponseStep.ON_SUCCEEDED);
