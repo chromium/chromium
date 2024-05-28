@@ -191,13 +191,12 @@ void WakeLock::DidReceivePermissionResponse(
     ScriptPromiseResolver<WakeLockSentinel>* resolver,
     mojom::blink::PermissionStatus status) {
   // https://w3c.github.io/screen-wake-lock/#the-request-method
-  DCHECK(status == mojom::blink::PermissionStatus::GRANTED ||
-         status == mojom::blink::PermissionStatus::DENIED);
   // 8.2. If state is "denied", then:
   // 8.2.1. Queue a global task on the screen wake lock task source given
   //        document's relevant global object to reject promise with a
   //        "NotAllowedError" DOMException.
   // 8.2.2. Abort these steps.
+  // Note: Treat ASK permission (default in headless_shell) as DENIED.
   if (status != mojom::blink::PermissionStatus::GRANTED) {
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
         resolver->GetScriptState()->GetIsolate(),
