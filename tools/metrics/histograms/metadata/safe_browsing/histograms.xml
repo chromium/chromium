@@ -358,6 +358,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.CheckUrl.Action"
+    enum="SafeBrowsingCheckUrlAction" expires_after="2025-05-22">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The action of URL check conducted by the Safe Browsing reputation lookup.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.CheckUrl.FirstRequestThreatType{ThreatSource}"
     enum="SBThreatType" expires_after="2024-11-17">
   <owner>drubery@chromium.org</owner>

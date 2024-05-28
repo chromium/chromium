@@ -36,8 +36,22 @@ using CompleteCheckResult = SafeBrowsingLookupMechanism::CompleteCheckResult;
 using hash_realtime_utils::HashRealTimeSelection;
 
 namespace {
+
+// Enum used to log the action of URL checks.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CheckUrlAction {
+  kChecked = 0,
+  kUnsafe = 1,
+  kMaxValue = kUnsafe,
+};
+
 void RecordCheckUrlTimeout(bool timed_out) {
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.CheckUrl.Timeout", timed_out);
+}
+
+void RecordCheckUrlAction(CheckUrlAction action) {
+  base::UmaHistogramEnumeration("SafeBrowsing.CheckUrl.Action", action);
 }
 
 std::string GetPerformedCheckSuffix(
@@ -382,8 +396,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Unsafe",
-                            network::mojom::RequestDestination::kDocument);
+  RecordCheckUrlAction(CheckUrlAction::kUnsafe);
 
   UnsafeResource resource =
       MakeUnsafeResource(url, threat_type, metadata, threat_source.value(),
@@ -436,8 +449,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
       continue;
     }
 
-    UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Checked",
-                              network::mojom::RequestDestination::kDocument);
+    RecordCheckUrlAction(CheckUrlAction::kChecked);
 
     SBThreatType threat_type = CheckWebUIUrls(url);
     if (threat_type != SBThreatType::SB_THREAT_TYPE_SAFE) {

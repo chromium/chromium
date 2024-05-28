@@ -9809,18 +9809,6 @@ Safe Browsing lookups, which is critical for security. -->
   </summary>
 </histogram>
 
-<histogram base="true" name="SB2.RequestDestination" enum="RequestDestination"
-    expires_after="2024-09-22">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Request destinations of resources that were inspected by Safe Browsing in
-    the SafeBrowsingResourceThrottle. kDocument is for a main resource request
-    in a main frame or a Portal. Subframe requests are a combination of kIframe
-    and kFrame.
-  </summary>
-</histogram>
-
 <histogram name="SBIRS.DiscardedIncident" enum="IncidentType"
     expires_after="never">
 <!-- expires-never: This tracks health of the incident reporting feature and

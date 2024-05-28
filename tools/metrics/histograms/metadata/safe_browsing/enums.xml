@@ -283,6 +283,11 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Too many requests"/>
 </enum>
 
+<enum name="SafeBrowsingCheckUrlAction">
+  <int value="0" label="URL was checked."/>
+  <int value="1" label="URL was classified as unsafe."/>
+</enum>
+
 <enum name="SafeBrowsingDelayedWarningEvent">
   <int value="0" label="User loaded a page with a delayed warning"/>
   <int value="1" label="User left the page and the warning was never shown"/>
