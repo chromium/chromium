@@ -2054,6 +2054,13 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // is opened with "noopener", and won't be unset if the opener is closed.
   bool opened_by_another_window_;
 
+  // Set to true while calling out to notify one-off observers (ie non-
+  // WebContentsObservers). These observers should not destroy WebContentsImpl
+  // while it is on the call stack, as that leads to use-after-frees.
+  bool prevent_destruction_ = false;
+
+  bool is_being_destroyed_ = false;
+
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<WebContentsAndroid> web_contents_android_;
 #endif
@@ -2141,13 +2148,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Whether there has been a call to UpdateWebContentsVisibility(VISIBLE).
   bool did_first_set_visible_ = false;
-
-  // Set to true while calling out to notify one-off observers (ie non-
-  // WebContentsObservers). These observers should not destroy WebContentsImpl
-  // while it is on the call stack, as that leads to use-after-frees.
-  bool prevent_destruction_ = false;
-
-  bool is_being_destroyed_ = false;
 
   // Indicates whether we should notify about disconnection of this
   // WebContentsImpl. This is used to ensure disconnection notifications only
