@@ -7,11 +7,13 @@
 #include "base/uuid.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mock_cluster_manager.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -39,20 +41,6 @@ class MockObserver
   MOCK_METHOD(void, HideEntryPoint, (), (override));
 };
 
-class MockProductSpecificationsService
-    : public commerce::ProductSpecificationsService {
- public:
-  MockProductSpecificationsService()
-      : ProductSpecificationsService(
-            base::DoNothing(),
-            std::make_unique<syncer::MockModelTypeChangeProcessor>()) {}
-  ~MockProductSpecificationsService() override = default;
-  MOCK_METHOD(const std::optional<commerce::ProductSpecificationsSet>,
-              AddProductSpecificationsSet,
-              (const std::string& name, const std::vector<GURL>& urls),
-              (override));
-};
-
 class ProductSpecificationsEntryPointControllerBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -64,14 +52,12 @@ class ProductSpecificationsEntryPointControllerBrowserTest
             browser()->profile()));
     mock_cluster_manager_ = static_cast<commerce::MockClusterManager*>(
         mock_shopping_service->GetClusterManager());
-    product_spec_service_ =
-        std::make_unique<MockProductSpecificationsService>();
-    ON_CALL(*mock_shopping_service, GetProductSpecificationsService)
-        .WillByDefault(testing::Return(product_spec_service_.get()));
-
-    controller_ =
-        std::make_unique<commerce::ProductSpecificationsEntryPointController>(
-            browser());
+    mock_product_spec_service_ =
+        static_cast<commerce::MockProductSpecificationsService*>(
+            mock_shopping_service->GetProductSpecificationsService());
+    controller_ = browser()
+                      ->browser_window_features()
+                      ->product_specifications_entry_point_controller();
     observer_ = std::make_unique<MockObserver>();
     controller_->AddObserver(observer_.get());
     // This is needed to make sure that the URL changes caused by navigations
@@ -92,8 +78,6 @@ class ProductSpecificationsEntryPointControllerBrowserTest
     is_browser_context_services_created = false;
   }
 
-  void TearDown() override { controller_->RemoveObserver(observer_.get()); }
-
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     is_browser_context_services_created = true;
     commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactory(
@@ -105,8 +89,11 @@ class ProductSpecificationsEntryPointControllerBrowserTest
  protected:
   raw_ptr<commerce::MockClusterManager, AcrossTasksDanglingUntriaged>
       mock_cluster_manager_;
-  std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
-  std::unique_ptr<commerce::ProductSpecificationsEntryPointController>
+  raw_ptr<commerce::MockProductSpecificationsService,
+          AcrossTasksDanglingUntriaged>
+      mock_product_spec_service_;
+  raw_ptr<commerce::ProductSpecificationsEntryPointController,
+          AcrossTasksDanglingUntriaged>
       controller_;
   base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<MockObserver> observer_;
@@ -198,13 +185,13 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                        ExecuteEntryPoint) {
   // Set up product spec service.
-  EXPECT_CALL(*product_spec_service_,
+  EXPECT_CALL(*mock_product_spec_service_,
               AddProductSpecificationsSet(testing::_, testing::_))
       .Times(1);
   const base::Uuid uuid = base::Uuid::GenerateRandomV4();
   commerce::ProductSpecificationsSet set(
       uuid.AsLowercaseString(), 0, 0, {GURL(kTestUrl1), GURL(kTestUrl2)}, "");
-  ON_CALL(*product_spec_service_, AddProductSpecificationsSet)
+  ON_CALL(*mock_product_spec_service_, AddProductSpecificationsSet)
       .WillByDefault(testing::Return(set));
 
   // Trigger entry point with selection.

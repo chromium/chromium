@@ -76,7 +76,7 @@ ProductSpecificationsEntryPointController::
         shopping_service->GetProductSpecificationsService();
     cluster_manager_ = shopping_service->GetClusterManager();
     if (cluster_manager_) {
-      cluster_manager_->AddObserver(this);
+      cluster_manager_observations_.Observe(cluster_manager_);
     }
   }
 }
