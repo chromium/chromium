@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="StartSurface.Module.Click" enum="ModuleTypeOnStartAndNTP"
-    expires_after="2024-09-22">
+    expires_after="2024-11-24">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
