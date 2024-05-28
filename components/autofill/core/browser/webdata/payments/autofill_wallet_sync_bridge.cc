@@ -391,18 +391,6 @@ void AutofillWalletSyncBridge::SetSyncData(
         syncer::AUTOFILL_WALLET_DATA);
 }
 
-void AutofillWalletSyncBridge::ReconcileServerCvcForWalletCards() {
-  const std::vector<std::unique_ptr<ServerCvc>>& deleted_server_cvc_list =
-      GetAutofillTable()->DeleteOrphanedServerCvcs();
-
-  for (const std::unique_ptr<ServerCvc>& deleted_server_cvc :
-       deleted_server_cvc_list) {
-    web_data_backend_->NotifyOnServerCvcChanged(
-        ServerCvcChange{ServerCvcChange::REMOVE,
-                        deleted_server_cvc->instrument_id, ServerCvc{}});
-  }
-}
-
 bool AutofillWalletSyncBridge::SetWalletCards(
     std::vector<CreditCard> wallet_cards,
     bool notify_webdata_backend) {
@@ -619,6 +607,18 @@ void AutofillWalletSyncBridge::LogVirtualCardMetadataChanges(
         (*old_data_iterator)->card_art_url() != new_card.card_art_url()) {
       AutofillMetrics::LogVirtualCardMetadataSynced(/*existing_card=*/true);
     }
+  }
+}
+
+void AutofillWalletSyncBridge::ReconcileServerCvcForWalletCards() {
+  const std::vector<std::unique_ptr<ServerCvc>>& deleted_server_cvc_list =
+      GetAutofillTable()->DeleteOrphanedServerCvcs();
+
+  for (const std::unique_ptr<ServerCvc>& deleted_server_cvc :
+       deleted_server_cvc_list) {
+    web_data_backend_->NotifyOnServerCvcChanged(
+        ServerCvcChange{ServerCvcChange::REMOVE,
+                        deleted_server_cvc->instrument_id, ServerCvc{}});
   }
 }
 
