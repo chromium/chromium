@@ -783,9 +783,8 @@ class MoveTestWidgetDelegate : public WidgetDelegateView {
 // Acquiring the layer resets the bounds of the window. This test verifies the
 // Widget is still notified correctly of a move in this case.
 TEST_F(NativeWidgetAuraTest, OnWidgetMovedInvokedAfterAcquireLayer) {
-  // |delegate| is owned by the Widget by default and is deleted when the widget
-  // is destroyed.
-  // See WidgetDelegateView::WidgetDelegateView();
+  // |delegate| is not owned by the Widget but it is deleted when the widget
+  // is destroyed since it is "owned" by the root view via the View hierarchy.
   auto delegate = std::make_unique<MoveTestWidgetDelegate>();
   auto* delegate_ptr = delegate.release();
   UniqueWidgetPtr widget = base::WrapUnique(Widget::CreateWindowWithContext(

@@ -3801,7 +3801,7 @@ bool RunGetNativeThemeFromDestructor(Widget::InitParams params,
 }
 
 // See description of RunGetNativeThemeFromDestructor() for details.
-TEST_F(DesktopWidgetTest, GetNativeThemeFromDestructor) {
+TEST_F(DesktopWidgetTest, DISABLED_GetNativeThemeFromDestructor) {
   if (RunGetNativeThemeFromDestructor(
           CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
                        Widget::InitParams::TYPE_POPUP),

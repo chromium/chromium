@@ -266,7 +266,6 @@ Widget* Widget::CreateWindowWithParent(WidgetDelegate* delegate,
 Widget* Widget::CreateWindowWithParent(std::unique_ptr<WidgetDelegate> delegate,
                                        gfx::NativeView parent,
                                        const gfx::Rect& bounds) {
-  DCHECK(delegate->owned_by_widget());
   return CreateWindowWithParent(delegate.release(), parent, bounds);
 }
 
@@ -286,7 +285,6 @@ Widget* Widget::CreateWindowWithContext(
     std::unique_ptr<WidgetDelegate> delegate,
     gfx::NativeWindow context,
     const gfx::Rect& bounds) {
-  DCHECK(delegate->owned_by_widget());
   return CreateWindowWithContext(delegate.release(), context, bounds);
 }
 

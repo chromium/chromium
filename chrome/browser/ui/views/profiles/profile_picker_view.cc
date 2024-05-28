@@ -510,6 +510,10 @@ void ProfilePickerView::Clear() {
   }
 
   WindowClosing();
+  // TODO(crbug.com/40232473): Here we set owned by widget to ensure the
+  // DeleteDelegate() call deletes this instance. Once the full migration to
+  // "client owns delegate" is done, this will need to change.
+  SetOwnedByWidget(true);
   DeleteDelegate();
 }
 

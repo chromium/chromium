@@ -510,10 +510,12 @@ TEST_F(NativeViewHostAuraTest, FocusManagerUpdatedDuringDestruction) {
       std::make_unique<NativeViewHost>();
   toplevel()->GetContentsView()->AddChildView(native_view_host.get());
 
+  auto widget_delegate_view = std::make_unique<WidgetDelegateView>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
                    Widget::InitParams::TYPE_CONTROL);
-  params.delegate = new views::WidgetDelegateView();  // Owned by the widget.
+  // Delegate is "owned" via the view and will be deleted with it.
+  params.delegate = widget_delegate_view.release();
   params.child = true;
   params.bounds = gfx::Rect(10, 10, 100, 100);
   params.parent = window.get();
@@ -522,10 +524,10 @@ TEST_F(NativeViewHostAuraTest, FocusManagerUpdatedDuringDestruction) {
 
   native_view_host->Attach(window.get());
 
-  View* view1 = new View;  // Owned by |child_widget|.
+  View* view1 = child_widget->GetContentsView()->AddChildView(
+      std::make_unique<View>());  // Owned by |child_widget|.
   view1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   view1->SetBounds(0, 0, 20, 20);
-  child_widget->GetContentsView()->AddChildView(view1);
   child_widget->Show();
   view1->RequestFocus();
   EXPECT_EQ(view1, toplevel()->GetFocusManager()->GetFocusedView());

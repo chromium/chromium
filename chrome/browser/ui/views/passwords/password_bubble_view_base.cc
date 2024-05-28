@@ -164,7 +164,9 @@ void PasswordBubbleViewBase::CloseCurrentBubble() {
         g_manage_passwords_bubble_->GetController();
     DCHECK(controller);
     controller->OnBubbleClosing();
-    g_manage_passwords_bubble_->GetWidget()->Close();
+    if (auto* const widget = g_manage_passwords_bubble_->GetWidget()) {
+      widget->Close();
+    }
   }
 }
 

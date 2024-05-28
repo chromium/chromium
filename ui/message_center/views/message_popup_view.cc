@@ -35,7 +35,6 @@ MessagePopupView::MessagePopupView(MessageView* message_view,
     : message_view_(message_view),
       popup_collection_(popup_collection),
       a11y_feedback_on_init_(a11y_feedback_on_init) {
-  SetOwnedByWidget(false);
   set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -50,7 +49,6 @@ MessagePopupView::MessagePopupView(MessagePopupCollection* popup_collection)
     : message_view_(nullptr),
       popup_collection_(popup_collection),
       a11y_feedback_on_init_(false) {
-  SetOwnedByWidget(false);
   set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }

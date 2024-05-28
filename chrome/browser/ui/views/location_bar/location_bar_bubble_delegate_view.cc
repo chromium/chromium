@@ -193,7 +193,9 @@ void LocationBarBubbleDelegateView::AdjustForFullscreen(
 }
 
 void LocationBarBubbleDelegateView::CloseBubble() {
-  GetWidget()->Close();
+  if (auto* const widget = GetWidget()) {
+    widget->Close();
+  }
 }
 
 void LocationBarBubbleDelegateView::SetCloseOnMainFrameOriginNavigation(

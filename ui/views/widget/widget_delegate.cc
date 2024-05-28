@@ -534,11 +534,7 @@ gfx::Rect WidgetDelegate::GetDesiredWidgetBounds() {
 ////////////////////////////////////////////////////////////////////////////////
 // WidgetDelegateView:
 
-WidgetDelegateView::WidgetDelegateView() {
-  // TODO (kylixrd): Remove once the Widget ceases to "own" the WidgetDelegate.
-  // A WidgetDelegate should be deleted on DeleteDelegate.
-  SetOwnedByWidget(true);
-}
+WidgetDelegateView::WidgetDelegateView() = default;
 
 WidgetDelegateView::~WidgetDelegateView() = default;
 
