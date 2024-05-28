@@ -343,6 +343,23 @@ bool TextInputHost::GetFirstRectForRange(const gfx::Range& requested_range,
   return true;
 }
 
+bool TextInputHost::IsTextEditCommandEnabled(ui::TextEditCommand command,
+                                             bool* out_enabled) {
+  if (text_input_client_) {
+    *out_enabled = text_input_client_->IsTextEditCommandEnabled(command);
+  } else {
+    *out_enabled = false;
+  }
+  return true;
+}
+
+void TextInputHost::SetTextEditCommandForNextKeyEvent(
+    ui::TextEditCommand command) {
+  if (text_input_client_) {
+    text_input_client_->SetTextEditCommandForNextKeyEvent(command);
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // TextInputHost, remote_cocoa::mojom::TextInputHost synchronous methods:
 
@@ -406,6 +423,14 @@ void TextInputHost::GetFirstRectForRange(
   gfx::Range actual_range;
   GetFirstRectForRange(requested_range, &rect, &actual_range);
   std::move(callback).Run(rect, actual_range);
+}
+
+void TextInputHost::IsTextEditCommandEnabled(
+    ui::TextEditCommand command,
+    IsTextEditCommandEnabledCallback callback) {
+  bool enable;
+  IsTextEditCommandEnabled(command, &enable);
+  std::move(callback).Run(enable);
 }
 
 }  // namespace views

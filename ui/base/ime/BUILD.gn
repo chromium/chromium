@@ -28,11 +28,13 @@ component("ime_types") {
     "ime_text_span.h",
     "infolist_entry.cc",
     "infolist_entry.h",
+    "text_edit_commands.h",
   ]
 
   defines = [ "IS_UI_BASE_IME_TYPES_IMPL" ]
 
   deps = [
+    ":text_edit_commands",
     "//base",
     "//ui/gfx/geometry",
     "//ui/gfx/range",
@@ -74,7 +76,6 @@ component("ime") {
     "mock_input_method.h",
     "surrounding_text_tracker.cc",
     "surrounding_text_tracker.h",
-    "text_edit_commands.h",
     "text_input_client.cc",
     "text_input_client.h",
     "virtual_keyboard_controller.h",
@@ -102,4 +103,8 @@ component("ime") {
   ]
 
   deps = [ "//build:chromeos_buildflags" ]
+}
+
+source_set("text_edit_commands") {
+  sources = [ "text_edit_commands.inc" ]
 }

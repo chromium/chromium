@@ -84,7 +84,7 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 
 // The TextInputClient of the currently focused views::View.
 // TODO(ccameron): This cannot be relied on across processes.
-- (ui::TextInputClient*)textInputClient;
+- (ui::TextInputClient*)textInputClientForTesting;
 
 // Returns true if it is needed to call -[NSApp updateWindows] while updating
 // the text input client.

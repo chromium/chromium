@@ -23,6 +23,7 @@ mojom("mojo") {
     "//services/network/public/mojom",
     "//ui/base/accelerators/mojom",
     "//ui/base/cursor/mojom",
+    "//ui/base/ime/mojom",
     "//ui/base/mojom",
     "//ui/display/mojom",
     "//ui/events/mojom",
@@ -54,7 +55,10 @@ mojom("mojo") {
         "//ui/gfx/platform_font_mac.h",
       ]
       traits_sources = [ "font_mojom_traits.cc" ]
-      traits_public_deps = [ "//ui/gfx" ]
+      traits_public_deps = [
+        "//ui/base/ime",
+        "//ui/gfx",
+      ]
     },
   ]
 }

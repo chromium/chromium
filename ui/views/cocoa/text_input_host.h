@@ -59,6 +59,9 @@ class VIEWS_EXPORT TextInputHost : public remote_cocoa::mojom::TextInputHost {
   bool GetFirstRectForRange(const gfx::Range& requested_range,
                             gfx::Rect* out_rect,
                             gfx::Range* out_actual_range) override;
+  bool IsTextEditCommandEnabled(ui::TextEditCommand command,
+                                bool* out_enabled) override;
+  void SetTextEditCommandForNextKeyEvent(ui::TextEditCommand command) override;
 
   // remote_cocoa::mojom::TextInputHost synchronous methods:
   void HasClient(HasClientCallback callback) override;
@@ -74,6 +77,9 @@ class VIEWS_EXPORT TextInputHost : public remote_cocoa::mojom::TextInputHost {
       GetAttributedSubstringForRangeCallback callback) override;
   void GetFirstRectForRange(const gfx::Range& requested_range,
                             GetFirstRectForRangeCallback callback) override;
+  void IsTextEditCommandEnabled(
+      ui::TextEditCommand command,
+      IsTextEditCommandEnabledCallback callback) override;
 
   // Weak. If non-null the TextInputClient of the currently focused views::View
   // in the hierarchy rooted at the root view of |host_impl_|. Owned by the

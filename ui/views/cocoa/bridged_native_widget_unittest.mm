@@ -702,7 +702,7 @@ NSRange BridgedNativeWidgetTest::GetExpectedSelectionRange() {
 }
 
 void BridgedNativeWidgetTest::SetSelectionRange(NSRange range) {
-  ui::TextInputClient* client = [ns_view_ textInputClient];
+  ui::TextInputClient* client = [ns_view_ textInputClientForTesting];
   client->SetEditableSelectionRange(gfx::Range(range));
 
   [dummy_text_view_ setSelectedRange:range];
@@ -714,7 +714,7 @@ void BridgedNativeWidgetTest::PerformCommand(SEL sel) {
 }
 
 void BridgedNativeWidgetTest::MakeSelection(int start, int end) {
-  ui::TextInputClient* client = [ns_view_ textInputClient];
+  ui::TextInputClient* client = [ns_view_ textInputClientForTesting];
   const gfx::Range range(start, end);
 
   // Although a gfx::Range is directed, the underlying model will not choose an
@@ -1483,7 +1483,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_Transpose) {
 // empty or outside composition range.
 TEST_F(BridgedNativeWidgetTest, TextInput_FirstRectForCharacterRange_Caret) {
   InstallTextField("");
-  ui::TextInputClient* client = [ns_view_ textInputClient];
+  ui::TextInputClient* client = [ns_view_ textInputClientForTesting];
 
   // No composition. Ensure bounds and range corresponding to the current caret
   // position are returned.
@@ -1545,7 +1545,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_FirstRectForCharacterRange_Caret) {
 // the composition range.
 TEST_F(BridgedNativeWidgetTest, TextInput_FirstRectForCharacterRange) {
   InstallTextField("");
-  ui::TextInputClient* client = [ns_view_ textInputClient];
+  ui::TextInputClient* client = [ns_view_ textInputClientForTesting];
 
   const std::u16string test_string = u"test_str";
   const size_t kTextLength = 8;
@@ -1573,7 +1573,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_FirstRectForCharacterRange) {
 // phonetic languages such as Korean and Vietnamese.
 TEST_F(BridgedNativeWidgetTest, TextInput_SimulatePhoneticIme) {
   Textfield* textfield = InstallTextField("");
-  EXPECT_TRUE([ns_view_ textInputClient]);
+  EXPECT_TRUE([ns_view_ textInputClientForTesting]);
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
 
@@ -1645,7 +1645,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_SimulatePhoneticIme) {
 // no candidate IME window to dismiss for this IME.
 TEST_F(BridgedNativeWidgetTest, TextInput_SimulateTelexMoo) {
   Textfield* textfield = InstallTextField("");
-  EXPECT_TRUE([ns_view_ textInputClient]);
+  EXPECT_TRUE([ns_view_ textInputClientForTesting]);
 
   EnterAcceleratorView* enter_view = new EnterAcceleratorView();
   textfield->parent()->AddChildView(enter_view);
@@ -1711,7 +1711,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_SimulateTelexMoo) {
 // suppressing accelerators.
 TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorPinyinSelectWord) {
   Textfield* textfield = InstallTextField("");
-  EXPECT_TRUE([ns_view_ textInputClient]);
+  EXPECT_TRUE([ns_view_ textInputClientForTesting]);
 
   EnterAcceleratorView* enter_view = new EnterAcceleratorView();
   textfield->parent()->AddChildView(enter_view);
@@ -1797,7 +1797,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorPinyinSelectWord) {
 // accelerators.
 TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorEnterComposition) {
   Textfield* textfield = InstallTextField("");
-  EXPECT_TRUE([ns_view_ textInputClient]);
+  EXPECT_TRUE([ns_view_ textInputClientForTesting]);
 
   EnterAcceleratorView* enter_view = new EnterAcceleratorView();
   textfield->parent()->AddChildView(enter_view);
@@ -1847,7 +1847,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorEnterComposition) {
 // suppressing accelerators.
 TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorTabEnterComposition) {
   Textfield* textfield = InstallTextField("");
-  EXPECT_TRUE([ns_view_ textInputClient]);
+  EXPECT_TRUE([ns_view_ textInputClientForTesting]);
 
   EnterAcceleratorView* enter_view = new EnterAcceleratorView();
   textfield->parent()->AddChildView(enter_view);
@@ -1928,7 +1928,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorTabEnterComposition) {
 // change. Twice.
 TEST_F(BridgedNativeWidgetTest, TextInput_RecursiveUpdateWindows) {
   Textfield* textfield = InstallTextField("");
-  EXPECT_TRUE([ns_view_ textInputClient]);
+  EXPECT_TRUE([ns_view_ textInputClientForTesting]);
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
   base::apple::ScopedObjCClassSwizzler update_windows_swizzler(

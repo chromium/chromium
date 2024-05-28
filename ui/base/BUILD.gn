@@ -1171,10 +1171,13 @@ test("ui_base_unittests") {
       "ime/composition_text_unittest.cc",
       "ime/input_method_base_unittest.cc",
       "ime/mojom/ime_mojom_traits_unittest.cc",
+      "ime/mojom/text_edit_command_mojom_traits_unittest.cc",
       "ime/surrounding_text_tracker_unittest.cc",
     ]
     deps += [
+      "//mojo/public/cpp/test_support:test_utils",
       "//ui/base/ime",
+      "//ui/base/ime:text_edit_commands",
       "//ui/base/ime/mojom:test_interfaces",
     ]
     if (is_win) {
