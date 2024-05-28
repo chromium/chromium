@@ -133,7 +133,8 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
                                     const sync_pb::ReadingListSpecifics& rhs);
 
   // Asynchronously retrieve the corresponding sync data for |storage_keys|.
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
+  void GetDataForCommit(StorageKeyList storage_keys,
+                        DataCallback callback) override;
 
   // Asynchronously retrieve all of the local sync data.
   void GetAllDataForDebugging(DataCallback callback) override;

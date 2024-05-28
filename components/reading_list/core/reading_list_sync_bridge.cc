@@ -271,8 +271,8 @@ ReadingListSyncBridge::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void ReadingListSyncBridge::GetData(StorageKeyList storage_keys,
-                                    DataCallback callback) {
+void ReadingListSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                             DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& url_string : storage_keys) {
