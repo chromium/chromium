@@ -323,7 +323,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::UNSYNCABLE,
            /*allowlisted_primary_schemes=*/{},
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO,

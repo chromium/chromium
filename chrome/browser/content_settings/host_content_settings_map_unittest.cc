@@ -1147,10 +1147,9 @@ TEST_P(IndexedHostContentSettingsMapTest, IncognitoDontInheritContentSetting) {
             otr_map->GetContentSetting(
                 host, host, ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL));
 
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(host),
-      ContentSettingsPattern::FromURLNoWildcard(host),
-      ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL, CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(
+      host, GURL(), ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL,
+      CONTENT_SETTING_BLOCK);
 
   // The setting is not inherited by |otr_map|.
   EXPECT_EQ(CONTENT_SETTING_BLOCK,

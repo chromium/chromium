@@ -191,7 +191,7 @@ class CookieSettingsBase {
   };
 
   // Set of types relevant for CookieSettings.
-  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 9>;
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 10>;
 
   // ContentSettings listed in this set will be automatically synced to the
   // CookieSettings instance in the network service.
@@ -337,7 +337,13 @@ class CookieSettingsBase {
   // Returns true iff the query for third-party cookie access should consider
   // grants awarded by the global allowlist.
   bool ShouldConsider3pcdMetadataGrantsSettings(
+      const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
+
+  // Returns true if there is a settings for the origin trial for third-party
+  // cookie deprecation blocking third-party cookie access under
+  // `first_party_url`.
+  bool IsBlockedByTopLevel3pcdOriginTrial(const GURL& first_party_url) const;
 
  private:
   // Returns a content setting for the requested parameters and populates |info|
@@ -418,7 +424,13 @@ class CookieSettingsBase {
   virtual bool ShouldBlockThirdPartyCookies() const = 0;
 
   // Returns whether Third Party Cookie Deprecation mitigations should take
-  // effect.
+  // effect (under `first_party_url`). True when mitigations are enabled for
+  // 3PCD or when third-party cookies are not blocked and the origin trial for
+  // 3PCD is enabled for `first_party_url`.
+  bool ShouldConsiderMitigationsFor3pcd(const GURL& first_party_url) const;
+  // Returns whether Third Party Cookie Deprecation mitigations are enabled,
+  // which requires that we are not blocking or allowing all 3PC and that either
+  // 3PCD is enabled or that ForceThirdPartyCookieBlocking is enabled.
   virtual bool MitigationsEnabledFor3pcd() const = 0;
 
   // Returns whether |scheme| is always allowed to access 3p cookies.

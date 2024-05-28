@@ -242,6 +242,10 @@ BASE_FEATURE(kSupportPartitionedBlobUrl,
              "SupportPartitionedBlobUrl",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTopLevelTpcdOriginTrial,
+             "TopLevelTpcdOriginTrial",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTpcdTrialSettings,
              "TpcdSupportSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);

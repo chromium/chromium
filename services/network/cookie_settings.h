@@ -215,6 +215,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // the given cookie in the given context.
   void AugmentInclusionStatus(
       const net::CanonicalCookie& cookie,
+      const url::Origin* top_frame_origin,
       bool is_third_party_request,
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
       const net::FirstPartySetMetadata& first_party_set_metadata,
