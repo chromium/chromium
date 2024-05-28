@@ -94,8 +94,7 @@ class PasswordsClientUIDelegate {
   virtual void OnPasswordAutofilled(
       base::span<const password_manager::PasswordForm> password_forms,
       const url::Origin& origin,
-      const std::vector<raw_ptr<const password_manager::PasswordForm,
-                                VectorExperimental>>& federated_matches) = 0;
+      base::span<const password_manager::PasswordForm> federated_matches) = 0;
 
   // Called when user credentials were leaked. This triggers the UI to prompt
   // the user whether they would like to check their passwords.

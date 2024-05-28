@@ -49,8 +49,7 @@ LikelyFormFilling SendFillInformationToRenderer(
     PasswordManagerDriver* driver,
     const PasswordForm& observed_form,
     base::span<const PasswordForm> best_matches,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        federated_matches,
+    base::span<const PasswordForm> federated_matches,
     const PasswordForm* preferred_match,
     PasswordFormMetricsRecorder* metrics_recorder,
     bool webauthn_suggestions_available);

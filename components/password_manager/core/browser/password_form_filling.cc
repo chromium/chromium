@@ -58,15 +58,13 @@ bool IsFillOnAccountSelectFeatureEnabled() {
 }
 #endif
 
-void Autofill(
-    PasswordManagerClient* client,
-    PasswordManagerDriver* driver,
-    const PasswordForm& form_for_autofill,
-    const base::span<const PasswordForm>& best_matches,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        federated_matches,
-    std::optional<PasswordForm> preferred_match,
-    bool wait_for_username) {
+void Autofill(PasswordManagerClient* client,
+              PasswordManagerDriver* driver,
+              const PasswordForm& form_for_autofill,
+              base::span<const PasswordForm> best_matches,
+              base::span<const PasswordForm> federated_matches,
+              std::optional<PasswordForm> preferred_match,
+              bool wait_for_username) {
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
@@ -115,8 +113,7 @@ LikelyFormFilling SendFillInformationToRenderer(
     PasswordManagerDriver* driver,
     const PasswordForm& observed_form,
     base::span<const PasswordForm> best_matches,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        federated_matches,
+    base::span<const PasswordForm> federated_matches,
     const PasswordForm* preferred_match,
     PasswordFormMetricsRecorder* metrics_recorder,
     bool webauthn_suggestions_available) {

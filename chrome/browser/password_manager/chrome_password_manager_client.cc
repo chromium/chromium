@@ -697,8 +697,7 @@ void ChromePasswordManagerClient::AutomaticPasswordSave(
 void ChromePasswordManagerClient::PasswordWasAutofilled(
     base::span<const PasswordForm> best_matches,
     const url::Origin& origin,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        federated_matches,
+    base::span<const PasswordForm> federated_matches,
     bool was_autofilled_on_pageload) {
 #if !BUILDFLAG(IS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =

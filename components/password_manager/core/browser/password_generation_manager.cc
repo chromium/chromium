@@ -54,8 +54,7 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
   base::span<const PasswordForm> GetBestMatches() const override;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-  GetFederatedMatches() const override;
+  base::span<const PasswordForm> GetFederatedMatches() const override;
   const PasswordForm& GetPendingCredentials() const override;
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;
@@ -116,13 +115,8 @@ base::span<const PasswordForm> PasswordDataForUI::GetBestMatches() const {
   return matches_;
 }
 
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-PasswordDataForUI::GetFederatedMatches() const {
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result(
-      federated_matches_.size());
-  base::ranges::transform(federated_matches_, result.begin(),
-                          [](const PasswordForm& form) { return &form; });
-  return result;
+base::span<const PasswordForm> PasswordDataForUI::GetFederatedMatches() const {
+  return federated_matches_;
 }
 
 const PasswordForm& PasswordDataForUI::GetPendingCredentials() const {

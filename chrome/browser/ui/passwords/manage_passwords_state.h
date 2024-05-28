@@ -89,8 +89,7 @@ class ManagePasswordsState {
   void OnPasswordAutofilled(
       base::span<const password_manager::PasswordForm> password_forms,
       url::Origin origin,
-      const std::vector<raw_ptr<const password_manager::PasswordForm,
-                                VectorExperimental>>& federated_matches);
+      base::span<const password_manager::PasswordForm> federated_matches);
 
   // Move to INACTIVE_STATE.
   void OnInactive();

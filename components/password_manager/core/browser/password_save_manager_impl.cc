@@ -250,15 +250,17 @@ void PopulateAlternativeUsernames(base::span<const PasswordForm> best_matches,
   }
 }
 
-// TODO(crbug.com/327343301) Remove after refactoring of GetFederatedMatches.
-// Helper function used because GetNonFederatedMatches has to be converted to a
-// vector of pointers.
+// TODO(crbug.com/327343301) to be replaced after refactoring of
+// GetAllRelevantMatches.
+// Helper function used for internal handling and
+// filtering of PasswordForms. Returns vector of pointers to the forms holded by
+// form_fetcher_.
 std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MakeWeakCopies(
     base::span<const PasswordForm> matches) {
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result;
-  for (const PasswordForm& form : matches) {
-    result.push_back(&form);
-  }
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result(
+      matches.size());
+  base::ranges::transform(matches, result.begin(),
+                          [](const PasswordForm& form) { return &form; });
   return result;
 }
 
@@ -486,14 +488,16 @@ void PasswordSaveManagerImpl::GeneratedPasswordAccepted(
     base::WeakPtr<PasswordManagerDriver> driver) {
   generation_manager_ = std::make_unique<PasswordGenerationManager>(client_);
 
-  // TODO(crbug.com/327343301) Remove after refactoring of GetFederatedMatches.
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       non_federated_matches =
           MakeWeakCopies(form_fetcher_->GetNonFederatedMatches());
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      federated_matches = MakeWeakCopies(form_fetcher_->GetFederatedMatches());
+
   generation_manager_->GeneratedPasswordAccepted(
       std::move(parsed_form),
       GetRelevantMatchesForGeneration(non_federated_matches),
-      GetRelevantMatchesForGeneration(form_fetcher_->GetFederatedMatches()),
+      GetRelevantMatchesForGeneration(federated_matches),
       ShouldStoreGeneratedPasswordsInAccountStore()
           ? PasswordForm::Store::kAccountStore
           : PasswordForm::Store::kProfileStore,
@@ -521,17 +525,19 @@ void PasswordSaveManagerImpl::MoveCredentialsToAccountStore(
       "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
       trigger);
 
-  // TODO(crbug.com/40111151): Moving credentials upon an update. FormFetch will
-  // have an outdated credentials. Fix it if this turns out to be a product
-  // requirement.
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       non_federated_matches =
           MakeWeakCopies(form_fetcher_->GetNonFederatedMatches());
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      federated_matches = MakeWeakCopies(form_fetcher_->GetFederatedMatches());
+
+  // TODO(crbug.com/40111151): Moving credentials upon an update. FormFetch will
+  // have an outdated credentials. Fix it if this turns out to be a product
+  // requirement.
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       account_store_matches = AccountStoreMatches(non_federated_matches);
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      account_store_federated_matches =
-          AccountStoreMatches(form_fetcher_->GetFederatedMatches());
+      account_store_federated_matches = AccountStoreMatches(federated_matches);
   account_store_matches.insert(account_store_matches.end(),
                                account_store_federated_matches.begin(),
                                account_store_federated_matches.end());
@@ -539,8 +545,7 @@ void PasswordSaveManagerImpl::MoveCredentialsToAccountStore(
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       profile_store_matches = ProfileStoreMatches(non_federated_matches);
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      profile_store_federated_matches =
-          ProfileStoreMatches(form_fetcher_->GetFederatedMatches());
+      profile_store_federated_matches = ProfileStoreMatches(federated_matches);
   profile_store_matches.insert(profile_store_matches.end(),
                                profile_store_federated_matches.begin(),
                                profile_store_federated_matches.end());

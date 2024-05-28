@@ -65,8 +65,7 @@ void PasswordManagerClient::UpdateCredentialCache(
 void PasswordManagerClient::PasswordWasAutofilled(
     base::span<const PasswordForm> best_matches,
     const url::Origin& origin,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        federated_matches,
+    base::span<const PasswordForm> federated_matches,
     bool was_autofilled_on_pageload) {}
 
 void PasswordManagerClient::AutofillHttpAuth(

@@ -189,8 +189,7 @@ class ChromePasswordManagerClient
   void PasswordWasAutofilled(
       base::span<const password_manager::PasswordForm> best_matches,
       const url::Origin& origin,
-      const std::vector<raw_ptr<const password_manager::PasswordForm,
-                                VectorExperimental>>& federated_matches,
+      base::span<const password_manager::PasswordForm> federated_matches,
       bool was_autofilled_on_pageload) override;
   void AutofillHttpAuth(
       const password_manager::PasswordForm& preferred_match,

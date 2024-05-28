@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_FORM_MANAGER_FOR_UI_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_FORM_MANAGER_FOR_UI_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_store/statistics_table.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,7 +26,7 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
               GetBestMatches,
               (),
               (const override));
-  MOCK_METHOD((std::vector<raw_ptr<const PasswordForm, VectorExperimental>>),
+  MOCK_METHOD((base::span<const PasswordForm>),
               GetFederatedMatches,
               (),
               (const override));

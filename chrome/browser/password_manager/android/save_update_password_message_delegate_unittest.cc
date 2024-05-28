@@ -305,8 +305,7 @@ SaveUpdatePasswordMessageDelegateTest::CreateFormManager(
   ON_CALL(*form_manager, GetURL()).WillByDefault(ReturnRef(password_form_url_));
   ON_CALL(*form_manager, GetBestMatches()).WillByDefault(Return(best_matches));
   ON_CALL(*form_manager, GetFederatedMatches())
-      .WillByDefault(Return(
-          std::vector<raw_ptr<const PasswordForm, VectorExperimental>>{}));
+      .WillByDefault(Return(base::span<const PasswordForm>()));
   ON_CALL(*form_manager, GetMetricsRecorder())
       .WillByDefault(Return(metrics_recorder_.get()));
   ON_CALL(*form_manager, Save())

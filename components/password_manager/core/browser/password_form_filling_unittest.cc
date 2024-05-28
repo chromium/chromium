@@ -59,14 +59,13 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
-  MOCK_METHOD(
-      void,
-      PasswordWasAutofilled,
-      (const base::span<const PasswordForm>,
-       const Origin&,
-       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&),
-       bool was_autofilled_on_pageload),
-      (override));
+  MOCK_METHOD(void,
+              PasswordWasAutofilled,
+              (base::span<const PasswordForm>,
+               const Origin&,
+               (base::span<const PasswordForm>),
+               bool was_autofilled_on_pageload),
+              (override));
   MOCK_METHOD(bool,
               IsSavingAndFillingEnabled,
               (const GURL&),
@@ -148,8 +147,7 @@ class PasswordFormFillingTest : public testing::Test {
   PasswordForm saved_match_;
   PasswordForm psl_saved_match_;
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      federated_matches_;
+  std::vector<const PasswordForm> federated_matches_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
   testing::NiceMock<MockPasswordFeatureManager> feature_manager_;
 };
@@ -513,8 +511,7 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadInCrossOriginIframe) {
           Return(Origin::Create(GURL("https://another_website.com"))));
 
   std::vector<PasswordForm> best_matches = {saved_match_};
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      federated_matches = {};
+  std::vector<const PasswordForm> federated_matches = {};
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches,

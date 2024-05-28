@@ -361,8 +361,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   }
 
   void SetFederatedAndNotifyFetchCompleted(
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          federated) {
+      const std::vector<PasswordForm>& federated) {
     fetcher_->set_federated(federated);
     fetcher_->NotifyFetchCompleted();
   }
@@ -1982,7 +1981,7 @@ TEST_F(MultiStorePasswordSaveManagerTest,
   federated_match_in_profile_store.in_store =
       PasswordForm::Store::kProfileStore;
 
-  SetFederatedAndNotifyFetchCompleted({&federated_match_in_profile_store});
+  SetFederatedAndNotifyFetchCompleted({federated_match_in_profile_store});
 
   password_save_manager_impl()->CreatePendingCredentials(
       federated_match_in_profile_store, &observed_form_, submitted_form_,

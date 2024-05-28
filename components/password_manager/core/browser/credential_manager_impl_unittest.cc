@@ -98,14 +98,13 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                const url::Origin& origin,
                CredentialsCallback callback),
               ());
-  MOCK_METHOD(
-      void,
-      PasswordWasAutofilled,
-      (base::span<const PasswordForm>,
-       const url::Origin&,
-       (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&),
-       bool was_autofilled_on_pageload),
-      (override));
+  MOCK_METHOD(void,
+              PasswordWasAutofilled,
+              (base::span<const PasswordForm>,
+               const url::Origin&,
+               (base::span<const PasswordForm>),
+               bool was_autofilled_on_pageload),
+              (override));
 
   explicit MockPasswordManagerClient(PasswordStoreInterface* profile_store,
                                      PasswordStoreInterface* account_store)
@@ -1731,10 +1730,9 @@ TEST_P(CredentialManagerImplTest,
   form_.match_type = PasswordForm::MatchType::kExact;
   federated.match_type = PasswordForm::MatchType::kExact;
 
-  EXPECT_CALL(*client_,
-              PasswordWasAutofilled(
-                  ElementsAre(MatchesFormExceptStore(form_)), _,
-                  ElementsAre(Pointee(MatchesFormExceptStore(federated))), _));
+  EXPECT_CALL(*client_, PasswordWasAutofilled(
+                            ElementsAre(MatchesFormExceptStore(form_)), _,
+                            ElementsAre(MatchesFormExceptStore(federated)), _));
 
   bool called = false;
   CredentialManagerError error;

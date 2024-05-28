@@ -14,18 +14,6 @@
 
 namespace password_manager {
 
-namespace {
-// TODO(crbug.com/327343301) Remove after refactoring of GetFederatedMatches.
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MakeWeakCopies(
-    const std::vector<PasswordForm>& matches) {
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result(
-      matches.size());
-  base::ranges::transform(matches, result.begin(),
-                          [](const auto& form) { return &form; });
-  return result;
-}
-
-}  // namespace
 FakeFormFetcher::FakeFormFetcher() = default;
 
 FakeFormFetcher::~FakeFormFetcher() = default;
@@ -59,8 +47,7 @@ base::span<const PasswordForm> FakeFormFetcher::GetNonFederatedMatches() const {
   return non_federated_;
 }
 
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-FakeFormFetcher::GetFederatedMatches() const {
+base::span<const PasswordForm> FakeFormFetcher::GetFederatedMatches() const {
   return federated_;
 }
 
@@ -70,31 +57,26 @@ bool FakeFormFetcher::IsBlocklisted() const {
 
 bool FakeFormFetcher::IsMovingBlocked(const signin::GaiaIdHash& destination,
                                       const std::u16string& username) const {
-  // TODO(crbug.com/327343301) Remove the copy after refactoring of
-  // GetFederatedMatches.
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      non_federated = MakeWeakCopies(non_federated_);
-
   // This is analogous to the implementation in
   // MultiStoreFormFetcher::IsMovingBlocked().
-  for (const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-           matches_vector : {federated_, non_federated}) {
-    for (const PasswordForm* form : matches_vector) {
+  for (const std::vector<PasswordForm>& matches_vector :
+       {federated_, non_federated_}) {
+    for (const PasswordForm& form : matches_vector) {
       // Only local entries can be moved to the account store (though
       // account store matches should never have |moving_blocked_for_list|
       // entries anyway).
-      if (form->IsUsingAccountStore()) {
+      if (form.IsUsingAccountStore()) {
         continue;
       }
       // Ignore non-exact matches for blocking moving.
-      if (password_manager_util::GetMatchType(*form) !=
+      if (password_manager_util::GetMatchType(form) !=
           password_manager_util::GetLoginMatchType::kExact) {
         continue;
       }
-      if (form->username_value != username) {
+      if (form.username_value != username) {
         continue;
       }
-      if (base::Contains(form->moving_blocked_for_list, destination)) {
+      if (base::Contains(form.moving_blocked_for_list, destination)) {
         return true;
       }
     }

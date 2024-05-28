@@ -164,8 +164,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
   base::span<const PasswordForm> GetBestMatches() const override;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-  GetFederatedMatches() const override;
+  base::span<const PasswordForm> GetFederatedMatches() const override;
   const PasswordForm& GetPendingCredentials() const override;
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;

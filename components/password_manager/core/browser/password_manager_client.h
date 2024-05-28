@@ -303,8 +303,7 @@ class PasswordManagerClient {
   virtual void PasswordWasAutofilled(
       base::span<const PasswordForm> best_matches,
       const url::Origin& origin,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          federated_matches,
+      base::span<const PasswordForm> federated_matches,
       bool was_autofilled_on_pageload);
 
   // Sends username/password from |preferred_match| for filling in the http auth

@@ -390,9 +390,8 @@ TEST_P(FormFetcherImplTest, Federated) {
                               /*account_store_results=*/{});
   EXPECT_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());
   EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(), IsEmpty());
-  EXPECT_THAT(
-      form_fetcher_->GetFederatedMatches(),
-      UnorderedElementsAre(Pointee(federated), Pointee(android_federated)));
+  EXPECT_THAT(form_fetcher_->GetFederatedMatches(),
+              UnorderedElementsAre(federated, android_federated));
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 }
 
@@ -506,8 +505,7 @@ TEST_P(FormFetcherImplTest, Mixed) {
       form_fetcher_->GetNonFederatedMatches(),
       UnorderedElementsAre(non_federated1, non_federated2, non_federated3));
   EXPECT_THAT(form_fetcher_->GetFederatedMatches(),
-              UnorderedElementsAre(Pointee(federated1), Pointee(federated2),
-                                   Pointee(federated3)));
+              UnorderedElementsAre(federated1, federated2, federated3));
   EXPECT_TRUE(form_fetcher_->IsBlocklisted());
 }
 
@@ -536,7 +534,7 @@ TEST_P(FormFetcherImplTest, Filtered) {
   EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(),
               UnorderedElementsAre(non_federated1, non_federated2));
   EXPECT_THAT(form_fetcher_->GetFederatedMatches(),
-              UnorderedElementsAre(Pointee(federated)));
+              UnorderedElementsAre(federated));
 }
 
 // Check that stats from PasswordStore are handled correctly.
@@ -696,7 +694,7 @@ TEST_P(FormFetcherImplTest, DoNotTryToMigrateHTTPPasswordsOnHTTPSites) {
   EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(),
               UnorderedElementsAre(http_form));
   EXPECT_THAT(form_fetcher_->GetFederatedMatches(),
-              UnorderedElementsAre(Pointee(federated_form)));
+              UnorderedElementsAre(federated_form));
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 }
 
@@ -824,14 +822,13 @@ TEST_P(FormFetcherImplTest, TryToMigrateHTTPPasswordsOnHTTPSSites) {
   if (account_mock_store_) {
     EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(),
                 UnorderedElementsAre(https_form, https_form));
-    EXPECT_THAT(
-        form_fetcher_->GetFederatedMatches(),
-        UnorderedElementsAre(Pointee(federated_form), Pointee(federated_form)));
+    EXPECT_THAT(form_fetcher_->GetFederatedMatches(),
+                UnorderedElementsAre(federated_form, federated_form));
   } else {
     EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(),
                 UnorderedElementsAre(https_form));
     EXPECT_THAT(form_fetcher_->GetFederatedMatches(),
-                UnorderedElementsAre(Pointee(federated_form)));
+                UnorderedElementsAre(federated_form));
   }
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 }
@@ -940,9 +937,8 @@ TEST_P(FormFetcherImplTest, Clone_NonEmptyResults) {
                               /*account_store_results=*/{});
   EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(),
               UnorderedElementsAre(non_federated));
-  EXPECT_THAT(
-      form_fetcher_->GetFederatedMatches(),
-      UnorderedElementsAre(Pointee(federated), Pointee(android_federated)));
+  EXPECT_THAT(form_fetcher_->GetFederatedMatches(),
+              UnorderedElementsAre(federated, android_federated));
   EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
               UnorderedElementsAre(federated));
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
@@ -962,9 +958,8 @@ TEST_P(FormFetcherImplTest, Clone_NonEmptyResults) {
   EXPECT_THAT(clone->GetInteractionsStats(), IsEmpty());
   EXPECT_THAT(clone->GetNonFederatedMatches(),
               UnorderedElementsAre(non_federated));
-  EXPECT_THAT(
-      clone->GetFederatedMatches(),
-      UnorderedElementsAre(Pointee(federated), Pointee(android_federated)));
+  EXPECT_THAT(clone->GetFederatedMatches(),
+              UnorderedElementsAre(federated, android_federated));
   EXPECT_THAT(clone->GetInsecureCredentials(), UnorderedElementsAre(federated));
   MockConsumer consumer;
   EXPECT_CALL(consumer, OnFetchCompleted);
@@ -1143,8 +1138,7 @@ TEST_F(MultiStoreFormFetcherTest, MergeFromBothStores) {
       form_fetcher_->GetNonFederatedMatches(),
       UnorderedElementsAre(non_federated1, non_federated2, non_federated3));
   EXPECT_THAT(form_fetcher_->GetFederatedMatches(),
-              UnorderedElementsAre(Pointee(federated1), Pointee(federated2),
-                                   Pointee(federated3)));
+              UnorderedElementsAre(federated1, federated2, federated3));
   EXPECT_TRUE(form_fetcher_->IsBlocklisted());
   EXPECT_THAT(form_fetcher_->GetPreferredMatch(), Pointee(non_federated3));
 }

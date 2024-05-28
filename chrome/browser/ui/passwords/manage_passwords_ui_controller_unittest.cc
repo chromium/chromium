@@ -257,8 +257,7 @@ std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManagerWithBestMatches(
   EXPECT_CALL(*form_manager, GetFederatedMatches())
       .Times(AtMost(2))
       .WillRepeatedly(
-          Return(std::vector<raw_ptr<const password_manager::PasswordForm,
-                                     VectorExperimental>>()));
+          Return(base::span<const password_manager::PasswordForm>()));
   EXPECT_CALL(*form_manager, GetURL())
       .Times(AtMost(2))
       .WillRepeatedly(ReturnRef(password_form->url));

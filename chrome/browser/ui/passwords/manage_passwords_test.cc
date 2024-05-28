@@ -199,8 +199,7 @@ void ManagePasswordsTest::SetupMovingPasswords() {
       .WillByDefault(ReturnRef(*test_form()));
   ON_CALL(*form_manager, GetFederatedMatches)
       .WillByDefault(
-          Return(std::vector<raw_ptr<const password_manager::PasswordForm,
-                                     VectorExperimental>>{}));
+          Return(std::vector<const password_manager::PasswordForm>{}));
   ON_CALL(*form_manager, GetURL).WillByDefault(ReturnRef(test_form()->url));
   GetController()->OnShowMoveToAccountBubble(std::move(form_manager));
   // Clearing the mock here ensures that |GetBestMatches| won't be called with a

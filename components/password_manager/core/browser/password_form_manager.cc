@@ -364,8 +364,8 @@ base::span<const PasswordForm> PasswordFormManager::GetBestMatches() const {
   return form_fetcher_->GetBestMatches();
 }
 
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-PasswordFormManager::GetFederatedMatches() const {
+base::span<const PasswordForm> PasswordFormManager::GetFederatedMatches()
+    const {
   return form_fetcher_->GetFederatedMatches();
 }
 

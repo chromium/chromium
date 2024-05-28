@@ -47,29 +47,6 @@ std::vector<std::unique_ptr<PasswordForm>> ConvertToUniquePtr(
   return result;
 }
 
-// Create a vector of const PasswordForm from a vector of
-// unique_ptr<PasswordForm> by applying get() item-wise.
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MakeWeakCopies(
-    const std::vector<std::unique_ptr<PasswordForm>>& owning) {
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result(
-      owning.size());
-  base::ranges::transform(owning, result.begin(),
-                          &std::unique_ptr<PasswordForm>::get);
-  return result;
-}
-
-// Create a vector of unique_ptr<PasswordForm> from another such vector by
-// copying the pointed-to forms.
-std::vector<std::unique_ptr<PasswordForm>> MakeCopies(
-    const std::vector<std::unique_ptr<PasswordForm>>& source) {
-  std::vector<std::unique_ptr<PasswordForm>> result(source.size());
-  base::ranges::transform(source, result.begin(),
-                          [](const std::unique_ptr<PasswordForm>& ptr) {
-                            return std::make_unique<PasswordForm>(*ptr);
-                          });
-  return result;
-}
-
 }  // namespace
 
 FormFetcherImpl::FormFetcherImpl(PasswordFormDigest form_digest,
@@ -179,9 +156,8 @@ base::span<const PasswordForm> FormFetcherImpl::GetNonFederatedMatches() const {
   return non_federated_;
 }
 
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-FormFetcherImpl::GetFederatedMatches() const {
-  return MakeWeakCopies(federated_);
+base::span<const PasswordForm> FormFetcherImpl::GetFederatedMatches() const {
+  return federated_;
 }
 
 bool FormFetcherImpl::IsBlocklisted() const {
@@ -195,29 +171,25 @@ bool FormFetcherImpl::IsBlocklisted() const {
 
 bool FormFetcherImpl::IsMovingBlocked(const signin::GaiaIdHash& destination,
                                       const std::u16string& username) const {
-  // TODO(crbug.com/327343301) Remove the copy after refactoring of
-  // GetFederatedMatches.
-  const std::vector<std::unique_ptr<PasswordForm>> non_federated =
-      ConvertToUniquePtr(non_federated_);
-  for (const std::vector<std::unique_ptr<PasswordForm>>* matches_vector :
-       {&federated_, &non_federated}) {
-    for (const auto& form : *matches_vector) {
+  for (const std::vector<PasswordForm>& matches_vector :
+       {federated_, non_federated_}) {
+    for (const auto& form : matches_vector) {
       // Only local entries can be moved to the account store (though
       // account store matches should never have |moving_blocked_for_list|
       // entries anyway).
-      if (form->IsUsingAccountStore()) {
+      if (form.IsUsingAccountStore()) {
         continue;
       }
       // Ignore non-exact matches for blocking moving. PLS, affiliated and
       // grouped matches are ignored.
-      if (GetMatchType(*form) !=
+      if (GetMatchType(form) !=
           password_manager_util::GetLoginMatchType::kExact) {
         continue;
       }
-      if (form->username_value != username) {
+      if (form.username_value != username) {
         continue;
       }
-      if (base::Contains(form->moving_blocked_for_list, destination)) {
+      if (base::Contains(form.moving_blocked_for_list, destination)) {
         return true;
       }
     }
@@ -253,7 +225,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   }
 
   result->non_federated_ = non_federated_;
-  result->federated_ = MakeCopies(federated_);
+  result->federated_ = federated_;
   result->is_blocklisted_in_account_store_ = is_blocklisted_in_account_store_;
   result->is_blocklisted_in_profile_store_ = is_blocklisted_in_profile_store_;
   result->best_matches_ = password_manager_util::FindBestMatches(
@@ -322,7 +294,7 @@ void FormFetcherImpl::SplitResults(
         insecure_credentials_.push_back(*form);
       }
       if (form->IsFederatedCredential()) {
-        federated_.push_back(std::move(form));
+        federated_.push_back(*form);
       } else {
         non_federated_.push_back(*form);
       }

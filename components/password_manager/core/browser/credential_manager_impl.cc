@@ -244,10 +244,10 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     // If this is a federated credential, check it against the federated matches
     // produced by the PasswordFormManager. If a match is found, update it and
     // return.
-    for (const password_manager::PasswordForm* match :
+    for (const password_manager::PasswordForm& match :
          form_manager_->GetFormFetcher()->GetFederatedMatches()) {
-      if (match->username_value == form.username_value &&
-          match->federation_origin.IsSameOriginWith(form.federation_origin)) {
+      if (match.username_value == form.username_value &&
+          match.federation_origin.IsSameOriginWith(form.federation_origin)) {
         form_manager_->Save();
         return;
       }

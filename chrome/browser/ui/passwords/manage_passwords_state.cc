@@ -35,12 +35,11 @@ std::vector<std::unique_ptr<PasswordForm>> DeepCopyNonPSLVector(
   return result;
 }
 
-void AppendDeepCopyVector(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& forms,
-    std::vector<std::unique_ptr<PasswordForm>>* result) {
+void AppendDeepCopyVector(base::span<const PasswordForm> forms,
+                          std::vector<std::unique_ptr<PasswordForm>>* result) {
   result->reserve(result->size() + forms.size());
-  for (const password_manager::PasswordForm* form : forms) {
-    result->push_back(std::make_unique<PasswordForm>(*form));
+  for (const password_manager::PasswordForm& form : forms) {
+    result->push_back(std::make_unique<PasswordForm>(form));
   }
 }
 
@@ -198,8 +197,7 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
 void ManagePasswordsState::OnPasswordAutofilled(
     base::span<const PasswordForm> password_forms,
     url::Origin origin,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        federated_matches) {
+    base::span<const PasswordForm> federated_matches) {
   DCHECK(!password_forms.empty() || !federated_matches.empty());
   auto local_credentials_forms = DeepCopyNonPSLVector(password_forms);
   AppendDeepCopyVector(federated_matches, &local_credentials_forms);
