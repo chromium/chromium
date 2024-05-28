@@ -8,20 +8,40 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
+#include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/plus_address_setting_specifics.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace plus_addresses {
 
 namespace {
+
+syncer::EntityData CreateSettingEntity(
+    const std::string& name,
+    absl::variant<bool, std::string, int32_t> value) {
+  syncer::EntityData entity;
+  sync_pb::PlusAddressSettingSpecifics* specifics =
+      entity.specifics.mutable_plus_address_setting();
+  specifics->set_name(name);
+  absl::visit(
+      base::Overloaded{
+          [&](bool value) { specifics->set_bool_value(value); },
+          [&](const std::string& value) { specifics->set_string_value(value); },
+          [&](int32_t value) { specifics->set_int_value(value); }},
+      value);
+  return entity;
+}
 
 class PlusAddressSettingSyncBridgeTest : public testing::Test {
  public:
@@ -77,6 +97,13 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
                                     /*state=*/syncer::HasInitialSyncDone(),
                                     /*entities=*/testing::IsEmpty())));
   RecreateBridge();
+}
+
+TEST_F(PlusAddressSettingSyncBridgeTest, GetStorageKey) {
+  syncer::EntityData entity = CreateSettingEntity("name", "value");
+  EXPECT_EQ(bridge().GetStorageKey(entity), "name");
+  // `GetClientTag()` is implemented using `GetStorageKey()`.
+  EXPECT_EQ(bridge().GetClientTag(entity), "name");
 }
 
 }  // namespace

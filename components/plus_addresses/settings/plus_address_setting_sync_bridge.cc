@@ -12,7 +12,10 @@
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/model_type_store.h"
+#include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/plus_address_setting_specifics.pb.h"
 
 namespace plus_addresses {
 
@@ -37,8 +40,7 @@ PlusAddressSettingSyncBridge::~PlusAddressSettingSyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 PlusAddressSettingSyncBridge::CreateMetadataChangeList() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
 std::optional<syncer::ModelError>
@@ -59,7 +61,8 @@ PlusAddressSettingSyncBridge::ApplyIncrementalSyncChanges(
 
 void PlusAddressSettingSyncBridge::GetData(StorageKeyList storage_keys,
                                            DataCallback callback) {
-  NOTIMPLEMENTED();
+  // PLUS_ADDRESS_SETTING is read-only, so `GetData()` is not needed.
+  NOTREACHED();
 }
 
 void PlusAddressSettingSyncBridge::GetAllDataForDebugging(
@@ -69,14 +72,12 @@ void PlusAddressSettingSyncBridge::GetAllDataForDebugging(
 
 std::string PlusAddressSettingSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  return GetStorageKey(entity_data);
 }
 
 std::string PlusAddressSettingSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  return entity_data.specifics.plus_address_setting().name();
 }
 
 void PlusAddressSettingSyncBridge::OnStoreCreated(
