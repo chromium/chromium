@@ -61,6 +61,7 @@ void ContentNotificationClient::HandleNotificationInteraction(
     if (url.is_empty()) {
       base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
                                 false);
+      return;
     }
     base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
                               true);
