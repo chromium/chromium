@@ -181,7 +181,9 @@ bool IsPasscodeSettingsAvailable() {
     [self popReauthenticationViewController];
 
     [_delegate successfulReauthenticationWithCoordinator:self];
-
+    // The user has been authenticated. No need to reauth until the scene goes
+    // back go the background.
+    _authOnForegroundActive = NO;
   } else {
     [self closeUI];
   }
@@ -234,10 +236,9 @@ bool IsPasscodeSettingsAvailable() {
       // remove the blocking view controller.
       if (_authOnForegroundActive) {
         _authOnForegroundActive = NO;
-        // Reauth vc should have been pushed on
-        // `SceneActivationLevelForegroundInactive` or
-        // SceneActivationLevelBackground`.
-        CHECK(_reauthViewController, base::NotFatalUntil::M125);
+        if (!_reauthViewController) {
+          base::debug::DumpWithoutCrashing();
+        }
         [_reauthViewController requestAuthentication];
       } else {
         [self popReauthenticationViewController];

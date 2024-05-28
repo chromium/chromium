@@ -276,3 +276,43 @@ TEST_F(ReauthenticationCoordinatorTest,
   // Cancelling reauth should close settings.
   ASSERT_TRUE(delegate_.dismissUICalled);
 }
+
+// Tests that ReauthenticationCoordinator dismissed its view controller after a
+// successful reauthentication before the scene is foregrounded.
+TEST_F(ReauthenticationCoordinatorTest,
+       ReauthViewControllerDismissedBeforeTheSceneIsForegrounded) {
+  CheckReauthenticationViewControllerNotPresented();
+  mock_reauth_module_.shouldReturnSynchronously = NO;
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+
+  // Simulate transition to inactive state before background state.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  CheckReauthenticationViewControllerIsPresented();
+
+  // Simulate transition to background.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  CheckReauthenticationViewControllerIsPresented();
+  ASSERT_FALSE(delegate_.successfulReauth);
+
+  // Simulate transition to foreground. This will trigger a reauthentication
+  // request.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  CheckReauthenticationViewControllerIsPresented();
+  ASSERT_FALSE(delegate_.successfulReauth);
+
+  // Transition back to background.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  CheckReauthenticationViewControllerIsPresented();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  CheckReauthenticationViewControllerIsPresented();
+
+  // Then back to foreground, delivering the reauthentication result before
+  // reaching the foreground state.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+  ASSERT_TRUE(delegate_.successfulReauth);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  // Reauth view controller should be gone.
+  CheckReauthenticationViewControllerNotPresented();
+}
