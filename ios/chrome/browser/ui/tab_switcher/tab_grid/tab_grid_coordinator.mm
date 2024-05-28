@@ -849,23 +849,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.baseViewController.remoteTabsViewController.menuProvider =
       self.recentTabsContextMenuHelper;
 
-  if (IsInactiveTabsAvailable()) {
-    self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
-        initWithBaseViewController:self.baseViewController
-                           browser:_inactiveBrowser
-                          delegate:self];
-    self.inactiveTabsCoordinator.tabContextMenuDelegate = self;
-
-    [self.inactiveTabsCoordinator start];
-
-    baseViewController.inactiveGridHandler =
-        self.inactiveTabsCoordinator.gridCommandsHandler;
-    self.regularTabsMediator.containedGridToolbarsProvider =
-        self.inactiveTabsCoordinator.toolbarsConfigurationProvider;
-    self.regularTabsMediator.inactiveTabsGridCommands =
-        self.inactiveTabsCoordinator.gridCommandsHandler;
-  }
-
   // TODO(crbug.com/41390276) : Remove RecentTabsTableViewController dependency
   // on ChromeBrowserState so that we don't need to expose the view controller.
   baseViewController.remoteTabsViewController.browser = self.regularBrowser;
@@ -913,6 +896,23 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [[GridContainerViewController alloc] init];
   self.baseViewController.remoteGridContainerViewController =
       _remoteGridContainerViewController;
+
+  if (IsInactiveTabsAvailable()) {
+    self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:_inactiveBrowser
+                          delegate:self];
+    self.inactiveTabsCoordinator.tabContextMenuDelegate = self;
+
+    [self.inactiveTabsCoordinator start];
+
+    baseViewController.inactiveGridHandler =
+        self.inactiveTabsCoordinator.gridCommandsHandler;
+    self.regularTabsMediator.containedGridToolbarsProvider =
+        self.inactiveTabsCoordinator.toolbarsConfigurationProvider;
+    self.regularTabsMediator.inactiveTabsGridCommands =
+        self.inactiveTabsCoordinator.gridCommandsHandler;
+  }
 
   self.firstPresentation = YES;
 
