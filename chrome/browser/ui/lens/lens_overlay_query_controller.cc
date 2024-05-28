@@ -37,6 +37,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "third_party/lens_server_proto/lens_overlay_client_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_filters.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_polygon.pb.h"
@@ -152,7 +153,8 @@ LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
-    lens::LensOverlayInvocationSource invocation_source)
+    lens::LensOverlayInvocationSource invocation_source,
+    bool use_dark_mode)
     : full_image_callback_(std::move(full_image_callback)),
       interaction_data_callback_(std::move(interaction_data_callback)),
       thumbnail_created_callback_(std::move(thumbnail_created_callback)),
@@ -161,7 +163,8 @@ LensOverlayQueryController::LensOverlayQueryController(
       url_callback_(std::move(url_callback)),
       variations_client_(variations_client),
       identity_manager_(identity_manager),
-      invocation_source_(invocation_source) {}
+      invocation_source_(invocation_source),
+      use_dark_mode_(use_dark_mode) {}
 
 LensOverlayQueryController::~LensOverlayQueryController() = default;
 
@@ -197,6 +200,8 @@ LensOverlayQueryController::CreateClientContext() {
   context.set_platform(lens::WEB);
   context.mutable_rendering_context()->set_rendering_environment(
       lens::RENDERING_ENV_LENS_OVERLAY);
+  context.mutable_client_filters()->add_filter()->set_filter_type(
+      lens::AUTO_FILTER);
   context.mutable_locale_context()->set_language(
       g_browser_process->GetApplicationLocale());
   context.mutable_locale_context()->set_region(
@@ -227,6 +232,8 @@ LensOverlayQueryController::AddVisualSearchInteractionLogData(
       ->mutable_user_selection_data()
       ->set_selection_type(selection_type);
   interaction_data.mutable_log_data()->set_is_parent_query(!parent_query_sent_);
+  interaction_data.mutable_log_data()->set_client_platform(
+      lens::CLIENT_PLATFORM_LENS_OVERLAY);
   parent_query_sent_ = true;
 
   std::string serialized_proto;
@@ -346,16 +353,6 @@ void LensOverlayQueryController::SendRegionSearch(
                   additional_search_query_params);
 }
 
-void LensOverlayQueryController::SendObjectSelection(
-    const std::string& object_id,
-    std::map<std::string, std::string> additional_search_query_params) {
-  // Object selection should send a REGION_SEARCH interaction type.
-  SendInteraction(/*region=*/lens::mojom::CenterRotatedBoxPtr(),
-                  /*query_text=*/std::nullopt,
-                  /*object_id=*/std::make_optional<std::string>(object_id),
-                  lens::REGION_SEARCH, additional_search_query_params);
-}
-
 void LensOverlayQueryController::SendMultimodalRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     const std::string& query_text,
@@ -372,6 +369,7 @@ void LensOverlayQueryController::SendMultimodalRequest(
 
 void LensOverlayQueryController::SendTextOnlyQuery(
     const std::string& query_text,
+    TextOnlyQueryType text_only_query_type,
     std::map<std::string, std::string> additional_search_query_params) {
   // Increment the request counter to cancel previously issued fetches.
   request_counter_++;
@@ -383,9 +381,9 @@ void LensOverlayQueryController::SendTextOnlyQuery(
 
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
   lens_overlay_url_response.set_url(
-      lens::BuildTextOnlySearchURL(query_text, page_url_, page_title_,
-                                   additional_search_query_params,
-                                   invocation_source_)
+      lens::BuildTextOnlySearchURL(
+          query_text, page_url_, page_title_, additional_search_query_params,
+          invocation_source_, text_only_query_type, use_dark_mode_)
           .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));
@@ -477,7 +475,7 @@ LensOverlayQueryController::CreateInteractionRequest(
         ->mutable_image_crop()
         ->CopyFrom(*image_crop);
     interaction_request_metadata.set_type(
-        lens::LensOverlayInteractionRequestMetadata::REGION);
+        lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
     interaction_request_metadata.mutable_selection_metadata()
         ->mutable_region()
         ->mutable_region()
@@ -548,7 +546,7 @@ void LensOverlayQueryController::
   lens_overlay_url_response.set_url(
       lens::BuildLensSearchURL(
           query_text, request_id_generator_->GetNextRequestId(), cluster_info,
-          additional_search_query_params, invocation_source_)
+          additional_search_query_params, invocation_source_, use_dark_mode_)
           .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));

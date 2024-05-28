@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 
 #include "base/base64url.h"
+#include "base/strings/escape.h"
 #include "chrome/browser/browser_process.h"
+#include "components/language/core/common/language_util.h"
 #include "components/lens/lens_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -71,6 +73,21 @@ inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
 constexpr char kViewportWidthQueryParamKey[] = "biw";
 constexpr char kViewportHeightQueryParamKey[] = "bih";
 
+// Query parameter for dark mode.
+inline constexpr char kDarkModeParameterKey[] = "cs";
+inline constexpr char kDarkModeParameterLightValue[] = "0";
+inline constexpr char kDarkModeParameterDarkValue[] = "1";
+
+// Query parameter for the Lens footprint.
+inline constexpr char kLensFootprintParameterKey[] = "lns_fp";
+inline constexpr char kLensFootprintParameterValue[] = "1";
+
+// Url path for redirects from the results base URL.
+inline constexpr char kUrlRedirectPath[] = "/url";
+
+// Query parameter for the URL to redirect to.
+inline constexpr char kUrlQueryParameterKey[] = "url";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -90,9 +107,12 @@ void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
                                 const std::string& content_language) {
   params[kCtxslTransParameterKey] = kCtxslTransParameterValue;
   params[kTliteQueryParameterKey] = query;
-  params[kTliteSourceLanguageParameterKey] = content_language;
-  params[kTliteTargetLanguageParameterKey] =
-      g_browser_process->GetApplicationLocale();
+  auto content_language_synonym = content_language;
+  language::ToTranslateLanguageSynonym(&content_language_synonym);
+  params[kTliteSourceLanguageParameterKey] = content_language_synonym;
+  auto locale = g_browser_process->GetApplicationLocale();
+  language::ToTranslateLanguageSynonym(&locale);
+  params[kTliteTargetLanguageParameterKey] = locale;
 }
 
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
@@ -164,23 +184,39 @@ GURL AppendInvocationSourceParamToURL(
       url_to_modify, kInvocationSourceParameterKey, param_value);
 }
 
+GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode) {
+  return net::AppendOrReplaceQueryParameter(
+      url_to_modify, kDarkModeParameterKey,
+      use_dark_mode ? kDarkModeParameterDarkValue
+                    : kDarkModeParameterLightValue);
+}
+
 GURL BuildTextOnlySearchURL(
     const std::string& text_query,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
     std::map<std::string, std::string> additional_search_query_params,
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    TextOnlyQueryType text_only_query_type,
+    bool use_dark_mode) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
+  url_with_query_params =
+      AppendDarkModeParamToURL(url_with_query_params, use_dark_mode);
   url_with_query_params = AppendInvocationSourceParamToURL(
       url_with_query_params, invocation_source);
   url_with_query_params = AppendUrlParamsFromMap(
       url_with_query_params, additional_search_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey, text_query);
-  url_with_query_params = net::AppendOrReplaceQueryParameter(
-      url_with_query_params, kLensModeParameterKey,
-      kLensModeParameterTextValue);
+  if (text_only_query_type == TextOnlyQueryType::kLensTextSelection) {
+    url_with_query_params = net::AppendOrReplaceQueryParameter(
+        url_with_query_params, kLensFootprintParameterKey,
+        kLensFootprintParameterValue);
+    url_with_query_params = net::AppendOrReplaceQueryParameter(
+        url_with_query_params, kLensModeParameterKey,
+        kLensModeParameterTextValue);
+  }
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params);
   url_with_query_params = AppendSearchContextParamToURL(url_with_query_params,
@@ -193,9 +229,12 @@ GURL BuildLensSearchURL(
     std::unique_ptr<lens::LensOverlayRequestId> request_id,
     lens::LensOverlayClusterInfo cluster_info,
     std::map<std::string, std::string> additional_search_query_params,
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    bool use_dark_mode) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
+  url_with_query_params =
+      AppendDarkModeParamToURL(url_with_query_params, use_dark_mode);
   url_with_query_params = AppendInvocationSourceParamToURL(
       url_with_query_params, invocation_source);
   url_with_query_params = AppendUrlParamsFromMap(
@@ -209,6 +248,9 @@ GURL BuildLensSearchURL(
       url_with_query_params, kLensModeParameterKey,
       text_query.has_value() ? kLensModeParameterMultimodalValue
                              : kLensModeParameterUnimodalValue);
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kLensFootprintParameterKey,
+      kLensFootprintParameterValue);
 
   // The search url should use the search session id from the cluster info.
   url_with_query_params = net::AppendOrReplaceQueryParameter(
@@ -238,6 +280,12 @@ const std::string GetTextQueryParameterValue(const GURL& url) {
   return param_value;
 }
 
+const std::string GetLensModeParameterValue(const GURL& url) {
+  std::string param_value = "";
+  net::GetValueForKeyInQuery(url, kLensModeParameterKey, &param_value);
+  return param_value;
+}
+
 bool HasCommonSearchQueryParameters(const GURL& url) {
   // Needed to prevent memory leaks even though we do not use the output.
   std::string temp_output_string;
@@ -254,6 +302,36 @@ bool IsValidSearchResultsUrl(const GURL& url) {
          net::registry_controlled_domains::SameDomainOrHost(
              results_url, url,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {
+  const GURL results_url(lens::features::GetLensOverlayResultsSearchURL());
+  // The URL should always be valid, have the same domain or host, and share the
+  // same scheme as the base search results URL.
+  if (!url.is_valid() || !results_url.SchemeIs(url.scheme()) ||
+      !net::registry_controlled_domains::SameDomainOrHost(
+          results_url, url,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+    return GURL();
+  }
+
+  // We only allow paths from `/url` if they are redirecting to a search URL.
+  std::string url_redirect_string;
+  if (url.path() == kUrlRedirectPath &&
+      net::GetValueForKeyInQuery(url, kUrlQueryParameterKey,
+                                 &url_redirect_string)) {
+    // The redirecting URL should be relative. Return false if not.
+    GURL url_to_redirect_to = results_url.Resolve(url_redirect_string);
+    if (!url_to_redirect_to.is_empty() && url_to_redirect_to.is_valid() &&
+        results_url.path() == url_to_redirect_to.path()) {
+      // Decode the url if needed since it should be encoded.
+      url_to_redirect_to = GURL(base::UnescapeURLComponent(
+          url_to_redirect_to.spec(), base::UnescapeRule::SPACES));
+      return url_to_redirect_to;
+    }
+  }
+
+  return GURL();
 }
 
 GURL RemoveUrlViewportParams(const GURL& url) {

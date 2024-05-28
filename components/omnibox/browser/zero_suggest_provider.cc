@@ -100,7 +100,7 @@ bool ShouldCacheResultTypeInContext(const ResultType result_type,
                                     const OEP::PageClassification page_class) {
   switch (result_type) {
     case ResultType::kRemoteNoURL:
-      return true;
+      return !omnibox::IsLensSearchbox(page_class);
     case ResultType::kRemoteSendURL:
       return omnibox::IsSearchResultsPage(page_class)
                  ? base::FeatureList::IsEnabled(
@@ -229,6 +229,15 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
     }
   }
 
+  // Lens searchboxes.
+  // TODO(b/335234545): Revisit sending the page URL.
+  if (omnibox::IsLensSearchbox(page_class)) {
+    if (focus_type_input_type ==
+        std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
+      return ResultType::kRemoteNoURL;
+    }
+  }
+
   // The following cases require sending the current page URL in the request.
   // Ensure the URL is valid with an HTTP(S) scheme and is not the NTP page URL.
   if (omnibox::IsNTPPage(page_class) ||
@@ -261,14 +270,6 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
     if (focus_type_input_type ==
             std::make_pair(OFT::INTERACTION_CLOBBER, OIT::EMPTY) &&
         base::FeatureList::IsEnabled(omnibox::kClobberTriggersSRPZeroSuggest)) {
-      return ResultType::kRemoteSendURL;
-    }
-  }
-
-  // Lens searchboxes.
-  if (omnibox::IsLensSearchbox(page_class)) {
-    if (focus_type_input_type ==
-        std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
       return ResultType::kRemoteSendURL;
     }
   }

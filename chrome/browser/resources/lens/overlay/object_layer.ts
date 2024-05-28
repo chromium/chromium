@@ -10,6 +10,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
@@ -182,6 +183,16 @@ export class ObjectLayerElement extends PolymerElement {
       composed: true,
       detail: {cursor: CursorType.POINTER},
     }));
+    this.dispatchEvent(
+        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
+          bubbles: true,
+          composed: true,
+          detail: {tooltipType: CursorTooltipType.CLICK_SEARCH},
+        }));
+    this.dispatchEvent(new CustomEvent('darken-extra-scrim-opacity', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onSegmentationUnhovered() {
@@ -191,6 +202,16 @@ export class ObjectLayerElement extends PolymerElement {
       bubbles: true,
       composed: true,
       detail: {cursor: CursorType.DEFAULT},
+    }));
+    this.dispatchEvent(
+        new CustomEvent<CursorTooltipData>('set-cursor-tooltip', {
+          bubbles: true,
+          composed: true,
+          detail: {tooltipType: CursorTooltipType.REGION_SEARCH},
+        }));
+    this.dispatchEvent(new CustomEvent('lighten-extra-scrim-opacity', {
+      bubbles: true,
+      composed: true,
     }));
   }
 
@@ -292,8 +313,8 @@ export class ObjectLayerElement extends PolymerElement {
     // Stroke the path on top of the image.
     context.lineCap = 'round';
     context.lineJoin = 'round';
-    context.lineWidth = 2;
-    context.filter = 'blur(4px)';
+    context.lineWidth = 6;
+    context.filter = 'blur(8px)';
     // Fit a square around the bounding box to use for gradient coordinates.
     const objectBoundingBox = object.geometry.boundingBox;
     const longestEdge =
@@ -310,8 +331,10 @@ export class ObjectLayerElement extends PolymerElement {
         right,
         bottom,
     );
-    gradient.addColorStop(0, '#ffffff');
-    gradient.addColorStop(1, '#ffffff');
+    gradient.addColorStop(
+        0, 'rgba(255,255,255, 0.65)');  // white with 65% opacity
+    gradient.addColorStop(
+        1, 'rgba(255,255,255, 0.65)');  // white with 65% opacity
     context.strokeStyle = gradient;
     context.stroke();
   }

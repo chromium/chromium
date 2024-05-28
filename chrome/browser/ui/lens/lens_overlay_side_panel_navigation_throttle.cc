@@ -68,19 +68,21 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   const auto& url = navigation_handle()->GetURL();
   auto params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
+
+  auto* controller = LensOverlayController::GetControllerFromWebViewWebContents(
+      navigation_handle()->GetWebContents());
+  // If the URL is a redirect to a search URL, we want to load it directly in
+  // the side panel.
+  GURL redirect_url = lens::GetSearchResultsUrlFromRedirectUrl(url);
+  if (!redirect_url.is_empty()) {
+    controller->LoadURLInResultsFrame(redirect_url);
+    return content::NavigationThrottle::CANCEL;
+  }
+
   // All user clicks to a destination outside of the results search URL
   // should be handled by the side panel coordinator.
   if (!lens::IsValidSearchResultsUrl(url)) {
     return content::NavigationThrottle::CANCEL;
-  }
-
-  // The navigation is to a search URL. Get the text query from the URL and set
-  // it as the input text on the searchbox.
-  auto* controller = LensOverlayController::GetControllerFromWebViewWebContents(
-      navigation_handle()->GetWebContents());
-  const std::string text_query = GetTextQueryParameterValue(url);
-  if (!text_query.empty()) {
-    controller->SetSearchboxInputText(text_query);
   }
 
   // If this is a same-site navigation and search URL, we make sure that the URL
@@ -91,6 +93,7 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
     // a user navigating to a SRP. If the SRP url did not have the common search
     // query parameters, it will reload the frame and go through this flow
     // anyway.
+    const std::string text_query = GetTextQueryParameterValue(url);
     controller->AddQueryToHistory(std::move(text_query),
                                   navigation_handle()->GetURL());
     return content::NavigationThrottle::PROCEED;

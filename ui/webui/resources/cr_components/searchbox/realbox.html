@@ -1,13 +1,10 @@
 <style include="cr-icons">
   :host {
-    --cr-realbox-height: 44px;
     /* Embedders should define --cr-realbox-min-width. */
     --cr-realbox-shadow: 0 1px 6px 0 var(--color-realbox-shadow);
     --cr-realbox-width: var(--cr-realbox-min-width);
 
     --cr-realbox-border-radius: calc(0.5 * var(--cr-realbox-height));
-    --cr-realbox-icon-left-position: 12px;
-    --cr-realbox-icon-top-position: 0;
     --cr-realbox-icon-width: 26px;
     --cr-realbox-inner-icon-margin: 8px;
     --cr-realbox-voice-icon-offset: 16px;
@@ -30,28 +27,8 @@
     --cr-realbox-shadow: none;
   }
 
-  /**
-   * Maintain a larger width if the secondary side can be shown and was at any
-   * point available to be shown.
-   */
-  :host([can-show-secondary-side][had-secondary-side]),
-  :host([can-show-secondary-side][width-behavior_='wide']) {
-    --cr-realbox-width: 746px;
-  }
-
-  :host([can-show-secondary-side][width-behavior_='revert']:not(
-      [dropdown-is-visible])) {
+  :host-context([realbox-width-behavior_='revert']):host([can-show-secondary-side]:not([dropdown-is-visible])) {
     --cr-realbox-width: var(--cr-realbox-min-width);
-  }
-
-  :host([is-tall_]) {
-    --cr-realbox-height: 48px;
-  }
-
-  :host([in-side-panel_]) {
-    --cr-realbox-height: 52px;
-    --cr-realbox-icon-left-position: 10px;
-    --cr-realbox-icon-top-position: 1px;
   }
 
   /**

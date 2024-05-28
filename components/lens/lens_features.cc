@@ -48,6 +48,9 @@ BASE_FEATURE(kEnableContextMenuInLensSidePanel,
 BASE_FEATURE(kLensOverlay, "LensOverlay", base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
+const base::FeatureParam<std::string> kActivityUrl{
+    &kLensOverlay, "activity-url",
+    "https://myactivity.google.com/myactivity?pli=1"};
 const base::FeatureParam<std::string> kHelpCenterUrl{
     &kLensOverlay, "help-center-url",
     "https://support.google.com/chrome?p=search_from_page"};
@@ -84,6 +87,11 @@ const base::FeatureParam<std::string> kResultsSearchLoadingUrl{
     "https://www.gstatic.com/lens/chrome/"
     "lens_overlay_sidepanel_results_ghostloader_light-"
     "71af0ff0f00a1a03d3fe8abad71a2665.svg"};
+const base::FeatureParam<std::string> kResultsSearchLoadingDarkModeUrl{
+    &kLensOverlay, "results-search-loading-dark-mode-url",
+    "https://www.gstatic.com/lens/chrome/"
+    "lens_overlay_sidepanel_results_ghostloader_dark-"
+    "b7b5c4f8c8891c881b7a20344f5298b0.svg"};
 
 const base::FeatureParam<bool> kLensOverlayGoogleDseRequired{
     &kLensOverlay, "google-dse-required", true};
@@ -93,6 +101,18 @@ const base::FeatureParam<bool> kUseLensOverlayForImageSearch{
 
 const base::FeatureParam<bool> kIsFindInPageEntryPointEnabled{
     &kLensOverlay, "find-in-page-entry-point", false};
+
+const base::FeatureParam<bool> kUseBrowserDarkModeSettingForLensOverlay{
+    &kLensOverlay, "use-browser-dark-mode-setting", true};
+
+const base::FeatureParam<bool> kDynamicThemeForLensOverlay{
+    &kLensOverlay, "use-dynamic-theme", true};
+
+const base::FeatureParam<double> kDynamicThemeMinPopulationPct{
+    &kLensOverlay, "use-dynamic-theme-min-population-pct", 0.0f};
+
+const base::FeatureParam<double> kDynamicThemeMinChroma{
+    &kLensOverlay, "use-dynamic-theme-min-chroma", 3.0f};
 
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
@@ -112,6 +132,10 @@ constexpr base::FeatureParam<int> kLensOverlayTapRegionHeight{
     &kLensOverlay, "tap-region-height", 300};
 constexpr base::FeatureParam<int> kLensOverlayTapRegionWidth{
     &kLensOverlay, "tap-region-width", 300};
+
+constexpr base::FeatureParam<double>
+    kLensOverlaySelectTextOverRegionTriggerThreshold{
+        &kLensOverlay, "select-text-over-region-trigger-threshold", 0.03};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -244,6 +268,10 @@ bool IsLensOverlayEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlay);
 }
 
+std::string GetLensOverlayActivityURL() {
+  return kActivityUrl.Get();
+}
+
 std::string GetLensOverlayHelpCenterURL() {
   return kHelpCenterUrl.Get();
 }
@@ -328,8 +356,9 @@ bool IsLensOverlayGoogleDseRequired() {
   return kLensOverlayGoogleDseRequired.Get();
 }
 
-std::string GetLensOverlayResultsSearchLoadingURL() {
-  return kResultsSearchLoadingUrl.Get();
+std::string GetLensOverlayResultsSearchLoadingURL(bool dark_mode) {
+  return dark_mode ? kResultsSearchLoadingDarkModeUrl.Get()
+                   : kResultsSearchLoadingUrl.Get();
 }
 
 int GetLensOverlayTapRegionHeight() {
@@ -346,6 +375,26 @@ bool UseLensOverlayForImageSearch() {
 
 bool IsFindInPageEntryPointEnabled() {
   return kIsFindInPageEntryPointEnabled.Get();
+}
+
+bool UseBrowserDarkModeSettingForLensOverlay() {
+  return kUseBrowserDarkModeSettingForLensOverlay.Get();
+}
+
+bool IsDynamicThemeDetectionEnabled() {
+  return kDynamicThemeForLensOverlay.Get();
+}
+
+double DynamicThemeMinPopulationPct() {
+  return kDynamicThemeMinPopulationPct.Get();
+}
+
+double DynamicThemeMinChroma() {
+  return kDynamicThemeMinChroma.Get();
+}
+
+double GetLensOverlaySelectTextOverRegionTriggerThreshold() {
+  return kLensOverlaySelectTextOverRegionTriggerThreshold.Get();
 }
 
 }  // namespace lens::features

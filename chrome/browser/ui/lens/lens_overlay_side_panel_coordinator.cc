@@ -165,6 +165,9 @@ void LensOverlaySidePanelCoordinator::DidOpenRequestedURL(
 
 void LensOverlaySidePanelCoordinator::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
+  // Focus the web contents immediately, so that hotkey presses (i.e. escape)
+  // are handled.
+  GetSidePanelWebContents()->Focus();
   // We only care about the navigation if it is the results frame, is HTTPS,
   // renderer initiated and NOT a same document navigation.
   if (!navigation_handle->IsRendererInitiated() ||
@@ -181,7 +184,9 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   // certain navigations before they result in an error page, we should make
   // sure these error pages don't commit and instead open these URLs in a new
   // tab.
-  if (!lens::IsValidSearchResultsUrl(navigation_handle->GetURL())) {
+  if (!lens::IsValidSearchResultsUrl(navigation_handle->GetURL()) &&
+      lens::GetSearchResultsUrlFromRedirectUrl(navigation_handle->GetURL())
+          .is_empty()) {
     auto params =
         content::OpenURLParams::FromNavigationHandle(navigation_handle);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;

@@ -11,9 +11,11 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
+#include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/sessions/core/session_id.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -81,7 +84,8 @@ class LensOverlayController : public LensSearchboxClient,
                         variations::VariationsClient* variations_client,
                         signin::IdentityManager* identity_manager,
                         PrefService* pref_service,
-                        syncer::SyncService* sync_service);
+                        syncer::SyncService* sync_service,
+                        ThemeService* theme_service);
   ~LensOverlayController() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
@@ -97,11 +101,13 @@ class LensOverlayController : public LensSearchboxClient,
     // The text query of the SRP panel.
     std::string search_query_text_;
     // The selected region for this query, if any.
-    lens::mojom::CenterRotatedBoxPtr search_query_region_;
+    lens::mojom::CenterRotatedBoxPtr selected_region_;
     // The selected text for this query, if any.
     std::optional<std::pair<int, int>> selected_text_;
     // The data URI of the thumbnail in the searchbox.
-    std::string search_query_region_thumbnail_;
+    std::string selected_region_thumbnail_uri_;
+    // Additional parameters used to build search URLs.
+    std::map<std::string, std::string> additional_search_query_params_;
     // The url that the search query loaded into the results frame.
     GURL search_query_url_;
   };
@@ -221,6 +227,11 @@ class LensOverlayController : public LensSearchboxClient,
     return initialization_data_->current_screenshot_;
   }
 
+  // Returns the dynamic color palette identifier based on the screenshot.
+  lens::PaletteId color_palette() {
+    return initialization_data_->color_palette_;
+  }
+
   // Returns the results side panel coordinator
   lens::LensOverlaySidePanelCoordinator* results_side_panel_coordinator() {
     return results_side_panel_coordinator_.get();
@@ -250,6 +261,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Send text data to the WebUI.
   void SendText(lens::mojom::TextPtr text);
 
+  // Send theme data obtained from `palette_id` to the WebUI.
+  void SendTheme(lens::PaletteId palette_id);
+
   // Send overlay object data to the WebUI.
   void SendObjects(std::vector<lens::mojom::OverlayObjectPtr> objects);
 
@@ -265,10 +279,6 @@ class LensOverlayController : public LensSearchboxClient,
   // Pass a result frame URL to load in the side panel.
   void LoadURLInResultsFrame(const GURL& url);
 
-  // Sets the input text for the searchbox. If the searchbox has not been bound,
-  // it stores it in `pending_text_query_` instead.
-  void SetSearchboxInputText(const std::string& text);
-
   // Adds a text query to the history stack for this lens overlay. This allows
   // the user to navigate to previous SRP results after sending new queries.
   void AddQueryToHistory(std::string query, GURL search_url);
@@ -282,6 +292,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Handles when the side panel has been deregistered to do any required
   // cleanup.
   void OnSidePanelEntryDeregistered();
+
+  // Testing function to issue a Lens (region selection) request.
+  void IssueLensRequestForTesting(lens::mojom::CenterRotatedBoxPtr region);
 
   // Testing function to issue a text request.
   void IssueTextSelectionRequestForTesting(const std::string& text_query,
@@ -354,7 +367,8 @@ class LensOverlayController : public LensSearchboxClient,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
-      lens::LensOverlayInvocationSource invocation_source);
+      lens::LensOverlayInvocationSource invocation_source,
+      bool use_dark_mode);
 
  private:
   // Data class for constructing overlay and storing overlay state for
@@ -369,6 +383,7 @@ class LensOverlayController : public LensSearchboxClient,
     OverlayInitializationData(
         const SkBitmap& screenshot,
         const std::string& data_uri,
+        lens::PaletteId color_palette,
         std::optional<GURL> page_url,
         std::optional<std::string> page_title,
         std::vector<lens::mojom::OverlayObjectPtr> objects =
@@ -389,6 +404,9 @@ class LensOverlayController : public LensSearchboxClient,
     // The screenshot that is currently being rendered by the WebUI.
     SkBitmap current_screenshot_;
     std::string current_screenshot_data_uri_;
+
+    // The dynamic color palette identifier based on the screenshot.
+    lens::PaletteId color_palette_;
 
     // The page url, if it is allowed to be shared.
     std::optional<GURL> page_url_;
@@ -527,6 +545,8 @@ class LensOverlayController : public LensSearchboxClient,
   void RemoveBackgroundBlur();
 
   // lens::mojom::LensPageHandler overrides.
+  void ActivityRequestedByOverlay(
+      ui::mojom::ClickModifiersPtr click_modifiers) override;
   void AddBackgroundBlur() override;
   void CloseRequestedByOverlayCloseButton() override;
   void CloseRequestedByOverlayBackgroundClick() override;
@@ -536,7 +556,6 @@ class LensOverlayController : public LensSearchboxClient,
       ui::mojom::ClickModifiersPtr click_modifiers) override;
   // TODO: rename this to IssueRegionSearchRequest.
   void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
-  void IssueObjectSelectionRequest(const std::string& object_id);
   void IssueTextSelectionRequest(const std::string& text_query,
                                  int selection_start_index,
                                  int selection_end_index) override;
@@ -580,6 +599,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Handles the creation of a new thumbnail based on the user selection.
   void HandleThumbnailCreated(const std::string& thumbnail_bytes);
 
+  // Sets the input text for the searchbox. If the searchbox has not been bound,
+  // it stores it in `pending_text_query_` instead.
+  void SetSearchboxInputText(const std::string& text);
+
   // Sets the thumbnail URI values on the searchbox if it is
   // bound. If it hasn't yet been bound, stores the value in
   // `pending_thumbnail_uri_` instead.
@@ -606,6 +629,8 @@ class LensOverlayController : public LensSearchboxClient,
   views::UniqueWidgetPtr overlay_widget_;
   // Pointer to the web view within the overlay widget if it exists.
   raw_ptr<views::WebView> overlay_web_view_;
+  // Stores the session ID for the window of the widget on creation.
+  std::optional<const SessionID> overlay_widget_window_session_id_;
 
   // Pointer to the WebViews that are being glued by this class. Only used to
   // clean up stale pointers. Only valid while `overlay_widget_` is showing.
@@ -637,7 +662,7 @@ class LensOverlayController : public LensSearchboxClient,
   // Thumbnail URI referencing the data defined by the user image selection on
   // the overlay. If the user hasn't made any selection or has made a text
   // selection this will contain an empty string. Returned by GetThumbnail().
-  std::string thumbnail_uri_;
+  std::string selected_region_thumbnail_uri_;
 
   // Connections to and from the overlay WebUI. Only valid while
   // `overlay_widget_` is showing, and after the WebUI has started executing JS
@@ -701,6 +726,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // The sync service associated with the current profile.
   raw_ptr<syncer::SyncService> sync_service_;
+
+  // The theme service associated with the current profile.
+  raw_ptr<ThemeService> theme_service_;
 
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;

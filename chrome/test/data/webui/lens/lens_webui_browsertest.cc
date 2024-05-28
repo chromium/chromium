@@ -123,12 +123,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayEscapeKey) {
   RunOverlayTest("lens/overlay/overlay_escape_key_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayFeedbackButton) {
-  RunOverlayTest("lens/overlay/overlay_feedback_button_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayInfoButton) {
-  RunOverlayTest("lens/overlay/overlay_info_button_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayMoreOptionsButton) {
+  RunOverlayTest("lens/overlay/overlay_more_options_button_test.js",
+                 "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayScreenshot) {
@@ -153,6 +150,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, SelectionOverlay) {
 
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, PostSelectionRenderer) {
   RunOverlayTest("lens/overlay/post_selection_renderer_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, FindWordsInRegion) {
+  RunOverlayTest("lens/overlay/find_words_in_region_test.js", "mocha.run()");
 }
 
 using LensSidePanelTest = LensOverlayTest;

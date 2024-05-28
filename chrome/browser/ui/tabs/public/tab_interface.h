@@ -50,7 +50,10 @@ class TabInterface {
 
   // Whether the tab is in the foreground. When a tab is in the foreground, this
   // class guarantees that GetContents() will return a non-nullptr WebContents,
-  // and this WebContents will not change.
+  // and this WebContents will not change. If a tab is dragged out of a window
+  // (creating a new window), it will briefly enter the background, and then
+  // re-enter the foreground. To see if this is happened, check the
+  // BrowserWindowInterface's session id.
   virtual bool IsInForeground() const = 0;
 
   // Register for these two callbacks to detect changes to IsInForeground().

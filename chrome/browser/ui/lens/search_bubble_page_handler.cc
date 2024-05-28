@@ -42,9 +42,10 @@ void SearchBubblePageHandler::CloseUI() {
   }
 }
 
-lens::mojom::ThemePtr MakeTheme(const ui::ColorProvider& color_provider,
-                                const PrefService* pref_service) {
-  auto theme = lens::mojom::Theme::New();
+lens::mojom::SearchboxThemePtr MakeTheme(
+    const ui::ColorProvider& color_provider,
+    const PrefService* pref_service) {
+  auto theme = lens::mojom::SearchboxTheme::New();
   theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
   theme->text_color = color_provider.GetColor(kColorNewTabPageText);
   if (!CurrentThemeIsGrayscale(pref_service) &&

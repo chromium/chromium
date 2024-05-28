@@ -39,6 +39,7 @@ build_webui("build_overlay") {
   }
 
   web_component_files = [
+    "cursor_tooltip.ts",
     "initial_toast.ts",
     "lens_overlay_app.ts",
     "object_layer.ts",
@@ -54,6 +55,7 @@ build_webui("build_overlay") {
   non_web_component_files = [
     "browser_proxy.ts",
     "values_converter.ts",
+    "find_words_in_region.ts",
     "hit.ts",
     "post_selection_paint_worklet.ts",
     "selection_utils.ts",

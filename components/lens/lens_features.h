@@ -202,6 +202,10 @@ extern bool IsLensOverlayEnabled();
 
 // Returns the finch configured help center URL for lens permission modal.
 COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayActivityURL();
+
+// Returns the finch configured help center URL for lens permission modal.
+COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayHelpCenterURL();
 
 // Returns the minimum amount of physical memory required to enable the Lens
@@ -299,7 +303,7 @@ extern bool IsLensOverlayGoogleDseRequired();
 // Returns the finch configured loading image URL for the results in Lens
 // Overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetLensOverlayResultsSearchLoadingURL();
+extern std::string GetLensOverlayResultsSearchLoadingURL(bool dark_mode);
 
 // Returns the ideal height of the region that is created when a user taps
 // rather than drags.
@@ -319,6 +323,30 @@ extern bool UseLensOverlayForImageSearch();
 // Returns whether to enable the find-in-page entry point.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsFindInPageEntryPointEnabled();
+
+// Returns whether or not to read the browser dark mode setting
+// for Lens Overlay. If false, it will fall back to light mode.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseBrowserDarkModeSettingForLensOverlay();
+
+// Returns whether dynamic theme detection based on the screenshot is enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsDynamicThemeDetectionEnabled();
+
+// Returns the min threshold for the fraction of the pixels with the extracted
+// vibrant or dynamic color out of the total number of pixels in the screenshot.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern double DynamicThemeMinPopulationPct();
+
+// Returns the min threshold for the chroma of the extracted vibrant or dynamic
+// color to be considered for matching to a set of candidate color palettes.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern double DynamicThemeMinChroma();
+
+// Returns the minimum intersection over union between region and text to serve
+// as a threshold for triggering select text chip over region search.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern double GetLensOverlaySelectTextOverRegionTriggerThreshold();
 
 }  // namespace lens::features
 

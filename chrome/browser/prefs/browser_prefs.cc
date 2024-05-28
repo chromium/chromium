@@ -2314,6 +2314,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                                 false);
   registry->RegisterBooleanPref(prefs::kTabGroupsDeletionSkipDialogOnCloseTab,
                                 false);
+
+  registry->RegisterIntegerPref(prefs::kLensOverlayStartCount, 0);
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

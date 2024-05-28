@@ -57,6 +57,15 @@ export class RegionSelectionElement extends PolymerElement {
       loadTimeData.getInteger('tapRegionHeight');
   private readonly tapRegionWidth: number =
       loadTimeData.getInteger('tapRegionWidth');
+  // Shader hex colors.
+  // TODO(b/340358494): Set the colors dynamically.
+  private shaderLayerColorHexes = [
+    '#EEF0F9',
+    '#A6C8FF',
+    '#5B5E66',
+    '#EEF0F9',
+    '#A8ABB3',
+  ];
 
   override ready() {
     super.ready();
@@ -83,6 +92,13 @@ export class RegionSelectionElement extends PolymerElement {
       bubbles: true,
       composed: true,
       detail: this.getPostSelectionRegion(event),
+    }));
+
+    // Check for selectable text
+    this.dispatchEvent(new CustomEvent('detect-text-in-region', {
+      bubbles: true,
+      composed: true,
+      detail: this.getNormalizedCenterRotatedBoxFromGesture(event),
     }));
 
     this.clearCanvas();
@@ -147,9 +163,9 @@ export class RegionSelectionElement extends PolymerElement {
         right,
         top,
     );
-    gradient.addColorStop(0, '#eef0f9');
-    gradient.addColorStop(0.5, '#a6c8ff');
-    gradient.addColorStop(1, '#5b5e66');
+    gradient.addColorStop(0, this.shaderLayerColorHexes[0]);
+    gradient.addColorStop(0.5, this.shaderLayerColorHexes[1]);
+    gradient.addColorStop(1, this.shaderLayerColorHexes[2]);
     this.context.strokeStyle = gradient;
 
     // Draw the path for the region bounding box.

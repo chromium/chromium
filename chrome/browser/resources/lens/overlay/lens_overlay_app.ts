@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './cursor_tooltip.js';
 import './initial_toast.js';
 import './selection_overlay.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {BigString} from '//resources/mojo/mojo/public/mojom/base/big_string.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import type {CursorTooltipData, CursorTooltipElement} from './cursor_tooltip.js';
 import type {InitialToastElement} from './initial_toast.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 
@@ -29,9 +33,9 @@ export interface LensOverlayAppElement {
   $: {
     backgroundScrim: HTMLElement,
     closeButton: CrIconButtonElement,
-    feedbackButton: CrIconButtonElement,
-    infoButton: CrIconButtonElement,
+    moreOptionsButton: CrIconButtonElement,
     initialToast: InitialToastElement,
+    cursorTooltip: CursorTooltipElement,
   };
 }
 
@@ -56,6 +60,10 @@ export class LensOverlayAppElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
+      moreOptionsMenuVisible: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -67,7 +75,11 @@ export class LensOverlayAppElement extends PolymerElement {
   private closeButtonHidden: boolean = false;
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
+  // Whether more options menu should be shown.
+  private moreOptionsMenuVisible: boolean = false;
 
+
+  private eventTracker_: EventTracker = new EventTracker();
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
@@ -86,6 +98,10 @@ export class LensOverlayAppElement extends PolymerElement {
       }),
     ];
     window.addEventListener('keyup', maybeCloseOverlay);
+    this.eventTracker_.add(
+        document, 'set-cursor-tooltip', (e: CustomEvent<CursorTooltipData>) => {
+          this.$.cursorTooltip.setTooltip(e.detail.tooltipType);
+        });
   }
 
   override disconnectedCallback() {
@@ -94,6 +110,28 @@ export class LensOverlayAppElement extends PolymerElement {
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
     window.removeEventListener('keyup', maybeCloseOverlay);
+    this.eventTracker_.removeAll();
+  }
+
+  override ready() {
+    super.ready();
+    this.addEventListener('pointermove', this.updateCursorPosition.bind(this));
+  }
+
+  private handlePointerEnter() {
+    this.$.cursorTooltip.markPointerEnteredContentArea();
+  }
+
+  private handlePointerLeave() {
+    this.$.cursorTooltip.markPointerLeftContentArea();
+  }
+
+  private handlePointerEnterActionButton() {
+    this.$.cursorTooltip.hideTooltip();
+  }
+
+  private handlePointerLeaveActionButton() {
+    this.$.cursorTooltip.unhideTooltip();
   }
 
   private onBackgroundScrimClicked() {
@@ -104,11 +142,12 @@ export class LensOverlayAppElement extends PolymerElement {
     this.browserProxy.handler.closeRequestedByOverlayCloseButton();
   }
 
-  private onFeedbackButtonClick() {
+  private onFeedbackClick() {
     this.browserProxy.handler.feedbackRequestedByOverlay();
+    this.moreOptionsMenuVisible = false;
   }
 
-  private onInfoButtonClick(event: MouseEvent|KeyboardEvent) {
+  private onLearnMoreClick(event: MouseEvent|KeyboardEvent) {
     this.browserProxy.handler.infoRequestedByOverlay({
       middleButton: (event as MouseEvent).button === 1,
       altKey: event.altKey,
@@ -116,6 +155,22 @@ export class LensOverlayAppElement extends PolymerElement {
       metaKey: event.metaKey,
       shiftKey: event.shiftKey,
     });
+    this.moreOptionsMenuVisible = false;
+  }
+
+  private onMoreOptionsButtonClick() {
+    this.moreOptionsMenuVisible = !this.moreOptionsMenuVisible;
+  }
+
+  private onMyActivityClick(event: MouseEvent|KeyboardEvent) {
+    this.browserProxy.handler.activityRequestedByOverlay({
+      middleButton: (event as MouseEvent).button === 1,
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey,
+    });
+    this.moreOptionsMenuVisible = false;
   }
 
   private onNotifyResultsPanelOpened() {
@@ -147,12 +202,14 @@ export class LensOverlayAppElement extends PolymerElement {
     this.screenshotDataUri = new TextDecoder().decode(buffer);
   }
 
-  private closeInitialToast() {
+  private handleSelectionOverlayClicked() {
     this.$.initialToast.triggerHideMessageAnimation();
+    this.$.cursorTooltip.setPauseTooltipChanges(true);
   }
 
-  private hideInitialToastGradient() {
+  private handlePointerReleased() {
     this.$.initialToast.triggerHideScrimAnimation();
+    this.$.cursorTooltip.setPauseTooltipChanges(false);
   }
 
   private onScreenshotRendered() {
@@ -164,6 +221,11 @@ export class LensOverlayAppElement extends PolymerElement {
     } else {
       return '';
     }
+  }
+
+  private updateCursorPosition(event: PointerEvent) {
+    this.$.cursorTooltip.style.transform =
+        `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
   }
 }
 

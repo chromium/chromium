@@ -62,6 +62,11 @@ export class LensSidePanelAppElement extends PolymerElement {
         value: loadTimeData.getString('resultsLoadingUrl'),
         readOnly: true,
       },
+      darkMode: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('darkMode'),
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -77,6 +82,7 @@ export class LensSidePanelAppElement extends PolymerElement {
 
   private browserProxy: SidePanelBrowserProxy =
       SidePanelBrowserProxyImpl.getInstance();
+  private darkMode: boolean;
   private listenerIds: number[];
   private pageHandler: LensSidePanelPageHandlerInterface;
 

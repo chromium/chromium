@@ -6,8 +6,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 _proto_files = [
   "lens_overlay_client_context.proto",
+  "lens_overlay_client_platform.proto",
   "lens_overlay_cluster_info.proto",
-  "lens_overlay_entry_point.proto",
   "lens_overlay_filters.proto",
   "lens_overlay_geometry.proto",
   "lens_overlay_image_crop.proto",
@@ -15,7 +15,6 @@ _proto_files = [
   "lens_overlay_interaction_request_metadata.proto",
   "lens_overlay_overlay_object.proto",
   "lens_overlay_payload.proto",
-  "lens_overlay_phase_latencies_metadata.proto",
   "lens_overlay_platform.proto",
   "lens_overlay_polygon.proto",
   "lens_overlay_request_id.proto",

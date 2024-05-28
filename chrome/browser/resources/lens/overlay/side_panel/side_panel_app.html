@@ -1,12 +1,4 @@
 <style include="cr-icons">
-  :host {
-    --cr-realbox-min-width: 340px;
-  }
-
-  :host([is-back-arrow-visible]) {
-    --cr-realbox-min-width: 300px;
-  }
-
   .results-pane {
     border: none;
      /* Viewport height minus the realbox height and margin. */
@@ -27,6 +19,10 @@
     z-index: 1;
   }
 
+  :host([dark-mode]) .results-pane {
+    background-color: #1F1F1F;
+  }
+
   /* Set z-index to hide results to prevent ghost frames when reshowing. */
   :host([is-loading-results]) #results {
     z-index: 0;
@@ -36,36 +32,48 @@
     background-color: white;
   }
 
+  :host([dark-mode]) #loadingResultsImage {
+    background-color: #1F1F1F;
+  }
+
   :host(:not([is-loading-results])) #loadingResultsImage {
     z-index: 0;
+  }
+
+  #realbox {
+    margin: 12px 8px;
+  }
+
+  :host([is-back-arrow-visible]) #realbox {
+    margin: 12px 8px 12px 0px;
   }
 
   #realboxContainer {
     align-items: center;
     display: flex;
     font-family: Roboto, Arial, sans-serif;
-    margin: 12px 8px;
     position: fixed;
+    width: 100%;
     z-index: 2;  /* Searchbox should render in front of the results iframe. */
     /* TODO(jdonnelly): Specify these in a color mixer. */
     /* Colors used in the cr-searchbox results dropdown */
     --color-realbox-answer-icon-background: #d3e3fdff;
     --color-realbox-answer-icon-foreground: #041e49ff;
-    --color-realbox-results-action-chip-focus-outline: #0b57d0ff;
-    --color-realbox-results-action-chip-icon: #0b57d0ff;
     --color-realbox-results-action-chip:#a8c7faff;
+    --color-realbox-results-action-chip-icon: #0b57d0ff;
+    --color-realbox-results-action-chip-focus-outline: #0b57d0ff;
     --color-realbox-results-background-hovered:#e9e9eaff;
     --color-realbox-results-background: #ffffffff;
     --color-realbox-results-button-hover: #202124ff;
     --color-realbox-results-dim-selected: #5f6368ff;
     --color-realbox-results-focus-indicator: #e9e9eaff;
-    --color-realbox-results-foreground-dimmed: #5f6368ff;
     --color-realbox-results-foreground: #000000ff;
+    --color-realbox-results-foreground-dimmed: #5f6368ff;
     --color-realbox-results-icon-focused-outline: #1a73e8ff;
     --color-realbox-results-icon-selected: #5f6368ff;
     --color-realbox-results-icon: #5f6368ff;
-    --color-realbox-results-url-selected: #1967d2ff;
     --color-realbox-results-url: #1967d2ff;
+    --color-realbox-results-url-selected: #1967d2ff;
     --color-realbox-search-icon-background: #5f6368ff;
     /* Colors specific to the cr-searchbox input */
     --color-realbox-background-hovered: #ffffffff;
@@ -74,11 +82,55 @@
     --color-realbox-foreground: #202124ff;
     --color-realbox-placeholder: #5f6368ff;
     --color-realbox-shadow: #20212451;
+    /* Variables used by cr-realbox */
+    --cr-realbox-height: 52px;
+    --cr-realbox-icon-left-position: 10px;
+    --cr-realbox-icon-top-position: 1px;
+    --cr-realbox-min-width: min(calc(100vw - 16px), 768px);
+  }
+
+  :host([is-back-arrow-visible]) #realboxContainer {
+    --cr-realbox-min-width: min(calc(100vw - 60px), 768px);
+  }
+
+  :host([dark-mode]) #realboxContainer {
+    background-color: #1F1F1F;
+
+    /* Colors used in the cr-searchbox results dropdown */
+    --color-realbox-answer-icon-background: #004a77ff;
+    --color-realbox-answer-icon-foreground: #c2e7ffff;
+    --color-realbox-results-action-chip: #047db7ff;
+    --color-realbox-results-action-chip-icon: #a8c7faff;
+    --color-realbox-results-action-chip-focus-outline: #669df6ff;
+    --color-realbox-results-background: #3c3c3cff;
+    --color-realbox-results-background-hovered: #50504fff;
+    --color-realbox-results-button-hover: #fdfcfb1a;
+    --color-realbox-results-dim-selected: #c7c7c7ff;
+    --color-realbox-results-focus-indicator: #669df6ff;
+    --color-realbox-results-foreground: #e3e3e3ff;
+    --color-realbox-results-foreground-dimmed: #c7c7c7ff;
+    --color-realbox-results-icon: #c7c7c7ff;
+    --color-realbox-results-icon-focused-outline: #a8c7faff;
+    --color-realbox-results-icon-selected: #c7c7c7ff;
+    --color-realbox-results-url: #a8c7faff;
+    --color-realbox-results-url-selected: #a8c7faff;
+    --color-realbox-search-icon-background: #c7c7c7ff;
+    /* Colors specific to the cr-searchbox input */
+    --color-realbox-background-hovered: #4a4a4aff;
+    --color-realbox-background: #303134;
+    --color-realbox-border: #dadce0ff;
+    --color-realbox-foreground: #e3e3e3ff;
+    --color-realbox-placeholder: #c7c7c7ff;
+    --color-realbox-shadow: #20212451;
   }
 
   cr-icon-button.icon-arrow-back {
-    margin-inline-start: 0px;
+    margin-inline-start: 8px;
     margin-inline-end: 12px;
+  }
+
+  :host([dark-mode]) cr-icon-button.icon-arrow-back {
+    color: #70757A;
   }
 </style>
 <div id="realboxContainer">

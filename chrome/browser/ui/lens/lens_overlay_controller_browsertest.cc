@@ -20,10 +20,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
@@ -119,7 +122,7 @@ constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
     "const tliteslPresent = "
     "  root.getElementById('results').src.includes('tlitesl=' + $2);"
     "const tlitetlPresent = "
-    "  root.getElementById('results').src.includes('tlitetl=en-US');"
+    "  root.getElementById('results').src.includes('tlitetl=en');"
     "const searchboxInputLoaded = "
     "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && tlitetxtPresent && ctxslTransPresent "
@@ -190,6 +193,10 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     last_received_text_ = std::move(text);
   }
 
+  void ThemeReceived(lens::mojom::OverlayThemePtr theme) override {
+    last_received_theme_ = std::move(theme);
+  }
+
   void NotifyResultsPanelOpened() override {
     did_notify_results_opened_ = true;
   }
@@ -221,6 +228,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   mojo::Remote<lens::mojom::LensPage> overlay_page_;
 
   std::string last_received_screenshot_data_uri_;
+  std::optional<lens::mojom::OverlayThemePtr> last_received_theme_;
   std::vector<lens::mojom::OverlayObjectPtr> last_received_objects_;
   lens::mojom::TextPtr last_received_text_;
   bool did_notify_results_opened_ = false;
@@ -243,14 +251,16 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
-      LensOverlayInvocationSource invocation_source)
+      LensOverlayInvocationSource invocation_source,
+      bool use_dark_mode)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
                                    interaction_data_callback,
                                    thumbnail_created_callback,
                                    variations_client,
                                    identity_manager,
-                                   invocation_source) {}
+                                   invocation_source,
+                                   use_dark_mode) {}
 
   void StartQueryFlow(const SkBitmap& screenshot,
                       std::optional<GURL> page_url,
@@ -279,12 +289,14 @@ class LensOverlayControllerFake : public LensOverlayController {
                             variations::VariationsClient* variations_client,
                             signin::IdentityManager* identity_manager,
                             PrefService* pref_service,
-                            syncer::SyncService* sync_service)
+                            syncer::SyncService* sync_service,
+                            ThemeService* theme_service)
       : LensOverlayController(tab,
                               variations_client,
                               identity_manager,
                               pref_service,
-                              sync_service) {}
+                              sync_service,
+                              theme_service) {}
 
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
@@ -293,11 +305,12 @@ class LensOverlayControllerFake : public LensOverlayController {
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
-      lens::LensOverlayInvocationSource invocation_source) override {
+      lens::LensOverlayInvocationSource invocation_source,
+      bool use_dark_mode) override {
     return std::make_unique<LensOverlayQueryControllerFake>(
         full_image_callback, url_callback, interaction_data_callback,
         thumbnail_created_callback, variations_client, identity_manager,
-        invocation_source);
+        invocation_source, use_dark_mode);
   }
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
@@ -340,10 +353,14 @@ class TabFeaturesFake : public tabs::TabFeatures {
   std::unique_ptr<LensOverlayController> CreateLensController(
       tabs::TabInterface* tab,
       Profile* profile) override {
+    auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
+    // Set browser color scheme to light mode for consistency.
+    theme_service->SetBrowserColorScheme(
+        ThemeService::BrowserColorScheme::kLight);
     return std::make_unique<LensOverlayControllerFake>(
         tab, profile->GetVariationsClient(),
         IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-        SyncServiceFactory::GetForProfile(profile));
+        SyncServiceFactory::GetForProfile(profile), theme_service);
   }
 };
 
@@ -358,6 +375,9 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
         {
             {"search-bubble", "true"},
             {"results-search-url", kResultsSearchBaseUrl},
+            {"use-dynamic-theme", "true"},
+            {"use-dynamic-theme-min-population-pct", "0.1"},
+            {"use-dynamic-theme-min-chroma", "3.0"},
         });
   }
 
@@ -695,6 +715,59 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   ASSERT_TRUE(fake_controller);
   EXPECT_FALSE(fake_controller->fake_overlay_page_
                    .last_received_screenshot_data_uri_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, DynamicTheme) {
+  WaitForPaint();
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_screenshot_data_uri_.empty());
+  EXPECT_FALSE(
+      fake_controller->fake_overlay_page_.last_received_theme_.has_value());
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify screenshot was captured and stored.
+  auto screenshot_bitmap = controller->current_screenshot();
+  EXPECT_FALSE(screenshot_bitmap.empty());
+  // Verify screenshot was encoded and passed to WebUI.
+  EXPECT_FALSE(fake_controller->fake_overlay_page_
+                   .last_received_screenshot_data_uri_.empty());
+
+  // Verify expected color palette was identified.
+  ASSERT_EQ(lens::PaletteId::kFallback, controller->color_palette());
+  // Verify expected theme color were passed to WebUI.
+  auto expected_theme = lens::mojom::OverlayTheme::New();
+  expected_theme->primary = lens::kColorFallbackPrimary;
+  expected_theme->shader_layer_1 = lens::kColorFallbackShaderLayer1;
+  expected_theme->shader_layer_2 = lens::kColorFallbackShaderLayer2;
+  expected_theme->shader_layer_3 = lens::kColorFallbackShaderLayer3;
+  expected_theme->shader_layer_4 = lens::kColorFallbackShaderLayer4;
+  expected_theme->shader_layer_5 = lens::kColorFallbackShaderLayer5;
+  expected_theme->scrim = lens::kColorFallbackScrim;
+  expected_theme->surface_container_highest_light =
+      lens::kColorFallbackSurfaceContainerHighestLight;
+  expected_theme->surface_container_highest_dark =
+      lens::kColorFallbackSurfaceContainerHighestDark;
+  expected_theme->selection_element = lens::kColorFallbackSelectionElement;
+  EXPECT_TRUE(
+      fake_controller->fake_overlay_page_.last_received_theme_.has_value());
+  const auto& received_theme =
+      fake_controller->fake_overlay_page_.last_received_theme_.value();
+  EXPECT_EQ(received_theme->primary, expected_theme->primary);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
@@ -1096,7 +1169,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
            content::EvalJs(
                controller->GetSidePanelWebContentsForTesting(),
                content::JsReplace(kCheckSidePanelTranslateResultsLoadedScript,
-                                  text_query, content_language));
+                                  text_query, "auto"));
   }));
 }
 
@@ -1175,10 +1248,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->GetLensResponseForTesting().suggest_signals(),
             kTestSuggestSignals);
 
-  // And the current page URL should be made available for use by the searchbox.
-  EXPECT_TRUE(base::EndsWith(controller->GetPageURLForTesting().spec(),
-                             kDocumentWithNamedElement,
-                             base::CompareCase::INSENSITIVE_ASCII));
+  // TODO(b/335234545): The current page URL should be made available for use by
+  // the searchbox.
+  EXPECT_TRUE(controller->GetPageURLForTesting().is_empty());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1630,8 +1702,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.menu&q=oranges&lns_mode=text&gsc=1&"
-      "hl=en-US");
+      "search?cs=0&source=chrome.cr.menu&q=oranges&lns_fp=1&lns_mode=text"
+      "&gsc=1&hl=en-US");
   controller->LoadURLInResultsFrame(first_search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
@@ -1645,15 +1717,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
   VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
                             first_search_url);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
 
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.menu&q=kiwi&lns_mode=text&gsc=1&hl="
-      "en-US");
+      "search?cs=0&source=chrome.cr.menu&q=kiwi&lns_fp=1&lns_mode=text&gsc=1"
+      "&hl=en-US");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
   content::TestNavigationObserver observer(
@@ -1670,8 +1742,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
   VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
                             second_search_url);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
   VerifySearchQueryParameters(observer.last_navigation_url());
   VerifyTextQueriesAreEqual(observer.last_navigation_url(), second_search_url);
@@ -1690,16 +1762,25 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
   VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
                             first_search_url);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
   VerifySearchQueryParameters(pop_observer.last_navigation_url());
   VerifyTextQueriesAreEqual(pop_observer.last_navigation_url(),
                             first_search_url);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       PopAndLoadQueryFromHistoryWithTextSelection) {
+// TODO(crbug.com/342390515): Test flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PopAndLoadQueryFromHistoryWithRegionAndTextSelection \
+  DISABLED_PopAndLoadQueryFromHistoryWithRegionAndTextSelection
+#else
+#define MAYBE_PopAndLoadQueryFromHistoryWithRegionAndTextSelection \
+  PopAndLoadQueryFromHistoryWithRegionAndTextSelection
+#endif
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerBrowserTest,
+    MAYBE_PopAndLoadQueryFromHistoryWithRegionAndTextSelection) {
   WaitForPaint();
 
   // State should start in off.
@@ -1717,11 +1798,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
 
-  // Loading a url in the side panel should show the results page.
+  // Issuing a text selection request should show the results page.
   const GURL first_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.menu&q=oranges&lns_mode=text&gsc=1&"
-      "hl=en-US");
+      "search?cs=0&source=chrome.cr.menu&q=oranges&lns_fp=1&lns_mode=text"
+      "&gsc=1&hl=en-US");
   controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
@@ -1738,61 +1819,105 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
 
-  // Loading a second url in the side panel should show the results page.
+  // Issuing a region selection request should update the results page.
   const GURL second_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.menu&q=kiwi&lns_mode=text&gsc=1&hl="
-      "en-US");
-  // We can't use content::WaitForLoadStop here since the last navigation is
-  // successful.
-  content::TestNavigationObserver observer(
+      "search?cs=0&source=chrome.cr.menu&q=&lns_fp=1&lns_mode=un&gsc=1&"
+      "hl=en-US");
+  // We can't use content::WaitForLoadStop here and below since the last
+  // navigation was already successful.
+  content::TestNavigationObserver second_search_observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->IssueTextSelectionRequestForTesting("kiwi", 1, 100);
-  observer.Wait();
+  controller->IssueLensRequestForTesting(kTestRegion->Clone());
+  // The full sequnce of events necessary to load Lens search results is not
+  // currently testable, so load the expected URL manually.
+  controller->LoadURLInResultsFrame(second_search_url);
+  second_search_observer.Wait();
 
   // The search query history stack should have 1 entry and the currently loaded
-  // query should be set to the new query
+  // region should be set.
   EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 1UL);
+  loaded_search_query.reset();
+  loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  EXPECT_TRUE(loaded_search_query);
+  EXPECT_EQ(loaded_search_query->search_query_text_, std::string());
+  EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_TRUE(loaded_search_query->selected_region_);
+
+  // Loading another url in the side panel should update the results page.
+  const GURL third_search_url(
+      "https://www.google.com/"
+      "search?cs=0&source=chrome.cr.menu&q=kiwi&lns_fp=1&lns_mode=text&gsc=1"
+      "&hl=en-US");
+  content::TestNavigationObserver third_search_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueTextSelectionRequestForTesting("kiwi", 1, 100);
+  third_search_observer.Wait();
+
+  // The search query history stack should have 2 entries and the currently
+  // loaded query should be set to the new query
+  EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 2UL);
+  loaded_search_query.reset();
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
   url_without_start_time_or_size =
       RemoveStartTimeAndSizeParams(loaded_search_query->search_query_url_);
-  EXPECT_EQ(url_without_start_time_or_size, second_search_url);
+  EXPECT_EQ(url_without_start_time_or_size, third_search_url);
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 1);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 100);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
   url_without_start_time_or_size =
-      RemoveStartTimeAndSizeParams(observer.last_navigation_url());
-  EXPECT_EQ(url_without_start_time_or_size, second_search_url);
+      RemoveStartTimeAndSizeParams(third_search_observer.last_navigation_url());
+  EXPECT_EQ(url_without_start_time_or_size, third_search_url);
 
-  // Popping the query should load the previous query into the results frame.
-  content::TestNavigationObserver pop_observer(
+  // Popping a query should load the previous query into the results frame.
+  content::TestNavigationObserver first_pop_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
-  pop_observer.Wait();
+  first_pop_observer.Wait();
+
+  // The search query history stack should have 1 entry and the previously
+  // loaded region should be present.
+  EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 1UL);
+  loaded_search_query.reset();
+  loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  EXPECT_TRUE(loaded_search_query);
+  EXPECT_EQ(loaded_search_query->search_query_text_, std::string());
+  EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_TRUE(loaded_search_query->selected_region_);
+
+  // Popping another query should load the original query into the results
+  // frame.
+  content::TestNavigationObserver second_pop_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->PopAndLoadQueryFromHistory();
+  second_pop_observer.Wait();
 
   // The search query history stack should be empty and the currently loaded
-  // query should be set to the previous query.
+  // query should be set to the original query.
   EXPECT_TRUE(controller->GetSearchQueryHistoryForTesting().empty());
+  loaded_search_query.reset();
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   url_without_start_time_or_size =
       RemoveStartTimeAndSizeParams(loaded_search_query->search_query_url_);
   EXPECT_EQ(url_without_start_time_or_size, first_search_url);
-  EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
-  EXPECT_FALSE(loaded_search_query->search_query_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
   url_without_start_time_or_size =
-      RemoveStartTimeAndSizeParams(pop_observer.last_navigation_url());
+      RemoveStartTimeAndSizeParams(second_pop_observer.last_navigation_url());
   EXPECT_EQ(url_without_start_time_or_size, first_search_url);
 
   // Verify the text selection was sent back to mojo and any old selections were

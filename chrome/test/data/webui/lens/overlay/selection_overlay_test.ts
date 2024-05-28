@@ -13,6 +13,11 @@ import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-w
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertNull, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
+// clang-format off
+// <if expr="not chromeos_lacros">
+import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+// </if>
+// clang-format on
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
@@ -251,6 +256,48 @@ suite('SelectionOverlay', function() {
             await testBrowserProxy.handler.whenCalled('issueLensRequest');
         assertDeepEquals(expectedRect, rect);
       });
+
+  // <if expr="not chromeos_lacros">
+  test(
+      'verify that region search over text triggers detected text context menu',
+      async () => {
+        await addWords();
+
+        await simulateDrag(
+            selectionOverlayElement, {x: 51, y: 10}, {x: 80, y: 40});
+
+        assertEquals(
+            1, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+        assertEquals(
+            0,
+            testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
+        assertTrue(
+            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+
+        testBrowserProxy.handler.reset();
+        selectionOverlayElement.handleSelectTextForTesting();
+
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertDeepEquals('there test', textQuery);
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+      });
+
+  test('verify that detected text context menu works', async () => {
+    await addWords();
+
+    await simulateDrag(selectionOverlayElement, {x: 51, y: 10}, {x: 80, y: 40});
+    selectionOverlayElement.handleSelectTextForTesting();
+
+    const textQuery =
+        await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
+    assertDeepEquals('there test', textQuery);
+    assertEquals(1, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+    assertFalse(
+        selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+  });
+  // </if>
 
   test('verify that region search triggers post selection', async () => {
     await simulateDrag(

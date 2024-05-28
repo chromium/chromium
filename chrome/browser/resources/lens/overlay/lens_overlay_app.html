@@ -1,4 +1,8 @@
 <style>
+  :host {
+    --color-scrim-rgb: 24, 28, 34;
+  }
+
   .app-container {
     height: 100%;
     width: 100%;
@@ -9,9 +13,8 @@
   }
 
   #backgroundScrim {
-    background-color: #5b5e66;
+    background-color: rgba(var(--color-scrim-rgb), 0.2);
     inset: 0;
-    opacity: 60%;
     position: absolute;
   }
 
@@ -27,7 +30,7 @@
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-size: 36px;
     --cr-icon-button-fill-color: white;
-    background-color: #181C2299;
+    background-color: rgba(var(--color-scrim-rgb), 0.6);
   }
 
   #closeButton {
@@ -38,12 +41,45 @@
     display: none;
   }
 
-  #feedbackButton {
-    --cr-icon-image: url("feedback.svg");
+  #moreOptions {
+    width: 130px;
   }
 
-  #infoButton {
-    --cr-icon-image: url("info.svg");
+  #moreOptionsButton {
+    margin-inline-start: 94px;
+  }
+
+  #moreOptionsMenu {
+    background-color: #181C2299;
+    border-radius: 8px;
+    display: none;
+    gap: 8px;
+    margin-top: 11px;
+    padding: 16px 0px;
+    /* Needed to prevent mouse flicker on option hover. */
+    cursor: default;
+  }
+
+  :host([more-options-menu-visible]) #moreOptionsMenu {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu-item {
+    margin-inline-start: 20px;
+    height: 20px;
+  }
+
+  .menu-item-label {
+    color: #E3E3E3;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  .menu-item-label:hover {
+    cursor: pointer;
   }
 
   .app-container :not(lens-selection-overlay) {
@@ -54,13 +90,25 @@
     opacity: 0;
   }
 
+  cursor-tooltip {
+    left: 0;
+    position: fixed;
+    top: 0;
+    /* Don't display the tooltip until the cursor location is determined. */
+    transform: scale(0);
+    width: 100%;
+  }
+
   initial-toast {
     pointer-events: none;
   }
 </style>
-<div class="app-container" on-selection-overlay-clicked="closeInitialToast"
-    on-pointer-released="hideInitialToastGradient"
-    on-screenshot-rendered="onScreenshotRendered">
+<div class="app-container"
+    on-selection-overlay-clicked="handleSelectionOverlayClicked"
+    on-pointer-released="handlePointerReleased"
+    on-screenshot-rendered="onScreenshotRendered"
+    on-pointerenter="handlePointerEnter"
+    on-pointerleave="handlePointerLeave">
   <div id="backgroundScrim" on-click="onBackgroundScrimClicked"
       hidden$="[[!isImageRendered]]"></div>
   <lens-selection-overlay screenshot-data-uri="[[screenshotDataUri]]"
@@ -68,15 +116,34 @@
   </lens-selection-overlay>
   <initial-toast id="initialToast"></initial-toast>
   <div id="buttonContainer">
-    <cr-icon-button id="feedbackButton" class="action-button"
-        on-click="onFeedbackButtonClick" aria-label="$i18n{sendFeedback}"
-        title="$i18n{sendFeedback}"></cr-icon-button>
-    <cr-icon-button id="infoButton" class="action-button"
-        on-click="onInfoButtonClick" aria-label="$i18n{info}"
-        title="$i18n{info}">
-    </cr-icon-button>
+    <div id="moreOptions">
+      <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"
+          class="action-button" on-click="onMoreOptionsButtonClick"
+          aria-label="$i18n{moreOptions}"
+          on-pointerenter="handlePointerEnterActionButton"
+          on-pointerleave="handlePointerLeaveActionButton"
+          title="$i18n{moreOptions}">
+      </cr-icon-button>
+      <div id="moreOptionsMenu">
+        <div class="menu-item">
+          <span id="myActivity" on-click="onMyActivityClick"
+              class="menu-item-label">$i18n{myActivity}</span>
+        </div>
+        <div class="menu-item">
+          <span id="learnMore" on-click="onLearnMoreClick"
+              class="menu-item-label">$i18n{learnMore}</span>
+        </div>
+        <div class="menu-item">
+          <span id="sendFeedback" on-click="onFeedbackClick"
+              class="menu-item-label">$i18n{sendFeedback}</span>
+        </div>
+      </div>
+    </div>
     <cr-icon-button id="closeButton" class="action-button"
         on-click="onCloseButtonClick" aria-label="$i18n{close}"
+        on-pointerenter="handlePointerEnterActionButton"
+        on-pointerleave="handlePointerLeaveActionButton"
         title="$i18n{close}"></cr-icon-button>
   </div>
+  <cursor-tooltip id="cursorTooltip"></cursor-tooltip>
 </div>

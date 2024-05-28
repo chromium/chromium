@@ -1,6 +1,11 @@
 <link rel="stylesheet" href="//resources/css/text_defaults_md.css">
 <style>
   :host {
+    --color-primary: black;
+    --color-scrim: #181C22;
+    --color-scrim-rgb: 24, 28, 34;
+    --color-selection-element: #EEF0F9;
+    --cursor-img-url: url("lens.svg");
     align-items: center;
     display: flex;
     height: 100%;
@@ -56,13 +61,24 @@
   }
 
   #selectionElements {
-    /* Background color #181C22 with 5% transparency */
-    background-color: #181C220D;
+    background-color: rgba(var(--color-scrim-rgb), .05);
     transition: opacity 150ms linear;
   }
 
   :host([is-closing]) #selectionElements{
     opacity: 0;
+  }
+
+  #extraScrim {
+    background-color: var(--color-scrim);
+    /* Start at 0% opacity since #selectionElements already is darkened. */
+    opacity: 0%;
+    transition: opacity 0.8s ease-out;
+    pointer-events: none;
+  }
+
+  :host([darken-extra-scrim]) #extraScrim {
+    opacity: 25%;
   }
 
   #selectionElements > * {
@@ -72,7 +88,7 @@
 
   #cursor {
     align-items: center;
-    background: #eef0f9;
+    background: var(--color-selection-element);
     border-radius: 2px 100px 100px 100px;
     box-shadow: 0px 4px 12px 0px rgba(27, 28, 20, 0.24);
     display: flex;
@@ -82,13 +98,20 @@
     pointer-events: none;
     position: fixed;
     top: 0;
+    /* Prevents displaying the icon until the cursor location is determined. */
+    transform: scale(0);
     width: 32px;
     z-index: 2;
   }
 
   #cursorImg {
-    height: 20px;
-    width: 20px;
+    background-color: var(--color-primary);
+    height: 100%;
+    mask-image: var(--cursor-img-url);
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 20px;
+    width: 100%;
   }
 
   #cursor.hidden {
@@ -101,9 +124,9 @@
     width: 100%;
   }
 
-  #contextMenu {
+  .context-menu {
     align-items: flex-start;
-    background: #eef0f9;
+    background: var(--color-selection-element);
     border-radius: 8px;
     box-shadow: 0px 2px 6px 0px rgba(60, 64, 67, 0.16);
     cursor: default;
@@ -120,7 +143,12 @@
     justify-content: space-between;
   }
 
-  :host([show-text-context-menu]) #contextMenu {
+  :host([show-selected-text-context-menu]) #selectedTextContextMenu {
+    /* TODO: b/338642962 - Add animation */
+    display: flex;
+  }
+
+  :host([show-detected-text-context-menu]) #detectedTextContextMenu {
     /* TODO: b/338642962 - Add animation */
     display: flex;
   }
@@ -135,11 +163,13 @@
   }
 
   .context-menu-item:hover {
-    background-color: rgba(0, 90, 92, 0.08);
+    background-color: 
+        rgba(var(--color-scrim-rgb), 0.05);
   }
 
   .context-menu-item:active {
-    background-color: rgba(0, 90, 92, 0.10);
+    background-color: 
+        rgba(var(--color-scrim-rgb), 0.10);
   }
 
   .menu-item-icon {
@@ -148,7 +178,7 @@
   }
 
   .menu-item-label {
-    color: #181E00;
+    color: var(--color-scrim);
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
@@ -163,6 +193,7 @@
   background image. -->
   <div id="selectionElements">
     <!-- Other elements that need to be bounded to the image go here -->
+    <div id="extraScrim"></div>
     <overlay-shimmer id="overlayShimmer"></overlay-shimmer>
     <post-selection-renderer id="postSelectionRenderer"
         screenshot-data-uri="[[screenshotDataUri]]">
@@ -174,18 +205,27 @@
     <lens-text-layer id="textSelectionLayer"></lens-text-layer>
   </div>
   <div id="contextMenuOverlay">
-    <div id="contextMenu" role="menu"
+    <div id="selectedTextContextMenu" class="context-menu" role="menu"
         style$="[[getContextMenuStyle(contextMenuX, contextMenuY)]]"
         on-pointerenter="handlePointerEnterContextMenu"
         on-pointerleave="handlePointerLeaveContextMenu">
-    <div class="context-menu-item" role="menuitem" on-pointerup="handleCopy">
-      <img src="copy.svg" class="menu-item-icon">
-      <span class="menu-item-label">$i18n{copy}</span>
+      <div class="context-menu-item" role="menuitem" on-pointerup="handleCopy">
+        <img src="copy.svg" class="menu-item-icon">
+        <span class="menu-item-label">$i18n{copy}</span>
+      </div>
+      <div class="context-menu-item" role="menuitem"
+          on-pointerup="handleTranslate">
+        <img src="translate.svg" class="menu-item-icon">
+        <span class="menu-item-label">$i18n{translate}</span>
+      </div>
     </div>
-    <div class="context-menu-item" role="menuitem"
-        on-pointerup="handleTranslate">
-      <img src="translate.svg" class="menu-item-icon">
-      <span class="menu-item-label">$i18n{translate}</span>
+    <div id="detectedTextContextMenu" class="context-menu" role="menu"
+        style$="[[getContextMenuStyle(contextMenuX, contextMenuY)]]"
+        on-pointerenter="handlePointerEnterContextMenu"
+        on-pointerleave="handlePointerLeaveContextMenu">
+      <div class="context-menu-item" role="menuitem"
+          on-pointerup="handleSelectText">
+        <span class="menu-item-label">Select text</span>
       </div>
     </div>
   </div>
@@ -198,5 +238,5 @@
 </cr-toast>
 <div id="cursor"
     class$="[[getHiddenCursorClass(isPointerInside, currentGesture.state)]]">
-  <img id="cursorImg" src="[[cursorImgUri]]">
+  <div id="cursorImg"></div>
 </div>

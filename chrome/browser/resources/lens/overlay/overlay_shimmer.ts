@@ -63,16 +63,6 @@ interface CircleProperties {
   steadyStateCenterY: number;
 }
 
-// The colors of the different circles that compose the shimmer. One circle
-// will be generated for each color hex in this array.
-export const COLOR_HEXES = [
-  '#5B5E66',
-  '#8E9199',
-  '#A6C8FF',
-  '#EEF0F9',
-  '#A8ABB3',
-];
-
 // INVOCATION CONSTANTS: These are the values that the circles will have on
 // the initial invocation, which then transition to the steady state constants.
 const INVOCATION_OPACITY_PERCENT = '0%';
@@ -246,6 +236,15 @@ export class OverlayShimmerElement extends PolymerElement {
   private areResultsShowing: boolean = false;
   // The time stamp in MS of the last time the sparkles were animated.
   private lastSparkleTime: number = 0;
+  // Shader hex colors.
+  // TODO(b/341968225): Set the colors dynamically.
+  private shaderLayerColorHexes = [
+    '#EEF0F9',
+    '#A6C8FF',
+    '#5B5E66',
+    '#EEF0F9',
+    '#A8ABB3',
+  ];
 
   // Listener ids for events from the browser side.
   private listenerIds: number[];
@@ -316,7 +315,7 @@ export class OverlayShimmerElement extends PolymerElement {
       const centerXOffsetInt = parseInt(STEADY_STATE_CENTER_X_PERCENT_OFFSET);
       const centerYOffsetInt = parseInt(STEADY_STATE_CENTER_Y_PERCENT_OFFSET);
       // Create a circle for each colorHex defined.
-      this.circles = COLOR_HEXES.map((colorHex: string) => {
+      this.circles = this.shaderLayerColorHexes.map((colorHex: string) => {
         return {
           colorHex,
           steadyStateCenterX: 50 - centerXOffsetInt * (Math.random() * 2 - 1),

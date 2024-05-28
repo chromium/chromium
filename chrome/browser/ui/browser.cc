@@ -1064,6 +1064,10 @@ void Browser::OpenURL(const GURL& gurl, WindowOpenDisposition disposition) {
           /*navigation_handle_callback=*/{});
 }
 
+const SessionID& Browser::GetSessionID() {
+  return session_id_;
+}
+
 void Browser::OnWindowClosing() {
   if (const auto closing_status = HandleBeforeClose();
       closing_status != BrowserClosingStatus::kPermitted) {

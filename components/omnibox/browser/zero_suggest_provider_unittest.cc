@@ -432,7 +432,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
     EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
                                                        on_clobber_srp_input));
 
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
               ZeroSuggestProvider::ResultTypeToRun(on_focus_lens_input));
     EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
                                                       on_focus_lens_input));
@@ -489,7 +489,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
     EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
                                                       on_clobber_srp_input));
 
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
               ZeroSuggestProvider::ResultTypeToRun(on_focus_lens_input));
     EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
                                                       on_focus_lens_input));
@@ -939,15 +939,15 @@ TEST_F(ZeroSuggestProviderRequestTest,
   EXPECT_CALL(*provider_, AllowZeroPrefixSuggestions(_, _))
       .WillRepeatedly(testing::Return(true));
 
-  // Start a query for the ResultType::kRemoteSendURL variant.
+  // Start a query for the ResultType::kRemoteNoURL variant.
   AutocompleteInput input = OnFocusInputForLens();
   provider_->Start(input, false);
 
   // Make sure the default provider's suggest endpoint was queried without the
   // Lens interaction response.
   EXPECT_FALSE(provider_->done());
-  EXPECT_TRUE(test_loader_factory()->IsPending(
-      "https://www.google.com/suggest?q=&url=https%3A%2F%2Fexample.com%2F&"));
+  EXPECT_TRUE(
+      test_loader_factory()->IsPending("https://www.google.com/suggest?q=&"));
 
   test_loader_factory()->AddResponse(
       test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
@@ -974,7 +974,7 @@ TEST_F(ZeroSuggestProviderRequestTest, SendRequestWithLensInteractionResponse) {
   EXPECT_CALL(*provider_, AllowZeroPrefixSuggestions(_, _))
       .WillRepeatedly(testing::Return(true));
 
-  // Start a query for the ResultType::kRemoteSendURL variant.
+  // Start a query for the ResultType::kRemoteNoURL variant.
   AutocompleteInput input = OnFocusInputForLens();
   lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
   lens_overlay_interaction_response.set_suggest_signals("xyz");
@@ -985,9 +985,9 @@ TEST_F(ZeroSuggestProviderRequestTest, SendRequestWithLensInteractionResponse) {
   // Make sure the default provider's suggest endpoint was queried without the
   // Lens interaction response.
   EXPECT_FALSE(provider_->done());
-  EXPECT_TRUE(test_loader_factory()->IsPending(
-      "https://www.google.com/"
-      "suggest?q=&url=https%3A%2F%2Fexample.com%2F&iil=xyz"));
+  EXPECT_TRUE(
+      test_loader_factory()->IsPending("https://www.google.com/"
+                                       "suggest?q=&iil=xyz"));
 
   test_loader_factory()->AddResponse(
       test_loader_factory()->GetPendingRequest(0)->request.url.spec(),

@@ -4212,6 +4212,8 @@ static_library("ui") {
       "lens/lens_overlay_side_panel_coordinator.h",
       "lens/lens_overlay_side_panel_navigation_throttle.cc",
       "lens/lens_overlay_side_panel_navigation_throttle.h",
+      "lens/lens_overlay_theme_utils.cc",
+      "lens/lens_overlay_theme_utils.h",
       "lens/lens_search_bubble_controller.cc",
       "lens/lens_search_bubble_controller.h",
       "lens/lens_untrusted_ui.cc",
