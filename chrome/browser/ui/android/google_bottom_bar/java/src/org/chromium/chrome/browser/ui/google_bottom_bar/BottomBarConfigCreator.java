@@ -281,12 +281,27 @@ public class BottomBarConfigCreator {
     }
 
     private static ButtonConfig getButtonConfigFromCustomButtonParams(
-            Context context, int buttonId, CustomButtonParams params) {
+            Context context, @ButtonId int buttonId, CustomButtonParams params) {
         return new ButtonConfig(
                 buttonId,
-                getScaledAndTintedIcon(
-                        context, params.getIcon(context), R.color.default_icon_color_baseline),
+                getIconDrawable(context, buttonId, params),
                 params.getDescription(),
                 params.getPendingIntent());
+    }
+
+    private static Drawable getIconDrawable(
+            Context context, @ButtonId int buttonId, CustomButtonParams params) {
+        // Always use pageInsights icon provided by Chrome
+        return isPageInsightsButton(buttonId)
+                ? UiUtils.getTintedDrawable(
+                        context, R.drawable.page_insights_icon, R.color.default_icon_color_baseline)
+                : getScaledAndTintedIcon(
+                        context, params.getIcon(context), R.color.default_icon_color_baseline);
+    }
+
+    private static boolean isPageInsightsButton(@ButtonId int buttonId) {
+        return buttonId == ButtonId.PIH_BASIC
+                || buttonId == ButtonId.PIH_COLORED
+                || buttonId == ButtonId.PIH_EXPANDED;
     }
 }
