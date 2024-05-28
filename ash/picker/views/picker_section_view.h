@@ -84,27 +84,27 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // Returns the item to highlight to when navigating to this section from the
   // top, or nullptr if the section is empty.
-  PickerItemView* GetTopItem();
+  views::View* GetTopItem();
 
   // Returns the item to highlight to when navigating to this section from the
   // bottom, or nullptr if the section is empty.
-  PickerItemView* GetBottomItem();
+  views::View* GetBottomItem();
 
   // Returns the item directly above `item`, or nullptr if there is no such item
   // in the section.
-  PickerItemView* GetItemAbove(PickerItemView* item);
+  views::View* GetItemAbove(views::View* item);
 
   // Returns the item directly below `item`, or nullptr if there is no such item
   // in the section.
-  PickerItemView* GetItemBelow(PickerItemView* item);
+  views::View* GetItemBelow(views::View* item);
 
   // Returns the item directly to the left of `item`, or nullptr if there is no
   // such item in the section.
-  PickerItemView* GetItemLeftOf(PickerItemView* item);
+  views::View* GetItemLeftOf(views::View* item);
 
   // Returns the item directly to the right of `item`, or nullptr if there is no
   // such item in the section.
-  PickerItemView* GetItemRightOf(PickerItemView* item);
+  views::View* GetItemRightOf(views::View* item);
 
   const views::Label* title_label_for_testing() const { return title_label_; }
   const views::Link* title_trailing_link_for_testing() const {

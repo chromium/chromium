@@ -117,8 +117,8 @@ bool PickerZeroStateView::MovePseudoFocusUp() {
   if (views::IsViewClass<PickerItemView>(pseudo_focused_view_)) {
     // Try to move directly to an item above the currently pseudo focused item,
     // i.e. skip non-item views.
-    if (PickerItemView* item = section_list_view_->GetItemAbove(
-            views::AsViewClass<PickerItemView>(pseudo_focused_view_))) {
+    if (views::View* item =
+            section_list_view_->GetItemAbove(pseudo_focused_view_)) {
       SetPseudoFocusedView(item);
       return true;
     }
@@ -137,8 +137,8 @@ bool PickerZeroStateView::MovePseudoFocusDown() {
   if (views::IsViewClass<PickerItemView>(pseudo_focused_view_)) {
     // Try to move directly to an item below the currently pseudo focused item,
     // i.e. skip non-item views.
-    if (PickerItemView* item = section_list_view_->GetItemBelow(
-            views::AsViewClass<PickerItemView>(pseudo_focused_view_))) {
+    if (views::View* item =
+            section_list_view_->GetItemBelow(pseudo_focused_view_)) {
       SetPseudoFocusedView(item);
       return true;
     }
@@ -159,8 +159,8 @@ bool PickerZeroStateView::MovePseudoFocusLeft() {
   // left of the current pseudo focused item. In other situations, we prefer not
   // to handle the movement here so that it can instead be used for other
   // purposes, e.g. moving the caret in the search field.
-  if (PickerItemView* item = section_list_view_->GetItemLeftOf(
-          views::AsViewClass<PickerItemView>(pseudo_focused_view_))) {
+  if (views::View* item =
+          section_list_view_->GetItemLeftOf(pseudo_focused_view_)) {
     SetPseudoFocusedView(item);
     return true;
   }
@@ -177,8 +177,8 @@ bool PickerZeroStateView::MovePseudoFocusRight() {
   // right of the current pseudo focused item. In other situations, we prefer
   // not to handle the movement here so that it can instead be used for other
   // purposes, e.g. moving the caret in the search field.
-  if (PickerItemView* item = section_list_view_->GetItemRightOf(
-          views::AsViewClass<PickerItemView>(pseudo_focused_view_))) {
+  if (views::View* item =
+          section_list_view_->GetItemRightOf(pseudo_focused_view_)) {
     SetPseudoFocusedView(item);
     return true;
   }
@@ -257,19 +257,18 @@ void PickerZeroStateView::ScrollPseudoFocusedViewToVisible() {
     return;
   }
 
-  auto* pseudo_focused_item =
-      views::AsViewClass<PickerItemView>(pseudo_focused_view_);
-  if (section_list_view_->GetItemAbove(pseudo_focused_item) == nullptr) {
+  if (section_list_view_->GetItemAbove(pseudo_focused_view_) == nullptr) {
     // For items at the top, scroll all the way up to let users see that they
     // have reached the top of the zero state view.
     ScrollRectToVisible(gfx::Rect(GetLocalBounds().origin(), gfx::Size()));
-  } else if (section_list_view_->GetItemBelow(pseudo_focused_item) == nullptr) {
+  } else if (section_list_view_->GetItemBelow(pseudo_focused_view_) ==
+             nullptr) {
     // For items at the bottom, scroll all the way down to let users see that
     // they have reached the bottom of the zero state view.
     ScrollRectToVisible(gfx::Rect(GetLocalBounds().bottom_left(), gfx::Size()));
   } else {
     // Otherwise, just ensure the item is visible.
-    pseudo_focused_item->ScrollViewToVisible();
+    pseudo_focused_view_->ScrollViewToVisible();
   }
 }
 

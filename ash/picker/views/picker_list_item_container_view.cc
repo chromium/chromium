@@ -27,45 +27,35 @@ PickerListItemContainerView::PickerListItemContainerView() {
 
 PickerListItemContainerView::~PickerListItemContainerView() = default;
 
-PickerItemView* PickerListItemContainerView::GetTopItem() {
-  return children().empty()
-             ? nullptr
-             : views::AsViewClass<PickerItemView>(children().front().get());
+views::View* PickerListItemContainerView::GetTopItem() {
+  return children().empty() ? nullptr : children().front().get();
 }
 
-PickerItemView* PickerListItemContainerView::GetBottomItem() {
-  return children().empty()
-             ? nullptr
-             : views::AsViewClass<PickerItemView>(children().back().get());
+views::View* PickerListItemContainerView::GetBottomItem() {
+  return children().empty() ? nullptr : children().back().get();
 }
 
-PickerItemView* PickerListItemContainerView::GetItemAbove(
-    PickerItemView* item) {
+views::View* PickerListItemContainerView::GetItemAbove(views::View* item) {
   const auto it = base::ranges::find(children(), item);
   return it == children().end() || it == children().begin()
              ? nullptr
-             : views::AsViewClass<PickerItemView>(std::prev(it)->get());
+             : std::prev(it)->get();
 }
 
-PickerItemView* PickerListItemContainerView::GetItemBelow(
-    PickerItemView* item) {
+views::View* PickerListItemContainerView::GetItemBelow(views::View* item) {
   const auto it = base::ranges::find(children(), item);
   if (it == children().end()) {
     return nullptr;
   }
   const auto next_it = std::next(it);
-  return next_it == children().end()
-             ? nullptr
-             : views::AsViewClass<PickerItemView>(next_it->get());
+  return next_it == children().end() ? nullptr : next_it->get();
 }
 
-PickerItemView* PickerListItemContainerView::GetItemLeftOf(
-    PickerItemView* item) {
+views::View* PickerListItemContainerView::GetItemLeftOf(views::View* item) {
   return nullptr;
 }
 
-PickerItemView* PickerListItemContainerView::GetItemRightOf(
-    PickerItemView* item) {
+views::View* PickerListItemContainerView::GetItemRightOf(views::View* item) {
   return nullptr;
 }
 

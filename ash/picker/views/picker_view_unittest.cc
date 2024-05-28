@@ -1073,9 +1073,9 @@ TEST_F(PickerViewTest, ClearsSearchWhenClickingOnCategoryResult) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
   PickerView* view = GetPickerViewFromWidget(*widget);
-  PickerItemView* category_result = view->search_results_view_for_testing()
-                                        .section_list_view_for_testing()
-                                        ->GetTopItem();
+  views::View* category_result = view->search_results_view_for_testing()
+                                     .section_list_view_for_testing()
+                                     ->GetTopItem();
   ASSERT_TRUE(category_result);
   ViewDrawnWaiter().Wait(category_result);
 

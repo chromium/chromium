@@ -7,9 +7,11 @@
 
 #include "ash/ash_export.h"
 
-namespace ash {
+namespace views {
+class View;
+}
 
-class PickerItemView;
+namespace ash {
 
 // Interface implemented by Picker item containers that support item traversal.
 class ASH_EXPORT PickerTraversableItemContainer {
@@ -18,27 +20,27 @@ class ASH_EXPORT PickerTraversableItemContainer {
 
   // Returns the item to highlight to when navigating to this container from the
   // top, or nullptr if the container is empty.
-  virtual PickerItemView* GetTopItem() = 0;
+  virtual views::View* GetTopItem() = 0;
 
   // Returns the item to highlight to when navigating to this container from the
   // bottom, or nullptr if the container is empty.
-  virtual PickerItemView* GetBottomItem() = 0;
+  virtual views::View* GetBottomItem() = 0;
 
   // Returns the item directly above `item`, or nullptr if there is no such item
   // in the container.
-  virtual PickerItemView* GetItemAbove(PickerItemView* item) = 0;
+  virtual views::View* GetItemAbove(views::View* item) = 0;
 
   // Returns the item directly below `item`, or nullptr if there is no such item
   // in the container.
-  virtual PickerItemView* GetItemBelow(PickerItemView* item) = 0;
+  virtual views::View* GetItemBelow(views::View* item) = 0;
 
   // Returns the item directly to the left of `item`, or nullptr if there is no
   // such item in the container.
-  virtual PickerItemView* GetItemLeftOf(PickerItemView* item) = 0;
+  virtual views::View* GetItemLeftOf(views::View* item) = 0;
 
   // Returns the item directly to the right of `item`, or nullptr if there is no
   // such item in the container.
-  virtual PickerItemView* GetItemRightOf(PickerItemView* item) = 0;
+  virtual views::View* GetItemRightOf(views::View* item) = 0;
 };
 
 }  // namespace ash

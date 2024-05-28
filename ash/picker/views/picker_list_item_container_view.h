@@ -14,7 +14,6 @@
 
 namespace ash {
 
-class PickerItemView;
 class PickerListItemView;
 
 // Container view for the list items in a section. The list items are displayed
@@ -32,12 +31,12 @@ class ASH_EXPORT PickerListItemContainerView
   ~PickerListItemContainerView() override;
 
   // PickerTraversableItemContainer:
-  PickerItemView* GetTopItem() override;
-  PickerItemView* GetBottomItem() override;
-  PickerItemView* GetItemAbove(PickerItemView* item) override;
-  PickerItemView* GetItemBelow(PickerItemView* item) override;
-  PickerItemView* GetItemLeftOf(PickerItemView* item) override;
-  PickerItemView* GetItemRightOf(PickerItemView* item) override;
+  views::View* GetTopItem() override;
+  views::View* GetBottomItem() override;
+  views::View* GetItemAbove(views::View* item) override;
+  views::View* GetItemBelow(views::View* item) override;
+  views::View* GetItemLeftOf(views::View* item) override;
+  views::View* GetItemRightOf(views::View* item) override;
 
   PickerListItemView* AddListItem(
       std::unique_ptr<PickerListItemView> list_item);

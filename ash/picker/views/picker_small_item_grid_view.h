@@ -14,7 +14,6 @@
 
 namespace ash {
 
-class PickerItemView;
 class PickerEmojiItemView;
 class PickerSymbolItemView;
 class PickerEmoticonItemView;
@@ -33,12 +32,12 @@ class ASH_EXPORT PickerSmallItemGridView
   ~PickerSmallItemGridView() override;
 
   // PickerTraversableItemContainer:
-  PickerItemView* GetTopItem() override;
-  PickerItemView* GetBottomItem() override;
-  PickerItemView* GetItemAbove(PickerItemView* item) override;
-  PickerItemView* GetItemBelow(PickerItemView* item) override;
-  PickerItemView* GetItemLeftOf(PickerItemView* item) override;
-  PickerItemView* GetItemRightOf(PickerItemView* item) override;
+  views::View* GetTopItem() override;
+  views::View* GetBottomItem() override;
+  views::View* GetItemAbove(views::View* item) override;
+  views::View* GetItemBelow(views::View* item) override;
+  views::View* GetItemLeftOf(views::View* item) override;
+  views::View* GetItemRightOf(views::View* item) override;
 
   PickerEmojiItemView* AddEmojiItem(
       std::unique_ptr<PickerEmojiItemView> emoji_item);
@@ -48,12 +47,11 @@ class ASH_EXPORT PickerSmallItemGridView
       std::unique_ptr<PickerEmoticonItemView> emoticon_item);
 
  private:
-  PickerItemView* AddSmallGridItem(
-      std::unique_ptr<PickerItemView> small_grid_item);
+  views::View* AddSmallGridItem(std::unique_ptr<views::View> small_grid_item);
 
   // Gets and returns the visible row containing `item`. Returns nullptr if the
   // row containing `item` is not visible or if `item` is not part of this grid.
-  views::View* GetVisibleRowContaining(PickerItemView* item);
+  views::View* GetVisibleRowContaining(views::View* item);
 
   int grid_width_ = 0;
 

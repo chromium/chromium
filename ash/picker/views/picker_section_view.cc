@@ -316,32 +316,32 @@ void PickerSectionView::ClearItems() {
   }
 }
 
-PickerItemView* PickerSectionView::GetTopItem() {
+views::View* PickerSectionView::GetTopItem() {
   return GetItemContainer() != nullptr ? GetItemContainer()->GetTopItem()
                                        : nullptr;
 }
 
-PickerItemView* PickerSectionView::GetBottomItem() {
+views::View* PickerSectionView::GetBottomItem() {
   return GetItemContainer() != nullptr ? GetItemContainer()->GetBottomItem()
                                        : nullptr;
 }
 
-PickerItemView* PickerSectionView::GetItemAbove(PickerItemView* item) {
+views::View* PickerSectionView::GetItemAbove(views::View* item) {
   return GetItemContainer() != nullptr ? GetItemContainer()->GetItemAbove(item)
                                        : nullptr;
 }
 
-PickerItemView* PickerSectionView::GetItemBelow(PickerItemView* item) {
+views::View* PickerSectionView::GetItemBelow(views::View* item) {
   return GetItemContainer() != nullptr ? GetItemContainer()->GetItemBelow(item)
                                        : nullptr;
 }
 
-PickerItemView* PickerSectionView::GetItemLeftOf(PickerItemView* item) {
+views::View* PickerSectionView::GetItemLeftOf(views::View* item) {
   return GetItemContainer() != nullptr ? GetItemContainer()->GetItemLeftOf(item)
                                        : nullptr;
 }
 
-PickerItemView* PickerSectionView::GetItemRightOf(PickerItemView* item) {
+views::View* PickerSectionView::GetItemRightOf(views::View* item) {
   return GetItemContainer() != nullptr
              ? GetItemContainer()->GetItemRightOf(item)
              : nullptr;
