@@ -72,7 +72,7 @@ export class CrProfileAvatarSelectorElement extends CrLitElement {
   }
 
   avatars: AvatarIcon[] = [];
-  selectedAvatar: AvatarIcon|null;
+  selectedAvatar: AvatarIcon|null = null;
   ignoreModifiedKeyEvents: boolean = false;
   columns: number = 6;
   private tabFocusableAvatar_: number = -1;

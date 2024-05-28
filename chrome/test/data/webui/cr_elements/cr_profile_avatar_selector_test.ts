@@ -9,7 +9,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrProfileAvatarSelectorElement} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -72,7 +72,7 @@ suite('cr-profile-avatar-selector', function() {
   });
 
   test('No avatar is initially selected', function() {
-    assertFalse(!!avatarSelector.selectedAvatar);
+    assertNull(avatarSelector.selectedAvatar);
     getGridItems().forEach(function(item) {
       assertFalse(item.parentElement!.classList.contains('iron-selected'));
     });

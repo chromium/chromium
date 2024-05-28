@@ -134,7 +134,7 @@ export const FocusRowMixin = dedupingMixin(
         isFocused: boolean = false;
 
         // Should be bound to the index of the item from the iron-list.
-        focusRowIndex: number;
+        focusRowIndex?: number;
 
         lastFocused: HTMLElement|null = null;
 
@@ -144,7 +144,7 @@ export const FocusRowMixin = dedupingMixin(
          * use of this fact. For example, when a control within a row is
          * focused, it will have tabIndex = -1 and ironListTabIndex = 0.
          */
-        ironListTabIndex: number;
+        ironListTabIndex?: number;
         listBlurred: boolean = false;
 
         private firstControl_: HTMLElement|null = null;
@@ -382,9 +382,9 @@ export const FocusRowMixin = dedupingMixin(
 export interface FocusRowMixinInterface {
   id: string;
   isFocused: boolean;
-  focusRowIndex: number;
+  focusRowIndex?: number;
   lastFocused: HTMLElement|null;
-  ironListTabIndex: number;
+  ironListTabIndex?: number;
   listBlurred: boolean;
   overrideCustomEquivalent?: boolean;
 
