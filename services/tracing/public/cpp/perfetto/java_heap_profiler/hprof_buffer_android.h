@@ -6,6 +6,7 @@
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_JAVA_HEAP_PROFILER_HPROF_BUFFER_ANDROID_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_data_type_android.h"
 
 namespace tracing {
@@ -52,7 +53,8 @@ class COMPONENT_EXPORT(TRACING_CPP) HprofBuffer {
   // The ID size in bytes of the objects in the hprof, valid values are 4 and 8.
   unsigned object_id_size_in_bytes_ = 4;
 
-  const unsigned char* const data_;  // Pointer to buffer.
+  const raw_ptr<const unsigned char, AllowPtrArithmetic>
+      data_;                         // Pointer to buffer.
   const size_t size_;                // Total size of buffer.
   size_t offset_ = 0;  // Index into buffer as we parse through contents.
 };

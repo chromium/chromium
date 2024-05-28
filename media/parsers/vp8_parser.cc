@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace media {
 
@@ -48,20 +49,13 @@ namespace media {
     *out = _out;                                   \
   } while (0)
 
-Vp8FrameHeader::Vp8FrameHeader() {
-  memset(this, 0, sizeof(*this));
-}
+Vp8FrameHeader::Vp8FrameHeader() = default;
 
 Vp8FrameHeader::~Vp8FrameHeader() = default;
 
-Vp8FrameHeader::Vp8FrameHeader(const Vp8FrameHeader& fhdr) {
-  memcpy(this, &fhdr, sizeof(*this));
-}
+Vp8FrameHeader::Vp8FrameHeader(const Vp8FrameHeader& fhdr) = default;
 
-Vp8FrameHeader& Vp8FrameHeader::operator=(const Vp8FrameHeader& fhdr) {
-  memcpy(this, &fhdr, sizeof(*this));
-  return *this;
-}
+Vp8FrameHeader& Vp8FrameHeader::operator=(const Vp8FrameHeader& fhdr) = default;
 
 Vp8Parser::Vp8Parser() : stream_(nullptr), bytes_left_(0) {
 }
@@ -74,7 +68,7 @@ bool Vp8Parser::ParseFrame(const uint8_t* ptr,
   stream_ = ptr;
   bytes_left_ = frame_size;
 
-  memset(fhdr, 0, sizeof(*fhdr));
+  *fhdr = Vp8FrameHeader();
   fhdr->data = stream_;
   fhdr->frame_size = bytes_left_;
 
@@ -862,8 +856,9 @@ bool Vp8Parser::ParsePartitions(Vp8FrameHeader* fhdr) {
   size_t bytes_left = fhdr->frame_size - first_dct_pos;
 
   // Position ourselves at the beginning of partition size values.
-  const uint8_t* ptr =
-      fhdr->data + fhdr->first_part_offset + fhdr->first_part_size;
+  const uint8_t* ptr = fhdr->data +
+                       base::checked_cast<size_t>(fhdr->first_part_offset) +
+                       fhdr->first_part_size;
 
   // Read sizes from the stream (if present).
   for (size_t i = 0; i < fhdr->num_of_dct_partitions - 1; ++i) {

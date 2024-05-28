@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -57,7 +58,7 @@ class MEDIA_EXPORT H264BitReader {
   bool UpdateCurrByte();
 
   // Pointer to the next unread (not in curr_byte_) byte in the stream.
-  const uint8_t* data_;
+  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> data_;
 
   // Bytes left in the stream (without the curr_byte_).
   off_t bytes_left_;

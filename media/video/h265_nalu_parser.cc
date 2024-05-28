@@ -34,9 +34,7 @@ namespace media {
     }                                                                \
   } while (0)
 
-H265NALU::H265NALU() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265NALU::H265NALU() = default;
 
 H265NaluParser::H265NaluParser() {
   Reset();
@@ -45,7 +43,7 @@ H265NaluParser::H265NaluParser() {
 H265NaluParser::~H265NaluParser() {}
 
 void H265NaluParser::Reset() {
-  stream_ = NULL;
+  stream_ = nullptr;
   bytes_left_ = 0;
   encrypted_ranges_.clear();
   previous_nalu_range_.clear();
@@ -131,7 +129,7 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
   }
 
   DCHECK(nalu);
-  nalu->data = stream_ + start_code_size;
+  nalu->data = (stream_ + start_code_size).get();
   nalu->size = nalu_size_with_start_code - start_code_size;
   DVLOG(4) << "NALU found: size=" << nalu_size_with_start_code;
 
@@ -156,11 +154,11 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
   READ_BITS_OR_RETURN(3, &nalu->nuh_temporal_id_plus1);
 
   DVLOG(4) << "NALU type: " << static_cast<int>(nalu->nal_unit_type)
-           << " at: " << reinterpret_cast<const void*>(nalu->data)
+           << " at: " << reinterpret_cast<const void*>(nalu->data.get())
            << " size: " << nalu->size;
 
   previous_nalu_range_.clear();
-  previous_nalu_range_.Add(nalu->data, nalu->data + nalu->size);
+  previous_nalu_range_.Add(nalu->data.get(), (nalu->data + nalu->size).get());
   return kOk;
 }
 

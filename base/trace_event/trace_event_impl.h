@@ -17,6 +17,7 @@
 
 #include "base/base_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
@@ -159,7 +160,7 @@ class BASE_EXPORT TraceEvent {
   // The equivalence is checked with a static_assert() in trace_event_impl.cc.
   const char* scope_ = nullptr;
   unsigned long long id_ = 0u;
-  const unsigned char* category_group_enabled_ = nullptr;
+  raw_ptr<const unsigned char> category_group_enabled_ = nullptr;
   const char* name_ = nullptr;
   StringStorage parameter_copy_storage_;
   TraceArguments args_;

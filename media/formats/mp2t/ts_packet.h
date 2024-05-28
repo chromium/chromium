@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace media {
 
 class BitReader;
@@ -54,7 +56,7 @@ class TsPacket {
                             int adaptation_field_length);
 
   // Size of the payload.
-  const uint8_t* payload_;
+  raw_ptr<const uint8_t, AllowPtrArithmetic> payload_;
   int payload_size_;
 
   // TS header.

@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "courgette/courgette.h"
 #include "courgette/image_utils.h"
@@ -153,8 +154,9 @@ class Disassembler : public AddressTranslator {
   // total data.
   //
   size_t length_;         // In current memory.
-  const uint8_t* start_;  // In current memory, base for 'file offsets'.
-  const uint8_t* end_;    // In current memory.
+  raw_ptr<const uint8_t, AllowPtrArithmetic>
+      start_;  // In current memory, base for 'file offsets'.
+  raw_ptr<const uint8_t, AllowPtrArithmetic> end_;  // In current memory.
 };
 
 }  // namespace courgette

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/subsample_entry.h"
@@ -305,7 +306,7 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   H265Parser parser_;
 
   // Most recent call to SetStream().
-  const uint8_t* current_stream_ = nullptr;
+  raw_ptr<const uint8_t, DanglingUntriaged> current_stream_ = nullptr;
   size_t current_stream_size_ = 0;
 
   // Decrypting config for the most recent data passed to SetStream().

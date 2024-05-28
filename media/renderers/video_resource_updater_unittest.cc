@@ -78,7 +78,7 @@ class UploadCounterGLES2Interface : public viz::TestGLES2Interface {
 
  private:
   int upload_count_;
-  const uint8_t* last_upload_ = nullptr;
+  raw_ptr<const uint8_t, DanglingUntriaged> last_upload_ = nullptr;
 };
 
 class VideoResourceUpdaterTest : public testing::Test {

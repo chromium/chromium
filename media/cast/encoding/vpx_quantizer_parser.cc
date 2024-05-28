@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "media/cast/encoding/vpx_quantizer_parser.h"
+
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 
 namespace media {
 namespace cast {
@@ -39,8 +41,10 @@ class VpxBitReader {
   // Read new bytes from the encoded data buffer until |bit_count_| > 0.
   void VpxDecoderReadBytes();
 
-  const uint8_t* encoded_data_;            // Current byte to decode.
-  const uint8_t* const encoded_data_end_;  // The end of the byte to decode.
+  raw_ptr<const uint8_t, AllowPtrArithmetic>
+      encoded_data_;  // Current byte to decode.
+  const raw_ptr<const uint8_t>
+      encoded_data_end_;  // The end of the byte to decode.
   // The following two variables are maintained by the decoder.
   // General decoding rule:
   // If |value_| is in the range of 0 to half of |range_|, output 0.
