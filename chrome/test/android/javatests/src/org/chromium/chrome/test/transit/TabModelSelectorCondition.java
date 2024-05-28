@@ -18,7 +18,7 @@ public class TabModelSelectorCondition extends UiThreadCondition
     private TabModelSelector mSelector;
 
     public TabModelSelectorCondition(Supplier<ChromeTabbedActivity> activitySupplier) {
-        mActivitySupplier = activitySupplier;
+        mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
     }
 
     @Override

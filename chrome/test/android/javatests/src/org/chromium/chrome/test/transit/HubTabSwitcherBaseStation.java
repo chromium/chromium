@@ -164,4 +164,19 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                         .build();
         return travelToSync(page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
     }
+
+    /**
+     * Returns to the previous tab via the back button.
+     *
+     * @return the {@link PageStation} that Hub returned to.
+     */
+    public PageStation leaveHubToPreviousTabViaBack() {
+        PageStation destination =
+                PageStation.newPageStationBuilder()
+                        .withIsOpeningTabs(0)
+                        .withIsSelectingTabs(1)
+                        .withIncognito(mIsIncognito)
+                        .build();
+        return leaveHubToPreviousTabViaBack(destination);
+    }
 }

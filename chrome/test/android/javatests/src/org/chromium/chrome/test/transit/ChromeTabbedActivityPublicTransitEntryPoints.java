@@ -9,6 +9,7 @@ import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.concurrent.Callable;
 
@@ -35,6 +36,21 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
                 WebPageStation.newWebPageStationBuilder().withEntryPoint().build();
         return sentinel.travelToSync(
                 entryPageStation, mActivityTestRule::startMainActivityOnBlankPage);
+    }
+
+    /**
+     * Start the test in an NTP.
+     *
+     * @return the active entry {@link NewTabPageStation}
+     */
+    public NewTabPageStation startOnNTP() {
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+        NewTabPageStation entryPageStation =
+                NewTabPageStation.newBuilder().withEntryPoint().build();
+        return sentinel.travelToSync(
+                entryPageStation,
+                () -> mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL));
     }
 
     /**

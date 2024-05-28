@@ -114,15 +114,7 @@ public abstract class HubBaseStation extends Station {
      *
      * @return the {@link PageStation} that Hub returned to.
      */
-    public PageStation leaveHubToPreviousTabViaBack() {
-        // TODO(crbug.com/40287437): This logic gets exponentially more complicated if there is
-        // additional back state e.g. in-pane navigations, between pane navigations, etc. Figure out
-        // a solution that better handles the complexity.
-        PageStation destination =
-                PageStation.newPageStationBuilder()
-                        .withIsOpeningTabs(0)
-                        .withIsSelectingTabs(1)
-                        .build();
+    public <T extends PageStation> T leaveHubToPreviousTabViaBack(T destination) {
         return travelToSync(destination, () -> Espresso.pressBack());
     }
 

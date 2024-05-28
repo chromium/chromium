@@ -332,8 +332,10 @@ public class PageStation extends Station {
                     int transitionType = PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
                     getActivity().getActivityTab().loadUrl(new LoadUrlParams(url, transitionType));
                 };
-        return travelToSync(
-                destination, Transition.timeoutOption(10000), () -> ThreadUtils.runOnUiThread(r));
+        // TODO(b/341978208): Wait for a page loaded callback.
+        Transition.TransitionOptions options =
+                Transition.newOptions().withTimeout(10000).withPossiblyAlreadyFulfilled().build();
+        return travelToSync(destination, options, () -> ThreadUtils.runOnUiThread(r));
     }
 
     /**
