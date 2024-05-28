@@ -838,6 +838,7 @@
 <translation id="1607139524282324606">항목 삭제</translation>
 <translation id="1607499585984539560">사용자가 도메인과 연결되어 있지 않습니다.</translation>
 <translation id="1608668830839595724">선택한 항목과 관련된 작업 더보기</translation>
+<translation id="1608698493373028805">이 확장 프로그램은 곧 지원 중단될 수 있습니다</translation>
 <translation id="1610272688494140697">앱 설정</translation>
 <translation id="161042844686301425">청록색</translation>
 <translation id="1611432201750675208">기기가 잠겼습니다</translation>
@@ -2325,6 +2326,7 @@
 <translation id="2666247341166669829">왼쪽 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 앱은 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="2667463864537187133">맞춤법 검사 관리</translation>
+<translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />의 유사한 확장 프로그램으로 대체하거나 삭제하세요</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> 앱을 열 수 없음</translation>
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" />이(가) Chrome 탭을 공유합니다.</translation>

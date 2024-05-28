@@ -837,6 +837,7 @@ Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento �
 <translation id="1607139524282324606">Vymazať záznam</translation>
 <translation id="1607499585984539560">Používateľ nie je spojený s doménou</translation>
 <translation id="1608668830839595724">Ďalšie akcie pre vybrané položky</translation>
+<translation id="1608698493373028805">Toto rozšírenie už čoskoro nemusí byť podporované</translation>
 <translation id="1610272688494140697">Nastavenia aplikácie</translation>
 <translation id="161042844686301425">Azúrová</translation>
 <translation id="1611432201750675208">Vaše zariadenie je uzamknuté</translation>
@@ -2310,6 +2311,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2666247341166669829">Úroveň batérie ľavého slúchadla je <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Ďalšie aplikácie sú nastavené, aby otvárali rovnaké odkazy ako <ph name="APP_NAME" />. Týmto zakážete aplikáciám <ph name="APP_NAME_2" /> a <ph name="APP_NAME_3" /> otvárať podporované odkazy.</translation>
 <translation id="2667463864537187133">Správa kontroly pravopisu</translation>
+<translation id="2668604389652548400">Odstráňte rozšírenie z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" /> alebo ho nahraďte podobnými</translation>
 <translation id="2669241540496514785">Aplikáciu <ph name="APP_NAME" /> sa nepodarilo otvoriť</translation>
 <translation id="2669454659051515572">Stiahnuté súbory uvidia všetci používatelia tohto zariadenia</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> zdieľa kartu Chromu.</translation>

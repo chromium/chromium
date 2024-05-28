@@ -832,6 +832,7 @@
 <translation id="1607139524282324606">प्रविष्टि खाली गर्नुहोस्</translation>
 <translation id="1607499585984539560">यी प्रयोगकर्ता यो डोमेनमा आबद्ध हुनुहुन्न</translation>
 <translation id="1608668830839595724">चयन गरिएका वस्तुमा गर्न सकिने थप कारबाहीहरू</translation>
+<translation id="1608698493373028805">यो एक्स्टेन्सनले चाँडै नै काम गर्न छाड्न सक्छ</translation>
 <translation id="1610272688494140697">एपसम्बन्धी सेटिङ</translation>
 <translation id="161042844686301425">सायन</translation>
 <translation id="1611432201750675208">तपाईंको यन्त्र लक गरिएको छ।</translation>
@@ -2305,6 +2306,7 @@
 <translation id="2666247341166669829">बायाँपट्टिको बडमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="2667144577800272420">अन्य एपले पनि <ph name="APP_NAME" /> ले झैँ उही लिंकहरू खोल्ने सेटिङ लागू गरिएको छ। तपाईंले डिफल्ट एप बदल्नुभयो भने <ph name="APP_NAME_2" /> र <ph name="APP_NAME_3" /> ले खोल्न मिल्ने लिंकहरू खोल्न सक्ने छैनन्।</translation>
 <translation id="2667463864537187133">हिज्जे जाँचको व्यवस्थापन गर्नुहोस्</translation>
+<translation id="2668604389652548400">यो एक्स्टेन्सन हटाउनुहोस् वा यसलाई <ph name="BEGIN_LINK" />Chrome वेब स्टोर<ph name="END_LINK" />मा उपलब्ध उस्तै एक्स्टेन्सनले प्रतिस्थापन गर्नुहोस्</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> खोल्न सकिएन</translation>
 <translation id="2669454659051515572">यो डिभाइस प्रयोग गर्ने सबै जना डाउनलोड गरिएका फाइलहरू देख्न सक्छन्</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome को एउटा ट्याबलाई साझेदारी गर्दैछ।</translation>

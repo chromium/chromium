@@ -835,6 +835,7 @@
 <translation id="1607139524282324606">エラー項目を消去</translation>
 <translation id="1607499585984539560">ユーザーはドメインに関連付けられていません</translation>
 <translation id="1608668830839595724">選択した項目のその他の操作</translation>
+<translation id="1608698493373028805">この拡張機能はまもなくサポートされなくなる可能性があります</translation>
 <translation id="1610272688494140697">アプリの設定</translation>
 <translation id="161042844686301425">シアン</translation>
 <translation id="1611432201750675208">デバイスはロックされています</translation>
@@ -2302,6 +2303,7 @@
 <translation id="2666247341166669829">左のバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリが複数あります。設定を変更すると、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> で対応リンクを開けなくなります。</translation>
 <translation id="2667463864537187133">スペルチェックの管理</translation>
+<translation id="2668604389652548400">削除するか、<ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />にある同様の拡張機能に置き換えてください。</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> を開けませんでした</translation>
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> が Chrome タブを共有しています。</translation>

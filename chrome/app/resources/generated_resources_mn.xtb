@@ -834,6 +834,7 @@
 <translation id="1607139524282324606">Оролтыг устгах</translation>
 <translation id="1607499585984539560">Хэрэглэгч домэйнтэй холбоогүй байна</translation>
 <translation id="1608668830839595724">Сонгосон зүйлс дээр хийх нэмэлт үйлдэл</translation>
+<translation id="1608698493373028805">Энэ өргөтгөлийг удахгүй дэмжихээ больж магадгүй</translation>
 <translation id="1610272688494140697">Аппын тохиргоо</translation>
 <translation id="161042844686301425">Шар хөх өнгө</translation>
 <translation id="1611432201750675208">Таны төхөөрөмжийг түгжсэн байна</translation>
@@ -2319,6 +2320,7 @@
 <translation id="2666247341166669829">Зүүн талын батарейн түвшин <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Бусад аппыг <ph name="APP_NAME" />-тай ижил холбоосыг нээхээр тохируулсан. Энэ нь <ph name="APP_NAME_2" /> болон <ph name="APP_NAME_3" />-н тусламж дэмжлэгийн холбоос нээхийг идэвхгүй болгоно.</translation>
 <translation id="2667463864537187133">Алдаа шалгахыг удирдах</translation>
+<translation id="2668604389652548400">Тус өргөтгөлийг хасах эсвэл <ph name="BEGIN_LINK" />Chrome Веб дэлгүүрээс<ph name="END_LINK" /> төстэй өргөтгөлөөр солино уу.</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />-г нээж чадсангүй</translation>
 <translation id="2669454659051515572">Энэ төхөөрөмжийг ашиглаж байгаа дурын хүн татсан файлуудыг харах боломжтой</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome-н чихтэй хуудсыг хуваалцаж байна.</translation>

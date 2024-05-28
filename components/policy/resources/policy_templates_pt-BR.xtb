@@ -475,6 +475,7 @@ Se definida como PromptInTab, quando a autenticação do usuário expirar, uma n
       Uma página descartada é descarregada e os recursos dela são totalmente recuperados. A guia a que ela está associada permanece na barra de guias, mas se ela ficar visível, uma atualização completa vai ser acionada.
       </translation>
 <translation id="138847842893090358">Informar o status de atualização do SO</translation>
+<translation id="1389138080311956934">Economia de memória máxima.</translation>
 <translation id="1390529781843037070">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão imprimir no <ph name="CLOUD_PRINT_NAME" /> pela caixa de diálogo de impressão do <ph name="PRODUCT_NAME" />. O <ph name="PRODUCT_NAME" /> pode enviar documentos para o <ph name="CLOUD_PRINT_NAME" /> para impressão. Os usuários não são impedidos de enviar trabalhos de impressão em sites.
 
       Se a política for definida como "Desativada", os usuários não poderão imprimir no <ph name="CLOUD_PRINT_NAME" /> pela caixa de diálogo de impressão do <ph name="PRODUCT_NAME" />.
@@ -4007,6 +4008,7 @@ No <ph name="PRODUCT_OS_NAME" />, esta política está relacionada a atestados r
 Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Diversos</translation>
 <translation id="4072225853834793549">Desativar atalhos de acessibilidade na tela de login</translation>
+<translation id="4074922053013383215">Economia de memória moderada.</translation>
 <translation id="4075675819066819571">Posicionar a estante no lado esquerdo da tela</translation>
 <translation id="4079306023113982053">Controla a disponibilidade da <ph name="BOREALIS_NAME" /> para este usuário.
 
@@ -8908,6 +8910,7 @@ Para mais informações sobre a política <ph name="IEEM_SITELIST_POLICY" /> do 
       Se ela for definida como falsa ou for deixada sem definição, os conteúdos em <ph name="FLASH_PLUGIN_NAME" /> pequenos ou de outras origens poderão ser bloqueados.
 
       Observação: para controlar quais sites podem executar o <ph name="FLASH_PLUGIN_NAME" />, consulte estas políticas: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801163363326128751">Mudar o modo de Economia de memória</translation>
 <translation id="7804859754080118507">Informar eventos de conexão de rede e intensidade do sinal em dispositivos registrados.
 
       Se a política for definida como falsa ou deixada sem definição, as informações não serão enviadas.
@@ -9508,6 +9511,7 @@ Mais informações sobre tecnologias legadas podem ser encontradas em https://ch
 <translation id="8274926413890711289">Ativar controles de geração de relatórios granulares</translation>
 <translation id="8275103737670730746">Permitir que APIs de seletores de arquivos ou diretórios sejam chamadas sem o gesto anterior do usuário</translation>
 <translation id="8278133379873210419">Suprimir caixas de diálogo de JavaScript acionadas por subframes de origem diferentes</translation>
+<translation id="8284028944941138279">Economia de memória equilibrada.</translation>
 <translation id="8284296539558710573">Prompts de autenticação HTTP de origem cruzada</translation>
 <translation id="8284527236880877730">Se <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> for definida como "Desativada", a definição de <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> especificará a porcentagem para o cálculo do intervalo de escurecimento da tela quando o dispositivo estiver no modo de apresentação. Quando o intervalo de escurecimento for calculado, os intervalos de desligamento, bloqueio e inatividade da tela serão ajustados para manter as mesmas distâncias do intervalo de escurecimento da tela de acordo com a configuração original.
 
@@ -10195,6 +10199,17 @@ Esta política não se aplica se o teclado virtual estiver desativado, por exemp
 <translation id="8835322836315560274">Se a política for definida, ela controlará o comando usado para abrir URLs em um navegador alternativo. Ela pode ser definida como <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> ou um caminho de arquivo. Quando esta política é definida como um caminho de arquivo, o arquivo em questão é usado como um executável. O <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> está disponível apenas no <ph name="MS_WIN_NAME" />. O <ph name="SAFARI_VALUE_PLACEHOLDER" /> e o <ph name="EDGE_VALUE_PLACEHOLDER" /> estão disponíveis apenas no <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />.
 
       Se a política não for definida, o padrão usado seguirá a plataforma: <ph name="IE_PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />. No <ph name="LINUX_OS_NAME" />, não será possível abrir um navegador alternativo.</translation>
+<translation id="8836227957461360521">Esta política muda o nível de Economia de memória.
+
+Isso só vai acontecer quando a Economia de memória for ativada pelas configurações ou pela política <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" />, e vai afetar a forma como as heurísticas são usadas para determinar quando descartar guias. Por exemplo, reduzir o ciclo de vida de uma guia inativa antes de descartá-la pode economizar memória, mas também significa que as guias serão recarregadas com mais frequência, o que pode resultar em uma experiência ruim para o usuário e em mais tráfego de rede.
+
+Se a política for definida como "0", o nível de Economia de memória será moderado. As guias ficarão inativas depois de um período mais longo
+
+Se a política for definida como "1", o nível de Economia de memória será balanceado. Suas guias ficarão inativas depois de um período ideal.
+
+Se a política for definida como "2", o nível de Economia de memória será extremo. Suas guias ficarão inativas depois de um período mais curto.
+
+Se a política for deixada sem definição, o usuário final poderá controlar essa configuração em chrome://settings/performance.</translation>
 <translation id="8836975838488342340">Tempo pelo qual o código de acesso é válido (em segundos).</translation>
 <translation id="883744045558067826">A Chrome Root Store pode ser usada dependendo do processo de lançamento do recurso.</translation>
 <translation id="8837957135252624017">Manter pelo menos uma guia do Chrome aberta</translation>

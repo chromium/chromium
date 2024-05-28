@@ -479,6 +479,7 @@ Jika kebijakan ini disetel ke PromptInTab, tab baru dengan halaman login Google 
       Halaman yang dihapus akan dihapus muatannya dan resource-nya akan diklaim kembali sepenuhnya. Tab yang terkait dengannya tetap berada di tab setrip. Namun, jika tab disetel agar terlihat, pemuatan ulang penuh akan dipicu.
       </translation>
 <translation id="138847842893090358">Melaporkan status update OS</translation>
+<translation id="1389138080311956934">Penghematan memori maksimum.</translation>
 <translation id="1390529781843037070">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat mencetak ke <ph name="CLOUD_PRINT_NAME" /> dari dialog pencetakan <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> dapat mengirimkan dokumen ke <ph name="CLOUD_PRINT_NAME" /> untuk dicetak. Kebijakan ini tidak menghalangi pengguna mengirimkan pekerjaan cetak di situs web.
 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat mencetak ke <ph name="CLOUD_PRINT_NAME" /> dari dialog pencetakan <ph name="PRODUCT_NAME" />.
@@ -4019,6 +4020,7 @@ Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini berhubungan dengan pengesahan
 Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Lain-lain</translation>
 <translation id="4072225853834793549">Nonaktifkan pintasan aksesibilitas di layar login</translation>
+<translation id="4074922053013383215">Penghematan memori sedang.</translation>
 <translation id="4075675819066819571">Posisikan rak di sisi kiri layar</translation>
 <translation id="4079306023113982053">Mengontrol ketersediaan <ph name="BOREALIS_NAME" /> untuk pengguna ini.
 
@@ -8930,6 +8932,7 @@ Untuk informasi selengkapnya terkait kebijakan <ph name="IEEM_SITELIST_POLICY" /
       Menyetel kebijakan ke Salah (False) atau membiarkannya tidak disetel dapat memblokir konten <ph name="FLASH_PLUGIN_NAME" /> dari asal lain atau konten kecil.
 
       Catatan: untuk mengontrol situs mana yang dapat menjalankan <ph name="FLASH_PLUGIN_NAME" />, lihat kebijakan ini: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />, dan <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801163363326128751">Ubah Penghematan Mode Penghemat Memori</translation>
 <translation id="7804859754080118507">Melaporkan peristiwa koneksi jaringan dan kekuatan sinyal pada perangkat terdaftar.
 
       Jika kebijakan disetel ke salah (false) atau tidak disetel, informasi tidak akan dilaporkan.
@@ -9525,6 +9528,7 @@ Informasi selengkapnya tentang teknologi lama dapat ditemukan di https://chromes
 <translation id="8274926413890711289">Mengaktifkan kontrol pelaporan terperinci</translation>
 <translation id="8275103737670730746">Mengizinkan API pemilih file atau direktori dipanggil tanpa gestur pengguna sebelumnya</translation>
 <translation id="8278133379873210419">Menyembunyikan Dialog JavaScript yang dipicu dari subframe asal yang berbeda</translation>
+<translation id="8284028944941138279">Penghematan memori seimbang.</translation>
 <translation id="8284296539558710573">Permintaan Autentikasi HTTP lintas asal</translation>
 <translation id="8284527236880877730">Jika <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> Dinonaktifkan, menyetel <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> akan menentukan persentase yang menskalakan penundaan peredupan layar saat perangkat dalam mode presentasi. Jika penundaan peredupan layar diskalakan, penundaan penonaktifan layar, penguncian layar, dan tidak ada aktivitas akan disesuaikan untuk mempertahankan jarak waktu yang sama dari penundaan peredupan layar seperti yang disetel sebelumnya.
 
@@ -10211,6 +10215,17 @@ Kebijakan ini tidak berlaku jika keyboard virtual dinonaktifkan (mis. menggunaka
 <translation id="8835322836315560274">Menyetel kebijakan akan mengontrol perintah yang digunakan untuk membuka URL dalam browser alternatif. Kebijakan ini dapat disetel ke salah satu dari <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" />, atau jalur file. Ketika kebijakan ini disetel ke jalur file, file tersebut akan digunakan sebagai file yang dapat dieksekusi. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> hanya tersedia di <ph name="MS_WIN_NAME" />. <ph name="SAFARI_VALUE_PLACEHOLDER" /> dan <ph name="EDGE_VALUE_PLACEHOLDER" /> hanya tersedia di <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" />.
 
       Jika kebijakan tidak disetel, kebijakan default khusus platform akan digunakan: <ph name="IE_PRODUCT_NAME" /> untuk <ph name="MS_WIN_NAME" />, atau <ph name="SAFARI_PRODUCT_NAME" /> untuk <ph name="MAC_OS_NAME" />. Di <ph name="LINUX_OS_NAME" />, peluncuran browser alternatif akan gagal.</translation>
+<translation id="8836227957461360521">Kebijakan ini mengubah tingkat penghematan Penghemat Memori.
+
+Tindakan ini hanya berlaku saat Penghemat Memori diaktifkan melalui setelan atau melalui kebijakan <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" />, dan akan memengaruhi cara heuristik digunakan untuk menentukan kapan harus menghapus tab. Misalnya, mengurangi masa pakai tab yang tidak aktif sebelum menghapusnya dapat menghemat memori, tetapi juga berarti tab akan lebih sering dimuat ulang sehingga dapat menyebabkan pengalaman pengguna yang buruk dan menimbulkan biaya traffic jaringan yang lebih besar.
+
+Jika kebijakan disetel ke 0 - Penghemat Memori akan mendapatkan penghematan memori sedang. Tab menjadi tidak aktif setelah jangka waktu yang lebih lama
+
+Jika kebijakan disetel ke 1 - Penghemat Memori akan mendapatkan penghematan memori yang seimbang. Tab menjadi tidak aktif setelah jangka waktu yang optimal.
+
+Jika kebijakan disetel ke 2, Penghemat Memori akan mendapatkan penghematan memori maksimum. Tab menjadi tidak aktif setelah jangka waktu yang lebih singkat.
+
+Jika kebijakan ini tidak disetel, pengguna akhir dapat mengontrol setelan ini di chrome://settings/performance.</translation>
 <translation id="8836975838488342340">Durasi waktu kode akses valid (dalam detik).</translation>
 <translation id="883744045558067826">Chrome Root Store dapat digunakan bergantung pada proses peluncuran fitur.</translation>
 <translation id="8837957135252624017">Izinkan setidaknya satu tab Chrome terbuka</translation>

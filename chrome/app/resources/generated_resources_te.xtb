@@ -838,6 +838,7 @@
 <translation id="1607139524282324606">నమోదును తీసివేయండి</translation>
 <translation id="1607499585984539560">యూజర్ డొమైన్‌తో అనుబంధించబడలేదు</translation>
 <translation id="1608668830839595724">ఎంపిక చేసిన అంశాల కోసం మరిన్ని చర్యలు</translation>
+<translation id="1608698493373028805">ఈ ఎక్స్‌టెన్షన్ ఇకపై సపోర్ట్ చేయకపోవచ్చు</translation>
 <translation id="1610272688494140697">యాప్ సెట్టింగ్‌లు</translation>
 <translation id="161042844686301425">నీలి ఆకుపచ్చ</translation>
 <translation id="1611432201750675208">మీ పరికరం లాక్ చేయబడింది</translation>
@@ -2321,6 +2322,7 @@
 <translation id="2666247341166669829">ఎడమ వైపు వైర్‌లెస్ బడ్ బ్యాటరీ స్థాయి <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ఇతర యాప్‌లు, <ph name="APP_NAME" /> తెరిచిన అవే లింక్‌లను తెరవడానికి సిద్ధంగా ఉన్నాయి. ఇది సపోర్ట్ చేయబడిన లింక్‌లను తెరవకుండా <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />ను డిజేబుల్ చేస్తుంది.</translation>
 <translation id="2667463864537187133">స్పెల్ చెక్‌ను మేనేజ్ చేయండి</translation>
+<translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome వెబ్ స్టోర్<ph name="END_LINK" /> నుండి ఒకే రకమైన ఎక్స్‌టెన్షన్‌లతో దాన్ని తీసివేయండి లేదా రీప్లేస్ చేయండి</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />ను తెరవడం సాధ్యపడలేదు</translation>
 <translation id="2669454659051515572">డౌన్‌లోడ్ చేసిన ఫైల్స్‌ను ఈ పరికరాన్ని ఉపయోగించే ఎవరైనా చూడగలరు</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> ఒక Chrome ట్యాబ్‌ను షేర్ చేస్తోంది.</translation>
