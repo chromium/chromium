@@ -61,11 +61,11 @@ PickerSearchRequest::PickerSearchRequest(
       gif_search_debouncer_(kGifDebouncingDelay) {
   std::string utf8_query = base::UTF16ToUTF8(query);
 
-  // TODO: b/326166751 - Use `available_categories_` to decide what searches to
-  // do.
   if (!category.has_value() || (category == PickerCategory::kLinks ||
                                 category == PickerCategory::kLocalFiles ||
                                 category == PickerCategory::kDriveFiles)) {
+    // TODO: b/326166751 - Use `available_categories_` to decide what searches
+    // to do.
     cros_search_start_ = base::TimeTicks::Now();
     client_->StartCrosSearch(
         query, category,
@@ -79,7 +79,8 @@ PickerSearchRequest::PickerSearchRequest(
     }
   }
 
-  if (!category.has_value() || category == PickerCategory::kClipboard) {
+  if ((!category.has_value() || category == PickerCategory::kClipboard) &&
+      base::Contains(available_categories, PickerCategory::kClipboard)) {
     clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
     clipboard_search_start_ = base::TimeTicks::Now();
     clipboard_provider_->FetchResults(
@@ -88,13 +89,15 @@ PickerSearchRequest::PickerSearchRequest(
         query);
   }
 
-  if (!category.has_value() || category == PickerCategory::kDatesTimes) {
+  if ((!category.has_value() || category == PickerCategory::kDatesTimes) &&
+      base::Contains(available_categories, PickerCategory::kDatesTimes)) {
     date_search_start_ = base::TimeTicks::Now();
     // Date results is currently synchronous.
     HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
   }
 
-  if (!category.has_value() || category == PickerCategory::kUnitsMaths) {
+  if ((!category.has_value() || category == PickerCategory::kUnitsMaths) &&
+      base::Contains(available_categories, PickerCategory::kUnitsMaths)) {
     math_search_start_ = base::TimeTicks::Now();
     // Math results is currently synchronous.
     HandleMathSearchResults(PickerMathSearch(query));
@@ -102,13 +105,15 @@ PickerSearchRequest::PickerSearchRequest(
 
   // These searches do not have category-specific search.
   if (!category.has_value()) {
-    gif_search_debouncer_.RequestSearch(
-        base::BindOnce(&PickerSearchRequest::StartGifSearch,
-                       weak_ptr_factory_.GetWeakPtr(), utf8_query));
+    if (base::Contains(available_categories, PickerCategory::kExpressions)) {
+      gif_search_debouncer_.RequestSearch(
+          base::BindOnce(&PickerSearchRequest::StartGifSearch,
+                         weak_ptr_factory_.GetWeakPtr(), utf8_query));
 
-    emoji_search_start_ = base::TimeTicks::Now();
-    // Emoji search is currently synchronous.
-    HandleEmojiSearchResults(emoji_search_->SearchEmoji(utf8_query));
+      emoji_search_start_ = base::TimeTicks::Now();
+      // Emoji search is currently synchronous.
+      HandleEmojiSearchResults(emoji_search_->SearchEmoji(utf8_query));
+    }
 
     category_search_start_ = base::TimeTicks::Now();
     // Category results are currently synchronous.
