@@ -178,18 +178,32 @@ float GetLayerCombinedTargetOpacity(const ui::Layer* layer) {
 
 }  // namespace
 
-WindowOcclusionTracker::ScopedPause::ScopedPause() {
-  Env::GetInstance()->PauseWindowOcclusionTracking();
+WindowOcclusionTracker::InnerClient::InnerClient(
+    WindowOcclusionTracker* occlusion_tracker)
+    : occlusion_tracker_(
+          occlusion_tracker ? occlusion_tracker
+                            : Env::GetInstance()->GetWindowOcclusionTracker()) {
+  CHECK(occlusion_tracker_);
+}
+
+WindowOcclusionTracker::InnerClient::~InnerClient() = default;
+
+WindowOcclusionTracker::ScopedPause::ScopedPause(
+    WindowOcclusionTracker* occlusion_tracker)
+    : InnerClient(occlusion_tracker) {
+  occlusion_tracker_->Pause();
 }
 
 WindowOcclusionTracker::ScopedPause::~ScopedPause() {
-  Env::GetInstance()->UnpauseWindowOcclusionTracking();
+  occlusion_tracker_->Unpause();
 }
 
-WindowOcclusionTracker::ScopedExclude::ScopedExclude(Window* window)
-    : window_(window) {
+WindowOcclusionTracker::ScopedExclude::ScopedExclude(
+    Window* window,
+    WindowOcclusionTracker* occlusion_tracker)
+    : InnerClient(occlusion_tracker), window_(window) {
   window->AddObserver(this);
-  Env::GetInstance()->GetWindowOcclusionTracker()->Exclude(window_);
+  occlusion_tracker_->Exclude(window_);
 }
 
 WindowOcclusionTracker::ScopedExclude::~ScopedExclude() {
@@ -204,15 +218,18 @@ void WindowOcclusionTracker::ScopedExclude::OnWindowDestroying(Window* window) {
 void WindowOcclusionTracker::ScopedExclude::Shutdown() {
   if (window_) {
     window_->RemoveObserver(this);
-    Env::GetInstance()->GetWindowOcclusionTracker()->Unexclude(window_);
+    occlusion_tracker_->Unexclude(window_);
     window_ = nullptr;
+    occlusion_tracker_ = nullptr;
   }
 }
 
-WindowOcclusionTracker::ScopedForceVisible::ScopedForceVisible(Window* window)
-    : window_(window) {
+WindowOcclusionTracker::ScopedForceVisible::ScopedForceVisible(
+    Window* window,
+    WindowOcclusionTracker* occlusion_tracker)
+    : InnerClient(occlusion_tracker), window_(window) {
   window_->AddObserver(this);
-  Env::GetInstance()->GetWindowOcclusionTracker()->ForceWindowVisible(window_);
+  occlusion_tracker_->ForceWindowVisible(window_);
 }
 
 WindowOcclusionTracker::ScopedForceVisible::~ScopedForceVisible() {
@@ -228,9 +245,9 @@ void WindowOcclusionTracker::ScopedForceVisible::OnWindowDestroying(
 void WindowOcclusionTracker::ScopedForceVisible::Shutdown() {
   if (window_) {
     window_->RemoveObserver(this);
-    Env::GetInstance()->GetWindowOcclusionTracker()->RemoveForceWindowVisible(
-        window_);
+    occlusion_tracker_->RemoveForceWindowVisible(window_);
     window_ = nullptr;
+    occlusion_tracker_ = nullptr;
   }
 }
 
@@ -723,7 +740,7 @@ void WindowOcclusionTracker::TrackedWindowAddedToRoot(Window* window) {
     AddObserverToWindowAndDescendants(root_window);
     auto* host = root_window->GetHost();
     if (host) {
-      host->AddObserver(this);
+      window_tree_host_observations_.AddObservation(host);
       if (!NativeWindowOcclusionTracker::
               IsNativeWindowOcclusionTrackingAlwaysEnabled(host)) {
         NativeWindowOcclusionTracker::EnableNativeWindowOcclusionTracking(host);
@@ -743,7 +760,8 @@ void WindowOcclusionTracker::TrackedWindowRemovedFromRoot(Window* window) {
     RemoveObserverFromWindowAndDescendants(root_window);
     root_windows_.erase(root_window_state_it);
     WindowTreeHost* host = root_window->GetHost();
-    host->RemoveObserver(this);
+    window_tree_host_observations_.RemoveObservation(host);
+
     if (!NativeWindowOcclusionTracker::
             IsNativeWindowOcclusionTrackingAlwaysEnabled(host)) {
       NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(host);
