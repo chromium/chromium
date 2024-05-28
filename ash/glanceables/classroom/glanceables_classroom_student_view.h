@@ -39,6 +39,7 @@ namespace ash {
 
 class Combobox;
 class CounterExpandButton;
+class GlanceablesContentsScrollView;
 class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
 struct GlanceablesClassroomAssignment;
@@ -124,6 +125,7 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // This is a simple label that copies the label style on `combo_box_view_` so
   // that it can visually replace it when `combo_box_view_` is hidden.
   raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
+  raw_ptr<GlanceablesContentsScrollView> content_scroll_view_ = nullptr;
   raw_ptr<views::FlexLayoutView> body_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> list_container_view_ = nullptr;
   raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;

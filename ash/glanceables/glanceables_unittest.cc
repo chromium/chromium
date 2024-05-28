@@ -158,7 +158,7 @@ class GlanceablesTasksAndClassroomTest : public AshTestBase {
 
   views::ScrollView* GetTasksScrollView() const {
     return views::AsViewClass<views::ScrollView>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleListScrollView)));
+        base::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
   GlanceablesClassroomStudentView* GetClassroomView() const {
@@ -170,6 +170,12 @@ class GlanceablesTasksAndClassroomTest : public AshTestBase {
     return views::AsViewClass<CounterExpandButton>(
         GetClassroomView()->GetViewByID(base::to_underlying(
             GlanceablesViewId::kClassroomBubbleExpandButton)));
+  }
+
+  views::ScrollView* GetClassroomScrollView() const {
+    return views::AsViewClass<views::ScrollView>(
+        GetClassroomView()->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
   GlanceableTrayBubbleView* view() const { return view_; }
@@ -366,6 +372,150 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
   EXPECT_TRUE(tasks_view->is_expanded());
   EXPECT_FALSE(classroom_view->is_expanded());
+}
+
+TEST_F(GlanceablesTasksAndClassroomTest,
+       TrackpadScrollingUpFromTheTopOfClassroomExpandsTasks) {
+  // Expand classroom first to make the scroll view visible.
+  auto const* classroom_expand_button = GetClassroomExpandButtonView();
+  ASSERT_TRUE(classroom_expand_button);
+  LeftClickOn(classroom_expand_button);
+  auto* const tasks_view = GetTasksView();
+  auto* const classroom_view = GetClassroomView();
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Make sure the scroll view is scrollable.
+  auto* const classroom_scroll_bar =
+      GetClassroomScrollView()->vertical_scroll_bar();
+  EXPECT_TRUE(classroom_scroll_bar->GetVisible());
+  const gfx::Point classroom_scroll_view_center =
+      GetClassroomScrollView()->GetBoundsInScreen().CenterPoint();
+
+  // Set the distance that we want to scroll to the amount that is greater than
+  // the scrollable length of the scroll view.
+  const int distance_to_scroll = classroom_scroll_bar->GetMaxPosition() -
+                                 classroom_scroll_bar->GetMinPosition() + 10;
+
+  auto generate_trackpad_scroll_event = [&](bool upward) {
+    GetEventGenerator()->ScrollSequence(
+        classroom_scroll_view_center, base::TimeDelta(), /*x_offset=*/0,
+        upward ? distance_to_scroll : -distance_to_scroll, /*steps=*/1,
+        /*num_fingers=*/2);
+  };
+
+  // Scrolling downward to the bottom of the scroll view doesn't change expand
+  // state.
+  generate_trackpad_scroll_event(/*upward=*/false);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  // Scrolling upward when there is scrollable content doesn't change expand
+  // state.
+  generate_trackpad_scroll_event(/*upward=*/true);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  // Scrolling upward at the top of the scroll view changes expand state.
+  generate_trackpad_scroll_event(/*upward=*/true);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+}
+
+TEST_F(GlanceablesTasksAndClassroomTest,
+       GestureScrollingUpFromTheTopOfClassroomExpandsTasks) {
+  // Expand classroom first to make the scroll view visible.
+  auto const* classroom_expand_button = GetClassroomExpandButtonView();
+  ASSERT_TRUE(classroom_expand_button);
+  LeftClickOn(classroom_expand_button);
+  auto* const tasks_view = GetTasksView();
+  auto* const classroom_view = GetClassroomView();
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Make sure the scroll view is scrollable.
+  auto* const classroom_scroll_bar =
+      GetClassroomScrollView()->vertical_scroll_bar();
+  EXPECT_TRUE(classroom_scroll_bar->GetVisible());
+  const gfx::Point classroom_scroll_view_center =
+      GetClassroomScrollView()->GetBoundsInScreen().CenterPoint();
+
+  // Set the distance that we want to scroll to the amount that is greater than
+  // the scrollable length of the scroll view.
+  const int distance_to_scroll = classroom_scroll_bar->GetMaxPosition() -
+                                 classroom_scroll_bar->GetMinPosition() + 10;
+
+  auto generate_gesture_scroll_event = [&](bool upward) {
+    // Scrolling upward needs to scroll downward using the gesture.
+    const gfx::Vector2d scroll_distance =
+        upward ? gfx::Vector2d(0, distance_to_scroll)
+               : gfx::Vector2d(0, -distance_to_scroll);
+    GetEventGenerator()->GestureScrollSequence(
+        classroom_scroll_view_center,
+        classroom_scroll_view_center + scroll_distance, base::Milliseconds(100),
+        /*steps=*/10);
+  };
+
+  // Scrolling downward to the bottom of the scroll view doesn't change expand
+  // state.
+  generate_gesture_scroll_event(/*upward=*/false);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  // Scrolling upward when there is scrollable content doesn't change expand
+  // state.
+  generate_gesture_scroll_event(/*upward=*/true);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  // Scrolling upward at the top of the scroll view changes expand state.
+  generate_gesture_scroll_event(/*upward=*/true);
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+}
+
+TEST_F(GlanceablesTasksAndClassroomTest,
+       MouseWheelScrollingUpFromTheTopOfClassroomDoesNotExpandsTasks) {
+  // Expand classroom first to make the scroll view visible.
+  auto const* classroom_expand_button = GetClassroomExpandButtonView();
+  ASSERT_TRUE(classroom_expand_button);
+  LeftClickOn(classroom_expand_button);
+  auto* const tasks_view = GetTasksView();
+  auto* const classroom_view = GetClassroomView();
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Make sure the scroll view is scrollable.
+  auto* const classroom_scroll_bar =
+      GetClassroomScrollView()->vertical_scroll_bar();
+  EXPECT_TRUE(classroom_scroll_bar->GetVisible());
+  const gfx::Point classroom_scroll_view_center =
+      GetClassroomScrollView()->GetBoundsInScreen().CenterPoint();
+
+  // Set the distance that we want to scroll to the amount that is greater than
+  // the scrollable length of the scroll view.
+  const int distance_to_scroll = classroom_scroll_bar->GetMaxPosition() -
+                                 classroom_scroll_bar->GetMinPosition() + 10;
+
+  // Using mouse wheel doesn't change expand state in either direction.
+  GetEventGenerator()->MoveMouseTo(classroom_scroll_view_center);
+  GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
 }
 
 }  // namespace ash

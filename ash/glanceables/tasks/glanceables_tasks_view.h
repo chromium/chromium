@@ -28,13 +28,13 @@ class GURL;
 
 namespace views {
 class LabelButton;
-class ScrollView;
 }  // namespace views
 
 namespace ash {
 
 class Combobox;
 class CounterExpandButton;
+class GlanceablesContentsScrollView;
 class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
 class GlanceablesTasksComboboxModel;
@@ -225,13 +225,12 @@ class ASH_EXPORT GlanceablesTasksView
   // `task_list_combo_box_view_` is hidden.
   raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
   raw_ptr<Combobox> task_list_combo_box_view_ = nullptr;
-  raw_ptr<views::ScrollView> content_scroll_view_ = nullptr;
+  raw_ptr<GlanceablesContentsScrollView> content_scroll_view_ = nullptr;
   raw_ptr<views::View> task_items_container_view_ = nullptr;
   raw_ptr<views::LabelButton> add_new_task_button_ = nullptr;
   raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<CounterExpandButton> expand_button_ = nullptr;
-  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // An invisible view added at the last element to the task list container to
   // more easily track the offset of the bottom of the list from the target

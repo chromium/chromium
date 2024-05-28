@@ -10,7 +10,7 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
-#include "ash/controls/rounded_scroll_bar.h"
+#include "ash/glanceables/common/glanceables_contents_scroll_view.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_util.h"
@@ -44,7 +44,6 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -56,13 +55,11 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
@@ -172,123 +169,6 @@ class AddNewTaskButton : public views::LabelButton {
 BEGIN_METADATA(AddNewTaskButton)
 END_METADATA
 
-class TaskListScrollBar : public RoundedScrollBar {
-  METADATA_HEADER(TaskListScrollBar, RoundedScrollBar)
- public:
-  TaskListScrollBar() : RoundedScrollBar(Orientation::kVertical) {}
-  TaskListScrollBar(const TaskListScrollBar&) = delete;
-  TaskListScrollBar& operator=(const TaskListScrollBar&) = delete;
-  ~TaskListScrollBar() override = default;
-
-  // views::ScrollBar:
-  void OnGestureEvent(ui::GestureEvent* event) override {
-    if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
-      // `GetMaxPosition()` in ScrollBar has different "position" definitions
-      // from `GetPosition()`. Calculate the max position of the thumb in the
-      // scrollbar for comparisons.
-      const int max_position =
-          GetTrackBounds().height() - GetThumb()->GetLength();
-
-      // Check if the position is at the max position at the start of the
-      // scroll event.
-      is_at_max_position_ = GetPosition() == max_position;
-    } else {
-      // Note that max position is at the bottom of the scrollbar, while the
-      // event y offset is increasing upward.
-      const bool start_overscrolling_downward =
-          is_at_max_position_ &&
-          event->type() == ui::ET_GESTURE_SCROLL_UPDATE &&
-          event->details().scroll_y() < 0;
-      if (start_overscrolling_downward) {
-        on_overscroll_callback_.Run();
-      }
-
-      // Reset the variables for the next scroll event.
-      is_at_max_position_ = false;
-    }
-
-    RoundedScrollBar::OnGestureEvent(event);
-  }
-  void ObserveScrollEvent(const ui::ScrollEvent& event) override {
-    if (event.type() == ui::ET_SCROLL_FLING_CANCEL) {
-      // `GetMaxPosition()` in ScrollBar has different "position" definitions
-      // from `GetPosition()`. Calculate the max position for the thumb in the
-      // scrollbar for comparisons.
-      const int max_position =
-          GetTrackBounds().height() - GetThumb()->GetLength();
-
-      // Check if the position is at the max position at the start of the
-      // scroll event.
-      is_at_max_position_ = GetPosition() == max_position;
-    } else {
-      // Note that max position is at the bottom of the scrollbar, while the
-      // event y offset is increasing upward.
-      const bool start_overscrolling_downward = is_at_max_position_ &&
-                                                event.type() == ui::ET_SCROLL &&
-                                                event.y_offset() < 0;
-      if (start_overscrolling_downward) {
-        on_overscroll_callback_.Run();
-      }
-
-      // Reset the variables for the next scroll event.
-      is_at_max_position_ = false;
-    }
-
-    RoundedScrollBar::ObserveScrollEvent(event);
-  }
-
-  void SetOnOverscrollCallback(const base::RepeatingClosure& callback) {
-    on_overscroll_callback_ = std::move(callback);
-  }
-
- private:
-  // Whether the scroll bar is at its max position, which is bottom in this
-  // case.
-  bool is_at_max_position_ = false;
-
-  // Called when the user attempts to scroll down from the bottom of the
-  // scroll view.
-  base::RepeatingClosure on_overscroll_callback_ = base::DoNothing();
-};
-
-BEGIN_METADATA(TaskListScrollBar)
-END_METADATA
-
-class TaskListScrollView : public views::ScrollView {
-  METADATA_HEADER(TaskListScrollView, views::ScrollView)
- public:
-  TaskListScrollView() {
-    auto unique_scroll_bar = std::make_unique<TaskListScrollBar>();
-    scroll_bar_ = unique_scroll_bar.get();
-    SetVerticalScrollBar(std::move(unique_scroll_bar));
-
-    SetID(base::to_underlying(GlanceablesViewId::kTasksBubbleListScrollView));
-    ClipHeightTo(0, std::numeric_limits<int>::max());
-    SetBackgroundColor(std::nullopt);
-    SetDrawOverflowIndicator(false);
-  }
-
-  TaskListScrollView(const TaskListScrollView&) = delete;
-  TaskListScrollView& operator=(const TaskListScrollView&) = delete;
-  ~TaskListScrollView() override = default;
-
-  void SetOnOverscrollCallback(const base::RepeatingClosure& callback) {
-    scroll_bar_->SetOnOverscrollCallback(std::move(callback));
-  }
-
-  // views::ScrollView:
-  void ChildPreferredSizeChanged(views::View* view) override {
-    PreferredSizeChanged();
-  }
-
- private:
-  raw_ptr<TaskListScrollBar> scroll_bar_ = nullptr;
-  gfx::Size contents_old_size_;
-};
-
-BEGIN_METADATA(TaskListScrollView)
-END_METADATA
-
 }  // namespace
 
 GlanceablesTasksView::ResizeAnimation::ResizeAnimation(
@@ -357,15 +237,11 @@ GlanceablesTasksView::GlanceablesTasksView(
   progress_bar_->SetPreferredSize(kProgressBarPreferredSize);
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  content_scroll_view_ = AddChildView(std::make_unique<TaskListScrollView>());
+  content_scroll_view_ = AddChildView(
+      std::make_unique<GlanceablesContentsScrollView>(Context::kTasks));
 
   auto* const list_view =
       content_scroll_view_->SetContents(std::make_unique<views::View>());
-  content_scroll_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded)
-          .WithWeight(1));
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/
@@ -549,10 +425,9 @@ void GlanceablesTasksView::CreateElevatedBackground() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
   expand_button_->SetVisible(true);
-  views::AsViewClass<TaskListScrollView>(content_scroll_view_)
-      ->SetOnOverscrollCallback(
-          base::BindRepeating(&GlanceablesTasksView::SetExpandState,
-                              base::Unretained(this), /*is_expanded=*/false));
+  content_scroll_view_->SetOnOverscrollCallback(
+      base::BindRepeating(&GlanceablesTasksView::SetExpandState,
+                          base::Unretained(this), /*is_expanded=*/false));
 }
 
 void GlanceablesTasksView::SetExpandState(bool is_expanded) {

@@ -10,9 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
+#include "ash/glanceables/common/glanceables_contents_scroll_view.h"
 #include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
@@ -238,7 +240,16 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       base::BindRepeating(&GlanceablesClassroomStudentView::ToggleExpandState,
                           base::Unretained(this)));
 
-  body_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
+  if (features::AreGlanceablesV2Enabled()) {
+    // TODO(b/338917100): Remove body_container_ if GlanceablesV2 flag is
+    // removed, as we only need `content_scroll_view_` after that.
+    body_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
+  } else {
+    content_scroll_view_ = AddChildView(
+        std::make_unique<GlanceablesContentsScrollView>(Context::kClassroom));
+    body_container_ = content_scroll_view_->SetContents(
+        std::make_unique<views::FlexLayoutView>());
+  }
   body_container_->SetOrientation(views::LayoutOrientation::kVertical);
 
   progress_bar_ = body_container_->AddChildView(
@@ -322,7 +333,14 @@ void GlanceablesClassroomStudentView::CreateElevatedBackground() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
   force_hide_footer_view_ = true;
+  list_footer_view_->SetVisible(false);
   expand_button_->SetVisible(true);
+
+  if (content_scroll_view_) {
+    content_scroll_view_->SetOnOverscrollCallback(
+        base::BindRepeating(&GlanceablesClassroomStudentView::SetExpandState,
+                            base::Unretained(this), /*is_expanded=*/false));
+  }
 }
 
 void GlanceablesClassroomStudentView::SetExpandState(bool is_expanded) {
@@ -333,6 +351,9 @@ void GlanceablesClassroomStudentView::SetExpandState(bool is_expanded) {
   is_expanded_ = is_expanded;
   expand_button_->SetExpanded(is_expanded);
 
+  if (content_scroll_view_) {
+    content_scroll_view_->SetVisible(is_expanded_);
+  }
   body_container_->SetVisible(is_expanded_);
   combo_box_view_->SetVisible(is_expanded_);
   combobox_replacement_label_->SetVisible(!is_expanded_);

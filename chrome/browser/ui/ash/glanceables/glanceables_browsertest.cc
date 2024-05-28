@@ -164,7 +164,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
 
   views::ScrollView* GetTasksScrollView() const {
     return views::AsViewClass<views::ScrollView>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleListScrollView)));
+        base::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
   views::View* GetTasksItemContainerView() const {
