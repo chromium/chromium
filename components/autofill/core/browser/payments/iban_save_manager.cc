@@ -140,8 +140,12 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
                           client_->GetPersonalDataManager()
                               ->payments_data_manager()
                               .GetPaymentsSigninStateForMetrics())) {
+    autofill_metrics::LogIbanSaveOfferedCountry(
+        import_candidate.GetCountryCode());
     return TypeOfOfferToSave::kOfferServerSave;
   } else if (import_candidate.record_type() != Iban::kLocalIban) {
+    autofill_metrics::LogIbanSaveOfferedCountry(
+        import_candidate.GetCountryCode());
     return TypeOfOfferToSave::kOfferLocalSave;
   }
   return TypeOfOfferToSave::kDoNotOfferToSave;

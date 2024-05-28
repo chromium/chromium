@@ -3859,6 +3859,88 @@ Called by update_autofill_enums.py.-->
   <int value="8" label="LeftEmpty"/>
 </enum>
 
+<enum name="IbanCountry">
+  <int value="0" label="Unsupport"/>
+  <int value="1" label="AD (Andorra)"/>
+  <int value="2" label="AE (United Arab Emirates)"/>
+  <int value="3" label="AL (Albania)"/>
+  <int value="4" label="AT (Austria)"/>
+  <int value="5" label="AZ (Azerbaijan)"/>
+  <int value="6" label="BA (Bosnia and Herzegovina)"/>
+  <int value="7" label="BE (Belgium)"/>
+  <int value="8" label="BG (Bulgaria)"/>
+  <int value="9" label="BH (Bahrain)"/>
+  <int value="10" label="BR (Brazil)"/>
+  <int value="11" label="BY (Belarus)"/>
+  <int value="12" label="CH (Switzerland)"/>
+  <int value="13" label="CR (Costa Rica)"/>
+  <int value="14" label="CY (Cyprus)"/>
+  <int value="15" label="CZ (Czech Republic)"/>
+  <int value="16" label="DE (Germany)"/>
+  <int value="17" label="DK (Denmark)"/>
+  <int value="18" label="DO (Dominican Republic)"/>
+  <int value="19" label="EE (Estonia)"/>
+  <int value="20" label="EG (Egypt)"/>
+  <int value="21" label="ES (Spain)"/>
+  <int value="22" label="FI (Finland)"/>
+  <int value="23" label="FO (Faroe Islands)"/>
+  <int value="24" label="FR (France)"/>
+  <int value="25" label="GB (United Kingdom)"/>
+  <int value="26" label="GE (Georgia)"/>
+  <int value="27" label="GI (Gibraltar)"/>
+  <int value="28" label="GL (Greenland)"/>
+  <int value="29" label="GR (Greece)"/>
+  <int value="30" label="GT (Guatemala)"/>
+  <int value="31" label="HR (Croatia)"/>
+  <int value="32" label="HU (Hungary)"/>
+  <int value="33" label="IL (Israel)"/>
+  <int value="34" label="IQ (Iraq)"/>
+  <int value="35" label="IS (Iceland)"/>
+  <int value="36" label="IT (Italy)"/>
+  <int value="37" label="JO (Jordan)"/>
+  <int value="38" label="KW (Kuwait)"/>
+  <int value="39" label="KZ (Kazakhstan)"/>
+  <int value="40" label="LB (Lebanon)"/>
+  <int value="41" label="LC (Saint Lucia)"/>
+  <int value="42" label="LI (Liechtenstein)"/>
+  <int value="43" label="LT (Lithuania)"/>
+  <int value="44" label="LU (Luxembourg)"/>
+  <int value="45" label="LV (Latvia)"/>
+  <int value="46" label="LY (Libya)"/>
+  <int value="47" label="MC (Monaco)"/>
+  <int value="48" label="MD (Moldova)"/>
+  <int value="49" label="ME (Montenegro)"/>
+  <int value="50" label="MK (North Macedonia)"/>
+  <int value="51" label="MR (Mauritania)"/>
+  <int value="52" label="MT (Malta)"/>
+  <int value="53" label="MU (Mauritius)"/>
+  <int value="54" label="NL (Netherlands)"/>
+  <int value="55" label="PK (Pakistan)"/>
+  <int value="56" label="PL (Poland)"/>
+  <int value="57" label="PS (Palestinian territories)"/>
+  <int value="58" label="PT (Portugal)"/>
+  <int value="59" label="QA (Qatar)"/>
+  <int value="60" label="RO (Romania)"/>
+  <int value="61" label="RS (Serbia)"/>
+  <int value="62" label="RU (Russia)"/>
+  <int value="63" label="SA (Saudi Arabia)"/>
+  <int value="64" label="SC (Seychelles)"/>
+  <int value="65" label="SD (Sudan)"/>
+  <int value="66" label="SE (Sweden)"/>
+  <int value="67" label="SI (Slovenia)"/>
+  <int value="68" label="SK (Slovakia)"/>
+  <int value="69" label="SM (San Marino)"/>
+  <int value="70" label="ST (São Tomé and Príncipe)"/>
+  <int value="71" label="SV (El Salvador)"/>
+  <int value="72" label="TL (East Timor)"/>
+  <int value="73" label="TN (Tunisia)"/>
+  <int value="74" label="TR (Turkey)"/>
+  <int value="75" label="UA (Ukraine)"/>
+  <int value="76" label="VA (Vatican City)"/>
+  <int value="77" label="VG (Virgin Islands, British)"/>
+  <int value="78" label="XK (Kosovo)"/>
+</enum>
+
 <enum name="IbanSuggestionBlockListStatus">
   <int value="0" label="Allowed"/>
   <int value="1" label="Blocked"/>

@@ -2586,6 +2586,17 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
+<histogram name="Autofill.Iban.CountryOfSaveOfferedIban" enum="IbanCountry"
+    expires_after="2025-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The country code of an IBAN that was offered to be saved. Recorded upon
+    deciding whether to offer save.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Iban.ShowSuggestionsBlocklistDecision"
     enum="IbanSuggestionBlockListStatus" expires_after="2025-07-01">
   <owner>qihuizhao@google.com</owner>
