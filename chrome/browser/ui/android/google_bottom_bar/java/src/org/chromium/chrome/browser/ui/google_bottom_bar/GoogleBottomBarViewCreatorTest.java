@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,7 +18,11 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCr
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 
+import androidx.annotation.Nullable;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -94,10 +101,17 @@ public class GoogleBottomBarViewCreatorTest {
         return mConfigCreator.create(buttonIdList, new ArrayList<>());
     }
 
-    private BottomBarConfig getAllChromeButtonsConfig() {
+    private void setUpPageInsightsCoordinatorSupplier() {
         when(mPageInsightsCoordinatorSupplier.get()).thenReturn(mPageInsightsCoordinator);
         when(mPageInsightsCoordinatorSupplier.hasValue()).thenReturn(true);
-        List<Integer> buttonIdList = List.of(0, PIH_BASIC, SHARE, SAVE);
+    }
+
+    private BottomBarConfig getAllChromeButtonsConfig() {
+        return getAllChromeButtonsConfig(List.of(0, PIH_BASIC, SHARE, SAVE));
+    }
+
+    private BottomBarConfig getAllChromeButtonsConfig(List<Integer> buttonIdList) {
+        setUpPageInsightsCoordinatorSupplier();
         return mConfigCreator.create(buttonIdList, new ArrayList<>());
     }
 
@@ -283,5 +297,80 @@ public class GoogleBottomBarViewCreatorTest {
 
         histogramWatcher.assertExpected();
         histogramWatcher.close();
+    }
+
+    @Test
+    public void testBottomBarWithEligibleEvenConfig_googleBottomBarButtonsCreated() {
+        BottomBarConfig config = getAllChromeButtonsConfig();
+        mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(config);
+        ViewGroup rootView = (ViewGroup) mGoogleBottomBarViewCreator.createGoogleBottomBarView();
+        assertButtonLayoutCreated(config, rootView);
+    }
+
+    @Test
+    public void testBottomBarWithEligibleSpotlightConfig_googleBottomBarButtonsCreated() {
+        BottomBarConfig config =
+                getAllChromeButtonsConfig(List.of(PIH_BASIC, SHARE, PIH_BASIC, SAVE));
+        mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(config);
+        ViewGroup rootView = (ViewGroup) mGoogleBottomBarViewCreator.createGoogleBottomBarView();
+        assertButtonLayoutCreated(config, rootView);
+    }
+
+    private void assertButtonLayoutCreated(BottomBarConfig config, ViewGroup root) {
+        if (config.getSpotlightId() != null) {
+            assertButtonSpotlightLayoutCreated(config, root);
+        } else {
+            assertButtonEvenLayoutCreated(config, root);
+        }
+    }
+
+    private void assertButtonEvenLayoutCreated(BottomBarConfig config, ViewGroup root) {
+        List<BottomBarConfig.ButtonConfig> buttonList = config.getButtonList();
+        int totalButtonCount = buttonList.size();
+
+        assertEquals(root.getChildCount(), totalButtonCount);
+        for (int index = 0; index < totalButtonCount; index++) {
+            assertButtonCreated(
+                    (ImageButton) root.getChildAt(/* index= */ index), buttonList.get(index));
+        }
+    }
+
+    private void assertButtonSpotlightLayoutCreated(BottomBarConfig config, ViewGroup root) {
+        @ButtonId int spotlightId = config.getSpotlightId();
+        assertButtonCreated(
+                (ImageButton) root.getChildAt(/* index= */ 0),
+                findButtonConfig(spotlightId, config));
+
+        ViewGroup nonSpotlitContainer =
+                root.findViewById(R.id.google_bottom_bar_non_spotlit_buttons_container);
+        assertNotNull(nonSpotlitContainer);
+
+        List<BottomBarConfig.ButtonConfig> buttonList = config.getButtonList();
+        buttonList.remove(spotlightId);
+        int totalButtonCount = buttonList.size();
+
+        assertEquals(nonSpotlitContainer.getChildCount(), totalButtonCount);
+        for (int index = 0; index < totalButtonCount; index++) {
+            assertButtonCreated(
+                    (ImageButton) nonSpotlitContainer.getChildAt(/* index= */ index),
+                    buttonList.get(index));
+        }
+    }
+
+    private void assertButtonCreated(
+            ImageButton button, BottomBarConfig.ButtonConfig buttonConfig) {
+        assertEquals(button.getId(), buttonConfig.getId());
+        assertEquals(button.getVisibility(), View.VISIBLE);
+        assertEquals(button.getContentDescription(), buttonConfig.getDescription());
+        assertEquals(button.getDrawable(), buttonConfig.getIcon());
+        assertTrue(button.hasOnClickListeners());
+    }
+
+    private @Nullable BottomBarConfig.ButtonConfig findButtonConfig(
+            @ButtonId int buttonId, BottomBarConfig baseConfig) {
+        return baseConfig.getButtonList().stream()
+                .filter(config -> config.getId() == buttonId)
+                .findFirst()
+                .orElse(null);
     }
 }

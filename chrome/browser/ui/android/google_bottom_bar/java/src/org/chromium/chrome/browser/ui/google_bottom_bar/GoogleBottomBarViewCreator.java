@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
@@ -70,24 +71,7 @@ public class GoogleBottomBarViewCreator {
                 (mConfig.getSpotlightId() != null)
                         ? createGoogleBottomBarSpotlightLayoutView()
                         : createGoogleBottomBarEvenLayoutView();
-
-        initButtons();
-
         return mRootView;
-    }
-
-    private void initButtons() {
-        initButton(R.id.google_bottom_bar_save_button, ButtonId.SAVE);
-        initButton(R.id.google_bottom_bar_share_button, ButtonId.SHARE);
-        initButton(R.id.google_bottom_bar_page_insights_button, ButtonId.PIH_BASIC);
-        initButton(R.id.google_bottom_bar_custom_button, ButtonId.CUSTOM);
-    }
-
-    private void initButton(int viewId, @ButtonId int buttonConfigId) {
-        assert mRootView != null;
-        ImageButton button = mRootView.findViewById(viewId);
-        ButtonConfig buttonConfig = findButtonConfig(buttonConfigId);
-        maybeUpdateButton(button, buttonConfig, /* isFirstTimeShown= */ true);
     }
 
     boolean updateBottomBarButton(@Nullable ButtonConfig buttonConfig) {
@@ -95,7 +79,9 @@ public class GoogleBottomBarViewCreator {
             return false;
         }
         ImageButton button = mRootView.findViewById(buttonConfig.getId());
-        return maybeUpdateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
+        return button == null
+                ? false
+                : updateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
     }
 
     void logButtons() {
@@ -119,23 +105,47 @@ public class GoogleBottomBarViewCreator {
 
     private ViewGroup createGoogleBottomBarEvenLayoutView() {
         GoogleBottomBarLogger.logCreatedEvent(GoogleBottomBarCreatedEvent.EVEN_LAYOUT);
-        return (ViewGroup)
-                LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_even, null);
+
+        LinearLayout rootView = getEvenLayoutRoot();
+        for (BottomBarConfig.ButtonConfig buttonConfig : mConfig.getButtonList()) {
+            createButtonAndAddToParent(
+                    rootView,
+                    R.layout.bottom_bar_button_even_layout,
+                    buttonConfig,
+                    /* addAsFirst= */ false);
+        }
+        return (ViewGroup) rootView;
     }
 
     private ViewGroup createGoogleBottomBarSpotlightLayoutView() {
         GoogleBottomBarLogger.logCreatedEvent(GoogleBottomBarCreatedEvent.SPOTLIGHT_LAYOUT);
-        return (ViewGroup)
-                LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_spotlight, null);
+
+        LinearLayout rootView = getSpotlightLayoutRoot();
+
+        // Set up Spotlight Button
+        createButtonAndAddToParent(
+                rootView,
+                R.layout.bottom_bar_button_spotlight_layout,
+                findButtonConfig(mConfig.getSpotlightId()),
+                /* addAsFirst= */ true);
+
+        LinearLayout nonSpotlightContainer =
+                rootView.findViewById(R.id.google_bottom_bar_non_spotlit_buttons_container);
+        for (BottomBarConfig.ButtonConfig buttonConfig : mConfig.getButtonList()) {
+            if (buttonConfig.getId() == mConfig.getSpotlightId()) continue;
+            createButtonAndAddToParent(
+                    nonSpotlightContainer,
+                    R.layout.bottom_bar_button_non_spotlight_layout,
+                    buttonConfig,
+                    /* addAsFirst= */ false);
+        }
+        return (ViewGroup) rootView;
     }
 
-    private boolean maybeUpdateButton(
+    private boolean updateButton(
             @Nullable ImageButton button,
             @Nullable ButtonConfig buttonConfig,
             boolean isFirstTimeShown) {
-        if (button == null || buttonConfig == null) {
-            return false;
-        }
         button.setId(buttonConfig.getId());
         button.setImageDrawable(buttonConfig.getIcon());
         button.setContentDescription(buttonConfig.getDescription());
@@ -149,5 +159,34 @@ public class GoogleBottomBarViewCreator {
             GoogleBottomBarLogger.logButtonUpdated(buttonEvent);
         }
         return true;
+    }
+
+    private void createButtonAndAddToParent(
+            LinearLayout parent,
+            int layoutType,
+            BottomBarConfig.ButtonConfig buttonConfig,
+            boolean addAsFirst) {
+        ImageButton button =
+                (ImageButton)
+                        LayoutInflater.from(mContext)
+                                .inflate(layoutType, parent, /* attachToRoot= */ false);
+        if (addAsFirst) {
+            parent.addView(button, /* index= */ 0);
+        } else {
+            parent.addView(button);
+        }
+        updateButton(button, buttonConfig, /* isFirstTimeShown= */ true);
+    }
+
+    private LinearLayout getEvenLayoutRoot() {
+        return (LinearLayout)
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.google_bottom_bar_even, /* root= */ null);
+    }
+
+    private LinearLayout getSpotlightLayoutRoot() {
+        return (LinearLayout)
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.google_bottom_bar_spotlight, /* root= */ null);
     }
 }
