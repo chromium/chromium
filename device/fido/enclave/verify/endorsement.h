@@ -37,8 +37,9 @@ bool COMPONENT_EXPORT(DEVICE_FIDO)
 
 // Verifies that the endorser public key coincides with the one contained in
 // the attestation.
-bool VerifyEndorserPublicKey(base::span<const uint8_t> log_entry,
-                             base::span<const uint8_t> endorser_public_key);
+bool COMPONENT_EXPORT(DEVICE_FIDO)
+    VerifyEndorserPublicKey(base::span<const uint8_t> log_entry,
+                            base::span<const uint8_t> endorser_public_key);
 
 }  // namespace device::enclave
 

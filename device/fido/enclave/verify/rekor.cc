@@ -221,7 +221,6 @@ bool VerifyRekorBody(const Body& body,
   if (contents_hash_hex != bytes_str) {
     return false;
   }
-
   std::string signature;
   if (!base::Base64Decode(body.spec.generic_signature.content, &signature)) {
     return false;

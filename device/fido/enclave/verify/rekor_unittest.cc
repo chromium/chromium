@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "device/fido/enclave/verify/hash.h"
+#include "device/fido/enclave/verify/test_utils.h"
 #include "device/fido/enclave/verify/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,16 +60,6 @@ constexpr char kHashValue[] =
 constexpr uint64_t kLogIndex = 74497915;
 
 constexpr base::Time kIntegratedTime = base::Time::FromTimeT(1709113639);
-
-std::string GetContentsFromFile(std::string_view file_name) {
-  std::string result;
-  base::FilePath file_path;
-  base::PathService::Get(base::BasePathKey::DIR_SRC_TEST_DATA_ROOT, &file_path);
-  file_path = file_path.AppendASCII("device/fido/enclave/verify/testdata");
-  file_path = file_path.AppendASCII(file_name);
-  EXPECT_TRUE(base::ReadFileToString(file_path, &result));
-  return result;
-}
 
 TEST(RekorTest, GetRekorLogEntry) {
   std::string json = GetContentsFromFile("logentry.json");

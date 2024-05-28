@@ -22,6 +22,8 @@ EndorsementStatement MakeEndorsementStatement(
 
 EndorsementStatement MakeValidEndorsementStatement();
 
+std::string GetContentsFromFile(std::string_view file_name);
+
 }  // namespace device::enclave
 
 #endif  // DEVICE_FIDO_ENCLAVE_VERIFY_TEST_UTILS_H_
