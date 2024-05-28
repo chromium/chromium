@@ -146,7 +146,11 @@ class MODULES_EXPORT UserMediaProcessor
 
   // Intended to be used only for testing.
   const blink::AudioCaptureSettings& AudioCaptureSettingsForTesting() const;
+  const Vector<blink::AudioCaptureSettings>&
+  EligibleAudioCaptureSettingsForTesting() const;
   const blink::VideoCaptureSettings& VideoCaptureSettingsForTesting() const;
+  const Vector<blink::VideoCaptureSettings>&
+  EligibleVideoCaptureSettingsForTesting() const;
 
   void SetMediaStreamDeviceObserverForTesting(
       WebMediaStreamDeviceObserver* media_stream_device_observer);

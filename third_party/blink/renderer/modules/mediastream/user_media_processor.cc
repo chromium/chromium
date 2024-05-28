@@ -2223,10 +2223,22 @@ UserMediaProcessor::AudioCaptureSettingsForTesting() const {
   return current_request_info_->audio_capture_settings();
 }
 
+const Vector<blink::AudioCaptureSettings>&
+UserMediaProcessor::EligibleAudioCaptureSettingsForTesting() const {
+  DCHECK(current_request_info_);
+  return current_request_info_->eligible_audio_settings();
+}
+
 const blink::VideoCaptureSettings&
 UserMediaProcessor::VideoCaptureSettingsForTesting() const {
   DCHECK(current_request_info_);
   return current_request_info_->video_capture_settings();
+}
+
+const Vector<blink::VideoCaptureSettings>&
+UserMediaProcessor::EligibleVideoCaptureSettingsForTesting() const {
+  DCHECK(current_request_info_);
+  return current_request_info_->eligible_video_settings();
 }
 
 void UserMediaProcessor::SetMediaStreamDeviceObserverForTesting(

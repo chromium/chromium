@@ -31,8 +31,9 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
       audio_stream_selection_info_ptr->is_search_by_session_id() &&
       !audio_stream_selection_info_ptr->get_search_by_session_id().is_null()) {
     stream_devices_.audio_device = MediaStreamDevice(
-        controls.audio.stream_type,
-        MaybeAppendSessionId(controls.audio.device_ids.front()), "microphone");
+        controls.audio.stream_type, controls.audio.device_ids.front(),
+        "microphone:" +
+            MaybeAppendSessionId(controls.audio.device_ids.front()));
     stream_devices_.audio_device->set_session_id(session_id_);
     stream_devices_.audio_device->matched_output_device_id =
         MaybeAppendSessionId("associated_output_device_id");
@@ -40,9 +41,8 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
 
   if (controls.video.requested()) {
     stream_devices_.video_device = MediaStreamDevice(
-        controls.video.stream_type,
-        MaybeAppendSessionId(controls.video.device_ids.front()),
-        "usb video camera");
+        controls.video.stream_type, controls.video.device_ids.front(),
+        "camera:" + MaybeAppendSessionId(controls.video.device_ids.front()));
     stream_devices_.video_device->video_facing = media::MEDIA_VIDEO_FACING_USER;
     stream_devices_.video_device->set_session_id(session_id_);
   }
