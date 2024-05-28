@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/omnibox_feature_configs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
@@ -16,31 +17,60 @@ namespace {
 OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
   // Some suggestions have custom icons. Others fallback to the icon from the
   // overall match type.
-  if (match.answer.has_value()) {
-    switch (match.answer.value().type()) {
-      case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
-        return OmniboxSuggestionIconType::kDictionary;
-      case SuggestionAnswer::ANSWER_TYPE_FINANCE:
-        return OmniboxSuggestionIconType::kStock;
-      case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
-        return OmniboxSuggestionIconType::kTranslation;
-      case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
-        return OmniboxSuggestionIconType::kWhenIs;
-      case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
-        return OmniboxSuggestionIconType::kConversion;
-      case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
-        return OmniboxSuggestionIconType::kSunrise;
-      case SuggestionAnswer::ANSWER_TYPE_KNOWLEDGE_GRAPH:
-      case SuggestionAnswer::ANSWER_TYPE_LOCAL:
-      case SuggestionAnswer::ANSWER_TYPE_LOCAL_TIME:
-      case SuggestionAnswer::ANSWER_TYPE_PLAY_INSTALL:
-      case SuggestionAnswer::ANSWER_TYPE_SPORTS:
-      case SuggestionAnswer::ANSWER_TYPE_WEATHER:
-        return OmniboxSuggestionIconType::kFallbackAnswer;
-      case SuggestionAnswer::ANSWER_TYPE_INVALID:
-      case SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT:
-        NOTREACHED_IN_MIGRATION();
-        break;
+  BOOL suggestionAnswerMigrationEnabled =
+      omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled;
+  if (suggestionAnswerMigrationEnabled) {
+    if (match.answer_template.has_value()) {
+      switch (match.answer_template->answer_type()) {
+        case omnibox::RichAnswerTemplate::DICTIONARY:
+          return OmniboxSuggestionIconType::kDictionary;
+        case omnibox::RichAnswerTemplate::FINANCE:
+          return OmniboxSuggestionIconType::kStock;
+        case omnibox::RichAnswerTemplate::TRANSLATION:
+          return OmniboxSuggestionIconType::kTranslation;
+        case omnibox::RichAnswerTemplate::WHEN_IS:
+          return OmniboxSuggestionIconType::kWhenIs;
+        case omnibox::RichAnswerTemplate::CURRENCY:
+          return OmniboxSuggestionIconType::kConversion;
+        case omnibox::RichAnswerTemplate::SUNRISE_SUNSET:
+          return OmniboxSuggestionIconType::kSunrise;
+        case omnibox::RichAnswerTemplate::LOCAL_TIME:
+        case omnibox::RichAnswerTemplate::PLAY_INSTALL:
+        case omnibox::RichAnswerTemplate::FLIGHT_STATUS:
+        case omnibox::RichAnswerTemplate::WEB_ANSWER:
+        case omnibox::RichAnswerTemplate::GENERIC_ANSWER:
+        case omnibox::RichAnswerTemplate::SPORTS:
+        case omnibox::RichAnswerTemplate::WEATHER:
+          return OmniboxSuggestionIconType::kFallbackAnswer;
+      }
+    }
+  } else {
+    if (match.answer.has_value()) {
+      switch (match.answer.value().type()) {
+        case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+          return OmniboxSuggestionIconType::kDictionary;
+        case SuggestionAnswer::ANSWER_TYPE_FINANCE:
+          return OmniboxSuggestionIconType::kStock;
+        case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+          return OmniboxSuggestionIconType::kTranslation;
+        case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
+          return OmniboxSuggestionIconType::kWhenIs;
+        case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
+          return OmniboxSuggestionIconType::kConversion;
+        case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
+          return OmniboxSuggestionIconType::kSunrise;
+        case SuggestionAnswer::ANSWER_TYPE_KNOWLEDGE_GRAPH:
+        case SuggestionAnswer::ANSWER_TYPE_LOCAL:
+        case SuggestionAnswer::ANSWER_TYPE_LOCAL_TIME:
+        case SuggestionAnswer::ANSWER_TYPE_PLAY_INSTALL:
+        case SuggestionAnswer::ANSWER_TYPE_SPORTS:
+        case SuggestionAnswer::ANSWER_TYPE_WEATHER:
+          return OmniboxSuggestionIconType::kFallbackAnswer;
+        case SuggestionAnswer::ANSWER_TYPE_INVALID:
+        case SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT:
+          NOTREACHED_IN_MIGRATION();
+          break;
+      }
     }
   }
 

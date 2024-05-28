@@ -12,6 +12,7 @@
 #import "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
+#import "components/omnibox/browser/omnibox_feature_configs.h"
 #import "components/omnibox/browser/suggestion_answer.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -80,6 +81,9 @@ UIColor* DimColorIncognito() {
 }
 
 - (BOOL)hasAnswer {
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
+    return _match.answer_template.has_value();
+  }
   return _match.answer.has_value();
 }
 
@@ -89,20 +93,7 @@ UIColor* DimColorIncognito() {
 
 - (NSAttributedString*)detailText {
   if (self.hasAnswer) {
-    if (!_match.answer->IsExceptedFromLineReversal()) {
-      NSAttributedString* detailBaseText = [self
-          attributedStringWithString:base::SysUTF16ToNSString(_match.contents)
-                     classifications:&_match.contents_class
-                           smallFont:NO
-                               color:SuggestionDetailTextColor()
-                            dimColor:DimColor()];
-      return [self addExtraTextFromAnswerLine:_match.answer->first_line()
-                           toAttributedString:detailBaseText
-                       useDeemphasizedStyling:YES];
-    } else {
-      return [self attributedStringWithAnswerLine:_match.answer->second_line()
-                           useDeemphasizedStyling:YES];
-    }
+    return [self answerDetailText];
   } else {
     // The detail text should be the URL (`_match.contents`) for non-search
     // suggestions and the entity type (`_match.description`) for search entity
@@ -139,6 +130,38 @@ UIColor* DimColorIncognito() {
   }
 }
 
+- (NSAttributedString*)answerDetailText {
+  DCHECK(self.hasAnswer);
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
+    std::string string = _match.answer_template->answers(0).headline().text();
+    if (_match.answer_template->answer_type() ==
+        omnibox::RichAnswerTemplate::DICTIONARY) {
+      string = _match.answer_template->answers(0).subhead().text();
+    }
+
+    return [self attributedStringWithString:base::SysUTF8ToNSString(string)
+                            classifications:&_match.contents_class
+                                  smallFont:NO
+                                      color:SuggestionDetailTextColor()
+                                   dimColor:DimColor()];
+
+  } else {
+    if (!_match.answer->IsExceptedFromLineReversal()) {
+      NSAttributedString* detailBaseText = [self
+          attributedStringWithString:base::SysUTF16ToNSString(_match.contents)
+                     classifications:&_match.contents_class
+                           smallFont:NO
+                               color:SuggestionDetailTextColor()
+                            dimColor:DimColor()];
+      return [self addExtraTextFromAnswerLine:_match.answer->first_line()
+                           toAttributedString:detailBaseText
+                       useDeemphasizedStyling:YES];
+    }
+    return [self attributedStringWithAnswerLine:_match.answer->second_line()
+                         useDeemphasizedStyling:YES];
+  }
+}
+
 - (id<OmniboxIcon>)icon {
   OmniboxIconFormatter* icon =
       [[OmniboxIconFormatter alloc] initWithMatch:_match];
@@ -147,6 +170,11 @@ UIColor* DimColorIncognito() {
 }
 
 - (NSInteger)numberOfLines {
+  // TODO (crbug/342608217) : double-check if we need to implement number of
+  // lines for the new answer proto.
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
+    return 3;
+  }
   // Answers specify their own limit on the number of lines to show but are
   // additionally capped here at 3 to guard against unreasonable values.
   const SuggestionAnswer::TextField& first_text_field =
@@ -168,22 +196,7 @@ UIColor* DimColorIncognito() {
 
 - (NSAttributedString*)text {
   if (self.hasAnswer) {
-    if (!_match.answer->IsExceptedFromLineReversal()) {
-      return [self attributedStringWithAnswerLine:_match.answer->second_line()
-                           useDeemphasizedStyling:NO];
-    } else {
-      UIColor* suggestionTextColor = SuggestionTextColor();
-      UIColor* dimColor = self.incognito ? DimColorIncognito() : DimColor();
-      NSAttributedString* attributedBaseText = [self
-          attributedStringWithString:base::SysUTF16ToNSString(_match.contents)
-                     classifications:&_match.contents_class
-                           smallFont:NO
-                               color:suggestionTextColor
-                            dimColor:dimColor];
-      return [self addExtraTextFromAnswerLine:_match.answer->first_line()
-                           toAttributedString:attributedBaseText
-                       useDeemphasizedStyling:NO];
-    }
+    return [self answerText];
   } else {
     // The text should be search term (`_match.contents`) for searches,
     // otherwise page title (`_match.description`).
@@ -232,6 +245,42 @@ UIColor* DimColorIncognito() {
       attributedText = mutableString;
     }
     return attributedText;
+  }
+}
+
+- (NSAttributedString*)answerText {
+  DCHECK(self.hasAnswer);
+  UIColor* suggestionTextColor = SuggestionTextColor();
+  UIColor* dimColor = self.incognito ? DimColorIncognito() : DimColor();
+
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
+    std::string string = _match.answer_template->answers(0).subhead().text();
+    if (_match.answer_template->answer_type() ==
+        omnibox::RichAnswerTemplate::DICTIONARY) {
+      string = _match.answer_template->answers(0).headline().text();
+    }
+
+    return [self attributedStringWithString:base::SysUTF8ToNSString(string)
+                            classifications:&_match.contents_class
+                                  smallFont:NO
+                                      color:suggestionTextColor
+                                   dimColor:dimColor];
+
+  } else {
+    if (!_match.answer->IsExceptedFromLineReversal()) {
+      return [self attributedStringWithAnswerLine:_match.answer->second_line()
+                           useDeemphasizedStyling:NO];
+    } else {
+      NSAttributedString* attributedBaseText = [self
+          attributedStringWithString:base::SysUTF16ToNSString(_match.contents)
+                     classifications:&_match.contents_class
+                           smallFont:NO
+                               color:suggestionTextColor
+                            dimColor:dimColor];
+      return [self addExtraTextFromAnswerLine:_match.answer->first_line()
+                           toAttributedString:attributedBaseText
+                       useDeemphasizedStyling:NO];
+    }
   }
 }
 
