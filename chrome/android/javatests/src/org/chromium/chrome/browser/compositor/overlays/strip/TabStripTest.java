@@ -434,6 +434,7 @@ public class TabStripTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
     })
     @Feature({"TabStrip"})
+    @DisabledTest(message = "crbug.com/342984901")
     public void testTabMenuDismissedOnOrientationChange() {
         // 1. Set orientation to portrait
         sActivityTestRule
