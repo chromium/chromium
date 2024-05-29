@@ -1972,7 +1972,9 @@ bool Database::OpenInternal(const std::string& db_file_path) {
   // time the database is being opened in WAL mode.
   const std::string page_size_sql =
       base::StringPrintf("PRAGMA page_size=%d", options_.page_size);
-  std::ignore = ExecuteWithTimeout(page_size_sql.c_str(), kBusyTimeout);
+  if (!ExecuteWithTimeout(page_size_sql.c_str(), kBusyTimeout)) {
+    return false;
+  }
 
   // https://www.sqlite.org/pragma.html#pragma_journal_mode
   // WAL - Use a write-ahead log instead of a journal file.
@@ -1992,13 +1994,15 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     // loss (but still durable after an application crash).
     // TODO(shuagga@microsoft.com): Evaluate if this loss of durability is a
     // concern.
-    std::ignore = Execute("PRAGMA synchronous=NORMAL");
+    if (!Execute("PRAGMA synchronous=NORMAL")) {
+      return false;
+    }
 
     // Opening the db in WAL mode can fail (eg if the underlying VFS doesn't
     // support shared memory and we are not in exclusive locking mode).
-    //
-    // TODO(shuagga@microsoft.com): We should probably catch a failure here.
-    std::ignore = Execute("PRAGMA journal_mode=WAL");
+    if (!Execute("PRAGMA journal_mode=WAL")) {
+      return false;
+    }
   } else {
     // For speed, change the journal mode from the default DELETE to TRUNCATE.
     // Both modes will delete the rollback journal at the conclusion of every
