@@ -22,6 +22,6 @@ message PlusAddressSettingSpecifics {
   oneof Value {
     bool bool_value = 2;
     string string_value = 3;
-    int32 int_value = 4;
+    int64 int_value = 4;
   }
 }

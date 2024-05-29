@@ -29,7 +29,7 @@ namespace {
 
 syncer::EntityData CreateSettingEntity(
     const std::string& name,
-    absl::variant<bool, std::string, int32_t> value) {
+    absl::variant<bool, std::string, int64_t> value) {
   syncer::EntityData entity;
   sync_pb::PlusAddressSettingSpecifics* specifics =
       entity.specifics.mutable_plus_address_setting();
@@ -38,7 +38,7 @@ syncer::EntityData CreateSettingEntity(
       base::Overloaded{
           [&](bool value) { specifics->set_bool_value(value); },
           [&](const std::string& value) { specifics->set_string_value(value); },
-          [&](int32_t value) { specifics->set_int_value(value); }},
+          [&](int64_t value) { specifics->set_int_value(value); }},
       value);
   return entity;
 }
