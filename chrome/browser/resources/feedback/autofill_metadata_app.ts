@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 import '/shared/key_value_pair_viewer/key_value_pair_viewer.js';
-import './css/about_sys.css.js';
 // <if expr="chromeos_ash">
 import './js/jelly_colors.js';
 
 // </if>
 
 import type {KeyValuePairEntry} from '/shared/key_value_pair_viewer/key_value_pair_entry.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './autofill_metadata_app.html.js';
+import {getHtml} from './autofill_metadata_app.html.js';
+import {getCss} from './css/about_sys.css.js';
 import {FeedbackBrowserProxyImpl} from './js/feedback_browser_proxy.js';
 
 export interface AutofillMetadataAppElement {
@@ -21,28 +21,31 @@ export interface AutofillMetadataAppElement {
   };
 }
 
-export class AutofillMetadataAppElement extends PolymerElement {
+export class AutofillMetadataAppElement extends CrLitElement {
   static get is() {
     return 'autofill-metadata-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      entries_: Array,
+      entries_: {type: Array},
       loading_: {
         type: Boolean,
-        value: true,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  private entries_: KeyValuePairEntry[];
-  private loading_: boolean;
+  protected entries_: KeyValuePairEntry[] = [];
+  protected loading_: boolean = true;
 
   override connectedCallback() {
     super.connectedCallback();

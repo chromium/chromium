@@ -12,9 +12,10 @@ import './js/jelly_colors.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import {FeedbackBrowserProxyImpl} from './js/feedback_browser_proxy.js';
 import {BT_DEVICE_REGEX, BT_REGEX, CANNOT_CONNECT_REGEX, CELLULAR_REGEX, DISPLAY_REGEX, FAST_PAIR_REGEX, NEARBY_SHARE_REGEX, SMART_LOCK_REGEX, TETHER_REGEX, THUNDERBOLT_REGEX, USB_REGEX, WIFI_REGEX} from './js/feedback_regexes.js';
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './js/feedback_util.js';
@@ -24,13 +25,17 @@ import {takeScreenshot} from './js/take_screenshot.js';
 const MAX_ATTACH_FILE_SIZE: number = 3 * 1024 * 1024;
 const MAX_SCREENSHOT_WIDTH: number = 100;
 
-export class FeedbackAppElement extends PolymerElement {
+export class AppElement extends CrLitElement {
   static get is() {
     return 'feedback-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private formOpenTime: number = new Date().getTime();
@@ -673,8 +678,8 @@ export class FeedbackAppElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'feedback-app': FeedbackAppElement;
+    'feedback-app': AppElement;
   }
 }
 
-customElements.define(FeedbackAppElement.is, FeedbackAppElement);
+customElements.define(AppElement.is, AppElement);

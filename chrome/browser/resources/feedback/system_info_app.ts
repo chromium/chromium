@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import '/shared/key_value_pair_viewer/key_value_pair_viewer.js';
-import './css/about_sys.css.js';
 
 import type {KeyValuePairEntry} from '/shared/key_value_pair_viewer/key_value_pair_entry.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './css/about_sys.css.js';
 import {FeedbackBrowserProxyImpl} from './js/feedback_browser_proxy.js';
-import {getTemplate} from './system_info_app.html.js';
+import {getHtml} from './system_info_app.html.js';
 
 export interface SystemInfoAppElement {
   $: {
@@ -17,28 +17,31 @@ export interface SystemInfoAppElement {
   };
 }
 
-export class SystemInfoAppElement extends PolymerElement {
+export class SystemInfoAppElement extends CrLitElement {
   static get is() {
     return 'system-info-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      entries_: Array,
+      entries_: {type: Array},
       loading_: {
         type: Boolean,
-        value: true,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  private entries_: KeyValuePairEntry[];
-  private loading_: boolean;
+  protected entries_: KeyValuePairEntry[] = [];
+  protected loading_: boolean = true;
 
   override async connectedCallback() {
     super.connectedCallback();

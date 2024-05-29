@@ -4,7 +4,7 @@
 
 import 'chrome://feedback/app.js';
 
-import type {FeedbackAppElement} from 'chrome://feedback/app.js';
+import type {AppElement} from 'chrome://feedback/app.js';
 import {FeedbackBrowserProxyImpl} from 'chrome://feedback/js/feedback_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -17,7 +17,7 @@ import {TestFeedbackBrowserProxy} from './test_feedback_browser_proxy.js';
 const USER_EMAIL = 'dummy_user_email';
 
 suite('FeedbackTest', function() {
-  let app: FeedbackAppElement;
+  let app: AppElement;
   let browserProxy: TestFeedbackBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
 
@@ -29,12 +29,12 @@ suite('FeedbackTest', function() {
     browserProxy.setUserEmail(USER_EMAIL);
     FeedbackBrowserProxyImpl.setInstance(browserProxy);
 
-    app = await createFeedbackAppElement();
+    app = await createAppElement();
   });
 
-  async function createFeedbackAppElement(): Promise<FeedbackAppElement> {
+  async function createAppElement(): Promise<AppElement> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const app: FeedbackAppElement = document.createElement('feedback-app');
+    const app: AppElement = document.createElement('feedback-app');
     document.body.appendChild(app);
     await eventToPromise('ready-for-testing', app);
     return app;
@@ -87,7 +87,7 @@ suite('FeedbackTest', function() {
   test('ScreenshotFailed', async function() {
     browserProxy.setUserMedia(Promise.reject(
         {name: 'error', message: 'error', constraintName: 'error'}));
-    app = await createFeedbackAppElement();
+    app = await createAppElement();
 
     const checkbox =
         app.getRequiredElement<HTMLInputElement>('#screenshot-checkbox');
@@ -160,7 +160,7 @@ suite('FeedbackTest', function() {
 
 suite('AIFeedbackTest', function() {
   const LOG_ID: string = 'TEST_LOG_ID';
-  let app: FeedbackAppElement;
+  let app: AppElement;
   let browserProxy: TestFeedbackBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
 
@@ -234,7 +234,7 @@ suite('AIFeedbackTest', function() {
 });
 
 suite('SeaPenFeedbackTest', function() {
-  let app: FeedbackAppElement;
+  let app: AppElement;
   let browserProxy: TestFeedbackBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
 

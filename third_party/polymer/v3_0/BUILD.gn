@@ -111,7 +111,6 @@ ts_library("library") {
     "//chrome/browser/resources/discards:build_ts",
     "//chrome/browser/resources/downloads:build_ts",
     "//chrome/browser/resources/extensions:build_ts",
-    "//chrome/browser/resources/feedback:build_ts",
     "//chrome/browser/resources/history:build_ts",
     "//chrome/browser/resources/inline_login:build_ts",
     "//chrome/browser/resources/internals/user_education:build_ts",

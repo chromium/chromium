@@ -9,6 +9,7 @@ import type {AutofillMetadataAppElement} from 'chrome://feedback/autofill_metada
 import {FeedbackBrowserProxyImpl} from 'chrome://feedback/js/feedback_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestFeedbackBrowserProxy} from './test_feedback_browser_proxy.js';
 
@@ -47,9 +48,10 @@ suite('AutofillMetadataTest', function() {
     return arr.some((obj) => obj['key'] === key);
   }
 
-  test('Check entries parsed from dialog arguments.', function() {
+  test('Check entries parsed from dialog arguments.', async function() {
     const keyValuePairViewer =
         app.shadowRoot!.querySelector('key-value-pair-viewer');
+    await microtasksFinished();
     assertTrue(!!keyValuePairViewer);
     const entries = keyValuePairViewer.entries;
     assertTrue(hasKey(entries, 'form_structures'));
