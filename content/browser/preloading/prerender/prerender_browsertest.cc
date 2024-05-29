@@ -34,6 +34,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "cc/base/features.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/public/mojom/test_api.test-mojom.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -13025,6 +13026,79 @@ IN_PROC_BROWSER_TEST_P(
   PerformBackNavigation(web_contents_impl());
 
   EXPECT_FALSE(prerender_observer.was_activated());
+}
+
+class PrerenderWarmUpCompositorBrowserTest
+    : public PrerenderBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    auto [warm_up_compositor, prerender2_warm_up_compositor] = info.param;
+    std::stringstream params_description;
+    params_description << "kWarmUpCompositor";
+    params_description << (warm_up_compositor ? "Enabled" : "Disabled");
+    params_description << "_kPrerender2WarmUpCompositor";
+    params_description << (prerender2_warm_up_compositor ? "Enabled"
+                                                         : "Disabled");
+    return params_description.str();
+  }
+
+  PrerenderWarmUpCompositorBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    auto [warm_up_compositor, prerender2_warm_up_compositor] = GetParam();
+    if (warm_up_compositor) {
+      enabled_features.push_back({features::kWarmUpCompositor, {}});
+    } else {
+      disabled_features.push_back(features::kWarmUpCompositor);
+    }
+
+    if (prerender2_warm_up_compositor) {
+      enabled_features.push_back(
+          {blink::features::kPrerender2WarmUpCompositor, {}});
+    } else {
+      disabled_features.push_back(blink::features::kPrerender2WarmUpCompositor);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrerenderWarmUpCompositorBrowserTest,
+    // Flips `kWarmUpCompositor` (cc) and `kPrerender2WarmUpCompositor` (blink).
+    // `kWarmUpCompositor` controls the independent cc internal feature of
+    // warming up, and `kPrerender2WarmUpCompositor` manages the trigger point
+    // of that feature for prerender case. Therefore, warming up on
+    // prerender is not performed unless both flags are enabled.
+    testing::Values(std::make_tuple(true, true),
+                    std::make_tuple(true, false),
+                    std::make_tuple(false, true)),
+    PrerenderWarmUpCompositorBrowserTest::DescribeParams);
+
+// Test that the prerendering page does not crash when enabling compositor
+// warming up features.
+// TODO(crbug.com/41496019): Check whether the warming up is actually happening.
+IN_PROC_BROWSER_TEST_P(PrerenderWarmUpCompositorBrowserTest,
+                       WarmingUpCCDoesntInvokeCrashes) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  int prerender_host_id = AddPrerender(prerendering_url);
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 prerender_host_id);
+
+  NavigatePrimaryPage(prerendering_url);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+  EXPECT_TRUE(prerender_observer.was_activated());
 }
 
 }  // namespace content

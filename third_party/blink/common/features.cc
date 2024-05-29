@@ -1854,6 +1854,20 @@ BASE_FEATURE(kPrerender2NoVarySearch,
              "Prerender2NoVarySearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrerender2WarmUpCompositor,
+             "Prerender2WarmUpCompositor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<Prerender2WarmUpCompositorTriggerPoint>::Option
+    prerender2_warm_up_compositor_trigger_point[] = {
+        {Prerender2WarmUpCompositorTriggerPoint::kDidFinishLoad,
+         "did_finish_load"},
+};
+const base::FeatureParam<Prerender2WarmUpCompositorTriggerPoint>
+    kPrerender2WarmUpCompositorTriggerPoint{
+        &kPrerender2WarmUpCompositor, "trigger_point",
+        Prerender2WarmUpCompositorTriggerPoint::kDidFinishLoad,
+        &prerender2_warm_up_compositor_trigger_point};
+
 // Enable limiting previews loading hints to specific resource types.
 BASE_FEATURE(kPreviewsResourceLoadingHintsSpecificResourceTypes,
              "PreviewsResourceLoadingHintsSpecificResourceTypes",

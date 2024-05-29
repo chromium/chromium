@@ -2527,7 +2527,12 @@ void WebLocalFrameImpl::DidFinish() {
   if (!Client())
     return;
 
-  if (base::FeatureList::IsEnabled(::features::kWarmUpCompositor)) {
+  if (base::FeatureList::IsEnabled(::features::kWarmUpCompositor) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kPrerender2WarmUpCompositor) &&
+      blink::features::kPrerender2WarmUpCompositorTriggerPoint.Get() ==
+          blink::features::Prerender2WarmUpCompositorTriggerPoint::
+              kDidFinishLoad) {
     // If the page is under prerendering, the page requests warm-up compositor
     // to minimize its activation time. Please see crbug.com/41496019 for more
     // details.

@@ -1198,6 +1198,17 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // No-Vary-Search header.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2NoVarySearch);
 
+// Enables to warm up compositor on certain loading event of prerender initial
+// navigation. The feature `kWarmUpCompositor` in cc is required to enable this
+// feature. Please see crbug.com/41496019 for more details.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositor);
+enum class Prerender2WarmUpCompositorTriggerPoint {
+  kDidFinishLoad,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    Prerender2WarmUpCompositorTriggerPoint>
+    kPrerender2WarmUpCompositorTriggerPoint;
+
 // Enables to run prerendering for new tabs (e.g., target="_blank").
 // See https://crbug.com/1350676.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2InNewTab);
