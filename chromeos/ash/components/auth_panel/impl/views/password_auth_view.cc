@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/auth/views/login_textfield.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -16,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
-#include "chromeos/ash/components/auth_panel/impl/views/login_textfield.h"
 #include "chromeos/ash/components/auth_panel/impl/views/view_size_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ime/text_input_type.h"

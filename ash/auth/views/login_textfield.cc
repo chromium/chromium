@@ -2,18 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/auth_panel/impl/views/login_textfield.h"
+#include "ash/auth/views/login_textfield.h"
 
 #include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
-#include "chromeos/ash/components/auth_panel/impl/views/auth_panel_views_utils.h"
-#include "chromeos/ash/components/auth_panel/impl/views/view_size_constants.h"
+#include "ash/style/ash_color_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/border.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 
 namespace ash {
+
+namespace {
+
+// Spacing between glyphs, used when password is in hidden state.
+constexpr int kPasswordGlyphSpacing = 6;
+
+// Size (width/height) of the different icons belonging to the password row
+// (the display password icon and the caps lock icon).
+constexpr int kIconSizeDp = 20;
+
+// The max width of the LoginTextfield.
+constexpr int kLogintTextfieldMaxWidthDp = 293;
+
+}
 
 LoginTextfield::LoginTextfield() : SystemTextfield(Type::kMedium) {
   const gfx::FontList font_list =
@@ -27,9 +41,18 @@ LoginTextfield::LoginTextfield() : SystemTextfield(Type::kMedium) {
   // Remove focus ring to remain consistent with other implementations of
   // login input fields.
   views::FocusRing::Remove(this);
+
+  // Don't show background.
   SetShowBackground(false);
   SetBackgroundEnabled(false);
-  ConfigureAuthTextField(this);
+  SetBackground(nullptr);
+
+  // Remove the border.
+  SetBorder(nullptr);
+
+  // Set the text colors.
+  SetTextColorId(kColorAshTextColorPrimary);
+  SetPlaceholderTextColorId(kColorAshTextColorSecondary);
 }
 
 LoginTextfield::~LoginTextfield() = default;
@@ -54,7 +77,7 @@ void LoginTextfield::OnFocus() {
 
 gfx::Size LoginTextfield::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(kPasswordTotalWidthDp, kIconSizeDp);
+  return gfx::Size(kLogintTextfieldMaxWidthDp, kIconSizeDp);
 }
 
 void LoginTextfield::SetDelegate(Delegate* delegate) {

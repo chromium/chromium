@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_VIEWS_LOGIN_TEXTFIELD_H_
-#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_VIEWS_LOGIN_TEXTFIELD_H_
+#ifndef ASH_AUTH_VIEWS_LOGIN_TEXTFIELD_H_
+#define ASH_AUTH_VIEWS_LOGIN_TEXTFIELD_H_
 
+#include "ash/ash_export.h"
 #include "ash/style/system_textfield.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -14,7 +15,7 @@ namespace ash {
 
 // A textfield that selects all text on focus and allows to switch between
 // show/hide password modes.
-class LoginTextfield : public SystemTextfield {
+class ASH_EXPORT LoginTextfield : public SystemTextfield {
   METADATA_HEADER(LoginTextfield, SystemTextfield)
  public:
   class Delegate {
@@ -46,4 +47,4 @@ class LoginTextfield : public SystemTextfield {
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_VIEWS_LOGIN_TEXTFIELD_H_
+#endif  // ASH_AUTH_VIEWS_LOGIN_TEXTFIELD_H_

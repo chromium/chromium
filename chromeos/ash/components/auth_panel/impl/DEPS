@@ -1,6 +1,7 @@
 noparent = True
 
 include_rules = [
+  "+ash/auth",
   "+ash/ime",
   "+ash/login/ui",
   "+ash/public/cpp",

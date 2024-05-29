@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/auth/views/login_textfield.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/style/system_textfield_controller.h"
@@ -16,7 +17,6 @@
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view.h"
-#include "chromeos/ash/components/auth_panel/impl/views/login_textfield.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 
