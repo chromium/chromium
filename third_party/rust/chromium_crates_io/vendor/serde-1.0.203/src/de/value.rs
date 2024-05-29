@@ -112,7 +112,7 @@ impl Debug for Error {
 }
 
 #[cfg(feature = "std")]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl error::Error for Error {
     fn description(&self) -> &str {
         &self.err
@@ -185,14 +185,14 @@ impl<E> Debug for UnitDeserializer<E> {
 
 /// A deserializer that cannot be instantiated.
 #[cfg(feature = "unstable")]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "unstable")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
 pub struct NeverDeserializer<E> {
     never: !,
     marker: PhantomData<E>,
 }
 
 #[cfg(feature = "unstable")]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "unstable")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
 impl<'de, E> IntoDeserializer<'de, E> for !
 where
     E: de::Error,
@@ -565,7 +565,7 @@ impl<'de, E> Debug for BorrowedStrDeserializer<'de, E> {
 
 /// A deserializer holding a `String`.
 #[cfg(any(feature = "std", feature = "alloc"))]
-#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "std", feature = "alloc"))))]
 pub struct StringDeserializer<E> {
     value: String,
     marker: PhantomData<E>,
@@ -582,7 +582,7 @@ impl<E> Clone for StringDeserializer<E> {
 }
 
 #[cfg(any(feature = "std", feature = "alloc"))]
-#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "std", feature = "alloc"))))]
 impl<'de, E> IntoDeserializer<'de, E> for String
 where
     E: de::Error,
@@ -670,7 +670,7 @@ impl<E> Debug for StringDeserializer<E> {
 
 /// A deserializer holding a `Cow<str>`.
 #[cfg(any(feature = "std", feature = "alloc"))]
-#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "std", feature = "alloc"))))]
 pub struct CowStrDeserializer<'a, E> {
     value: Cow<'a, str>,
     marker: PhantomData<E>,
@@ -687,7 +687,7 @@ impl<'a, E> Clone for CowStrDeserializer<'a, E> {
 }
 
 #[cfg(any(feature = "std", feature = "alloc"))]
-#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "std", feature = "alloc"))))]
 impl<'de, 'a, E> IntoDeserializer<'de, E> for Cow<'a, str>
 where
     E: de::Error,
@@ -1006,7 +1006,7 @@ where
 ////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(any(feature = "std", feature = "alloc"))]
-#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "std", feature = "alloc"))))]
 impl<'de, T, E> IntoDeserializer<'de, E> for Vec<T>
 where
     T: IntoDeserializer<'de, E>,
@@ -1020,7 +1020,7 @@ where
 }
 
 #[cfg(any(feature = "std", feature = "alloc"))]
-#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "std", feature = "alloc"))))]
 impl<'de, T, E> IntoDeserializer<'de, E> for BTreeSet<T>
 where
     T: IntoDeserializer<'de, E> + Eq + Ord,
@@ -1034,7 +1034,7 @@ where
 }
 
 #[cfg(feature = "std")]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl<'de, T, S, E> IntoDeserializer<'de, E> for HashSet<T, S>
 where
     T: IntoDeserializer<'de, E> + Eq + Hash,
@@ -1421,7 +1421,7 @@ impl Expected for ExpectedInMap {
 ////////////////////////////////////////////////////////////////////////////////
 
 #[cfg(any(feature = "std", feature = "alloc"))]
-#[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "std", feature = "alloc"))))]
 impl<'de, K, V, E> IntoDeserializer<'de, E> for BTreeMap<K, V>
 where
     K: IntoDeserializer<'de, E> + Eq + Ord,
@@ -1436,7 +1436,7 @@ where
 }
 
 #[cfg(feature = "std")]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl<'de, K, V, S, E> IntoDeserializer<'de, E> for HashMap<K, V, S>
 where
     K: IntoDeserializer<'de, E> + Eq + Hash,
