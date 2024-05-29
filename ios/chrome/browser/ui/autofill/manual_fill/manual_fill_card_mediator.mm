@@ -6,6 +6,7 @@
 
 #import <vector>
 
+#import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "url/gurl.h"
@@ -119,9 +121,17 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
     return;
   }
 
+  int cardCount = self.cards.size();
   NSMutableArray* cardItems =
-      [[NSMutableArray alloc] initWithCapacity:self.cards.size()];
-  for (CreditCard* card : self.cards) {
+      [[NSMutableArray alloc] initWithCapacity:cardCount];
+  for (int i = 0; i < cardCount; i++) {
+    CreditCard* card = self.cards[i];
+    NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_MANUAL_FALLBACK_PAYMENT_CELL_INDEX),
+            "count", cardCount, "position", i + 1));
+
     // If this card is enrolled to have a virtual card, create the virtual card
     // and order it directly before the original card.
     if (base::FeatureList::IsEnabled(
@@ -129,16 +139,22 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
         card->virtual_card_enrollment_state() ==
             CreditCard::VirtualCardEnrollmentState::kEnrolled) {
       CreditCard virtualCard = CreditCard::CreateVirtualCard(*card);
-      [cardItems addObject:[self createManualFillCardItemForCard:&virtualCard]];
+      [cardItems addObject:[self createManualFillCardItemForCard:&virtualCard
+                                     cellIndexAccessibilityLabel:
+                                         cellIndexAccessibilityLabel]];
     }
-    [cardItems addObject:[self createManualFillCardItemForCard:card]];
+    [cardItems addObject:[self createManualFillCardItemForCard:card
+                                   cellIndexAccessibilityLabel:
+                                       cellIndexAccessibilityLabel]];
   }
 
   [self.consumer presentCards:cardItems];
 }
 
 // Creates a ManualFillCardItem for the given `card`.
-- (ManualFillCardItem*)createManualFillCardItemForCard:(CreditCard*)card {
+- (ManualFillCardItem*)createManualFillCardItemForCard:(CreditCard*)card
+                           cellIndexAccessibilityLabel:
+                               (NSString*)cellIndexAccessibilityLabel {
   ManualFillCreditCard* manualFillCreditCard = [[ManualFillCreditCard alloc]
       initWithCreditCard:*card
                     icon:[self iconForCreditCard:card]];
@@ -146,10 +162,12 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
                                         ? [self createMenuActionsForCard:card]
                                         : @[];
 
-  return [[ManualFillCardItem alloc] initWithCreditCard:manualFillCreditCard
-                                        contentInjector:self.contentInjector
-                                     navigationDelegate:self.navigationDelegate
-                                            menuActions:menuActions];
+  return [[ManualFillCardItem alloc]
+               initWithCreditCard:manualFillCreditCard
+                  contentInjector:self.contentInjector
+               navigationDelegate:self.navigationDelegate
+                      menuActions:menuActions
+      cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
 }
 
 - (void)postActionsToConsumer {

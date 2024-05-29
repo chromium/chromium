@@ -16,11 +16,15 @@
 // Wrapper to show card cells in a LegacyChromeTableViewController.
 @interface ManualFillCardItem : TableViewItem
 
+// `cellIndexAccessibilityLabel` is the part of the cell's accessibility label
+// that is used to indicate the index at which the payment method represented by
+// this item is positioned in the list of payment methods to show.
 - (instancetype)initWithCreditCard:(ManualFillCreditCard*)card
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                 navigationDelegate:(id<CardListDelegate>)navigationDelegate
                        menuActions:(NSArray<UIAction*>*)menuActions
+       cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -33,11 +37,15 @@
 
 // Updates the cell with credit card and the `navigationDelegate` to be
 // notified. `menuActions` are the UIActions that should be available from the
-// cell's overflow menu button.
+// cell's overflow menu button. `cellIndexAccessibilityLabel` is the part of
+// this cell's accessibility label that is used to indicate the index at which
+// the payment method represented by this cell is positioned in the list of
+// payment methods to show.
 - (void)setUpWithCreditCard:(ManualFillCreditCard*)card
-            contentInjector:(id<ManualFillContentInjector>)contentInjector
-         navigationDelegate:(id<CardListDelegate>)navigationDelegate
-                menuActions:(NSArray<UIAction*>*)menuActions;
+                contentInjector:(id<ManualFillContentInjector>)contentInjector
+             navigationDelegate:(id<CardListDelegate>)navigationDelegate
+                    menuActions:(NSArray<UIAction*>*)menuActions
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel;
 
 @end
 

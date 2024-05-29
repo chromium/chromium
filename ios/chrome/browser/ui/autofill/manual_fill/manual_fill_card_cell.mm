@@ -49,6 +49,11 @@ using base::SysNSStringToUTF8;
 // The UIActions that should be available from the cell's overflow menu button.
 @property(nonatomic, strong) NSArray<UIAction*>* menuActions;
 
+// The part of the cell's accessibility label that is used to indicate the index
+// at which the payment method represented by this item is positioned in the
+// list of payment methods to show.
+@property(nonatomic, strong) NSString* cellIndexAccessibilityLabel;
+
 @end
 
 @implementation ManualFillCardItem
@@ -57,13 +62,15 @@ using base::SysNSStringToUTF8;
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                 navigationDelegate:(id<CardListDelegate>)navigationDelegate
-                       menuActions:(NSArray<UIAction*>*)menuActions {
+                       menuActions:(NSArray<UIAction*>*)menuActions
+       cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _contentInjector = contentInjector;
     _navigationDelegate = navigationDelegate;
     _card = card;
     _menuActions = menuActions;
+    _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
     self.cellClass = [ManualFillCardCell class];
   }
   return self;
@@ -73,9 +80,10 @@ using base::SysNSStringToUTF8;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   [cell setUpWithCreditCard:self.card
-            contentInjector:self.contentInjector
-         navigationDelegate:self.navigationDelegate
-                menuActions:self.menuActions];
+                  contentInjector:self.contentInjector
+               navigationDelegate:self.navigationDelegate
+                      menuActions:self.menuActions
+      cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel];
 }
 
 @end
@@ -193,9 +201,10 @@ constexpr CGFloat kCardIconWidth = 40;
 }
 
 - (void)setUpWithCreditCard:(ManualFillCreditCard*)card
-            contentInjector:(id<ManualFillContentInjector>)contentInjector
-         navigationDelegate:(id<CardListDelegate>)navigationDelegate
-                menuActions:(NSArray<UIAction*>*)menuActions {
+                contentInjector:(id<ManualFillContentInjector>)contentInjector
+             navigationDelegate:(id<CardListDelegate>)navigationDelegate
+                    menuActions:(NSArray<UIAction*>*)menuActions
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
   if (!self.dynamicConstraints) {
     self.dynamicConstraints = [[NSMutableArray alloc] init];
   }
@@ -210,6 +219,12 @@ constexpr CGFloat kCardIconWidth = 40;
 
   [self populateViewsWithCardData:card menuActions:menuActions];
   [self verticallyArrangeViews:card];
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    self.accessibilityLabel =
+        [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
+                                   self.cardLabel.attributedText.string];
+  }
 }
 
 #pragma mark - Private
