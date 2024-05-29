@@ -80,13 +80,13 @@ const char kESimPolicyUsageCountHistogram[] =
     "Network.Cellular.ESim.Policy.Usage.Count";
 
 const char kUnrestrictedPSimServiceAtLoginHistogram[] =
-    "Network.Cellular.Unrestricted.PSim.ServiceAtLogin.Count";
+    "Network.Cellular.PSim.ServiceAtLoginCount.SimLockAllowedByPolicy";
 const char kUnrestrictedESimServiceAtLoginHistogram[] =
-    "Network.Cellular.Unrestricted.ESim.ServiceAtLogin.Count";
+    "Network.Cellular.ESim.ServiceAtLoginCount.SimLockAllowedByPolicy";
 const char kRestrictedPSimServiceAtLoginHistogram[] =
-    "Network.Cellular.Restricted.PSim.ServiceAtLogin.Count";
+    "Network.Cellular.PSim.ServiceAtLoginCount.SimLockProhibitedByPolicy";
 const char kRestrictedESimServiceAtLoginHistogram[] =
-    "Network.Cellular.Restricted.ESim.ServiceAtLogin.Count";
+    "Network.Cellular.ESim.ServiceAtLoginCount.SimLockProhibitedByPolicy";
 const char kESimPolicyServiceAtLoginHistogram[] =
     "Network.Cellular.ESim.Policy.ServiceAtLogin.Count";
 
