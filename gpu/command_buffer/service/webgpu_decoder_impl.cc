@@ -32,6 +32,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
@@ -1961,6 +1962,12 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
 #endif
 
   if (flags & WEBGPU_MAILBOX_DISCARD) {
+    if (!(shared_image->usage() & SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
+      LOG(ERROR)
+          << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear the "
+             "texture requires WebGPU write access to the SharedImage";
+      return nullptr;
+    }
     // Set contents to uncleared.
     shared_image->SetClearedRect(gfx::Rect());
   }
@@ -2000,6 +2007,12 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
   }
 
   if (flags & WEBGPU_MAILBOX_DISCARD) {
+    if (!(shared_image->usage() & SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
+      LOG(ERROR)
+          << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear the "
+             "texture requires WebGPU write access to the SharedImage";
+      return nullptr;
+    }
     // Set contents to uncleared.
     shared_image->SetClearedRect(gfx::Rect());
   }

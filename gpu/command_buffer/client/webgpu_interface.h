@@ -80,6 +80,9 @@ class WebGPUInterface : public InterfaceBase {
 // this file instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/webgpu_interface_autogen.h"
 
+  // NOTE: Passing WEBGPU_MAILBOX_DISCARD is only valid if the SharedImage
+  // associated with `mailbox` has been created with
+  // SHARED_IMAGE_USAGE_WEBGPU_WRITE.
   virtual void AssociateMailbox(GLuint device_id,
                                 GLuint device_generation,
                                 GLuint id,

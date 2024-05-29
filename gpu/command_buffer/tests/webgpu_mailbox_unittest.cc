@@ -624,9 +624,9 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
   }
 }
 
-// Test that an uninitialized shared image is lazily cleared by Dawn when it is
-// read.
-TEST_P(WebGPUMailboxTest, ReadUninitializedSharedImage) {
+// Test that passing WEBGPU_MAILBOX_DISCARD when associating a mailbox fails if
+// the SharedImage associated with the mailbox doesn't have WEBGPU_WRITE access.
+TEST_P(WebGPUMailboxTest, PassDiscardWhenAssociatingReadOnlyMailbox) {
   // Create the shared image.
   SharedImageInterface* sii = GetSharedImageInterface();
   scoped_refptr<gpu::ClientSharedImage> shared_image =
@@ -639,8 +639,8 @@ TEST_P(WebGPUMailboxTest, ReadUninitializedSharedImage) {
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
-  // Set the texture contents to non-zero so we can test a lazy clear occurs.
-  InitializeTextureColor(device_, shared_image->mailbox(), {1.0, 0, 0, 1.0});
+  // Set callback to expect a validation error.
+  device_.SetUncapturedErrorCallback(ToMockUncapturedErrorCallback, nullptr);
 
   // Register the shared image as a Dawn texture in the wire.
   gpu::webgpu::ReservedTexture reservation =
@@ -674,28 +674,14 @@ TEST_P(WebGPUMailboxTest, ReadUninitializedSharedImage) {
 
   wgpu::CommandEncoder encoder = device_.CreateCommandEncoder();
   encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
-  wgpu::CommandBuffer commands = encoder.Finish();
 
-  wgpu::Queue queue = device_.GetQueue();
-  queue.Submit(1, &commands);
-
-  webgpu()->DissociateMailbox(reservation.id, reservation.generation);
-
-  // Map the buffer and assert the pixel is the correct value.
-  readback_buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
-                           ToMockBufferMapCallback, nullptr);
-  EXPECT_CALL(*mock_buffer_map_callback,
-              Call(WGPUBufferMapAsyncStatus_Success, nullptr))
+  EXPECT_CALL(*mock_device_error_callback,
+              Call(WGPUErrorType_Validation, testing::_, testing::_))
       .Times(1);
 
-  WaitForCompletion(device_);
+  encoder.Finish();
 
-  const uint8_t* data = static_cast<const uint8_t*>(
-      readback_buffer.GetConstMappedRange(0, buffer_desc.size));
-  // Contents should be black because the texture was lazily cleared.
-  for (uint32_t i = 0; i < buffer_desc.size; ++i) {
-    EXPECT_EQ(data[i], uint8_t(0));
-  }
+  WaitForCompletion(device_);
 }
 
 // Test that an uninitialized writable shared image is lazily cleared by Dawn
