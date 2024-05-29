@@ -29,7 +29,8 @@ CryptohomePasswordEngine::~CryptohomePasswordEngine() = default;
 std::optional<cryptohome::AuthFactorRef> CryptohomePasswordEngine::LookUpFactor(
     UserContext& context) {
   const cryptohome::AuthFactor* password_factor =
-      context.GetAuthFactorsData().FindOnlinePasswordFactor();
+      context.GetAuthFactorsData().FindAnyPasswordFactor();
+
   if (!password_factor) {
     return std::nullopt;
   }
