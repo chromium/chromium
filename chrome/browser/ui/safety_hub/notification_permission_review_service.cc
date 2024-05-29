@@ -123,6 +123,8 @@ base::Value::List NotificationPermissionsReviewService::
     NotificationPermissionsResult::GetSortedListValueForUI() {
   base::Value::List result;
 
+// Setting up the list for UI is done on the Android side.
+#if !BUILDFLAG(IS_ANDROID)
   const auto sorted_notification_permissions =
       GetSortedNotificationPermissions();
 
@@ -138,6 +140,7 @@ base::Value::List NotificationPermissionsReviewService::
     permission.Set(kSafetyHubNotificationInfoString, notification_info_string);
     result.Append(std::move(permission));
   }
+#endif
   return result;
 }
 
@@ -206,12 +209,17 @@ bool NotificationPermissionsReviewService::NotificationPermissionsResult::
 
 std::u16string NotificationPermissionsReviewService::
     NotificationPermissionsResult::GetNotificationString() const {
+#if !BUILDFLAG(IS_ANDROID)
   if (notification_permissions_.empty()) {
     return std::u16string();
   }
   return l10n_util::GetPluralStringFUTF16(
       IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION,
       GetOrigins().size());
+#else
+  // Menu notifications are not present on Android.
+  return std::u16string();
+#endif
 }
 
 int NotificationPermissionsReviewService::NotificationPermissionsResult::
