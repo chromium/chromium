@@ -153,6 +153,16 @@ TEST_F(AutofillPopupControllerImplTest, GetPopupScreenLocationCallsView) {
               Optional(Field(&PopupScreenLocation::bounds, kSampleRect)));
 }
 
+// Tests that a change to a text field hides a popup with a Compose suggestion.
+TEST_F(AutofillPopupControllerImplTest, HidesOnFieldChangeForComposeEntries) {
+  ShowSuggestions(manager(), {SuggestionType::kComposeResumeNudge});
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(SuggestionHidingReason::kFieldValueChanged));
+  manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeTextFieldDidChange, FormGlobalId(),
+      FieldGlobalId());
+}
+
 // Tests that Compose saved state notification popup gets hidden after 2
 // seconds, but not after 1 second.
 TEST_F(AutofillPopupControllerImplTest,

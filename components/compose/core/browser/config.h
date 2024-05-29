@@ -90,8 +90,6 @@ struct Config {
   // How long to wait to show the proactive nudge.
   base::TimeDelta proactive_nudge_delay = base::Seconds(3);
 
-  unsigned int nudge_field_change_event_max = 3;
-
   // The duration that the saved state notification is shown before
   // auto-dismissal.
   unsigned int saved_state_timeout_milliseconds = 2000;

@@ -27,18 +27,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/content/browser/test_autofill_client_injector.h"
-#include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -448,14 +439,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
             }));
   }
 
-  autofill::TestBrowserAutofillManager* autofill_manager() {
-    return autofill_manager_injector_[web_contents()];
-  }
-
-  autofill::TestContentAutofillClient* autofill_client() {
-    return autofill_client_injector_[web_contents()];
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -470,10 +453,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
-  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
-      autofill_client_injector_;
-  autofill::TestAutofillManagerInjector<autofill::TestBrowserAutofillManager>
-      autofill_manager_injector_;
 
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeUntrustedDialog>>
       callback_router_;
@@ -2502,49 +2481,6 @@ TEST_F(ChromeComposeClientTest,
                   .Find(test_origin.Serialize()));
   EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
                                            trigger_source));
-}
-
-TEST_F(ChromeComposeClientTest, TextFieldChangeThresholdHidesProactiveNudge) {
-  compose::Config& config = compose::GetMutableConfigForTesting();
-  config.proactive_nudge_enabled = true;
-  config.proactive_nudge_show_probability = 1.0;
-  config.proactive_nudge_delay = base::Seconds(0);
-  config.proactive_nudge_segmentation = false;
-
-  client().field_change_observer_.SetSkipSuggestionTypeForTest(true);
-
-  autofill::FormData form_data;
-  form_data.set_url(
-      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
-
-  // Simulate an Autofill popup being shown.
-  autofill::AutofillClient::PopupOpenArgs args;
-  args.suggestions = {
-      autofill::Suggestion(autofill::SuggestionType::kComposeProactiveNudge)};
-  autofill_client()->ShowAutofillSuggestions(args, /*delegate=*/nullptr);
-  EXPECT_TRUE(autofill_client()->IsShowingAutofillPopup());
-
-  // Simulate field change events up to limit specified by config.
-  std::u16string text_value = u"a";
-  unsigned int max = config.nudge_field_change_event_max;
-  for (size_t i = 1; i < max; i++) {
-    client().field_change_observer_.OnAfterTextFieldDidChange(
-        *autofill_manager(), form_data.global_id(),
-        form_data.fields[0].global_id(), text_value);
-    EXPECT_EQ(i,
-              client().field_change_observer_.text_field_change_event_count_);
-    text_value = text_value + u"a";
-  }
-
-  // Reaching the event threshold resets the event count and hides the Autofill
-  // popup.
-  client().field_change_observer_.OnAfterTextFieldDidChange(
-      *autofill_manager(), form_data.global_id(),
-      form_data.fields[0].global_id(), text_value);
-  EXPECT_EQ(0U, client().field_change_observer_.text_field_change_event_count_);
-  EXPECT_FALSE(autofill_client()->IsShowingAutofillPopup());
 }
 
 TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
