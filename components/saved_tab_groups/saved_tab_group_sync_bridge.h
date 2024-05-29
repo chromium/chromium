@@ -78,10 +78,6 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
     return tabs_missing_groups_;
   }
 
-  // Returns the cache guid the change processor holds if metadata is tracked.
-  // otherwise returns a nullopt.
-  std::optional<std::string> GetLocalCacheGuid();
-
   static SavedTabGroup SpecificsToSavedTabGroupForTest(
       const sync_pb::SavedTabGroupSpecifics& specifics);
   static sync_pb::SavedTabGroupSpecifics SavedTabGroupToSpecificsForTest(

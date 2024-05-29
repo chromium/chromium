@@ -26,8 +26,6 @@ class SavedTabGroupConversionTest : public testing::Test {
     EXPECT_EQ(sp1.guid(), sp2.guid());
     EXPECT_EQ(sp1.group().title(), sp2.group().title());
     EXPECT_EQ(sp1.group().color(), sp2.group().color());
-    EXPECT_EQ(sp1.group().originator_cache_guid(),
-              sp2.group().originator_cache_guid());
     EXPECT_EQ(sp1.creation_time_windows_epoch_micros(),
               sp2.creation_time_windows_epoch_micros());
     EXPECT_EQ(sp1.update_time_windows_epoch_micros(),
@@ -77,9 +75,7 @@ TEST_F(SavedTabGroupConversionTest, GroupToSpecificRetainsData) {
   std::optional<base::Uuid> saved_guid = base::Uuid::GenerateRandomV4();
   std::optional<base::Time> creation_time_windows_epoch_micros = time_;
   std::optional<base::Time> update_time_windows_epoch_micros = time_;
-  SavedTabGroup group(title, color, {}, 0, saved_guid,
-                      std::nullopt,               // local_group_id
-                      "originator_cache_guid_1",  // originator_cache_guid
+  SavedTabGroup group(title, color, {}, 0, saved_guid, std::nullopt,
                       creation_time_windows_epoch_micros,
                       update_time_windows_epoch_micros);
 
@@ -151,9 +147,9 @@ TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
   std::optional<base::Uuid> saved_guid = base::Uuid::GenerateRandomV4();
   std::optional<base::Time> creation_time_windows_epoch_micros = time_;
   std::optional<base::Time> update_time_windows_epoch_micros = time_;
-  SavedTabGroup group1(
-      title, color, {}, 0, saved_guid, std::nullopt, "originator_cache_guid",
-      creation_time_windows_epoch_micros, update_time_windows_epoch_micros);
+  SavedTabGroup group1(title, color, {}, 0, saved_guid, std::nullopt,
+                       creation_time_windows_epoch_micros,
+                       update_time_windows_epoch_micros);
 
   // Create a new group with the same data and update it. Calling set functions
   // should internally update update_time_windows_epoch_micros.
@@ -167,7 +163,6 @@ TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
       group2.update_time_windows_epoch_micros()));
   group1.MergeRemoteGroupMetadata(group2.title(), group2.color(),
                                   group2.position(),
-                                  group2.originator_cache_guid(),
                                   group2.update_time_windows_epoch_micros());
   CompareGroups(group1, group2);
 

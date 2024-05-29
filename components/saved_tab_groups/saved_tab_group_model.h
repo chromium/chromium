@@ -129,13 +129,11 @@ class SavedTabGroupModel {
 
   // Attempts to merge the remote group metadata or tab with the local object
   // that holds the same `guid`.
-  const SavedTabGroup* MergeRemoteGroupMetadata(
-      const base::Uuid& guid,
-      const std::u16string& title,
-      TabGroupColorId color,
-      std::optional<size_t> position,
-      std::optional<std::string> originator_cache_guid,
-      base::Time update_time);
+  const SavedTabGroup* MergeRemoteGroupMetadata(const base::Uuid& guid,
+                                                const std::u16string& title,
+                                                TabGroupColorId color,
+                                                std::optional<size_t> position,
+                                                base::Time update_time);
   const SavedTabGroupTab* MergeRemoteTab(const SavedTabGroupTab& remote_tab);
 
   // Changes the index of a given tab group by id. The new index provided is the
@@ -144,12 +142,6 @@ class SavedTabGroupModel {
   // from sync.
   void ReorderGroupLocally(const base::Uuid& id, int new_index);
   void ReorderGroupFromSync(const base::Uuid& id, int new_index);
-
-  // Update the originator cache guid for all saved groups that have
-  // `old_cache_guid`, to `new_cache_guid`.
-  std::set<base::Uuid> UpdateLocalCacheGuid(
-      std::optional<std::string> old_cache_guid,
-      std::optional<std::string> new_cache_guid);
 
   // Loads the model from the storage. `tabs` must have a corresponding group in
   // `groups`.

@@ -32,7 +32,6 @@ class SavedTabGroup {
                 std::optional<size_t> position,
                 std::optional<base::Uuid> saved_guid = std::nullopt,
                 std::optional<LocalTabGroupID> local_group_id = std::nullopt,
-                std::optional<std::string> originator_cache_guid = std::nullopt,
                 std::optional<base::Time> creation_time_windows_epoch_micros =
                     std::nullopt,
                 std::optional<base::Time> update_time_windows_epoch_micros =
@@ -51,11 +50,6 @@ class SavedTabGroup {
   const base::Time& update_time_windows_epoch_micros() const {
     return update_time_windows_epoch_micros_;
   }
-
-  const std::optional<std::string>& originator_cache_guid() const {
-    return originator_cache_guid_;
-  }
-
   const std::u16string& title() const { return title_; }
   const tab_groups::TabGroupColorId& color() const { return color_; }
   const std::vector<SavedTabGroupTab>& saved_tabs() const {
@@ -89,8 +83,6 @@ class SavedTabGroup {
   SavedTabGroup& SetTitle(std::u16string title);
   SavedTabGroup& SetColor(tab_groups::TabGroupColorId color);
   SavedTabGroup& SetLocalGroupId(std::optional<LocalTabGroupID> tab_group_id);
-  SavedTabGroup& SetOriginatorCacheGuid(
-      std::optional<std::string> new_cache_guid);
   SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
       base::Time update_time_windows_epoch_micros);
   SavedTabGroup& SetPosition(size_t position);
@@ -130,14 +122,13 @@ class SavedTabGroup {
   SavedTabGroup& MoveTabFromSync(const base::Uuid& saved_tab_guid,
                                  size_t new_index);
 
-  // Merges this groups data with the `remote_group` params. Side effect:
-  // updates the values of this group.
-  void MergeRemoteGroupMetadata(
-      const std::u16string& title,
-      TabGroupColorId color,
-      std::optional<size_t> position,
-      std::optional<std::string> originator_cache_guid,
-      base::Time update_time);
+  // Merges this groups data with the `remote_group`. Side effect: updates the
+  // values of this group. `remote_group` should never contain tabs, only
+  // metadata is being merged.
+  void MergeRemoteGroupMetadata(const std::u16string& title,
+                                TabGroupColorId color,
+                                std::optional<size_t> position,
+                                base::Time update_time);
 
   // Returns whether the remote group has more recent updates.
   bool RemoteGroupHasMoreRecentUpdates(base::Time remote_update_time) const;
@@ -184,12 +175,6 @@ class SavedTabGroup {
   // A value of nullopt means that the group was not assigned a position and
   // will be assigned one when it is added into the SavedTabGroupModel.
   std::optional<size_t> position_;
-
-  // A guid which refers to the group which created the tab group. If metadata
-  // is not being tracked when the saved tab group is being created, this value
-  // will be null. The value could also be null if the group was created before
-  // M127.
-  std::optional<std::string> originator_cache_guid_;
 
   // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;

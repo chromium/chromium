@@ -51,11 +51,6 @@ message SavedTabGroup {
   // Position of the pinned tab group in bookmark bar on Desktop. This will
   // replace the position field in Tab Group V2.
   optional int64 pinned_position = 4;
-
-  // Identifier for device that refers to the device that created the group.
-  // Should only be set on creation, and should not be edited if the value is
-  // missing.
-  optional string originator_cache_guid = 5;
 }
 
 // Sync protocol datatype extension for saved tab group tabs. SavedTabGroupTab
