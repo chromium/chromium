@@ -67,6 +67,10 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
     ExpectConsoleMessage(id + "-resolve");
   }
 
+  void WaitForUpdateGrantedPermissionElement(const std::string& id) {
+    ExpectConsoleMessage(id + "-granted");
+  }
+
   void WaitForDismissEvent(const std::string& id) {
     ExpectConsoleMessage(id + "-dismiss");
   }
@@ -131,6 +135,24 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
       observer.Wait();
       WaitForResolveEvent(id);
     }
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
+                       DispatchResolveEventUpdateGrantedElement) {
+  SkipInvalidElementMessage();
+  permissions::PermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+  std::string permission_ids[] = {"microphone", "camera", "camera-microphone"};
+  for (const auto& id : permission_ids) {
+    permissions::PermissionRequestObserver observer(web_contents());
+    ClickElementWithId(web_contents(), id);
+    observer.Wait();
+    WaitForResolveEvent(id);
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(), content::JsReplace("notifyWhenGranted($1);", id)));
+    WaitForUpdateGrantedPermissionElement(id);
   }
 }
 
