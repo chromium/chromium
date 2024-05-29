@@ -7,6 +7,9 @@
 
 namespace storage {
 
+MockBlobRegistryDelegate::MockBlobRegistryDelegate() = default;
+MockBlobRegistryDelegate::~MockBlobRegistryDelegate() = default;
+
 bool MockBlobRegistryDelegate::CanReadFile(const base::FilePath& file) {
   return can_read_file_result;
 }
