@@ -94,7 +94,7 @@ if (ios_sdk_path == "") {
       ios_sdk_developer_dir,
     ]
   }
-  if (use_system_xcode && (use_remoteexec || use_siso)) {
+  if (use_system_xcode && use_remoteexec) {
     ios_sdk_info_args += [
       "--create_symlink_at",
       "sdk/xcode_links",

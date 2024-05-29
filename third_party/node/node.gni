@@ -17,9 +17,9 @@ template("node") {
       "//third_party/node/node_modules.tar.gz.sha1",
     ]
 
-    # When use_remoteexec=true or use_siso=true, node actions run on remote
+    # When use_remoteexec=true, node actions may run on remote
     # Linux worker. So it should include linux node binary in inputs.
-    if (is_linux || is_chromeos || use_remoteexec || use_siso) {
+    if (is_linux || is_chromeos || use_remoteexec) {
       inputs += [ "//third_party/node/linux/node-linux-x64/bin/node" ]
     }
     if (is_win && host_os == "win") {
