@@ -302,8 +302,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                             bool for_shadow_pseudo = false);
   void MatchPseudoPartRulesForUAHost(const Element&, ElementRuleCollector&);
   void MatchPositionTryRules(ElementRuleCollector&);
-  void MatchAuthorRules(const Element&,
-                        ElementRuleCollector&);
+  void MatchAuthorRules(const Element&, ElementRuleCollector&);
   void MatchAllRules(StyleResolverState&,
                      ElementRuleCollector&,
                      bool include_smil_properties);
@@ -396,8 +395,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   bool was_viewport_resized_ = false;
 
   friend class StyleResolverTest;
-  FRIEND_TEST_ALL_PREFIXES(ParameterizedStyleResolverTest,
-                           TreeScopedReferences);
+  FRIEND_TEST_ALL_PREFIXES(StyleResolverTest, TreeScopedReferences);
 
   Element& EnsureElementForFormattedText();
   const ComputedStyle* StyleForFormattedText(
