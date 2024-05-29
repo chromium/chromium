@@ -95,6 +95,8 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
         mTitleView.setText(item.getTitle());
         mDescriptionView.setText(item.getDomain());
+        // Try to make the TLD part of the URL string visible.
+        mDescriptionView.setEllipsize(TextUtils.TruncateAt.START);
         updateChipView(item);
         SelectableListUtils.setContentDescriptionContext(
                 getContext(),
