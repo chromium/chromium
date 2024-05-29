@@ -160,10 +160,11 @@ void ReportLoginTotalAnimationThroughput(
       "Ash.LoginAnimation.Duration.", "Ash.LoginAnimation.Duration2.");
 }
 
-void RecordSmoothnessMetrics(
-    const cc::FrameSequenceMetrics::CustomReportData& data,
-    const char* smoothness_name) {
-  DCHECK(data.frames_expected_v3);
+void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data) {
+  if (!data.frames_expected_v3) {
+    LOG(WARNING) << "Zero frames expected in unlock animation throughput data";
+    return;
+  }
 
   // Report could happen during Shell shutdown. Early out in that case.
   if (!Shell::HasInstance() || !Shell::Get()->tablet_mode_controller()) {
@@ -172,18 +173,9 @@ void RecordSmoothnessMetrics(
 
   const int smoothness = metrics_util::CalculateSmoothnessV3(data);
 
+  constexpr char smoothness_name[] = "Ash.UnlockAnimation.Smoothness.";
   const std::string suffix = GetDeviceModeSuffix();
   base::UmaHistogramPercentage(smoothness_name + suffix, smoothness);
-  ash::Shell::Get()->login_unlock_throughput_recorder()->AddLoginTimeMarker(
-      smoothness_name + suffix);
-}
-
-void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data) {
-  if (!data.frames_expected_v3) {
-    LOG(WARNING) << "Zero frames expected in unlock animation throughput data";
-    return;
-  }
-  RecordSmoothnessMetrics(data, "Ash.UnlockAnimation.Smoothness.");
 }
 
 bool HasBrowserIcon(const ShelfModel* model) {
