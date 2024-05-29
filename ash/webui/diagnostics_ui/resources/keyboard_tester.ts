@@ -342,6 +342,10 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     assert(diagram);
     diagram.resetAllKeys();
     this.$.dialog.close();
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('showDefaultKeyboardTester');
+    history.pushState(null, '', url);
   }
 
   handleClose(): void {
