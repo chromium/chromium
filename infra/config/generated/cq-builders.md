@@ -471,6 +471,12 @@ builder.
   Location filters:
   * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
 
+* [linux-utr-tester](https://ci.chromium.org/p/chromium/builders/try/linux-utr-tester) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-utr-tester""))
+
+  Location filters:
+  * [`//tools/utr/.+`](https://cs.chromium.org/chromium/src/tools/utr/)
+  * [`//tools/mb/.+`](https://cs.chromium.org/chromium/src/tools/mb/)
+
 * [linux-v4l2-codec-rel](https://ci.chromium.org/p/chromium/builders/try/linux-v4l2-codec-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-v4l2-codec-rel""))
 
   Location filters:

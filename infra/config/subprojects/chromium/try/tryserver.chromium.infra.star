@@ -121,4 +121,10 @@ try_.builder(
     },
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
+    tryjob = try_.job(
+        location_filters = [
+            "tools/utr/.+",
+            "tools/mb/.+",
+        ],
+    ),
 )
