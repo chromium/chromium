@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 
+#include "base/rand_util.h"
 #include "base/time/time.h"
 
 namespace segmentation_platform {
@@ -64,7 +65,7 @@ std::optional<TrainingRequestId> TrainingDataCache::GetRequestId(
 }
 
 TrainingRequestId TrainingDataCache::GenerateNextId() {
-  return request_id_generator.GenerateNextId();
+  return TrainingRequestId::FromUnsafeValue(base::RandUint64());
 }
 
 }  // namespace segmentation_platform
