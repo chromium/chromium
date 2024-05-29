@@ -104,6 +104,12 @@ id<GREYMatcher> TabStripGroupCellMatcher(NSString* title) {
                     nil);
 }
 
+// Matcher for an unnamed tab group that has the `number_of_tabs`.
+id<GREYMatcher> CreateUnnamedTabGroupMatcher(int number_of_tabs) {
+  return TabStripGroupCellMatcher(l10n_util::GetPluralNSStringF(
+      IDS_IOS_TAB_GROUP_TABS_NUMBER, number_of_tabs));
+}
+
 // Returns a matcher for a context menu button with `accessibility_label` as
 // accessibility label.
 id<GREYMatcher> ContextMenuButtonMatcher(NSString* accessibility_label) {
@@ -274,17 +280,35 @@ void AddTabToNewGroup(id<GREYMatcher> tab_cell_matcher,
                                                           kGroupTitle1)];
 }
 
-// Tests that a tab can be added to a new unnamed group using the context menu.
-- (void)testTabStripCreateNewUnnamedGroupWithTab {
+// Tests that adding a tab to an unnamed group increases the count in the title.
+- (void)testTabStripAddingToUnnamedGroupIncreasesCountInTitle {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
 
+  id<GREYMatcher> groupWithOneTabMatcher = CreateUnnamedTabGroupMatcher(1);
+  id<GREYMatcher> groupWithTwoTabsMatcher = CreateUnnamedTabGroupMatcher(2);
+  id<GREYMatcher> contextMenuButtonMatcher =
+      ContextMenuButtonMatcher(IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP);
+
   // Add the current tab to a new group with an empty title.
   AddTabToNewGroup(TabStripTabCellSelectedMatcher(), @"");
-  // Test that there is now a group cell with an empty title.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(@"")];
+
+  // When created, the unnamed tab group should use the tabs count as title.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:groupWithOneTabMatcher];
+
+  // Long press the tab group and tab "New Tab in Group".
+  [[EarlGrey selectElementWithMatcher:groupWithOneTabMatcher]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:contextMenuButtonMatcher]
+      performAction:grey_tap()];
+
+  // Check that there are now two tabs and the current tab has changed.
+  GREYAssertEqual(2, [ChromeEarlGrey mainTabCount],
+                  @"Expected 2 tabs to be present.");
+
+  // Then the count that appears in the title should have been increased.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:groupWithTwoTabsMatcher];
 }
 
 // Tests that a tab can be added to a new unnamed group using the context menu.

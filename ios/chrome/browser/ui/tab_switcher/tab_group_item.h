@@ -39,7 +39,6 @@ typedef void (^GroupTabInfosFetchingCompletionBlock)(
 @property(nonatomic, readonly, nullable) const TabGroup* tabGroup;
 #endif
 @property(nonatomic, readonly, nullable) NSString* title;
-@property(nonatomic, readonly, nullable) NSString* rawTitle;
 @property(nonatomic, readonly, nullable) UIColor* groupColor;
 @property(nonatomic, readonly) NSInteger numberOfTabsInGroup;
 @property(nonatomic, readonly) BOOL collapsed;
