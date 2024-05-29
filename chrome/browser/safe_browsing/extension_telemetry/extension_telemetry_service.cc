@@ -842,7 +842,7 @@ ExtensionTelemetryService::GetTokenFetcher() {
   return nullptr;
 }
 
-void ExtensionTelemetryService::DumpReportForTest(
+void ExtensionTelemetryService::DumpReportForTesting(
     const ExtensionTelemetryReportRequest& report) {
   base::Time creation_time = base::Time::FromMillisecondsSinceUnixEpoch(
       report.creation_timestamp_msec());
@@ -1004,6 +1004,12 @@ void ExtensionTelemetryService::DumpReportForTest(
                << "      URL: " << get_args_pb.url() << "\n"
                << "      StoreId: " << get_args_pb.store_id() << "\n"
                << "      count: " << get_args_pb.count() << "\n";
+            const auto& js_callstacks = get_args_pb.js_callstacks();
+            int stack_idx = 0;
+            for (const auto& stack : js_callstacks) {
+              ss << "      JS callstack " << stack_idx++ << " :";
+              ss << ExtensionJSCallStacks::SignalInfoJSCallStackAsString(stack);
+            }
           }
         }
         continue;

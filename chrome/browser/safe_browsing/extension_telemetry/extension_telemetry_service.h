@@ -168,7 +168,7 @@ class ExtensionTelemetryService : public KeyedService {
   std::unique_ptr<ExtensionTelemetryReportRequest> CreateReportForEnterprise();
 
   // Dumps a telemetry report in logs for testing.
-  void DumpReportForTest(const ExtensionTelemetryReportRequest& report);
+  void DumpReportForTesting(const ExtensionTelemetryReportRequest& report);
 
   // Collects extension information for reporting.
   std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>

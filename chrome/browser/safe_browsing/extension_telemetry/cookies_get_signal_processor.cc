@@ -17,8 +17,9 @@ constexpr size_t kMaxArgSets = 100;
 
 }  // namespace
 
-using GetArgsInfo =
-    ExtensionTelemetryReportRequest::SignalInfo::CookiesGetInfo::GetArgsInfo;
+CookiesGetSignalProcessor::CallData::CallData() = default;
+CookiesGetSignalProcessor::CallData::~CallData() = default;
+CookiesGetSignalProcessor::CallData::CallData(const CallData&) = default;
 
 CookiesGetSignalProcessor::CookiesGetStoreEntry::CookiesGetStoreEntry() =
     default;
@@ -39,27 +40,30 @@ void CookiesGetSignalProcessor::ProcessSignal(const ExtensionSignal& signal) {
   // extension, a new entry is created in the store.
   CookiesGetStoreEntry& store_entry =
       cookies_get_store_[cg_signal.extension_id()];
-  GetArgsInfos& get_args_infos = store_entry.get_args_infos;
+  CallDataMap& call_data_map = store_entry.call_data_map;
 
-  const std::string arg_set_id = cg_signal.getUniqueArgSetId();
-  auto get_args_infos_it = get_args_infos.find(arg_set_id);
-  if (get_args_infos_it != get_args_infos.end()) {
+  std::string arg_set_id = cg_signal.getUniqueArgSetId();
+  auto call_data_it = call_data_map.find(arg_set_id);
+  if (call_data_it != call_data_map.end()) {
     // If a cookies.get() API with the same arguments has been invoked
-    // before, simply increment the count for the corresponding record.
-    auto count = get_args_infos_it->second.count();
-    get_args_infos_it->second.set_count(count + 1);
-
-  } else if (get_args_infos.size() < max_arg_sets_) {
+    // before, simply increment the count for the corresponding record
+    // and save the associated JS callstack data.
+    auto& [args_info, js_callstacks] = call_data_it->second;
+    auto count = args_info.count();
+    args_info.set_count(count + 1);
+    js_callstacks.Add(cg_signal.js_callstack());
+  } else if (call_data_map.size() < max_arg_sets_) {
     // For new argument sets, process only if under max limit.
-    // Create new GetArgsInfo object with its unique args set id key.
-    GetArgsInfo get_args_info;
-    get_args_info.set_name(cg_signal.name());
-    get_args_info.set_store_id(cg_signal.store_id());
-    get_args_info.set_url(cg_signal.url());
-    get_args_info.set_count(1);
+    // Create a new entry for the call data map.
+    CallData call_data;
+    call_data.args_info.set_name(cg_signal.name());
+    call_data.args_info.set_store_id(cg_signal.store_id());
+    call_data.args_info.set_url(cg_signal.url());
+    call_data.args_info.set_count(1);
+    // Save the associated JS callstack data as well.
+    call_data.js_callstacks.Add(cg_signal.js_callstack());
 
-    get_args_infos.emplace(arg_set_id, get_args_info);
-
+    call_data_map.emplace(std::move(arg_set_id), std::move(call_data));
   } else {
     // Otherwise, increment max exceeded argument sets count.
     store_entry.max_exceeded_arg_sets_count++;
@@ -74,22 +78,26 @@ CookiesGetSignalProcessor::GetSignalInfoForReport(
     return nullptr;
 
   // Create the signal info protobuf.
-  auto signal_info =
+  auto signal_info_pb =
       std::make_unique<ExtensionTelemetryReportRequest_SignalInfo>();
-  ExtensionTelemetryReportRequest_SignalInfo_CookiesGetInfo* cookies_get_info =
-      signal_info->mutable_cookies_get_info();
+  ExtensionTelemetryReportRequest_SignalInfo_CookiesGetInfo*
+      cookies_get_info_pb = signal_info_pb->mutable_cookies_get_info();
 
-  for (auto& get_args_infos_it : cookies_get_store_it->second.get_args_infos) {
-    *cookies_get_info->add_get_args_info() =
-        std::move(get_args_infos_it.second);
+  for (auto& [key, call_data] : cookies_get_store_it->second.call_data_map) {
+    // Get the JS callstacks associated with this arg set and add them to the
+    // GetArgsInfo message.
+    auto js_callstacks = call_data.js_callstacks.GetAll();
+    call_data.args_info.mutable_js_callstacks()->Assign(js_callstacks.begin(),
+                                                        js_callstacks.end());
+    *cookies_get_info_pb->add_get_args_info() = std::move(call_data.args_info);
   }
-  cookies_get_info->set_max_exceeded_args_count(
+  cookies_get_info_pb->set_max_exceeded_args_count(
       cookies_get_store_it->second.max_exceeded_arg_sets_count);
 
   // Finally, clear the data in the argument sets store.
   cookies_get_store_.erase(cookies_get_store_it);
 
-  return signal_info;
+  return signal_info_pb;
 }
 
 bool CookiesGetSignalProcessor::HasDataToReportForTest() const {
