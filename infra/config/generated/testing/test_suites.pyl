@@ -6743,17 +6743,24 @@
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
           'shards-20',
+          'skylab-cft',
         ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],

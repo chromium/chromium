@@ -386,17 +386,24 @@ targets.legacy_matrix_compound_suite(
             mixins = [
                 # trogdor is slow. So that we use more number of shards.
                 "shards-20",
+                "skylab-cft",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
