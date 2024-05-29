@@ -243,27 +243,27 @@ class GamepadComparisonsTest : public testing::Test {
   }
 };
 
-TEST_F(GamepadComparisonsTest, DISABLED_EmptyListCausesNoActivation) {
+TEST_F(GamepadComparisonsTest, EmptyListCausesNoActivation) {
   auto list = CreateEmptyGamepadList();
   EXPECT_FALSE(GamepadComparisons::HasUserActivation(list));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_NeutralGamepadCausesNoActivation) {
+TEST_F(GamepadComparisonsTest, NeutralGamepadCausesNoActivation) {
   auto list = CreateGamepadListWithNeutralGamepad();
   EXPECT_FALSE(GamepadComparisons::HasUserActivation(list));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_AxisTiltCausesNoActivation) {
+TEST_F(GamepadComparisonsTest, AxisTiltCausesNoActivation) {
   auto list = CreateGamepadListWithAxisTilt();
   EXPECT_FALSE(GamepadComparisons::HasUserActivation(list));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_ButtonDownCausesActivation) {
+TEST_F(GamepadComparisonsTest, ButtonDownCausesActivation) {
   auto list = CreateGamepadListWithButtonDown();
   EXPECT_TRUE(GamepadComparisons::HasUserActivation(list));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareEmptyLists) {
+TEST_F(GamepadComparisonsTest, CompareEmptyLists) {
   // Simulate no connected gamepads.
   auto list1 = CreateEmptyGamepadList();
   auto list2 = CreateEmptyGamepadList();
@@ -278,7 +278,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareEmptyLists) {
   EXPECT_FALSE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareNeutrals) {
+TEST_F(GamepadComparisonsTest, CompareNeutrals) {
   // Simulate a neutral gamepad with no input changes.
   auto list1 = CreateGamepadListWithNeutralGamepad();
   auto list2 = CreateGamepadListWithNeutralGamepad();
@@ -293,7 +293,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareNeutrals) {
   EXPECT_FALSE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareEmptyListWithNeutral) {
+TEST_F(GamepadComparisonsTest, CompareEmptyListWithNeutral) {
   // Simulate a connection.
   auto list1 = CreateEmptyGamepadList();
   auto list2 = CreateGamepadListWithNeutralGamepad();
@@ -308,7 +308,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareEmptyListWithNeutral) {
   EXPECT_FALSE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareNeutralWithEmptyList) {
+TEST_F(GamepadComparisonsTest, CompareNeutralWithEmptyList) {
   // Simulate a disconnection.
   auto list1 = CreateGamepadListWithNeutralGamepad();
   auto list2 = CreateEmptyGamepadList();
@@ -323,7 +323,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareNeutralWithEmptyList) {
   EXPECT_FALSE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareNeutralWithAxisTilt) {
+TEST_F(GamepadComparisonsTest, CompareNeutralWithAxisTilt) {
   // Simulate tilting an axis away from neutral.
   auto list1 = CreateGamepadListWithNeutralGamepad();
   auto list2 = CreateGamepadListWithAxisTilt();
@@ -351,7 +351,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareNeutralWithAxisTilt) {
   EXPECT_FALSE(compareResult2.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareNeutralWithButtonDown) {
+TEST_F(GamepadComparisonsTest, CompareNeutralWithButtonDown) {
   // Simulate pressing a digital (on/off) button.
   auto list1 = CreateGamepadListWithNeutralGamepad();
   auto list2 = CreateGamepadListWithButtonDown();
@@ -379,7 +379,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareNeutralWithButtonDown) {
   EXPECT_FALSE(compareResult2.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareButtonDownWithNeutral) {
+TEST_F(GamepadComparisonsTest, CompareButtonDownWithNeutral) {
   // Simulate releasing a digital (on/off) button.
   auto list1 = CreateGamepadListWithButtonDown();
   auto list2 = CreateGamepadListWithNeutralGamepad();
@@ -395,7 +395,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareButtonDownWithNeutral) {
   EXPECT_TRUE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareNeutralWithButtonTouched) {
+TEST_F(GamepadComparisonsTest, CompareNeutralWithButtonTouched) {
   // Simulate touching an analog button or trigger.
   auto list1 = CreateGamepadListWithNeutralGamepad();
   auto list2 = CreateGamepadListWithButtonTouched();
@@ -411,8 +411,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareNeutralWithButtonTouched) {
   EXPECT_FALSE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest,
-       DISABLED_CompareButtonTouchedWithButtonJustDown) {
+TEST_F(GamepadComparisonsTest, CompareButtonTouchedWithButtonJustDown) {
   // Simulate pressing an analog button or trigger enough to register a button
   // press.
   auto list1 = CreateGamepadListWithButtonTouched();
@@ -429,7 +428,7 @@ TEST_F(GamepadComparisonsTest,
   EXPECT_FALSE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareButtonJustDownWithButtonDown) {
+TEST_F(GamepadComparisonsTest, CompareButtonJustDownWithButtonDown) {
   // Simulate continuing to press an analog button or trigger until it reaches
   // the maximum value.
   auto list1 = CreateGamepadListWithButtonJustDown();
@@ -446,7 +445,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareButtonJustDownWithButtonDown) {
   EXPECT_FALSE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareButtonDownWithButtonJustDown) {
+TEST_F(GamepadComparisonsTest, CompareButtonDownWithButtonJustDown) {
   // Simulate releasing an analog button or trigger until it is just barely
   // pressed.
   auto list1 = CreateGamepadListWithButtonDown();
@@ -463,8 +462,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareButtonDownWithButtonJustDown) {
   EXPECT_FALSE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest,
-       DISABLED_CompareButtonJustDownWithButtonTouched) {
+TEST_F(GamepadComparisonsTest, CompareButtonJustDownWithButtonTouched) {
   // Simulate releasing an analog button or trigger until it is no longer
   // pressed.
   auto list1 = CreateGamepadListWithButtonJustDown();
@@ -481,7 +479,7 @@ TEST_F(GamepadComparisonsTest,
   EXPECT_TRUE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareButtonTouchedWithNeutral) {
+TEST_F(GamepadComparisonsTest, CompareButtonTouchedWithNeutral) {
   // Simulate releasing an analog button or trigger until it is neutral.
   auto list1 = CreateGamepadListWithButtonTouched();
   auto list2 = CreateGamepadListWithNeutralGamepad();
@@ -497,7 +495,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareButtonTouchedWithNeutral) {
   EXPECT_FALSE(compareResult.IsButtonUp(0, 0));
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareDifferentTouch) {
+TEST_F(GamepadComparisonsTest, CompareDifferentTouch) {
   auto list1 = CreateGamepadListWithTopLeftTouch();
   auto list2 = CreateGamepadListWithCenterTouch();
 
@@ -506,7 +504,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareDifferentTouch) {
   EXPECT_TRUE(compareResult.IsDifferent());
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareDifferentSurface) {
+TEST_F(GamepadComparisonsTest, CompareDifferentSurface) {
   auto list1 = CreateGamepadListWithTopLeftTouch();
   auto list2 = CreateGamepadListWithTopLeftTouchSurface1();
 
@@ -515,7 +513,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareDifferentSurface) {
   EXPECT_TRUE(compareResult.IsDifferent());
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareDifferentTouchId) {
+TEST_F(GamepadComparisonsTest, CompareDifferentTouchId) {
   auto list1 = CreateGamepadListWithTopLeftTouchesTouchId1();
   auto list2 = CreateGamepadListWithTopLeftTouchesTouchId3();
 
@@ -525,7 +523,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareDifferentTouchId) {
   EXPECT_TRUE(compareResult.IsDifferent());
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareSameTouch1) {
+TEST_F(GamepadComparisonsTest, CompareSameTouch1) {
   auto list1 = CreateGamepadListWithTopLeftTouch();
 
   auto compareResult = GamepadComparisons::Compare(
@@ -533,7 +531,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareSameTouch1) {
   EXPECT_FALSE(compareResult.IsDifferent());
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareSameTouch2) {
+TEST_F(GamepadComparisonsTest, CompareSameTouch2) {
   auto list1 = CreateGamepadListWithTopLeftTouchesTouchId3();
 
   auto compareResult = GamepadComparisons::Compare(
@@ -541,7 +539,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareSameTouch2) {
   EXPECT_FALSE(compareResult.IsDifferent());
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareSurfaceNoSurfaceTouch) {
+TEST_F(GamepadComparisonsTest, CompareSurfaceNoSurfaceTouch) {
   auto list1 = CreateGamepadListWithTopLeftTouchSurface1();
   auto list2 = CreateGamepadListWithTopLeftTouch();
 
@@ -550,7 +548,7 @@ TEST_F(GamepadComparisonsTest, DISABLED_CompareSurfaceNoSurfaceTouch) {
   EXPECT_TRUE(compareResult.IsDifferent());
 }
 
-TEST_F(GamepadComparisonsTest, DISABLED_CompareDifferentSurfaceTouch) {
+TEST_F(GamepadComparisonsTest, CompareDifferentSurfaceTouch) {
   auto list1 = CreateGamepadListWithTopLeftTouchSurface1();
   auto list2 = CreateGamepadListWithTopLeftTouchSurface2();
 
