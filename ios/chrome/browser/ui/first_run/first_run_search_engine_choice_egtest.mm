@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/policy/policy_constants.h"
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/first_run/first_run_test_case_base.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -133,4 +137,40 @@
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
+
+// Tests that the search engine screen is skipped if the enterprise policies
+// are loaded after the sign-in screen is presented.
+- (void)testLoadingEnterprisePoliciesAfterPresentingFRE {
+  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
+            FRESigninIntentRegular];
+  // Load enterprise policies to skip the search engine screen.
+  NSString* const enterpriseSearchEngineName = @"TestEngine";
+  policy_test_utils::MergePolicyWithStringValue(
+      base::SysNSStringToUTF8(enterpriseSearchEngineName),
+      policy::key::kDefaultSearchProviderName);
+  policy_test_utils::MergePolicyWithStringValue(
+      "http://www.google.com/search?q={searchTerms}",
+      policy::key::kDefaultSearchProviderSearchURL);
+  policy_test_utils::MergePolicy(true,
+                                 policy::key::kDefaultSearchProviderEnabled);
+  // Skip sign-in.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Dismiss the default browser screen.
+  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  // Open the default search engine settings menu.
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Verify that the correct search engine is selected. The enterprise search
+  // engine's name appears in the name of the selected row.
+  id<GREYMatcher> settingsSearchEngineButton =
+      grey_accessibilityID(kSettingsManagedSearchEngineCellId);
+  [[EarlGrey selectElementWithMatcher:settingsSearchEngineButton]
+      assertWithMatcher:grey_allOf(
+                            grey_accessibilityValue(enterpriseSearchEngineName),
+                            grey_sufficientlyVisible(), nil)];
+}
+
 @end
