@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
+#include "ash/system/focus_mode/sounds/soundscape/playlist_tracker.h"
 #include "ash/system/focus_mode/sounds/soundscape/soundscape_types.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -20,7 +21,11 @@ class SoundscapesDownloader;
 
 class ASH_EXPORT FocusModeSoundscapeDelegate : public FocusModeSoundsDelegate {
  public:
-  FocusModeSoundscapeDelegate(const std::string& locale);
+  static std::unique_ptr<FocusModeSoundscapeDelegate> Create(
+      const std::string& locale);
+
+  FocusModeSoundscapeDelegate(
+      std::unique_ptr<SoundscapesDownloader> downloader);
   ~FocusModeSoundscapeDelegate() override;
 
   // FocusModeSoundsDelegate:
@@ -35,6 +40,9 @@ class ASH_EXPORT FocusModeSoundscapeDelegate : public FocusModeSoundsDelegate {
       std::optional<SoundscapeConfiguration> configuration);
 
   base::Time last_update_;
+
+  std::optional<PlaylistTracker> playlist_tracker_;
+
   std::optional<SoundscapeConfiguration> cached_configuration_;
   std::unique_ptr<SoundscapesDownloader> downloader_;
 

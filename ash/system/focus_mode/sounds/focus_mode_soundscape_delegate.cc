@@ -7,9 +7,11 @@
 #include <vector>
 
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
+#include "ash/system/focus_mode/sounds/soundscape/playlist_tracker.h"
 #include "ash/system/focus_mode/sounds/soundscape/soundscape_types.h"
 #include "ash/system/focus_mode/sounds/soundscape/soundscapes_downloader.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace ash {
@@ -41,26 +43,77 @@ std::vector<FocusModeSoundsDelegate::Playlist> PlaylistsFromConfig(
   return requests;
 }
 
-}  // namespace
-
-FocusModeSoundscapeDelegate::FocusModeSoundscapeDelegate(
-    const std::string& locale) {
-  downloader_ = SoundscapesDownloader::Create(locale);
+FocusModeSoundsDelegate::Track FromTrack(const SoundscapeTrack& track,
+                                         const std::string& playlist_thumbnail,
+                                         SoundscapesDownloader& resolver) {
+  return FocusModeSoundsDelegate::Track(
+      /*title=*/track.name,
+      // `artist` is always empty for soundscapes.
+      /*artist=*/"",
+      /*source=*/"Focus Sounds",
+      /*thumbnail_url*/ resolver.ResolveUrl(playlist_thumbnail),
+      /*source_url=*/resolver.ResolveUrl(track.path));
 }
 
-FocusModeSoundscapeDelegate::~FocusModeSoundscapeDelegate() = default;
+}  // namespace
+
+// static
+std::unique_ptr<FocusModeSoundscapeDelegate>
+FocusModeSoundscapeDelegate::Create(const std::string& locale) {
+  return std::make_unique<FocusModeSoundscapeDelegate>(
+      SoundscapesDownloader::Create(locale));
+}
+
+FocusModeSoundscapeDelegate::FocusModeSoundscapeDelegate(
+    std::unique_ptr<SoundscapesDownloader> downloader)
+    : downloader_(std::move(downloader)) {}
+
+FocusModeSoundscapeDelegate::~FocusModeSoundscapeDelegate() {
+  // Free the tracker before we release `cached_configuration_`.
+  playlist_tracker_.reset();
+}
 
 bool FocusModeSoundscapeDelegate::GetNextTrack(
     const std::string& playlist_id,
     FocusModeSoundsDelegate::TrackCallback callback) {
-  // NOT IMPLEMENTED
-  return false;
+  if (!cached_configuration_) {
+    // TODO(b/342467806): Support fetching a configuration here.
+    LOG(WARNING) << "Track requested before configuration download";
+    return false;
+  }
+
+  if (!playlist_tracker_ || playlist_id != playlist_tracker_->id()) {
+    // When switching playlists, create a new tracker.
+    const std::vector<SoundscapePlaylist>& playlists =
+        cached_configuration_->playlists;
+    auto iter =
+        std::find_if(playlists.cbegin(), playlists.cend(),
+                     [playlist_id](const SoundscapePlaylist& playlist) {
+                       return playlist_id == playlist.uuid.AsLowercaseString();
+                     });
+
+    if (iter == playlists.end() || iter->tracks.empty()) {
+      return false;
+    }
+
+    const SoundscapePlaylist& playlist = *iter;
+    playlist_tracker_.emplace(playlist);
+  }
+
+  const SoundscapeTrack& next_track = playlist_tracker_->NextTrack();
+  std::optional<FocusModeSoundsDelegate::Track> track = FromTrack(
+      next_track, playlist_tracker_->playlist().thumbnail, *downloader_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(track)));
+
+  return true;
 }
 
 bool FocusModeSoundscapeDelegate::GetPlaylists(PlaylistsCallback callback) {
   if (cached_configuration_) {
     base::TimeDelta update_age = base::Time::Now() - last_update_;
     if (update_age < kCacheLifetime) {
+      // Return the cached playlists.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
                                     PlaylistsFromConfig(*cached_configuration_,
@@ -68,6 +121,10 @@ bool FocusModeSoundscapeDelegate::GetPlaylists(PlaylistsCallback callback) {
       return true;
     }
   }
+
+  // Configuration is outdated. Clear it.
+  playlist_tracker_.reset();
+  cached_configuration_.reset();
 
   downloader_->FetchConfiguration(
       base::BindOnce(&FocusModeSoundscapeDelegate::HandleConfiguration,

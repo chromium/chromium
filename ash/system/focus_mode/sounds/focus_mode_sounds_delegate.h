@@ -44,6 +44,8 @@ class ASH_EXPORT FocusModeSoundsDelegate {
 
     std::string ToString() const;
 
+    bool operator==(const Track& other) const = default;
+
     std::string title;
     std::string artist;
     std::string source;

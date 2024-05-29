@@ -137,8 +137,7 @@ FocusModeSoundsController::SelectedPlaylist::operator=(
 FocusModeSoundsController::SelectedPlaylist::~SelectedPlaylist() = default;
 
 FocusModeSoundsController::FocusModeSoundsController()
-    : soundscape_delegate_(
-          std::make_unique<FocusModeSoundscapeDelegate>("en-US")),
+    : soundscape_delegate_(FocusModeSoundscapeDelegate::Create("en-US")),
       youtube_music_delegate_(
           std::make_unique<FocusModeYouTubeMusicDelegate>()) {
   // TODO(b/341176182): Plumb the locale here and replace the default
