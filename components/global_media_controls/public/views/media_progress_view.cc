@@ -25,6 +25,10 @@ namespace {
 // and also the focus ring.
 constexpr int kStrokeWidth = 2;
 
+// The width of stroke to paint the progress foreground straight line when user
+// is dragging the progress line.
+constexpr int kLargeStrokeWidth = 4;
+
 // The height of squiggly progress that user can click to seek to a new media
 // position. This is slightly larger than the painted progress height.
 constexpr int kProgressClickHeight = 16;
@@ -76,7 +80,9 @@ MediaProgressView::MediaProgressView(
     ui::ColorId paused_foreground_color_id,
     ui::ColorId paused_background_color_id,
     ui::ColorId focus_ring_color_id,
-    base::RepeatingCallback<void(bool)> dragging_callback,
+    base::RepeatingCallback<void(DragState)> drag_state_change_callback,
+    base::RepeatingCallback<void(PlaybackStateChangeForDragging)>
+        playback_state_change_for_dragging_callback,
     base::RepeatingCallback<void(double)> seek_callback,
     base::RepeatingCallback<void(base::TimeDelta)> on_update_progress_callback)
     : use_squiggly_line_(use_squiggly_line),
@@ -85,7 +91,9 @@ MediaProgressView::MediaProgressView(
       paused_foreground_color_id_(paused_foreground_color_id),
       paused_background_color_id_(paused_background_color_id),
       focus_ring_color_id_(focus_ring_color_id),
-      dragging_callback_(std::move(dragging_callback)),
+      drag_state_change_callback_(std::move(drag_state_change_callback)),
+      playback_state_change_for_dragging_callback_(
+          std::move(playback_state_change_for_dragging_callback)),
       seek_callback_(std::move(seek_callback)),
       on_update_progress_callback_(std::move(on_update_progress_callback)),
       slide_animation_(this) {
@@ -98,6 +106,7 @@ MediaProgressView::MediaProgressView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   slide_animation_.SetSlideDuration(kSlideAnimationDuration);
+  foreground_straight_line_width_ = kStrokeWidth;
 }
 
 MediaProgressView::~MediaProgressView() = default;
@@ -195,9 +204,12 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
     canvas->ClipRect(gfx::Rect(0, 0, progress_width, view_height));
     canvas->DrawPath(progress_path, flags);
   } else {
-    // Paint a foreground straight progress line.
-    canvas->DrawLine(gfx::PointF(0, view_height / 2),
-                     gfx::PointF(progress_width, view_height / 2), flags);
+    // Paint a foreground straight progress line with rounded corners.
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    canvas->DrawRoundRect(
+        gfx::RectF(0, (view_height - foreground_straight_line_width_) / 2,
+                   progress_width, foreground_straight_line_width_),
+        foreground_straight_line_width_ / 2, flags);
   }
   canvas->Restore();
 
@@ -391,18 +403,27 @@ void MediaProgressView::OnProgressDragStarted() {
   // Pause the media only once if it is playing when the user starts dragging
   // the progress line.
   if (!is_paused_ && !paused_for_dragging_) {
-    dragging_callback_.Run(/*pause=*/true);
+    playback_state_change_for_dragging_callback_.Run(
+        PlaybackStateChangeForDragging::kPauseForDraggingStarted);
     paused_for_dragging_ = true;
   }
+  // Enlarge the foreground straight progress line width when the user starts
+  // dragging the progress line.
+  foreground_straight_line_width_ = kLargeStrokeWidth;
+  drag_state_change_callback_.Run(DragState::kDragStarted);
 }
 
 void MediaProgressView::OnProgressDragEnded() {
   // Un-pause the media when the user finishes dragging the progress line if the
   // media was playing before dragging.
   if (paused_for_dragging_) {
-    dragging_callback_.Run(/*pause=*/false);
+    playback_state_change_for_dragging_callback_.Run(
+        PlaybackStateChangeForDragging::kResumeForDraggingEnded);
     paused_for_dragging_ = false;
   }
+  // Reset the foreground straight progress line width.
+  foreground_straight_line_width_ = kStrokeWidth;
+  drag_state_change_callback_.Run(DragState::kDragEnded);
 }
 
 void MediaProgressView::HandleSeeking(double location) {

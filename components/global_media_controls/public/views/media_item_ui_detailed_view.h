@@ -38,6 +38,7 @@ namespace global_media_controls {
 
 class MediaActionButton;
 class MediaProgressView;
+enum class PlaybackStateChangeForDragging;
 
 namespace {
 class MediaLabelButton;
@@ -149,9 +150,12 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   // Callback for a media action button being pressed.
   void MediaActionButtonPressed(views::Button* button);
 
-  // Callback for the user dragging the progress view. A playing media should be
-  // temporarily paused when the user is dragging the progress line.
-  void OnProgressDragging(bool pause);
+  // Callback for when the user starts or ends dragging the progress view, and
+  // the media is playing before dragging starts. The media should be
+  // temporarily paused when the dragging starts, and resumed when the dragging
+  // ends.
+  void OnPlaybackStateChangeForProgressDrag(
+      PlaybackStateChangeForDragging change);
 
   // Callback for when the media progress view wants to update the progress
   // position.

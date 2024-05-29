@@ -6,7 +6,6 @@
 
 #include "components/global_media_controls/media_view_utils.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
-#include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -51,6 +50,12 @@ constexpr gfx::Size kBackgroundSize = gfx::Size(400, 150);
 constexpr gfx::Size kArtworkSize = gfx::Size(80, 80);
 constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr gfx::Size kMediaActionButtonSize = gfx::Size(24, 24);
+
+// Buttons with the following media actions should be hidden when the user is
+// dragging the progress view.
+const MediaSessionAction kHiddenMediaActionsWhileDragging[] = {
+    MediaSessionAction::kPreviousTrack, MediaSessionAction::kNextTrack,
+    MediaSessionAction::kSeekForward, MediaSessionAction::kSeekBackward};
 
 }  // namespace
 
@@ -193,8 +198,12 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
           media_color_theme_.paused_progress_foreground_color_id,
           media_color_theme_.paused_progress_background_color_id,
           media_color_theme_.focus_ring_color_id,
-          base::BindRepeating(&MediaItemUIUpdatedView::OnProgressDragging,
-                              base::Unretained(this)),
+          base::BindRepeating(
+              &MediaItemUIUpdatedView::OnProgressDragStateChange,
+              base::Unretained(this)),
+          base::BindRepeating(
+              &MediaItemUIUpdatedView::OnPlaybackStateChangeForProgressDrag,
+              base::Unretained(this)),
           base::BindRepeating(&MediaItemUIUpdatedView::SeekTo,
                               base::Unretained(this)),
           /*on_update_progress_callback=*/base::DoNothing()));
@@ -474,6 +483,11 @@ void MediaItemUIUpdatedView::UpdateMediaActionButtonsVisibility() {
     if (button == picture_in_picture_button_ && footer_view_) {
       should_show = false;
     }
+    if (drag_state_ == DragState::kDragStarted &&
+        base::Contains(kHiddenMediaActionsWhileDragging,
+                       static_cast<MediaSessionAction>(button->GetID()))) {
+      should_show = false;
+    }
     if (should_show != button->GetVisible()) {
       button->SetVisible(should_show);
       should_invalidate_layout = true;
@@ -485,9 +499,17 @@ void MediaItemUIUpdatedView::UpdateMediaActionButtonsVisibility() {
   }
 }
 
-void MediaItemUIUpdatedView::OnProgressDragging(bool pause) {
+void MediaItemUIUpdatedView::OnProgressDragStateChange(DragState drag_state) {
+  drag_state_ = drag_state;
+  UpdateMediaActionButtonsVisibility();
+}
+
+void MediaItemUIUpdatedView::OnPlaybackStateChangeForProgressDrag(
+    PlaybackStateChangeForDragging change) {
   const auto action =
-      (pause ? MediaSessionAction::kPause : MediaSessionAction::kPlay);
+      (change == PlaybackStateChangeForDragging::kPauseForDraggingStarted
+           ? MediaSessionAction::kPause
+           : MediaSessionAction::kPlay);
   item_->OnMediaSessionActionButtonPressed(action);
 }
 

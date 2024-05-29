@@ -9,6 +9,7 @@
 #include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
+#include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/notification_theme.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -30,7 +31,6 @@ class Label;
 namespace global_media_controls {
 
 class MediaItemUIObserver;
-class MediaProgressView;
 
 // MediaItemUIUpdatedView holds the media information and playback controls for
 // a media session or cast session. This will be displayed within
@@ -116,9 +116,15 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   // actions are enabled.
   void UpdateMediaActionButtonsVisibility();
 
-  // Callback for the user dragging the progress view. A playing media should be
-  // temporarily paused when the user is dragging the progress line.
-  void OnProgressDragging(bool pause);
+  // Callback for when the user starts or ends dragging the progress view.
+  void OnProgressDragStateChange(DragState drag_state);
+
+  // Callback for when the user starts or ends dragging the progress view, and
+  // the media is playing before dragging starts. The media should be
+  // temporarily paused when the dragging starts, and resumed when the dragging
+  // ends.
+  void OnPlaybackStateChangeForProgressDrag(
+      PlaybackStateChangeForDragging change);
 
   // Callback for when the media progress view wants to update the progress
   // position.
@@ -132,6 +138,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
 
   // Whether the media is currently in picture-in-picture.
   bool in_picture_in_picture_ = false;
+
+  // Whether the user is currently dragging the progress view.
+  DragState drag_state_ = DragState::kDragEnded;
 
   // Set of enabled media session actions that are used to decide media action
   // button visibilities.

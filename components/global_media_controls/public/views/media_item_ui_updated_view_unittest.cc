@@ -301,4 +301,82 @@ TEST_F(MediaItemUIUpdatedViewTest, FooterViewCheck) {
   EXPECT_EQ(footer_ptr, view()->GetFooterForTesting());
 }
 
+TEST_F(MediaItemUIUpdatedViewTest, DragProgressForPlayingMedia) {
+  EnableAllMediaActions();
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view()->UpdateWithMediaPosition(media_position);
+  auto* progress_view = view()->GetProgressViewForTesting();
+
+  // Starts dragging the progress view should pause the media.
+  gfx::Point point(progress_view->width() / 2, progress_view->height() / 2);
+  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(item(), SeekTo(testing::_));
+  EXPECT_CALL(item(),
+              OnMediaSessionActionButtonPressed(MediaSessionAction::kPause));
+  progress_view->OnMousePressed(pressed_event);
+
+  // Starts dragging should hide these media action buttons.
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kPreviousTrack));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kNextTrack));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSeekForward));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
+
+  // Ends dragging the progress view should resume the media.
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(item(), SeekTo(testing::_));
+  EXPECT_CALL(item(),
+              OnMediaSessionActionButtonPressed(MediaSessionAction::kPlay));
+  progress_view->OnMouseReleased(released_event);
+
+  // Ends dragging should show these media action buttons.
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kPreviousTrack));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kNextTrack));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekForward));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
+}
+
+TEST_F(MediaItemUIUpdatedViewTest, DragProgressForPausedMedia) {
+  EnableAllMediaActions();
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view()->UpdateWithMediaPosition(media_position);
+  auto* progress_view = view()->GetProgressViewForTesting();
+
+  // Starts dragging the progress view.
+  gfx::Point point(progress_view->width() / 2, progress_view->height() / 2);
+  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(item(), SeekTo(testing::_));
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(testing::_)).Times(0);
+  progress_view->OnMousePressed(pressed_event);
+
+  // Starts dragging should hide these media action buttons.
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kPreviousTrack));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kNextTrack));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSeekForward));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
+
+  // Ends dragging the progress view.
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(item(), SeekTo(testing::_));
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(testing::_)).Times(0);
+  progress_view->OnMouseReleased(released_event);
+
+  // Ends dragging should show these media action buttons.
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kPreviousTrack));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kNextTrack));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekForward));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
+}
+
 }  // namespace global_media_controls
