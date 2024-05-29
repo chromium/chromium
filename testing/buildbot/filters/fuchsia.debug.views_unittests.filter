@@ -3,6 +3,10 @@
 -All/TableViewTest.TableHeaderColumnAccessibleViewsFocusable/1
 -All/TableViewTest.TableHeaderColumnAccessibleViewsFocusable/2
 -All/TableViewTest.TableHeaderColumnAccessibleViewsFocusable/3
+-All/TableViewTest.TableHeaderRowAccessibleViewFocusable/0
+-All/TableViewTest.TableHeaderRowAccessibleViewFocusable/1
+-All/TableViewTest.TableHeaderRowAccessibleViewFocusable/2
+-All/TableViewTest.TableHeaderRowAccessibleViewFocusable/3
 -BubbleDialogDelegateViewTest.BubbleMetrics
 -BubbleFrameViewTest.IgnorePossiblyUnintendedClicksAnchorBoundsChanged
 -DialogClientViewTest.IgnorePossiblyUnintendedClicks_ClickAfterClosingTooltip
