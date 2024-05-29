@@ -29,6 +29,24 @@ bool ShouldSkipInvisibleTextAt(const Text& text,
   return layout_object->Style()->Visibility() != EVisibility::kVisible;
 }
 
+String TextIgnoringCSSTextTransforms(const LayoutText& layout_text,
+                                     const OffsetMappingUnit& unit) {
+  String text = layout_text.OriginalText();
+  text = text.Substring(unit.DOMStart(), unit.DOMEnd() - unit.DOMStart());
+  // Per the white space processing spec
+  // https://drafts.csswg.org/css-text-3/#white-space-processing,
+  // collapsed spaces should be ignored completely and this is assured since
+  // |ComputeTextAndOffsetsForEmission| is not called for kCollapsed unit.
+  // Preserved whitespaces can be represented as-is.
+  // Non-preserved newline or tab characters should be converted into a space
+  // to reflect what the user sees on the screen
+  if (!layout_text.StyleRef().ShouldPreserveBreaks()) {
+    text.Replace(kNewlineCharacter, kSpaceCharacter);
+    text.Replace(kTabulationCharacter, kSpaceCharacter);
+  }
+  return text;
+}
+
 struct StringAndOffsetRange {
   String string;
   unsigned start;
@@ -42,14 +60,24 @@ StringAndOffsetRange ComputeTextAndOffsetsForEmission(
   StringAndOffsetRange result{mapping.GetText(), unit.TextContentStart(),
                               unit.TextContentEnd()};
 
+  // This is ensured because |unit.GetLayoutObject()| must be the
+  // LayoutObject for TextIteratorTextNodeHandler's |text_node_|.
+  DCHECK(IsA<LayoutText>(unit.GetLayoutObject()));
+  const LayoutText& layout_text = To<LayoutText>(unit.GetLayoutObject());
+
+  // |TextIgnoringCSSTextTransforms| gets |layout_text.OriginalText()|
+  // which is not masked. This should not be allowed when
+  // |-webkit-text-security| property is set.
+  if (behavior.IgnoresCSSTextTransforms() && layout_text.HasTextTransform() &&
+      !layout_text.IsSecure()) {
+    result.string = TextIgnoringCSSTextTransforms(layout_text, unit);
+    result.start = 0;
+    result.end = result.string.length();
+  }
+
   if (behavior.EmitsOriginalText()) {
-    // This is ensured because |unit.GetLayoutObject()| must be the
-    // LayoutObject for TextIteratorTextNodeHandler's |text_node_|.
-    DCHECK(IsA<LayoutText>(unit.GetLayoutObject()));
-    result.string =
-        To<LayoutText>(unit.GetLayoutObject())
-            .OriginalText()
-            .Substring(unit.DOMStart(), unit.DOMEnd() - unit.DOMStart());
+    result.string = layout_text.OriginalText().Substring(
+        unit.DOMStart(), unit.DOMEnd() - unit.DOMStart());
     result.start = 0;
     result.end = result.string.length();
   }

@@ -7,10 +7,11 @@
 test(() => {
     assert_not_equals(window.testRunner, undefined,
         'This test requires testRunner to read/write clipboard.');
+
     assert_selection(
         [
             '<div contenteditable>',
-                '<span style="text-transform: capitalize;">^foo|</span>',
+                '<span style="text-transform: capitalize;">^this should not be capitalized|</span>',
                 '<span id="target">bar</span>',
             '</div>',
         ].join(''),
@@ -22,9 +23,33 @@ test(() => {
         },
         [
             '<div contenteditable>',
-                '<span style="text-transform: capitalize;">foo</span>',
-                '<span id="target">barFoo|</span>',
+                '<span style="text-transform: capitalize;">this should not be capitalized</span>',
+                '<span id="target">barthis should not be capitalized|</span>',
             '</div>',
         ].join(''));
-    }, 'text-transform should affect text in clipboard');
+    }, 'text-transform should not affect plain text copy');
+test(() => {
+    assert_not_equals(window.testRunner, undefined,
+        'This test requires testRunner to read/write clipboard.');
+
+    assert_selection(
+        [
+            '<div contenteditable>',
+                '<span style="text-transform: capitalize;">^\u00DF|</span>',
+                '<span id="target">Paste here:</span>',
+            '</div>',
+        ].join(''),
+        selection => {
+            selection.document.execCommand('copy');
+            let target = selection.document.getElementById('target');
+            selection.collapse(target, 1);
+            selection.document.execCommand('pasteAndMatchStyle');
+        },
+        [
+            '<div contenteditable>',
+                '<span style="text-transform: capitalize;">\u00DF</span>',
+                '<span id="target">Paste here:\u00DF|</span>',
+            '</div>',
+        ].join(''));
+    }, 'copy where text-transform changes the length of the text');
 </script>

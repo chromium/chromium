@@ -234,6 +234,12 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     NOT_DESTROYED();
     return StyleRef().TextSecurity() != ETextSecurity::kNone;
   }
+
+  bool HasTextTransform() const {
+    NOT_DESTROYED();
+    return StyleRef().TextTransform() != ETextTransform::kNone;
+  }
+
   void MomentarilyRevealLastTypedCharacter(
       unsigned last_typed_character_offset);
 

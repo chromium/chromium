@@ -61,7 +61,10 @@ function testCopyAndPasteTexts(fromDocument, fromName, toDocument, toName)
             var expectedLeadingString = "\\\\ from ";
             if (fromElementName == "secure")
                 expectedLeadingString = "•••••••";
-            else if (fromElementName == "transform")
+            // Plain text is copied to input element whereas HTML text is copied to span element. 
+            // 'element.innerText' returns transformed text if text-transform is present...
+            // So we only need to transform the expected string to upper case for span element
+            else if (fromElementName == "transform" && toElementNameSuffix == "content-editable")
                 expectedLeadingString = expectedLeadingString.toUpperCase();
             if (actualText.search(expectedLeadingString) != 0)
                 result = "FAIL: the actual text was '" + actualText + "' (char code of the first character was " + actualText.charCodeAt(0) + ")";
