@@ -1600,7 +1600,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool cached_can_set_focus_attribute_ : 1 = false;
 
   Member<AXObject> cached_live_region_root_;
-  gfx::RectF cached_local_bounding_box_rect_for_accessibility_;
+  gfx::RectF cached_local_bounding_box_;
 
   Member<AXObjectCacheImpl> ax_object_cache_;
 

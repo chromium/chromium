@@ -3283,7 +3283,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   }
 
   if (GetLayoutObject() && GetLayoutObject()->IsText()) {
-    cached_local_bounding_box_rect_for_accessibility_ =
+    cached_local_bounding_box_ =
         GetLayoutObject()->LocalBoundingBoxRectForAccessibility();
   }
 
@@ -6764,7 +6764,7 @@ gfx::RectF AXObject::LocalBoundingBoxRectForAccessibility() {
   DCHECK(GetLayoutObject()->IsText());
   CHECK(!cached_values_need_update_ || !AXObjectCache().IsFrozen());
   UpdateCachedAttributeValuesIfNeeded();
-  return cached_local_bounding_box_rect_for_accessibility_;
+  return cached_local_bounding_box_;
 }
 
 PhysicalRect AXObject::GetBoundsInFrameCoordinates() const {
