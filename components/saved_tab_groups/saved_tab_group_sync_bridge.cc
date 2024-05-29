@@ -137,8 +137,15 @@ SavedTabGroup SpecificsToSavedTabGroup(
       TimeFromWindowsEpochMicros(specific.creation_time_windows_epoch_micros());
   const base::Time update_time =
       TimeFromWindowsEpochMicros(specific.update_time_windows_epoch_micros());
-  SavedTabGroup group = SavedTabGroup(title, color, {}, position, guid,
-                                      std::nullopt, creation_time);
+  std::optional<std::string> originator_cache_guid = std::nullopt;
+  if (specific.group().has_originator_cache_guid()) {
+    originator_cache_guid = specific.group().originator_cache_guid();
+  }
+
+  SavedTabGroup group =
+      SavedTabGroup(title, color, {}, position, guid,
+                    /*local_group_guid=*/std::nullopt,
+                    std::move(originator_cache_guid), creation_time);
   group.SetUpdateTimeWindowsEpochMicros(update_time);
 
   return group;
@@ -160,6 +167,9 @@ sync_pb::SavedTabGroupSpecifics SavedTabGroupToSpecifics(
   sync_pb::SavedTabGroup* pb_group = pb_specific.mutable_group();
   pb_group->set_color(TabGroupColorToSyncColor(group.color()));
   pb_group->set_title(base::UTF16ToUTF8(group.title()));
+  if (group.originator_cache_guid().has_value()) {
+    pb_group->set_originator_cache_guid(group.originator_cache_guid().value());
+  }
 
   if (group.position().has_value()) {
     if (IsTabGroupsSaveUIUpdateEnabled()) {
@@ -273,6 +283,20 @@ std::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeFullSyncData(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
   std::set<std::string> synced_items;
+
+  // MergeFullSyncData is the first command called when the user signs in/or
+  // turns sync on. When this happens, a cache guid  will be added to the
+  // metadata of the change processor. This cache guid should be used on all
+  // groups that previously didnt have a cache guid attached.
+  CHECK(change_processor()->IsTrackingMetadata());
+  std::set<base::Uuid> updated_group_ids =
+      model_->UpdateLocalCacheGuid(std::nullopt, GetLocalCacheGuid());
+
+  for (const base::Uuid& saved_guid : updated_group_ids) {
+    sync_pb::SavedTabGroupSpecifics specifics =
+        SavedTabGroupToSpecifics(*model_->Get(saved_guid));
+    write_batch->WriteData(specifics.guid(), specifics.SerializeAsString());
+  }
 
   // Merge sync to local data.
   for (const auto& change : entity_changes) {
@@ -518,6 +542,13 @@ void SavedTabGroupSyncBridge::SavedTabGroupReorderedLocally() {
   store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
 }
 
+std::optional<std::string> SavedTabGroupSyncBridge::GetLocalCacheGuid() {
+  if (!change_processor()->IsTrackingMetadata()) {
+    return std::nullopt;
+  }
+  return change_processor()->TrackedCacheGuid();
+}
+
 // static
 SavedTabGroup SavedTabGroupSyncBridge::SpecificsToSavedTabGroupForTest(
     const sync_pb::SavedTabGroupSpecifics& specifics) {
@@ -583,6 +614,10 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
           group_guid, base::UTF8ToUTF16(specifics.group().title()),
           SyncColorToTabGroupColor(specifics.group().color()),
           GroupPositionFromSpecifics(specifics),
+          specifics.group().has_originator_cache_guid()
+              ? std::make_optional<std::string>(
+                    specifics.group().originator_cache_guid())
+              : std::nullopt,
           TimeFromWindowsEpochMicros(
               specifics.update_time_windows_epoch_micros()));
       sync_pb::SavedTabGroupSpecifics updated_specifics =

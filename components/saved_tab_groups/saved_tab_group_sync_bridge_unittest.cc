@@ -210,8 +210,16 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncData) {
 // Verify merging with preexisting data in the model merges the correct
 // elements.
 TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
+  // Force the cache guid to return the same value as the groups, reflecting
+  // that the processor cache guid is the "originator".
+  std::string cache_guid = "cache_guid";
+  ON_CALL(processor_, TrackedCacheGuid())
+      .WillByDefault(testing::Return(cache_guid));
+
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/std::nullopt);
+                      /*position=*/std::nullopt, /*saved_guid=*/std::nullopt,
+                      /*local_group_guid=*/std::nullopt,
+                      /*originator_cache_guid=*/cache_guid);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
                          group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
@@ -233,7 +241,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   // Create an updated version of `group` using the same creation time and 1
   // less tab.
   SavedTabGroup updated_group(u"New Title", tab_groups::TabGroupColorId::kPink,
-                              {}, /*position=*/0, group_guid, std::nullopt,
+                              {}, /*position=*/0, /*saved_guid=*/group_guid,
+                              /*local_group_guid=*/std::nullopt, cache_guid,
                               group_creation_time);
   SavedTabGroupTab updated_tab_1(GURL("https://support.google.com"), u"Support",
                                  group_guid, /*position=*/0, tab_1_guid,
@@ -917,6 +926,19 @@ TEST_F(SavedTabGroupSyncBridgeTest, ReorderGroupLocally) {
   EXPECT_CALL(processor_, Put(group_2_guid.AsLowercaseString(), _, _));
 
   saved_tab_group_model_.ReorderGroupLocally(group_guid, 1);
+}
+
+// Verify that pulling the cache guid works.
+TEST_F(SavedTabGroupSyncBridgeTest, Group) {
+  const std::string expected_guid = "cache_guid";
+  ON_CALL(processor_, TrackedCacheGuid())
+      .WillByDefault(testing::Return(expected_guid));
+
+  ASSERT_TRUE(processor_.IsTrackingMetadata());
+  ASSERT_EQ(processor_.TrackedCacheGuid(), expected_guid);
+
+  std::optional<std::string> maybe_cache_guid = bridge_->GetLocalCacheGuid();
+  EXPECT_EQ(maybe_cache_guid, expected_guid);
 }
 
 }  // namespace tab_groups

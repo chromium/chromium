@@ -232,4 +232,24 @@ TEST(SavedTabGroupTest, PinAndUnpin) {
   EXPECT_FALSE(group.position().has_value());
 }
 
+// Test updating the cache guid.
+TEST(SavedTabGroupTest, UpdateOriginatorCacheGuid) {
+  std::string cache_guid_1 = "new_guid_1";
+  std::string cache_guid_2 = "new_guid_2";
+  SavedTabGroup group = CreateDefaultEmptySavedTabGroup();
+
+  // Saved Tab Group should have position after pin.
+  auto old_update_time = group.update_time_windows_epoch_micros();
+  ASSERT_EQ(group.originator_cache_guid(), std::nullopt);
+  group.SetOriginatorCacheGuid(cache_guid_1);
+  EXPECT_EQ(group.originator_cache_guid(), cache_guid_1);
+  EXPECT_NE(group.update_time_windows_epoch_micros(), old_update_time);
+
+  // cache guid should update if its already set.
+  old_update_time = group.update_time_windows_epoch_micros();
+  group.SetOriginatorCacheGuid(cache_guid_2);
+  EXPECT_EQ(group.originator_cache_guid(), cache_guid_2);
+  EXPECT_NE(group.update_time_windows_epoch_micros(), old_update_time);
+}
+
 }  // namespace tab_groups

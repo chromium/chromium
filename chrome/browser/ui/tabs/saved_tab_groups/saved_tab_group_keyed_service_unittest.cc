@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -65,7 +66,8 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
  private:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    service_ = std::make_unique<SavedTabGroupKeyedService>(profile_.get());
+    service_ = SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+        profile_.get());
   }
   void TearDown() override {
     for (auto& browser : browsers_) {
@@ -76,7 +78,7 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
 
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<SavedTabGroupKeyedService> service_;
+  raw_ptr<SavedTabGroupKeyedService> service_;
 
   std::vector<std::unique_ptr<Browser>> browsers_;
 };
