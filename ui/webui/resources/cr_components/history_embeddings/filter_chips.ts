@@ -60,6 +60,7 @@ export class HistoryEmbeddingsFilterChips extends PolymerElement {
 
   static get properties() {
     return {
+      enableShowResultsByGroupOption: Boolean,
       timeRangeStart: {
         type: Object,
         observer: 'onTimeRangeStartChanged_',
@@ -80,6 +81,7 @@ export class HistoryEmbeddingsFilterChips extends PolymerElement {
     };
   }
 
+  enableShowResultsByGroupOption: boolean;
   selectedSuggestion?: Suggestion;
   showResultsByGroup: boolean;
   private suggestions_: Suggestion[];

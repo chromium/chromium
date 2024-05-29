@@ -9,7 +9,7 @@ import type {HistoryEmbeddingsFilterChips, Suggestion} from 'chrome://resources/
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('cr-history-embeddings-filter-chips', () => {
   let element: HistoryEmbeddingsFilterChips;
@@ -24,8 +24,16 @@ suite('cr-history-embeddings-filter-chips', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     element = document.createElement('cr-history-embeddings-filter-chips');
+    element.enableShowResultsByGroupOption = true;
     document.body.appendChild(element);
     return flushTasks();
+  });
+
+  test('TogglesVisbilityOfShowResultsByGroupOption', () => {
+    element.enableShowResultsByGroupOption = false;
+    assertFalse(isVisible(element.$.showByGroupSelectMenu));
+    element.enableShowResultsByGroupOption = true;
+    assertTrue(isVisible(element.$.showByGroupSelectMenu));
   });
 
   test('UpdatesShowByMenuByBinding', () => {

@@ -26,7 +26,8 @@ hr {
 
 <select id="showByGroupSelectMenu" class="md-select"
     value="[[showResultsByGroup]]"
-    on-change="onShowByGroupSelectMenuChanged_">
+    on-change="onShowByGroupSelectMenuChanged_"
+    hidden$="[[!enableShowResultsByGroupOption]]">
   <option value="false">
     $i18n{historyEmbeddingsShowByDate}
   </option>
@@ -35,7 +36,7 @@ hr {
   </option>
 </select>
 
-<hr></hr>
+<hr hidden$="[[!enableShowResultsByGroupOption]]"></hr>
 
 <div id="suggestions">
   <template is="dom-repeat" items="[[suggestions_]]">
