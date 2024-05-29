@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/task/task_traits.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
