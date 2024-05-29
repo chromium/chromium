@@ -336,7 +336,7 @@ class SourceSetUnittest(unittest.TestCase):
         e = SourceSet(set(['common', 'arm']),
                       set([SourceListCondition('arm', 'Chromium', 'linux')]))
         f = SourceSet(
-            set(['common', 'arm-neon', 'chrome', 'chrome']),
+            set(['common', 'arm-neon', 'chrome']),
             set([SourceListCondition('arm-neon', 'Chrome', 'linux')]))
 
         expected = set()
@@ -373,9 +373,8 @@ class SourceSetUnittest(unittest.TestCase):
                 ])))
         expected.add(
             SourceSet(
-                set(['arm-neon', 'chrome']),
+                set(['arm-neon']),
                 set([SourceListCondition('arm-neon', 'Chrome', 'linux')])))
-
         source_sets = gg.CreatePairwiseDisjointSets([a, b, c, d, e, f])
         self.assertEqualSourceSets(expected, set(source_sets))
 

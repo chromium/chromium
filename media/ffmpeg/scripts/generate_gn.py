@@ -38,8 +38,6 @@ import subprocess
 import sys
 from robo_lib import config
 
-# The test wrapper doesn't appreciate the status messages.
-ROBO_CONFIGURATION = config.RoboConfiguration(quiet=True)
 
 COPYRIGHT = """# Copyright %d The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -577,17 +575,27 @@ def ParseOptions():
   """
     parser = optparse.OptionParser(usage='usage: %prog [options] DIR')
 
+    # The test wrapper doesn't appreciate the status messages.
+    ffmpeg_home = ffmpeg_src = ''
+    try:
+        # This may fail on CQ bots, but we don't care since its just for defaults.
+        ROBO_CONFIGURATION = config.RoboConfiguration(quiet=True)
+        ffmpeg_src = ROBO_CONFIGURATION.ffmpeg_src()
+        ffmpeg_home = ROBO_CONFIGURATION.ffmpeg_home()
+    except:
+        pass
+
     parser.add_option('-s',
                       '--source_dir',
                       dest='source_dir',
-                      default=ROBO_CONFIGURATION.ffmpeg_src(),
+                      default=ffmpeg_src,
                       metavar='DIR',
                       help='FFmpeg source directory.')
 
     parser.add_option('-b',
                       '--build_dir',
                       dest='build_dir',
-                      default=ROBO_CONFIGURATION.ffmpeg_home(),
+                      default=ffmpeg_home,
                       metavar='DIR',
                       help='Build root containing build.x64.linux, etc...')
 
