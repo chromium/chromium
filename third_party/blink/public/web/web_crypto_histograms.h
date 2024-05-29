@@ -125,4 +125,4 @@ HistogramDeriveBitsTruncation(ExecutionContext*,
                               WebCryptoWarningType);
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CRYPTO_HISTOGRAMS_H
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CRYPTO_HISTOGRAMS_H_

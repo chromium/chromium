@@ -192,4 +192,4 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
 }  // namespace blink::scheduler
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_TASK_ATTRIBUTION_TRACKER_H_

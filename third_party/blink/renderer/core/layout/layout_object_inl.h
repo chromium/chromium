@@ -52,4 +52,4 @@ void LayoutObject::MarkContainerChainForOverflowRecalcIfNeeded(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_OBJECT_INL_H_

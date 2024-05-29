@@ -64,4 +64,4 @@ class ScopedOldDocumentInfoForCommitCapturer {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOADER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_OLD_DOCUMENT_INFO_FOR_COMMIT_H_

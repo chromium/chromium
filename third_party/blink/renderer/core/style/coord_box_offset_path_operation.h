@@ -30,4 +30,4 @@ struct DowncastTraits<CoordBoxOffsetPathOperation> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_COORD_BOX_SHAPE_OFFSET_PATH_OPERATION_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COORD_BOX_OFFSET_PATH_OPERATION_H_

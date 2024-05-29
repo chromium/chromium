@@ -86,4 +86,4 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
 }  // namespace blink::scheduler
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_

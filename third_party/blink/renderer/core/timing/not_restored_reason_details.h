@@ -30,5 +30,4 @@ class CORE_EXPORT NotRestoredReasonDetails : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // #define
-        // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_NOT_RESTORED_REASON_DETAILS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_NOT_RESTORED_REASON_DETAILS_H_

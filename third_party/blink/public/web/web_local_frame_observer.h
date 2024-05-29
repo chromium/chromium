@@ -50,4 +50,4 @@ class BLINK_EXPORT WebLocalFrameObserver : public base::CheckedObserver {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_OBSERVER_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_LOCAL_FRAME_OBSERVER_H_

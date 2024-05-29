@@ -83,4 +83,4 @@ class PLATFORM_EXPORT ScopedRasterTimer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SCOPED_RASTER_TIMER_H_

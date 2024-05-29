@@ -72,4 +72,4 @@ class CORE_EXPORT CanvasPerformanceMonitor
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_PERFORMANCE_MONITOR_H_

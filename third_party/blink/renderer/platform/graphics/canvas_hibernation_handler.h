@@ -133,4 +133,4 @@ class PLATFORM_EXPORT HibernatedCanvasMemoryDumpProvider
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_HIBERNATION_HANDLER_H_

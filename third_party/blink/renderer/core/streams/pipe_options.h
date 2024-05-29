@@ -35,4 +35,4 @@ class PipeOptions : public GarbageCollected<PipeOptions> {
 
 }  // namespace blink
 
-#endif  // LOCAL_GOOGLE_HOME_NIDHIJAJU_CHROMIUM_SRC_THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_PIPE_OPTIONS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_PIPE_OPTIONS_H_
