@@ -50,6 +50,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="No extended advertising support"/>
   <int value="2" label="Adapter RegisterAdvertisement failed"/>
+  <int value="3" label="Failed to register GATT services in GATT server"/>
 </enum>
 
 <enum name="NearbyConnectionsStartScanningFailureReason">

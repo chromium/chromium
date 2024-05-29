@@ -159,6 +159,13 @@ bool BleV2Medium::StartAdvertising(
           << __func__
           << ": failed register GATT Services before starting advertising; "
              "stopping advertising";
+      metrics::RecordStartAdvertisingResult(
+          /*success=*/false,
+          /*is_extended_advertisement=*/false);
+      metrics::RecordStartAdvertisingFailureReason(
+          /*reason=*/metrics::StartAdvertisingFailureReason::
+              kFailedToRegisterGattServices,
+          /*is_extended_advertisement=*/false);
       return false;
     }
   }

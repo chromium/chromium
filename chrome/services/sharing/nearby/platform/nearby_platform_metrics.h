@@ -16,7 +16,8 @@ enum class StartAdvertisingFailureReason {
   kUnknown = 0,
   kNoExtendedAdvertisementSupport = 1,
   kAdapterRegisterAdvertisementFailed = 2,
-  kMaxValue = kAdapterRegisterAdvertisementFailed,
+  kFailedToRegisterGattServices = 3,
+  kMaxValue = kFailedToRegisterGattServices,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

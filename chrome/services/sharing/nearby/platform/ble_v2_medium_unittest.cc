@@ -796,6 +796,12 @@ TEST_F(BleV2MediumTest, StartAdvertising_RegisterGattServer_Success) {
                          base::Unretained(this), /*expected_result=*/true),
           run_loop.QuitClosure());
   run_loop.Run();
+
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Success=*/1, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Connections.BleV2.StartAdvertising.FailureReason", 0);
 }
 
 TEST_F(BleV2MediumTest, StartAdvertising_RegisterGattServer_Failure) {
@@ -814,6 +820,17 @@ TEST_F(BleV2MediumTest, StartAdvertising_RegisterGattServer_Failure) {
                          base::Unretained(this), /*expected_result=*/false),
           run_loop.QuitClosure());
   run_loop.Run();
+
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result."
+      "RegularAdvertisement",
+      /*bucket: Failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.FailureReason",
+      metrics::StartAdvertisingFailureReason::kFailedToRegisterGattServices, 1);
 }
 
 TEST_F(BleV2MediumTest, ConnectToGattServer_Success) {
