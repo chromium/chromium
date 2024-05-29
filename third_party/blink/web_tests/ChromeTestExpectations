@@ -30,7 +30,7 @@ crbug.com/1512119 external/wpt/webdriver/tests/classic/perform_actions/pointer_t
 
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/webdriver/tests/bidi/input/perform_actions/invalid.py [ Timeout ]
+crbug.com/343338108 external/wpt/webdriver/tests/bidi/input/perform_actions/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_clear/clear.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/perform_actions/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_send_keys/send_keys.py [ Failure ]
