@@ -289,6 +289,10 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   network::mojom::IpProtectionProxyBypassPolicy
   GetIpProtectionProxyBypassPolicy() override;
   bool WillProvidePublicFirstPartySets() override;
+  bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
+                                 content::RenderFrameHost* rfh,
+                                 const GURL& url,
+                                 const blink::StorageKey& storage_key) override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;

@@ -1109,8 +1109,11 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns whether cookies should be allowed for requests to `url`, fetched
   // from contexts whose storage is keyed on `storage_key`.
+  // A valid `rfh` pointer must be passed in unless the request is coming from a
+  // service worker.
   virtual bool IsFullCookieAccessAllowed(
       content::BrowserContext* browser_context,
+      content::RenderFrameHost* rfh,
       const GURL& url,
       const blink::StorageKey& storage_key);
 

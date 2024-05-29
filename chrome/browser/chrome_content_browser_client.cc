@@ -3524,6 +3524,7 @@ bool ChromeContentBrowserClient::IsCookieDeprecationLabelAllowedForContext(
 
 bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
     const GURL& url,
     const blink::StorageKey& storage_key) {
   Profile* profile = Profile::FromBrowserContext(browser_context);

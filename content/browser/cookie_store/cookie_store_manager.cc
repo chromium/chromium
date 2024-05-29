@@ -613,7 +613,7 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
 
               if (content_browser_client && !change.cookie.IsPartitioned() &&
                   !content_browser_client->IsFullCookieAccessAllowed(
-                      browser_context, registration->scope(),
+                      browser_context, /*rfh=*/nullptr, registration->scope(),
                       registration->key())) {
                 return;
               }

@@ -634,6 +634,7 @@ bool ContentBrowserClient::IsCookieDeprecationLabelAllowedForContext(
 
 bool ContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
     const GURL& url,
     const blink::StorageKey& storage_key) {
   return true;

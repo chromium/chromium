@@ -697,9 +697,8 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
         static_cast<ui::PageTransition>(request.transition_type),
         ui::PAGE_TRANSITION_RELOAD);
     if (is_load_url || is_go_back_forward || is_reload) {
-      result.push_back(
-          std::make_unique<AwURLLoaderThrottle>(static_cast<AwBrowserContext*>(
-              browser_context)));
+      result.push_back(std::make_unique<AwURLLoaderThrottle>(
+          static_cast<AwBrowserContext*>(browser_context)));
     }
   }
 
@@ -1356,4 +1355,21 @@ bool AwContentBrowserClient::WillProvidePublicFirstPartySets() {
       switches::kWebViewFpsComponent);
 }
 
+bool AwContentBrowserClient::IsFullCookieAccessAllowed(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const GURL& url,
+    const blink::StorageKey& storage_key) {
+  if (!rfh) {
+    // We do not allow third-party cookie access from service workers.
+    return false;
+  }
+  WebContents* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
+  if (!aw_settings) {
+    return false;
+  }
+
+  return aw_settings->GetAllowThirdPartyCookies();
+}
 }  // namespace android_webview
