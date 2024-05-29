@@ -230,8 +230,15 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_main) {
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/343368219): Flaky on Windows 10 x64 builds.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)
+#define MAYBE_InvokeUi_main_upgrade_available \
+  DISABLED_InvokeUi_main_upgrade_available
+#else
+#define MAYBE_InvokeUi_main_upgrade_available InvokeUi_main_upgrade_available
+#endif
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
-                       InvokeUi_main_upgrade_available) {
+                       MAYBE_InvokeUi_main_upgrade_available) {
   UpgradeDetector::GetInstance()->set_upgrade_notification_stage_for_testing(
       UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL);
   UpgradeDetector::GetInstance()->NotifyUpgradeForTesting();
