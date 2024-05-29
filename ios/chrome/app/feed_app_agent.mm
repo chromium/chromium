@@ -109,8 +109,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     }
 
     if ((!IsFirstRunRecent(base::Days(30)) &&
-         isContentNotificationProvisionalEnabled) ||
-        IsContentPushNotificationsProvisionalBypass()) {
+         isContentNotificationProvisionalEnabled)) {
       // This method does not show a UI prompt to the user. Provisional
       // notifications are authorized without any user input if the user hasn't
       // previously disabled notifications.

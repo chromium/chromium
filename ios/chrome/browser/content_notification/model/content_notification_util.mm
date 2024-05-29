@@ -174,10 +174,6 @@ bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
   BOOL is_signed_in = auth_service && auth_service->HasPrimaryIdentity(
                                           signin::ConsentLevel::kSignin);
 
-  if (is_signed_in && IsContentPushNotificationsProvisionalBypass()) {
-    return true;
-  }
-
   const TemplateURL* default_search_url_template =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state)
           ->GetDefaultSearchProvider();
@@ -194,10 +190,6 @@ bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
 bool IsContentNotificationEnabled(bool user_signed_in,
                                   bool default_search_engine,
                                   PrefService* pref_service) {
-  if (user_signed_in && IsContentPushNotificationsProvisionalBypass()) {
-    return true;
-  }
-
   // Make sure all enabled types are checked since more than one types can be
   // enabled, and the UMA will only be active after checking the pref.
   bool promo_enabled = IsContentNotificationPromoEnabled(
