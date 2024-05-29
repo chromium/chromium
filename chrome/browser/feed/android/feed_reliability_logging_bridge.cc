@@ -5,11 +5,13 @@
 #include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
 #include "base/android/jni_android.h"
 #include "base/time/time.h"
-#include "chrome/browser/feed/android/jni_headers/FeedReliabilityLoggingBridge_jni.h"
 #include "components/feed/core/v2/public/types.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/feed/android/jni_headers/FeedReliabilityLoggingBridge_jni.h"
 
 namespace feed {
 namespace android {

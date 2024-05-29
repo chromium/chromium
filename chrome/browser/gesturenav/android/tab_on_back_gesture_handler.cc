@@ -4,12 +4,14 @@
 
 #include "chrome/browser/gesturenav/android/tab_on_back_gesture_handler.h"
 
-#include "chrome/browser/gesturenav/android/jni_headers/TabOnBackGestureHandler_jni.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/geometry/point_f.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/gesturenav/android/jni_headers/TabOnBackGestureHandler_jni.h"
 
 namespace gesturenav {
 

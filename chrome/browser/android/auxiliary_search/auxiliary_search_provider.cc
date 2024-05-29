@@ -23,7 +23,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "url/url_constants.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/AuxiliarySearchBridge_jni.h"
 
 using base::android::ToJavaByteArray;

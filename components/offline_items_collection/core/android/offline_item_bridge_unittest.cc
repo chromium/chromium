@@ -5,8 +5,10 @@
 #include "components/offline_items_collection/core/android/offline_item_bridge.h"
 
 #include "base/android/jni_android.h"
-#include "components/offline_items_collection/core/native_j_unittests_jni_headers/OfflineItemBridgeUnitTest_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/offline_items_collection/core/native_j_unittests_jni_headers/OfflineItemBridgeUnitTest_jni.h"
 
 using base::android::AttachCurrentThread;
 

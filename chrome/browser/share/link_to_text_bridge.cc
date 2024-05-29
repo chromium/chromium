@@ -4,11 +4,13 @@
 
 #include <jni.h>
 
-#include "chrome/android/chrome_jni_headers/LinkToTextBridge_jni.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/LinkToTextBridge_jni.h"
 
 using shared_highlighting::LinkGenerationReadyStatus;
 using shared_highlighting::LinkGenerationStatus;

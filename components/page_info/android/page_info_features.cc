@@ -4,8 +4,10 @@
 
 #include "base/android/jni_string.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/page_info/android/jni_headers/PageInfoFeatures_jni.h"
 #include "components/page_info/core/features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/page_info/android/jni_headers/PageInfoFeatures_jni.h"
 
 namespace page_info {
 

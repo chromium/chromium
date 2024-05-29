@@ -5,8 +5,10 @@
 #include "chrome/browser/safe_browsing/android/safe_browsing_settings_launcher_android.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/SafeBrowsingSettingsLauncher_jni.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/SafeBrowsingSettingsLauncher_jni.h"
 
 namespace safe_browsing {
 

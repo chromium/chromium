@@ -12,7 +12,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/android/chrome_jni_headers/ChromeBackupWatcher_jni.h"
 #include "chrome/browser/android/mojo/chrome_interface_registrar_android.h"
 #include "chrome/browser/android/preferences/clipboard_android.h"
 #include "chrome/browser/android/seccomp_support_detector.h"
@@ -30,6 +29,9 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #include "ui/base/ui_base_paths.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/ChromeBackupWatcher_jni.h"
 
 ChromeBrowserMainPartsAndroid::ChromeBrowserMainPartsAndroid(
     bool is_integration_test,

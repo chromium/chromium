@@ -8,9 +8,11 @@
 #include "base/android/jni_array.h"
 #include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
-#include "chrome/browser/ui/android/toolbar/jni_headers/TopToolbarSceneLayer_jni.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/toolbar/jni_headers/TopToolbarSceneLayer_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

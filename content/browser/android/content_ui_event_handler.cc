@@ -8,7 +8,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
-#include "content/public/android/content_jni_headers/ContentUiEventHandler_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
 #include "ui/events/android/gesture_event_android.h"
@@ -17,6 +16,9 @@
 #include "ui/events/android/motion_event_android.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/ContentUiEventHandler_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

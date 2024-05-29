@@ -5,6 +5,8 @@
 #include "services/device/generic_sensor/platform_sensor_android.h"
 
 #include "base/functional/bind.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/device/generic_sensor/jni_headers/PlatformSensor_jni.h"
 
 using base::android::JavaRef;

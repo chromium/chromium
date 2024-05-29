@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/android/test_support_jni_headers/ScreenshotCaptureTestHelper_jni.h"
 #include "content/public/test/navigation_transition_test_utils.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/test_support_jni_headers/ScreenshotCaptureTestHelper_jni.h"
 
 using base::android::JavaParamRef;
 

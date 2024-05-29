@@ -6,8 +6,10 @@
 
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
-#include "chrome/browser/readaloud/android/jni_headers/ReadAloudMiniPlayerSceneLayer_jni.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/readaloud/android/jni_headers/ReadAloudMiniPlayerSceneLayer_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

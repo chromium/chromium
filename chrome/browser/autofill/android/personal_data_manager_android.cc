@@ -49,7 +49,7 @@
 #include "components/prefs/pref_service.h"
 #include "url/android/gurl_android.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/autofill/android/jni_headers/PersonalDataManager_jni.h"
 #include "components/autofill/android/payments_jni_headers/BankAccount_jni.h"
 #include "components/autofill/android/payments_jni_headers/PaymentInstrument_jni.h"

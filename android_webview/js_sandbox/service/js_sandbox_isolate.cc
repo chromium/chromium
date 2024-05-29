@@ -14,7 +14,6 @@
 #include <string>
 #include <string_view>
 
-#include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
 #include "android_webview/js_sandbox/service/js_sandbox_array_buffer_allocator.h"
 #include "android_webview/js_sandbox/service/js_sandbox_isolate_callback.h"
 #include "base/android/callback_android.h"
@@ -56,6 +55,9 @@
 #include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-statistics.h"
 #include "v8/include/v8-template.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

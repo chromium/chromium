@@ -9,9 +9,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
-#include "components/webapps/browser/android/webapps_jni_headers/WebappsUtils_jni.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webapps/browser/android/webapps_jni_headers/WebappsUtils_jni.h"
 
 namespace webapps {
 

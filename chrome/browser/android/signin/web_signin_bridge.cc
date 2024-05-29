@@ -11,7 +11,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/signin/services/android/jni_headers/WebSigninBridge_jni.h"
 #include "components/signin/public/android/jni_headers/GoogleServiceAuthError_jni.h"
 

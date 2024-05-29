@@ -6,12 +6,14 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/AutoSigninSnackbarController_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AutoSigninSnackbarController_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

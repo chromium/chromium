@@ -4,12 +4,14 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "components/security_state/content/android/jni_headers/SecurityStateModel_jni.h"
 #include "components/security_state/content/android/security_state_client.h"
 #include "components/security_state/content/android/security_state_model_delegate.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/security_state/content/android/jni_headers/SecurityStateModel_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::JavaParamRef;

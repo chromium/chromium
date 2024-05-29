@@ -18,7 +18,6 @@
 #include "android_webview/browser/metrics/system_state_util.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
 #include "android_webview/browser/tracing/background_tracing_field_trial.h"
-#include "android_webview/browser_jni_headers/AwInterfaceRegistrar_jni.h"
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_resource.h"
@@ -68,6 +67,9 @@
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gl/gl_surface.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwInterfaceRegistrar_jni.h"
 
 namespace android_webview {
 

@@ -17,10 +17,12 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/test/content_unittests_jni_headers/SmsProviderFakes_jni.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/test/content_unittests_jni_headers/SmsProviderFakes_jni.h"
 
 using base::android::AttachCurrentThread;
 using ::testing::_;

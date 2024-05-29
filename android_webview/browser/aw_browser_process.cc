@@ -9,7 +9,6 @@
 #include "android_webview/browser/component_updater/registration.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
-#include "android_webview/browser_jni_headers/AwBrowserProcess_jni.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -26,6 +25,9 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/process_visibility_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwBrowserProcess_jni.h"
 
 using content::BrowserThread;
 

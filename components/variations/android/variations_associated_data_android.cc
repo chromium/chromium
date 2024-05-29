@@ -6,9 +6,11 @@
 
 #include "base/android/jni_string.h"
 #include "base/metrics/field_trial_params.h"
-#include "components/variations/android/variations_jni/VariationsAssociatedData_jni.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/variations/android/variations_jni/VariationsAssociatedData_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

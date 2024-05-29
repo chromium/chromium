@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/features/keyboard_accessory/internal/jni/AllPasswordsBottomSheetBridge_jni.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -17,6 +16,9 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/features/keyboard_accessory/internal/jni/AllPasswordsBottomSheetBridge_jni.h"
 
 using autofill::mojom::FocusedFieldType;
 using base::android::AttachCurrentThread;

@@ -8,9 +8,11 @@
 #include <string>
 
 #include "components/webapps/browser/android/add_to_homescreen_data_fetcher.h"
-#include "components/webapps/browser/android/webapps_jni_headers/PwaUniversalInstallBottomSheetCoordinator_jni.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webapps/browser/android/webapps_jni_headers/PwaUniversalInstallBottomSheetCoordinator_jni.h"
 
 using base::android::JavaParamRef;
 

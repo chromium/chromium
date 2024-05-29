@@ -8,7 +8,7 @@
 #include "components/feature_engagement/public/android/wrapping_test_tracker.h"
 #include "components/feature_engagement/public/tracker.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/feature_engagement/jni_headers/TrackerFactory_jni.h"
 
 namespace {

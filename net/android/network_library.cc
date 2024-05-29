@@ -22,6 +22,8 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/dns_protocol.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/net_jni_headers/AndroidNetworkLibrary_jni.h"
 #include "net/net_jni_headers/DnsStatus_jni.h"
 

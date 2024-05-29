@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "components/infobars/android/jni_headers/ConfirmInfoBar_jni.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/infobars/android/jni_headers/ConfirmInfoBar_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

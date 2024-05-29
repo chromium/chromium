@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "net/cert/cert_database.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/net_jni_headers/X509Util_jni.h"
 
 using jni_zero::JavaParamRef;

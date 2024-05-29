@@ -14,10 +14,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/android/window_android.h"
-#include "ui/base/select_file_dialog_jni_headers/SelectFileDialog_jni.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/base/select_file_dialog_jni_headers/SelectFileDialog_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;

@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/android/omnibox/omnibox_view_util.h"
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/ui/android/omnibox/jni_headers/OmniboxViewUtil_jni.h"
 #include "components/omnibox/browser/omnibox_view.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/omnibox/jni_headers/OmniboxViewUtil_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

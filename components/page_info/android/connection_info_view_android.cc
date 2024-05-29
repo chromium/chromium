@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "components/page_info/android/jni_headers/ConnectionInfoView_jni.h"
 #include "components/page_info/android/page_info_client.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_delegate.h"
@@ -21,6 +20,9 @@
 #include "content/public/browser/web_contents.h"
 #include "net/cert/x509_certificate.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/page_info/android/jni_headers/ConnectionInfoView_jni.h"
 
 using base::android::CheckException;
 using base::android::ConvertUTF16ToJavaString;

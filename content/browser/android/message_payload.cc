@@ -14,10 +14,12 @@
 #include "base/containers/span.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
-#include "content/public/android/content_jni_headers/MessagePayloadJni_jni.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/MessagePayloadJni_jni.h"
 
 namespace {
 

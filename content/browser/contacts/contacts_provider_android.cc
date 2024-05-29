@@ -15,10 +15,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/android/content_jni_headers/ContactsDialogHost_jni.h"
 #include "content/public/browser/contacts_picker_properties.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/ContactsDialogHost_jni.h"
 
 namespace content {
 

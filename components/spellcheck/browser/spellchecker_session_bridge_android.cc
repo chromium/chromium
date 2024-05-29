@@ -9,10 +9,12 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "components/spellcheck/browser/android/jni_headers/SpellCheckerSessionBridge_jni.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/spellcheck/browser/android/jni_headers/SpellCheckerSessionBridge_jni.h"
 
 using base::android::JavaParamRef;
 

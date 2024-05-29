@@ -10,7 +10,6 @@
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/android/chrome_jni_headers/TabInteractionRecorder_jni.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -23,6 +22,9 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabInteractionRecorder_jni.h"
 
 namespace customtabs {
 

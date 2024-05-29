@@ -7,11 +7,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
-#include "chrome/android/chrome_jni_headers/ScreenshotTask_jni.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/snapshot/snapshot.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/ScreenshotTask_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

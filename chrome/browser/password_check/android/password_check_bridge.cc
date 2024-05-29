@@ -8,14 +8,16 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/password_check/android/internal/internal_jni/PasswordCheckBridge_jni.h"
-#include "chrome/browser/password_check/android/jni_headers/CompromisedCredential_jni.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/password_check/android/internal/internal_jni/PasswordCheckBridge_jni.h"
+#include "chrome/browser/password_check/android/jni_headers/CompromisedCredential_jni.h"
 
 namespace {
 

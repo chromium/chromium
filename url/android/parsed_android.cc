@@ -7,6 +7,8 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "url/url_jni_headers/Parsed_jni.h"
 
 using base::android::AttachCurrentThread;

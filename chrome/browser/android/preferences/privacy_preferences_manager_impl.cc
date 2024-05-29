@@ -5,13 +5,15 @@
 #include <jni.h>
 
 #include "base/feature_list.h"
-#include "chrome/android/chrome_jni_headers/PrivacyPreferencesManagerImpl_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/policy/core/common/features.h"
 #include "components/prefs/pref_service.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PrivacyPreferencesManagerImpl_jni.h"
 
 static jboolean JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingEnabled(
     JNIEnv* env) {

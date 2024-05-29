@@ -27,7 +27,6 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/android/jar_jni/DragEvent_jni.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -47,6 +46,9 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/android/view_configuration.h"
 #include "ui/gfx/image/image_skia.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/jar_jni/DragEvent_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;

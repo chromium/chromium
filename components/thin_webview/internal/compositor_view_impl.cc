@@ -9,11 +9,13 @@
 #include "base/android/jni_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
-#include "components/thin_webview/internal/jni_headers/CompositorViewImpl_jni.h"
 #include "content/public/browser/android/compositor.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/thin_webview/internal/jni_headers/CompositorViewImpl_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

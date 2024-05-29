@@ -10,13 +10,15 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/PermissionInfoBar_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/permissions/permission_infobar_delegate_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PermissionInfoBar_jni.h"
 
 namespace {
 

@@ -5,8 +5,10 @@
 #include "components/offline_items_collection/core/android/offline_item_bridge.h"
 
 #include "base/android/jni_string.h"
-#include "components/offline_items_collection/core/jni_headers/OfflineItemBridge_jni.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/offline_items_collection/core/jni_headers/OfflineItemBridge_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;

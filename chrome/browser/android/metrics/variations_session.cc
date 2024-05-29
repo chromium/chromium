@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/VariationsSession_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/variations/service/variations_service.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/VariationsSession_jni.h"
 
 using base::android::JavaParamRef;
 

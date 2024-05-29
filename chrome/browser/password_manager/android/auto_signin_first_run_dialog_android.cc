@@ -6,7 +6,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/AutoSigninFirstRunDialog_jni.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +20,9 @@
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AutoSigninFirstRunDialog_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;

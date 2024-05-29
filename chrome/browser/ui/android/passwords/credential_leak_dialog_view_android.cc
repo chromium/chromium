@@ -8,9 +8,11 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/CredentialLeakDialogBridge_jni.h"
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/CredentialLeakDialogBridge_jni.h"
 
 CredentialLeakDialogViewAndroid::CredentialLeakDialogViewAndroid(
     CredentialLeakControllerAndroid* controller)

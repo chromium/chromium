@@ -5,7 +5,6 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
-#include "android_webview/browser_jni_headers/AwProxyController_jni.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -15,6 +14,9 @@
 #include "base/task/current_thread.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwProxyController_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::HasException;

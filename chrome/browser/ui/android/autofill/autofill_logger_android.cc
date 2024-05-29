@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/AutofillLogger_jni.h"
 
 using base::android::ScopedJavaLocalRef;

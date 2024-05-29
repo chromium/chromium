@@ -9,13 +9,15 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/android/chrome_jni_headers/CreditCardScannerBridge_jni.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_view_delegate.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/CreditCardScannerBridge_jni.h"
 
 using base::android::JavaParamRef;
 

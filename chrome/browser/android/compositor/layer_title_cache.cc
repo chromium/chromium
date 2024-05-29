@@ -10,7 +10,6 @@
 
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
-#include "chrome/android/chrome_jni_headers/LayerTitleCache_jni.h"
 #include "chrome/browser/android/compositor/decoration_title.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/resources/resource_manager_impl.h"
@@ -18,6 +17,9 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/LayerTitleCache_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

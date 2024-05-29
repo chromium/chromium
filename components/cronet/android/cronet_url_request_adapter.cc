@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "components/cronet/android/cronet_context_adapter.h"
-#include "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h"
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
 #include "components/cronet/android/url_request_error.h"
 #include "components/cronet/metrics_util.h"
@@ -31,6 +30,9 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request_context.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;

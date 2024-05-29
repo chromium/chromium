@@ -9,13 +9,15 @@
 #include <vector>
 
 #include "android_webview/browser/aw_print_manager.h"
-#include "android_webview/browser_jni_headers/AwPdfExporter_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/functional/bind.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/print_settings.h"
 #include "printing/units.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwPdfExporter_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

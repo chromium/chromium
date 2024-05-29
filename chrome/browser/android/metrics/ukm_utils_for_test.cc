@@ -4,12 +4,14 @@
 
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
-#include "chrome/browser/android/metrics/test_jni_headers/UkmUtilsForTest_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/ukm/ukm_service.h"
 
 #include "chrome/browser/android/metrics/ukm_utils_for_test.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/android/metrics/test_jni_headers/UkmUtilsForTest_jni.h"
 
 using base::android::JavaParamRef;
 

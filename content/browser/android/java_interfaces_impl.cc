@@ -12,11 +12,13 @@
 #include "base/memory/singleton.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/android/content_jni_headers/InterfaceRegistrarImpl_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/InterfaceRegistrarImpl_jni.h"
 
 namespace content {
 

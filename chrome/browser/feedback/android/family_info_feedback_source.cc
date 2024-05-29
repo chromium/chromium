@@ -16,7 +16,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/feedback/android/jni_headers/FamilyInfoFeedbackSource_jni.h"
 
 using base::android::AttachCurrentThread;

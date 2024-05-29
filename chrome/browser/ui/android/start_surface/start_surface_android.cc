@@ -5,8 +5,10 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
-#include "chrome/android/features/start_surface/jni_headers/StartSurfaceConfiguration_jni.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/features/start_surface/jni_headers/StartSurfaceConfiguration_jni.h"
 
 using base::android::JavaParamRef;
 

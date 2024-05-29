@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/escape.h"
-#include "components/navigation_interception/jni_headers/InterceptNavigationDelegate_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -30,6 +29,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/navigation_interception/jni_headers/InterceptNavigationDelegate_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;

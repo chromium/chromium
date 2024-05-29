@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 
 #include "cc/slim/layer.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/layouts/layouts_jni_headers/SceneLayer_jni.h"
 
 using base::android::JavaParamRef;

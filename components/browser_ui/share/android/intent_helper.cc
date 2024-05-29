@@ -9,6 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/browser_ui/share/android/jni_headers/IntentHelper_jni.h"
 
 using base::android::AttachCurrentThread;

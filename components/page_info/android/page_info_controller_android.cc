@@ -14,7 +14,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/page_info/android/jni_headers/PageInfoController_jni.h"
 #include "components/page_info/android/page_info_client.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info.h"
@@ -28,6 +27,9 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/page_info/android/jni_headers/PageInfoController_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;

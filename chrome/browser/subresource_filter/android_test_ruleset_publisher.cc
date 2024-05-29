@@ -15,9 +15,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/subresource_filter/jni_headers/TestRulesetPublisher_jni.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/subresource_filter/jni_headers/TestRulesetPublisher_jni.h"
 
 namespace {
 

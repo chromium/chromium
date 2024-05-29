@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/password_manager/android/jni_headers/PasswordManagerLifecycleHelper_jni.h"
 
 PasswordManagerLifecycleHelperImpl::PasswordManagerLifecycleHelperImpl() {

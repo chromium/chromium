@@ -5,10 +5,12 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/dom_distiller/content/browser/android/jni_headers/DistillablePageUtils_jni.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/dom_distiller/content/browser/android/jni_headers/DistillablePageUtils_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

@@ -10,7 +10,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/test/test_support_android.h"
-#include "components/cronet/android/cronet_test_apk_jni/MockCertVerifier_jni.h"
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
@@ -20,6 +19,9 @@
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_test_apk_jni/MockCertVerifier_jni.h"
 
 using base::android::JavaParamRef;
 

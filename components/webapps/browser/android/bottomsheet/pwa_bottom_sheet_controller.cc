@@ -12,8 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
-#include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetControllerProvider_jni.h"
-#include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetController_jni.h"
 #include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/webapps_client.h"
@@ -22,6 +20,10 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/text_elider.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetControllerProvider_jni.h"
+#include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetController_jni.h"
 
 using base::ASCIIToUTF16;
 using base::android::ConvertUTF16ToJavaString;

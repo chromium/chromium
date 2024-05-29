@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
-#include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePromptController_jni.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -28,6 +27,9 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePromptController_jni.h"
 
 namespace autofill {
 

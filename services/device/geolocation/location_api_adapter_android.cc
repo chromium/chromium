@@ -10,8 +10,10 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "services/device/geolocation/geolocation_jni_headers/LocationProviderAdapter_jni.h"
 #include "services/device/geolocation/location_provider_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "services/device/geolocation/geolocation_jni_headers/LocationProviderAdapter_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

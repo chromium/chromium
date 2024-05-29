@@ -19,8 +19,10 @@
 #include "ui/base/resource/data_pack.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
-#include "ui/base/ui_base_jni_headers/ResourceBundle_jni.h"
 #include "ui/base/ui_base_paths.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/base/ui_base_jni_headers/ResourceBundle_jni.h"
 
 namespace ui {
 

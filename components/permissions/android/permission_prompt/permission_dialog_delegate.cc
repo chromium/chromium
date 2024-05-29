@@ -9,8 +9,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/android/jni_headers/PermissionDialogController_jni.h"
-#include "components/permissions/android/jni_headers/PermissionDialogDelegate_jni.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_android.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
@@ -22,6 +20,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/permissions/android/jni_headers/PermissionDialogController_jni.h"
+#include "components/permissions/android/jni_headers/PermissionDialogDelegate_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 

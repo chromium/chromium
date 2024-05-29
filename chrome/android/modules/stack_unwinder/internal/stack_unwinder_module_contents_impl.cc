@@ -10,6 +10,8 @@
 #include "base/profiler/native_unwinder_android.h"
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
 #include "chrome/android/features/stack_unwinder/public/function_types.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/modules/stack_unwinder/internal/jni_headers/StackUnwinderModuleContentsImpl_jni.h"
 
 std::unique_ptr<base::NativeUnwinderAndroidMemoryRegionsMap>

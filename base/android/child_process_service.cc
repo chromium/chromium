@@ -11,6 +11,8 @@
 #include "base/file_descriptor_store.h"
 #include "base/logging.h"
 #include "base/posix/global_descriptors.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/process_launcher_jni/ChildProcessService_jni.h"
 
 using base::android::JavaIntArrayToIntVector;

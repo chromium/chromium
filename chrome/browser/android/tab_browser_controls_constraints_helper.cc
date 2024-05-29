@@ -5,10 +5,12 @@
 #include "chrome/browser/android/tab_browser_controls_constraints_helper.h"
 
 #include "cc/input/browser_controls_state.h"
-#include "chrome/android/chrome_jni_headers/TabBrowserControlsConstraintsHelper_jni.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabBrowserControlsConstraintsHelper_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

@@ -7,6 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/lazy_instance.h"
 #include "base/synchronization/lock.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/gfx/gfx_jni_headers/ViewConfigurationHelper_jni.h"
 
 using base::android::AttachCurrentThread;

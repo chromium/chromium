@@ -14,7 +14,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ContextualSearchTabHelper_jni.h"
 
 using base::android::JavaParamRef;

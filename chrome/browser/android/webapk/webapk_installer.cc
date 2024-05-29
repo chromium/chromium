@@ -30,7 +30,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/android/chrome_jni_headers/WebApkInstaller_jni.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
@@ -58,6 +57,9 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/WebApkInstaller_jni.h"
 
 namespace {
 

@@ -6,8 +6,10 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
-#include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsViewBridge_jni.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsViewBridge_jni.h"
 
 namespace payments::facilitated {
 

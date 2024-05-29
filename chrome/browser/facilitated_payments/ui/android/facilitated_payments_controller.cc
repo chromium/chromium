@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
 
 FacilitatedPaymentsController::FacilitatedPaymentsController() = default;

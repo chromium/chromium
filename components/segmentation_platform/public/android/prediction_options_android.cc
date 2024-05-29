@@ -5,10 +5,12 @@
 #include "components/segmentation_platform/public/android/prediction_options_android.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "components/segmentation_platform/public/jni_headers/PredictionOptions_jni.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 
 #include <jni.h>
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/segmentation_platform/public/jni_headers/PredictionOptions_jni.h"
 
 namespace segmentation_platform {
 

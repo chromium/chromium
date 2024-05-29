@@ -21,7 +21,6 @@
 #include "base/pickle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/tab/jni_headers/WebContentsStateBridge_jni.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_command.h"
@@ -31,6 +30,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/tab/jni_headers/WebContentsStateBridge_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;

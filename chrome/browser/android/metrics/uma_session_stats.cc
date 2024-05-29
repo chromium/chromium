@@ -14,7 +14,6 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/android/chrome_jni_headers/UmaSessionStats_jni.h"
 #include "chrome/browser/android/metrics/android_session_durations_service.h"
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
 #include "chrome/browser/android/preferences/shared_preferences_migrator_android.h"
@@ -31,6 +30,9 @@
 #include "components/ukm/ukm_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/browser_thread.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/UmaSessionStats_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;

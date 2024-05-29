@@ -8,7 +8,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/PasswordMigrationWarningBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -20,6 +19,9 @@
 #include "components/version_info/android/channel_getter.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/native_widget_types.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PasswordMigrationWarningBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;

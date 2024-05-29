@@ -6,11 +6,13 @@
 
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/Credential_jni.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/Credential_jni.h"
 
 base::android::ScopedJavaLocalRef<jobject> CreateNativeCredential(
     JNIEnv* env,

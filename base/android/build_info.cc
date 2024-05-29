@@ -9,11 +9,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/base_jni/BuildInfo_jni.h"
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_jni/BuildInfo_jni.h"
 
 namespace base {
 namespace android {

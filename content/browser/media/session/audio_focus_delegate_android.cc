@@ -7,9 +7,11 @@
 #include "base/android/jni_android.h"
 #include "base/unguessable_token.h"
 #include "content/browser/media/session/media_session_impl.h"
-#include "content/public/android/content_jni_headers/AudioFocusDelegate_jni.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/AudioFocusDelegate_jni.h"
 
 using base::android::JavaParamRef;
 

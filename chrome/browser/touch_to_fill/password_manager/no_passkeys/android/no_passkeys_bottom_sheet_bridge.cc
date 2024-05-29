@@ -5,8 +5,10 @@
 #include "chrome/browser/touch_to_fill/password_manager/no_passkeys/android/no_passkeys_bottom_sheet_bridge.h"
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android/jni/NoPasskeysBottomSheetBridge_jni.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android/jni/NoPasskeysBottomSheetBridge_jni.h"
 
 namespace {
 

@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "components/payments/content/android/csp_checker_android.h"
-#include "components/payments/content/android/jni_headers/PaymentManifestDownloader_jni.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -19,6 +18,9 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/jni_headers/PaymentManifestDownloader_jni.h"
 
 namespace payments {
 namespace {

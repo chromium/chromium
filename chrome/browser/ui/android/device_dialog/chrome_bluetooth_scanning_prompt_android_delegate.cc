@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/android/device_dialog/chrome_bluetooth_scanning_prompt_android_delegate.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/ChromeBluetoothScanningPromptAndroidDelegate_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/ChromeBluetoothScanningPromptAndroidDelegate_jni.h"
 
 ChromeBluetoothScanningPromptAndroidDelegate::
     ChromeBluetoothScanningPromptAndroidDelegate(Profile* profile) {

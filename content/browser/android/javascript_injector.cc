@@ -10,6 +10,8 @@
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/JavascriptInjectorImpl_jni.h"
 
 using base::android::AttachCurrentThread;

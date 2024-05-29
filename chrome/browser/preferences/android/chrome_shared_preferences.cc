@@ -5,9 +5,11 @@
 #include "chrome/browser/preferences/android/chrome_shared_preferences.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/preferences/jni_headers/ChromeSharedPreferences_jni.h"
 
 #include <memory>
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/preferences/jni_headers/ChromeSharedPreferences_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;

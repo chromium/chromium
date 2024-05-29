@@ -13,6 +13,8 @@
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/surface_texture_listener.h"
 #include "ui/gl/gl_bindings.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/gl/gl_jni_headers/SurfaceTexturePlatformWrapper_jni.h"
 
 #ifndef GL_ANGLE_texture_storage_external

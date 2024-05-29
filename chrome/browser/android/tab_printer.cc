@@ -4,11 +4,13 @@
 
 #include "chrome/browser/android/tab_printer.h"
 
-#include "chrome/android/chrome_jni_headers/TabPrinter_jni.h"
 #include "chrome/browser/printing/print_view_manager_basic.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabPrinter_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

@@ -15,9 +15,11 @@
 #include "components/offline_items_collection/core/android/offline_item_bridge.h"
 #include "components/offline_items_collection/core/android/offline_item_share_info_bridge.h"
 #include "components/offline_items_collection/core/android/offline_item_visuals_bridge.h"
-#include "components/offline_items_collection/core/jni_headers/OfflineContentAggregatorBridge_jni.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/throttled_offline_content_provider.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/offline_items_collection/core/jni_headers/OfflineContentAggregatorBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

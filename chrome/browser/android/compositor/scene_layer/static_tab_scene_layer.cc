@@ -8,12 +8,14 @@
 
 #include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
-#include "chrome/android/chrome_jni_headers/StaticTabSceneLayer_jni.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/resource_manager_impl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/StaticTabSceneLayer_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

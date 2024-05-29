@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "android_webview/browser/aw_ip_protection_proxy_bypass_info.h"
-#include "android_webview/browser_jni_headers/ExclusionUtilities_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/ExclusionUtilities_jni.h"
 
 namespace android_webview {
 

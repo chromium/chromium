@@ -5,10 +5,12 @@
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/PasswordManagerLauncher_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PasswordManagerLauncher_jni.h"
 
 namespace {
 

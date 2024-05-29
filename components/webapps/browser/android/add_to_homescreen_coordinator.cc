@@ -11,9 +11,11 @@
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
 #include "components/webapps/browser/android/add_to_homescreen_mediator.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
-#include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenCoordinator_jni.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenCoordinator_jni.h"
 
 namespace webapps {
 

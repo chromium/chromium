@@ -6,8 +6,10 @@
 
 #include "base/android/feature_map.h"
 #include "base/no_destructor.h"
-#include "components/permissions/android/core_jni/PermissionsAndroidFeatureMap_jni.h"
 #include "components/permissions/features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/permissions/android/core_jni/PermissionsAndroidFeatureMap_jni.h"
 
 namespace permissions {
 

@@ -5,12 +5,14 @@
 #include "chrome/browser/permissions/permission_blocked_dialog_controller_android.h"
 
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/PermissionBlockedDialog_jni.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PermissionBlockedDialog_jni.h"
 
 namespace {
 

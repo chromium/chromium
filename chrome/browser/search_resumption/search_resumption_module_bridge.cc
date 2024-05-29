@@ -12,7 +12,7 @@
 #include "components/search_engines/search_terms_data.h"
 #include "url/android/gurl_android.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/search_resumption/jni_headers/SearchResumptionModuleBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;

@@ -6,6 +6,8 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "ui/android/ui_android_features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/UiAndroidFeatureMap_jni.h"
 
 namespace ui {

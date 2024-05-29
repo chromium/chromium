@@ -7,8 +7,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/test/android/content_test_jni/FencedFrameUtils_jni.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/test/android/content_test_jni/FencedFrameUtils_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

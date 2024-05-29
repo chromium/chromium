@@ -4,9 +4,11 @@
 
 #include "chrome/browser/android/compositor/scene_layer/overscroll_scene_layer.h"
 
-#include "chrome/android/chrome_jni_headers/OverscrollSceneLayer_jni.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/OverscrollSceneLayer_jni.h"
 
 using base::android::JavaParamRef;
 

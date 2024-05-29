@@ -12,11 +12,13 @@
 
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "components/security_interstitials/content/android/jni_headers/CaptivePortalHelper_jni.h"
 #include "components/security_interstitials/content/ssl_error_assistant.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/android/network_library.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/security_interstitials/content/android/jni_headers/CaptivePortalHelper_jni.h"
 
 namespace security_interstitials {
 

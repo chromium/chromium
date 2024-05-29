@@ -6,8 +6,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/crash/android/jni_headers/CrashKeys_jni.h"
 #include "components/crash/core/common/crash_key.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/crash/android/jni_headers/CrashKeys_jni.h"
 
 namespace {
 

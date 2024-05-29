@@ -34,7 +34,6 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/browser_thread_impl.h"
-#include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/content_browser_client.h"
@@ -42,6 +41,9 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 
 using jni_zero::AttachCurrentThread;
 using jni_zero::ScopedJavaLocalRef;

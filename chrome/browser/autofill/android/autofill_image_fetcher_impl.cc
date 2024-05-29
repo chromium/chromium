@@ -5,8 +5,10 @@
 #include "chrome/browser/autofill/android/autofill_image_fetcher_impl.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/autofill/android/jni_headers/AutofillImageFetcher_jni.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/autofill/android/jni_headers/AutofillImageFetcher_jni.h"
 
 namespace autofill {
 

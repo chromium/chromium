@@ -27,7 +27,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "components/cronet/android/cronet_base_feature.h"
-#include "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h"
 #include "components/cronet/android/cronet_jni_registration_generated.h"
 #include "components/cronet/android/cronet_library_loader.h"
 #include "components/cronet/android/proto/base_feature_overrides.pb.h"
@@ -43,6 +42,9 @@
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
 #include "base/i18n/icu_util.h"  // nogncheck
 #endif
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

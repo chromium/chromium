@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/android/chrome_jni_headers/WebApkUpdateManager_jni.h"
 #include "chrome/browser/android/webapk/webapk_features.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"
@@ -30,6 +29,9 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/android/color_utils_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/WebApkUpdateManager_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;

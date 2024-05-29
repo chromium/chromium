@@ -5,10 +5,12 @@
 #include "chrome/browser/data_sharing/data_sharing_ui_delegate_android.h"
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/data_sharing/jni_headers/DataSharingUIDelegateAndroid_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/data_sharing/jni_headers/DataSharingUIDelegateAndroid_jni.h"
 
 namespace data_sharing {
 

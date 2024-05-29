@@ -6,6 +6,8 @@
 
 #include "base/android/jni_array.h"
 #include "base/time/time.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/midi/midi_jni_headers/MidiInputPortAndroid_jni.h"
 
 using base::android::JavaParamRef;

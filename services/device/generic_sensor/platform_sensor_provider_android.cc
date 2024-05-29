@@ -11,13 +11,15 @@
 #include "base/memory/ref_counted.h"
 #include "services/device/generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer.h"
 #include "services/device/generic_sensor/gravity_fusion_algorithm_using_accelerometer.h"
-#include "services/device/generic_sensor/jni_headers/PlatformSensorProvider_jni.h"
 #include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/orientation_euler_angles_fusion_algorithm_using_quaternion.h"
 #include "services/device/generic_sensor/orientation_quaternion_fusion_algorithm_using_euler_angles.h"
 #include "services/device/generic_sensor/platform_sensor_android.h"
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
 #include "services/device/generic_sensor/relative_orientation_euler_angles_fusion_algorithm_using_accelerometer.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "services/device/generic_sensor/jni_headers/PlatformSensorProvider_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 using jni_zero::AttachCurrentThread;

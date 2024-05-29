@@ -6,6 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/device/vibration/android/vibration_jni_headers/VibrationManagerAndroid_jni.h"
 
 namespace device {

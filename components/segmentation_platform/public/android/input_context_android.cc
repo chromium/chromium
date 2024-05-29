@@ -18,10 +18,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_context.h"
-#include "components/segmentation_platform/public/jni_headers/InputContext_jni.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/segmentation_platform/public/jni_headers/InputContext_jni.h"
 
 using base::android::JavaParamRef;
 

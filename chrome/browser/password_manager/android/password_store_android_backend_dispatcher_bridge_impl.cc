@@ -12,7 +12,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendDispatcherBridgeImpl_jni.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
 #include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
@@ -20,6 +19,9 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendDispatcherBridgeImpl_jni.h"
 
 namespace password_manager {
 

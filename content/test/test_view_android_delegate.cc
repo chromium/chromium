@@ -5,9 +5,11 @@
 #include "content/test/test_view_android_delegate.h"
 
 #include "base/android/scoped_java_ref.h"
-#include "content/test/content_unittests_jni_headers/TestViewAndroidDelegate_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/view_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/test/content_unittests_jni_headers/TestViewAndroidDelegate_jni.h"
 
 namespace content {
 

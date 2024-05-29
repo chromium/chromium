@@ -8,10 +8,12 @@
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/device_reauth/android/jni_headers/ReauthenticatorBridge_jni.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/device_reauth/android/jni_headers/ReauthenticatorBridge_jni.h"
 
 static jlong JNI_ReauthenticatorBridge_Create(
     JNIEnv* env,

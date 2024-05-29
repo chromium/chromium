@@ -5,10 +5,12 @@
 #include "chrome/browser/android/net/nqe/network_quality_provider.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/NetworkQualityProvider_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_quality_observer_factory.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/NetworkQualityProvider_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

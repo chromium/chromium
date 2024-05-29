@@ -9,7 +9,7 @@
 #include "chrome/browser/signin/signin_manager_android_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/signin/services/android/jni_headers/IdentityServicesProvider_jni.h"
 
 using base::android::JavaParamRef;

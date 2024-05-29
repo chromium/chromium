@@ -7,10 +7,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/SigninBridge_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/SigninBridge_jni.h"
 
 using base::android::JavaParamRef;
 

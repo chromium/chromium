@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cronet/android/cronet_context_adapter.h"
-#include "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h"
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
 #include "components/cronet/android/url_request_error.h"
 #include "components/cronet/metrics_util.h"
@@ -31,6 +30,9 @@
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/url_request/url_request_context.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ConvertJavaStringToUTF8;

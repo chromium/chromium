@@ -5,12 +5,14 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "components/dom_distiller/core/android/jni_headers/DomDistillerUrlUtils_jni.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "net/base/url_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/dom_distiller/core/android/jni_headers/DomDistillerUrlUtils_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

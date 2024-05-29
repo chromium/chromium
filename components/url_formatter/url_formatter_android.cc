@@ -6,13 +6,15 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/url_formatter/android/jni_headers/UrlFormatter_jni.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/url_formatter/android/jni_headers/UrlFormatter_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

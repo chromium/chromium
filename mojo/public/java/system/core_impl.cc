@@ -14,6 +14,8 @@
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/system_impl_java_jni_headers/CoreImpl_jni.h"
 
 namespace mojo {

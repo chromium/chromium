@@ -14,7 +14,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/share/jni_headers/PageInfoSharingBridge_jni.h"
 
 using base::android::JavaParamRef;

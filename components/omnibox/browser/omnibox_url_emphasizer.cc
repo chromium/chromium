@@ -8,6 +8,8 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/omnibox/browser/scheme_classifier_jni/OmniboxUrlEmphasizer_jni.h"
 
 using base::android::JavaParamRef;

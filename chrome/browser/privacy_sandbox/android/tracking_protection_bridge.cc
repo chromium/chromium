@@ -6,7 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/privacy_sandbox/android/jni_headers/TrackingProtectionBridge_jni.h"
 
 static jint JNI_TrackingProtectionBridge_GetRequiredNotice(JNIEnv* env,

@@ -7,9 +7,11 @@
 
 #include "base/android/jni_string.h"
 #include "base/logging.h"
-#include "components/messages/android/jni_headers/MessageWrapper_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/messages/android/jni_headers/MessageWrapper_jni.h"
 
 namespace messages {
 

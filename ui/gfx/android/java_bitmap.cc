@@ -13,6 +13,8 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/geometry/size.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/gfx/gfx_jni_headers/BitmapHelper_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;

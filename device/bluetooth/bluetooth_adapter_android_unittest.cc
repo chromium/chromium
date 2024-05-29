@@ -9,8 +9,10 @@
 #include "device/bluetooth/android/wrappers.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/test/bluetooth_test_android.h"
-#include "device/bluetooth_test_jni_headers/ChromeBluetoothScanFilter_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "device/bluetooth_test_jni_headers/ChromeBluetoothScanFilter_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

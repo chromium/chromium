@@ -10,7 +10,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/embedder_support/android/delegate/color_picker_bridge.h"
-#include "components/embedder_support/android/web_contents_delegate_jni_headers/WebContentsDelegateAndroid_jni.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/global_request_id.h"
@@ -30,6 +29,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/embedder_support/android/web_contents_delegate_jni_headers/WebContentsDelegateAndroid_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;

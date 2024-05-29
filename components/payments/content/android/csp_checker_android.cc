@@ -4,8 +4,10 @@
 
 #include "components/payments/content/android/csp_checker_android.h"
 
-#include "components/payments/content/android/jni_headers/CSPCheckerBridge_jni.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/jni_headers/CSPCheckerBridge_jni.h"
 
 namespace payments {
 

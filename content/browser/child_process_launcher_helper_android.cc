@@ -19,7 +19,6 @@
 #include "content/browser/child_process_launcher_helper_posix.h"
 #include "content/browser/posix_file_descriptor_info_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/android/content_jni_headers/ChildProcessLauncherHelperImpl_jni.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
@@ -29,6 +28,9 @@
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/ChildProcessLauncherHelperImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

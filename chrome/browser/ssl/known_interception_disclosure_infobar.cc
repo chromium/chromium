@@ -10,11 +10,13 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/android/chrome_jni_headers/KnownInterceptionDisclosureInfoBar_jni.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/KnownInterceptionDisclosureInfoBar_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

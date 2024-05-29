@@ -8,10 +8,12 @@
 #include "base/android/jni_string.h"
 #include "base/notreached.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/util/jni_headers/PlatformUtil_jni.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/util/jni_headers/PlatformUtil_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tracing_controller.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwTracingController_jni.h"
 
 using base::android::JavaParamRef;

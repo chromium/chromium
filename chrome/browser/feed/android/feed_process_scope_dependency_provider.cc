@@ -6,7 +6,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/logging.h"
-#include "chrome/browser/feed/android/jni_headers/FeedProcessScopeDependencyProvider_jni.h"
 #include "chrome/browser/feed/android/jni_translation.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +14,9 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/variations/variations_ids_provider.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/feed/android/jni_headers/FeedProcessScopeDependencyProvider_jni.h"
 
 namespace feed {
 namespace android {

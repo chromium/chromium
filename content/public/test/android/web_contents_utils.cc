@@ -17,8 +17,10 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
-#include "content/public/test/android/content_test_jni/WebContentsUtils_jni.h"
 #include "content/public/test/browser_test_utils.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/test/android/content_test_jni/WebContentsUtils_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF8ToJavaString;

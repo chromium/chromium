@@ -7,9 +7,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/omnibox/jni_headers/GeolocationHeader_jni.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/omnibox/jni_headers/GeolocationHeader_jni.h"
 
 bool HasGeolocationPermission() {
   JNIEnv* env = base::android::AttachCurrentThread();

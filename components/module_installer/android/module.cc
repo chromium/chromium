@@ -12,8 +12,10 @@
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
-#include "components/module_installer/android/jni_headers/Module_jni.h"
 #include "ui/base/resource/resource_bundle_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/module_installer/android/jni_headers/Module_jni.h"
 
 using base::android::BundleUtils;
 

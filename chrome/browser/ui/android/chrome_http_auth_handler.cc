@@ -13,6 +13,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ChromeHttpAuthHandler_jni.h"
 
 using base::android::AttachCurrentThread;

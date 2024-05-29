@@ -25,9 +25,6 @@
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/android/content_jni_headers/AccessibilityNodeInfoBuilder_jni.h"
-#include "content/public/android/content_jni_headers/AssistDataBuilder_jni.h"
-#include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 #include "content/public/common/content_features.h"
 #include "net/base/data_url.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -36,6 +33,11 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/events/android/motion_event_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/AccessibilityNodeInfoBuilder_jni.h"
+#include "content/public/android/content_jni_headers/AssistDataBuilder_jni.h"
+#include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

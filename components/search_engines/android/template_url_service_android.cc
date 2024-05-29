@@ -23,7 +23,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
-#include "components/search_engines/android/jni_headers/TemplateUrlService_jni.h"
 #include "components/search_engines/android/template_url_android.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -36,6 +35,9 @@
 #include "net/base/url_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/search_engines/android/jni_headers/TemplateUrlService_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

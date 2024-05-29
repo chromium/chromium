@@ -14,8 +14,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "content/browser/webauth/client_data_json.h"
-#include "content/public/android/content_jni_headers/ClientDataJsonImpl_jni.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/ClientDataJsonImpl_jni.h"
 
 namespace content {
 namespace {

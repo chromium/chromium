@@ -12,10 +12,12 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
-#include "components/webauthn/android/jni_headers/InternalAuthenticator_jni.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webauthn/android/jni_headers/InternalAuthenticator_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;

@@ -13,10 +13,12 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/payments/content/android/jni_headers/PaymentManifestWebDataService_jni.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/jni_headers/PaymentManifestWebDataService_jni.h"
 
 namespace payments {
 

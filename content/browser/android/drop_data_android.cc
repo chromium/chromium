@@ -13,6 +13,7 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/DropDataAndroid_jni.h"
 
 using base::android::AttachCurrentThread;

@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
-#include "chrome/android/chrome_jni_headers/OverlayPanelContent_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -26,6 +25,9 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/OverlayPanelContent_jni.h"
 
 using base::android::JavaParamRef;
 

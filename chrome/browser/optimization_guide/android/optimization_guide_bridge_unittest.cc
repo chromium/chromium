@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
-#include "chrome/browser/optimization_guide/android/native_j_unittests_jni_headers/OptimizationGuideBridgeNativeUnitTest_jni.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -26,6 +25,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/optimization_guide/android/native_j_unittests_jni_headers/OptimizationGuideBridgeNativeUnitTest_jni.h"
 
 using ::testing::An;
 using ::testing::ByRef;

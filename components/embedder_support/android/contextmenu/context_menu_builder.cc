@@ -8,12 +8,14 @@
 #include "base/android/jni_string.h"
 #include "base/android/unguessable_token_android.h"
 #include "base/unguessable_token.h"
-#include "components/embedder_support/android/context_menu_jni_headers/ContextMenuParams_jni.h"
 #include "content/public/browser/android/additional_navigation_params_android.h"
 #include "content/public/browser/android/impression_android.h"
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/embedder_support/android/context_menu_jni_headers/ContextMenuParams_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 

@@ -6,7 +6,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/LaunchMetrics_jni.h"
 #include "chrome/browser/prefs/pref_metrics_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -16,6 +15,9 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/LaunchMetrics_jni.h"
 
 using base::android::JavaParamRef;
 

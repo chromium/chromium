@@ -61,7 +61,6 @@
 #include "content/common/features.h"
 #include "content/common/input/events_helper.h"
 #include "content/common/input/input_router.h"
-#include "content/public/android/content_jni_headers/RenderWidgetHostViewImpl_jni.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -100,6 +99,9 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/touch_selection/selection_event_type.h"
 #include "ui/touch_selection/touch_selection_controller.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/RenderWidgetHostViewImpl_jni.h"
 
 namespace content {
 

@@ -9,13 +9,15 @@
 #include <algorithm>
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/android/browserservices/metrics/jni_headers/WebApkUkmRecorder_jni.h"
 #include "components/ukm/app_source_url_recorder.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/android/browserservices/metrics/jni_headers/WebApkUkmRecorder_jni.h"
 
 namespace webapk {
 

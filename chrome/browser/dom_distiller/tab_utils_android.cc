@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/DomDistillerTabUtils_jni.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/dom_distiller/core/experiments.h"
@@ -15,6 +14,9 @@
 #include "content/public/common/content_constants.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/DomDistillerTabUtils_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

@@ -6,9 +6,11 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/feedback/android/jni_headers/SystemInfoFeedbackSource_jni.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "gpu/config/gpu_info.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/feedback/android/jni_headers/SystemInfoFeedbackSource_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
