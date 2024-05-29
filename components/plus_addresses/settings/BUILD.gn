@@ -10,6 +10,7 @@ source_set("settings") {
     "plus_address_setting_sync_bridge.h",
   ]
   public_deps = [
+    "//base",
     "//components/keyed_service/core",
     "//components/sync",
   ]

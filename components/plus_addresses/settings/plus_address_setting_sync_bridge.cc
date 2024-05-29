@@ -14,6 +14,7 @@
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/model_type_store.h"
+#include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
 
@@ -25,6 +26,18 @@ namespace plus_addresses {
     change_processor()->ReportError(*error); \
     return;                                  \
   }
+
+namespace {
+
+std::unique_ptr<syncer::EntityData> CreateEntityData(
+    const sync_pb::PlusAddressSettingSpecifics& specifics) {
+  auto entity = std::make_unique<syncer::EntityData>();
+  entity->name = specifics.name();
+  entity->specifics.mutable_plus_address_setting()->CopyFrom(specifics);
+  return entity;
+}
+
+}  // namespace
 
 PlusAddressSettingSyncBridge::PlusAddressSettingSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
@@ -67,7 +80,12 @@ void PlusAddressSettingSyncBridge::GetData(StorageKeyList storage_keys,
 
 void PlusAddressSettingSyncBridge::GetAllDataForDebugging(
     DataCallback callback) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const auto& [name, specifics] : settings_) {
+    batch->Put(name, CreateEntityData(specifics));
+  }
+  std::move(callback).Run(std::move(batch));
 }
 
 std::string PlusAddressSettingSyncBridge::GetClientTag(
@@ -86,16 +104,41 @@ void PlusAddressSettingSyncBridge::OnStoreCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RETURN_IF_ERROR(error);
   store_ = std::move(store);
-  store_->ReadAllMetadata(
-      base::BindOnce(&PlusAddressSettingSyncBridge::StartSyncingWithMetadata,
+  store_->ReadAllData(
+      base::BindOnce(&PlusAddressSettingSyncBridge::OnReadAllData,
                      weak_factory_.GetWeakPtr()));
 }
 
-void PlusAddressSettingSyncBridge::StartSyncingWithMetadata(
+void PlusAddressSettingSyncBridge::OnReadAllData(
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RETURN_IF_ERROR(error);
+  store_->ReadAllMetadata(base::BindOnce(
+      &PlusAddressSettingSyncBridge::StartSyncingWithDataAndMetadata,
+      weak_factory_.GetWeakPtr(), std::move(data)));
+}
+
+void PlusAddressSettingSyncBridge::StartSyncingWithDataAndMetadata(
+    std::unique_ptr<syncer::ModelTypeStore::RecordList> data,
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RETURN_IF_ERROR(error);
+  // Initialize the `settings_` with the `data`.
+  std::vector<std::pair<std::string, sync_pb::PlusAddressSettingSpecifics>>
+      processed_entries;
+  for (const syncer::ModelTypeStore::Record& record : *data) {
+    sync_pb::PlusAddressSettingSpecifics specifics;
+    if (!specifics.ParseFromString(record.value)) {
+      change_processor()->ReportError({FROM_HERE, "Couldn't parse specifics"});
+      return;
+    }
+    processed_entries.emplace_back(record.id, std::move(specifics));
+  }
+  settings_ =
+      base::MakeFlatMap<std::string, sync_pb::PlusAddressSettingSpecifics>(
+          std::move(processed_entries));
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 

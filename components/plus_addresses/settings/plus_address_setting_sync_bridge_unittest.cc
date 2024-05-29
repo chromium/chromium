@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/entity_data.h"
@@ -27,20 +28,32 @@ namespace plus_addresses {
 
 namespace {
 
-syncer::EntityData CreateSettingEntity(
+using SettingSpecifics = sync_pb::PlusAddressSettingSpecifics;
+
+SettingSpecifics CreateSettingSpecifics(
     const std::string& name,
-    absl::variant<bool, std::string, int64_t> value) {
-  syncer::EntityData entity;
-  sync_pb::PlusAddressSettingSpecifics* specifics =
-      entity.specifics.mutable_plus_address_setting();
-  specifics->set_name(name);
-  absl::visit(
-      base::Overloaded{
-          [&](bool value) { specifics->set_bool_value(value); },
-          [&](const std::string& value) { specifics->set_string_value(value); },
-          [&](int64_t value) { specifics->set_int_value(value); }},
-      value);
-  return entity;
+    absl::variant<bool, const char*, int32_t> value) {
+  SettingSpecifics specifics;
+  specifics.set_name(name);
+  absl::visit(base::Overloaded{
+                  [&](bool value) { specifics.set_bool_value(value); },
+                  [&](const char* value) { specifics.set_string_value(value); },
+                  [&](int32_t value) { specifics.set_int_value(value); }},
+              value);
+  return specifics;
+}
+
+// Matchers for `SettingSpecifics` args with given name and values.
+MATCHER_P2(HasBoolSetting, name, value, "") {
+  return arg.name() == name && arg.has_bool_value() &&
+         arg.bool_value() == value;
+}
+MATCHER_P2(HasStringSetting, name, value, "") {
+  return arg.name() == name && arg.has_string_value() &&
+         arg.string_value() == value;
+}
+MATCHER_P2(HasIntSetting, name, value, "") {
+  return arg.name() == name && arg.has_int_value() && arg.int_value() == value;
 }
 
 class PlusAddressSettingSyncBridgeTest : public testing::Test {
@@ -66,6 +79,17 @@ class PlusAddressSettingSyncBridgeTest : public testing::Test {
 
   syncer::MockModelTypeChangeProcessor& mock_processor() {
     return mock_processor_;
+  }
+
+  // Adds the `specifics` to the `store()`, returning true if it succeeded.
+  bool InjectSpecifics(const SettingSpecifics& specifics) {
+    auto write_batch = store().CreateWriteBatch();
+    write_batch->WriteData(specifics.name(), specifics.SerializeAsString());
+    base::test::TestFuture<const std::optional<syncer::ModelError>&>
+        write_result;
+    store().CommitWriteBatch(std::move(write_batch),
+                             write_result.GetCallback());
+    return !write_result.Get().has_value();
   }
 
  private:
@@ -100,10 +124,35 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
 }
 
 TEST_F(PlusAddressSettingSyncBridgeTest, GetStorageKey) {
-  syncer::EntityData entity = CreateSettingEntity("name", "value");
+  syncer::EntityData entity;
+  *entity.specifics.mutable_plus_address_setting() =
+      CreateSettingSpecifics("name", "value");
   EXPECT_EQ(bridge().GetStorageKey(entity), "name");
   // `GetClientTag()` is implemented using `GetStorageKey()`.
   EXPECT_EQ(bridge().GetClientTag(entity), "name");
+}
+
+TEST_F(PlusAddressSettingSyncBridgeTest, GetAllDataForDebugging) {
+  ASSERT_TRUE(InjectSpecifics(CreateSettingSpecifics("name1", "string")));
+  ASSERT_TRUE(InjectSpecifics(CreateSettingSpecifics("name2", true)));
+  ASSERT_TRUE(InjectSpecifics(CreateSettingSpecifics("name3", 123)));
+  // Recreate the bridge so it reloads the data from the `store()`.
+  RecreateBridge();
+
+  base::test::TestFuture<std::unique_ptr<syncer::DataBatch>> debug_data;
+  bridge().GetAllDataForDebugging(debug_data.GetCallback());
+  const std::unique_ptr<syncer::DataBatch>& batch = debug_data.Get();
+  // Since protos don't have an equality operator, compare their encodings.
+  std::vector<sync_pb::PlusAddressSettingSpecifics> specifics;
+  while (batch->HasNext()) {
+    std::unique_ptr<syncer::EntityData> entity = batch->Next().second;
+    ASSERT_TRUE(entity->specifics.has_plus_address_setting());
+    specifics.push_back(entity->specifics.plus_address_setting());
+  }
+  EXPECT_THAT(specifics,
+              testing::UnorderedElementsAre(HasStringSetting("name1", "string"),
+                                            HasBoolSetting("name2", true),
+                                            HasIntSetting("name3", 123)));
 }
 
 }  // namespace

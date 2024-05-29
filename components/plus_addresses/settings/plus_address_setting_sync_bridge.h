@@ -7,10 +7,12 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/protocol/plus_address_setting_specifics.pb.h"
 
 namespace plus_addresses {
 
@@ -41,7 +43,10 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
   // Callbacks for various asynchronous operations of the `store_`.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
-  void StartSyncingWithMetadata(
+  void OnReadAllData(const std::optional<syncer::ModelError>& error,
+                     std::unique_ptr<syncer::ModelTypeStore::RecordList> data);
+  void StartSyncingWithDataAndMetadata(
+      std::unique_ptr<syncer::ModelTypeStore::RecordList> data,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
@@ -49,6 +54,10 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
   // `store_factory` injected through the constructor. Non-null if creation
   // finished without an error.
   std::unique_ptr<syncer::ModelTypeStore> store_;
+
+  // A copy of the settings from the `store_`, used for synchronous access.
+  // Keyed by `PlusAddressSettingSpecifics::name`.
+  base::flat_map<std::string, sync_pb::PlusAddressSettingSpecifics> settings_;
 
   // Sequence checker ensuring that callbacks from the `store_` happen on the
   // bridge's thread.
