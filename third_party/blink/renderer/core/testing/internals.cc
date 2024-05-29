@@ -3412,6 +3412,13 @@ void Internals::setDarkPreferredColorScheme(Document* document) {
   settings->SetPreferredColorScheme(mojom::blink::PreferredColorScheme::kDark);
 }
 
+void Internals::setDarkPreferredRootScrollbarColorScheme(Document* document) {
+  DCHECK(document);
+  color_scheme_helper_.emplace(*document);
+  color_scheme_helper_->SetPreferredRootScrollbarColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+}
+
 void Internals::setShouldRevealPassword(Element* element,
                                         bool reveal,
                                         ExceptionState& exception_state) {
