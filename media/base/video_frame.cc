@@ -860,8 +860,17 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
          sizeof(frame->mailbox_holders_));
   frame->mailbox_holders_and_gmb_release_cb_ =
       ReleaseMailboxAndGpuMemoryBufferCB();
-  frame->dmabuf_fds_ = std::move(dmabuf_fds);
+  // Copies the unowned FDs from |dmabuf_fds_| to |frame|.
+  frame->dmabuf_fds_.reserve(dmabuf_fds.size());
+  for (auto& dmabuf_fd : dmabuf_fds) {
+    frame->dmabuf_fds_.push_back(dmabuf_fd.get());
+  }
   DCHECK(frame->HasDmaBufs());
+
+  // Storing the incoming vector of ScopedFDs in the destruction observer list
+  // ensures that the file descriptors get closed when |frame| is destroyed.
+  frame->AddDestructionObserver(
+      base::DoNothingWithBoundArgs(std::move(dmabuf_fds)));
 
   return frame;
 }
@@ -1533,7 +1542,7 @@ int VideoFrame::GetDmabufFd(size_t i) const {
   }
 
   DCHECK_EQ(storage_type_, STORAGE_DMABUFS);
-  return dmabuf_fds_[i].get();
+  return dmabuf_fds_[i];
 }
 #endif
 
@@ -1658,6 +1667,11 @@ VideoFrame::~VideoFrame() {
 
   // Prevents dangling raw ptr, see https://docs.google.com/document/d/156O7kBZqIhe1dUcqTMcN5T-6YEAcg0yNnj5QlnZu9xU/edit?usp=sharing.
   shm_region_ = nullptr;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Prevents dangling dmabuf fds.
+  dmabuf_fds_.clear();
+#endif
 
   std::vector<base::OnceClosure> done_callbacks;
   {
