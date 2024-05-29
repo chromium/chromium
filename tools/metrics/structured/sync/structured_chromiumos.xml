@@ -614,9 +614,10 @@
         that is running.
       </summary>
     </metric>
-    <metric name="IsCrashLoop" type="int">
+    <metric name="CrashSendingMode" type="int">
       <summary>
-        Boolean: 1 if using crash-loop mode.
+        Value from CrashSendingMode, indicating if the crash was sent using
+        crash-loop mode.
       </summary>
     </metric>
   </event>
@@ -638,9 +639,10 @@
         that is running.
       </summary>
     </metric>
-    <metric name="IsCrashLoop" type="int">
+    <metric name="CrashSendingMode" type="int">
       <summary>
-        Boolean: 1 if using crash-loop mode.
+        Value from CrashSendingMode, indicating if the crash was sent using
+        crash-loop mode.
       </summary>
     </metric>
   </event>
@@ -677,10 +679,10 @@
       crash_sender has started processing a new crash file. Recorded once per
       crash send attempt. Not recorded in dry run mode.
     </summary>
-    <metric name="IsCrashLoop" type="int">
+    <metric name="CrashSendingMode" type="int">
       <summary>
-        Boolean: 1 if crash_sender was invoked by crash_reporter using
-        crash-loop mode.
+        Value from CrashSendingMode, indicating if crash sender was started
+        using crash-loop mode.
       </summary>
     </metric>
   </event>
@@ -697,10 +699,10 @@
         that produced the .meta file.
       </summary>
     </metric>
-    <metric name="IsCrashLoop" type="int">
+    <metric name="CrashSendingMode" type="int">
       <summary>
-        Boolean: 1 if crash_sender was invoked by crash_reporter using
-        crash-loop mode.
+        Value from CrashSendingMode, indicating if crash sender was started
+        using crash-loop mode.
       </summary>
     </metric>
   </event>
@@ -723,10 +725,10 @@
         removed the crash record.
       </summary>
     </metric>
-    <metric name="IsCrashLoop" type="int">
+    <metric name="CrashSendingMode" type="int">
       <summary>
-        Boolean: 1 if crash_sender was invoked by crash_reporter using
-        crash-loop mode.
+        Value from CrashSendingMode, indicating if crash sender was started
+        using crash-loop mode.
       </summary>
     </metric>
   </event>
@@ -749,10 +751,10 @@
         left for the next time.
       </summary>
     </metric>
-    <metric name="IsCrashLoop" type="int">
+    <metric name="CrashSendingMode" type="int">
       <summary>
-        Boolean: 1 if crash_sender was invoked by crash_reporter using
-        crash-loop mode.
+        Value from CrashSendingMode, indicating if crash sender was started
+        using crash-loop mode.
       </summary>
     </metric>
   </event>
@@ -768,10 +770,10 @@
         file could not be removed.
       </summary>
     </metric>
-    <metric name="IsCrashLoop" type="int">
+    <metric name="CrashSendingMode" type="int">
       <summary>
-        Boolean: 1 if crash_sender was invoked by crash_reporter using
-        crash-loop mode.
+        Value from CrashSendingMode, indicating if crash sender was started
+        using crash-loop mode.
       </summary>
     </metric>
     <metric name="SeemingCrashFile" type="int">
@@ -2882,6 +2884,24 @@
     <metric name="TestMetricFive" type="int-array" max="10">
       <summary>
         A per-user keyed hash array value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProject.With.Name.Not.Legal.CPP">
+  <owner>iby@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+  <event name="TestEvent.With.Name.Not.Legal.CPP">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetric.With.Name.Not.Legal.CPP" type="raw-string">
+      <summary>
+        Metric for unit testing, do not use.
       </summary>
     </metric>
   </event>
