@@ -29,10 +29,8 @@ PlusAddressAffiliationMatchHelper::~PlusAddressAffiliationMatchHelper() =
     default;
 
 void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
-    const FacetURI& facet,
+    const PlusProfile::facet_t& facet,
     AffiliatedPlusProfilesCallback result_callback) {
-  DCHECK(facet.IsValidWebFacetURI());
-
   if (!base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressAffiliations)) {
     std::vector<PlusProfile> results;
@@ -44,6 +42,8 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
     return;
   }
 
+  FacetURI facet_uri = absl::get<FacetURI>(facet);
+  DCHECK(facet_uri.IsValidWebFacetURI());
   // The barrier is used to collect affiliated plus addresses from multiple
   // sources (i.e. grouped affiliations, PSL matches), combine and return them.
   const int kCallsNumber = 2;
@@ -54,11 +54,11 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
 
   GetPSLExtensions(base::BindOnce(
       &PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches,
-      weak_factory_.GetWeakPtr(), barrier_callback, facet));
+      weak_factory_.GetWeakPtr(), barrier_callback, facet_uri));
 
   CHECK(affiliation_service_);
   affiliation_service_->GetGroupingInfo(
-      {facet},
+      {facet_uri},
       base::BindOnce(&PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived,
                      weak_factory_.GetWeakPtr(), barrier_callback));
 }

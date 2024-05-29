@@ -33,6 +33,9 @@ struct Suggestion;
 // `AutofillClient`.
 class AutofillPlusAddressDelegate {
  public:
+  // Callback to return the list of plus address suggestions.
+  using GetSuggestionsCallback =
+      base::OnceCallback<void(std::vector<Suggestion>)>;
   // Describes interactions with Autofill suggestions for plus addresses.
   // The values are persisted to metrics, do not change them.
   enum class SuggestionEvent {
@@ -54,12 +57,13 @@ class AutofillPlusAddressDelegate {
   // fallback (e.g. the suggestions were triggered from the context menu on
   // Desktop), then `focused_field_value` is ignored. Otherwise, only
   // suggestions whose prefix matches `focused_field_value` are shown.
-  virtual std::vector<Suggestion> GetSuggestions(
+  virtual void GetSuggestions(
       const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
       AutofillClient::PasswordFormType focused_form_type,
       std::u16string_view focused_field_value,
-      AutofillSuggestionTriggerSource trigger_source) = 0;
+      AutofillSuggestionTriggerSource trigger_source,
+      GetSuggestionsCallback callback) = 0;
 
   // Logs Autofill suggestion events related to plus addresses.
   virtual void RecordAutofillSuggestionEvent(

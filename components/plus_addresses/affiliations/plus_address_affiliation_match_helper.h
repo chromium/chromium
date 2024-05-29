@@ -50,7 +50,7 @@ class PlusAddressAffiliationMatchHelper {
   // Returns the complete list of plus profiles that are affiliated with `facet`
   // based on their facet value. Only valid web facets must be passed-in.
   void GetAffiliatedPlusProfiles(
-      const affiliations::FacetURI& facet,
+      const PlusProfile::facet_t& facet,
       AffiliatedPlusProfilesCallback result_callback);
 
   // Requests and caches the list of PSL extensions.

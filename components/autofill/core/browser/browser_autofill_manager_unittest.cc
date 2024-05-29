@@ -26,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -116,6 +117,7 @@ namespace {
 using ::base::Bucket;
 using ::base::BucketsAre;
 using ::base::UTF8ToUTF16;
+using ::base::test::RunOnceCallback;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 using test::CreateTestAddressFormData;
@@ -7876,7 +7878,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   using enum AutofillPlusAddressDelegate::SuggestionContext;
   using enum AutofillClient::PasswordFormType;
   EXPECT_CALL(plus_address_delegate(), GetSuggestions)
-      .WillOnce(Return(std::vector<Suggestion>{
+      .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
   EXPECT_CALL(
       plus_address_delegate(),
@@ -7911,8 +7913,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
       plus_address_delegate(),
       GetSuggestions(
           _, _, _, _,
-          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses))
-      .WillOnce(Return(std::vector<Suggestion>{
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses, _))
+      .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
   EXPECT_CALL(plus_address_delegate(),
               OnPlusAddressSuggestionShown(

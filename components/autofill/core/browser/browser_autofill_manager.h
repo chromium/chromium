@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -575,12 +576,22 @@ class BrowserAutofillManager : public AutofillManager {
   // `GenerateSuggestionsAndMaybeShowUI` and displays them if `show_suggestions`
   // is true (via the `external_delegate_`). It also logs whether there is a
   // suggestion for the user and whether the suggestion is shown.
+  // TODO(b/340494671): Move to the unnamed namespace.
   void OnGenerateSuggestionsComplete(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       const SuggestionsContext& context,
       bool show_suggestions,
+      std::vector<Suggestion> suggestions);
+
+  void OnGetPlusAddressSuggestions(
+      AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
+      AutofillClient::PasswordFormType password_form_type,
+      const FormData& form,
+      const FormFieldData& field,
+      std::vector<Suggestion> address_suggestions,
+      OnGenerateSuggestionsCallback callback,
       std::vector<Suggestion> suggestions);
 
   // For each submitted field in the |form_structure|, it determines whether

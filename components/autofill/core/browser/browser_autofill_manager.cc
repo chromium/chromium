@@ -63,7 +63,6 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -1375,21 +1374,37 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return;
   }
 
-  if (IsPlusAddressesManuallyTriggered(trigger_source)) {
-    // The list of suggestions is never empty. It contains either existing plus
-    // addresses or the option to create a new one.
+  // Try to show plus address suggestions. If manually triggered, only plus
+  // addresses suggestions are shown. Otherwise plus address suggestions are
+  // mixed with address suggestions.
+  const bool should_offer_plus_addresses =
+      IsPlusAddressesManuallyTriggered(trigger_source) ||
+      (!context.should_show_mixed_content_warning &&
+       context.is_autofill_available &&
+       !context.do_not_generate_autofill_suggestions &&
+       context.filling_product == FillingProduct::kAddress &&
+       context.focused_field &&
+       context.focused_field->Type().group() == FieldTypeGroup::kEmail &&
+       client().GetPlusAddressDelegate());
+
+  if (should_offer_plus_addresses) {
     const AutofillClient::PasswordFormType password_form_type =
         client().ClassifyAsPasswordForm(*this, form.global_id(),
                                         field.global_id());
-    suggestions = client().GetPlusAddressDelegate()->GetSuggestions(
+    const AutofillPlusAddressDelegate::SuggestionContext suggestions_context =
+        IsPlusAddressesManuallyTriggered(trigger_source)
+            ? AutofillPlusAddressDelegate::SuggestionContext::kManualFallback
+            : AutofillPlusAddressDelegate::SuggestionContext::
+                  kAutofillProfileOnEmailField;
+    client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
         client().IsOffTheRecord(), password_form_type, field.value(),
-        trigger_source);
-    client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
-        *this, form.global_id(), field.global_id(),
-        AutofillPlusAddressDelegate::SuggestionContext::kManualFallback,
-        password_form_type, suggestions[0].type);
-    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+        trigger_source,
+        base::BindOnce(&BrowserAutofillManager::OnGetPlusAddressSuggestions,
+                       weak_ptr_factory_.GetWeakPtr(), suggestions_context,
+                       password_form_type, form, field, std::move(suggestions),
+                       std::move(callback)));
+
     return;
   }
 
@@ -1539,6 +1554,26 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
     // Send Autofill suggestions (could be an empty list).
     external_delegate_->OnSuggestionsReturned(field.global_id(), suggestions);
   }
+}
+
+void BrowserAutofillManager::OnGetPlusAddressSuggestions(
+    AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
+    AutofillClient::PasswordFormType password_form_type,
+    const FormData& form,
+    const FormFieldData& field,
+    std::vector<Suggestion> address_suggestions,
+    OnGenerateSuggestionsCallback callback,
+    std::vector<Suggestion> suggestions) {
+  if (!suggestions.empty()) {
+    client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
+        *this, form.global_id(), field.global_id(), suggestions_context,
+        password_form_type, suggestions[0].type);
+  }
+  suggestions.insert(suggestions.cend(),
+                     std::make_move_iterator(address_suggestions.begin()),
+                     std::make_move_iterator(address_suggestions.end()));
+
+  std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
 }
 
 void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
@@ -2838,29 +2873,6 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     // the `trigger_source`.
     suggestions = GetProfileSuggestions(form, context.form_structure, field,
                                         context.focused_field, trigger_source);
-    if (context.focused_field &&
-        context.focused_field->Type().group() == FieldTypeGroup::kEmail &&
-        client().GetPlusAddressDelegate()) {
-      const AutofillClient::PasswordFormType password_form_type =
-          client().ClassifyAsPasswordForm(*this, form.global_id(),
-                                          field.global_id());
-      std::vector<Suggestion> plus_address_suggestions =
-          client().GetPlusAddressDelegate()->GetSuggestions(
-              client().GetLastCommittedPrimaryMainFrameOrigin(),
-              client().IsOffTheRecord(), password_form_type, field.value(),
-              trigger_source);
-      if (!plus_address_suggestions.empty()) {
-        client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
-            *this, form.global_id(), field.global_id(),
-            AutofillPlusAddressDelegate::SuggestionContext::
-                kAutofillProfileOnEmailField,
-            password_form_type, plus_address_suggestions[0].type);
-        suggestions.insert(
-            suggestions.cbegin(),
-            std::make_move_iterator(plus_address_suggestions.begin()),
-            std::make_move_iterator(plus_address_suggestions.end()));
-      }
-    }
   }
 
   // Ablation experiment

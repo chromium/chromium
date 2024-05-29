@@ -81,12 +81,13 @@ class PlusAddressService : public KeyedService,
   // autofill::AutofillPlusAddressDelegate:
   // Checks whether the passed-in string is a known plus address.
   bool IsPlusAddress(const std::string& potential_plus_address) const override;
-  std::vector<autofill::Suggestion> GetSuggestions(
+  void GetSuggestions(
       const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
       autofill::AutofillClient::PasswordFormType focused_form_type,
       std::u16string_view focused_field_value,
-      autofill::AutofillSuggestionTriggerSource trigger_source) override;
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      GetSuggestionsCallback callback) override;
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
   void OnPlusAddressSuggestionShown(
       autofill::AutofillManager& manager,
@@ -202,6 +203,16 @@ class PlusAddressService : public KeyedService,
   // TODO(b/322147254): Remove once integration has finished.
   void UpdatePlusAddressMap(const PlusAddressMap& map);
 
+  // Called when PlusAddressService::OnGetAffiliatedPlusProfiles is resolved.
+  // Builds a list of suggestions from the list of `affiliated_profiles` and
+  // returns it via the `callback`.
+  void OnGetAffiliatedPlusProfiles(
+      autofill::AutofillClient::PasswordFormType focused_form_type,
+      std::u16string_view focused_field_value,
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      GetSuggestionsCallback callback,
+      std::vector<PlusProfile> affiliated_profiles);
+
   // The user's existing set of `PlusProfile`s, ordered by facet. Since only a
   // single address per facet is supported, this can be used as the comparator.
   base::flat_set<PlusProfile, PlusProfileFacetComparator> plus_profiles_
@@ -261,6 +272,8 @@ class PlusAddressService : public KeyedService,
   base::ObserverList<Observer> observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PlusAddressService> weak_factory_{this};
 };
 
 }  // namespace plus_addresses
