@@ -186,7 +186,7 @@ void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
   if (!service) {
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
-        "Unable to create generic session because the service is not running.");
+        "Unable to create a text session because the service is not running.");
     std::move(callback).Run(/*can_create=*/false);
     return;
   }
@@ -212,8 +212,8 @@ void AIManagerImpl::OnModelPathValidationComplete(const std::string& model_path,
   if (!is_valid_path) {
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf("Unable to create generic session because "
-                           "the model path ('%s') is invalid.",
+        base::StringPrintf("Unable to create a text session because the model "
+                           "path ('%s') is invalid.",
                            model_path.c_str()));
   }
 }

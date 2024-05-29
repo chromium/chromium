@@ -21,7 +21,8 @@ const char kExceptionMessageRequestThrottled[] = "The request was throttled.";
 const char kExceptionMessagePermissionDenied[] =
     "A user permission error occurred, such as not signed-in or not "
     "allowed to execute model.";
-const char kExceptionMessageGenericError[] = "Other generic failure occurred.";
+const char kExceptionMessageGenericError[] =
+    "Some other generic failure occurred.";
 const char kExceptionMessageRetryableError[] =
     "A retryable error occurred in the server.";
 const char kExceptionMessageNonRetryableError[] =
@@ -31,7 +32,7 @@ const char kExceptionMessageUnsupportedLanguage[] =
 const char kExceptionMessageFiltered[] =
     "The execution yielded a bad response.";
 const char kExceptionMessageDisabled[] = "The response was disabled.";
-const char kExceptionMessageCancelled[] = "The request was cancelled.";
+const char kExceptionMessageCancelled[] = "The request was canceled.";
 const char kExceptionMessageSessionDestroyed[] =
     "The model execution session has been destroyed.";
 
