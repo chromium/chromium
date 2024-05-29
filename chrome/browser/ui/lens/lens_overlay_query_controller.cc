@@ -92,9 +92,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
         policy {
           cookies_allowed: YES
           cookies_store: "user"
-          setting: "This feature is opt-in by flag only for now, so there "
-            "is no setting to disable the feature."
-          policy_exception_justification: "Policy not yet implemented."
+          setting: "This feature is only shown in menus by default and does "
+            "nothing without explicit user action, so there is no setting to "
+            "disable the feature."
+          chrome_policy {
+            LensOverlaySettings {
+              LensOverlaySettings: 1
+            }
+          }
         }
       )");
 

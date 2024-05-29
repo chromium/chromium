@@ -15,6 +15,10 @@ namespace lens {
 namespace prefs {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterIntegerPref(
+      kLensOverlaySettings,
+      static_cast<int>(LensOverlaySettingsPolicyValue::kEnabled));
+
   registry->RegisterBooleanPref(kLensSharingPageScreenshotEnabled, false);
 }
 

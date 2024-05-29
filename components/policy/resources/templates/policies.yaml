@@ -1260,6 +1260,11 @@ policies:
   1259: ''
   1260: ''
   1261: MemorySaverModeSavings
+  1262: ''
+  1263: ''
+  1264: ''
+  1265: ''
+  1266: LensOverlaySettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

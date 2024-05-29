@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -249,6 +250,13 @@ LensOverlayController::SearchQuery::~SearchQuery() = default;
 // static
 bool LensOverlayController::IsEnabled(Profile* profile) {
   if (!lens::features::IsLensOverlayEnabled()) {
+    return false;
+  }
+
+  lens::prefs::LensOverlaySettingsPolicyValue policy_value =
+      static_cast<lens::prefs::LensOverlaySettingsPolicyValue>(
+          profile->GetPrefs()->GetInteger(lens::prefs::kLensOverlaySettings));
+  if (policy_value == lens::prefs::LensOverlaySettingsPolicyValue::kDisabled) {
     return false;
   }
 
