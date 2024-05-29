@@ -44,6 +44,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -60,6 +61,7 @@ const float kDescriptionWidthPercent = 0.8;
 const int kGoogleGLogoWidth = 50;
 const int kPlusAddressLabelVerticalMargin = 10;
 const int kPlusAddressLogoWidth = 100;
+const int kPlusAddressRefreshColumnWidth = 48;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kGoogleGLogoIcon;
 const gfx::VectorIcon& kPlusAddressLogoIcon =
@@ -204,12 +206,28 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
       views::CreateThemedRoundedRectBackground(
           // TODO(crbug.com/40276862) - Replace with color from the mocks.
           ui::kColorSubtleEmphasisBackground, kRectangleRadius);
-  views::BoxLayoutView* label_container =
-      primary_view->AddChildView(views::Builder<views::BoxLayoutView>()
+
+  views::TableLayoutView* label_container =
+      primary_view->AddChildView(views::Builder<views::TableLayoutView>()
                                      .SetBackground(std::move(background))
                                      .Build());
   label_container->SetProperty(
       views::kMarginsKey, gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));
+  if (offer_refresh) {
+    label_container->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                      kPlusAddressRefreshColumnWidth);
+  }
+  label_container->AddColumn(
+      views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter, 1.0f,
+      views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  if (offer_refresh) {
+    label_container->AddColumn(
+        views::LayoutAlignment::kStart, views::LayoutAlignment::kStretch,
+        views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
+        kPlusAddressRefreshColumnWidth, 0);
+  }
+  label_container->AddRows(1, views::TableLayout::kFixedSize);
+
   plus_address_label_ = label_container->AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
@@ -242,15 +260,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
                                  kPlusAddressRefreshButtonElementId);
     refresh_button_->SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_PLUS_ADDRESS_MODEL_REFRESH_BUTTON_ACCESSIBLE_NAME));
-    refresh_button_->SetProperty(views::kMarginsKey,
-                                 gfx::Insets::TLBR(0, 0, 0, 16));
     refresh_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 8)));
-    plus_address_label_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, 16 + refresh_button_->GetMinimumSize().width(), 0,
-                          0));
   }
-  label_container->SetFlexForView(plus_address_label_, 1);
 
   // Create and hide label for bug report instruction.
   std::vector<size_t> error_link_offsets;
