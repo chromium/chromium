@@ -12,7 +12,9 @@ namespace ash::nearby::presence::enums {
 // This is a super set of the absl status code found in
 // //mojo/public/mojom/base/absl_status.mojom with the only difference being
 // the addition of kFailedToStartProcess. Any updates to absl_status should be
-// reflected here.
+// reflected here. This enum should also be kept in sync with the
+// NearbyPresenceScanRequestResult enum found in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class StatusCode {
   kAbslOk = 0,
   kAbslCancelled = 1,
@@ -32,6 +34,7 @@ enum class StatusCode {
   kAbslDataLoss = 15,
   kAbslUnauthenticated = 16,
   kFailedToStartProcess = 17,
+  kMaxValue = kFailedToStartProcess,
 };
 
 StatusCode ConvertToPresenceStatus(

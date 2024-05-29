@@ -82,6 +82,8 @@ void NearbyPresenceServiceImpl::StartScan(
     std::move(on_start_scan_callback)
         .Run(/*scan_session=*/nullptr,
              /*status=*/enums::StatusCode::kFailedToStartProcess);
+
+    metrics::RecordScanRequestResult(enums::StatusCode::kFailedToStartProcess);
     return;
   }
 
@@ -234,6 +236,8 @@ void NearbyPresenceServiceImpl::OnScanStarted(
   }
   std::move(on_start_scan_callback)
       .Run(std::move(scan_session), enums::ConvertToPresenceStatus(status));
+
+  metrics::RecordScanRequestResult(enums::ConvertToPresenceStatus(status));
 }
 
 void NearbyPresenceServiceImpl::OnScanSessionDisconnect(

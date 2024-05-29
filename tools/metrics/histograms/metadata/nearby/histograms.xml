@@ -880,6 +880,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Presence.ScanRequest.Result"
+    enum="NearbyPresenceScanRequestResult" expires_after="2025-05-01">
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result of starting a scan via Nearby Presence. Emitted when the
+    scan request result is received for most cases. A special case occurs if the
+    utility process reference is unable to be started; that particular enum is
+    instead emitted as soon as the failure to start occurs.
+  </summary>
+</histogram>
+
 <histogram
     name="Nearby.Share.BackgroundScanning.DeviceNearbySharing.Notification.Flow"
     enum="NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent"

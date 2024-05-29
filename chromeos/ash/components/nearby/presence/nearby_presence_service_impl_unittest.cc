@@ -343,6 +343,8 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
 
   EXPECT_TRUE(scan_delegate_.WasOnPresenceDeviceChangedCalled());
   EXPECT_TRUE(IsScanSessionActive());
+  histogram_tester()->ExpectBucketCount("Nearby.Presence.ScanRequest.Result",
+                                        enums::StatusCode::kAbslOk, 1);
 }
 
 TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
@@ -378,6 +380,8 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
 
   EXPECT_TRUE(scan_delegate_.WasOnPresenceDeviceLostCalled());
   EXPECT_TRUE(IsScanSessionActive());
+  histogram_tester()->ExpectBucketCount("Nearby.Presence.ScanRequest.Result",
+                                        enums::StatusCode::kAbslOk, 1);
 }
 
 TEST_F(NearbyPresenceServiceImplTest, EndScan) {
