@@ -15,8 +15,6 @@
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
-#import "components/search_engines/template_url_service_observer.h"
-#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_consumer.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
@@ -51,14 +49,10 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 
 }  // namespace
 
-@interface SearchEngineChoiceMediator () <SearchEngineObserving>
-@end
-
 @implementation SearchEngineChoiceMediator {
   raw_ptr<search_engines::SearchEngineChoiceService>
       _searchEngineChoiceService;                   // weak
   raw_ptr<TemplateURLService> _templateURLService;  // weak
-  std::unique_ptr<SearchEngineObserverBridge> _observerTemplateURLService;
   // The template URLs to be shown on the choice screen and some associated
   // data.
   std::unique_ptr<search_engines::ChoiceScreenData> _choiceScreenData;
@@ -73,8 +67,6 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   if (self) {
     _templateURLService = templateURLService;
     _searchEngineChoiceService = searchEngineChoiceService;
-    _observerTemplateURLService =
-        std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
     _templateURLService->Load();
   }
   return self;
@@ -82,10 +74,6 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 
 - (void)saveDefaultSearchEngine {
   CHECK(_selectedSearchEngineKeyword);
-  // When the default search engine is saved, there is no reason to observe
-  // `_templateURLService` anymore since the dialog should disappear right
-  // after.
-  _observerTemplateURLService.reset();
   std::u16string keyword =
       base::SysNSStringToUTF16(_selectedSearchEngineKeyword);
   TemplateURL* selectedTemplateURL = nil;
@@ -109,7 +97,6 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 - (void)disconnect {
   _searchEngineChoiceService = nullptr;
   _templateURLService = nullptr;
-  _observerTemplateURLService.reset();
 }
 
 #pragma mark - Properties
@@ -119,12 +106,6 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   if (_consumer) {
     [self loadSearchEngines];
   }
-}
-
-#pragma mark - SearchEngineObserving
-
-- (void)searchEngineChanged {
-  [self loadSearchEngines];
 }
 
 #pragma mark - SearchEngineChoiceMutator
