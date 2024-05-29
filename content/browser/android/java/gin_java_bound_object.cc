@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "content/browser/android/java/jni_reflect.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/browser/reflection_jni_headers/Object_jni.h"
 
 using base::android::AttachCurrentThread;

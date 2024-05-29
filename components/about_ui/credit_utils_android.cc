@@ -5,8 +5,6 @@
 #include "components/about_ui/credit_utils.h"
 
 #include "base/files/file.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/about_ui/android/about_ui_jni_headers/CreditUtils_jni.h"
 
 namespace about_ui {

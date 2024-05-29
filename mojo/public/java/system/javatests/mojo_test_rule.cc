@@ -14,8 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_support_android.h"
 #include "mojo/core/embedder/embedder.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/test_support_jni/MojoTestRule_jni.h"
 
 using base::android::JavaParamRef;

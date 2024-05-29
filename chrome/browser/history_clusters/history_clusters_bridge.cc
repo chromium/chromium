@@ -15,7 +15,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "url/android/gurl_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/history_clusters/jni_headers/HistoryClustersBridge_jni.h"
 
 using base::android::JavaParamRef;

@@ -5,8 +5,6 @@
 #include "media/midi/midi_output_port_android.h"
 
 #include "base/android/jni_array.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/midi/midi_jni_headers/MidiOutputPortAndroid_jni.h"
 
 using base::android::ScopedJavaLocalRef;

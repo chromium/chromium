@@ -7,12 +7,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/thumbnail/generator/android/thumbnail_media_parser.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/android/java_bitmap.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/thumbnail/generator/test_support_jni_headers/ThumbnailMediaData_jni.h"
 #include "chrome/browser/thumbnail/generator/test_support_jni_headers/ThumbnailMediaParserBridge_jni.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 using base::android::ConvertUTF8ToJavaString;
 

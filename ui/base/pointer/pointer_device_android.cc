@@ -6,8 +6,6 @@
 
 #include "base/android/jni_array.h"
 #include "base/check_op.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/base/ui_base_jni_headers/TouchDevice_jni.h"
 
 using jni_zero::AttachCurrentThread;

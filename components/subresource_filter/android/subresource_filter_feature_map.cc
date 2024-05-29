@@ -5,10 +5,8 @@
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "components/subresource_filter/core/browser/subresource_filter_features.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/subresource_filter/android/subresource_filter_jni_headers/SubresourceFilterFeatureMap_jni.h"
+#include "components/subresource_filter/core/browser/subresource_filter_features.h"
 
 namespace subresource_filter {
 

@@ -6,13 +6,11 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "chrome/android/chrome_jni_headers/NavigationPredictorBridge_jni.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/NavigationPredictorBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

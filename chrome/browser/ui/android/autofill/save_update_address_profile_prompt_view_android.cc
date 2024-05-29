@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePrompt_jni.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -17,9 +18,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePrompt_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

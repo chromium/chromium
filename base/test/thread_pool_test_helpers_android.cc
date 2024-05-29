@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/task/thread_pool/thread_pool_instance.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/test/test_support_jni_headers/ThreadPoolTestHelpers_jni.h"
 
 namespace base {

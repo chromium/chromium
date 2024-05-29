@@ -4,7 +4,6 @@
 
 #include "components/browser_ui/photo_picker/android/features.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/browser_ui/photo_picker/android/photo_picker_jni_headers/PhotoPickerFeatures_jni.h"
 
 namespace photo_picker {

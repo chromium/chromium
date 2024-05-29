@@ -10,11 +10,9 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/lazy_instance.h"
+#include "components/omnibox/browser/jni_headers/OmniboxActionFactory_jni.h"
 #include "omnibox_action.h"
 #include "url/android/gurl_android.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/omnibox/browser/jni_headers/OmniboxActionFactory_jni.h"
 
 namespace {
 

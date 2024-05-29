@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/android/chrome_jni_headers/ActionInfo_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -39,8 +40,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/native_theme/native_theme.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/ActionInfo_jni.h"
+// Must be at the end because it uses SkBitmap.
 #include "chrome/android/chrome_jni_headers/NotificationPlatformBridge_jni.h"
 
 using base::android::AttachCurrentThread;

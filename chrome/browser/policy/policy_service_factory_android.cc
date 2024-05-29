@@ -9,7 +9,7 @@
 #include "components/policy/core/common/android/policy_service_android.h"
 #include "components/policy/core/common/policy_service.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/policy/android/jni_headers/PolicyServiceFactory_jni.h"
 
 namespace policy {

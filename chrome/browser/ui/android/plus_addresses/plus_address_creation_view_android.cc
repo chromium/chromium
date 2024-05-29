@@ -7,6 +7,7 @@
 #include "base/android/jni_string.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationViewBridge_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
@@ -17,9 +18,6 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationViewBridge_jni.h"
 
 namespace plus_addresses {
 PlusAddressCreationViewAndroid::PlusAddressCreationViewAndroid(

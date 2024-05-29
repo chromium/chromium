@@ -4,6 +4,7 @@
 
 #include "chrome/browser/feedback/android/process_id_feedback_source.h"
 
+#include "chrome/browser/feedback/android/jni_headers/ProcessIdFeedbackSource_jni.h"
 #include "content/public/browser/browser_thread.h"
 
 #include "base/android/jni_array.h"
@@ -14,9 +15,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/feedback/android/jni_headers/ProcessIdFeedbackSource_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

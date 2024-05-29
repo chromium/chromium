@@ -6,10 +6,8 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "content/public/browser/web_contents.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/payments/content/android/jni_headers/JourneyLogger_jni.h"
+#include "content/public/browser/web_contents.h"
 
 namespace payments {
 namespace {

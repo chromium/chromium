@@ -4,11 +4,9 @@
 
 #include <ostream>
 
+#include "android_webview/browser_jni_headers/AwCrashyClassUtils_jni.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/browser_jni_headers/AwCrashyClassUtils_jni.h"
 
 namespace android_webview {
 

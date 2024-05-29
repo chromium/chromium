@@ -5,10 +5,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/readaloud/android/synthetic_trial.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/readaloud/android/features_jni_headers/ReadAloudFeatures_jni.h"
+#include "chrome/browser/readaloud/android/synthetic_trial.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;

@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/embedder_support/android/metrics/android_metrics_log_uploader.h"
+#include "components/embedder_support/android/metrics/jni/AndroidMetricsServiceClient_jni.h"
 #include "components/metrics/android_metrics_provider.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "components/metrics/content/accessibility_metrics_provider.h"
@@ -61,9 +62,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/metrics/jni/AndroidMetricsServiceClient_jni.h"
 
 namespace metrics {
 

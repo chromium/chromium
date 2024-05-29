@@ -26,7 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/recent_tabs/jni_headers/ForeignSessionHelper_jni.h"
 
 using base::android::AttachCurrentThread;

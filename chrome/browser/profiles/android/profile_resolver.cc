@@ -22,7 +22,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/profiles/android/jni_headers/ProfileResolver_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;

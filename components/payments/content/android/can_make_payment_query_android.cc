@@ -10,13 +10,11 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "components/payments/content/android/jni_headers/CanMakePaymentQuery_jni.h"
 #include "components/payments/content/can_make_payment_query_factory.h"
 #include "components/payments/core/can_make_payment_query.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/payments/content/android/jni_headers/CanMakePaymentQuery_jni.h"
 
 namespace payments {
 

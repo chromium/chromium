@@ -12,13 +12,11 @@
 #include <sys/prctl.h>
 #include <sys/utsname.h>
 
+#include "base/android/linker/linker_jni.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/android/linker/linker_jni.h"
 
 extern char __executable_start;
 

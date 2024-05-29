@@ -13,6 +13,7 @@
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/android/chrome_jni_headers/DuplicateDownloadDialogBridge_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/download/android/download_dialog_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,9 +23,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/DuplicateDownloadDialogBridge_jni.h"
 
 using base::android::JavaParamRef;
 

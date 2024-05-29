@@ -16,6 +16,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/common/features.h"
+#include "content/public/android/content_jni_headers/SelectionPopupControllerImpl_jni.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -23,9 +24,6 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/point_conversions.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "content/public/android/content_jni_headers/SelectionPopupControllerImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;

@@ -7,11 +7,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/logging.h"
+#include "chrome/android/chrome_jni_headers/WebappRegistry_jni.h"
 #include "chrome/browser/android/browsing_data/url_filter_bridge.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/WebappRegistry_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

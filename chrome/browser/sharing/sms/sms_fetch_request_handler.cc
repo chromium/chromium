@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/android/chrome_jni_headers/SmsFetcherMessageHandler_jni.h"
 #include "chrome/browser/sharing/proto/sms_fetch_message_test_proto3_optional.pb.h"
 #include "chrome/browser/sharing/sharing_device_source.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
@@ -22,9 +23,6 @@
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/SmsFetcherMessageHandler_jni.h"
 
 namespace {
 // To mitigate the overlapping of the notification for SMS and the one for

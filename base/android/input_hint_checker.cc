@@ -4,13 +4,11 @@
 
 #include "base/android/input_hint_checker.h"
 
+#include "base/base_jni/InputHintChecker_jni.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_jni/InputHintChecker_jni.h"
 
 namespace base::android {
 

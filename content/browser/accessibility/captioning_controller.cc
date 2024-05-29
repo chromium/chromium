@@ -6,10 +6,8 @@
 
 #include "base/android/jni_string.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/CaptioningController_jni.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

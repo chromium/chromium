@@ -8,6 +8,7 @@
 #include <GLES2/gl2.h>
 
 #include "android_webview/public/browser/draw_fn.h"
+#include "android_webview/test/draw_fn_impl_jni_headers/ContextManager_jni.h"
 #include "android_webview/test/shell/src/draw_fn/allocator.h"
 #include "base/android/jni_array.h"
 #include "base/logging.h"
@@ -43,9 +44,6 @@
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
 #include "ui/gfx/color_space.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/test/draw_fn_impl_jni_headers/ContextManager_jni.h"
 
 namespace draw_fn {
 

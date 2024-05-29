@@ -11,6 +11,7 @@
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
 #include "android_webview/nonembedded/component_updater/registration.h"
+#include "android_webview/nonembedded/nonembedded_jni_headers/AwComponentUpdateService_jni.h"
 #include "android_webview/nonembedded/webview_apk_process.h"
 #include "base/android/callback_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -26,9 +27,6 @@
 #include "components/component_updater/component_updater_utils.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/nonembedded/nonembedded_jni_headers/AwComponentUpdateService_jni.h"
 
 namespace android_webview {
 

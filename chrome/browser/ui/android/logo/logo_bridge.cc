@@ -24,7 +24,7 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/ui/android/logo/jni_headers/LogoBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;

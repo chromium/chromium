@@ -4,10 +4,8 @@
 
 #include "base/android/feature_map.h"
 #include "base/no_destructor.h"
-#include "components/browser_ui/contacts_picker/android/features.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/browser_ui/contacts_picker/android/contacts_picker_jni_headers/ContactsPickerFeatureMap_jni.h"
+#include "components/browser_ui/contacts_picker/android/features.h"
 
 namespace browser_ui {
 

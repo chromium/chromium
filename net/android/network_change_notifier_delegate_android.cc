@@ -10,8 +10,6 @@
 #include "base/notreached.h"
 #include "net/android/network_change_notifier_android.h"
 #include "net/base/features.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/net_jni_headers/NetworkActiveNotifier_jni.h"
 #include "net/net_jni_headers/NetworkChangeNotifier_jni.h"
 

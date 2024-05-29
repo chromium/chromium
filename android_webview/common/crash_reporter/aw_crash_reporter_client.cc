@@ -10,6 +10,7 @@
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
+#include "android_webview/crash_client_jni/AwCrashReporterClient_jni.h"
 #include "base/android/build_info.h"
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"
@@ -27,9 +28,6 @@
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_info_values.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/crash_client_jni/AwCrashReporterClient_jni.h"
 
 using base::android::AttachCurrentThread;
 

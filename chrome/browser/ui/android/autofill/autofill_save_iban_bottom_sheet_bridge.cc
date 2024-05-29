@@ -7,13 +7,11 @@
 #include <memory>
 
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/AutofillSaveIbanBottomSheetBridge_jni.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_delegate.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/AutofillSaveIbanBottomSheetBridge_jni.h"
 
 namespace autofill {
 

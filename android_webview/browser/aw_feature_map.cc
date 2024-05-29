@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "android_webview/browser_jni_headers/AwFeatureMap_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
@@ -11,9 +12,6 @@
 #include "base/no_destructor.h"
 #include "components/embedder_support/android/metrics/features.h"
 #include "components/safe_browsing/core/common/features.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/browser_jni_headers/AwFeatureMap_jni.h"
 
 namespace android_webview {
 

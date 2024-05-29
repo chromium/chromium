@@ -4,10 +4,8 @@
 
 #include "base/android/jni_string.h"
 #include "base/strings/string_util.h"
-#include "services/network/public/cpp/cors/cors.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/IntentHandler_jni.h"
+#include "services/network/public/cpp/cors/cors.h"
 
 using base::android::JavaParamRef;
 

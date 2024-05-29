@@ -6,7 +6,6 @@
 
 #include <optional>
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/base_jni/RadioUtils_jni.h"
 
 namespace base {

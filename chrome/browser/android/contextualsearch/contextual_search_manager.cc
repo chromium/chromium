@@ -26,7 +26,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
 
 using base::android::JavaParamRef;

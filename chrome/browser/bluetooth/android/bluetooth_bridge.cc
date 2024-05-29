@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/web_contents.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/bluetooth/android/jni_headers/BluetoothBridge_jni.h"
+#include "content/public/browser/web_contents.h"
 
 jboolean JNI_BluetoothBridge_IsWebContentsConnectedToBluetoothDevice(
     JNIEnv* env,

@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "android_webview/browser/metrics/android_metrics_provider.h"
+#include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
@@ -26,9 +27,6 @@
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/android/channel_getter.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
 
 namespace android_webview {
 

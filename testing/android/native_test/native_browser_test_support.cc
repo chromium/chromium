@@ -9,7 +9,6 @@
 // These markers are read by the test runner script to generate test results.
 // It installs signal handlers to detect crashes.
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "testing/android/native_test/native_browser_test_jni/NativeBrowserTest_jni.h"
 
 namespace testing {

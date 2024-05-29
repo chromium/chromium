@@ -14,8 +14,6 @@
 #include "mojo/public/cpp/bindings/tests/nullable_value_types_enums.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/interfaces/bindings/tests/nullable_value_types.mojom.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/mojo_javatests_jni/NullableValueTypesTestUtil_jni.h"
 
 namespace mojo {

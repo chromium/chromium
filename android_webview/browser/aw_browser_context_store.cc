@@ -11,6 +11,7 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser_jni_headers/AwBrowserContextStore_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -28,9 +29,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/browser_jni_headers/AwBrowserContextStore_jni.h"
 
 namespace android_webview {
 

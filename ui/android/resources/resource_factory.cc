@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "ui/android/resources/nine_patch_resource.h"
-#include "ui/gfx/geometry/rect.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/ResourceFactory_jni.h"
+#include "ui/gfx/geometry/rect.h"
 
 using jni_zero::JavaParamRef;
 

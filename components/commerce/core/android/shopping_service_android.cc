@@ -11,12 +11,10 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/commerce/core/android/core_jni/ShoppingService_jni.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/commerce/core/android/core_jni/ShoppingService_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

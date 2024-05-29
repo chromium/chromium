@@ -8,10 +8,8 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "components/payments/core/currency_formatter.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/payments/content/android/jni_headers/CurrencyFormatter_jni.h"
+#include "components/payments/core/currency_formatter.h"
 
 namespace payments {
 namespace {

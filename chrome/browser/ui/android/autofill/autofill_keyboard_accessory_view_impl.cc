@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chrome/android/features/keyboard_accessory/internal/jni/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
@@ -25,9 +26,6 @@
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/android/gurl_android.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/features/keyboard_accessory/internal/jni/AutofillKeyboardAccessoryViewBridge_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;

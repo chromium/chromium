@@ -15,13 +15,11 @@
 #include "components/viz/common/viz_utils.h"
 #include "ui/android/screen_android.h"
 #include "ui/android/ui_android_features.h"
+#include "ui/android/ui_android_jni_headers/DisplayAndroidManager_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/display/display.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/icc_profile.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "ui/android/ui_android_jni_headers/DisplayAndroidManager_jni.h"
 
 namespace ui {
 

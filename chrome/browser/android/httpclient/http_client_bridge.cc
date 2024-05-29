@@ -16,7 +16,7 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/android/httpclient/jni_headers/SimpleHttpClient_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;

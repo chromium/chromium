@@ -14,11 +14,9 @@
 #include "base/scoped_observation.h"
 #include "components/data_sharing/internal/android/data_sharing_conversion_bridge.h"
 #include "components/data_sharing/internal/android/data_sharing_network_loader_android.h"
-#include "components/data_sharing/public/data_sharing_service.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/data_sharing/internal/jni_headers/DataSharingServiceImpl_jni.h"
 #include "components/data_sharing/internal/jni_headers/ObserverBridge_jni.h"
+#include "components/data_sharing/public/data_sharing_service.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

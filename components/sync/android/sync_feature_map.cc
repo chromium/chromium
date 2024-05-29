@@ -9,10 +9,8 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/no_destructor.h"
-#include "components/sync/base/features.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/sync/android/jni_headers/SyncFeatureMap_jni.h"
+#include "components/sync/base/features.h"
 
 namespace {
 // Array of features exposed through the Java SyncFeatureMap.

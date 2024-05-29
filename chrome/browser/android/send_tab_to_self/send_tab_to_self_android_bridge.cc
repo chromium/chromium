@@ -19,7 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/android/chrome_jni_headers/SendTabToSelfAndroidBridge_jni.h"
 #include "chrome/android/chrome_jni_headers/TargetDeviceInfo_jni.h"
 

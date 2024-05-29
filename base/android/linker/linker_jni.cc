@@ -7,6 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "base/android/linker/linker_jni.h"
 
 #include <android/dlext.h>
 #include <dlfcn.h>
@@ -22,9 +23,6 @@
 #include <unistd.h>
 
 #include <memory>
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/android/linker/linker_jni.h"
 
 namespace chromium_android_linker {
 

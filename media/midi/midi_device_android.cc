@@ -8,10 +8,8 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "media/midi/midi_output_port_android.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/midi/midi_jni_headers/MidiDeviceAndroid_jni.h"
+#include "media/midi/midi_output_port_android.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;

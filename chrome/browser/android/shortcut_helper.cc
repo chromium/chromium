@@ -14,6 +14,7 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/uuid.h"
+#include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
@@ -22,9 +23,6 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

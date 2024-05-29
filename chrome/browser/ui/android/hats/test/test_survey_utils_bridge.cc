@@ -7,8 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/hats/test/jni_headers/TestSurveyUtilsBridge_jni.h"
 
 namespace hats {

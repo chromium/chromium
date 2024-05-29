@@ -7,10 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/device_reauth/android/device_authenticator_android.h"
-#include "components/device_reauth/device_authenticator.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/device_reauth/android/jni_headers/DeviceAuthenticatorBridge_jni.h"
+#include "components/device_reauth/device_authenticator.h"
 
 using base::android::AttachCurrentThread;
 using device_reauth::BiometricsAvailability;

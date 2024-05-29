@@ -15,7 +15,7 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/consent_auditor/android/jni_headers/ConsentAuditorBridge_jni.h"
 
 using base::android::JavaParamRef;

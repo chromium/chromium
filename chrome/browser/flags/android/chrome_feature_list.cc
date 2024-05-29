@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
+#include "chrome/browser/flags/jni_headers/ChromeFeatureMap_jni.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -69,9 +70,6 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_features.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/flags/jni_headers/ChromeFeatureMap_jni.h"
 
 namespace chrome {
 namespace android {

@@ -16,7 +16,7 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/android/chrome_jni_headers/NotificationSuspender_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;

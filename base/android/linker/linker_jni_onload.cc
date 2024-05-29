@@ -9,7 +9,6 @@
 
 #include <jni.h>
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/android/linker/linker_jni.h"
 
 namespace chromium_android_linker {

@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/gl/gl_jni_headers/ScopedJavaSurfaceControl_jni.h"
 
 namespace gl {

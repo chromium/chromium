@@ -10,8 +10,6 @@
 
 #include "base/android/jni_string.h"
 #include "base/notreached.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/external_intents/android/jni_headers/ExternalIntentsFeatures_jni.h"
 
 namespace external_intents {

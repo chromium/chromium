@@ -7,13 +7,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "content/public/android/content_jni_headers/NavigationHandle_jni.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/http/http_response_headers.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "content/public/android/content_jni_headers/NavigationHandle_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

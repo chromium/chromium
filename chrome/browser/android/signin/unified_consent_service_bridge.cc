@@ -12,7 +12,7 @@
 #include "components/unified_consent/unified_consent_metrics.h"
 #include "components/unified_consent/unified_consent_service.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/signin/services/android/jni_headers/UnifiedConsentServiceBridge_jni.h"
 
 using base::android::JavaParamRef;

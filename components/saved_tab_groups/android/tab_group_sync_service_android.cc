@@ -12,11 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/saved_tab_groups/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/android/tab_group_sync_conversions_utils.h"
+#include "components/saved_tab_groups/jni_headers/TabGroupSyncServiceImpl_jni.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "url/android/gurl_android.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/saved_tab_groups/jni_headers/TabGroupSyncServiceImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;

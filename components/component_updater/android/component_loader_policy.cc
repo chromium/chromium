@@ -38,10 +38,8 @@
 #include "base/version.h"
 #include "components/component_updater/android/component_loader_policy_forward.h"
 #include "components/component_updater/android/components_info_holder.h"
-#include "components/update_client/utils.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/component_updater/android/embedded_component_loader_jni_headers/ComponentLoaderPolicyBridge_jni.h"
+#include "components/update_client/utils.h"
 
 namespace component_updater {
 namespace {

@@ -6,10 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/check.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h"
+#include "base/check.h"
 
 namespace base::android {
 

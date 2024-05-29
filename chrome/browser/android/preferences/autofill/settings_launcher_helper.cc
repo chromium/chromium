@@ -5,10 +5,8 @@
 #include "chrome/browser/android/preferences/autofill/settings_launcher_helper.h"
 
 #include "base/android/jni_android.h"
-#include "content/public/browser/web_contents.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/SettingsLauncherHelper_jni.h"
+#include "content/public/browser/web_contents.h"
 
 namespace autofill {
 

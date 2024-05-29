@@ -13,10 +13,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/policy/android/test_jni_headers/PolicyMapTestSupporter_jni.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
 namespace android {

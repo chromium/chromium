@@ -9,10 +9,8 @@
 #include "base/android/jni_string.h"
 #include "base/logging.h"
 #include "components/webxr/android/webxr_utils.h"
-#include "device/vr/android/xr_activity_state_handler.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webxr/android/xr_jni_headers/XrActivityListener_jni.h"
+#include "device/vr/android/xr_activity_state_handler.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;

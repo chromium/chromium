@@ -5,10 +5,8 @@
 #include "content/public/browser/android/browser_context_handle.h"
 
 #include "base/android/jni_android.h"
-#include "content/public/browser/browser_context.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/BrowserContextHandleImpl_jni.h"
+#include "content/public/browser/browser_context.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;

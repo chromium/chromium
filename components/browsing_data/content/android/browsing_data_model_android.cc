@@ -9,8 +9,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/functional/bind.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/browsing_data/content/android/jni_headers/BrowsingDataModel_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;

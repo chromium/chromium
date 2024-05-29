@@ -10,7 +10,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/prefetch/android/jni_headers/PreloadPagesSettingsBridge_jni.h"
 
 namespace prefetch {

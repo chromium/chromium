@@ -4,7 +4,6 @@
 
 #include "components/bookmarks/common/android/bookmark_id.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/bookmarks/common/android/bookmarks_jni_headers/BookmarkId_jni.h"
 
 namespace bookmarks {

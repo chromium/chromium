@@ -4,7 +4,6 @@
 
 #include "chrome/browser/android/compositor/scene_layer/solid_color_scene_layer.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/SolidColorSceneLayer_jni.h"
 
 namespace android {

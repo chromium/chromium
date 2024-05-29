@@ -7,11 +7,9 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenInstaller_jni.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenInstaller_jni.h"
 
 namespace webapps {
 

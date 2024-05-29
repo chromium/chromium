@@ -11,12 +11,10 @@
 #include "base/android/token_android.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/android/tab_group_sync_conversions_utils.h"
+#include "components/saved_tab_groups/jni_headers/TabGroupSyncConversionsBridge_jni.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "url/android/gurl_android.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/saved_tab_groups/jni_headers/TabGroupSyncConversionsBridge_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;

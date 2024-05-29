@@ -5,10 +5,8 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
-#include "components/password_manager/core/browser/password_form_manager.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/password_manager/android/test_support_jni_headers/PasswordManagerTestUtilsBridge_jni.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
 
 void JNI_PasswordManagerTestUtilsBridge_DisableServerPredictions(JNIEnv* env) {
   password_manager::PasswordFormManager::

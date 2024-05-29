@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "android_webview/test/embedded_test_server/aw_net_jni_headers/AwEmbeddedTestServerImpl_jni.h"
 #include "base/android/jni_array.h"
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
@@ -13,9 +14,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/client_hints.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/test/embedded_test_server/aw_net_jni_headers/AwEmbeddedTestServerImpl_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/android/chrome_jni_headers/UsbChooserDialog_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/url_constants.h"
@@ -24,9 +25,6 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/UsbChooserDialog_jni.h"
 
 namespace {
 

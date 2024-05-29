@@ -6,7 +6,6 @@
 
 #include <utility>
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/modules/dev_ui/provider/jni_headers/DevUiInstallListener_jni.h"
 
 namespace dev_ui {

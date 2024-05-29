@@ -4,10 +4,8 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/profiles/profile_metrics.h"
-#include "components/signin/public/base/signin_metrics.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/signin/services/android/jni_headers/SigninMetricsUtils_jni.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 static void JNI_SigninMetricsUtils_LogSigninUserActionForAccessPoint(
     JNIEnv* env,

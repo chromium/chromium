@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/crash/android/anr_build_id_provider.h"
 #include "components/crash/android/anr_skipped_reason.h"
+#include "components/minidump_uploader/minidump_uploader_jni_headers/CrashReportMimeWriter_jni.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
 #include "third_party/crashpad/crashpad/handler/minidump_to_upload_parameters.h"
@@ -25,9 +26,6 @@
 #include "third_party/crashpad/crashpad/util/net/http_body.h"
 #include "third_party/crashpad/crashpad/util/net/http_multipart_builder.h"
 #include "third_party/crashpad/crashpad/util/posix/signals.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/minidump_uploader/minidump_uploader_jni_headers/CrashReportMimeWriter_jni.h"
 
 namespace minidump_uploader {
 

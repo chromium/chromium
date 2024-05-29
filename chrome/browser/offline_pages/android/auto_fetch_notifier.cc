@@ -13,7 +13,7 @@
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/android/chrome_jni_headers/AutoFetchNotifier_jni.h"
 
 namespace offline_pages {

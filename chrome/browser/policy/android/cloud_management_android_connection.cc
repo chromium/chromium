@@ -6,8 +6,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/policy/android/jni_headers/CloudManagementAndroidConnection_jni.h"
 
 namespace policy {

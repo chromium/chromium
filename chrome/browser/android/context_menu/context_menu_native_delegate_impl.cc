@@ -9,6 +9,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "chrome/browser/contextmenu/jni_headers/ContextMenuNativeDelegateImpl_jni.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -17,9 +18,6 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/android/java_bitmap.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/contextmenu/jni_headers/ContextMenuNativeDelegateImpl_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

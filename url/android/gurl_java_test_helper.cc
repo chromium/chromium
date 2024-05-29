@@ -9,8 +9,6 @@
 #include "base/test/icu_test_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "url/j_test_jni_headers/GURLJavaTestHelper_jni.h"
 
 using base::android::AttachCurrentThread;

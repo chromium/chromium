@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
 #include "components/data_sharing/internal/fake_data_sharing_sdk_delegate.h"
+#include "components/data_sharing/internal/test_jni_headers/TestServiceObserver_jni.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -18,9 +19,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/data_sharing/internal/test_jni_headers/TestServiceObserver_jni.h"
 
 namespace data_sharing {
 

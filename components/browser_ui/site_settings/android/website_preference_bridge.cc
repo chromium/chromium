@@ -23,6 +23,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "components/browser_ui/site_settings/android/site_settings_jni_headers/WebsitePreferenceBridge_jni.h"
 #include "components/browser_ui/site_settings/android/storage_info_fetcher.h"
 #include "components/browser_ui/site_settings/android/website_preference_bridge_util.h"
 #include "components/browsing_data/content/cookie_helper.h"
@@ -59,9 +60,6 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/browser_ui/site_settings/android/site_settings_jni_headers/WebsitePreferenceBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
