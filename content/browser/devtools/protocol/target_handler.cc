@@ -1009,7 +1009,7 @@ void TargetHandler::SetAutoAttach(
   }
   if (!auto_attach && filter && !filter->empty()) {
     callback->sendFailure(Response::InvalidParams(
-        "Target filter should be empty whien disabling auto-attach"));
+        "Target filter should be empty when disabling auto-attach"));
     return;
   }
   auto_attach_target_filter_ =
