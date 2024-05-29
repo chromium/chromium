@@ -2399,7 +2399,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
-      ExecuteModelResult::kDisconnectAndFallbackToServer, 1);
+      ExecuteModelResult::kDisconnectAndMaybeFallback, 1);
   EXPECT_TRUE(remote_execute_called_);
   ASSERT_TRUE(log_ai_data_request_passed_to_remote_);
   EXPECT_EQ(log_ai_data_request_passed_to_remote_->compose()

@@ -665,7 +665,7 @@ void SessionImpl::OnDisconnect() {
   if (on_device_state_->did_execute_and_waiting_for_on_complete() &&
       features::GetOnDeviceFallbackToServerOnDisconnect()) {
     DestroyOnDeviceStateAndFallbackToRemote(
-        ExecuteModelResult::kDisconnectAndFallbackToServer);
+        ExecuteModelResult::kDisconnectAndMaybeFallback);
     return;
   }
 

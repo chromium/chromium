@@ -287,8 +287,8 @@ chromium-metrics-reviews@google.com.
     Failed to create the response message.
   </int>
   <int value="4" label="Timed out">Timed out, and a result used server.</int>
-  <int value="5" label="Disconnect and fallback">
-    Received a disconnect and as a result used server.
+  <int value="5" label="Disconnect and maybe fallback">
+    Received a disconnect and maybe fallback.
   </int>
   <int value="6" label="Disconnect and cancel">
     Received a disconnect and cancelled.

@@ -94,9 +94,10 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     kFailedConstructingResponseMessage = 3,
     // Timed out and used server.
     kTimedOut = 4,
-    // Received a disconnect while waiting for response and used server.
-    kDisconnectAndFallbackToServer = 5,
-    // Received a disconnect whiel waiting for response and cancelled.
+    // Received a disconnect while waiting for response. This may trigger
+    // fallback to another model, e.g. on the server, if configured.
+    kDisconnectAndMaybeFallback = 5,
+    // Received a disconnect while waiting for response and cancelled.
     kDisconnectAndCancel = 6,
     // Response was cancelled because ExecuteModel() was called while waiting
     // for response.
