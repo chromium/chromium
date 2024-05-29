@@ -36,7 +36,7 @@ public class IpProtectionSettingsFragment extends PreferenceFragmentCompat {
     protected static final String IP_PROTECTION_PREF_HISTOGRAM_NAME =
             "Settings.IpProtection.Enabled";
 
-    private IpProtectionDelegate mDelegate;
+    private TrackingProtectionDelegate mDelegate;
 
     private CustomTabIntentHelper mCustomTabIntentHelper;
 
@@ -49,12 +49,12 @@ public class IpProtectionSettingsFragment extends PreferenceFragmentCompat {
     }
 
     /**
-     * Sets the {@link IpProtectionDelegate} which is later used to access Ip protection
+     * Sets the {@link TrackingProtectionDelegate} which is later used to access Ip protection
      * preferences.
      *
-     * @param delegate {@link IpProtectionDelegate} to set.
+     * @param delegate {@link TrackingProtectionDelegate} to set.
      */
-    public void setIProtectionDelegate(IpProtectionDelegate delegate) {
+    public void setTrackingProtectionDelegate(TrackingProtectionDelegate delegate) {
         mDelegate = delegate;
     }
 

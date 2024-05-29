@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentVi
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
-import org.chromium.chrome.browser.privacy_sandbox.ChromeIpProtectionDelegate;
 import org.chromium.chrome.browser.privacy_sandbox.ChromeTrackingProtectionDelegate;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment;
@@ -660,8 +659,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof IpProtectionSettingsFragment) {
             IpProtectionSettingsFragment ipProtectionSettingsFragment =
                     ((IpProtectionSettingsFragment) fragment);
-            ipProtectionSettingsFragment.setIProtectionDelegate(
-                    new ChromeIpProtectionDelegate(mProfile));
+            ipProtectionSettingsFragment.setTrackingProtectionDelegate(
+                    new ChromeTrackingProtectionDelegate(mProfile));
             ipProtectionSettingsFragment.setCustomTabIntentHelper(
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
         }

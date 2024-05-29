@@ -262,8 +262,13 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
+    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
+    @Features.DisableFeatures({
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
+        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH
+    })
     public void testIpProtectionFragment() throws IOException {
+        setShowTrackingProtection(false);
         mSettingsActivityTestRule.startSettingsActivity();
         // Scroll down and open Privacy Sandbox page.
         scrollToSetting(withText(R.string.ip_protection_title));
@@ -336,9 +341,14 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
+    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
+    @Features.DisableFeatures({
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
+        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH
+    })
     public void testIpProtectionSettingsE2E() throws ExecutionException {
         setIpProtection(false);
+        setShowTrackingProtection(false);
         mSettingsActivityTestRule.startSettingsActivity();
         // Scroll down and open Privacy Sandbox page.
         scrollToSetting(withText(R.string.ip_protection_title));
@@ -347,6 +357,25 @@ public class PrivacySettingsFragmentTest {
         onView(withText(R.string.ip_protection_title)).check(matches(isDisplayed()));
         onView(allOf(withText(R.string.text_off), isDisplayed())).perform(click());
         assertTrue(isIpProtectionEnabled());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
+        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH
+    })
+    public void testIpProtectionSettingsWithTrackingProtectionEnabled() throws ExecutionException {
+        setIpProtection(false);
+        mSettingsActivityTestRule.startSettingsActivity();
+        waitForOptionsMenu();
+
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        Preference ipProtectionPreference =
+                fragment.findPreference(PrivacySettings.PREF_IP_PROTECTION);
+
+        assertFalse(ipProtectionPreference.isVisible());
     }
 
     @Test

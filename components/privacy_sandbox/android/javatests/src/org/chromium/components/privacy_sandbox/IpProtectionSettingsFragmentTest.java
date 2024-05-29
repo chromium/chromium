@@ -44,7 +44,7 @@ public class IpProtectionSettingsFragmentTest {
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
             new BlankUiTestActivitySettingsTestRule();
 
-    @Mock private IpProtectionDelegate mDelegate;
+    @Mock private TrackingProtectionDelegate mDelegate;
 
     private IpProtectionSettingsFragment mFragment;
 
@@ -65,7 +65,7 @@ public class IpProtectionSettingsFragmentTest {
                 null,
                 (fragment) ->
                         ((IpProtectionSettingsFragment) fragment)
-                                .setIProtectionDelegate(mDelegate));
+                                .setTrackingProtectionDelegate(mDelegate));
         mFragment = (IpProtectionSettingsFragment) mSettingsRule.getPreferenceFragment();
     }
 

@@ -67,7 +67,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
     private static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
     private static final String PREF_TRACKING_PROTECTION = "tracking_protection";
-    private static final String PREF_IP_PROTECTION = "ip_protection";
+    @VisibleForTesting static final String PREF_IP_PROTECTION = "ip_protection";
     @VisibleForTesting static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
 
     @VisibleForTesting
@@ -362,7 +362,8 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     }
 
     private boolean shouldShowIpProtectionUI() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
+        return !showTrackingProtectionUI()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1);
     }
 
     @Override
