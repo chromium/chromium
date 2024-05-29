@@ -46,10 +46,8 @@ InProgressInfo CreateInProgressInfo() {
   info.bytes_wasted = 1234;
   info.auto_resume_count = 3;
   info.fetch_error_body = true;
-  info.request_headers.emplace_back(
-      std::make_pair<std::string, std::string>("123", "456"));
-  info.request_headers.emplace_back(
-      std::make_pair<std::string, std::string>("ABC", "def"));
+  info.request_headers.emplace_back("123", "456");
+  info.request_headers.emplace_back("ABC", "def");
   info.credentials_mode = ::network::mojom::CredentialsMode::kOmit;
   return info;
 }
@@ -82,10 +80,8 @@ TEST_F(DownloadDBConversionsTest, DownloadEntry) {
   entry.ukm_download_id = 123;
   entry.bytes_wasted = 1234;
   entry.fetch_error_body = true;
-  entry.request_headers.emplace_back(
-      std::make_pair<std::string, std::string>("123", "456"));
-  entry.request_headers.emplace_back(
-      std::make_pair<std::string, std::string>("ABC", "def"));
+  entry.request_headers.emplace_back("123", "456");
+  entry.request_headers.emplace_back("ABC", "def");
   EXPECT_EQ(entry, DownloadEntryFromProto(DownloadEntryToProto(entry)));
 }
 
@@ -96,17 +92,14 @@ TEST_F(DownloadDBConversionsTest, DownloadEntries) {
 
   // Entries vector with one entry.
   DownloadUrlParameters::RequestHeadersType request_headers;
-  entries.push_back(DownloadEntry("guid", "request origin",
-                                  DownloadSource::UNKNOWN, false,
-                                  request_headers, 123));
+  entries.emplace_back("guid", "request origin", DownloadSource::UNKNOWN, false,
+                       request_headers, 123);
   EXPECT_EQ(entries, DownloadEntriesFromProto(DownloadEntriesToProto(entries)));
 
   // Entries vector with multiple entries.
-  request_headers.emplace_back(
-      DownloadUrlParameters::RequestHeadersNameValuePair("key", "value"));
-  entries.push_back(DownloadEntry("guid2", "request origin",
-                                  DownloadSource::UNKNOWN, true,
-                                  request_headers, 456));
+  request_headers.emplace_back("key", "value");
+  entries.emplace_back("guid2", "request origin", DownloadSource::UNKNOWN, true,
+                       request_headers, 456);
   EXPECT_EQ(entries, DownloadEntriesFromProto(DownloadEntriesToProto(entries)));
 }
 
