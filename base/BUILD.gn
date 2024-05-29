@@ -1064,13 +1064,11 @@ component("base") {
     ":check_version_internal",
     ":message_pump_buildflags",
     "//base/allocator:buildflags",
-    "//base/allocator/partition_allocator:raw_ptr",
     "//base/third_party/double_conversion",
     "//build:blink_buildflags",
     "//build:branding_buildflags",
     "//build:ios_buildflags",
     "//build/config/compiler:compiler_buildflags",
-    "//third_party/abseil-cpp:absl",
     "//third_party/modp_b64",
   ]
 
