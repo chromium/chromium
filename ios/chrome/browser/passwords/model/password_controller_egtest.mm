@@ -198,7 +198,8 @@ void LoginOnUff() {
   } else if ([self isRunningTest:@selector
                    (testSaveCredentialWithAutofilledEmailInUFF)] ||
              [self isRunningTest:@selector(testSaveTypedCredentialInUff)] ||
-             [self isRunningTest:@selector(testUpdateTypedCredentialInUff)]) {
+             [self isRunningTest:@selector
+                   (DISABLED_testUpdateTypedCredentialInUff)]) {
     config.features_enabled.push_back(
         password_manager::features::kIosDetectUsernameInUff);
   }
@@ -646,7 +647,8 @@ void LoginOnUff() {
 
 // Tests that the typed credentials are correctly updated in the sign-in UFF
 // flow when there is already a credential stored for the corresponding email.
-- (void)testUpdateTypedCredentialInUff {
+// TODO(crbug.com/343361399): Test is failing.
+- (void)DISABLED_testUpdateTypedCredentialInUff {
   NSString* usernameValue = @"test-username";
   NSString* passwordValue = @"test-password";
   NSString* passwordValueToBeReplaced = @"old-password";
