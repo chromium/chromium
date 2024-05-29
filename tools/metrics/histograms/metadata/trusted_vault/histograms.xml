@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain"
-    enum="SecurityDomainId" expires_after="2024-06-14">
+    enum="SecurityDomainId" expires_after="2025-01-31">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.JavascriptSetClientEncryptionKeysValidArgs"
-    enum="BooleanValid" expires_after="2024-06-14">
+    enum="BooleanValid" expires_after="2025-01-31">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.SetEncryptionKeysForSecurityDomain{ProfileType}"
-    enum="SecurityDomainId" expires_after="2024-06-14">
+    enum="SecurityDomainId" expires_after="2025-01-31">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
