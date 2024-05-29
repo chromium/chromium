@@ -220,10 +220,7 @@ export class InfiniteList extends PolymerElement {
   private createAndInsertDomItem_(index: number) {
     const instance = this.createItemInstance_(index);
     this.instances_[index] = instance;
-    // Offset the insertion index to take into account the template elements
-    // that are present in the light DOM.
-    this.insertBefore(
-        instance.root, this.children[index + this.instanceConstructors_.size]!);
+    this.insertBefore(instance.root, this.children[index]!);
   }
 
   private createItemInstance_(itemIndex: number): TemplateInstanceBase
@@ -237,6 +234,7 @@ export class InfiniteList extends PolymerElement {
         {item, index: this.selectableIndexToItemIndex_!.invGet(itemIndex)} :
         {item};
     const instance = new instanceConstructor(args);
+    instance.children[0]!.setAttribute('slot', 'items');
 
     if (itemSelectable) {
       instance.children[0]!.classList.add(SELECTABLE_CLASS_NAME);
@@ -254,7 +252,10 @@ export class InfiniteList extends PolymerElement {
     // ensured by the logic that observes the items array.
     const domItemCount = this.instances_.length;
     assert(domItemCount);
-    const lastDomItem = this.lastElementChild as HTMLElement;
+    const lastDomItem =
+        this.shadowRoot!.querySelector<HTMLSlotElement>('slot[name=\'items\']')!
+            .assignedElements()
+            .at(-1) as HTMLElement;
     return (lastDomItem.offsetTop + lastDomItem.offsetHeight) / domItemCount;
   }
 

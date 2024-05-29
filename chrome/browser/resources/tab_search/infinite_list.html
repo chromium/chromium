@@ -15,6 +15,7 @@
       on-iron-select="onSelectedChanged_"
       selectable="[[selectableSelector_()]]" selected-class="selected"
       on-selected-item-changed="onSelectedItemChanged_">
-    <slot></slot>
+    <slot name="items"></slot>
   </iron-selector>
+  <slot></slot>
 </div>
