@@ -32,10 +32,10 @@ crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Pas
 crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/constant.https.any.worker.html?gpu [ Timeout ]
-virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pad.https.any.worker.html?gpu [ Timeout ]
-virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Timeout ]
-virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/prelu.https.any.worker.html?gpu [ Timeout ]
+crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/constant.https.any.worker.html?gpu [ Timeout ]
+crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pad.https.any.worker.html?gpu [ Timeout ]
+crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Timeout ]
+crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/prelu.https.any.worker.html?gpu [ Timeout ]
 crbug.com/341972219 virtual/gpu-rasterization/external/wpt/css/css-images/gradient/gradient-eval-001.html [ Failure ]
 crbug.com/341972219 virtual/gpu-rasterization/external/wpt/css/css-images/gradient/gradient-eval-002.html [ Failure ]
 crbug.com/341972219 virtual/gpu-rasterization/external/wpt/css/css-images/gradient/gradient-eval-003.html [ Failure ]
