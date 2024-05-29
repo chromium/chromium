@@ -35,6 +35,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/stack_frame.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -313,7 +314,7 @@ void CookiesGetFunction::NotifyExtensionTelemetry() {
   auto cookies_get_signal = std::make_unique<safe_browsing::CookiesGetSignal>(
       extension_id(), parsed_args_->details.name,
       parsed_args_->details.store_id.value_or(std::string()),
-      parsed_args_->details.url);
+      parsed_args_->details.url, js_callstack().value_or(StackTrace()));
   telemetry_service->AddSignal(std::move(cookies_get_signal));
 }
 
@@ -423,7 +424,7 @@ void CookiesGetAllFunction::NotifyExtensionTelemetry() {
           parsed_args_->details.secure,
           parsed_args_->details.store_id.value_or(std::string()),
           parsed_args_->details.url.value_or(std::string()),
-          parsed_args_->details.session);
+          parsed_args_->details.session, js_callstack().value_or(StackTrace()));
   telemetry_service->AddSignal(std::move(cookies_get_all_signal));
 }
 

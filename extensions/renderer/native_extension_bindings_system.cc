@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -415,10 +416,11 @@ const char* const kWebAvailableFeatures[] = {
 // sending an API request to the browser.
 bool ShouldCollectJSStackTrace(const APIRequestHandler::Request& request) {
   // NOTE: Please consider throttling the stack collection if you add any
-  // methods here that may be expected be called very frequently to reduce
+  // methods here that may be expected to be called very frequently to reduce
   // any performance impacts.
-  constexpr const char* kApiMethods[] = {
-      "tabs.create", "tabs.update", "tabs.remove", "tabs.captureVisibleTab"};
+  static constexpr const char* kApiMethods[] = {
+      "tabs.create", "tabs.update", "tabs.remove", "tabs.captureVisibleTab",
+      "cookies.get", "cookies.getAll"};
 
   if (!base::FeatureList::IsEnabled(
           extensions_features::kIncludeJSCallStackInExtensionApiRequest)) {
@@ -895,7 +897,13 @@ void NativeExtensionBindingsSystem::SendRequest(
       << script_context->GetDebugString();
 
   if (!params->extension_id.empty() && ShouldCollectJSStackTrace(*request)) {
+    auto start_time = base::TimeTicks::Now();
     auto stack_trace = script_context->GetStackTrace(/*frame_limit=*/5);
+    auto end_time = base::TimeTicks::Now();
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.Functions.ExtractJSCallStackElapsedTime",
+        end_time - start_time, base::Microseconds(1), base::Milliseconds(10),
+        50);
     params->js_callstack = std::move(stack_trace);
   } else {
     params->js_callstack = std::nullopt;
