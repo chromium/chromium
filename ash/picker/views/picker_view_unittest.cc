@@ -205,7 +205,7 @@ PickerView* GetPickerViewFromWidget(views::Widget& widget) {
 // Gets the first category item view that can be clicked to select a category.
 PickerItemView* GetFirstCategoryItemView(PickerView* picker_view) {
   return picker_view->zero_state_view_for_testing()
-      .section_views_for_testing()
+      .category_section_views_for_testing()
       .begin()
       ->second->item_views_for_testing()[0];
 }

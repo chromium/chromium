@@ -95,8 +95,13 @@ PickerZeroStateView::PickerZeroStateView(
     item_view->SetLeadingIcon(GetIconForPickerCategory(category));
     GetOrCreateSectionView(category)->AddListItem(std::move(item_view));
   }
-
   SetPseudoFocusedView(section_list_view_->GetTopItem());
+
+  // TODO: b/343092747 - Move this to the top once the `primary_section_view_`
+  // always has at least one child.
+  if (primary_section_view_ == nullptr) {
+    primary_section_view_ = section_list_view_->AddSectionAt(0);
+  }
 }
 
 PickerZeroStateView::~PickerZeroStateView() = default;
@@ -215,15 +220,15 @@ void PickerZeroStateView::AdvancePseudoFocus(PseudoFocusDirection direction) {
 PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
     PickerCategory category) {
   const PickerCategoryType category_type = GetPickerCategoryType(category);
-  auto section_view_iterator = section_views_.find(category_type);
-  if (section_view_iterator != section_views_.end()) {
+  auto section_view_iterator = category_section_views_.find(category_type);
+  if (section_view_iterator != category_section_views_.end()) {
     return section_view_iterator->second;
   }
 
   auto* section_view = section_list_view_->AddSection();
   section_view->AddTitleLabel(
       GetSectionTitleForPickerCategoryType(category_type));
-  section_views_.insert({category_type, section_view});
+  category_section_views_.insert({category_type, section_view});
   return section_view;
 }
 
@@ -277,13 +282,13 @@ void PickerZeroStateView::OnFetchRecentResults(
   if (results.empty()) {
     return;
   }
-  if (!recent_section_view_) {
-    recent_section_view_ = section_list_view_->AddSectionAt(0);
-    recent_section_view_->AddTitleLabel(
-        GetSectionTitleForPickerSectionType(PickerSectionType::kNone));
+  // TODO: b/343092747 - Remove this to the top once the `primary_section_view_`
+  // always has at least one child.
+  if (primary_section_view_ == nullptr) {
+    primary_section_view_ = section_list_view_->AddSectionAt(0);
   }
   for (const auto& result : results) {
-    PickerItemView* view = recent_section_view_->AddResult(
+    PickerItemView* view = primary_section_view_->AddResult(
         result, &preview_controller_,
         base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                             weak_ptr_factory_.GetWeakPtr(), result));

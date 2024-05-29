@@ -104,12 +104,13 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
   PickerZeroStateView view(&mock_delegate, kAllCategories, {}, kPickerWidth,
                            &asset_fetcher_);
 
-  EXPECT_THAT(view.section_views_for_testing(),
+  EXPECT_THAT(view.category_section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kEditorWrite),
                           Key(PickerCategoryType::kEditorRewrite),
                           Key(PickerCategoryType::kGeneral),
                           Key(PickerCategoryType::kCalculations)));
-  EXPECT_THAT(view.RecentSectionForTesting(), IsNull());
+  EXPECT_THAT(view.PrimarySectionForTesting().item_views_for_testing(),
+              IsEmpty());
 }
 
 TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
@@ -120,9 +121,9 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
       &mock_delegate, std::vector<PickerCategory>{PickerCategory::kExpressions},
       std::vector<PickerCategory>{}, kPickerWidth, &asset_fetcher_));
   widget->Show();
-  ASSERT_THAT(view->section_views_for_testing(),
+  ASSERT_THAT(view->category_section_views_for_testing(),
               Contains(Key(PickerCategoryType::kGeneral)));
-  ASSERT_THAT(view->section_views_for_testing()
+  ASSERT_THAT(view->category_section_views_for_testing()
                   .find(PickerCategoryType::kGeneral)
                   ->second->item_views_for_testing(),
               Not(IsEmpty()));
@@ -131,7 +132,7 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
               SelectZeroStateCategory(PickerCategory::kExpressions))
       .Times(1);
 
-  PickerItemView* category_view = view->section_views_for_testing()
+  PickerItemView* category_view = view->category_section_views_for_testing()
                                       .find(PickerCategoryType::kGeneral)
                                       ->second->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(category_view);
@@ -167,9 +168,10 @@ TEST_F(PickerZeroStateViewTest, ShowsRecentItems) {
                       u"test drive file")))))
       .Times(1);
 
-  ASSERT_THAT(view->RecentSectionForTesting(), Not(IsNull()));
+  ASSERT_THAT(view->PrimarySectionForTesting().item_views_for_testing(),
+              Not(IsEmpty()));
   PickerItemView* item_view =
-      view->RecentSectionForTesting()->item_views_for_testing()[0];
+      view->PrimarySectionForTesting().item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
 }
@@ -184,7 +186,7 @@ TEST_F(PickerZeroStateViewTest,
                            {}, kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
-      view.section_views_for_testing(),
+      view.category_section_views_for_testing(),
       ElementsAre(Pair(
           PickerCategoryType::kEditorRewrite,
           Pointee(Property("GetVisible", &views::View::GetVisible, false)))));
@@ -212,7 +214,7 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItems) {
                            {}, kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
-      view.section_views_for_testing(),
+      view.category_section_views_for_testing(),
       ElementsAre(Pair(
           PickerCategoryType::kEditorRewrite,
           Pointee(AllOf(
