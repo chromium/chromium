@@ -34,7 +34,7 @@ class ScopedEmbeddingsModelInfoStatusLogger {
   ScopedEmbeddingsModelInfoStatusLogger() = default;
   ~ScopedEmbeddingsModelInfoStatusLogger() {
     CHECK_NE(history_embeddings::EmbeddingsModelInfoStatus::kUnknown, status_);
-    base::UmaHistogramEnumeration("History.Embeddings.Embedder.ModelInfoStatus",
+    base::UmaHistogramEnumeration(history_embeddings::kModelInfoMetricName,
                                   status_);
   }
 

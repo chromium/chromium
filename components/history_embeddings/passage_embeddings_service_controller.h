@@ -13,6 +13,9 @@
 
 namespace history_embeddings {
 
+inline constexpr char kModelInfoMetricName[] =
+    "History.Embeddings.Embedder.ModelInfoStatus";
+
 enum class EmbeddingsModelInfoStatus {
   kUnknown = 0,
 
