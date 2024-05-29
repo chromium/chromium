@@ -318,6 +318,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
     targetContentHash: `sha256:${scriptHash}`,
     targetURLHash: sourceURL ? makeAPIHash(sourceURL) : undefined,
     targetMapURLHash: makeAPIHash(sourceMapURL),
+    timestamp: Date.now(),
   }));
 
   for (const { offset, url } of sources) {
@@ -340,6 +341,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
       recordingId,
       parentId: id,
       parentOffset: offset,
+      timestamp: Date.now(),
     }));
   }
   } catch (err) {
