@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for {@link ImageFetcher}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class ImageFetcherIntegrationTest {
     @ClassRule public static final ChromeBrowserTestRule sRule = new ChromeBrowserTestRule();
 
