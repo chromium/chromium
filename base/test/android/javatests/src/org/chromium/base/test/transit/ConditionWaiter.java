@@ -17,6 +17,8 @@ import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
@@ -82,7 +84,9 @@ public class ConditionWaiter {
                     status = mCondition.check();
                 }
             } catch (Exception e) {
-                status = Condition.error(e.getMessage());
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                status = Condition.error(sw.toString());
             }
 
             mStatusStore.report(status);
