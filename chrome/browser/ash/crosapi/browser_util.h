@@ -109,23 +109,6 @@ enum class MigrationStatus {
   kMaxValue = kMaxAttemptReached,
 };
 
-extern const ComponentInfo kLacrosDogfoodCanaryInfo;
-extern const ComponentInfo kLacrosDogfoodDevInfo;
-extern const ComponentInfo kLacrosDogfoodBetaInfo;
-extern const ComponentInfo kLacrosDogfoodStableInfo;
-
-// The default update channel to leverage for Lacros when the channel is
-// unknown.
-extern const version_info::Channel kLacrosDefaultChannel;
-
-// A command-line switch that can also be set from chrome://flags for selecting
-// the channel for Lacros updates.
-extern const char kLacrosStabilitySwitch[];
-extern const char kLacrosStabilityChannelCanary[];
-extern const char kLacrosStabilityChannelDev[];
-extern const char kLacrosStabilityChannelBeta[];
-extern const char kLacrosStabilityChannelStable[];
-
 // The internal name in about_flags.cc for the `LacrosDataBackwardMigrationMode`
 // policy.
 inline constexpr const char

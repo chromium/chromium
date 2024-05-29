@@ -83,6 +83,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
+#include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -304,7 +305,7 @@ class BrowserVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate,
     // loaded by the manager.
     if (IsNewerBrowserAvailable()) {
       const auto component_version_number =
-          browser_util::GetInstalledLacrosComponentVersion(
+          ash::standalone_browser::GetInstalledLacrosComponentVersion(
               component_update_service_);
       CHECK(component_version_number.IsValid());
       return component_version_number;
@@ -320,7 +321,7 @@ class BrowserVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate,
     }
 
     const auto component_version_number =
-        browser_util::GetInstalledLacrosComponentVersion(
+        ash::standalone_browser::GetInstalledLacrosComponentVersion(
             component_update_service_);
     return (!browser_version_loaded_.IsValid() &&
             component_version_number.IsValid()) ||

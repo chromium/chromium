@@ -39,7 +39,6 @@
 using ash::standalone_browser::LacrosAvailability;
 using crosapi::browser_util::LacrosLaunchSwitchSource;
 using user_manager::User;
-using version_info::Channel;
 
 namespace crosapi {
 
@@ -528,24 +527,6 @@ TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlockBadJson) {
   ASSERT_TRUE(base::WriteFile(path, kContent));
 
   EXPECT_FALSE(browser_util::GetRootfsLacrosVersionMayBlock(path).IsValid());
-}
-
-TEST_F(BrowserUtilTest, StatefulLacrosSelectionUpdateChannel) {
-  // Assert that when no Lacros stability switch is specified, we return the
-  // "unknown" channel.
-  ASSERT_EQ(Channel::UNKNOWN,
-            browser_util::GetLacrosSelectionUpdateChannel(
-                ash::standalone_browser::LacrosSelection::kStateful));
-
-  // Assert that when a Lacros stability switch is specified, we return the
-  // relevant channel name associated to that switch value.
-  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  cmdline->AppendSwitchNative(browser_util::kLacrosStabilitySwitch,
-                              browser_util::kLacrosStabilityChannelBeta);
-  ASSERT_EQ(Channel::BETA,
-            browser_util::GetLacrosSelectionUpdateChannel(
-                ash::standalone_browser::LacrosSelection::kStateful));
-  cmdline->RemoveSwitch(browser_util::kLacrosStabilitySwitch);
 }
 
 TEST_F(BrowserUtilTest, GetMigrationStatusForUser) {

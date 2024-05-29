@@ -286,6 +286,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
@@ -1007,18 +1008,18 @@ const FeatureEntry::Choice kPreferDcheckChoices[] = {
 
 const FeatureEntry::Choice kLacrosStabilityChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {crosapi::browser_util::kLacrosStabilityChannelCanary,
-     crosapi::browser_util::kLacrosStabilitySwitch,
-     crosapi::browser_util::kLacrosStabilityChannelCanary},
-    {crosapi::browser_util::kLacrosStabilityChannelDev,
-     crosapi::browser_util::kLacrosStabilitySwitch,
-     crosapi::browser_util::kLacrosStabilityChannelDev},
-    {crosapi::browser_util::kLacrosStabilityChannelBeta,
-     crosapi::browser_util::kLacrosStabilitySwitch,
-     crosapi::browser_util::kLacrosStabilityChannelBeta},
-    {crosapi::browser_util::kLacrosStabilityChannelStable,
-     crosapi::browser_util::kLacrosStabilitySwitch,
-     crosapi::browser_util::kLacrosStabilityChannelStable},
+    {ash::standalone_browser::kLacrosStabilityChannelCanary,
+     ash::standalone_browser::kLacrosStabilitySwitch,
+     ash::standalone_browser::kLacrosStabilityChannelCanary},
+    {ash::standalone_browser::kLacrosStabilityChannelDev,
+     ash::standalone_browser::kLacrosStabilitySwitch,
+     ash::standalone_browser::kLacrosStabilityChannelDev},
+    {ash::standalone_browser::kLacrosStabilityChannelBeta,
+     ash::standalone_browser::kLacrosStabilitySwitch,
+     ash::standalone_browser::kLacrosStabilityChannelBeta},
+    {ash::standalone_browser::kLacrosStabilityChannelStable,
+     ash::standalone_browser::kLacrosStabilitySwitch,
+     ash::standalone_browser::kLacrosStabilityChannelStable},
 };
 
 const char kLacrosSelectionInternalName[] = "lacros-selection";

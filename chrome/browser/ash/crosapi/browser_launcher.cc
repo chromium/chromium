@@ -49,6 +49,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chromeos/ash/components/channel/channel_info.h"
+#include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
@@ -382,11 +383,11 @@ void SetUpEnvironment(ash::standalone_browser::LacrosSelection lacros_selection,
   // from picking up Finch experiments.
   version_info::Channel update_channel = version_info::Channel::UNKNOWN;
   if (ash::GetChannel() != version_info::Channel::UNKNOWN) {
-    update_channel =
-        browser_util::GetLacrosSelectionUpdateChannel(lacros_selection);
+    update_channel = ash::standalone_browser::GetLacrosSelectionUpdateChannel(
+        lacros_selection);
     // If we don't have channel information, we default to the "dev" channel.
     if (update_channel == version_info::Channel::UNKNOWN) {
-      update_channel = browser_util::kLacrosDefaultChannel;
+      update_channel = ash::standalone_browser::kLacrosDefaultChannel;
     }
   }
 

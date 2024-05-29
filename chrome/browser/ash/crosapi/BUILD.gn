@@ -597,6 +597,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/launcher_search:search_util",
     "//chrome/common/printing",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/components/dbus/cec_service:unit_tests",

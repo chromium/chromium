@@ -176,52 +176,6 @@ std::optional<LacrosAvailability> GetLacrosAvailability(
 
 }  // namespace
 
-constexpr char kLacrosStabilitySwitch[] = "lacros-stability";
-constexpr char kLacrosStabilityChannelCanary[] = "canary";
-constexpr char kLacrosStabilityChannelDev[] = "dev";
-constexpr char kLacrosStabilityChannelBeta[] = "beta";
-constexpr char kLacrosStabilityChannelStable[] = "stable";
-
-namespace {
-
-// Resolves the Lacros stateful channel in the following order:
-//   1. From the kLacrosStabilitySwitch command line flag if present.
-//   2. From the current ash channel.
-Channel GetStatefulLacrosChannel() {
-  static constexpr auto kStabilitySwitchToChannelMap =
-      base::MakeFixedFlatMap<std::string_view, Channel>({
-          {kLacrosStabilityChannelCanary, Channel::CANARY},
-          {kLacrosStabilityChannelDev, Channel::DEV},
-          {kLacrosStabilityChannelBeta, Channel::BETA},
-          {kLacrosStabilityChannelStable, Channel::STABLE},
-      });
-  std::string stability_switch_value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kLacrosStabilitySwitch);
-  if (!stability_switch_value.empty()) {
-    if (auto it = kStabilitySwitchToChannelMap.find(stability_switch_value);
-        it != kStabilitySwitchToChannelMap.end()) {
-      return it->second;
-    }
-  }
-  return ash::GetChannel();
-}
-
-}  // namespace
-
-// NOTE: If you change the lacros component names, you must also update
-// chrome/browser/component_updater/cros_component_installer_chromeos.cc
-const ComponentInfo kLacrosDogfoodCanaryInfo = {
-    "lacros-dogfood-canary", "hkifppleldbgkdlijbdfkdpedggaopda"};
-const ComponentInfo kLacrosDogfoodDevInfo = {
-    "lacros-dogfood-dev", "ldobopbhiamakmncndpkeelenhdmgfhk"};
-const ComponentInfo kLacrosDogfoodBetaInfo = {
-    "lacros-dogfood-beta", "hnfmbeciphpghlfgpjfbcdifbknombnk"};
-const ComponentInfo kLacrosDogfoodStableInfo = {
-    "lacros-dogfood-stable", "ehpjbaiafkpkmhjocnenjbbhmecnfcjb"};
-
-const Channel kLacrosDefaultChannel = Channel::DEV;
-
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
 const char kProfileDataBackwardMigrationCompletedForUserPref[] =
     "lacros.profile_data_backward_migration_completed_for_user";
@@ -460,59 +414,6 @@ void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map) {
       policy::key::kLacrosDataBackwardMigrationMode, base::Value::Type::STRING);
   g_lacros_data_backward_migration_mode = ParseLacrosDataBackwardMigrationMode(
       value ? value->GetString() : std::string_view());
-}
-
-ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel) {
-  // We default to the Dev component for UNKNOWN channels.
-  static constexpr auto kChannelToComponentInfoMap =
-      base::MakeFixedFlatMap<Channel, const ComponentInfo*>({
-          {Channel::UNKNOWN, &kLacrosDogfoodDevInfo},
-          {Channel::CANARY, &kLacrosDogfoodCanaryInfo},
-          {Channel::DEV, &kLacrosDogfoodDevInfo},
-          {Channel::BETA, &kLacrosDogfoodBetaInfo},
-          {Channel::STABLE, &kLacrosDogfoodStableInfo},
-      });
-  return *kChannelToComponentInfoMap.at(channel);
-}
-
-ComponentInfo GetLacrosComponentInfo() {
-  return GetLacrosComponentInfoForChannel(GetStatefulLacrosChannel());
-}
-
-Channel GetLacrosSelectionUpdateChannel(
-    ash::standalone_browser::LacrosSelection selection) {
-  switch (selection) {
-    case ash::standalone_browser::LacrosSelection::kRootfs:
-      // For 'rootfs' Lacros use the same channel as ash/OS. Obtained from
-      // the LSB's release track property.
-      return ash::GetChannel();
-    case ash::standalone_browser::LacrosSelection::kStateful:
-      // For 'stateful' Lacros directly check the channel of stateful-lacros
-      // that the user is on.
-      return GetStatefulLacrosChannel();
-    case ash::standalone_browser::LacrosSelection::kDeployedLocally:
-      // For locally deployed Lacros there is no channel so return unknown.
-      return Channel::UNKNOWN;
-  }
-}
-
-base::Version GetInstalledLacrosComponentVersion(
-    const component_updater::ComponentUpdateService* component_update_service) {
-  DCHECK(component_update_service);
-
-  const std::vector<component_updater::ComponentInfo>& components =
-      component_update_service->GetComponents();
-  const std::string& lacros_component_id = GetLacrosComponentInfo().crx_id;
-
-  LOG(WARNING) << "Looking for lacros-chrome component with id: "
-               << lacros_component_id;
-  auto it =
-      std::find_if(components.begin(), components.end(),
-                   [&](const component_updater::ComponentInfo& component_info) {
-                     return component_info.id == lacros_component_id;
-                   });
-
-  return it == components.end() ? base::Version() : it->version;
 }
 
 LacrosAvailability GetCachedLacrosAvailabilityForTesting() {

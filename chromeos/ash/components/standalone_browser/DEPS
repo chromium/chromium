@@ -26,5 +26,12 @@ specific_include_rules = {
     "+components/user_manager/fake_user_manager.h",
     "+components/user_manager/scoped_user_manager.h",
     "+components/user_manager/user.h",
-  ]
+  ],
+  "channel_util\.cc": [
+    "+chromeos/ash/components/channel/channel_info.h",
+    "+components/component_updater/component_updater_service.h",
+  ],
+  "channel_util_unittest\.cc": [
+    "+chromeos/ash/components/standalone_browser/lacros_selection.h",
+  ],
 }

@@ -24,7 +24,6 @@
 #include "base/values.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_constants.h"
@@ -36,6 +35,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"
@@ -222,7 +222,7 @@ void DeriveCommandLine(const GURL& start_url,
       switches::kLacrosChromeAdditionalArgs,
       switches::kLacrosChromeAdditionalEnv,
       switches::kLacrosChromePath,
-      crosapi::browser_util::kLacrosStabilitySwitch,
+      ash::standalone_browser::kLacrosStabilitySwitch,
       switches::kLoginProfile,
       switches::kNaturalScrollDefault,
       switches::kOobeForceTabletFirstRun,

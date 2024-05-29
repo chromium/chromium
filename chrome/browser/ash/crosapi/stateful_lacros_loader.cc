@@ -22,6 +22,7 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
@@ -87,8 +88,9 @@ void PreloadComponent(
 // which point this method will begin loading stateful lacros.
 // Returns the name of the component on success, empty string on failure.
 std::string CheckForComponentToPreloadMayBlock() {
-  browser_util::ComponentInfo info =
-      browser_util::GetLacrosComponentInfoForChannel(ash::GetChannel());
+  ash::standalone_browser::ComponentInfo info =
+      ash::standalone_browser::GetLacrosComponentInfoForChannel(
+          ash::GetChannel());
   bool registered = IsInstalledMayBlock(info.name);
   if (registered) {
     return info.name;
@@ -130,9 +132,10 @@ bool CheckInstalledAndMaybeRemoveUserDirectory(
 
 StatefulLacrosLoader::StatefulLacrosLoader(
     scoped_refptr<component_updater::ComponentManagerAsh> manager)
-    : StatefulLacrosLoader(manager,
-                           g_browser_process->component_updater(),
-                           browser_util::GetLacrosComponentInfo().name) {}
+    : StatefulLacrosLoader(
+          manager,
+          g_browser_process->component_updater(),
+          ash::standalone_browser::GetLacrosComponentInfo().name) {}
 
 StatefulLacrosLoader::StatefulLacrosLoader(
     scoped_refptr<component_updater::ComponentManagerAsh> manager,
@@ -273,7 +276,7 @@ void StatefulLacrosLoader::OnLoad(
       << static_cast<int>(error) << ", " << path;
 
   version_ = is_stateful_lacros_available
-                 ? browser_util::GetInstalledLacrosComponentVersion(
+                 ? ash::standalone_browser::GetInstalledLacrosComponentVersion(
                        component_update_service_)
                  : base::Version();
   path_ = path;
