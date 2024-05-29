@@ -2117,7 +2117,7 @@ pub(crate) mod parsing {
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
     impl Parse for ExprLet {
         fn parse(input: ParseStream) -> Result<Self> {
-            let allow_struct = AllowStruct(false);
+            let allow_struct = AllowStruct(true);
             expr_let(input, allow_struct)
         }
     }

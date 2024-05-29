@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.60"
 name = "syn"
-version = "2.0.65"
+version = "2.0.66"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 include = [
@@ -188,7 +188,7 @@ required-features = [
 ]
 
 [dependencies.proc-macro2]
-version = "1.0.80"
+version = "1.0.83"
 default-features = false
 
 [dependencies.quote]
