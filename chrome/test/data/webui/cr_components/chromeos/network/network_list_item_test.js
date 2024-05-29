@@ -617,6 +617,30 @@ suite('NetworkListItemTest', function() {
     assertFalse(eventTriggered);
   });
 
+  test('Disable VPN subpage button when Always-On VPN forced on', async () => {
+    init();
+
+    const properties =
+        OncMojo.getDefaultManagedProperties(NetworkType.kVPN, 'vpn');
+    mojoApi_.setManagedPropertiesForTest(properties);
+    listItem.networkState = OncMojo.managedPropertiesToNetworkState(properties);
+    listItem.isBuiltInVpnManagementBlocked = false;
+    await flushAsync();
+
+    const arrow = listItem.$$('#subpageButton');
+    let policyIcon = listItem.$$('#policyIcon');
+
+    assertFalse(arrow.disabled, 'subpage button is falsely disabled');
+    assertFalse(!!policyIcon, 'policy icon is falsely showing');
+
+    listItem.isBuiltInVpnManagementBlocked = true;
+    await flushAsync();
+
+    policyIcon = listItem.$$('#policyIcon');
+    assertTrue(arrow.disabled, 'subpage button is falsely enabled');
+    assertTrue(!!policyIcon, 'policy icon is falsely hidden');
+  });
+
   test(
       'Network disabled, no arrow and enter and click does not fire events',
       async () => {

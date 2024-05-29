@@ -537,21 +537,51 @@ suite('<settings-internet-subpage>', () => {
         await initSubpage();
         initVpn();
 
-        internetSubpage.isAddingBuiltInVpnProhibited = true;
+        internetSubpage.isBuiltInVpnManagementBlocked = true;
         await flushTasks();
 
         const addBuiltInVpnButton =
             internetSubpage.shadowRoot!.querySelector<HTMLButtonElement>(
                 '#addBuiltInVpnButton');
 
-        assertTrue(!!addBuiltInVpnButton);
-        assertTrue(addBuiltInVpnButton.disabled);
+        assertTrue(
+            !!addBuiltInVpnButton, 'add built in vpn button falsely hidden');
+        assertTrue(
+            addBuiltInVpnButton.disabled,
+            'add built in vpn button falsely enabled');
 
-        internetSubpage.isAddingBuiltInVpnProhibited = false;
+        internetSubpage.isBuiltInVpnManagementBlocked = false;
         await flushTasks();
 
-        assertTrue(!!addBuiltInVpnButton);
-        assertFalse(addBuiltInVpnButton.disabled);
+        assertTrue(
+            !!addBuiltInVpnButton, 'add built in vpn button falsely hidden');
+        assertFalse(
+            addBuiltInVpnButton.disabled,
+            'add built in vpn button falsely disabled');
+      });
+
+      test('Disable built-in VPN list subpage buttons', async () => {
+        createSubpage();
+        await initSubpage();
+        initVpn();
+
+        internetSubpage.isBuiltInVpnManagementBlocked = true;
+        await flushTasks();
+
+        let allNetworkLists =
+            internetSubpage.shadowRoot!.querySelectorAll<NetworkListElement>(
+                'network-list');
+
+        assertTrue(allNetworkLists[0]!.isBuiltInVpnManagementBlocked);
+
+        internetSubpage.isBuiltInVpnManagementBlocked = false;
+        await flushTasks();
+
+        allNetworkLists =
+            internetSubpage.shadowRoot!.querySelectorAll<NetworkListElement>(
+                'network-list');
+
+        assertFalse(allNetworkLists[0]!.isBuiltInVpnManagementBlocked);
       });
 
       test(

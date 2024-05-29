@@ -11,6 +11,7 @@ interface NetworkListElement extends LegacyElementMixin, HTMLElement {
   networks: OncMojo.NetworkStateProperties[];
   customItems: NetworkList.CustomItemState[];
   disabled: boolean;
+  isBuiltInVpnManagementBlocked: boolean;
 }
 
 declare global {

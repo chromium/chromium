@@ -142,9 +142,10 @@
             isESimUnactivatedProfile_)]]
       </div>
     </div>
-    <template is="dom-if" if="[[isPolicySource(networkState.source)]]">
-      <cr-policy-indicator indicator-type="[[getIndicatorTypeForSource(
-          networkState.source)]]">
+    <template is="dom-if" if="[[shouldShowPolicyIcon_(
+        isBuiltInVpnManagementBlocked, networkState.source)]]">
+      <cr-policy-indicator id="policyIcon" indicator-type="[[getPolicyIcon_(
+          isBuiltInVpnManagementBlocked, networkState.source)]]">
       </cr-policy-indicator>
     </template>
     <template is="dom-if"
@@ -167,9 +168,11 @@
     <template is="dom-if"
         if="[[isSubpageButtonVisible_(networkState, showButtons, disabled_,
           networkState.typeState.cellular.simLocked,
-          isPSimPendingActivationNetwork_, isPSimActivatingNetwork_)]]" restamp>
+          isPSimPendingActivationNetwork_, isPSimActivatingNetwork_,
+          isBuiltInVpnManagementBlocked)]]" restamp>
       <div>
         <cr-icon-button class="subpage-arrow"
+            disabled="[[disabled_]]"
             id="subpageButton"
             on-click="onSubpageArrowClick_"
             tabindex$="[[tabindex]]"

@@ -99,6 +99,11 @@ class NetworkListElement extends NetworkListElementBase {
       /** @type {!GlobalPolicy|undefined} */
       globalPolicy: Object,
 
+      isBuiltInVpnManagementBlocked: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * Contains |networks| + |customItems|.
        * @private {!Array<!NetworkList.NetworkListItemType>}

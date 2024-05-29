@@ -142,13 +142,13 @@
     <template is="dom-if" if="[[isShowingVpn_]]">
       <div class="vpn-header layout horizontal center">
         <div class="flex settings-box-text">$i18n{networkVpnBuiltin}</div>
-        <template is="dom-if" if="[[isAddingBuiltInVpnProhibited]]">
+        <template is="dom-if" if="[[isBuiltInVpnManagementBlocked]]">
           <cr-policy-indicator indicator-type="devicePolicy">
           </cr-policy-indicator>
         </template>
         <cr-icon-button class="icon-add-circle"
             id="addBuiltInVpnButton"
-            disabled="[[isAddingBuiltInVpnProhibited]]"
+            disabled="[[isBuiltInVpnManagementBlocked]]"
             aria-label="$i18n{internetAddVPN}"
             on-click="onAddVpnButtonClick_"
             tabindex$="[[tabindex]]">
@@ -164,6 +164,7 @@
       </template>
       <network-list id="networkList" show-buttons
           class="layout horizontal center"
+          is-built-in-vpn-management-blocked="[[isBuiltInVpnManagementBlocked]]"
           show-technology-badge="[[showTechnologyBadge_]]"
           networks="[[networkStateList_]]"
           global-policy="[[globalPolicy]]"

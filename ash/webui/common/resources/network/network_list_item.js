@@ -19,11 +19,12 @@ import './network_icon.js';
 import {assert} from '//resources/ash/common/assert.js';
 import {CellularSetupPageName} from '//resources/ash/common/cellular_setup/cellular_types.js';
 import {getESimProfileProperties} from '//resources/ash/common/cellular_setup/esim_manager_utils.js';
+import {CrPolicyIndicatorType} from '//resources/ash/common/cr_policy_indicator_behavior.js';
 import {FocusRowBehavior} from '//resources/ash/common/focus_row_behavior.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
-import {ActivationStateType, CrosNetworkConfigInterface, GlobalPolicy, SecurityType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, CrosNetworkConfigInterface, GlobalPolicy, SecurityType, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -53,7 +54,9 @@ Polymer({
       reflectToAttribute: true,
       observer: 'disabledChanged_',
       computed: 'computeDisabled_(deviceState, deviceState.inhibitReason,' +
-          'disableItem, isUserLoggedIn_, isPSimPendingActivationNetwork_)',
+          'disableItem, isUserLoggedIn_, isPSimPendingActivationNetwork_,' +
+          'isBuiltInVpnManagementBlocked, networkState,' +
+          'networkState.typeState.vpn, networkState.typeState.vpn.type)',
     },
 
     /**
@@ -61,6 +64,11 @@ Polymer({
      * @type {boolean}
      */
     disableItem: Boolean,
+
+    isBuiltInVpnManagementBlocked: {
+      type: Boolean,
+      value: false,
+    },
 
     /** @type {!NetworkList.NetworkListItemType|undefined} */
     item: {
@@ -304,6 +312,19 @@ Polymer({
         !!this.networkState.typeState.cellular.iccid;
   },
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isBuiltInVpn_() {
+    if (!this.networkState || this.networkState.type !== NetworkType.kVPN) {
+      return false;
+    }
+
+    const vpnType = this.networkState.typeState.vpn.type;
+    return vpnType === VpnType.kL2TPIPsec || vpnType === VpnType.kOpenVPN;
+  },
+
   /** @private */
   async itemChanged_() {
     if (this.item && !this.item.hasOwnProperty('customItemType')) {
@@ -420,6 +441,9 @@ Polymer({
    */
   computeDisabled_() {
     if (this.disableItem) {
+      return true;
+    }
+    if (this.isBuiltInVpn_() && this.isBuiltInVpnManagementBlocked) {
       return true;
     }
     if (!this.deviceState) {
@@ -781,6 +805,9 @@ Polymer({
     if (this.isPSimPendingActivationNetwork_ || this.isPSimActivatingNetwork_) {
       return true;
     }
+    if (this.isBuiltInVpn_() && this.isBuiltInVpnManagementBlocked) {
+      return true;
+    }
     return !!networkState && !disabled_ && !this.shouldShowUnlockButton_();
   },
 
@@ -1094,6 +1121,29 @@ Polymer({
     }
 
     return this.isBlockedWifiNetwork_();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowPolicyIcon_() {
+    if (this.isBuiltInVpn_() && this.isBuiltInVpnManagementBlocked) {
+      return true;
+    }
+
+    return !!this.networkState && this.isPolicySource(this.networkState.source);
+  },
+
+  /**
+   * @return {!CrPolicyIndicatorType}
+   */
+  getPolicyIcon_() {
+    if (this.isBuiltInVpn_() && this.isBuiltInVpnManagementBlocked) {
+      return CrPolicyIndicatorType.USER_POLICY;
+    }
+
+    return this.getIndicatorTypeForSource(this.networkState.source);
   },
 
   /**
