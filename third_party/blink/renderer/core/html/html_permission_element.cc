@@ -336,6 +336,11 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
 void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
   Element::DetachLayoutTree(performing_reattach);
   embedded_permission_control_receiver_.reset();
+  // We also need to remove all permission observer receivers from the set, to
+  // effectively stop listening the permission status change events.
+  permission_observer_receivers_.Clear();
+  permission_status_map_.clear();
+  permissions_granted_ = false;
   if (auto* view = GetDocument().View()) {
     view->UnregisterFromLifecycleNotifications(this);
   }
