@@ -6722,11 +6722,17 @@
 
     'chromeos_octopus_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
