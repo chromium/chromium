@@ -97,6 +97,7 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
   switch (command_id) {
     case base::to_underlying(CommandId::kShowSuggestions): {
       views::MenuItemView* item_view = menu->AppendMenuItem(command_id, label);
+      item_view->SetHighlightWhenSelectedWithChildViews(true);
       auto* switch_button =
           item_view->AddChildView(CreateShowSuggestionSwitch());
       switch_button->SetAccessibleName(label);
@@ -120,6 +121,7 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       // Creates a checkbox. The argument `button_width` is the minimum width of
       // the checkbox button. Since we are not going to limit the minimum size,
       // so it is set to 0.
+      item_view->SetHighlightWhenSelectedWithChildViews(true);
       auto* checkbox = item_view->AddChildView(std::make_unique<Checkbox>(
           /*button_width=*/0,
           base::BindRepeating(
