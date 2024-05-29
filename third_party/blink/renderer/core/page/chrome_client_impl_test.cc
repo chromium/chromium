@@ -383,8 +383,6 @@ TEST_F(FileChooserQueueTest, DerefQueuedChooser) {
 class AutofillChromeClientTest : public PageTestBase {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableSelectList);
     chrome_client_ = MakeGarbageCollected<FakeChromeClientForAutofill>();
     SetupPageWithClients(chrome_client_);
     GetFrame().GetSettings()->SetScriptEnabled(true);
@@ -396,7 +394,6 @@ class AutofillChromeClientTest : public PageTestBase {
   }
 
   Persistent<FakeChromeClientForAutofill> chrome_client_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Validates the JavaScriptChangedValue notification if JavaScript

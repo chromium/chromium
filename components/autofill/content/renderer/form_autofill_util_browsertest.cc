@@ -198,8 +198,7 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   FormAutofillUtilsTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillReplaceCachedWebElementsByRendererIds,
-         features::kAutofillEnableSelectList},
+        {features::kAutofillReplaceCachedWebElementsByRendererIds},
         /*disabled_features=*/{});
   }
   ~FormAutofillUtilsTest() override = default;
@@ -1513,30 +1512,7 @@ INSTANTIATE_TEST_SUITE_P(
       return cases;
     }()));
 
-// FormAutofillUtilsTest subclass for testing with and without
-// features::kAutofillEnableSelectList feature enabled.
-class SelectListAutofillParamTest : public FormAutofillUtilsTest,
-                                    public testing::WithParamInterface<bool> {
- public:
-  SelectListAutofillParamTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableSelectList, IsAutofillingSelectListEnabled());
-  }
-  ~SelectListAutofillParamTest() override = default;
-
-  bool IsAutofillingSelectListEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(FormAutofillUtilsTest,
-                         SelectListAutofillParamTest,
-                         ::testing::Bool());
-
-// Test that ExtractFormData() ignores <selectlist> if
-// features::kAutofillEnableSelectList is disabled.
-TEST_P(SelectListAutofillParamTest, WebFormElementToFormData) {
+TEST_F(FormAutofillUtilsTest, WebFormElementToFormData) {
   LoadHTML(R"(
     <form id='form'>
       <input id='input'>
@@ -1552,8 +1528,7 @@ TEST_P(SelectListAutofillParamTest, WebFormElementToFormData) {
   auto form_element = GetFormElementById(doc, "form");
   FormData form_data = *ExtractFormData(doc, form_element, field_data_manager(),
                                         /*extract_options=*/{});
-  EXPECT_EQ(form_data.fields.size(),
-            IsAutofillingSelectListEnabled() ? 2u : 1u);
+  EXPECT_EQ(form_data.fields.size(), 2u);
 
   {
     WebElement element = GetElementById(doc, "input");
@@ -1563,13 +1538,11 @@ TEST_P(SelectListAutofillParamTest, WebFormElementToFormData) {
                                       form_data.fields[0]));
   }
 
-  if (IsAutofillingSelectListEnabled()) {
-    WebElement element = GetElementById(doc, "selectlist");
-    ASSERT_FALSE(element.IsNull());
-    ASSERT_TRUE(element.IsFormControlElement());
-    EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
-                                      form_data.fields[1]));
-  }
+  WebElement element = GetElementById(doc, "selectlist");
+  ASSERT_FALSE(element.IsNull());
+  ASSERT_TRUE(element.IsFormControlElement());
+  EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
+                                    form_data.fields[1]));
 }
 
 // Tests that if the number of iframes exceeds kMaxExtractableChildFrames,

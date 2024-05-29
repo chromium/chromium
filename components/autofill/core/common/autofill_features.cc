@@ -181,12 +181,6 @@ BASE_FEATURE(kAutofillEnableAddressFieldParserNG,
              "AutofillEnableAddressFieldParserNG",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, autofill will fill <selectlist> elements.
-// TODO(crbug.com/40261659) Remove once autofilling <selectlist> is launched.
-BASE_FEATURE(kAutofillEnableSelectList,
-             "AutofillEnableSelectList",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, autofill displays an IPH informing users about using autofill
 // from the context menu. The IPH will be attached to address fields with
 // autocomplete="garbage".

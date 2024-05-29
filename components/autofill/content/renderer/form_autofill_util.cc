@@ -1751,8 +1751,7 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   return IsAutofillableInputElement(input_element) ||
          IsSelectElement(element) || IsTextAreaElement(element) ||
-         (IsSelectListElement(element) &&
-          base::FeatureList::IsEnabled(features::kAutofillEnableSelectList));
+         IsSelectListElement(element);
 }
 
 FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type) {

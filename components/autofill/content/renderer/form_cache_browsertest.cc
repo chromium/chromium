@@ -78,8 +78,6 @@ class FormCacheBrowserTest : public content::RenderViewTest {
     focus_test_utils_ = std::make_unique<test::FocusTestUtils>(
         base::BindRepeating(&FormCacheBrowserTest::ExecuteJavaScriptForTests,
                             base::Unretained(this)));
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableSelectList);
     field_data_manager_ = base::MakeRefCounted<FieldDataManager>();
   }
   ~FormCacheBrowserTest() override = default;
@@ -102,7 +100,6 @@ class FormCacheBrowserTest : public content::RenderViewTest {
   std::unique_ptr<test::FocusTestUtils> focus_test_utils_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<FieldDataManager> field_data_manager_;
 };
 

@@ -243,9 +243,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_EXPIRATION_DATE_IMPROVEMENTS,
                 "Enables various improvements to handling expiration dates."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_SELECT_LIST,
-                "Enables autofill of <selectlist> elements."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PHONE_NUMBER_TRUNK_TYPES,
                 "Rationalizes city-and-number and city-code fields to the "
                         + "correct trunk-prefix types."),

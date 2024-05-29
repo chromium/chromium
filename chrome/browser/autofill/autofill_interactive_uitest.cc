@@ -875,8 +875,7 @@ const char AutofillInteractiveTestBase::kTestUrlPath[] =
 
 class AutofillInteractiveTest : public AutofillInteractiveTestBase {
  protected:
-  AutofillInteractiveTest()
-      : feature_list_(features::kAutofillEnableSelectList) {}
+  AutofillInteractiveTest() = default;
   ~AutofillInteractiveTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -888,9 +887,6 @@ class AutofillInteractiveTest : public AutofillInteractiveTestBase {
     command_line->AppendSwitchASCII("enable-blink-features",
                                     "HTMLSelectListElement");
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class AutofillInteractiveTestWithHistogramTester
@@ -961,48 +957,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FillHiddenSelect) {
   EXPECT_EQ(kDefaultAddressValues.address1, GetFieldValueById("address1"));
   EXPECT_EQ(kDefaultAddressValues.city, GetFieldValueById("city"));
   EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
-}
-
-// AutofillInteractiveTest subclass which disables autofilling <selectlist>.
-class AutofillInteractiveDisableAutofillSelectListTest
-    : public AutofillInteractiveTest {
- protected:
-  AutofillInteractiveDisableAutofillSelectListTest() {
-    feature_list_.InitAndDisableFeature(features::kAutofillEnableSelectList);
-  }
-  ~AutofillInteractiveDisableAutofillSelectListTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test that the <selectlist> is not filled if the <selectlist> autofilling
-// feature is disabled.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectListTest,
-                       DisableSelectListAutofilling) {
-  const char kFormWithSelectListString[] = R"(
-    <!-- Disable extra network request for /favicon.ico -->
-    <link rel="icon" href="data:,">
-    <form action="https://www.example.com/" method="POST" id="shipping">
-      <label for="firstname">First name:</label>
-      <input type="text" id="firstname" autocomplete="given-name"><br>
-      <label for="state">State:</label>
-      <selectlist id="state" autocomplete="address-level1">
-        <option value="" selected="yes">--</option>
-        <option value="CA">California</option>
-        <option value="TX">Texas</option>
-      </selectlist>
-    </form>
-    )";
-
-  CreateTestProfile();
-  SetTestUrlResponse(kFormWithSelectListString);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
-
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  EXPECT_THAT(GetFormValues(),
-              ValuesAre({{"firstname", kDefaultAddressValues.first_name},
-                         {"state", ""}}));
 }
 
 class AutofillInteractiveTest_PrefillFormAndFill
