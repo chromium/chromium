@@ -88,7 +88,6 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
      * this class are not meant for general use, but instead only to access experimental features.
      * Experimental features may be deprecated in the future. Use at your own risk.
      */
-    // LINT.IfChange(builder)
     public static class Builder extends CronetEngine.Builder {
         /**
          * Constructs a {@link Builder} object that facilitates creating a {@link CronetEngine}. The
@@ -121,7 +120,8 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
          * @return the builder to facilitate chaining.
          */
         public Builder setExperimentalOptions(String options) {
-            mBuilderDelegate.setExperimentalOptions(options);
+            mParsedExperimentalOptions =
+                    ExperimentalOptionsTranslator.toJsonExperimentalOptions(options);
             return this;
         }
 
@@ -239,8 +239,6 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
             return buildExperimental();
         }
     }
-
-    // LINT.ThenChange(//components/cronet/android/api/src/org/chromium/net/ExperimentalOptionsTranslatingCronetEngineBuilder.java)
 
     @Override
     public abstract ExperimentalBidirectionalStream.Builder newBidirectionalStreamBuilder(

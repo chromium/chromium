@@ -80,6 +80,7 @@ public abstract class org.chromium.net.CronetEngine$Builder$LibraryLoader {
   public abstract void loadLibrary(java.lang.String);
 }
 public class org.chromium.net.CronetEngine$Builder {
+  protected org.json.JSONObject mParsedExperimentalOptions;
   protected final org.chromium.net.ICronetEngineBuilder mBuilderDelegate;
   public static final int HTTP_CACHE_DISABLED;
   public static final int HTTP_CACHE_IN_MEMORY;
@@ -634,4 +635,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: cfd272ad8510d246ce07e5f12c4caa92
+Stamp: 31ef5e660d31d43015f23b6d5d5d2ce0
