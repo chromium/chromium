@@ -6373,9 +6373,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Another program on your computer added a theme that may change the way Chrome works.
       </message>
 
-      <message name="IDS_EXTENSIONS_UNSUPPORTED_DISABLED_TITLE" desc="Title of the dialog shown when unsupported extensions have been disabled">
-        Unsupported extensions disabled
-      </message>
       <message name="IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE" desc="Text shown in the extensions settings for items that might have been forcefully added to Chrome without the user's knowledge">
         This extension is not listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE">$1<ex>Chrome Web Store</ex></ph> and may have been added without your knowledge.
       </message>
@@ -6499,9 +6496,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_DEPRECATED_APPS_CANCEL_LABEL" desc="Label for Cancel button on deprecated apps dialog">
           Cancel
         </message>
-        <message name="IDS_DEPRECATED_APPS_LAUNCH_ANYWAY_LABEL" desc="Label for button cancel button to launch the app anyways in the deprecated apps dialog">
-          Open Anyway
-        </message>
       </if>
         <if expr="not use_titlecase">
         <message name="IDS_DEPRECATED_APPS_OK_LABEL" desc="Label for OK button to delete deprecated apps on deprecated apps dialog">
@@ -6511,9 +6505,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_DEPRECATED_APPS_CANCEL_LABEL" desc="Label for Cancel button on deprecated apps dialog">
           Cancel
-        </message>
-        <message name="IDS_DEPRECATED_APPS_LAUNCH_ANYWAY_LABEL" desc="Label for button cancel button to launch the app anyways in the deprecated apps dialog">
-          Open anyway
         </message>
       </if>
       <!-- End Deprecated Apps Deletion Dialog strings. -->
