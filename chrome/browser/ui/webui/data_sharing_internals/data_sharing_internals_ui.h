@@ -12,10 +12,10 @@
 
 class DataSharingInternalsPageHandlerImpl;
 
-class DataSharingUIConfig : public content::WebUIConfig {
+class DataSharingInternalsUIConfig : public content::WebUIConfig {
  public:
-  DataSharingUIConfig();
-  ~DataSharingUIConfig() override;
+  DataSharingInternalsUIConfig();
+  ~DataSharingInternalsUIConfig() override;
 
   // content::WebUIConfig:
   std::unique_ptr<content::WebUIController> CreateWebUIController(

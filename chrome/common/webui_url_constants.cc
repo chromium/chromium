@@ -249,6 +249,9 @@ const char kChromeUIUntrustedImageEditorURL[] =
     "chrome-untrusted://image-editor/";
 const char kChromeUIUntrustedPrintURL[] = "chrome-untrusted://print/";
 const char kChromeUIUntrustedThemeURL[] = "chrome-untrusted://theme/";
+const char kChromeUIUntrustedDataSharingHost[] = "data-sharing";
+const char kChromeUIUntrustedDataSharingURL[] =
+    "chrome-untrusted://data-sharing/";
 const char kChromeUIUsbInternalsHost[] = "usb-internals";
 const char kChromeUIUserActionsHost[] = "user-actions";
 const char kChromeUIVersionHost[] = "version";

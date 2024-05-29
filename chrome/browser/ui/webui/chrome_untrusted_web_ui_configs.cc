@@ -11,6 +11,7 @@
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
@@ -48,6 +49,7 @@ void RegisterChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(
       std::make_unique<ReadAnythingUIUntrustedConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<HatsUIConfig>());
+  map.AddUntrustedWebUIConfig(std::make_unique<DataSharingUIConfig>());
 
 #if BUILDFLAG(ENABLE_COMPOSE)
   map.AddUntrustedWebUIConfig(std::make_unique<ComposeUIUntrustedConfig>());

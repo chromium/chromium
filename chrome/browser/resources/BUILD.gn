@@ -31,6 +31,7 @@ group("resources") {
       "app_service_internals:resources",
       "bookmarks:resources",
       "commerce/product_specifications:resources",
+      "data_sharing:resources",
       "downloads:resources",
       "feedback:resources",
       "gaia_auth_host:resources",

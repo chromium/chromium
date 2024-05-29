@@ -14,15 +14,15 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-DataSharingUIConfig::DataSharingUIConfig()
+DataSharingInternalsUIConfig::DataSharingInternalsUIConfig()
     : WebUIConfig(content::kChromeUIScheme,
                   chrome::kChromeUIDataSharingInternalsHost) {}
 
-DataSharingUIConfig::~DataSharingUIConfig() = default;
+DataSharingInternalsUIConfig::~DataSharingInternalsUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-DataSharingUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                  const GURL& url) {
+DataSharingInternalsUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                    const GURL& url) {
   return std::make_unique<DataSharingInternalsUI>(web_ui);
 }
 

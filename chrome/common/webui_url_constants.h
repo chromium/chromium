@@ -236,6 +236,8 @@ extern const char kChromeUIUntrustedHatsURL[];
 extern const char kChromeUIUntrustedImageEditorURL[];
 extern const char kChromeUIUntrustedPrintURL[];
 extern const char kChromeUIUntrustedThemeURL[];
+extern const char kChromeUIUntrustedDataSharingHost[];
+extern const char kChromeUIUntrustedDataSharingURL[];
 extern const char kChromeUIUsbInternalsHost[];
 extern const char kChromeUIUserActionsHost[];
 extern const char kChromeUIVersionHost[];
