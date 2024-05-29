@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "base/files/file_path.h"
-#include "base/files/file_path_watcher.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +16,7 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/common/content_export.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -29,9 +29,9 @@ namespace content {
 // This class must constructed, used, and destroyed on the same sequence.
 class CONTENT_EXPORT FileSystemAccessChangeSource {
  public:
-  using ChangeInfo = base::FilePathWatcher::ChangeInfo;
-  using ChangeType = base::FilePathWatcher::ChangeType;
-  using FilePathType = base::FilePathWatcher::FilePathType;
+  using ChangeInfo = FilePathWatcher::ChangeInfo;
+  using ChangeType = FilePathWatcher::ChangeType;
+  using FilePathType = FilePathWatcher::FilePathType;
 
   class RawChangeObserver : public base::CheckedObserver {
    public:

@@ -2931,6 +2931,7 @@ test("content_unittests") {
     sources += [
       "../browser/compute_pressure/pressure_service_for_frame_unittest.cc",
       "../browser/compute_pressure/pressure_service_for_worker_unittest.cc",
+      "../browser/file_system_access/file_path_watcher/file_path_watcher_unittest.cc",
     ]
   }
 

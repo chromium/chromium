@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
@@ -808,7 +807,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Local file system access - including the open*Picker() methods used here
 // - is not supported on Android or iOS. See https://crbug.com/1011535.
-// Meanwhile, `base::FilePathWatcher` is not implemented on Fuchsia. See
+// Meanwhile, `FilePathWatcher` is not implemented on Fuchsia. See
 // https://crbug.com/851641.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 class FileSystemAccessObserverWithBFCacheBrowserTest
