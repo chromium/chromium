@@ -58,18 +58,6 @@ ServiceWorkerMetrics::EventType PurposeToEventType(
   return ServiceWorkerMetrics::EventType::UNKNOWN;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// TODO(crbug.com/40918057): remove this metrics if we confirm that
-// kContainerNotReady prevents calling the CountFeature IPC.
-enum class CountFeatureDropOutReason {
-  kOk = 0,
-  kContainerNotReady = 1,
-  kExecutionNotReady = 2,
-  kNotBoundOrNotConnected = 3,
-  kMaxValue = kNotBoundOrNotConnected,
-};
-
 // Max number of messages that can be sent before |container_| gets ready.
 // I believe messages may not be sent in that situation for regular way, but
 // we technically do not prevent finding a client and send a message in that
@@ -767,26 +755,17 @@ void ServiceWorkerContainerHostForClient::PostMessageToClient(
 
 void ServiceWorkerClient::CountFeature(blink::mojom::WebFeature feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SCOPED_CRASH_KEY_NUMBER("SWCH_CF", "feature", static_cast<int32_t>(feature));
-  SCOPED_CRASH_KEY_NUMBER("SWCH_CF", "client_type",
-                          static_cast<int32_t>(GetClientType()));
-
-  constexpr char kDropOutMetrics[] = "ServiceWorker.CountFeature.DropOut";
 
   // `container_` can be used only if ServiceWorkerContainerInfoForClient has
   // been passed to the renderer process. Otherwise, the method call will crash
   // inside the mojo library (See crbug.com/40918057).
   if (!is_container_ready()) {
-    base::UmaHistogramEnumeration(
-        kDropOutMetrics, CountFeatureDropOutReason::kContainerNotReady);
     buffered_used_features_.insert(feature);
     return;
   }
 
   // And only when loading finished so the controller is really settled.
   if (!is_execution_ready()) {
-    base::UmaHistogramEnumeration(
-        kDropOutMetrics, CountFeatureDropOutReason::kExecutionNotReady);
     buffered_used_features_.insert(feature);
     return;
   }
@@ -796,20 +775,8 @@ void ServiceWorkerClient::CountFeature(blink::mojom::WebFeature feature) {
 
 void ServiceWorkerContainerHostForClient::CountFeature(
     blink::mojom::WebFeature feature) {
-  constexpr char kDropOutMetrics[] = "ServiceWorker.CountFeature.DropOut";
-
-  // `container_` shouldn't be disconnected during the lifetime of `this` but
-  // there seems a situation where `container_` is disconnected or unbound.
-  // TODO(crbug.com/1136843, crbug.com/40918057): Figure out the cause and
-  // remove this check.
-  if (!container_.is_bound() || !container_.is_connected()) {
-    base::UmaHistogramEnumeration(
-        kDropOutMetrics, CountFeatureDropOutReason::kNotBoundOrNotConnected);
-    return;
-  }
-
-  base::UmaHistogramEnumeration(kDropOutMetrics,
-                                CountFeatureDropOutReason::kOk);
+  CHECK(container_.is_bound());
+  CHECK(container_.is_connected());
   container_->CountFeature(feature);
 }
 
